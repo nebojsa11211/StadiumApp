@@ -1,0 +1,17 @@
+{
+  "name": "stadiontest",
+  "version": "1.0.0",
+  "description": "A complete, production-ready drink ordering system for stadium events, built with modern .NET technologies, Docker containers, and cloud-native architecture.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0"
+  }
+}

@@ -1,0 +1,9 @@
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+
+@ChildContent
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+}

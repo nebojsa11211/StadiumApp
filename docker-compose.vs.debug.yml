@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # API - Development debugging (using SQLite for local development)
+  api:
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.API/Dockerfile
+      target: base
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=StadiumDrinkOrdering.db
+      - JwtSettings__SecretKey=DevSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=StadiumDrinkOrdering
+      - JwtSettings__Audience=StadiumDrinkOrdering
+      - Logging__LogLevel__Default=Debug
+      - Logging__LogLevel__Microsoft.AspNetCore=Information
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./StadiumDrinkOrdering.API:/app:rw
+      - ./StadiumDrinkOrdering.API/StadiumDrinkOrdering.db:/app/StadiumDrinkOrdering.db:rw
+      - ~/.vsdbg:/remote_debugger:rw
+    networks:
+      - stadium-network
+    restart: unless-stopped
+
+  # Customer - Development debugging
+  customer:
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.Customer/Dockerfile
+      target: base
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8081
+      - ApiSettings__BaseUrl=http://api:8080/
+      - Logging__LogLevel__Default=Debug
+    ports:
+      - "5002:8081"
+    volumes:
+      - ./StadiumDrinkOrdering.Customer:/app:rw
+      - ~/.vsdbg:/remote_debugger:rw
+    depends_on:
+      - api
+    networks:
+      - stadium-network
+    restart: unless-stopped
+
+  # Admin - Development debugging
+  admin:
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.Admin/Dockerfile
+      target: base
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8082
+      - ApiSettings__BaseUrl=http://api:8080/
+      - Logging__LogLevel__Default=Debug
+    ports:
+      - "5003:8082"
+    volumes:
+      - ./StadiumDrinkOrdering.Admin:/app:rw
+      - ~/.vsdbg:/remote_debugger:rw
+    depends_on:
+      - api
+    networks:
+      - stadium-network
+    restart: unless-stopped
+
+networks:
+  stadium-network:
+    driver: bridge
+    # Ensure network is removed when containers stop
+    attachable: true
+
+volumes:
+  sqlserver_debug_data:
+    driver: local

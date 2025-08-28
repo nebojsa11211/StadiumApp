@@ -1,0 +1,92 @@
+.stadium-visualization-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.stadium-svg-container {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.stadium-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.stadium-field {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.stand {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.stand:hover {
+    filter: brightness(1.1) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    transform: scale(1.02);
+    transform-origin: center;
+}
+
+.stand.hover {
+    filter: brightness(1.1) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.stand.selected {
+    stroke: #fbbf24;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+.stand-label {
+    pointer-events: none;
+    user-select: none;
+}
+
+.stand-info {
+    pointer-events: none;
+    user-select: none;
+}
+
+.entrance {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.sector-details {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+@media (max-width: 576px) {
+    .stadium-svg-container {
+        padding: 10px;
+    }
+    
+    .stand-label {
+        font-size: 10px !important;
+    }
+    
+    .stand-info {
+        font-size: 7px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stand {
+        transition: none;
+    }
+    
+    .entrance {
+        animation: none;
+    }
+}

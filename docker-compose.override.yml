@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # API - Development overrides (using SQLite for local development)
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Data Source=StadiumDrinkOrdering.db
+      - JwtSettings__SecretKey=DevSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=StadiumDrinkOrdering
+      - JwtSettings__Audience=StadiumDrinkOrdering
+      - Logging__LogLevel__Default=Debug
+      - Logging__LogLevel__Microsoft.AspNetCore=Information
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./StadiumDrinkOrdering.API/StadiumDrinkOrdering.db:/app/StadiumDrinkOrdering.db
+
+  # Customer - Development overrides
+  customer:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiSettings__BaseUrl=http://api:8080/
+      - Logging__LogLevel__Default=Debug
+    ports:
+      - "5002:8081"
+
+  # Admin - Development overrides
+  admin:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiSettings__BaseUrl=http://api:8080/
+      - Logging__LogLevel__Default=Debug
+    ports:
+      - "5003:8082"

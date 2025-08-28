@@ -1,0 +1,311 @@
+@page "/stadium-map"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Customer.Services
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Stadium Map - Select Your Sector</PageTitle>
+
+<div class="container-fluid" id="customer-stadium-map-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card" id="customer-stadium-map-card">
+                <div class="card-header d-flex justify-content-between align-items-center" id="customer-stadium-map-header">
+                    <h3 id="customer-stadium-map-title">🏟️ Stadium Layout - Select Your Sector</h3>
+                    <div id="customer-stadium-map-controls">
+                        <button class="btn btn-outline-primary" @onclick="RefreshMap" id="customer-stadium-map-refresh-btn">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                        <a href="/menu" class="btn btn-primary ms-2" id="customer-stadium-map-order-btn">
+                            <i class="bi bi-cup-straw"></i> Order Drinks
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body" id="customer-stadium-map-body">
+                    @if (stadiumLayout == null)
+                    {
+                        <div class="text-center" id="customer-stadium-map-loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Loading stadium layout...</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="stadium-visualization-container">
+                            <div class="stadium-svg-container">
+                                <svg viewBox="0 0 400 300" class="stadium-svg" id="stadium-layout-svg"
+                                     aria-labelledby="stadium-title" role="img">
+                                    <title id="stadium-title">Stadium layout with 4 sectors</title>
+                                    
+                                    <!-- Field -->
+                                    <rect x="100" y="100" width="200" height="100" 
+                                          fill="#22c55e" stroke="#16a34a" stroke-width="1" 
+                                          class="stadium-field" rx="2"/>
+                                    
+                                    <!-- Center circle -->
+                                    <circle cx="200" cy="150" r="20" 
+                                            fill="none" stroke="#ffffff" stroke-width="1" 
+                                            class="field-center-circle"/>
+                                    <circle cx="200" cy="150" r="2" fill="#ffffff"/>
+                                    
+                                    <!-- North Stand -->
+                                    <g class="stand-group" data-sector="north"
+                                       @onclick="SelectNorth"
+                                       @onmouseenter="HoverNorth"
+                                       @onmouseleave="HandleStandLeave">
+                                        <rect x="125" y="40" width="150" height="40" 
+                                              fill="#1e3a8a" stroke="#1e40af" stroke-width="1"
+                                              class="@GetStandClass("north")"
+                                              rx="2"/>
+                                        <text x="200" y="62" text-anchor="middle" 
+                                              fill="white" font-size="12" font-weight="bold"
+                                              class="stand-label">North Stand</text>
+                                        <text x="200" y="75" text-anchor="middle" 
+                                              fill="#e2e8f0" font-size="9"
+                                              class="stand-info">@GetSectorInfo("north")</text>
+                                    </g>
+
+                                    <!-- South Stand -->
+                                    <g class="stand-group" data-sector="south"
+                                       @onclick="SelectSouth"
+                                       @onmouseenter="HoverSouth"
+                                       @onmouseleave="HandleStandLeave">
+                                        <rect x="125" y="220" width="150" height="40"
+                                              fill="#dc2626" stroke="#b91c1c" stroke-width="1"
+                                              class="@GetStandClass("south")"
+                                              rx="2" />
+                                        <text x="200" y="242" text-anchor="middle"
+                                              fill="white" font-size="12" font-weight="bold"
+                                              class="stand-label">South Stand</text>
+                                        <text x="200" y="255" text-anchor="middle"
+                                              fill="#fecaca" font-size="9"
+                                              class="stand-info">@GetSectorInfo("south")</text>
+                                    </g>
+
+                                    <!-- East Stand -->
+                                    <g class="stand-group" data-sector="east"
+                                       @onclick="SelectEast"
+                                       @onmouseenter="HoverEast"
+                                       @onmouseleave="HandleStandLeave">
+                                        <rect x="310" y="110" width="40" height="80"
+                                              fill="#16a34a" stroke="#15803d" stroke-width="1"
+                                              class="@GetStandClass("east")"
+                                              rx="2" />
+                                        <text x="330" y="150" text-anchor="middle"
+                                              fill="white" font-size="12" font-weight="bold"
+                                              class="stand-label" transform="rotate(90, 330, 150)">East Stand</text>
+                                        <text x="330" y="175" text-anchor="middle"
+                                              fill="#dcfce7" font-size="9"
+                                              class="stand-info" transform="rotate(90, 330, 175)">@GetSectorInfo("east")</text>
+                                    </g>
+
+                                    <!-- West Stand -->
+                                    <g class="stand-group" data-sector="west"
+                                       @onclick="SelectWest"
+                                       @onmouseenter="HoverWest"
+                                       @onmouseleave="HandleStandLeave">
+                                        <rect x="50" y="110" width="40" height="80"
+                                              fill="#7c3aed" stroke="#6d28d9" stroke-width="1"
+                                              class="@GetStandClass("west")"
+                                              rx="2" />
+                                        <text x="70" y="150" text-anchor="middle"
+                                              fill="white" font-size="12" font-weight="bold"
+                                              class="stand-label" transform="rotate(-90, 70, 150)">West Stand</text>
+                                        <text x="70" y="125" text-anchor="middle"
+                                              fill="#e9d5ff" font-size="9"
+                                              class="stand-info" transform="rotate(-90, 70, 125)">@GetSectorInfo("west")</text>
+                                    </g>
+
+                                    
+                                    <!-- Stadium entrance indicators -->
+                                    <circle cx="200" cy="280" r="3" fill="#6b7280" class="entrance"/>
+                                    <text x="200" y="290" text-anchor="middle" font-size="8" fill="#6b7280">ENTRANCE</text>
+                                </svg>
+                            </div>
+                            
+                            <div class="sector-details mt-4" id="customer-stadium-sector-details">
+                                @if (selectedSection != null)
+                                {
+                                    <div class="card" id="customer-stadium-selected-sector-card">
+                                        <div class="card-header d-flex justify-content-between align-items-center" 
+                                             id="customer-stadium-selected-sector-header">
+                                            <h5 id="customer-stadium-selected-sector-title">
+                                                <i class="bi bi-geo-alt-fill" style="color: @GetSectionColor(selectedSection.SectionName)"></i>
+                                                @selectedSection.DisplayName
+                                            </h5>
+                                            <button class="btn btn-sm btn-primary" 
+                                                    @onclick="() => NavigateToMenu(selectedSection.SectionName)"
+                                                    id="customer-stadium-order-from-sector-btn">
+                                                <i class="bi bi-cup-straw"></i> Order Here
+                                            </button>
+                                        </div>
+                                        <div class="card-body" id="customer-stadium-selected-sector-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p><strong>Section:</strong> @selectedSection.SectionName</p>
+                                                    <p><strong>Total Seats:</strong> @selectedSection.TotalSeats</p>
+                                                    <p><strong>Active Orders:</strong> @selectedSection.ActiveOrders</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><strong>Type:</strong> @GetSectionType(selectedSection.SectionName)</p>
+                                                    <p><strong>Available:</strong> @(selectedSection.TotalSeats - selectedSection.ActiveOrders) seats</p>
+                                                    <p><strong>Status:</strong> 
+                                                        <span class="badge @GetStatusBadgeClass(selectedSection.ActiveOrders, selectedSection.TotalSeats)">
+                                                            @GetStatusText(selectedSection.ActiveOrders, selectedSection.TotalSeats)
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center text-muted" id="customer-stadium-select-prompt">
+                                        <i class="bi bi-hand-index" style="font-size: 2rem;"></i>
+                                        <p class="mt-2">Click on a stand to view details and place orders</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private StadiumLayoutDto? stadiumLayout;
+    private string? hoveredSector;
+    private string? selectedSector;
+    private StadiumSectionDto? selectedSection;
+    private void SelectNorth() => SelectSector("north");
+    private void HoverNorth() => HandleStandHover("north");
+    private void SelectSouth() => SelectSector("south");
+    private void HoverSouth() => HandleStandHover("south");
+
+    private void SelectEast() => SelectSector("east");
+    private void HoverEast() => HandleStandHover("east");
+
+    private void SelectWest() => SelectSector("west");
+    private void HoverWest() => HandleStandHover("west");
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStadiumLayout();
+    }
+
+    private async Task LoadStadiumLayout()
+    {
+        try
+        {
+            stadiumLayout = await ApiService.GetStadiumLayoutAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading stadium layout: {ex.Message}");
+        }
+    }
+
+    private async Task RefreshMap()
+    {
+        stadiumLayout = null;
+        selectedSector = null;
+        selectedSection = null;
+        await LoadStadiumLayout();
+    }
+
+    private void HandleStandHover(string sector)
+    {
+        hoveredSector = sector;
+    }
+
+    private void HandleStandLeave()
+    {
+        hoveredSector = null;
+    }
+
+    private void SelectSector(string sector)
+    {
+        selectedSector = sector;
+        selectedSection = stadiumLayout?.Sections.FirstOrDefault(s => s.SectionName.Equals(sector, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void NavigateToMenu(string sector)
+    {
+        NavigationManager.NavigateTo($"/menu?sector={sector}");
+    }
+
+    private string GetSectorInfo(string sectorName)
+    {
+        var section = stadiumLayout?.Sections.FirstOrDefault(s => s.SectionName.Equals(sectorName, StringComparison.OrdinalIgnoreCase));
+        if (section == null) return "0/0";
+        
+        var available = section.TotalSeats - section.ActiveOrders;
+        return $"{available}/{section.TotalSeats}";
+    }
+
+    private string GetSectorDisplayName(string sector)
+    {
+        return sector switch
+        {
+            "north" => "North",
+            "south" => "South", 
+            "east" => "East",
+            "west" => "West",
+            _ => sector
+        };
+    }
+
+    private string GetSectionColor(string sectionName)
+    {
+        var section = stadiumLayout?.Sections.FirstOrDefault(s => s.SectionName.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
+        return section?.Color ?? "#6b7280";
+    }
+
+    private string GetSectionType(string sectionName)
+    {
+        return sectionName switch
+        {
+            "north" => "Ultras Section",
+            "south" => "Family Section",
+            "east" => "VIP Section",
+            "west" => "General Admission",
+            _ => "Standard"
+        };
+    }
+
+    private string GetStatusBadgeClass(int activeOrders, int totalSeats)
+    {
+        var available = totalSeats - activeOrders;
+        var percentage = (double)available / totalSeats;
+        return percentage switch
+        {
+            > 0.7 => "bg-success",
+            > 0.3 => "bg-warning",
+            _ => "bg-danger"
+        };
+    }
+
+    private string GetStatusText(int activeOrders, int totalSeats)
+    {
+        var available = totalSeats - activeOrders;
+        var percentage = (double)available / totalSeats;
+        return percentage switch
+        {
+            > 0.7 => "Many seats available",
+            > 0.3 => "Some seats available", 
+            _ => "Almost full"
+        };
+    }
+
+    private string GetStandClass(string sector)
+    {
+        var classes = new List<string> { "stand", sector + "-stand" };
+        if (hoveredSector == sector) classes.Add("hover");
+        if (selectedSector == sector) classes.Add("selected");
+        return string.Join(" ", classes);
+    }
+}

@@ -1,0 +1,6 @@
+@StadiumDrinkOrdering.API_HostAddress = http://localhost:5151
+
+GET {{StadiumDrinkOrdering.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

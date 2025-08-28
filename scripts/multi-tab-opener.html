@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stadium Drink Ordering - Multi-Tab Launcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .urls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .url-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            transition: background 0.3s;
+        }
+        .url-item:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .loading {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">🚀 Opening All Stadium Services</div>
+        <div class="urls">
+            <a href="http://localhost:5002" class="url-item" target="_blank">
+                📱 Customer App - http://localhost:5002
+            </a>
+            <a href="http://localhost:5003" class="url-item" target="_blank">
+                🛠️ Admin Dashboard - http://localhost:5003
+            </a>
+            <a href="http://localhost:5001/swagger" class="url-item" target="_blank">
+                📚 API Documentation - http://localhost:5001/swagger
+            </a>
+        </div>
+        <div class="loading">⏳ Opening all tabs automatically...</div>
+    </div>
+
+    <script>
+        // Auto-open all URLs in new tabs
+        setTimeout(() => {
+            const urls = [
+                'http://localhost:5002',
+                'http://localhost:5003',
+                'http://localhost:5001/swagger'
+            ];
+            
+            urls.forEach((url, index) => {
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, index * 500);
+            });
+            
+            // Close this launcher page after opening tabs
+            setTimeout(() => {
+                window.close();
+            }, 2000);
+        }, 1000);
+    </script>
+</body>
+</html>

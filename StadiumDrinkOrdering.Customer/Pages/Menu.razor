@@ -1,0 +1,333 @@
+@page "/menu"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Customer.Services
+@inject IApiService ApiService
+@inject ICartService CartService
+
+<PageTitle>Stadium Drinks - Order Now</PageTitle>
+
+<div class="container-fluid" id="customer-menu-container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4" id="customer-menu-title">🍺 Stadium Drinks Menu</h1>
+            
+            @if (drinks == null)
+            {
+                <div class="text-center" id="customer-menu-loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading drinks...</p>
+                </div>
+            }
+            else if (!drinks.Any())
+            {
+                <div class="alert alert-info" id="customer-menu-empty">
+                    <h4 id="customer-menu-empty-title">No drinks available</h4>
+                    <p id="customer-menu-empty-message">Sorry, no drinks are currently available for order.</p>
+                </div>
+            }
+            else
+            {
+                <!-- Category filters -->
+                <div class="mb-4" id="customer-category-filters">
+                    <div class="btn-group" role="group" id="customer-category-buttons">
+                        <button type="button" class="btn @(selectedCategory == null ? "btn-primary" : "btn-outline-primary")" 
+                                @onclick="() => FilterByCategory(null)" id="customer-category-all">
+                            All
+                        </button>
+                        @foreach (var category in Enum.GetValues<DrinkCategory>())
+                        {
+                            <button type="button" class="btn @(selectedCategory == category ? "btn-primary" : "btn-outline-primary")" 
+                                    @onclick="() => FilterByCategory(category)" id="customer-category-@category">
+                                @category
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Drinks grid -->
+                <div class="row" id="customer-drinks-grid">
+                    @foreach (var drink in FilteredDrinks)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4" id="customer-drink-card-@drink.Id">
+                            <div class="card h-100" id="customer-drink-@drink.Id">
+                                @if (!string.IsNullOrEmpty(drink.ImageUrl))
+                                {
+                                    <img src="@drink.ImageUrl" class="card-img-top" alt="@drink.Name" style="height: 200px; object-fit: cover;" id="customer-drink-image-@drink.Id">
+                                }
+                                else
+                                {
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;" id="customer-drink-placeholder-@drink.Id">
+                                        <span class="text-muted">🥤</span>
+                                    </div>
+                                }
+                                
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title" id="customer-drink-name-@drink.Id">@drink.Name</h5>
+                                    <p class="card-text flex-grow-1" id="customer-drink-description-@drink.Id">@drink.Description</p>
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="h5 mb-0 text-primary" id="customer-drink-price-@drink.Id">$@drink.Price.ToString("F2")</span>
+                                            <small class="text-muted" id="customer-drink-stock-@drink.Id">Stock: @drink.StockQuantity</small>
+                                        </div>
+                                        
+                                        @if (drink.StockQuantity > 0 && drink.IsAvailable)
+                                        {
+                                            <div class="input-group mb-2" id="customer-quantity-controls-@drink.Id">
+                                                <button class="btn btn-outline-secondary" type="button" 
+                                                        @onclick="() => DecreaseQuantity(drink.Id)" id="customer-decrease-btn-@drink.Id">-</button>
+                                                <input type="number" class="form-control text-center" 
+                                                       @bind="quantities[drink.Id]" min="0" max="@drink.StockQuantity" id="customer-quantity-input-@drink.Id">
+                                                <button class="btn btn-outline-secondary" type="button" 
+                                                        @onclick="() => IncreaseQuantity(drink.Id)" id="customer-increase-btn-@drink.Id">+</button>
+                                            </div>
+                                            
+                                            <button class="btn btn-primary w-100" 
+                                                    @onclick="() => AddToCart(drink)"
+                                                    disabled="@(quantities.GetValueOrDefault(drink.Id, 0) <= 0)" id="customer-add-to-cart-btn-@drink.Id">
+                                                Add to Cart
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-secondary w-100" disabled id="customer-out-of-stock-btn-@drink.Id">
+                                                Out of Stock
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        
+        <!-- Cart sidebar -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px;" id="customer-cart-card">
+                <div class="card-header d-flex justify-content-between align-items-center" id="customer-cart-header">
+                    <h5 class="mb-0" id="customer-cart-title">🛒 Your Order</h5>
+                    <span class="badge bg-primary" id="customer-cart-item-count">@CartService.GetTotalItems() items</span>
+                </div>
+                <div class="card-body" id="customer-cart-body">
+                    @if (!CartService.Items.Any())
+                    {
+                        <p class="text-muted text-center" id="customer-cart-empty">Your cart is empty</p>
+                    }
+                    else
+                    {
+                        @foreach (var item in CartService.Items)
+                        {
+                            <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom" id="customer-cart-item-@item.Drink.Id">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1" id="customer-cart-item-name-@item.Drink.Id">@item.Drink.Name</h6>
+                                    <small class="text-muted" id="customer-cart-item-price-@item.Drink.Id">$@item.Drink.Price.ToString("F2") × @item.Quantity</small>
+                                    @if (!string.IsNullOrEmpty(item.SpecialInstructions))
+                                    {
+                                        <div id="customer-cart-item-notes-@item.Drink.Id"><small class="text-info">Note: @item.SpecialInstructions</small></div>
+                                    }
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold" id="customer-cart-item-total-@item.Drink.Id">$@item.TotalPrice.ToString("F2")</div>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            @onclick="() => CartService.RemoveItem(item.Drink.Id)" id="customer-cart-remove-btn-@item.Drink.Id">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        
+                        <div class="border-top pt-3" id="customer-cart-total-section">
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong id="customer-cart-total-label">Total: $@CartService.GetTotalPrice().ToString("F2")</strong>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label" for="customer-ticket-input">Ticket Number</label>
+                                <input type="text" class="form-control" @bind="ticketNumber" 
+                                       placeholder="Enter your ticket number" required id="customer-ticket-input">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label" for="customer-notes-input">Special Instructions (Optional)</label>
+                                <textarea class="form-control" @bind="orderNotes" 
+                                          placeholder="Any special requests?" rows="2" id="customer-notes-input"></textarea>
+                            </div>
+                            
+                            <button class="btn btn-success w-100 mb-2" 
+                                    @onclick="PlaceOrder"
+                                    disabled="@(string.IsNullOrWhiteSpace(ticketNumber) || isPlacingOrder)" id="customer-place-order-btn">
+                                @if (isPlacingOrder)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" id="customer-order-spinner"></span>
+                                }
+                                Place Order
+                            </button>
+                            
+                            <button class="btn btn-outline-secondary w-100" 
+                                    @onclick="CartService.ClearCart" id="customer-clear-cart-btn">
+                                Clear Cart
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="customer-alert-container">
+        <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="customer-alert-message">
+            @alertMessage
+            <button type="button" class="btn-close" @onclick="ClearAlert" id="customer-alert-close-btn"></button>
+        </div>
+    </div>
+}
+
+@code {
+    private List<DrinkDto>? drinks;
+    private DrinkCategory? selectedCategory;
+    private Dictionary<int, int> quantities = new();
+    private string ticketNumber = "";
+    private string orderNotes = "";
+    private bool isPlacingOrder = false;
+    private string alertMessage = "";
+    private string alertType = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDrinks();
+        CartService.OnCartChanged += StateHasChanged;
+    }
+
+    private async Task LoadDrinks()
+    {
+        drinks = await ApiService.GetDrinksAsync();
+        if (drinks != null)
+        {
+            // Initialize quantities
+            foreach (var drink in drinks)
+            {
+                quantities[drink.Id] = 0;
+            }
+        }
+    }
+
+    private IEnumerable<DrinkDto> FilteredDrinks
+    {
+        get
+        {
+            if (drinks == null) return Enumerable.Empty<DrinkDto>();
+            
+            return selectedCategory == null 
+                ? drinks 
+                : drinks.Where(d => d.Category == selectedCategory);
+        }
+    }
+
+    private void FilterByCategory(DrinkCategory? category)
+    {
+        selectedCategory = category;
+    }
+
+    private void IncreaseQuantity(int drinkId)
+    {
+        var drink = drinks?.FirstOrDefault(d => d.Id == drinkId);
+        if (drink != null && quantities[drinkId] < drink.StockQuantity)
+        {
+            quantities[drinkId]++;
+        }
+    }
+
+    private void DecreaseQuantity(int drinkId)
+    {
+        if (quantities[drinkId] > 0)
+        {
+            quantities[drinkId]--;
+        }
+    }
+
+    private void AddToCart(DrinkDto drink)
+    {
+        var quantity = quantities.GetValueOrDefault(drink.Id, 0);
+        if (quantity > 0)
+        {
+            CartService.AddItem(drink, quantity);
+            quantities[drink.Id] = 0; // Reset quantity after adding
+            ShowAlert($"Added {quantity} × {drink.Name} to cart", "success");
+        }
+    }
+
+    private async Task PlaceOrder()
+    {
+        if (string.IsNullOrWhiteSpace(ticketNumber) || !CartService.Items.Any())
+            return;
+
+        isPlacingOrder = true;
+        
+        try
+        {
+            var createOrderDto = new CreateOrderDto
+            {
+                TicketNumber = ticketNumber.Trim(),
+                CustomerNotes = string.IsNullOrWhiteSpace(orderNotes) ? null : orderNotes.Trim(),
+                OrderItems = CartService.Items.Select(item => new CreateOrderItemDto
+                {
+                    DrinkId = item.Drink.Id,
+                    Quantity = item.Quantity,
+                    SpecialInstructions = item.SpecialInstructions
+                }).ToList()
+            };
+
+            var order = await ApiService.CreateOrderAsync(createOrderDto);
+            if (order != null)
+            {
+                CartService.ClearCart();
+                ticketNumber = "";
+                orderNotes = "";
+                ShowAlert($"Order #{order.Id} placed successfully!", "success");
+            }
+            else
+            {
+                ShowAlert("Failed to place order. Please check your ticket number and try again.", "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Error placing order: {ex.Message}", "danger");
+        }
+        finally
+        {
+            isPlacingOrder = false;
+        }
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+        StateHasChanged();
+        
+        // Auto-hide after 5 seconds
+        _ = Task.Delay(5000).ContinueWith(_ => 
+        {
+            alertMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private void ClearAlert()
+    {
+        alertMessage = "";
+    }
+
+    public void Dispose()
+    {
+        CartService.OnCartChanged -= StateHasChanged;
+    }
+}

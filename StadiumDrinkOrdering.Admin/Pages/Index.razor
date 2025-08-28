@@ -1,0 +1,91 @@
+﻿@page "/"
+
+<PageTitle>Stadium Admin Dashboard</PageTitle>
+
+<div class="container-fluid">
+    <div class="hero-section text-center py-5 mb-4" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">
+        <div class="container">
+            <h1 class="display-4 mb-3">🏟️ Stadium Admin</h1>
+            <p class="lead mb-4">Manage orders, drinks, and monitor stadium operations</p>
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <a href="/orders" class="btn btn-light btn-lg me-3">
+                        <i class="bi bi-list-check"></i> Manage Orders
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="/drinks" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-cup-straw"></i> Manage Drinks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span style="font-size: 3rem;">📋</span>
+                        </div>
+                        <h5 class="card-title">Order Management</h5>
+                        <p class="card-text">View, process, and track customer orders in real-time.</p>
+                        <a href="/orders" class="btn btn-primary">View Orders</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span style="font-size: 3rem;">🍺</span>
+                        </div>
+                        <h5 class="card-title">Drink Catalog</h5>
+                        <p class="card-text">Manage drinks, prices, stock levels, and availability.</p>
+                        <a href="/drinks" class="btn btn-primary">Manage Drinks</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span style="font-size: 3rem;">📊</span>
+                        </div>
+                        <h5 class="card-title">Analytics</h5>
+                        <p class="card-text">View sales reports, popular items, and performance metrics.</p>
+                        <button class="btn btn-secondary" disabled>Coming Soon</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-6 offset-md-3 text-center">
+                <h3>Quick Setup Guide</h3>
+                <ol class="list-unstyled">
+                    <li class="mb-3">
+                        <span class="badge bg-primary rounded-circle me-3">1</span>
+                        Add drinks to your catalog with prices and descriptions
+                    </li>
+                    <li class="mb-3">
+                        <span class="badge bg-primary rounded-circle me-3">2</span>
+                        Monitor incoming orders from customers
+                    </li>
+                    <li class="mb-3">
+                        <span class="badge bg-primary rounded-circle me-3">3</span>
+                        Process orders through preparation to delivery
+                    </li>
+                    <li class="mb-3">
+                        <span class="badge bg-primary rounded-circle me-3">4</span>
+                        Track performance and customer satisfaction
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

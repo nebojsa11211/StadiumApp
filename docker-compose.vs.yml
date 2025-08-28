@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  api:
+    image: ${DOCKER_REGISTRY-}stadiumdrinkorderingapi
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=StadiumDrinkOrdering.db
+      - JwtSettings__SecretKey=DevSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=StadiumDrinkOrdering
+      - JwtSettings__Audience=StadiumDrinkOrdering
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./StadiumDrinkOrdering.API:/app:rw
+      - ./StadiumDrinkOrdering.API/StadiumDrinkOrdering.db:/app/StadiumDrinkOrdering.db:rw
+      - ~/.vsdbg:/remote_debugger:rw
+    networks:
+      - stadium-network
+
+  stadiumdrinkordering.customer:
+    image: ${DOCKER_REGISTRY-}stadiumdrinkorderingcustomer
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.Customer/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8081
+      - ApiSettings__BaseUrl=http://api:8080/
+    ports:
+      - "5002:8081"
+    volumes:
+      - ./StadiumDrinkOrdering.Customer:/app:rw
+      - ~/.vsdbg:/remote_debugger:rw
+    depends_on:
+      - api
+    networks:
+      - stadium-network
+
+  stadiumdrinkordering.admin:
+    image: ${DOCKER_REGISTRY-}stadiumdrinkorderingadmin
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.Admin/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8082
+      - ApiSettings__BaseUrl=http://api:8080/
+    ports:
+      - "5003:8082"
+    volumes:
+      - ./StadiumDrinkOrdering.Admin:/app:rw
+      - ~/.vsdbg:/remote_debugger:rw
+    depends_on:
+      - api
+    networks:
+      - stadium-network
+
+networks:
+  stadium-network:
+    driver: bridge
+
+volumes:
+  sqlserver_data:
+    driver: local

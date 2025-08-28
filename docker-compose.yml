@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: stadium-sqlserver
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: YourPassword123!
+      MSSQL_PID: Express
+    ports:
+      - "14330:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - stadium-network
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'health check'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  # API Backend
+  api:
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.API/Dockerfile
+    container_name: stadium-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=StadiumDrinkOrdering;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=StadiumDrinkOrdering
+      - JwtSettings__Audience=StadiumDrinkOrdering
+    ports:
+      - "9000:8080"
+    depends_on:
+      - sqlserver
+    networks:
+      - stadium-network
+    restart: unless-stopped
+
+  # Customer Frontend
+  customer:
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.Customer/Dockerfile
+    container_name: stadium-customer
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiSettings__BaseUrl=http://api:8080/
+    ports:
+      - "9001:8081"
+    depends_on:
+      - api
+    networks:
+      - stadium-network
+    restart: unless-stopped
+
+  # Admin Frontend
+  admin:
+    build:
+      context: .
+      dockerfile: StadiumDrinkOrdering.Admin/Dockerfile
+    container_name: stadium-admin
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiSettings__BaseUrl=http://api:8080/
+    ports:
+      - "9002:8082"
+    depends_on:
+      - api
+    networks:
+      - stadium-network
+    restart: unless-stopped
+
+# Networks
+networks:
+  stadium-network:
+    driver: bridge
+    name: stadium-network
+
+# Volumes
+volumes:
+  sqlserver_data:
+    driver: local
+    name: stadium-sqlserver-data

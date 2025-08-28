@@ -1,0 +1,469 @@
+@page "/drinks"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService ApiService
+@inject IJSRuntime JSRuntime
+
+<AuthRoute>
+<PageTitle>Drink Management</PageTitle>
+
+<div class="container-fluid" id="admin-drinks-container">
+    <div class="d-flex justify-content-between align-items-center mb-4" id="admin-drinks-header">
+        <h1 id="admin-drinks-title">🍺 Drink Management</h1>
+        <button class="btn btn-primary" @onclick="ShowCreateDrinkModal" id="admin-add-drink-btn">
+            <i class="bi bi-plus"></i> Add New Drink
+        </button>
+    </div>
+
+    @if (drinks == null)
+    {
+        <div class="text-center" id="admin-drinks-loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading drinks...</p>
+        </div>
+    }
+    else if (!drinks.Any())
+    {
+        <div class="text-center py-5" id="admin-drinks-empty">
+            <div class="mb-4">
+                <span style="font-size: 4rem;">🥤</span>
+            </div>
+            <h3 id="admin-drinks-empty-title">No drinks found</h3>
+            <p class="text-muted" id="admin-drinks-empty-message">Start by adding your first drink to the menu.</p>
+            <button class="btn btn-primary btn-lg" @onclick="ShowCreateDrinkModal" id="admin-add-first-drink-btn">
+                Add First Drink
+            </button>
+        </div>
+    }
+    else
+    {
+        <!-- Filter Controls -->
+        <div class="card mb-4" id="admin-drinks-filter-card">
+            <div class="card-header" id="admin-drinks-filter-header">
+                <h6 id="admin-drinks-filter-title">Filter Drinks</h6>
+            </div>
+            <div class="card-body" id="admin-drinks-filter-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label" for="admin-category-filter">Category</label>
+                        <select class="form-select" @bind="selectedCategory" @bind:after="StateHasChanged" id="admin-category-filter">
+                            <option value="">All Categories</option>
+                            @foreach (var category in Enum.GetValues<DrinkCategory>())
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="admin-availability-filter">Availability</label>
+                        <select class="form-select" @bind="availabilityFilter" @bind:after="StateHasChanged" id="admin-availability-filter">
+                            <option value="">All Drinks</option>
+                            <option value="available">Available Only</option>
+                            <option value="unavailable">Unavailable Only</option>
+                            <option value="lowstock">Low Stock (&lt; 10)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="admin-search-filter">Search</label>
+                        <input type="text" class="form-control" placeholder="Search drinks..." 
+                               @bind="searchTerm" @bind:after="StateHasChanged" id="admin-search-filter" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drinks Grid -->
+        <div class="row" id="admin-drinks-grid">
+            @foreach (var drink in FilteredDrinks)
+            {
+                <div class="col-md-6 col-lg-4 col-xl-3 mb-4" id="admin-drink-card-@drink.Id">
+                    <div class="card h-100" id="admin-drink-@drink.Id">
+                        @if (!string.IsNullOrEmpty(drink.ImageUrl))
+                        {
+                            <img src="@drink.ImageUrl" class="card-img-top" alt="@drink.Name" style="height: 200px; object-fit: cover;" id="admin-drink-image-@drink.Id">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;" id="admin-drink-placeholder-@drink.Id">
+                                <span class="text-muted display-4">🥤</span>
+                            </div>
+                        }
+                        
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title" id="admin-drink-name-@drink.Id">@drink.Name</h5>
+                                @if (!drink.IsAvailable)
+                                {
+                                    <span class="badge bg-danger" id="admin-drink-status-unavailable-@drink.Id">Unavailable</span>
+                                }
+                                else if (drink.StockQuantity < 10)
+                                {
+                                    <span class="badge bg-warning text-dark" id="admin-drink-status-lowstock-@drink.Id">Low Stock</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success" id="admin-drink-status-available-@drink.Id">Available</span>
+                                }
+                            </div>
+                            
+                            <p class="card-text text-muted small" id="admin-drink-category-@drink.Id">@drink.Category</p>
+                            <p class="card-text flex-grow-1" id="admin-drink-description-@drink.Id">@drink.Description</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="h5 mb-0 text-primary" id="admin-drink-price-@drink.Id">$@drink.Price.ToString("F2")</span>
+                                    <span class="text-muted" id="admin-drink-stock-@drink.Id">Stock: @drink.StockQuantity</span>
+                                </div>
+                                
+                                <div class="btn-group w-100">
+                                    <button class="btn btn-outline-primary btn-sm" 
+                                            @onclick="() => ShowEditDrinkModal(drink)"
+                                            id="admin-edit-drink-@drink.Id">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </button>
+                                    <button class="btn @(drink.IsAvailable ? "btn-outline-warning" : "btn-outline-success") btn-sm" 
+                                            @onclick="() => ToggleAvailability(drink)"
+                                            id="admin-toggle-availability-@drink.Id">
+                                        @if (drink.IsAvailable)
+                                        {
+                                            <i class="bi bi-eye-slash"></i> <span id="admin-disable-text-@drink.Id">Disable</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-eye"></i> <span id="admin-enable-text-@drink.Id">Enable</span>
+                                        }
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" 
+                                            @onclick="() => DeleteDrink(drink)"
+                                            id="admin-delete-drink-@drink.Id">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+</AuthRoute>
+
+<!-- Create/Edit Drink Modal -->
+@if (showDrinkModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="admin-drink-modal">
+        <div class="modal-dialog">
+            <div class="modal-content" id="admin-drink-modal-content">
+                <div class="modal-header" id="admin-drink-modal-header">
+                    <h5 class="modal-title" id="admin-drink-modal-title">@(editingDrink == null ? "Add New Drink" : "Edit Drink")</h5>
+                    <button type="button" class="btn-close" @onclick="HideDrinkModal" id="admin-drink-modal-close-btn"></button>
+                </div>
+                <div class="modal-body" id="admin-drink-modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="admin-drink-name">Name *</label>
+                        <input type="text" class="form-control" @bind="drinkForm.Name" required id="admin-drink-name">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label" for="admin-drink-description">Description</label>
+                        <textarea class="form-control" rows="3" @bind="drinkForm.Description" id="admin-drink-description"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label" for="admin-drink-price">Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" @bind="drinkForm.Price" 
+                                           step="0.01" min="0" required id="admin-drink-price">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label" for="admin-drink-stock">Stock Quantity *</label>
+                                <input type="number" class="form-control" @bind="drinkForm.StockQuantity" 
+                                       min="0" required id="admin-drink-stock">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label" for="admin-drink-category">Category *</label>
+                        <select class="form-select" @bind="drinkForm.Category" required id="admin-drink-category">
+                            @foreach (var category in Enum.GetValues<DrinkCategory>())
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label" for="admin-drink-image">Image URL</label>
+                        <input type="url" class="form-control" @bind="drinkForm.ImageUrl" 
+                               placeholder="https://example.com/image.jpg" id="admin-drink-image">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="drinkForm.IsAvailable" id="admin-drink-available">
+                            <label class="form-check-label" for="admin-drink-available">
+                                Available for ordering
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="admin-drink-modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideDrinkModal" id="admin-drink-modal-cancel-btn">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveDrink" disabled="@isSaving" id="admin-drink-modal-save-btn">
+                        @if (isSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" id="admin-drink-saving-spinner"></span>
+                        }
+                        @(editingDrink == null ? "Create Drink" : "Save Changes")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-alert-container">
+        <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="admin-alert-message">
+            @alertMessage
+            <button type="button" class="btn-close" @onclick="ClearAlert" id="admin-alert-close-btn"></button>
+        </div>
+    </div>
+}
+
+@code {
+    private List<DrinkDto>? drinks;
+    private DrinkDto? editingDrink;
+    private bool showDrinkModal = false;
+    private bool isSaving = false;
+    private string selectedCategory = "";
+    private string availabilityFilter = "";
+    private string searchTerm = "";
+    private string alertMessage = "";
+    private string alertType = "";
+
+    private DrinkFormModel drinkForm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDrinks();
+    }
+
+    private async Task LoadDrinks()
+    {
+        drinks = await ApiService.GetDrinksAsync();
+    }
+
+    private IEnumerable<DrinkDto> FilteredDrinks
+    {
+        get
+        {
+            if (drinks == null) return Enumerable.Empty<DrinkDto>();
+
+            var filtered = drinks.AsEnumerable();
+
+            // Category filter
+            if (!string.IsNullOrEmpty(selectedCategory) && Enum.TryParse<DrinkCategory>(selectedCategory, out var category))
+            {
+                filtered = filtered.Where(d => d.Category == category);
+            }
+
+            // Availability filter
+            filtered = availabilityFilter switch
+            {
+                "available" => filtered.Where(d => d.IsAvailable && d.StockQuantity > 0),
+                "unavailable" => filtered.Where(d => !d.IsAvailable || d.StockQuantity == 0),
+                "lowstock" => filtered.Where(d => d.StockQuantity < 10 && d.IsAvailable),
+                _ => filtered
+            };
+
+            // Search filter
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var search = searchTerm.ToLower();
+                filtered = filtered.Where(d => 
+                    d.Name.ToLower().Contains(search) ||
+                    (d.Description?.ToLower().Contains(search) ?? false));
+            }
+
+            return filtered.OrderBy(d => d.Category).ThenBy(d => d.Name);
+        }
+    }
+
+    private void ShowCreateDrinkModal()
+    {
+        editingDrink = null;
+        drinkForm = new DrinkFormModel { IsAvailable = true };
+        showDrinkModal = true;
+    }
+
+    private void ShowEditDrinkModal(DrinkDto drink)
+    {
+        editingDrink = drink;
+        drinkForm = new DrinkFormModel
+        {
+            Name = drink.Name,
+            Description = drink.Description,
+            Price = drink.Price,
+            StockQuantity = drink.StockQuantity,
+            ImageUrl = drink.ImageUrl,
+            Category = drink.Category,
+            IsAvailable = drink.IsAvailable
+        };
+        showDrinkModal = true;
+    }
+
+    private void HideDrinkModal()
+    {
+        showDrinkModal = false;
+        editingDrink = null;
+        drinkForm = new();
+    }
+
+    private async Task SaveDrink()
+    {
+        if (string.IsNullOrWhiteSpace(drinkForm.Name) || drinkForm.Price <= 0)
+        {
+            ShowAlert("Please fill in all required fields", "danger");
+            return;
+        }
+
+        isSaving = true;
+        try
+        {
+            if (editingDrink == null)
+            {
+                // Create new drink
+                var createDto = new CreateDrinkDto
+                {
+                    Name = drinkForm.Name.Trim(),
+                    Description = string.IsNullOrWhiteSpace(drinkForm.Description) ? null : drinkForm.Description.Trim(),
+                    Price = drinkForm.Price,
+                    StockQuantity = drinkForm.StockQuantity,
+                    ImageUrl = string.IsNullOrWhiteSpace(drinkForm.ImageUrl) ? null : drinkForm.ImageUrl.Trim(),
+                    Category = drinkForm.Category,
+                    IsAvailable = drinkForm.IsAvailable
+                };
+
+                var created = await ApiService.CreateDrinkAsync(createDto);
+                if (created != null)
+                {
+                    await LoadDrinks();
+                    HideDrinkModal();
+                    ShowAlert($"Drink '{created.Name}' created successfully", "success");
+                }
+                else
+                {
+                    ShowAlert("Failed to create drink", "danger");
+                }
+            }
+            else
+            {
+                // Update existing drink
+                var updateDto = new UpdateDrinkDto
+                {
+                    Name = drinkForm.Name.Trim(),
+                    Description = string.IsNullOrWhiteSpace(drinkForm.Description) ? null : drinkForm.Description.Trim(),
+                    Price = drinkForm.Price,
+                    StockQuantity = drinkForm.StockQuantity,
+                    ImageUrl = string.IsNullOrWhiteSpace(drinkForm.ImageUrl) ? null : drinkForm.ImageUrl.Trim(),
+                    Category = drinkForm.Category,
+                    IsAvailable = drinkForm.IsAvailable
+                };
+
+                var success = await ApiService.UpdateDrinkAsync(editingDrink.Id, updateDto);
+                if (success)
+                {
+                    await LoadDrinks();
+                    HideDrinkModal();
+                    ShowAlert($"Drink '{drinkForm.Name}' updated successfully", "success");
+                }
+                else
+                {
+                    ShowAlert("Failed to update drink", "danger");
+                }
+            }
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task ToggleAvailability(DrinkDto drink)
+    {
+        var updateDto = new UpdateDrinkDto { IsAvailable = !drink.IsAvailable };
+        var success = await ApiService.UpdateDrinkAsync(drink.Id, updateDto);
+        
+        if (success)
+        {
+            await LoadDrinks();
+            ShowAlert($"Drink '{drink.Name}' {(drink.IsAvailable ? "disabled" : "enabled")}", "success");
+        }
+        else
+        {
+            ShowAlert("Failed to update drink availability", "danger");
+        }
+    }
+
+    private async Task DeleteDrink(DrinkDto drink)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{drink.Name}'?"))
+        {
+            var success = await ApiService.DeleteDrinkAsync(drink.Id);
+            if (success)
+            {
+                await LoadDrinks();
+                ShowAlert($"Drink '{drink.Name}' deleted successfully", "success");
+            }
+            else
+            {
+                ShowAlert("Failed to delete drink", "danger");
+            }
+        }
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+        StateHasChanged();
+        
+        // Auto-hide after 5 seconds
+        _ = Task.Delay(5000).ContinueWith(_ => 
+        {
+            alertMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private void ClearAlert()
+    {
+        alertMessage = "";
+    }
+
+    private class DrinkFormModel
+    {
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+        public decimal Price { get; set; }
+        public int StockQuantity { get; set; }
+        public string? ImageUrl { get; set; }
+        public DrinkCategory Category { get; set; } = DrinkCategory.SoftDrink;
+        public bool IsAvailable { get; set; } = true;
+    }
+}

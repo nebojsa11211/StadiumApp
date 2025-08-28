@@ -1,0 +1,416 @@
+@page "/orders"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Customer.Services
+@inject IApiService ApiService
+
+<PageTitle>My Orders</PageTitle>
+
+<div class="container" id="customer-orders-container">
+    <div class="d-flex justify-content-between align-items-center mb-4" id="customer-orders-header">
+        <h1 id="customer-orders-title">📋 My Orders</h1>
+        <a href="/menu" class="btn btn-primary" id="customer-new-order-btn">
+            <i class="bi bi-plus"></i> New Order
+        </a>
+    </div>
+
+    @if (orders == null)
+    {
+        <div class="text-center" id="customer-orders-loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading your orders...</p>
+        </div>
+    }
+    else if (!orders.Any())
+    {
+        <div class="text-center py-5" id="customer-orders-empty">
+            <div class="mb-4">
+                <span style="font-size: 4rem;">🛒</span>
+            </div>
+            <h3 id="customer-orders-empty-title">No orders yet</h3>
+            <p class="text-muted mb-4" id="customer-orders-empty-message">You haven't placed any orders. Ready to get started?</p>
+            <a href="/menu" class="btn btn-primary btn-lg" id="customer-browse-menu-btn">
+                Browse Menu
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row" id="customer-orders-grid">
+            @foreach (var order in orders.OrderByDescending(o => o.CreatedAt))
+            {
+                <div class="col-md-6 col-lg-4 mb-4" id="customer-order-card-@order.Id">
+                    <div class="card h-100" id="customer-order-@order.Id">
+                        <div class="card-header d-flex justify-content-between align-items-center" id="customer-order-header-@order.Id">
+                            <span class="fw-bold" id="customer-order-number-@order.Id">Order #@order.Id</span>
+                            <span class="badge @GetStatusBadgeClass(order.Status)" id="customer-order-status-@order.Id">
+                                @GetStatusText(order.Status)
+                            </span>
+                        </div>
+                        
+                        <div class="card-body" id="customer-order-body-@order.Id">
+                            <div class="mb-3" id="customer-order-info-@order.Id">
+                                <small class="text-muted" id="customer-order-date-@order.Id">
+                                    <i class="bi bi-calendar"></i> @order.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                                </small>
+                                <br>
+                                <small class="text-muted" id="customer-order-seat-@order.Id">
+                                    <i class="bi bi-geo-alt"></i> Seat: @order.SeatNumber
+                                </small>
+                            </div>
+
+                            <div class="mb-3" id="customer-order-items-@order.Id">
+                                <h6 id="customer-order-items-title-@order.Id">Items:</h6>
+                                @foreach (var item in order.OrderItems)
+                                {
+                                    <div class="d-flex justify-content-between align-items-center mb-1" id="customer-order-item-@item.Id-@order.Id">
+                                        <span id="customer-order-item-name-@item.Id-@order.Id">@item.Quantity × @item.DrinkName</span>
+                                        <span class="fw-bold" id="customer-order-item-total-@item.Id-@order.Id">$@item.TotalPrice.ToString("F2")</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.SpecialInstructions))
+                                    {
+                                        <div class="text-muted small" id="customer-order-item-notes-@item.Id-@order.Id">
+                                            <i class="bi bi-chat-left-text"></i> @item.SpecialInstructions
+                                        </div>
+                                    }
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(order.CustomerNotes))
+                            {
+                                <div class="mb-3" id="customer-order-customer-notes-@order.Id">
+                                    <h6 id="customer-order-customer-notes-title-@order.Id">Your Notes:</h6>
+                                    <p class="small text-muted" id="customer-order-customer-notes-content-@order.Id">@order.CustomerNotes</p>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(order.Notes))
+                            {
+                                <div class="mb-3" id="customer-order-staff-notes-@order.Id">
+                                    <h6 id="customer-order-staff-notes-title-@order.Id">Staff Notes:</h6>
+                                    <p class="small text-info" id="customer-order-staff-notes-content-@order.Id">@order.Notes</p>
+                                </div>
+                            }
+
+                            <div class="d-flex justify-content-between align-items-center" id="customer-order-total-@order.Id">
+                                <span class="h5 mb-0 text-primary" id="customer-order-total-amount-@order.Id">Total: $@order.TotalAmount.ToString("F2")</span>
+                            </div>
+                        </div>
+
+                        <div class="card-footer" id="customer-order-footer-@order.Id">
+                            <div class="row g-2" id="customer-order-actions-@order.Id">
+                                <div class="col">
+                                    <button class="btn btn-outline-primary btn-sm w-100" 
+                                            @onclick="() => ShowOrderDetails(order)" id="customer-order-details-btn-@order.Id">
+                                        <i class="bi bi-eye"></i> Details
+                                    </button>
+                                </div>
+                                @if (order.Status == OrderStatus.Pending || order.Status == OrderStatus.Accepted)
+                                {
+                                    <div class="col">
+                                        <button class="btn btn-outline-danger btn-sm w-100" 
+                                                @onclick="() => CancelOrder(order.Id)"
+                                                disabled="@isCancelling" id="customer-order-cancel-btn-@order.Id">
+                                            @if (isCancelling)
+                                            {
+                                                <span class="spinner-border spinner-border-sm" id="customer-order-cancel-spinner-@order.Id"></span>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-x-circle"></i>
+                                            }
+                                            Cancel
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Order timeline -->
+                        @if (order.Status != OrderStatus.Pending)
+                        {
+                            <div class="card-footer bg-light" id="customer-order-timeline-@order.Id">
+                                <small class="text-muted" id="customer-order-timeline-content-@order.Id">
+                                    <div class="timeline-small" id="customer-order-timeline-items-@order.Id">
+                                        @if (order.AcceptedAt.HasValue)
+                                        {
+                                            <div id="customer-order-accepted-@order.Id">✅ Accepted: @order.AcceptedAt.Value.ToString("HH:mm")</div>
+                                        }
+                                        @if (order.PreparedAt.HasValue)
+                                        {
+                                            <div id="customer-order-prepared-@order.Id">🔥 Prepared: @order.PreparedAt.Value.ToString("HH:mm")</div>
+                                        }
+                                        @if (order.DeliveredAt.HasValue)
+                                        {
+                                            <div id="customer-order-delivered-@order.Id">🚚 Delivered: @order.DeliveredAt.Value.ToString("HH:mm")</div>
+                                        }
+                                    </div>
+                                </small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Order Details Modal -->
+@if (selectedOrder != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="customer-order-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="customer-order-modal-content">
+                <div class="modal-header" id="customer-order-modal-header">
+                    <h5 class="modal-title" id="customer-order-modal-title">Order #@selectedOrder.Id Details</h5>
+                    <button type="button" class="btn-close" @onclick="() => selectedOrder = null" id="customer-order-modal-close-btn"></button>
+                </div>
+                <div class="modal-body" id="customer-order-modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 id="customer-order-modal-info-title">Order Information</h6>
+                            <table class="table table-sm" id="customer-order-modal-info-table">
+                                <tr><td>Order ID:</td><td id="customer-order-modal-id">#@selectedOrder.Id</td></tr>
+                                <tr><td>Status:</td><td><span class="badge @GetStatusBadgeClass(selectedOrder.Status)" id="customer-order-modal-status">@GetStatusText(selectedOrder.Status)</span></td></tr>
+                                <tr><td>Ticket:</td><td id="customer-order-modal-ticket">@selectedOrder.TicketNumber</td></tr>
+                                <tr><td>Seat:</td><td id="customer-order-modal-seat">@selectedOrder.SeatNumber</td></tr>
+                                <tr><td>Total:</td><td class="fw-bold" id="customer-order-modal-total">$@selectedOrder.TotalAmount.ToString("F2")</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 id="customer-order-modal-timeline-title">Timeline</h6>
+                            <div class="timeline" id="customer-order-modal-timeline">
+                                <div class="timeline-item" id="customer-order-modal-ordered">
+                                    <span class="timeline-marker bg-primary" id="customer-order-modal-ordered-marker"></span>
+                                    <div class="timeline-content" id="customer-order-modal-ordered-content">
+                                        <strong>Ordered</strong><br>
+                                        <small id="customer-order-modal-ordered-time">@selectedOrder.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                                    </div>
+                                </div>
+                                @if (selectedOrder.AcceptedAt.HasValue)
+                                {
+                                    <div class="timeline-item" id="customer-order-modal-accepted">
+                                        <span class="timeline-marker bg-success" id="customer-order-modal-accepted-marker"></span>
+                                        <div class="timeline-content" id="customer-order-modal-accepted-content">
+                                            <strong>Accepted</strong><br>
+                                            <small id="customer-order-modal-accepted-time">@selectedOrder.AcceptedAt.Value.ToString("MMM dd, yyyy HH:mm")</small>
+                                            @if (!string.IsNullOrEmpty(selectedOrder.AcceptedByUserName))
+                                            {
+                                                <br><small class="text-muted" id="customer-order-modal-accepted-by">by @selectedOrder.AcceptedByUserName</small>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (selectedOrder.PreparedAt.HasValue)
+                                {
+                                    <div class="timeline-item" id="customer-order-modal-prepared">
+                                        <span class="timeline-marker bg-warning" id="customer-order-modal-prepared-marker"></span>
+                                        <div class="timeline-content" id="customer-order-modal-prepared-content">
+                                            <strong>Prepared</strong><br>
+                                            <small id="customer-order-modal-prepared-time">@selectedOrder.PreparedAt.Value.ToString("MMM dd, yyyy HH:mm")</small>
+                                            @if (!string.IsNullOrEmpty(selectedOrder.PreparedByUserName))
+                                            {
+                                                <br><small class="text-muted" id="customer-order-modal-prepared-by">by @selectedOrder.PreparedByUserName</small>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (selectedOrder.DeliveredAt.HasValue)
+                                {
+                                    <div class="timeline-item" id="customer-order-modal-delivered">
+                                        <span class="timeline-marker bg-info" id="customer-order-modal-delivered-marker"></span>
+                                        <div class="timeline-content" id="customer-order-modal-delivered-content">
+                                            <strong>Delivered</strong><br>
+                                            <small id="customer-order-modal-delivered-time">@selectedOrder.DeliveredAt.Value.ToString("MMM dd, yyyy HH:mm")</small>
+                                            @if (!string.IsNullOrEmpty(selectedOrder.DeliveredByUserName))
+                                            {
+                                                <br><small class="text-muted" id="customer-order-modal-delivered-by">by @selectedOrder.DeliveredByUserName</small>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6 class="mt-4" id="customer-order-modal-items-title">Items Ordered</h6>
+                    <div class="table-responsive" id="customer-order-modal-items-container">
+                        <table class="table" id="customer-order-modal-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Drink</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                    <th>Instructions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in selectedOrder.OrderItems)
+                                {
+                                    <tr id="customer-order-modal-item-@item.Id">
+                                        <td id="customer-order-modal-item-name-@item.Id">@item.DrinkName</td>
+                                        <td id="customer-order-modal-item-quantity-@item.Id">@item.Quantity</td>
+                                        <td id="customer-order-modal-item-price-@item.Id">$@item.UnitPrice.ToString("F2")</td>
+                                        <td class="fw-bold" id="customer-order-modal-item-total-@item.Id">$@item.TotalPrice.ToString("F2")</td>
+                                        <td id="customer-order-modal-item-instructions-@item.Id">@(item.SpecialInstructions ?? "None")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="customer-alert-container">
+        <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="customer-alert-message">
+            @alertMessage
+            <button type="button" class="btn-close" @onclick="ClearAlert" id="customer-alert-close-btn"></button>
+        </div>
+    </div>
+}
+
+@code {
+    private List<OrderDto>? orders;
+    private OrderDto? selectedOrder;
+    private bool isCancelling = false;
+    private string alertMessage = "";
+    private string alertType = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        orders = await ApiService.GetMyOrdersAsync();
+    }
+
+    private void ShowOrderDetails(OrderDto order)
+    {
+        selectedOrder = order;
+    }
+
+    private async Task CancelOrder(int orderId)
+    {
+        if (isCancelling) return;
+
+        isCancelling = true;
+        try
+        {
+            var success = await ApiService.CancelOrderAsync(orderId);
+            if (success)
+            {
+                ShowAlert("Order cancelled successfully", "success");
+                await LoadOrders(); // Refresh the orders
+            }
+            else
+            {
+                ShowAlert("Failed to cancel order", "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Error cancelling order: {ex.Message}", "danger");
+        }
+        finally
+        {
+            isCancelling = false;
+        }
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning text-dark",
+            OrderStatus.Accepted => "bg-info",
+            OrderStatus.InPreparation => "bg-primary",
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetStatusText(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "Pending",
+            OrderStatus.Accepted => "Accepted",
+            OrderStatus.InPreparation => "Preparing",
+            OrderStatus.Ready => "Ready",
+            OrderStatus.Delivered => "Delivered",
+            OrderStatus.Cancelled => "Cancelled",
+            _ => status.ToString()
+        };
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+        StateHasChanged();
+        
+        // Auto-hide after 5 seconds
+        _ = Task.Delay(5000).ContinueWith(_ => 
+        {
+            alertMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private void ClearAlert()
+    {
+        alertMessage = "";
+    }
+}
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 20px;
+    }
+
+    .timeline-item:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: -21px;
+        top: 20px;
+        height: calc(100% - 10px);
+        width: 2px;
+        background-color: #dee2e6;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: -25px;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+
+    .timeline-content {
+        margin-left: 10px;
+    }
+
+    .timeline-small {
+        font-size: 0.8rem;
+    }
+</style>

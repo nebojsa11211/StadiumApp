@@ -1,0 +1,64 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "stadiumdrinkordering.customer": "StartDebugging",
+        "stadiumdrinkordering.admin": "StartDebugging",
+        "stadiumdrinkordering.api": "StartDebugging",
+        "sqlserver": "StartWithoutDebugging"
+      },
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5002",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker Compose (Multi-Tab)": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "stadiumdrinkordering.customer": "StartDebugging",
+        "stadiumdrinkordering.admin": "StartDebugging",
+        "stadiumdrinkordering.api": "StartDebugging",
+        "sqlserver": "StartWithoutDebugging"
+      },
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5002",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker Compose (Admin)": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "stadiumdrinkordering.customer": "StartDebugging",
+        "stadiumdrinkordering.admin": "StartDebugging",
+        "stadiumdrinkordering.api": "StartDebugging",
+        "sqlserver": "StartWithoutDebugging"
+      },
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5003",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker Compose (API)": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "stadiumdrinkordering.customer": "StartDebugging",
+        "stadiumdrinkordering.admin": "StartDebugging",
+        "stadiumdrinkordering.api": "StartDebugging",
+        "sqlserver": "StartWithoutDebugging"
+      },
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5001/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

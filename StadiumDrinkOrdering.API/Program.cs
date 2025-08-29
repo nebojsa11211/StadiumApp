@@ -15,6 +15,11 @@ builder.Services.AddSwaggerGen();
 // Add health checks
 builder.Services.AddHealthChecks();
 
+// Debug: Print all connection string related environment variables
+Console.WriteLine("Environment Variables:");
+Console.WriteLine($"ConnectionStrings__DefaultConnection: {Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")}");
+Console.WriteLine($"ASPNETCORE_ENVIRONMENT: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
+
 // Debug: Print the actual connection string being used
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 Console.WriteLine($"Connection String: {connectionString}");

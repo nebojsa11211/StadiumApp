@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stadium Visibility Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #b6d7ff; }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🏟️ Stadium Visibility Test</h1>
+        
+        <div class="controls">
+            <button onclick="runTests()">Run Visibility Tests</button>
+            <button onclick="testInteractivity()">Test Interactivity</button>
+            <button onclick="testAPI()">Test JavaScript API</button>
+        </div>
+        
+        <div id="test-results"></div>
+        
+        <h2>Stadium Preview</h2>
+        <iframe id="stadium-frame" src="stadium-complete.html"></iframe>
+    </div>
+
+    <script>
+        let testResults = [];
+        
+        function addTestResult(name, passed, message) {
+            testResults.push({name, passed, message});
+            updateTestDisplay();
+        }
+        
+        function updateTestDisplay() {
+            const container = document.getElementById('test-results');
+            container.innerHTML = testResults.map(result => 
+                `<div class="test-result ${result.passed ? 'pass' : 'fail'}">
+                    ${result.passed ? '✅' : '❌'} ${result.name}: ${result.message}
+                </div>`
+            ).join('');
+        }
+        
+        function runTests() {
+            testResults = [];
+            addTestResult('Loading Test', true, 'Stadium HTML file is accessible');
+            
+            const iframe = document.getElementById('stadium-frame');
+            iframe.onload = function() {
+                try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    // Test 1: Check if main container exists
+                    const container = doc.querySelector('.stadium-container');
+                    addTestResult('Container Test', !!container, 
+                        container ? 'Stadium container found' : 'Stadium container missing');
+                    
+                    // Test 2: Check if SVG exists
+                    const svg = doc.querySelector('.stadium-svg');
+                    addTestResult('SVG Test', !!svg, 
+                        svg ? 'Stadium SVG found' : 'Stadium SVG missing');
+                    
+                    // Test 3: Check if sectors exist
+                    const sectors = doc.querySelectorAll('[data-sector]');
+                    addTestResult('Sectors Test', sectors.length === 4, 
+                        `Found ${sectors.length}/4 sectors`);
+                    
+                    // Test 4: Check if seats are generated
+                    setTimeout(() => {
+                        const seats = doc.querySelectorAll('.seat-group');
+                        addTestResult('Seats Test', seats.length > 0, 
+                            `Found ${seats.length} seats`);
+                        
+                        // Test 5: Check if controls exist
+                        const controls = doc.querySelector('.stadium-controls');
+                        addTestResult('Controls Test', !!controls, 
+                            controls ? 'Control panel found' : 'Control panel missing');
+                        
+                        // Test 6: Check if legend exists
+                        const legend = doc.querySelector('.seat-legend');
+                        addTestResult('Legend Test', !!legend, 
+                            legend ? 'Seat legend found' : 'Seat legend missing');
+                        
+                    }, 1000); // Wait for seats to be generated
+                    
+                } catch (error) {
+                    addTestResult('Access Test', false, 'Cannot access iframe content: ' + error.message);
+                }
+            };
+            
+            // Reload iframe to trigger tests
+            iframe.src = iframe.src;
+        }
+        
+        function testInteractivity() {
+            const iframe = document.getElementById('stadium-frame');
+            try {
+                const win = iframe.contentWindow;
+                const doc = iframe.contentDocument || win.document;
+                
+                // Test sector hover
+                const sector = doc.querySelector('[data-sector="north"]');
+                if (sector) {
+                    // Simulate hover
+                    const hoverEvent = new MouseEvent('mouseenter', { bubbles: true });
+                    sector.dispatchEvent(hoverEvent);
+                    
+                    setTimeout(() => {
+                        const tooltip = doc.querySelector('.tooltip.visible');
+                        addTestResult('Hover Test', !!tooltip, 
+                            tooltip ? 'Hover interaction working' : 'Hover interaction failed');
+                    }, 100);
+                } else {
+                    addTestResult('Hover Test', false, 'No sector found for hover test');
+                }
+                
+                // Test seat click
+                setTimeout(() => {
+                    const seat = doc.querySelector('.seat-group:not(.occupied)');
+                    if (seat) {
+                        seat.click();
+                        setTimeout(() => {
+                            const isSelected = seat.classList.contains('selected');
+                            addTestResult('Click Test', isSelected, 
+                                isSelected ? 'Seat selection working' : 'Seat selection failed');
+                        }, 100);
+                    } else {
+                        addTestResult('Click Test', false, 'No available seat found for click test');
+                    }
+                }, 200);
+                
+            } catch (error) {
+                addTestResult('Interactivity Test', false, 'Interactivity test failed: ' + error.message);
+            }
+        }
+        
+        function testAPI() {
+            const iframe = document.getElementById('stadium-frame');
+            try {
+                const win = iframe.contentWindow;
+                
+                if (win.stadium) {
+                    // Test API methods exist
+                    const methods = ['selectSector', 'selectSeat', 'clearAllSelections', 'getSelectedSeats'];
+                    const allMethodsExist = methods.every(method => typeof win.stadium[method] === 'function');
+                    
+                    addTestResult('API Methods Test', allMethodsExist, 
+                        allMethodsExist ? 'All API methods found' : 'Some API methods missing');
+                    
+                    // Test programmatic selection
+                    try {
+                        win.stadium.selectSector('north');
+                        const selectedSectors = win.stadium.getSelectedSectors();
+                        addTestResult('API Function Test', selectedSectors.includes('north'), 
+                            selectedSectors.includes('north') ? 'API functions working' : 'API functions failed');
+                    } catch (error) {
+                        addTestResult('API Function Test', false, 'API function error: ' + error.message);
+                    }
+                } else {
+                    addTestResult('API Test', false, 'window.stadium object not found');
+                }
+            } catch (error) {
+                addTestResult('API Test', false, 'API test failed: ' + error.message);
+            }
+        }
+        
+        // Auto-run basic tests on load
+        window.onload = function() {
+            setTimeout(runTests, 1000);
+        };
+    </script>
+</body>
+</html>

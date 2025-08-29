@@ -5,7 +5,7 @@ services:
   api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Data Source=StadiumDrinkOrdering.db
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/StadiumDrinkOrdering.db
       - JwtSettings__SecretKey=DevSuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=StadiumDrinkOrdering
       - JwtSettings__Audience=StadiumDrinkOrdering
@@ -13,8 +13,6 @@ services:
       - Logging__LogLevel__Microsoft.AspNetCore=Information
     ports:
       - "5001:8080"
-    volumes:
-      - ./StadiumDrinkOrdering.API/StadiumDrinkOrdering.db:/app/StadiumDrinkOrdering.db
 
   # Customer - Development overrides
   customer:

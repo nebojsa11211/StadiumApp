@@ -43,8 +43,8 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 # Copy published application
 COPY --from=publish /app/publish .
 
-# Set ownership
-RUN chown -R appuser:appuser /app
+# Create directory for SQLite database with proper permissions
+RUN mkdir -p /app/data && chown -R appuser:appuser /app
 USER appuser
 
 # Health check

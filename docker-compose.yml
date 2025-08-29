@@ -31,14 +31,14 @@ services:
     container_name: stadium-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=StadiumDrinkOrdering;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/StadiumDrinkOrdering.db
       - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=StadiumDrinkOrdering
       - JwtSettings__Audience=StadiumDrinkOrdering
     ports:
       - "9000:8080"
-    depends_on:
-      - sqlserver
+    volumes:
+      - api_data:/app/data
     networks:
       - stadium-network
     restart: unless-stopped
@@ -88,3 +88,6 @@ volumes:
   sqlserver_data:
     driver: local
     name: stadium-sqlserver-data
+  api_data:
+    driver: local
+    name: stadium-api-data

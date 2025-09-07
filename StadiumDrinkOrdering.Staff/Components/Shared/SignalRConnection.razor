@@ -1,0 +1,230 @@
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+<div class="connection-status @(_connectionStatus.ToLower())" title="Connection: @_connectionStatus">
+    @if (_connectionStatus == "Connected")
+    {
+        <span class="connection-indicator connected"></span>
+    }
+    else if (_connectionStatus == "Connecting" || _connectionStatus == "Reconnecting")
+    {
+        <span class="connection-indicator connecting"></span>
+    }
+    else
+    {
+        <span class="connection-indicator disconnected"></span>
+    }
+    <span class="connection-text d-none d-sm-inline">@_connectionStatus</span>
+</div>
+
+@code {
+    private HubConnection? hubConnection;
+    private string _connectionStatus = "Disconnected";
+    
+    [Parameter] public EventCallback<string> OnNewOrder { get; set; }
+    [Parameter] public EventCallback<string> OnOrderStatusChanged { get; set; }
+    [Parameter] public EventCallback<string> OnNotificationReceived { get; set; }
+    [Parameter] public string ApiBaseUrl { get; set; } = "https://localhost:7000";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeConnection();
+        StateHasChanged();
+    }
+
+    private async Task InitializeConnection()
+    {
+        try
+        {
+            _connectionStatus = "Connecting";
+            StateHasChanged();
+
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl($"{ApiBaseUrl}/bartenderHub")
+                .WithAutomaticReconnect(new[] { TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30) })
+                .Build();
+
+            // Handle connection events
+            hubConnection.Reconnecting += async (error) =>
+            {
+                _connectionStatus = "Reconnecting";
+                await InvokeAsync(StateHasChanged);
+                await ShowNotification("Connection lost, attempting to reconnect...", "warning");
+            };
+
+            hubConnection.Reconnected += async (connectionId) =>
+            {
+                _connectionStatus = "Connected";
+                await InvokeAsync(StateHasChanged);
+                await ShowNotification("Connection restored!", "success");
+            };
+
+            hubConnection.Closed += async (error) =>
+            {
+                _connectionStatus = "Disconnected";
+                await InvokeAsync(StateHasChanged);
+                if (error != null)
+                {
+                    await ShowNotification("Connection lost. Please refresh the page if issues persist.", "error");
+                }
+            };
+
+            // Listen for new orders (staff-specific)
+            hubConnection.On<int, string, string>("NewOrder", async (orderId, customerName, seatNumber) =>
+            {
+                await OnNewOrder.InvokeAsync($"{orderId}:{customerName}:{seatNumber}");
+                await ShowNotification($"🔔 New order #{orderId} from {customerName} (Seat {seatNumber})", "info");
+                await JSRuntime.InvokeVoidAsync("vibratePhone", new object[] { new int[] { 100, 50, 100 } });
+                await InvokeAsync(StateHasChanged);
+            });
+
+            // Listen for order status updates
+            hubConnection.On<int, string>("OrderStatusUpdated", async (orderId, status) =>
+            {
+                await OnOrderStatusChanged.InvokeAsync($"{orderId}:{status}");
+                await InvokeAsync(StateHasChanged);
+            });
+
+            // Listen for general notifications
+            hubConnection.On<string, string>("NotificationReceived", async (message, type) =>
+            {
+                await OnNotificationReceived.InvokeAsync($"{type}:{message}");
+                await ShowNotification(message, type);
+                await InvokeAsync(StateHasChanged);
+            });
+
+            // Listen for urgent orders
+            hubConnection.On<int, string>("UrgentOrder", async (orderId, reason) =>
+            {
+                await ShowNotification($"🚨 URGENT: Order #{orderId} - {reason}", "error");
+                await JSRuntime.InvokeVoidAsync("vibratePhone", new object[] { new int[] { 300, 100, 300, 100, 300 } });
+                await InvokeAsync(StateHasChanged);
+            });
+
+            // Start the connection
+            await hubConnection.StartAsync();
+            _connectionStatus = "Connected";
+            await ShowNotification("Connected to order queue!", "success");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _connectionStatus = "Failed";
+            await ShowNotification($"Failed to connect: {ex.Message}", "error");
+            StateHasChanged();
+        }
+    }
+
+    private async Task ShowNotification(string message, string type)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", message, type, 4000);
+        }
+        catch
+        {
+            // Ignore JS interop errors
+        }
+    }
+
+    public async Task SendMessage(string method, params object[] args)
+    {
+        if (hubConnection?.State == HubConnectionState.Connected)
+        {
+            try
+            {
+                await hubConnection.SendAsync(method, args);
+            }
+            catch (Exception ex)
+            {
+                await ShowNotification($"Failed to send message: {ex.Message}", "error");
+            }
+        }
+    }
+
+    public async Task UpdateOrderStatus(int orderId, string status)
+    {
+        await SendMessage("UpdateOrderStatus", orderId, status);
+    }
+
+    public async Task NotifyOrderReady(int orderId, string customerName, string seatNumber)
+    {
+        await SendMessage("NotifyOrderReady", orderId, customerName, seatNumber);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}
+
+<style>
+    .connection-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        border-radius: var(--stadium-radius);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        background: white;
+        border: 1px solid var(--stadium-gray-200);
+        box-shadow: var(--stadium-shadow-sm);
+        min-height: 48px;
+    }
+
+    .connection-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .connection-indicator.connected {
+        background: var(--staff-primary);
+        box-shadow: 0 0 10px rgba(5, 150, 105, 0.4);
+    }
+
+    .connection-indicator.connecting {
+        background: var(--stadium-warning);
+        animation: pulse 2s infinite;
+    }
+
+    .connection-indicator.disconnected {
+        background: var(--stadium-danger);
+    }
+
+    .connection-status.connected {
+        color: var(--staff-primary);
+        border-color: rgba(5, 150, 105, 0.2);
+    }
+
+    .connection-status.connecting,
+    .connection-status.reconnecting {
+        color: var(--stadium-warning);
+        border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .connection-status.disconnected,
+    .connection-status.failed {
+        color: var(--stadium-danger);
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    @@media (max-width: 640px) {
+        .connection-status {
+            padding: 0.625rem;
+            font-size: 0;
+            min-height: 44px;
+        }
+        
+        .connection-text {
+            display: none !important;
+        }
+    }
+</style>

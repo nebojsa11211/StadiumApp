@@ -1,0 +1,103 @@
+﻿@using StadiumDrinkOrdering.Staff.Components.Shared
+@using StadiumDrinkOrdering.Staff.Services
+@inject IAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+
+<PageTitle>StadiumDrinkOrdering.Staff</PageTitle>
+
+<div class="page">
+    @if (!IsLoginPage())
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
+
+    <main class="@(IsLoginPage() ? "login-main" : "")">
+        @if (!IsLoginPage())
+        {
+            <div class="top-row px-4">
+            <div class="d-flex align-center justify-between w-full">
+                <div class="d-flex align-center gap-3">
+                    <h6 class="mb-0 text-primary">Staff Dashboard</h6>
+                </div>
+                <div class="d-flex align-center gap-3">
+                    <LanguageSwitcher />
+                    <SignalRConnection OnNewOrder="HandleNewOrder" OnOrderStatusChanged="HandleOrderStatusChanged" OnNotificationReceived="HandleNotification" />
+                    @if (AuthStateService.IsAuthenticated)
+                    {
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-muted">
+                                <small>👤 @AuthStateService.UserEmail</small>
+                            </span>
+                            <button class="btn btn-outline-secondary btn-sm" @onclick="HandleLogout" id="staff-mainlayout-logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    }
+                    <a href="https://docs.microsoft.com/aspnet/" target="_blank" class="btn-link">Help</a>
+                </div>
+            </div>
+        </div>
+        }
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<style>
+    .login-main {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .login-main .content {
+        background: none !important;
+        padding: 2rem !important;
+        max-width: 500px;
+        width: 100%;
+    }
+</style>
+
+@code {
+    private bool IsLoginPage()
+    {
+        return NavigationManager.Uri.Contains("/login");
+    }
+
+    private void HandleNewOrder(string orderInfo)
+    {
+        // Handle new order notifications
+        // Format: "orderId:customerName:seatNumber"
+        StateHasChanged();
+    }
+
+    private void HandleOrderStatusChanged(string statusUpdate)
+    {
+        // Handle real-time order status updates
+        // Format: "orderId:status"
+        StateHasChanged();
+    }
+
+    private void HandleNotification(string notification)
+    {
+        // Handle real-time notifications
+        // Format: "type:message"
+        StateHasChanged();
+    }
+
+    private async Task HandleLogout()
+    {
+        await AuthStateService.LogoutAsync();
+        NavigationManager.NavigateTo("/login");
+    }
+}

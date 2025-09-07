@@ -1,0 +1,640 @@
+@page "/analytics"
+@using StadiumDrinkOrdering.Admin.Components.Shared
+@using System.Text.Json
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Analytics Dashboard</PageTitle>
+
+<div class="analytics-dashboard" id="admin-analytics-container">
+    <div class="admin-header" id="admin-analytics-header">
+        <h1 id="admin-analytics-title">📊 Analytics Dashboard</h1>
+        <p id="admin-analytics-subtitle">Real-time insights and performance metrics for your stadium operations</p>
+    </div>
+
+    @if (_isLoading)
+    {
+        <div id="admin-analytics-loading">
+            <LoadingSpinner IsVisible="true" Message="Loading analytics data..." Size="Large" />
+        </div>
+    }
+    else
+    {
+        <!-- Key Performance Indicators -->
+        <div class="stats-grid mb-6" id="admin-analytics-stats-grid">
+            <div class="stat-card" id="admin-analytics-total-orders">
+                <div class="stat-value" id="admin-analytics-orders-value">@_analytics.TotalOrders.ToString("N0")</div>
+                <div class="stat-label" id="admin-analytics-orders-label">Total Orders</div>
+                <div class="stat-trend @(_analytics.OrdersGrowth >= 0 ? "positive" : "negative")" id="admin-analytics-orders-trend">
+                    <span class="trend-arrow" id="admin-analytics-orders-arrow">@(_analytics.OrdersGrowth >= 0 ? "↗" : "↘")</span>
+                    @(_analytics.OrdersGrowth.ToString("F1"))%
+                </div>
+            </div>
+
+            <div class="stat-card success" id="admin-analytics-total-revenue">
+                <div class="stat-value" id="admin-analytics-revenue-value">@_analytics.TotalRevenue.ToString("C")</div>
+                <div class="stat-label" id="admin-analytics-revenue-label">Total Revenue</div>
+                <div class="stat-trend @(_analytics.RevenueGrowth >= 0 ? "positive" : "negative")" id="admin-analytics-revenue-trend">
+                    <span class="trend-arrow" id="admin-analytics-revenue-arrow">@(_analytics.RevenueGrowth >= 0 ? "↗" : "↘")</span>
+                    @(_analytics.RevenueGrowth.ToString("F1"))%
+                </div>
+            </div>
+
+            <div class="stat-card info" id="admin-analytics-avg-order-value">
+                <div class="stat-value" id="admin-analytics-aov-value">@_analytics.AvgOrderValue.ToString("C")</div>
+                <div class="stat-label" id="admin-analytics-aov-label">Avg Order Value</div>
+                <div class="stat-trend @(_analytics.AovGrowth >= 0 ? "positive" : "negative")" id="admin-analytics-aov-trend">
+                    <span class="trend-arrow" id="admin-analytics-aov-arrow">@(_analytics.AovGrowth >= 0 ? "↗" : "↘")</span>
+                    @(_analytics.AovGrowth.ToString("F1"))%
+                </div>
+            </div>
+
+            <div class="stat-card warning" id="admin-analytics-fulfillment-time">
+                <div class="stat-value" id="admin-analytics-fulfillment-value">@_analytics.AvgFulfillmentTime</div>
+                <div class="stat-label" id="admin-analytics-fulfillment-label">Avg Fulfillment Time</div>
+                <div class="stat-trend @(_analytics.FulfillmentImprovement >= 0 ? "positive" : "negative")" id="admin-analytics-fulfillment-trend">
+                    <span class="trend-arrow" id="admin-analytics-fulfillment-arrow">@(_analytics.FulfillmentImprovement >= 0 ? "↗" : "↘")</span>
+                    @(_analytics.FulfillmentImprovement.ToString("F1"))%
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid" id="admin-analytics-dashboard-grid">
+            <!-- Orders Over Time Chart -->
+            <div class="chart-container" id="admin-analytics-orders-chart-container">
+                <div class="chart-header" id="admin-analytics-orders-chart-header">
+                    <h3 id="admin-analytics-orders-chart-title">Orders Over Time</h3>
+                    <div class="chart-controls" id="admin-analytics-orders-chart-controls">
+                        <select @bind="_selectedPeriod" @bind:after="LoadAnalytics" class="form-control form-control-sm" id="admin-analytics-period-select">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="quarter">This Quarter</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-body" id="admin-analytics-orders-chart-body">
+                    <canvas id="ordersChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="chart-container" id="admin-analytics-revenue-chart-container">
+                <div class="chart-header" id="admin-analytics-revenue-chart-header">
+                    <h3 id="admin-analytics-revenue-chart-title">Revenue Analysis</h3>
+                </div>
+                <div class="chart-body" id="admin-analytics-revenue-chart-body">
+                    <canvas id="revenueChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Popular Items -->
+            <div class="chart-container" id="admin-analytics-popular-items-container">
+                <div class="chart-header" id="admin-analytics-popular-items-header">
+                    <h3 id="admin-analytics-popular-items-title">Popular Items</h3>
+                </div>
+                <div class="chart-body" id="admin-analytics-popular-items-body">
+                    <div class="popular-items-list" id="admin-analytics-popular-items-list">
+                        @foreach (var item in _analytics.PopularItems.Take(5))
+                        {
+                            <div class="popular-item" id="admin-analytics-popular-item-@item.Name.Replace(" ", "-").ToLower()">
+                                <div class="item-info" id="admin-analytics-item-info-@item.Name.Replace(" ", "-").ToLower()">
+                                    <div class="item-name" id="admin-analytics-item-name-@item.Name.Replace(" ", "-").ToLower()">@item.Name</div>
+                                    <div class="item-count" id="admin-analytics-item-count-@item.Name.Replace(" ", "-").ToLower()">@item.OrderCount orders</div>
+                                </div>
+                                <div class="item-progress" id="admin-analytics-item-progress-@item.Name.Replace(" ", "-").ToLower()">
+                                    <ProgressBar Value="@((double)item.OrderCount / _analytics.PopularItems.Max(x => x.OrderCount) * 100)" 
+                                               Size="Small" 
+                                               Color="primary" 
+                                               ShowPercentage="false" 
+                                               Animated="true" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Status Distribution -->
+            <div class="chart-container" id="admin-analytics-status-chart-container">
+                <div class="chart-header" id="admin-analytics-status-chart-header">
+                    <h3 id="admin-analytics-status-chart-title">Order Status Distribution</h3>
+                </div>
+                <div class="chart-body" id="admin-analytics-status-chart-body">
+                    <canvas id="statusChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="chart-container" id="admin-analytics-performance-container">
+                <div class="chart-header" id="admin-analytics-performance-header">
+                    <h3 id="admin-analytics-performance-title">Performance Metrics</h3>
+                </div>
+                <div class="chart-body" id="admin-analytics-performance-body">
+                    <div class="performance-metrics" id="admin-analytics-performance-metrics">
+                        <div class="metric" id="admin-analytics-customer-satisfaction">
+                            <div class="metric-label" id="admin-analytics-satisfaction-label">Customer Satisfaction</div>
+                            <div class="metric-value" id="admin-analytics-satisfaction-value">
+                                <ProgressBar Value="@_analytics.CustomerSatisfaction" 
+                                           Color="success" 
+                                           Size="Medium" 
+                                           Label="Rating" />
+                            </div>
+                        </div>
+
+                        <div class="metric" id="admin-analytics-order-accuracy">
+                            <div class="metric-label" id="admin-analytics-accuracy-label">Order Accuracy</div>
+                            <div class="metric-value" id="admin-analytics-accuracy-value">
+                                <ProgressBar Value="@_analytics.OrderAccuracy" 
+                                           Color="primary" 
+                                           Size="Medium" 
+                                           Label="Accuracy" />
+                            </div>
+                        </div>
+
+                        <div class="metric" id="admin-analytics-on-time-delivery">
+                            <div class="metric-label" id="admin-analytics-delivery-label">On-Time Delivery</div>
+                            <div class="metric-value" id="admin-analytics-delivery-value">
+                                <ProgressBar Value="@_analytics.OnTimeDelivery" 
+                                           Color="info" 
+                                           Size="Medium" 
+                                           Label="On Time" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heat Map -->
+            <div class="chart-container full-width" id="admin-analytics-heatmap-container">
+                <div class="chart-header" id="admin-analytics-heatmap-header">
+                    <h3 id="admin-analytics-heatmap-title">Stadium Activity Heat Map</h3>
+                </div>
+                <div class="chart-body" id="admin-analytics-heatmap-body">
+                    <div class="heatmap-grid" id="admin-analytics-heatmap-grid">
+                        @for (int section = 1; section <= 20; section++)
+                        {
+                            var activity = _analytics.SectionActivity.FirstOrDefault(s => s.SectionNumber == section)?.ActivityLevel ?? 0;
+                            var intensity = activity / 100.0; // Normalize to 0-1
+                            
+                            <div class="heatmap-cell" 
+                                 style="background-color: rgba(37, 99, 235, @intensity.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))"
+                                 id="@( $"admin-analytics-heatmap-section-{section}" )"
+                                 title="Section @(section): @(activity)% activity">
+                                <span class="section-number" id="@( $"admin-analytics-section-number-{section}" )">@(section)</span>
+                                <span class="activity-level" id="@( $"admin-analytics-activity-level-{section}" )">@(activity)%</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Updates -->
+        <div class="realtime-section" id="admin-analytics-realtime-section">
+            <div class="card" id="admin-analytics-realtime-card">
+                <div class="card-header" id="admin-analytics-realtime-header">
+                    <h3 id="admin-analytics-realtime-title">Real-Time Activity</h3>
+                    <div class="realtime-indicator" id="admin-analytics-realtime-indicator">
+                        <span class="indicator-dot" id="admin-analytics-indicator-dot"></span>
+                        Live
+                    </div>
+                </div>
+                <div class="card-body" id="admin-analytics-realtime-body">
+                    <div class="activity-feed" id="admin-analytics-activity-feed">
+                        @foreach (var activity in _realtimeActivities.Take(10))
+                        {
+                            <div class="activity-item fade-in" id="admin-analytics-activity-item-@activity.Timestamp.Ticks">
+                                <div class="activity-time" id="admin-analytics-activity-time-@activity.Timestamp.Ticks">@activity.Timestamp.ToString("HH:mm:ss")</div>
+                                <div class="activity-message" id="admin-analytics-activity-message-@activity.Timestamp.Ticks">@activity.Message</div>
+                                <div class="activity-type @activity.Type.ToLower()" id="admin-analytics-activity-type-@activity.Timestamp.Ticks">@activity.Type</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool _isLoading = true;
+    private string _selectedPeriod = "today";
+    private AnalyticsData _analytics = new();
+    private List<RealtimeActivity> _realtimeActivities = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAnalytics();
+        await LoadCharts();
+        StartRealtimeUpdates();
+    }
+
+    private async Task LoadAnalytics()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            // Simulate loading delay
+            await Task.Delay(1000);
+
+            // Mock analytics data - replace with actual API call
+            _analytics = new AnalyticsData
+            {
+                TotalOrders = 1247,
+                OrdersGrowth = 12.5,
+                TotalRevenue = 18420.50m,
+                RevenueGrowth = 8.3,
+                AvgOrderValue = 14.78m,
+                AovGrowth = -2.1,
+                AvgFulfillmentTime = "8m 32s",
+                FulfillmentImprovement = 15.2,
+                CustomerSatisfaction = 92.5,
+                OrderAccuracy = 96.8,
+                OnTimeDelivery = 89.2,
+                PopularItems = new List<PopularItem>
+                {
+                    new() { Name = "Premium Lager", OrderCount = 245 },
+                    new() { Name = "Craft IPA", OrderCount = 198 },
+                    new() { Name = "Soft Drinks", OrderCount = 167 },
+                    new() { Name = "Water", OrderCount = 134 },
+                    new() { Name = "Premium Wine", OrderCount = 89 },
+                    new() { Name = "Hot Coffee", OrderCount = 67 }
+                },
+                SectionActivity = Enumerable.Range(1, 20).Select(i => new SectionActivity 
+                { 
+                    SectionNumber = i, 
+                    ActivityLevel = Random.Shared.Next(10, 100) 
+                }).ToList()
+            };
+
+            _isLoading = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _isLoading = false;
+            StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("showToast", $"Error loading analytics: {ex.Message}", "error", 5000);
+        }
+    }
+
+    private async Task LoadCharts()
+    {
+        try
+        {
+            // Initialize Chart.js charts
+            await JSRuntime.InvokeVoidAsync("initializeAnalyticsCharts", _analytics);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", $"Error loading charts: {ex.Message}", "warning", 3000);
+        }
+    }
+
+    private void StartRealtimeUpdates()
+    {
+        // Simulate real-time activity updates
+        var timer = new Timer(async _ =>
+        {
+            var activities = new[]
+            {
+                "New order placed in Section 12",
+                "Order #1234 completed",
+                "Payment processed for Order #5678",
+                "Staff member checked in at Bar Station 3",
+                "Inventory alert: Premium Lager running low",
+                "Customer rated service 5 stars",
+                "Order #9876 ready for pickup"
+            };
+
+            var activity = new RealtimeActivity
+            {
+                Timestamp = DateTime.Now,
+                Message = activities[Random.Shared.Next(activities.Length)],
+                Type = new[] { "Order", "Payment", "Staff", "Inventory", "Rating" }[Random.Shared.Next(5)]
+            };
+
+            _realtimeActivities.Insert(0, activity);
+            if (_realtimeActivities.Count > 20)
+                _realtimeActivities.RemoveAt(_realtimeActivities.Count - 1);
+
+            await InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(5));
+    }
+
+    public class AnalyticsData
+    {
+        public int TotalOrders { get; set; }
+        public double OrdersGrowth { get; set; }
+        public decimal TotalRevenue { get; set; }
+        public double RevenueGrowth { get; set; }
+        public decimal AvgOrderValue { get; set; }
+        public double AovGrowth { get; set; }
+        public string AvgFulfillmentTime { get; set; } = "";
+        public double FulfillmentImprovement { get; set; }
+        public double CustomerSatisfaction { get; set; }
+        public double OrderAccuracy { get; set; }
+        public double OnTimeDelivery { get; set; }
+        public List<PopularItem> PopularItems { get; set; } = new();
+        public List<SectionActivity> SectionActivity { get; set; } = new();
+    }
+
+    public class PopularItem
+    {
+        public string Name { get; set; } = "";
+        public int OrderCount { get; set; }
+    }
+
+    public class SectionActivity
+    {
+        public int SectionNumber { get; set; }
+        public int ActivityLevel { get; set; }
+    }
+
+    public class RealtimeActivity
+    {
+        public DateTime Timestamp { get; set; }
+        public string Message { get; set; } = "";
+        public string Type { get; set; } = "";
+    }
+}
+
+<style>
+    .analytics-dashboard {
+        max-width: none;
+        padding: 0;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: var(--stadium-radius-lg);
+        box-shadow: var(--stadium-shadow);
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .chart-container:hover {
+        box-shadow: var(--stadium-shadow-md);
+    }
+
+    .chart-container.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .chart-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--stadium-gray-200);
+        background: var(--stadium-gray-50);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chart-header h3 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+    .chart-controls select {
+        min-width: 120px;
+    }
+
+    .chart-body {
+        padding: 1.5rem;
+    }
+
+    .stat-trend {
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+    }
+
+    .stat-trend.positive {
+        color: var(--stadium-success);
+    }
+
+    .stat-trend.negative {
+        color: var(--stadium-danger);
+    }
+
+    .trend-arrow {
+        font-size: 1rem;
+    }
+
+    .popular-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .popular-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .item-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .item-name {
+        font-weight: 500;
+        color: var(--stadium-gray-900);
+    }
+
+    .item-count {
+        font-size: 0.8125rem;
+        color: var(--stadium-gray-500);
+    }
+
+    .item-progress {
+        flex: 2;
+    }
+
+    .performance-metrics {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .metric {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .metric-label {
+        font-weight: 500;
+        color: var(--stadium-gray-700);
+        font-size: 0.9375rem;
+    }
+
+    .heatmap-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+    }
+
+    .heatmap-cell {
+        aspect-ratio: 1;
+        border-radius: var(--stadium-radius);
+        border: 2px solid var(--stadium-gray-200);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: white;
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .heatmap-cell:hover {
+        transform: scale(1.05);
+        box-shadow: var(--stadium-shadow-md);
+    }
+
+    .section-number {
+        font-size: 1.125rem;
+        font-weight: 700;
+    }
+
+    .activity-level {
+        font-size: 0.75rem;
+        opacity: 0.9;
+    }
+
+    .realtime-section {
+        margin-top: 2rem;
+    }
+
+    .realtime-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--stadium-success);
+        font-weight: 500;
+    }
+
+    .indicator-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--stadium-success);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    .activity-feed {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: var(--stadium-gray-50);
+        border-radius: var(--stadium-radius);
+        border-left: 3px solid var(--stadium-primary);
+    }
+
+    .activity-time {
+        font-size: 0.8125rem;
+        color: var(--stadium-gray-500);
+        font-family: monospace;
+        min-width: 60px;
+    }
+
+    .activity-message {
+        flex: 1;
+        font-size: 0.875rem;
+        color: var(--stadium-gray-800);
+    }
+
+    .activity-type {
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--stadium-radius);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .activity-type.order {
+        background: var(--admin-primary);
+        color: white;
+    }
+
+    .activity-type.payment {
+        background: var(--stadium-success);
+        color: white;
+    }
+
+    .activity-type.staff {
+        background: var(--stadium-info);
+        color: white;
+    }
+
+    .activity-type.inventory {
+        background: var(--stadium-warning);
+        color: white;
+    }
+
+    .activity-type.rating {
+        background: var(--stadium-accent);
+        color: white;
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .chart-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        .chart-body {
+            padding: 1rem;
+        }
+
+        .heatmap-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .activity-item {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+        }
+
+        .activity-time {
+            min-width: auto;
+        }
+    }
+</style>

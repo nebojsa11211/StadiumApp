@@ -1,0 +1,60 @@
+@using StadiumDrinkOrdering.Staff.Services
+@using StadiumDrinkOrdering.Staff.Shared
+@inject IAuthStateService AuthStateService
+
+@if (!isInitialized)
+{
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="text-center">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted">Initializing application...</p>
+        </div>
+    </div>
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            @if (IsLoginPage(routeData.PageType))
+            {
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(AuthLayout)" />
+            }
+            else
+            {
+                <AuthRoute>
+                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                </AuthRoute>
+            }
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <AuthRoute>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p role="alert">Sorry, there's nothing at this address.</p>
+                </LayoutView>
+            </AuthRoute>
+        </NotFound>
+    </Router>
+}
+
+@code {
+    private bool isInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthStateService.InitializeAsync();
+            isInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    private bool IsLoginPage(Type? pageType)
+    {
+        return pageType?.Name == "Login";
+    }
+}

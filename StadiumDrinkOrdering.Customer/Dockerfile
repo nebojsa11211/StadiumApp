@@ -47,6 +47,9 @@ COPY --from=publish /app/publish .
 RUN chown -R appuser:appuser /app
 USER appuser
 
+# Configure environment for Docker container
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8081 || exit 1

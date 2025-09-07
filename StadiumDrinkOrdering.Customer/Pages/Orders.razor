@@ -2,11 +2,13 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
 
 <PageTitle>My Orders</PageTitle>
 
-<div class="container" id="customer-orders-container">
+<AuthenticationGuard>
+    <div class="container" id="customer-orders-container">
     <div class="d-flex justify-content-between align-items-center mb-4" id="customer-orders-header">
         <h1 id="customer-orders-title">📋 My Orders</h1>
         <a href="/menu" class="btn btn-primary" id="customer-new-order-btn">
@@ -272,7 +274,7 @@
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="customer-alert-container">
         <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="customer-alert-message">
             @alertMessage
-            <button type="button" class="btn-close" @onclick="ClearAlert" id="customer-alert-close-btn"></button>
+            <button type="button" class="btn-close" @onclick="ClearAlert" id="customer-orders-alert-close-btn"></button>
         </div>
     </div>
 }
@@ -414,3 +416,4 @@
         font-size: 0.8rem;
     }
 </style>
+</AuthenticationGuard>

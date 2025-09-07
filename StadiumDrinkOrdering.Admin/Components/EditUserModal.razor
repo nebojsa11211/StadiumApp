@@ -1,0 +1,148 @@
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService ApiService
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="edit-user-modal">
+    <div class="modal-dialog modal-lg" id="edit-user-modal-dialog">
+        <div class="modal-content" id="edit-user-modal-content">
+            <div class="modal-header" id="edit-user-modal-header">
+                <h5 class="modal-title" id="edit-user-modal-title">Edit User: @User?.Username</h5>
+                <button type="button" class="btn-close" @onclick="OnCancel" id="edit-user-modal-close-btn"></button>
+            </div>
+            <EditForm Model="@updateUserDto" OnValidSubmit="@HandleValidSubmit" id="edit-user-form">
+                <DataAnnotationsValidator />
+                <div class="modal-body" id="edit-user-modal-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" id="edit-user-error-alert">@errorMessage</div>
+                    }
+                    
+                    <div class="alert alert-info" id="edit-user-info-alert">
+                        <small id="edit-user-info-text"><strong>User ID:</strong> @User?.Id | <strong>Created:</strong> @User?.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                    </div>
+                    
+                    <div class="row" id="edit-user-name-row">
+                        <div class="col-md-6" id="edit-user-username-col">
+                            <div class="mb-3" id="edit-user-username-group">
+                                <label for="edit-username" class="form-label" id="edit-user-username-label">Username *</label>
+                                <InputText id="edit-username" class="form-control" @bind-Value="updateUserDto.Username" />
+                                <ValidationMessage For="@(() => updateUserDto.Username)" />
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="edit-user-email-col">
+                            <div class="mb-3" id="edit-user-email-group">
+                                <label for="edit-email" class="form-label" id="edit-user-email-label">Email *</label>
+                                <InputText id="edit-email" type="email" class="form-control" @bind-Value="updateUserDto.Email" />
+                                <ValidationMessage For="@(() => updateUserDto.Email)" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3" id="edit-user-role-group">
+                        <label for="edit-role" class="form-label" id="edit-user-role-label">Role *</label>
+                        <InputSelect id="edit-role" class="form-select" @bind-Value="updateUserDto.Role">
+                            <option value="@UserRole.Admin">Admin</option>
+                            <option value="@UserRole.Customer">Customer</option>
+                            <option value="@UserRole.Bartender">Bartender</option>
+                            <option value="@UserRole.Waiter">Waiter</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => updateUserDto.Role)" />
+                        @if (User?.Role == UserRole.Admin)
+                        {
+                            <div class="form-text text-warning" id="edit-user-admin-warning">
+                                <i class="bi bi-exclamation-triangle"></i> 
+                                Changing the role of an admin user may affect system permissions.
+                            </div>
+                        }
+                    </div>
+                    
+                    @if (User?.LastLoginAt.HasValue == true)
+                    {
+                        <div class="alert alert-light" id="edit-user-last-login-alert">
+                            <small id="edit-user-last-login-text"><strong>Last Login:</strong> @User.LastLoginAt.Value.ToString("yyyy-MM-dd HH:mm")</small>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-light" id="edit-user-never-logged-alert">
+                            <small id="edit-user-never-logged-text"><strong>Last Login:</strong> Never logged in</small>
+                        </div>
+                    }
+                    
+                    <div class="alert alert-warning" id="edit-user-password-note">
+                        <small id="edit-user-password-note-text">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Note:</strong> To change the user's password, use the "Change Password" button in the user list.
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer" id="edit-user-modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="OnCancel" id="edit-user-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@isSubmitting" id="edit-user-submit-btn">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" id="edit-user-submit-spinner"></span>
+                        }
+                        Update User
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public UserDto? User { get; set; }
+    [Parameter] public EventCallback OnUserUpdated { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private UpdateUserDto updateUserDto = new UpdateUserDto();
+    private bool isSubmitting = false;
+    private string errorMessage = "";
+
+    protected override void OnParametersSet()
+    {
+        if (User != null)
+        {
+            updateUserDto = new UpdateUserDto
+            {
+                Username = User.Username,
+                Email = User.Email,
+                Role = User.Role
+            };
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (User == null) return;
+
+        isSubmitting = true;
+        errorMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            var result = await ApiService.UpdateUserAsync(User.Id, updateUserDto);
+            
+            if (result != null)
+            {
+                await OnUserUpdated.InvokeAsync();
+            }
+            else
+            {
+                errorMessage = "Failed to update user. Email or username may already be taken by another user.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error updating user: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+}

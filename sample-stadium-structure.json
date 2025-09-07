@@ -1,0 +1,120 @@
+{
+  "Name": "Sample Stadium",
+  "Description": "A sample stadium configuration for testing",
+  "Tribunes": [
+    {
+      "Code": "N",
+      "Name": "North Tribune",
+      "Description": "Main stand facing the field",
+      "Rings": [
+        {
+          "Number": 1,
+          "Name": "Lower Tier",
+          "Sectors": [
+            {
+              "Code": "N1A",
+              "Name": "North 1A",
+              "Rows": 20,
+              "SeatsPerRow": 25,
+              "StartRow": 1,
+              "StartSeat": 1
+            },
+            {
+              "Code": "N1B",
+              "Name": "North 1B", 
+              "Rows": 20,
+              "SeatsPerRow": 25,
+              "StartRow": 1,
+              "StartSeat": 1
+            }
+          ]
+        },
+        {
+          "Number": 2,
+          "Name": "Upper Tier",
+          "Sectors": [
+            {
+              "Code": "N2A",
+              "Name": "North 2A",
+              "Rows": 15,
+              "SeatsPerRow": 30,
+              "StartRow": 1,
+              "StartSeat": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Code": "S",
+      "Name": "South Tribune",
+      "Description": "Opposite stand",
+      "Rings": [
+        {
+          "Number": 1,
+          "Name": "Lower Tier",
+          "Sectors": [
+            {
+              "Code": "S1A",
+              "Name": "South 1A",
+              "Rows": 18,
+              "SeatsPerRow": 24,
+              "StartRow": 1,
+              "StartSeat": 1
+            },
+            {
+              "Code": "S1B",
+              "Name": "South 1B",
+              "Rows": 18,
+              "SeatsPerRow": 24,
+              "StartRow": 1,
+              "StartSeat": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Code": "E",
+      "Name": "East Tribune",
+      "Description": "Side stand",
+      "Rings": [
+        {
+          "Number": 1,
+          "Name": "Main Stand",
+          "Sectors": [
+            {
+              "Code": "E1A",
+              "Name": "East 1A",
+              "Rows": 25,
+              "SeatsPerRow": 20,
+              "StartRow": 1,
+              "StartSeat": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Code": "W",
+      "Name": "West Tribune",
+      "Description": "VIP side stand",
+      "Rings": [
+        {
+          "Number": 1,
+          "Name": "VIP Boxes",
+          "Sectors": [
+            {
+              "Code": "W1V",
+              "Name": "West VIP",
+              "Rows": 10,
+              "SeatsPerRow": 12,
+              "StartRow": 1,
+              "StartSeat": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

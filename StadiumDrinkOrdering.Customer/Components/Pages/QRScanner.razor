@@ -1,0 +1,579 @@
+@page "/scan"
+@page "/scan/{qrToken}"
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@inject IApiService ApiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode @(new InteractiveServerRenderMode())
+
+<PageTitle>QR Scanner - Stadium Ordering</PageTitle>
+
+<div class="qr-scanner-container">
+    @if (!string.IsNullOrEmpty(qrToken))
+    {
+        <!-- Direct QR Token Processing -->
+        @if (isValidating)
+        {
+            <div class="validation-screen">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <h2>Validating Ticket...</h2>
+                <p>Please wait while we verify your ticket</p>
+            </div>
+        }
+        else if (validationError)
+        {
+            <div class="error-screen">
+                <div class="error-icon">❌</div>
+                <h2>Invalid Ticket</h2>
+                <p>@errorMessage</p>
+                <button id="customer-qrscanner-retry-btn" class="btn btn-primary" @onclick="RetryValidation">Try Again</button>
+                <button id="customer-qrscanner-go-home-btn" class="btn btn-secondary" @onclick="GoHome">Go Home</button>
+            </div>
+        }
+        else if (ticket != null)
+        {
+            <div class="ticket-validated-screen">
+                <div class="success-icon">✅</div>
+                <h2>Ticket Validated!</h2>
+                <div class="ticket-info">
+                    <div class="event-card">
+                        <h3>@ticket.EventName</h3>
+                        <div class="seat-info">
+                            <span class="seat-badge">@ticket.Section</span>
+                            <span class="seat-details">Row @ticket.Row, Seat @ticket.SeatNumber</span>
+                        </div>
+                        <div class="event-date">
+                            @ticket.EventDate?.ToString("MMM dd, yyyy • h:mm tt")
+                        </div>
+                    </div>
+                </div>
+                <button id="customer-qrscanner-start-ordering-btn" class="btn btn-primary btn-large" @onclick="StartOrdering">
+                    🍻 Start Ordering
+                </button>
+            </div>
+        }
+    }
+    else
+    {
+        <!-- QR Scanner Interface -->
+        <div class="scanner-header">
+            <h1>Scan Your Ticket</h1>
+            <p>Position the QR code within the frame to start ordering</p>
+        </div>
+
+        <div class="camera-container">
+            <div class="camera-frame">
+                <div class="scan-overlay">
+                    <div class="scan-box">
+                        <div class="corner top-left"></div>
+                        <div class="corner top-right"></div>
+                        <div class="corner bottom-left"></div>
+                        <div class="corner bottom-right"></div>
+                    </div>
+                </div>
+                <video id="qr-video" autoplay muted playsinline></video>
+                <canvas id="qr-canvas" style="display: none;"></canvas>
+            </div>
+        </div>
+
+        <div class="manual-entry">
+            <h3>Manual Entry</h3>
+            <p>Enter your ticket number if you can't scan</p>
+            <div class="input-group">
+                <input @bind="manualTicketNumber" 
+                       class="form-control" 
+                       placeholder="Enter ticket number"
+                       @onkeypress="HandleManualEntry" />
+                <button id="customer-qrscanner-validate-manual-btn" class="btn btn-secondary" @onclick="ValidateManualEntry">
+                    Validate
+                </button>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(scanError))
+        {
+            <div class="alert alert-warning">
+                <strong>Scanner Issue:</strong> @scanError
+                <button id="customer-qrscanner-close-error-btn" class="btn-close" @onclick="() => scanError = string.Empty"></button>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    .qr-scanner-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        color: white;
+    }
+
+    .validation-screen, .error-screen, .ticket-validated-screen {
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .loading-spinner {
+        margin-bottom: 20px;
+    }
+
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #fff;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .success-icon, .error-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    .ticket-info {
+        margin: 30px 0;
+    }
+
+    .event-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .event-card h3 {
+        margin: 0 0 15px 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .seat-info {
+        margin: 15px 0;
+    }
+
+    .seat-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .seat-details {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .event-date {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 10px;
+    }
+
+    .scanner-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .scanner-header h1 {
+        font-size: 2.5rem;
+        margin: 0 0 10px 0;
+        font-weight: bold;
+    }
+
+    .scanner-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .camera-container {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        margin: 0 auto 40px auto;
+        max-width: 90vw;
+        max-height: 40vh;
+    }
+
+    .camera-frame {
+        width: 100%;
+        height: 100%;
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        background: #000;
+    }
+
+    #qr-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .scan-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+    }
+
+    .scan-box {
+        width: 200px;
+        height: 200px;
+        position: relative;
+        border: 2px solid transparent;
+    }
+
+    .corner {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border: 3px solid #fff;
+    }
+
+    .corner.top-left {
+        top: 0;
+        left: 0;
+        border-right: none;
+        border-bottom: none;
+        border-top-left-radius: 10px;
+    }
+
+    .corner.top-right {
+        top: 0;
+        right: 0;
+        border-left: none;
+        border-bottom: none;
+        border-top-right-radius: 10px;
+    }
+
+    .corner.bottom-left {
+        bottom: 0;
+        left: 0;
+        border-right: none;
+        border-top: none;
+        border-bottom-left-radius: 10px;
+    }
+
+    .corner.bottom-right {
+        bottom: 0;
+        right: 0;
+        border-left: none;
+        border-top: none;
+        border-bottom-right-radius: 10px;
+    }
+
+    .manual-entry {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 30px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .manual-entry h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.3rem;
+    }
+
+    .manual-entry p {
+        margin: 0 0 20px 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    .input-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .form-control {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .form-control::placeholder {
+        color: #666;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: #ff6b6b;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #ee5a5a;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .btn-large {
+        padding: 16px 40px;
+        font-size: 1.2rem;
+        margin-top: 20px;
+    }
+
+    .alert {
+        background: rgba(255, 193, 7, 0.9);
+        color: #856404;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        position: relative;
+    }
+
+    .btn-close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #856404;
+    }
+
+    /* Mobile Optimizations */
+    @@media (max-width: 768px) {
+        .qr-scanner-container {
+            padding: 10px;
+        }
+
+        .scanner-header h1 {
+            font-size: 2rem;
+        }
+
+        .camera-container {
+            width: 280px;
+            height: 280px;
+        }
+
+        .manual-entry {
+            padding: 20px;
+        }
+
+        .input-group {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public string? qrToken { get; set; }
+    
+    private bool isValidating = false;
+    private bool validationError = false;
+    private string errorMessage = string.Empty;
+    private string scanError = string.Empty;
+    private string manualTicketNumber = string.Empty;
+    private Ticket? ticket = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (!string.IsNullOrEmpty(qrToken))
+            {
+                await ValidateQRToken(qrToken);
+            }
+            else
+            {
+                await InitializeCamera();
+            }
+        }
+    }
+
+    private async Task ValidateQRToken(string token)
+    {
+        try
+        {
+            isValidating = true;
+            validationError = false;
+            StateHasChanged();
+
+            var validationResult = await ApiService.ValidateTicketAsync(token);
+            if (validationResult != null && validationResult.Success)
+            {
+                // Store the session token for later use
+                if (validationResult.SessionToken != null)
+                {
+                    // Store in session storage or local state
+                    await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "ticketSessionToken", validationResult.SessionToken);
+                }
+
+                // Create a ticket object from the validation result for display
+                ticket = new Ticket
+                {
+                    Id = validationResult.Ticket?.Id ?? 0,
+                    EventName = validationResult.Ticket?.EventName ?? "",
+                    EventDate = validationResult.Ticket?.EventDate ?? DateTime.MinValue,
+                    QRCodeToken = token,
+                    SeatNumber = validationResult.SeatInfo?.SeatNumber,
+                    Section = validationResult.SeatInfo?.Section,
+                    Row = validationResult.SeatInfo?.Row,
+                    CustomerName = validationResult.Ticket?.CustomerName
+                };
+            }
+            else
+            {
+                validationError = true;
+                errorMessage = validationResult?.ErrorMessage ?? "Invalid or expired QR code.";
+            }
+        }
+        catch (Exception ex)
+        {
+            validationError = true;
+            errorMessage = "Unable to validate ticket. Please try again.";
+        }
+        finally
+        {
+            isValidating = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task InitializeCamera()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("startQRScanner");
+        }
+        catch (Exception ex)
+        {
+            scanError = "Camera access denied or not supported. Please use manual entry.";
+            StateHasChanged();
+        }
+    }
+
+    private async Task RetryValidation()
+    {
+        if (!string.IsNullOrEmpty(qrToken))
+        {
+            await ValidateQRToken(qrToken);
+        }
+    }
+
+    private void GoHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private async Task StartOrdering()
+    {
+        if (ticket != null)
+        {
+            try
+            {
+                // Get the session token from session storage
+                var sessionToken = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "ticketSessionToken");
+                if (!string.IsNullOrEmpty(sessionToken))
+                {
+                    // Navigate to menu with session token
+                    Navigation.NavigateTo($"/menu?sessionToken={sessionToken}");
+                }
+                else
+                {
+                    // Fallback to legacy flow
+                    Navigation.NavigateTo($"/order/{ticket.QRCodeToken}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fallback to legacy flow
+                Navigation.NavigateTo($"/order/{ticket.QRCodeToken}");
+            }
+        }
+    }
+
+    private async Task HandleManualEntry(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await ValidateManualEntry();
+        }
+    }
+
+    private async Task ValidateManualEntry()
+    {
+        if (string.IsNullOrWhiteSpace(manualTicketNumber))
+            return;
+
+        try
+        {
+            var ticketByNumber = await ApiService.GetTicketByNumberAsync(manualTicketNumber);
+            if (ticketByNumber != null)
+            {
+                Navigation.NavigateTo($"/scan/{ticketByNumber.QRCodeToken}");
+            }
+            else
+            {
+                scanError = "Ticket number not found. Please check and try again.";
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            scanError = "Error validating ticket number. Please try again.";
+            StateHasChanged();
+        }
+    }
+}

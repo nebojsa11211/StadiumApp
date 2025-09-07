@@ -2,8 +2,62 @@
 @inject IAuthStateService AuthStateService
 @inject NavigationManager NavigationManager
 
-@ChildContent
+@if (isChecking)
+{
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="text-center">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Checking authentication...</span>
+            </div>
+            <p class="text-muted">Verifying authentication...</p>
+        </div>
+    </div>
+}
+else if (AuthStateService.IsAuthenticated)
+{
+    @ChildContent
+}
+else
+{
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="text-center">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">🔐 Authentication Required</h5>
+                    <p class="card-text">You need to be logged in to access this page.</p>
+                    <button class="btn btn-primary" @onclick="RedirectToLogin" id="admin-auth-route-login-btn">
+                        Go to Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    
+    private bool isChecking = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate a brief authentication check delay
+        await Task.Delay(100);
+        isChecking = false;
+        StateHasChanged();
+
+        // Listen for authentication state changes
+        AuthStateService.OnAuthenticationStateChanged += StateHasChanged;
+    }
+
+    private void RedirectToLogin()
+    {
+        var returnUrl = Uri.EscapeDataString(NavigationManager.Uri);
+        NavigationManager.NavigateTo($"/login?returnUrl={returnUrl}");
+    }
+
+    public void Dispose()
+    {
+        AuthStateService.OnAuthenticationStateChanged -= StateHasChanged;
+    }
 }

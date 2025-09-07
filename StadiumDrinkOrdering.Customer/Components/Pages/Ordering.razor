@@ -1,0 +1,1061 @@
+@page "/order/{qrToken}"
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@using Microsoft.AspNetCore.SignalR.Client
+@inject ApiService ApiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode @(new InteractiveServerRenderMode())
+
+<PageTitle>Order Drinks - Stadium Ordering</PageTitle>
+
+<div class="ordering-container">
+    @if (isLoading)
+    {
+        <div class="loading-screen">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <h2>Loading Menu...</h2>
+        </div>
+    }
+    else if (orderSession == null)
+    {
+        <div class="error-screen">
+            <div class="error-icon">❌</div>
+            <h2>Session Expired</h2>
+            <p>Your ordering session has expired. Please scan your ticket again.</p>
+            <button id="customer-ordering-scan-again-btn" class="btn btn-primary" @onclick="GoToScanner">Scan Again</button>
+        </div>
+    }
+    else
+    {
+        <!-- Header with ticket info -->
+        <div class="order-header">
+            <div class="ticket-summary">
+                <div class="event-info">
+                    <h3>@orderSession.Ticket?.EventName</h3>
+                    <div class="seat-info">
+                        <span class="seat-badge">@orderSession.Ticket?.Seat?.Section?.SectionName</span>
+                        <span>Row @orderSession.Ticket?.Seat?.RowNumber, Seat @orderSession.Ticket?.Seat?.SeatNumber</span>
+                    </div>
+                </div>
+                <div class="session-timer">
+                    <div class="timer-circle">
+                        <span class="timer-text">@GetRemainingTime()</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Summary (Fixed at top when scrolling) -->
+        @if (cartItems.Any())
+        {
+            <div class="cart-summary @(isCartExpanded ? "expanded" : "")" @onclick="ToggleCart">
+                <div class="cart-header">
+                    <div class="cart-info">
+                        <span class="cart-count">@cartItems.Sum(x => x.Quantity) items</span>
+                        <span class="cart-total">€@cartTotal.ToString("F2")</span>
+                    </div>
+                    <div class="cart-toggle">
+                        @(isCartExpanded ? "▼" : "▲")
+                    </div>
+                </div>
+                
+                @if (isCartExpanded)
+                {
+                    <div class="cart-items">
+                        @foreach (var item in cartItems)
+                        {
+                            <div class="cart-item">
+                                <div class="item-info">
+                                    <span class="item-name">@item.DrinkName</span>
+                                    <span class="item-price">€@item.UnitPrice.ToString("F2")</span>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button id="customer-ordering-decrease-quantity-btn-@item.DrinkId" class="btn-quantity" @onclick="() => UpdateQuantity(item.DrinkId, item.Quantity - 1)">-</button>
+                                    <span class="quantity">@item.Quantity</span>
+                                    <button id="customer-ordering-increase-quantity-btn-@item.DrinkId" class="btn-quantity" @onclick="() => UpdateQuantity(item.DrinkId, item.Quantity + 1)">+</button>
+                                    <button id="customer-ordering-remove-item-btn-@item.DrinkId" class="btn-remove" @onclick="() => RemoveFromCart(item.DrinkId)">🗑️</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="checkout-section">
+                        <button id="customer-ordering-checkout-btn" class="btn btn-primary btn-checkout" @onclick="ProceedToCheckout">
+                            Proceed to Payment • €@cartTotal.ToString("F2")
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Drink Categories -->
+        <div class="categories-container">
+            <div class="categories-tabs">
+                @foreach (var category in drinkCategories)
+                {
+                    <button id="customer-ordering-category-btn-@category" class="category-tab @(selectedCategory == category ? "active" : "")" 
+                            @onclick="() => SelectCategory(category)">
+                        @GetCategoryIcon(category) @category.ToString().Replace("_", " ")
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Drinks Grid -->
+        <div class="drinks-container">
+            <div class="drinks-grid">
+                @foreach (var drink in GetFilteredDrinks())
+                {
+                    <div class="drink-card @(drink.StockQuantity <= 0 ? "out-of-stock" : "")" @onclick="() => ShowDrinkDetails(drink)">
+                        <div class="drink-image">
+                            @if (!string.IsNullOrEmpty(drink.ImageUrl))
+                            {
+                                <img src="@drink.ImageUrl" alt="@drink.Name" />
+                            }
+                            else
+                            {
+                                <div class="placeholder-image">@GetDrinkEmoji(drink.Category)</div>
+                            }
+                        </div>
+                        <div class="drink-info">
+                            <h4>@drink.Name</h4>
+                            <p class="drink-description">@drink.Description</p>
+                            <div class="drink-footer">
+                                <span class="price">€@drink.Price.ToString("F2")</span>
+                                @if (drink.StockQuantity <= 0)
+                                {
+                                    <span class="out-of-stock-badge">Out of Stock</span>
+                                }
+                                else
+                                {
+                                    <button id="customer-ordering-quick-add-btn-@drink.Id" class="btn btn-add-to-cart" @onclick:stopPropagation="true" @onclick="() => QuickAddToCart(drink)">
+                                        +
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Drink Details Modal -->
+@if (selectedDrink != null)
+{
+    <div class="modal-overlay" @onclick="CloseDrinkDetails">
+        <div class="drink-modal" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>@selectedDrink.Name</h3>
+                <button id="customer-ordering-close-modal-btn" class="btn-close" @onclick="CloseDrinkDetails">✕</button>
+            </div>
+            <div class="modal-content">
+                <div class="drink-image-large">
+                    @if (!string.IsNullOrEmpty(selectedDrink.ImageUrl))
+                    {
+                        <img src="@selectedDrink.ImageUrl" alt="@selectedDrink.Name" />
+                    }
+                    else
+                    {
+                        <div class="placeholder-image-large">@GetDrinkEmoji(selectedDrink.Category)</div>
+                    }
+                </div>
+                <p class="description">@selectedDrink.Description</p>
+                <div class="price-large">€@selectedDrink.Price.ToString("F2")</div>
+                
+                @if (selectedDrink.StockQuantity > 0)
+                {
+                    <div class="quantity-selector">
+                        <label>Quantity:</label>
+                        <div class="quantity-controls-large">
+                            <button id="customer-ordering-modal-decrease-btn" class="btn-quantity-large" @onclick="() => selectedQuantity = Math.Max(1, selectedQuantity - 1)">-</button>
+                            <span class="quantity-large">@selectedQuantity</span>
+                            <button id="customer-ordering-modal-increase-btn" class="btn-quantity-large" @onclick="() => selectedQuantity = Math.Min(10, selectedQuantity + 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="special-instructions">
+                        <label>Special Instructions (optional):</label>
+                        <textarea @bind="specialInstructions" placeholder="e.g., No ice, Extra lime..." maxlength="100"></textarea>
+                    </div>
+
+                    <button id="customer-ordering-add-to-cart-btn" class="btn btn-primary btn-add-large" @onclick="AddToCartWithDetails">
+                        Add @selectedQuantity to Cart • €@((selectedDrink.Price * selectedQuantity).ToString("F2"))
+                    </button>
+                }
+                else
+                {
+                    <div class="out-of-stock-message">
+                        <span class="out-of-stock-badge">Out of Stock</span>
+                        <p>Sorry, this item is currently unavailable.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .ordering-container {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+        padding-bottom: 100px; /* Space for cart */
+    }
+
+    .loading-screen, .error-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .loading-spinner {
+        margin-bottom: 20px;
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #007bff;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .order-header {
+        background: white;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .ticket-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .event-info h3 {
+        margin: 0 0 8px 0;
+        font-size: 1.3rem;
+        color: #333;
+    }
+
+    .seat-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .seat-badge {
+        background: #007bff;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+
+    .timer-circle {
+        width: 60px;
+        height: 60px;
+        border: 3px solid #007bff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 123, 255, 0.1);
+    }
+
+    .timer-text {
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .cart-summary {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #dee2e6;
+        box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
+        z-index: 1000;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .cart-summary.expanded {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: #007bff;
+        color: white;
+    }
+
+    .cart-info {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .cart-count {
+        font-weight: bold;
+    }
+
+    .cart-total {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .cart-toggle {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .cart-items {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .item-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .item-name {
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+    .item-price {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-quantity {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #ddd;
+        background: #f8f9fa;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn-quantity:hover {
+        background: #e9ecef;
+    }
+
+    .quantity {
+        min-width: 30px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .btn-remove {
+        background: #dc3545;
+        color: white;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-left: 8px;
+    }
+
+    .checkout-section {
+        padding: 20px;
+        background: #f8f9fa;
+    }
+
+    .btn-checkout {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .categories-container {
+        background: white;
+        padding: 15px 20px 0;
+        position: sticky;
+        top: 90px;
+        z-index: 99;
+        border-bottom: 1px solid #eee;
+    }
+
+    .categories-tabs {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 15px;
+    }
+
+    .category-tab {
+        padding: 10px 20px;
+        border: 2px solid #ddd;
+        background: white;
+        border-radius: 25px;
+        cursor: pointer;
+        white-space: nowrap;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .category-tab.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .category-tab:hover:not(.active) {
+        border-color: #007bff;
+        background: rgba(0, 123, 255, 0.1);
+    }
+
+    .drinks-container {
+        padding: 20px;
+    }
+
+    .drinks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .drink-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .drink-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .drink-card.out-of-stock {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .drink-image {
+        height: 180px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    }
+
+    .drink-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .placeholder-image {
+        font-size: 4rem;
+        opacity: 0.7;
+    }
+
+    .drink-info {
+        padding: 20px;
+    }
+
+    .drink-info h4 {
+        margin: 0 0 8px 0;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .drink-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin: 0 0 15px 0;
+        line-height: 1.4;
+    }
+
+    .drink-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .btn-add-to-cart {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #28a745;
+        color: white;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-add-to-cart:hover {
+        background: #218838;
+        transform: scale(1.1);
+    }
+
+    .out-of-stock-badge {
+        background: #dc3545;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 20px;
+    }
+
+    .drink-modal {
+        background: white;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-close:hover {
+        background: #f8f9fa;
+    }
+
+    .modal-content {
+        padding: 20px;
+    }
+
+    .drink-image-large {
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .drink-image-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .placeholder-image-large {
+        font-size: 6rem;
+        opacity: 0.7;
+    }
+
+    .description {
+        font-size: 1rem;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    .price-large {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+
+    .quantity-selector {
+        margin-bottom: 20px;
+    }
+
+    .quantity-selector label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .quantity-controls-large {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .btn-quantity-large {
+        width: 50px;
+        height: 50px;
+        border: 2px solid #007bff;
+        background: white;
+        border-radius: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #007bff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-quantity-large:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .quantity-large {
+        font-size: 1.5rem;
+        font-weight: bold;
+        min-width: 50px;
+        text-align: center;
+    }
+
+    .special-instructions {
+        margin-bottom: 20px;
+    }
+
+    .special-instructions label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .special-instructions textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        resize: vertical;
+        min-height: 80px;
+        font-family: inherit;
+    }
+
+    .btn-add-large {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .out-of-stock-message {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .out-of-stock-message p {
+        margin-top: 10px;
+        color: #666;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .drinks-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .categories-tabs {
+            gap: 5px;
+        }
+
+        .category-tab {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+
+        .ticket-summary {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .timer-circle {
+            align-self: flex-end;
+        }
+    }
+
+    /* Common Button Styles */
+    .btn {
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        padding: 12px 24px;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        padding: 12px 24px;
+    }
+
+    .btn-secondary:hover {
+        background: #545b62;
+        transform: translateY(-1px);
+    }
+</style>
+
+@code {
+    [Parameter] public string qrToken { get; set; } = string.Empty;
+    
+    private bool isLoading = true;
+    private OrderSession? orderSession = null;
+    private List<DrinkDto> drinks = new();
+    private List<CartItem> cartItems = new();
+    private decimal cartTotal = 0;
+    private bool isCartExpanded = false;
+    private DrinkCategory selectedCategory = DrinkCategory.SoftDrink;
+    private List<DrinkCategory> drinkCategories = new();
+    private DrinkDto? selectedDrink = null;
+    private int selectedQuantity = 1;
+    private string specialInstructions = string.Empty;
+    private HubConnection? hubConnection;
+    private Timer? sessionTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrderSession();
+        await LoadDrinks();
+        await InitializeSignalR();
+        StartSessionTimer();
+    }
+
+    private async Task LoadOrderSession()
+    {
+        try
+        {
+            var session = await ApiService.CreateOrderSessionFromQRAsync(qrToken);
+            if (session != null)
+            {
+                orderSession = session;
+                await LoadCartItems();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadDrinks()
+    {
+        try
+        {
+            drinks = await ApiService.GetDrinksAsync() ?? new List<DrinkDto>();
+            drinkCategories = drinks.Select(d => d.Category).Distinct().OrderBy(c => c).ToList();
+            if (drinkCategories.Any())
+            {
+                selectedCategory = drinkCategories.First();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task LoadCartItems()
+    {
+        if (orderSession != null)
+        {
+            // Parse cart items from session
+            if (!string.IsNullOrEmpty(orderSession.CartData))
+            {
+                cartItems = System.Text.Json.JsonSerializer.Deserialize<List<CartItem>>(orderSession.CartData) ?? new();
+                cartTotal = cartItems.Sum(x => x.TotalPrice);
+            }
+        }
+    }
+
+    private async Task InitializeSignalR()
+    {
+        try
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(Navigation.ToAbsoluteUri("/bartenderHub"))
+                .Build();
+
+            await hubConnection.StartAsync();
+        }
+        catch (Exception ex)
+        {
+            // Handle SignalR connection error
+        }
+    }
+
+    private void StartSessionTimer()
+    {
+        sessionTimer = new Timer(async _ =>
+        {
+            await InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+    }
+
+    private string GetRemainingTime()
+    {
+        if (orderSession == null) return "0:00";
+        
+        var remaining = orderSession.ExpiresAt - DateTime.UtcNow;
+        if (remaining.TotalMinutes <= 0) return "0:00";
+        
+        return $"{remaining.Hours:D1}:{remaining.Minutes:D2}";
+    }
+
+    private void SelectCategory(DrinkCategory category)
+    {
+        selectedCategory = category;
+        StateHasChanged();
+    }
+
+    private List<DrinkDto> GetFilteredDrinks()
+    {
+        return drinks.Where(d => d.Category == selectedCategory && d.IsAvailable).OrderBy(d => d.Name).ToList();
+    }
+
+    private string GetCategoryIcon(DrinkCategory category)
+    {
+        return category switch
+        {
+            DrinkCategory.Beer => "🍺",
+            DrinkCategory.SoftDrink => "🥤",
+            DrinkCategory.Water => "💧",
+            DrinkCategory.Coffee => "☕",
+            DrinkCategory.Tea => "🍵",
+            DrinkCategory.Juice => "🧃",
+            DrinkCategory.EnergyDrink => "⚡",
+            _ => "🥤"
+        };
+    }
+
+    private string GetDrinkEmoji(DrinkCategory category)
+    {
+        return GetCategoryIcon(category);
+    }
+
+    private void ToggleCart()
+    {
+        isCartExpanded = !isCartExpanded;
+        StateHasChanged();
+    }
+
+    private async Task QuickAddToCart(DrinkDto drink)
+    {
+        selectedDrink = drink;
+        selectedQuantity = 1;
+        specialInstructions = string.Empty;
+        await AddToCartWithDetails();
+    }
+
+    private void ShowDrinkDetails(DrinkDto drink)
+    {
+        if (drink.StockQuantity <= 0) return;
+        
+        selectedDrink = drink;
+        selectedQuantity = 1;
+        specialInstructions = string.Empty;
+        StateHasChanged();
+    }
+
+    private void CloseDrinkDetails()
+    {
+        selectedDrink = null;
+        StateHasChanged();
+    }
+
+    private async Task AddToCartWithDetails()
+    {
+        if (selectedDrink == null || orderSession == null) return;
+
+        try
+        {
+            var updatedSession = await ApiService.AddToCartAsync(
+                orderSession.SessionToken, 
+                selectedDrink.Id, 
+                selectedQuantity);
+
+            if (updatedSession != null)
+            {
+                orderSession = updatedSession;
+                await LoadCartItems();
+                CloseDrinkDetails();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task UpdateQuantity(int drinkId, int newQuantity)
+    {
+        if (orderSession == null || newQuantity < 0) return;
+
+        try
+        {
+            OrderSession? updatedSession;
+            
+            if (newQuantity == 0)
+            {
+                updatedSession = await ApiService.RemoveFromCartAsync(orderSession.SessionToken, drinkId);
+            }
+            else
+            {
+                updatedSession = await ApiService.UpdateCartItemAsync(orderSession.SessionToken, drinkId, newQuantity);
+            }
+
+            if (updatedSession != null)
+            {
+                orderSession = updatedSession;
+                await LoadCartItems();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task RemoveFromCart(int drinkId)
+    {
+        await UpdateQuantity(drinkId, 0);
+    }
+
+    private async Task ProceedToCheckout()
+    {
+        if (orderSession == null) return;
+        Navigation.NavigateTo($"/checkout/{orderSession.SessionToken}");
+    }
+
+    private void GoToScanner()
+    {
+        Navigation.NavigateTo("/scan");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        sessionTimer?.Dispose();
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+
+    public class CartItem
+    {
+        public int DrinkId { get; set; }
+        public string DrinkName { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+        public string? SpecialInstructions { get; set; }
+    }
+}

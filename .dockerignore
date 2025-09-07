@@ -3,6 +3,7 @@
 **/obj/
 **/out/
 **/publish/
+**/Properties/
 
 # Files
 Dockerfile*

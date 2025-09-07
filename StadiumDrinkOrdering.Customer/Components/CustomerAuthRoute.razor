@@ -1,0 +1,65 @@
+@using StadiumDrinkOrdering.Customer.Services
+@inject ICustomerAuthStateService AuthStateService
+@inject NavigationManager Navigation
+
+@if (AuthStateService.IsAuthenticated)
+{
+    @ChildContent
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">🔐 Authentication Required</h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-user-lock" style="font-size: 3rem; color: #ffc107;"></i>
+                        </div>
+                        <h5>Please Sign In</h5>
+                        <p class="text-muted mb-4">
+                            You need to be logged in to purchase tickets and access this feature.
+                        </p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-warning btn-lg" @onclick="RedirectToLogin">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+                            <button class="btn btn-outline-secondary" @onclick="RedirectToRegister">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                        <hr class="my-4">
+                        <div class="text-start">
+                            <h6>Why do I need to sign in?</h6>
+                            <ul class="list-unstyled small text-muted">
+                                <li>• Purchase tickets securely</li>
+                                <li>• Track your orders</li>
+                                <li>• Access your ticket history</li>
+                                <li>• Receive order confirmations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = null!;
+
+    private void RedirectToLogin()
+    {
+        var returnUrl = Navigation.Uri.Replace(Navigation.BaseUri, "/");
+        Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
+    }
+
+    private void RedirectToRegister()
+    {
+        var returnUrl = Navigation.Uri.Replace(Navigation.BaseUri, "/");
+        Navigation.NavigateTo($"/register?returnUrl={Uri.EscapeDataString(returnUrl)}");
+    }
+}

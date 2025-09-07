@@ -1,16 +1,18 @@
 ﻿@page "/"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Stadium Drinks</PageTitle>
+<PageTitle>@Localizer["PageTitle"]</PageTitle>
 
 <div class="hero-section text-center py-5 mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
     <div class="container">
-        <h1 class="display-4 mb-3">🏟️ Welcome to Stadium Drinks</h1>
-        <p class="lead mb-4">Order your favorite drinks directly to your seat!</p>
+        <h1 class="display-4 mb-3">🏟️ @Localizer["WelcomeTitle"]</h1>
+        <p class="lead mb-4">@Localizer["WelcomeSubtitle"]</p>
         <a href="/menu" class="btn btn-light btn-lg me-3">
-            <i class="bi bi-cup-straw"></i> Order Drinks
+            <i class="bi bi-cup-straw"></i> @Localizer["OrderDrinksButton"]
         </a>
         <a href="/orders" class="btn btn-outline-light btn-lg">
-            <i class="bi bi-receipt"></i> My Orders
+            <i class="bi bi-receipt"></i> @Localizer["MyOrdersButton"]
         </a>
     </div>
 </div>
@@ -23,8 +25,8 @@
                     <div class="mb-3">
                         <span style="font-size: 3rem;">🍺</span>
                     </div>
-                    <h5 class="card-title">Wide Selection</h5>
-                    <p class="card-text">Choose from beers, soft drinks, water, coffee, and more!</p>
+                    <h5 class="card-title">@Localizer["WideSelectionTitle"]</h5>
+                    <p class="card-text">@Localizer["WideSelectionDescription"]</p>
                 </div>
             </div>
         </div>
@@ -35,8 +37,8 @@
                     <div class="mb-3">
                         <span style="font-size: 3rem;">🚀</span>
                     </div>
-                    <h5 class="card-title">Fast Delivery</h5>
-                    <p class="card-text">Get your drinks delivered straight to your seat during the game!</p>
+                    <h5 class="card-title">@Localizer["FastDeliveryTitle"]</h5>
+                    <p class="card-text">@Localizer["FastDeliveryDescription"]</p>
                 </div>
             </div>
         </div>
@@ -47,8 +49,8 @@
                     <div class="mb-3">
                         <span style="font-size: 3rem;">📱</span>
                     </div>
-                    <h5 class="card-title">Easy Ordering</h5>
-                    <p class="card-text">Simple interface - just enter your ticket number and order!</p>
+                    <h5 class="card-title">@Localizer["EasyOrderingTitle"]</h5>
+                    <p class="card-text">@Localizer["EasyOrderingDescription"]</p>
                 </div>
             </div>
         </div>
@@ -56,23 +58,23 @@
 
     <div class="row mt-5">
         <div class="col-md-6 offset-md-3 text-center">
-            <h3>How it works</h3>
+            <h3>@Localizer["HowItWorksTitle"]</h3>
             <ol class="list-unstyled">
                 <li class="mb-3">
                     <span class="badge bg-primary rounded-circle me-3">1</span>
-                    Browse our menu and add drinks to your cart
+                    @Localizer["Step1"]
                 </li>
                 <li class="mb-3">
                     <span class="badge bg-primary rounded-circle me-3">2</span>
-                    Enter your ticket number to verify your seat
+                    @Localizer["Step2"]
                 </li>
                 <li class="mb-3">
                     <span class="badge bg-primary rounded-circle me-3">3</span>
-                    Place your order and track its progress
+                    @Localizer["Step3"]
                 </li>
                 <li class="mb-3">
                     <span class="badge bg-primary rounded-circle me-3">4</span>
-                    Enjoy your drinks delivered right to your seat!
+                    @Localizer["Step4"]
                 </li>
             </ol>
         </div>

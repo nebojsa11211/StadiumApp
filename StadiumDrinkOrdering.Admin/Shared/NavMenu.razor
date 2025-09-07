@@ -1,7 +1,10 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAuthStateService AuthStateService
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">StadiumDrinkOrdering.Admin</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <a class="navbar-brand" href="">Stadium Admin</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu" id="admin-nav-toggle-btn">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
@@ -25,8 +28,67 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="analytics">
+                <span class="oi oi-bar-chart" aria-hidden="true"></span> Analytics
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="customer-analytics">
+                <span class="oi oi-people" aria-hidden="true"></span> Customer Analytics
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="events">
+                <span class="oi oi-calendar" aria-hidden="true"></span> Events
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="tickets">
+                <span class="oi oi-tag" aria-hidden="true"></span> Tickets
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
             <NavLink class="nav-link" href="bartender">
                 <span class="oi oi-monitor" aria-hidden="true"></span> Bartender Dashboard
+            </NavLink>
+        </div>
+        
+        <!-- Stadium Management Section -->
+        <div class="nav-item px-3 mt-2">
+            <div class="nav-section-header">
+                <span class="text-muted small">STADIUM MANAGEMENT</span>
+            </div>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="admin/stadium-structure">
+                <span class="oi oi-map-marker" aria-hidden="true"></span> Structure Management
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="admin/stadium-overview">
+                <span class="oi oi-eye" aria-hidden="true"></span> Stadium Overview
+            </NavLink>
+        </div>
+        
+        <!-- System Management Section -->
+        <div class="nav-item px-3 mt-2">
+            <div class="nav-section-header">
+                <span class="text-muted small">SYSTEM MANAGEMENT</span>
+            </div>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="users">
+                <span class="oi oi-people" aria-hidden="true"></span> User Management
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="logs">
+                <span class="oi oi-document" aria-hidden="true"></span> System Logs
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="datagrid">
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span> Database Explorer
             </NavLink>
         </div>
     </nav>
@@ -37,8 +99,19 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    protected override void OnInitialized()
+    {
+        AuthStateService.OnAuthenticationStateChanged += StateHasChanged;
+    }
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+
+    public void Dispose()
+    {
+        AuthStateService.OnAuthenticationStateChanged -= StateHasChanged;
     }
 }

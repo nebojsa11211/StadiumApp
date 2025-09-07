@@ -1,0 +1,794 @@
+@page "/datagrid"
+@using System.Text.Json
+@using System.Web
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService ApiService
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<PageTitle>Database Explorer</PageTitle>
+
+<div class="database-explorer">
+    <div class="header-section">
+        <h3><i class="oi oi-grid-three-up me-2"></i>Database Explorer</h3>
+        <p class="text-muted">Browse and manage database tables with advanced filtering, sorting, and export capabilities</p>
+    </div>
+
+    <div class="container-fluid">
+        @if (isLoading)
+        {
+            <div class="loading-container">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">Connecting to database...</p>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="oi oi-warning me-2"></i>
+                <div>
+                    <strong>Connection Error:</strong> @errorMessage
+                    <button class="btn btn-sm btn-outline-danger ms-3" @onclick="RetryConnection">
+                        <i class="oi oi-reload"></i> Retry
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="table-selector-card">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="oi oi-list me-1"></i> Select Table:
+                        </label>
+                        <select class="form-select form-select-lg" @onchange="OnTableChanged" value="@selectedTable">
+                            <option value="">-- Choose a table to explore --</option>
+                            @foreach (var table in tables)
+                            {
+                                <option value="@table.EntityName">
+                                    @table.Name 
+                                    <span class="text-muted">(@table.ColumnCount columns)</span>
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    @if (!string.IsNullOrEmpty(selectedTable))
+                    {
+                        <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+                            <div class="btn-group">
+                                <button class="btn btn-outline-secondary" @onclick="RefreshData" title="Refresh Data">
+                                    <i class="oi oi-reload"></i> Refresh
+                                </button>
+                                <button class="btn btn-success" @onclick="ExportToCsv" title="Export to CSV">
+                                    <i class="oi oi-data-transfer-download"></i> Export CSV
+                                </button>
+                                <button class="btn btn-info" @onclick="ShowTableInfo" title="Table Information">
+                                    <i class="oi oi-info"></i> Info
+                                </button>
+                            </div>
+                            <div class="record-count">
+                                <span class="badge bg-primary">@totalCount Records</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(selectedTable) && tableData != null)
+            {
+                @if (showTableInfo)
+                {
+                    <div class="table-info-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5><i class="oi oi-spreadsheet me-2"></i>Table Structure</h5>
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => showTableInfo = false">
+                                <i class="oi oi-x"></i>
+                            </button>
+                        </div>
+                        <div class="row">
+                            @foreach (var column in columns)
+                            {
+                                <div class="col-md-4 mb-2">
+                                    <div class="column-info">
+                                        <strong>@column.Name</strong>
+                                        <span class="badge bg-secondary ms-2">@column.Type</span>
+                                        @if (column.IsPrimaryKey)
+                                        {
+                                            <span class="badge bg-warning ms-1">PK</span>
+                                        }
+                                        @if (column.IsForeignKey)
+                                        {
+                                            <span class="badge bg-info ms-1">FK</span>
+                                        }
+                                        @if (column.IsNullable)
+                                        {
+                                            <span class="text-muted ms-1">(nullable)</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="datagrid-container">
+                    <div class="filter-toolbar">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted">
+                                    <i class="oi oi-filter"></i> 
+                                    @if (filters.Any())
+                                    {
+                                        <span>@filters.Count filter(s) applied</span>
+                                        <button class="btn btn-sm btn-outline-warning ms-2" @onclick="ClearFilters">
+                                            Clear All
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span>No filters applied</span>
+                                    }
+                                </span>
+                            </div>
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" 
+                                       placeholder="Quick search..." 
+                                       @oninput="OnQuickSearchChanged" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover datagrid-table">
+                            <thead class="table-light sticky-header">
+                                <tr>
+                                    @foreach (var column in columns)
+                                    {
+                                        <th class="datagrid-header">
+                                            <div class="column-header">
+                                                <div class="column-title" @onclick="() => Sort(column.Name)">
+                                                    <span>@column.Name</span>
+                                                    @if (sortColumn == column.Name)
+                                                    {
+                                                        @if (sortDirection == "asc")
+                                                        {
+                                                            <i class="oi oi-arrow-top text-primary"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="oi oi-arrow-bottom text-primary"></i>
+                                                        }
+                                                    }
+                                                </div>
+                                                <input type="text" 
+                                                       class="form-control form-control-sm filter-input" 
+                                                       placeholder="Filter..."
+                                                       value="@GetFilterValue(column.Name)"
+                                                       @oninput="(e) => OnFilterChanged(column.Name, e.Value?.ToString())"
+                                                       @onkeyup="@(async (e) => { if (e.Key == "Enter") await ApplyFilters(); })" />
+                                            </div>
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (isLoadingData)
+                                {
+                                    <tr>
+                                        <td colspan="@columns.Count" class="text-center p-4">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Loading data...</span>
+                                            </div>
+                                            <p class="mt-2 text-muted">Fetching records...</p>
+                                        </td>
+                                    </tr>
+                                }
+                                else if (tableData.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="@columns.Count" class="text-center p-4">
+                                            <div class="no-data">
+                                                <i class="oi oi-inbox text-muted" style="font-size: 2rem;"></i>
+                                                <p class="mt-2 text-muted">No records found</p>
+                                                @if (filters.Any())
+                                                {
+                                                    <button class="btn btn-sm btn-outline-primary" @onclick="ClearFilters">
+                                                        Clear Filters
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var row in tableData)
+                                    {
+                                        <tr class="data-row">
+                                            @foreach (var column in columns)
+                                            {
+                                                <td class="datagrid-cell">
+                                                    @{
+                                                        var value = row.ContainsKey(column.Name) ? row[column.Name] : null;
+                                                        if (value == null)
+                                                        {
+                                                            <span class="null-value">null</span>
+                                                        }
+                                                        else if (value is bool boolValue)
+                                                        {
+                                                            if (boolValue)
+                                                            {
+                                                                <span class="badge bg-success">
+                                                                    <i class="oi oi-check"></i> True
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge bg-secondary">
+                                                                    <i class="oi oi-x"></i> False
+                                                                </span>
+                                                            }
+                                                        }
+                                                        else if (value is DateTime dateValue)
+                                                        {
+                                                            <span class="date-value" title="@dateValue.ToString("F")">
+                                                                <i class="oi oi-calendar"></i> @dateValue.ToString("yyyy-MM-dd HH:mm")
+                                                            </span>
+                                                        }
+                                                        else if (decimal.TryParse(value.ToString(), out var decimalValue) && column.Name.Contains("Price", StringComparison.OrdinalIgnoreCase))
+                                                        {
+                                                            <span class="price-value">$@decimalValue.ToString("F2")</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span title="@value.ToString()">@value.ToString()</span>
+                                                        }
+                                                    }
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (totalPages > 1)
+                    {
+                        <div class="pagination-container">
+                            <div class="page-size-selector">
+                                <label class="me-2">Rows per page:</label>
+                                <select class="form-select form-select-sm" style="width: auto;" @onchange="OnPageSizeChanged" value="@pageSize">
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                            
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination mb-0">
+                                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                        <button class="page-link" @onclick="() => GoToPage(1)" disabled="@(currentPage == 1)">
+                                            <i class="oi oi-media-skip-backward"></i> First
+                                        </button>
+                                    </li>
+                                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                        <button class="page-link" @onclick="() => GoToPage(currentPage - 1)" disabled="@(currentPage == 1)">
+                                            <i class="oi oi-chevron-left"></i>
+                                        </button>
+                                    </li>
+                                    
+                                    @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                                    {
+                                        var pageNum = i;
+                                        <li class="page-item @(currentPage == pageNum ? "active" : "")">
+                                            <button class="page-link" @onclick="() => GoToPage(pageNum)">
+                                                @pageNum
+                                            </button>
+                                        </li>
+                                    }
+                                    
+                                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                        <button class="page-link" @onclick="() => GoToPage(currentPage + 1)" disabled="@(currentPage == totalPages)">
+                                            <i class="oi oi-chevron-right"></i>
+                                        </button>
+                                    </li>
+                                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                        <button class="page-link" @onclick="() => GoToPage(totalPages)" disabled="@(currentPage == totalPages)">
+                                            Last <i class="oi oi-media-skip-forward"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                            
+                            <div class="page-info">
+                                <strong>Page @currentPage of @totalPages</strong>
+                                <span class="text-muted ms-2">(@totalCount total records)</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .database-explorer {
+        padding: 20px;
+    }
+
+    .header-section {
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .header-section h3 {
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .loading-container {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .table-selector-card {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+
+    .table-info-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .column-info {
+        padding: 8px;
+        background: white;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+    }
+
+    .datagrid-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .filter-toolbar {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .search-box input {
+        width: 250px;
+    }
+    
+    .datagrid-table {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+    
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .datagrid-header {
+        min-width: 120px;
+        padding: 0 !important;
+    }
+
+    .column-header {
+        padding: 10px;
+    }
+
+    .column-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .column-title:hover {
+        color: #0d6efd;
+    }
+
+    .filter-input {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+    
+    .datagrid-cell {
+        padding: 10px 12px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+    }
+
+    .data-row:hover {
+        background-color: #f0f7ff !important;
+    }
+
+    .null-value {
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .date-value {
+        color: #6f42c1;
+    }
+
+    .price-value {
+        color: #28a745;
+        font-weight: 600;
+    }
+    
+    .table-responsive {
+        max-height: 600px;
+        overflow: auto;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .page-size-selector {
+        display: flex;
+        align-items: center;
+    }
+
+    .page-info {
+        color: #495057;
+    }
+
+    .record-count {
+        margin-left: auto;
+    }
+
+    .btn-group .btn {
+        padding: 0.5rem 1rem;
+    }
+
+    .no-data {
+        padding: 40px;
+    }
+</style>
+
+@code {
+    public class TableInfo
+    {
+        public string Name { get; set; } = string.Empty;
+        public string EntityName { get; set; } = string.Empty;
+        public string Schema { get; set; } = string.Empty;
+        public int ColumnCount { get; set; }
+        public List<ColumnInfo> Columns { get; set; } = new List<ColumnInfo>();
+    }
+
+    public class ColumnInfo
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public bool IsNullable { get; set; }
+        public bool IsPrimaryKey { get; set; }
+        public bool IsForeignKey { get; set; }
+        public int? MaxLength { get; set; }
+    }
+
+    private List<TableInfo> tables = new List<TableInfo>();
+    private List<Dictionary<string, object?>> tableData = new List<Dictionary<string, object?>>();
+    private List<ColumnInfo> columns = new List<ColumnInfo>();
+    private Dictionary<string, string> filters = new Dictionary<string, string>();
+    
+    private string selectedTable = "";
+    private string sortColumn = "";
+    private string sortDirection = "asc";
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalCount = 0;
+    private int totalPages = 0;
+    private bool showTableInfo = false;
+    
+    private bool isLoading = true;
+    private bool isLoadingData = false;
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTables();
+    }
+
+    private async Task LoadTables()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = "";
+            
+            var response = await ApiService.GetAsync("datagrid/tables");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                tables = JsonSerializer.Deserialize<List<TableInfo>>(json, new JsonSerializerOptions 
+                { 
+                    PropertyNameCaseInsensitive = true 
+                }) ?? new List<TableInfo>();
+            }
+            else
+            {
+                errorMessage = "Failed to connect to database. Please check your connection settings.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Connection failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task RetryConnection()
+    {
+        await LoadTables();
+    }
+
+    private async Task OnTableChanged(ChangeEventArgs e)
+    {
+        selectedTable = e.Value?.ToString() ?? "";
+        showTableInfo = false;
+        
+        if (!string.IsNullOrEmpty(selectedTable))
+        {
+            // Reset state
+            currentPage = 1;
+            sortColumn = "";
+            sortDirection = "asc";
+            filters.Clear();
+            
+            // Get columns for the selected table
+            var table = tables.FirstOrDefault(t => t.EntityName == selectedTable);
+            
+            if (table != null)
+            {
+                columns = table.Columns;
+            }
+            
+            await LoadTableData();
+        }
+        else
+        {
+            tableData.Clear();
+            columns.Clear();
+        }
+    }
+
+    private async Task LoadTableData()
+    {
+        if (string.IsNullOrEmpty(selectedTable)) return;
+        
+        try
+        {
+            isLoadingData = true;
+            errorMessage = "";
+            
+            var queryParams = new List<string>
+            {
+                $"page={currentPage}",
+                $"pageSize={pageSize}"
+            };
+            
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                queryParams.Add($"sortColumn={HttpUtility.UrlEncode(sortColumn)}");
+                queryParams.Add($"sortDirection={sortDirection}");
+            }
+            
+            if (filters.Any())
+            {
+                var filterJson = JsonSerializer.Serialize(filters);
+                queryParams.Add($"filters={HttpUtility.UrlEncode(filterJson)}");
+            }
+            
+            var url = $"datagrid/table-data/{selectedTable}?{string.Join("&", queryParams)}";
+            var response = await ApiService.GetAsync(url);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<Dictionary<string, object>>(json, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (result != null)
+                {
+                    if (result.ContainsKey("data"))
+                    {
+                        var dataJson = result["data"]?.ToString();
+                        if (!string.IsNullOrEmpty(dataJson))
+                        {
+                            tableData = JsonSerializer.Deserialize<List<Dictionary<string, object?>>>(dataJson, 
+                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Dictionary<string, object?>>();
+                        }
+                    }
+                    
+                    if (result.ContainsKey("totalCount"))
+                    {
+                        totalCount = JsonSerializer.Deserialize<int>(result["totalCount"].ToString());
+                    }
+                    
+                    if (result.ContainsKey("totalPages"))
+                    {
+                        totalPages = JsonSerializer.Deserialize<int>(result["totalPages"].ToString());
+                    }
+                }
+            }
+            else
+            {
+                errorMessage = $"Failed to load data for table {selectedTable}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading table data: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingData = false;
+        }
+    }
+
+    private async Task Sort(string columnName)
+    {
+        if (sortColumn == columnName)
+        {
+            sortDirection = sortDirection == "asc" ? "desc" : "asc";
+        }
+        else
+        {
+            sortColumn = columnName;
+            sortDirection = "asc";
+        }
+        
+        await LoadTableData();
+    }
+
+    private void OnFilterChanged(string columnName, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            filters.Remove(columnName);
+        }
+        else
+        {
+            filters[columnName] = value;
+        }
+    }
+
+    private async Task ApplyFilters()
+    {
+        currentPage = 1;
+        await LoadTableData();
+    }
+
+    private async Task ClearFilters()
+    {
+        filters.Clear();
+        currentPage = 1;
+        await LoadTableData();
+    }
+
+    private void OnQuickSearchChanged(ChangeEventArgs e)
+    {
+        // This could be enhanced to search across all columns
+        // For now, it's a placeholder for future enhancement
+    }
+
+    private string GetFilterValue(string columnName)
+    {
+        return filters.ContainsKey(columnName) ? filters[columnName] : "";
+    }
+
+    private async Task GoToPage(int page)
+    {
+        currentPage = page;
+        await LoadTableData();
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var newSize))
+        {
+            pageSize = newSize;
+            currentPage = 1;
+            await LoadTableData();
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadTableData();
+    }
+
+    private void ShowTableInfo()
+    {
+        showTableInfo = !showTableInfo;
+    }
+
+    private async Task ExportToCsv()
+    {
+        if (string.IsNullOrEmpty(selectedTable)) return;
+        
+        try
+        {
+            var queryParams = new List<string>();
+            
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                queryParams.Add($"sortColumn={HttpUtility.UrlEncode(sortColumn)}");
+                queryParams.Add($"sortDirection={sortDirection}");
+            }
+            
+            if (filters.Any())
+            {
+                var filterJson = JsonSerializer.Serialize(filters);
+                queryParams.Add($"filters={HttpUtility.UrlEncode(filterJson)}");
+            }
+            
+            var url = $"datagrid/export/{selectedTable}";
+            if (queryParams.Any())
+            {
+                url += "?" + string.Join("&", queryParams);
+            }
+            
+            var response = await ApiService.GetAsync(url);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var bytes = await response.Content.ReadAsByteArrayAsync();
+                var fileName = $"{selectedTable}_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+                
+                // Use JavaScript to download the file
+                await JS.InvokeVoidAsync("downloadFileFromStream", fileName, bytes);
+            }
+            else
+            {
+                errorMessage = "Failed to export data";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error exporting data: {ex.Message}";
+        }
+    }
+}

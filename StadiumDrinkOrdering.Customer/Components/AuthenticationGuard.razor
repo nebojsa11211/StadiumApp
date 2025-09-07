@@ -1,0 +1,94 @@
+@using StadiumDrinkOrdering.Customer.Services
+@inject ICustomerAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+@if (AuthStateService.IsAuthenticated)
+{
+    @ChildContent
+}
+else if (isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <span class="ms-2">Checking authentication...</span>
+    </div>
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">🔒 Authentication Required</h4>
+                        <p class="card-text">You need to sign in to access this page.</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" @onclick="RedirectToLogin">
+                                Sign In
+                            </button>
+                            <a href="/register" class="btn btn-outline-secondary">
+                                Create Account
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? RequiredRole { get; set; }
+    [Parameter] public string? RedirectUrl { get; set; }
+
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Subscribe to authentication state changes
+        AuthStateService.OnAuthenticationStateChanged += OnAuthenticationStateChanged;
+        
+        // Ensure auth state is initialized
+        await AuthStateService.InitializeAsync();
+        
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Double check authentication state after first render
+            await AuthStateService.InitializeAsync();
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnAuthenticationStateChanged()
+    {
+        InvokeAsync(() =>
+        {
+            isLoading = false;
+            StateHasChanged();
+        });
+    }
+
+    private void RedirectToLogin()
+    {
+        var currentUrl = NavigationManager.Uri;
+        var returnUrl = Uri.EscapeDataString(currentUrl);
+        var loginUrl = !string.IsNullOrEmpty(RedirectUrl) ? RedirectUrl : $"/login?returnUrl={returnUrl}";
+        NavigationManager.NavigateTo(loginUrl);
+    }
+
+    public void Dispose()
+    {
+        AuthStateService.OnAuthenticationStateChanged -= OnAuthenticationStateChanged;
+    }
+}

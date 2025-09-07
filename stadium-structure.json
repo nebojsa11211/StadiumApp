@@ -1,0 +1,168 @@
+{
+  "name": "MetroCenter Stadium",
+  "description": "Stadium drink ordering system test structure with 4 tribunes and 12 sectors",
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Stand",
+      "description": "North Tribune with lower and upper rings",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "N1",
+              "name": "North Lower 1",
+              "rows": 25,
+              "seatsPerRow": 20,
+              "startRow": 1,
+              "startSeat": 1
+            },
+            {
+              "code": "N2",
+              "name": "North Lower 2",
+              "rows": 25,
+              "seatsPerRow": 22,
+              "startRow": 1,
+              "startSeat": 1
+            },
+            {
+              "code": "N3",
+              "name": "North Lower 3",
+              "rows": 25,
+              "seatsPerRow": 20,
+              "startRow": 1,
+              "startSeat": 1
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Upper Ring",
+          "sectors": [
+            {
+              "code": "N4",
+              "name": "North Upper 1",
+              "rows": 30,
+              "seatsPerRow": 18,
+              "startRow": 1,
+              "startSeat": 1
+            },
+            {
+              "code": "N5",
+              "name": "North Upper 2",
+              "rows": 30,
+              "seatsPerRow": 20,
+              "startRow": 1,
+              "startSeat": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "South Stand",
+      "description": "South Tribune with lower ring",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "S1",
+              "name": "South Lower 1",
+              "rows": 25,
+              "seatsPerRow": 20,
+              "startRow": 1,
+              "startSeat": 1
+            },
+            {
+              "code": "S2",
+              "name": "South Lower 2",
+              "rows": 25,
+              "seatsPerRow": 22,
+              "startRow": 1,
+              "startSeat": 1
+            },
+            {
+              "code": "S3",
+              "name": "South Lower 3",
+              "rows": 25,
+              "seatsPerRow": 20,
+              "startRow": 1,
+              "startSeat": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "name": "East Stand",
+      "description": "East Tribune with VIP sections",
+      "rings": [
+        {
+          "number": 1,
+          "name": "VIP Ring",
+          "sectors": [
+            {
+              "code": "VIP1",
+              "name": "VIP East Premium",
+              "rows": 15,
+              "seatsPerRow": 16,
+              "startRow": 1,
+              "startSeat": 1
+            },
+            {
+              "code": "VIP2",
+              "name": "VIP East Club",
+              "rows": 12,
+              "seatsPerRow": 14,
+              "startRow": 1,
+              "startSeat": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "name": "West Stand",
+      "description": "West Tribune with lower ring",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "W1",
+              "name": "West Lower 1",
+              "rows": 22,
+              "seatsPerRow": 18,
+              "startRow": 1,
+              "startSeat": 1
+            },
+            {
+              "code": "W2",
+              "name": "West Lower 2",
+              "rows": 22,
+              "seatsPerRow": 20,
+              "startRow": 1,
+              "startSeat": 1
+            },
+            {
+              "code": "W3",
+              "name": "West Lower 3",
+              "rows": 22,
+              "seatsPerRow": 18,
+              "startRow": 1,
+              "startSeat": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -10,172 +10,203 @@
 
 <AuthRoute>
     <PageTitle>Bartender Dashboard</PageTitle>
+    
+    <!-- Animated gradient background -->
+    <div class="stadium-bg-animation" id="bartender-bg-animation"></div>
+    
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
 
-    <div class="bartender-dashboard" id="bartender-dashboard-container">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card" id="bartender-stadium-map-card">
-                    <div class="card-header d-flex justify-content-between align-items-center" id="bartender-stadium-map-header">
-                        <h5 id="bartender-stadium-map-title">🏟️ Stadium Map</h5>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary" @onclick="RefreshData" id="bartender-refresh-btn">
-                                <span class="oi oi-reload"></span> Refresh
-                            </button>
-                        </div>
+    <div class="stadium-container" id="bartender-container">
+        <div class="stadium-card" id="bartender-card">
+            <div class="header" id="bartender-header">
+                <h1 id="bartender-title">ARENA 2025</h1>
+                <p class="subtitle" id="bartender-subtitle">Stadium Drink Ordering • Real-time Dashboard</p>
+            </div>
+            
+            <div class="dashboard-grid" id="bartender-dashboard-grid">
+                <div class="stadium-section" id="bartender-stadium-section">
+                    <div class="section-header" id="bartender-stadium-header">
+                        <h3 id="bartender-stadium-title">🏟️ Stadium Map</h3>
+                        <button class="btn-refresh" @onclick="RefreshData" id="bartender-refresh-btn">
+                            <span class="refresh-icon" id="bartender-refresh-icon">🔄</span> Refresh
+                        </button>
                     </div>
-                    <div class="card-body" id="bartender-stadium-map-body">
+                    <div class="stadium-content" id="bartender-stadium-content">
                         @if (stadiumLayout == null)
                         {
-                            <div class="text-center" id="bartender-loading-stadium">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p>Loading stadium layout...</p>
+                            <div class="loading-container" id="bartender-stadium-loading">
+                                <div class="loading-spinner" id="bartender-stadium-spinner"></div>
+                                <p id="bartender-stadium-loading-text">Loading stadium layout...</p>
                             </div>
                         }
                         else
                         {
-                            <div class="stadium-map-container" id="bartender-stadium-map-container">
-                                <svg width="100%" height="500" viewBox="0 0 900 700" class="stadium-svg" id="bartender-stadium-svg">
+                            <!-- Modern Legend -->
+                            <div class="legend" id="bartender-legend">
+                                <div class="legend-item" id="bartender-legend-available">
+                                    <div class="legend-box available" id="bartender-legend-box-available"></div>
+                                    <span id="bartender-legend-text-available">Available</span>
+                                </div>
+                                <div class="legend-item" id="bartender-legend-pending">
+                                    <div class="legend-box pending" id="bartender-legend-box-pending"></div>
+                                    <span id="bartender-legend-text-pending">Pending</span>
+                                </div>
+                                <div class="legend-item" id="bartender-legend-accepted">
+                                    <div class="legend-box accepted" id="bartender-legend-box-accepted"></div>
+                                    <span id="bartender-legend-text-accepted">Accepted</span>
+                                </div>
+                                <div class="legend-item" id="bartender-legend-preparing">
+                                    <div class="legend-box preparing" id="bartender-legend-box-preparing"></div>
+                                    <span id="bartender-legend-text-preparing">Preparing</span>
+                                </div>
+                                <div class="legend-item" id="bartender-legend-ready">
+                                    <div class="legend-box ready" id="bartender-legend-box-ready"></div>
+                                    <span id="bartender-legend-text-ready">Ready</span>
+                                </div>
+                            </div>
+
+                            <div class="stadium-wrapper" id="bartender-stadium-wrapper">
+                                <svg viewBox="0 0 800 600" class="stadium-svg" id="bartender-stadium-svg">
                                     <defs>
-                                        <radialGradient id="stadiumBg" cx="50%" cy="50%" r="70%">
-                                            <stop offset="0%" style="stop-color:#f8fafc"/>
-                                            <stop offset="100%" style="stop-color:#e2e8f0"/>
-                                        </radialGradient>
-                                        
-                                        <linearGradient id="standGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" style="stop-color:#3b82f6"/>
-                                            <stop offset="100%" style="stop-color:#1d4ed8"/>
+                                        <linearGradient id="fieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
                                         </linearGradient>
                                         
-                                        <filter id="stadiumShadow">
-                                            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.15"/>
+                                        <linearGradient id="standGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.9" />
+                                            <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:0.9" />
+                                        </linearGradient>
+                                        
+                                        <linearGradient id="selectedGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+                                        </linearGradient>
+                                        
+                                        <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+                                            <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" />
+                                        </filter>
+                                        
+                                        <filter id="seatGlow">
+                                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                            <feMerge> 
+                                                <feMergeNode in="coloredBlur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
                                         </filter>
                                     </defs>
 
-                                    <!-- Stadium Background -->
-                                    <rect width="900" height="700" fill="url(#stadiumBg)"/>
-                                    <ellipse cx="450" cy="350" rx="420" ry="320" fill="none" stroke="#64748b" stroke-width="3" filter="url(#stadiumShadow)"/>
-                                    <ellipse cx="450" cy="350" rx="360" ry="260" fill="none" stroke="#94a3b8" stroke-width="2" opacity="0.5"/>
+                                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                                    </pattern>
+                                    <rect width="800" height="600" fill="url(#grid)"/>
                                     
-                                    <!-- Football Pitch -->
-                                    <rect x="350" y="250" width="200" height="200" rx="10" fill="#22c55e" stroke="#16a34a" stroke-width="2" filter="drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15))"/>
-                                    <g stroke="#ffffff" stroke-width="2" fill="none" opacity="0.8">
-                                        <line x1="450" y1="250" x2="450" y2="450"/>
-                                        <circle cx="450" cy="350" r="30"/>
-                                        <rect x="350" y="300" width="40" height="100"/>
-                                        <rect x="510" y="300" width="40" height="100"/>
-                                        <rect x="350" y="325" width="20" height="50"/>
-                                        <rect x="530" y="325" width="20" height="50"/>
+                                    <rect x="250" y="200" width="300" height="200" class="field" rx="8"/>
+                                    
+                                    <g class="field-lines">
+                                        <line x1="400" y1="200" x2="400" y2="400"/>
+                                        <circle cx="400" cy="300" r="30"/>
+                                        <circle cx="400" cy="300" r="3" fill="white"/>
+                                        <rect x="250" y="270" width="40" height="60"/>
+                                        <rect x="250" y="285" width="20" height="30"/>
+                                        <rect x="510" y="270" width="40" height="60"/>
+                                        <rect x="530" y="285" width="20" height="30"/>
+                                        <circle cx="280" cy="300" r="3" fill="white"/>
+                                        <circle cx="520" cy="300" r="3" fill="white"/>
                                     </g>
 
-                                    <!-- Stadium Stands -->
-                                    <!-- North Stand -->
-                                    <g class="stand-group">
-                                        <path d="M 100 80 Q 450 50 800 80 L 740 150 Q 450 120 160 150 Z" fill="url(#standGradient)" stroke="#64748b" stroke-width="1.5" opacity="0.7"/>
-                                        <path d="M 160 150 Q 450 120 740 150 L 680 190 Q 450 170 220 190 Z" fill="url(#standGradient)" stroke="#64748b" stroke-width="1.5" opacity="0.6"/>
-                                        <line x1="350" y1="80" x2="320" y2="190" stroke="#cbd5e1" stroke-width="1" opacity="0.6"/>
-                                        <line x1="550" y1="80" x2="580" y2="190" stroke="#cbd5e1" stroke-width="1" opacity="0.6"/>
-                                        <text x="450" y="135" fill="white" font-family="system-ui, -apple-system, sans-serif" font-size="14px" font-weight="600" text-anchor="middle" dominant-baseline="middle" text-shadow="0 1px 2px rgba(0, 0, 0, 0.5)">NORTH</text>
+                                    <g id="bartender-north-stand">
+                                        <rect x="150" y="50" width="500" height="120" class="stand" data-stand="north" rx="15" id="bartender-north-stand-rect"/>
+                                        <text x="400" y="115" class="stand-label" id="bartender-north-stand-label">NORTH</text>
                                     </g>
                                     
-                                    <!-- South Stand -->
-                                    <g class="stand-group">
-                                        <path d="M 100 620 Q 450 650 800 620 L 740 550 Q 450 580 160 550 Z" fill="url(#standGradient)" stroke="#64748b" stroke-width="1.5" opacity="0.7"/>
-                                        <path d="M 160 550 Q 450 580 740 550 L 680 510 Q 450 530 220 510 Z" fill="url(#standGradient)" stroke="#64748b" stroke-width="1.5" opacity="0.6"/>
-                                        <line x1="350" y1="620" x2="320" y2="510" stroke="#cbd5e1" stroke-width="1" opacity="0.6"/>
-                                        <line x1="550" y1="620" x2="580" y2="510" stroke="#cbd5e1" stroke-width="1" opacity="0.6"/>
-                                        <text x="450" y="565" fill="white" font-family="system-ui, -apple-system, sans-serif" font-size="14px" font-weight="600" text-anchor="middle" dominant-baseline="middle" text-shadow="0 1px 2px rgba(0, 0, 0, 0.5)">SOUTH</text>
+                                    <g id="bartender-south-stand">
+                                        <rect x="150" y="430" width="500" height="120" class="stand" data-stand="south" rx="15" id="bartender-south-stand-rect"/>
+                                        <text x="400" y="495" class="stand-label" id="bartender-south-stand-label">SOUTH</text>
+                                    </g>
+                                    
+                                    <g id="bartender-east-stand">
+                                        <rect x="680" y="100" width="100" height="400" class="stand" data-stand="east" rx="15" id="bartender-east-stand-rect"/>
+                                        <text x="730" y="305" class="stand-label" transform="rotate(90 730 305)" id="bartender-east-stand-label">EAST</text>
+                                    </g>
+                                    
+                                    <g id="bartender-west-stand">
+                                        <rect x="20" y="100" width="100" height="400" class="stand" data-stand="west" rx="15" id="bartender-west-stand-rect"/>
+                                        <text x="70" y="305" class="stand-label" transform="rotate(-90 70 305)" id="bartender-west-stand-label">WEST</text>
                                     </g>
 
-                                    <!-- East Stand -->
-                                    <g class="stand-group">
-                                        <path d="M 820 120 Q 850 350 820 580 L 750 520 Q 780 350 750 180 Z" fill="url(#standGradient)" stroke="#64748b" stroke-width="1.5" opacity="0.7"/>
-                                        <path d="M 750 180 Q 780 350 750 520 L 710 460 Q 730 350 710 240 Z" fill="url(#standGradient)" stroke="#64748b" stroke-width="1.5" opacity="0.6"/>
-                                        <line x1="820" y1="270" x2="710" y2="290" stroke="#cbd5e1" stroke-width="1" opacity="0.6"/>
-                                        <line x1="820" y1="430" x2="710" y2="410" stroke="#cbd5e1" stroke-width="1" opacity="0.6"/>
-                                        <text x="765" y="350" fill="white" font-family="system-ui, -apple-system, sans-serif" font-size="14px" font-weight="600" text-anchor="middle" dominant-baseline="middle" text-shadow="0 1px 2px rgba(0, 0, 0, 0.5)">EAST</text>
-                                    </g>
-
-                                    <!-- West Stand -->
-                                    <g class="stand-group">
-                                        <path d="M 80 120 Q 50 350 80 580 L 150 520 Q 120 350 150 180 Z" fill="url(#standGradient)" stroke="#64748b" stroke-width="1.5" opacity="0.7"/>
-                                        <path d="M 150 180 Q 120 350 150 520 L 190 460 Q 170 350 190 240 Z" fill="url(#standGradient)" stroke="#64748b" stroke-width="1.5" opacity="0.6"/>
-                                        <line x1="80" y1="270" x2="190" y2="290" stroke="#cbd5e1" stroke-width="1" opacity="0.6"/>
-                                        <line x1="80" y1="430" x2="190" y2="410" stroke="#cbd5e1" stroke-width="1" opacity="0.6"/>
-                                        <text x="135" y="350" fill="white" font-family="system-ui, -apple-system, sans-serif" font-size="14px" font-weight="600" text-anchor="middle" dominant-baseline="middle" text-shadow="0 1px 2px rgba(0, 0, 0, 0.5)">WEST</text>
-                                    </g>
-
-                                    <!-- Stadium Seats -->
                                     @foreach (var section in stadiumLayout.Sections)
                                     {
                                         <g class="stadium-section" id="@("bartender-section-" + section.SectionName)">
+                                            @{
+                                                var seatIndex = 0;
+                                            }
                                             @foreach (var seat in section.Seats)
                                             {
-                                                <circle cx="@seat.XCoordinate"
-                                                        cy="@seat.YCoordinate"
-                                                        r="15"
-                                                        fill="@GetSeatColor(seat)"
-                                                        stroke="@(selectedSeat?.Id == seat.Id ? "#000" : "#374151")"
-                                                        stroke-width="@(selectedSeat?.Id == seat.Id ? 2 : 0.5)"
-                                                        class="@GetSeatClass(seat)"
-                                                        id="@("bartender-seat-" + seat.Id)"
-                                                        title="@seat.SeatNumber"
-                                                        @onclick="() => SelectSeat(seat)" />
+                                                var coordinates = GetModernSeatCoordinates(section.SectionName, seatIndex, section.Seats.Count);
+                                                <g class="seat" @onclick="() => SelectSeat(seat)" id="@($"bartender-seat-{seat.Id}")">
+                                                    <rect x="@coordinates.X" y="@coordinates.Y" width="32" height="25" 
+                                                          fill="@GetModernSeatColor(seat)" 
+                                                          stroke="@GetModernSeatStroke(seat)" 
+                                                          stroke-width="1.5" 
+                                                          rx="3" 
+                                                          class="@GetModernSeatClass(seat)"
+                                                          id="@($"bartender-seat-rect-{seat.Id}")" />
+                                                    <text x="@(coordinates.X + 16)" y="@(coordinates.Y + 16)" 
+                                                          class="seat-text"
+                                                          id="@($"bartender-seat-text-{seat.Id}")">@GetSeatLabel(seat)</text>
+                                                </g>
+                                                seatIndex++;
                                             }
                                         </g>
                                     }
+
                                 </svg>
                             </div>
                         }
                     </div>
                 </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card" id="bartender-order-queue-card">
-                    <div class="card-header" id="bartender-order-queue-header">
-                        <h5 id="bartender-order-queue-title">📋 Order Queue</h5>
+                
+                <div class="orders-section" id="bartender-orders-section">
+                    <div class="section-header" id="bartender-orders-header">
+                        <h3 id="bartender-orders-title">📋 Order Queue</h3>
                     </div>
-                    <div class="card-body" id="bartender-order-queue-body">
+                    <div class="orders-content" id="bartender-orders-content">
                         @if (pendingOrders == null)
                         {
-                            <div class="text-center" id="bartender-loading-orders">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p>Loading orders...</p>
+                            <div class="loading-container" id="bartender-orders-loading">
+                                <div class="loading-spinner" id="bartender-orders-spinner"></div>
+                                <p id="bartender-orders-loading-text">Loading orders...</p>
                             </div>
                         }
                         else if (!pendingOrders.Any())
                         {
-                            <p class="text-muted text-center" id="bartender-no-pending-orders">No pending orders</p>
+                            <p class="no-orders" id="bartender-orders-empty">No pending orders</p>
                         }
                         else
                         {
-                            <div class="order-queue" id="bartender-order-queue">
+                            <div class="order-list" id="bartender-order-list">
                                 @foreach (var order in pendingOrders.OrderBy(o => o.CreatedAt))
                                 {
-                                    <div class="order-card mb-3 p-3 border rounded" 
-                                         @onclick="() => SelectOrder(order)"
-                                         id="bartender-order-card-@order.Id">
-                                        <div class="d-flex justify-content-between">
+                                    <div class="order-item" @onclick="() => SelectOrder(order)" id="bartender-order-item-@order.Id">
+                                        <div class="order-header" id="bartender-order-header-@order.Id">
                                             <strong id="bartender-order-number-@order.Id">Order #@order.Id</strong>
-                                            <span class="badge @GetStatusBadgeClass(order.Status)" id="bartender-order-status-@order.Id">
+                                            <span class="status-badge @GetStatusClass(order.Status)" id="bartender-order-status-@order.Id">
                                                 @GetStatusText(order.Status)
                                             </span>
                                         </div>
-                                        <div class="text-muted small" id="bartender-order-details-@order.Id">
+                                        <div class="order-details" id="bartender-order-details-@order.Id">
                                             Seat: @order.SeatNumber | @order.CreatedAt.ToString("HH:mm")
                                         </div>
-                                        <div class="mt-2" id="bartender-order-items-@order.Id">
+                                        <div class="order-items" id="bartender-order-items-@order.Id">
                                             @foreach (var item in order.OrderItems.Take(2))
                                             {
-                                                <div class="small" id="bartender-order-item-@item.Id">@item.Quantity× @item.DrinkName</div>
+                                                <div class="item" id="bartender-order-item-detail-@item.Id-@order.Id">@item.Quantity× @item.DrinkName</div>
                                             }
                                             @if (order.OrderItems.Count > 2)
                                             {
-                                                <div class="small text-muted" id="bartender-order-more-items-@order.Id">+@(order.OrderItems.Count - 2) more items</div>
+                                                <div class="more-items" id="bartender-order-more-items-@order.Id">+@(order.OrderItems.Count - 2) more items</div>
                                             }
                                         </div>
                                     </div>
@@ -183,6 +214,26 @@
                             </div>
                         }
                     </div>
+                </div>
+            </div>
+            
+            <!-- Modern Stats -->
+            <div class="stats" id="bartender-stats">
+                <div class="stat-item" id="bartender-stat-total-seats">
+                    <div class="stat-value" id="bartender-stat-seats-value">@(stadiumLayout?.TotalSeats ?? 0)</div>
+                    <div class="stat-label" id="bartender-stat-seats-label">Total Seats</div>
+                </div>
+                <div class="stat-item" id="bartender-stat-pending-orders">
+                    <div class="stat-value" id="bartender-stat-pending-value">@(pendingOrders?.Count ?? 0)</div>
+                    <div class="stat-label" id="bartender-stat-pending-label">Pending Orders</div>
+                </div>
+                <div class="stat-item" id="bartender-stat-active-orders">
+                    <div class="stat-value" id="bartender-stat-active-value">@(activeOrders?.Count ?? 0)</div>
+                    <div class="stat-label" id="bartender-stat-active-label">Active Orders</div>
+                </div>
+                <div class="stat-item" id="bartender-stat-total-orders">
+                    <div class="stat-value" id="bartender-stat-total-value">@(stadiumLayout?.ActiveOrders ?? 0)</div>
+                    <div class="stat-label" id="bartender-stat-total-label">Total Orders</div>
                 </div>
             </div>
         </div>
@@ -240,7 +291,7 @@
                             {
                                 <button class="btn btn-success" 
                                         @onclick="() => UpdateOrderStatus(selectedOrder.Id, OrderStatus.Accepted)"
-                                        id="bartender-accept-order-btn">
+                                        id="bartender-accept-order-@selectedOrder.Id-btn">
                                     Accept Order
                                 </button>
                             }
@@ -248,7 +299,7 @@
                             {
                                 <button class="btn btn-warning" 
                                         @onclick="() => UpdateOrderStatus(selectedOrder.Id, OrderStatus.InPreparation)"
-                                        id="bartender-start-preparation-btn">
+                                        id="bartender-start-preparation-@selectedOrder.Id-btn">
                                     Start Preparation
                                 </button>
                             }
@@ -256,7 +307,7 @@
                             {
                                 <button class="btn btn-info" 
                                         @onclick="() => UpdateOrderStatus(selectedOrder.Id, OrderStatus.Ready)"
-                                        id="bartender-mark-ready-btn">
+                                        id="bartender-mark-ready-@selectedOrder.Id-btn">
                                     Mark Ready
                                 </button>
                             }
@@ -264,7 +315,7 @@
                             {
                                 <button class="btn btn-primary" 
                                         @onclick="() => UpdateOrderStatus(selectedOrder.Id, OrderStatus.Delivered)"
-                                        id="bartender-mark-delivered-btn">
+                                        id="bartender-mark-delivered-@selectedOrder.Id-btn">
                                     Mark Delivered
                                 </button>
                             }
@@ -422,17 +473,70 @@
         selectedOrder = null;
     }
 
-    private string GetSeatColor(StadiumSeatDto seat)
+    private string GetModernSeatColor(StadiumSeatDto seat)
     {
-        if (!seat.HasActiveOrder) return "#28a745";
+        if (!seat.HasActiveOrder) return "#22c55e";
         
         return seat.ActiveOrder?.Status switch
         {
-            OrderStatus.Pending => "#ffc107",
-            OrderStatus.Accepted => "#fd7e14",
-            OrderStatus.InPreparation => "#007bff",
-            OrderStatus.Ready => "#dc3545",
-            _ => "#6c757d"
+            OrderStatus.Pending => "#fbbf24",
+            OrderStatus.Accepted => "#fb923c",
+            OrderStatus.InPreparation => "#3b82f6",
+            OrderStatus.Ready => "#ef4444",
+            _ => "#6b7280"
+        };
+    }
+    
+    private string GetModernSeatStroke(StadiumSeatDto seat)
+    {
+        if (!seat.HasActiveOrder) return "#16a34a";
+        
+        return seat.ActiveOrder?.Status switch
+        {
+            OrderStatus.Pending => "#f59e0b",
+            OrderStatus.Accepted => "#ea580c",
+            OrderStatus.InPreparation => "#2563eb",
+            OrderStatus.Ready => "#dc2626",
+            _ => "#4b5563"
+        };
+    }
+    
+    private string GetModernSeatClass(StadiumSeatDto seat)
+    {
+        if (!seat.HasActiveOrder) return "available";
+        if (selectedSeat?.Id == seat.Id) return "selected";
+        
+        return seat.ActiveOrder?.Status switch
+        {
+            OrderStatus.Pending => "pending",
+            OrderStatus.Accepted => "accepted",
+            OrderStatus.InPreparation => "preparing",
+            OrderStatus.Ready => "ready",
+            _ => "occupied"
+        };
+    }
+    
+    private string GetSeatLabel(StadiumSeatDto seat)
+    {
+        // Only show labels for VIP or selected seats
+        if (seat.Section == "VIP" || selectedSeat?.Id == seat.Id)
+        {
+            return seat.SeatNumber.ToString();
+        }
+        return "";
+    }
+    
+    private string GetStatusClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "pending",
+            OrderStatus.Accepted => "accepted",
+            OrderStatus.InPreparation => "preparing",
+            OrderStatus.Ready => "ready",
+            OrderStatus.Delivered => "ready",
+            OrderStatus.Cancelled => "occupied",
+            _ => "occupied"
         };
     }
 
@@ -469,6 +573,84 @@
         return "stadium-seat" + (seat.HasActiveOrder ? " has-order" : "");
     }
 
+    private string GetSeatStroke(StadiumSeatDto seat)
+    {
+        if (selectedSeat?.Id == seat.Id) return "#1f2937";
+        if (seat.HasActiveOrder) return "#dc2626";
+        return "#6b7280";
+    }
+
+    private int GetSeatStrokeWidth(StadiumSeatDto seat)
+    {
+        if (selectedSeat?.Id == seat.Id) return 3;
+        if (seat.HasActiveOrder) return 2;
+        return 1;
+    }
+
+    private string GetSectionLabelX(string sectionName)
+    {
+        return sectionName switch
+        {
+            "A" => "300",  // North-West
+            "B" => "700",  // North-East
+            "C" => "700",  // South-East
+            "VIP" => "300", // South-West
+            _ => "500"
+        };
+    }
+
+    private string GetSectionLabelY(string sectionName)
+    {
+        return sectionName switch
+        {
+            "A" => "140",  // North-West
+            "B" => "140",  // North-East
+            "C" => "660",  // South-East
+            "VIP" => "660", // South-West
+            _ => "400"
+        };
+    }
+
+    private (int X, int Y) GetModernSeatCoordinates(string sectionName, int seatIndex, int totalSeatsInSection)
+    {
+        var seatsPerRow = (int)Math.Ceiling(Math.Sqrt(totalSeatsInSection));
+        var currentRow = seatIndex / seatsPerRow;
+        var currentCol = seatIndex % seatsPerRow;
+
+        // Map sections A, B, C, D to North, East, South, West stands
+        var sectionBounds = sectionName switch
+        {
+            "A" => new { StartX = 180, StartY = 75, Width = 280, Height = 80 },      // North Stand (Left)
+            "B" => new { StartX = 340, StartY = 75, Width = 280, Height = 80 },      // North Stand (Right)
+            "C" => new { StartX = 695, StartY = 150, Width = 80, Height = 280 },     // East Stand
+            "D" => new { StartX = 25, StartY = 150, Width = 80, Height = 280 },      // West Stand
+            "VIP" => new { StartX = 180, StartY = 465, Width = 280, Height = 80 },   // South Stand
+            _ => new { StartX = 300, StartY = 200, Width = 200, Height = 200 }
+        };
+
+        // For vertical sections (East/West), arrange seats vertically
+        if (sectionName == "C" || sectionName == "D")
+        {
+            var verticalSeatsPerRow = Math.Max(1, (int)Math.Ceiling(totalSeatsInSection / 8.0)); // 8 rows vertically
+            var verticalCurrentRow = seatIndex % 8;
+            var verticalCurrentCol = seatIndex / 8;
+            
+            var x = sectionBounds.StartX + (verticalCurrentCol * (sectionBounds.Width / Math.Max(verticalSeatsPerRow, 1)));
+            var y = sectionBounds.StartY + (verticalCurrentRow * (sectionBounds.Height / 8));
+            return (x, y);
+        }
+        else
+        {
+            // Horizontal arrangement for North/South stands
+            var seatSpacingX = sectionBounds.Width / Math.Max(seatsPerRow, 1);
+            var seatSpacingY = sectionBounds.Height / Math.Max((totalSeatsInSection + seatsPerRow - 1) / seatsPerRow, 1);
+
+            var x = sectionBounds.StartX + (currentCol * seatSpacingX);
+            var y = sectionBounds.StartY + (currentRow * seatSpacingY);
+            return (x, y);
+        }
+    }
+
     public void Dispose()
     {
         SignalRService.NewOrder -= OnNewOrder;
@@ -479,72 +661,650 @@
 }
 
 <style>
-.bartender-dashboard {
-    padding: 20px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.stadium-map-container {
-    overflow: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 0.375rem;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --accent: #14b8a6;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #10b981;
+    --dark: #0f172a;
+    --light: #f1f5f9;
+    --glass: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
 }
 
-.stadium-svg {
-    background: transparent;
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #000;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Animated gradient background */
+.stadium-bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
+    background: linear-gradient(125deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #667eea 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    opacity: 0.8;
+    z-index: -2;
 }
 
-.stand-group {
+@@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* Floating particles */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: float 20s infinite linear;
+}
+
+@@keyframes float {
+    from {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    to {
+        transform: translateY(-100vh) translateX(100px);
+        opacity: 0;
+    }
+}
+
+.stadium-container {
+    position: relative;
+    z-index: 10;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    animation: slideUp 0.8s ease-out;
+}
+
+@@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Glassmorphism card */
+.stadium-card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glow effect */
+.stadium-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+    animation: rotate 30s linear infinite;
+    pointer-events: none;
+}
+
+@@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 2;
+}
+
+h1 {
+    font-size: 3.5em;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #fff 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease infinite;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+@@keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1em;
+    font-weight: 400;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.stadium-section, .orders-section {
+    position: relative;
+    z-index: 2;
+}
+
+.section-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header h3 {
+    color: white;
+    font-size: 1.5em;
+    font-weight: 700;
+    margin: 0;
+    flex: 1;
+}
+
+.btn-refresh {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-refresh:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.refresh-icon {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.btn-refresh:active .refresh-icon {
+    transform: rotate(180deg);
+}
+
+.loading-container {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Modern Legend */
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
 }
 
-.stand-group:hover {
-    opacity: 0.9;
-    filter: brightness(1.1);
+.legend-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
-.stadium-seat {
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.legend-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.stadium-seat:hover {
-    transform: scale(1.1);
-    filter: brightness(1.1) drop-shadow(0 2px 4px rgba(59, 130, 246, 0.4));
+.legend-box.available {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
 }
 
-.stadium-seat.has-order {
-    stroke: #ff6b6b;
+.legend-box.pending {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+.legend-box.accepted {
+    background: linear-gradient(135deg, #fb923c, #ea580c);
+}
+
+.legend-box.preparing {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.legend-box.ready {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.legend-item span {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Stadium SVG Container */
+.stadium-wrapper {
+    position: relative;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.stadium-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+}
+
+/* Field with gradient */
+.field {
+    fill: url(#fieldGradient);
+    stroke: #10b981;
     stroke-width: 2;
-    animation: pulse 2s infinite;
+    filter: drop-shadow(0 4px 20px rgba(16, 185, 129, 0.4));
+    animation: pulse 4s ease infinite;
 }
 
 @@keyframes pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+    50% { opacity: 0.95; }
 }
 
-.section-label {
-    font-size: 14px;
-    font-weight: bold;
-    fill: #495057;
+.field-lines {
+    stroke: rgba(255, 255, 255, 0.9);
+    stroke-width: 2;
+    fill: none;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
 }
 
-.order-card {
+/* Modern stands with gradient */
+.stand {
+    fill: url(#standGradient);
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 1;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 4px 15px rgba(99, 102, 241, 0.3));
 }
 
-.order-card:hover {
-    background-color: #f8f9fa;
-    transform: translateY(-1px);
+.stand:hover {
+    transform: translateY(-2px) scale(1.02);
+    filter: drop-shadow(0 8px 25px rgba(99, 102, 241, 0.5));
+    stroke: rgba(255, 255, 255, 0.5);
 }
 
-.order-queue {
-    max-height: 400px;
+.stand-label {
+    fill: white;
+    font-size: 20px;
+    font-weight: 800;
+    text-anchor: middle;
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* Seats with better visuals */
+.seat {
+    cursor: pointer;
+    z-index: 100;
+}
+
+.seat rect {
+    rx: 3;
+    stroke-width: 1.5;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.seat:hover:not(.occupied) rect {
+    transform: scale(1.4);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+}
+
+.seat.available rect {
+    fill: #22c55e;
+    stroke: #16a34a;
+    filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.8));
+}
+
+.seat.selected rect {
+    fill: #ef4444;
+    stroke: #b91c1c;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 1));
+    animation: seatPulse 1s ease infinite;
+}
+
+@@keyframes seatPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+.seat.occupied rect {
+    fill: #6b7280;
+    stroke: #4b5563;
+    opacity: 0.7;
+}
+
+.seat.vip rect {
+    fill: #fbbf24;
+    stroke: #f59e0b;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.9));
+}
+
+.seat-text {
+    fill: #000;
+    font-size: 11px;
+    font-weight: 900;
+    pointer-events: none;
+    text-anchor: middle;
+    opacity: 1;
+}
+
+.seat:hover .seat-text {
+    transform: scale(0.714); /* 1 / 1.4 */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Orders Section */
+.orders-content {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.no-orders {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 40px;
+    font-size: 16px;
+}
+
+.order-list {
+    max-height: 600px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.order-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+.order-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.order-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.order-header strong {
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    flex: 1;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #000;
+}
+
+.status-badge.accepted {
+    background: linear-gradient(135deg, #fb923c, #ea580c);
+    color: white;
+}
+
+.status-badge.preparing {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+
+.status-badge.ready {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.order-details {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.order-items .item {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.order-items .more-items {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Animated Stats */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    animation: countUp 0.8s ease-out;
+}
+
+@@keyframes countUp {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.stat-label {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Responsive */
+@@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@@media (max-width: 768px) {
+    h1 { font-size: 2.5em; }
+    .stadium-card { padding: 25px; }
+    .section-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    .legend {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
 }
 </style>
+
+<script>
+    // Generate floating particles
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        if (!particlesContainer) return;
+        
+        // Clear existing particles
+        particlesContainer.innerHTML = '';
+        
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // Initialize particles when page loads
+    window.addEventListener('DOMContentLoaded', function() {
+        createParticles();
+    });
+    
+    // Reinitialize particles when navigating back
+    window.addEventListener('pageshow', function() {
+        createParticles();
+    });
+</script>

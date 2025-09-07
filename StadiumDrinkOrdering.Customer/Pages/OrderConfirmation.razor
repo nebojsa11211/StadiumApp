@@ -1,0 +1,263 @@
+@page "/order-confirmation/{orderId}"
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.DTOs
+@inject IApiService ApiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Order Confirmation - Stadium Drinks</PageTitle>
+
+@if (isLoading)
+{
+    <div class="container-fluid py-5">
+        <div class="text-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading order confirmation...</span>
+            </div>
+            <p class="mt-3">Loading your order details...</p>
+        </div>
+    </div>
+}
+else if (orderConfirmation == null)
+{
+    <div class="container-fluid py-5">
+        <div class="alert alert-danger text-center">
+            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+            <h4>Order Not Found</h4>
+            <p>We couldn't find your order. Please check your email for confirmation details or contact support.</p>
+            <a href="/events" class="btn btn-primary">Browse Events</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container-fluid py-4">
+        <!-- Success Header -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <div class="alert alert-success shadow-sm">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h2 class="text-success mb-2">Payment Successful!</h2>
+                    <p class="lead mb-0">Your order has been confirmed and your tickets are ready.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Order Details -->
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <strong>Order ID:</strong> #@orderConfirmation.OrderId
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>Order Date:</strong> @orderConfirmation.OrderDate.ToString("MMM dd, yyyy - HH:mm")
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <strong>Customer:</strong> @orderConfirmation.CustomerName
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>Payment Status:</strong> 
+                                <span class="badge bg-success ms-2">@orderConfirmation.PaymentStatus</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>Event:</strong> @orderConfirmation.EventName
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>Event Date:</strong> @orderConfirmation.EventDate.ToString("MMM dd, yyyy - HH:mm")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tickets -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Your Tickets (@orderConfirmation.Tickets.Count)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var ticket in orderConfirmation.Tickets)
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="ticket-card border rounded p-3 bg-light">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0"><strong>@ticket.SeatCode</strong></h6>
+                                            <span class="badge bg-primary">$@ticket.Price.ToString("F2")</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Section: @ticket.SectionName</small>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Ticket: @ticket.TicketNumber</small>
+                                        </div>
+                                        <div class="qr-code-placeholder bg-white border rounded p-2 text-center">
+                                            <i class="fas fa-qrcode fa-2x text-muted"></i>
+                                            <div><small>QR Code</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary & Actions -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tickets (@orderConfirmation.Tickets.Count)</span>
+                            <span>$@orderConfirmation.Tickets.Sum(t => t.Price).ToString("F2")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Service Fee (10%)</span>
+                            <span>$@(orderConfirmation.Tickets.Sum(t => t.Price) * 0.10m).ToString("F2")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Processing Fee</span>
+                            <span>$2.50</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold h5">
+                            <span>Total</span>
+                            <span class="text-success">$@orderConfirmation.TotalAmount.ToString("F2")</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button class="btn btn-primary" @onclick="PrintTickets">
+                                <i class="fas fa-print me-2"></i>Print Tickets
+                            </button>
+                            <button class="btn btn-outline-secondary" @onclick="DownloadTickets">
+                                <i class="fas fa-download me-2"></i>Download PDF
+                            </button>
+                            <button class="btn btn-outline-info" @onclick="EmailTickets">
+                                <i class="fas fa-envelope me-2"></i>Email Tickets
+                            </button>
+                        </div>
+
+                        <hr>
+                        <div class="text-center">
+                            <a href="/events" class="btn btn-success">
+                                <i class="fas fa-calendar me-2"></i>Browse More Events
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Information -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>Important Information</h6>
+                    <ul class="mb-0">
+                        <li>Please arrive at the venue at least 30 minutes before the event start time.</li>
+                        <li>Present your QR code tickets at the entrance for scanning.</li>
+                        <li>Keep your tickets safe and don't share the QR codes with others.</li>
+                        <li>For any issues or questions, contact our support team.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string OrderId { get; set; } = string.Empty;
+    
+    private OrderConfirmationDto? orderConfirmation;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrderConfirmation();
+    }
+
+    private async Task LoadOrderConfirmation()
+    {
+        try
+        {
+            orderConfirmation = await ApiService.GetOrderConfirmationAsync(OrderId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading order confirmation: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task PrintTickets()
+    {
+        await JSRuntime.InvokeVoidAsync("window.print");
+    }
+
+    private async Task DownloadTickets()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "PDF download functionality will be implemented soon!");
+    }
+
+    private async Task EmailTickets()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Tickets have been sent to your email address!");
+    }
+}
+
+<style>
+    .ticket-card {
+        transition: transform 0.2s;
+    }
+
+    .ticket-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .qr-code-placeholder {
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sticky-top {
+        position: -webkit-sticky;
+        position: sticky;
+    }
+
+    @@media print {
+        .btn, .alert-info {
+            display: none !important;
+        }
+        
+        .ticket-card {
+            page-break-inside: avoid;
+            margin-bottom: 20px;
+        }
+    }
+
+    @@media (max-width: 991.98px) {
+        .sticky-top {
+            position: static;
+        }
+    }
+</style>

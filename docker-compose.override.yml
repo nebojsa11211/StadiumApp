@@ -1,16 +1,19 @@
 version: '3.8'
 
 services:
-  # API - Development overrides (using SQLite for local development)
+  # API - Development overrides (using PostgreSQL/Supabase for development)
   api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Data Source=/app/data/StadiumDrinkOrdering.db
+      - ConnectionStrings__DefaultConnection=Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=300;Keepalive=30;Connection Idle Lifetime=300;Maximum Pool Size=50;Minimum Pool Size=5;Pooling=true;No Reset On Close=true;Include Error Detail=true
       - JwtSettings__SecretKey=DevSuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=StadiumDrinkOrdering
       - JwtSettings__Audience=StadiumDrinkOrdering
       - Logging__LogLevel__Default=Debug
       - Logging__LogLevel__Microsoft.AspNetCore=Information
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=
     ports:
       - "5001:8080"
 
@@ -20,6 +23,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ApiSettings__BaseUrl=http://api:8080/
       - Logging__LogLevel__Default=Debug
+      - ASPNETCORE_URLS=http://+:8081
+      - ASPNETCORE_HTTP_PORTS=8081
+      - ASPNETCORE_HTTPS_PORTS=
     ports:
       - "5002:8081"
 
@@ -29,5 +35,20 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ApiSettings__BaseUrl=http://api:8080/
       - Logging__LogLevel__Default=Debug
+      - ASPNETCORE_URLS=http://+:8082
+      - ASPNETCORE_HTTP_PORTS=8082
+      - ASPNETCORE_HTTPS_PORTS=
     ports:
       - "5003:8082"
+
+  # Staff - Development overrides
+  staff:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiSettings__BaseUrl=http://api:8080/
+      - Logging__LogLevel__Default=Debug
+      - ASPNETCORE_URLS=http://+:8083
+      - ASPNETCORE_HTTP_PORTS=8083
+      - ASPNETCORE_HTTPS_PORTS=
+    ports:
+      - "5004:8083"

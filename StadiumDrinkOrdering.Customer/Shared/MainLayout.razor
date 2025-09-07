@@ -1,4 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using StadiumDrinkOrdering.Customer.Components.Shared
+@using StadiumDrinkOrdering.Customer.Services
+@inject ICustomerAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+@implements IDisposable
 
 <PageTitle>StadiumDrinkOrdering.Customer</PageTitle>
 
@@ -9,7 +14,37 @@
 
     <main id="customer-layout-main">
         <div class="top-row px-4" id="customer-layout-top-row">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank" id="customer-layout-about-link">About</a>
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <div class="d-flex align-items-center gap-3">
+                    <h6 class="mb-0 text-primary">Stadium Ordering</h6>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <LanguageSwitcher />
+                    <SignalRConnection OnOrderStatusChanged="HandleOrderStatusChanged" OnNotificationReceived="HandleNotification" />
+                    @if (AuthStateService.IsAuthenticated)
+                    {
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="customerDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                👤 @(AuthStateService.CurrentUser?.Username ?? "User")
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="customerDropdown">
+                                <li><h6 class="dropdown-header">@AuthStateService.UserEmail</h6></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/profile">My Profile</a></li>
+                                <li><a class="dropdown-item" href="/orders">My Orders</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><button class="dropdown-item" @onclick="HandleLogout">Sign Out</button></li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="/login" class="btn btn-outline-primary btn-sm">Sign In</a>
+                        <a href="/register" class="btn btn-primary btn-sm">Sign Up</a>
+                    }
+                    <a href="https://docs.microsoft.com/aspnet/" target="_blank" id="customer-layout-about-link" class="btn-link">Help</a>
+                </div>
+            </div>
         </div>
 
         <article class="content px-4" id="customer-layout-content">
@@ -17,3 +52,40 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        AuthStateService.OnAuthenticationStateChanged += OnAuthenticationStateChanged;
+    }
+
+    private void OnAuthenticationStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleOrderStatusChanged(string statusUpdate)
+    {
+        // Handle real-time order status updates
+        // Format: "orderId:status"
+        StateHasChanged();
+    }
+
+    private void HandleNotification(string notification)
+    {
+        // Handle real-time notifications
+        // Format: "type:message"
+        StateHasChanged();
+    }
+
+    private async Task HandleLogout()
+    {
+        await AuthStateService.LogoutAsync();
+        NavigationManager.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        AuthStateService.OnAuthenticationStateChanged -= OnAuthenticationStateChanged;
+    }
+}

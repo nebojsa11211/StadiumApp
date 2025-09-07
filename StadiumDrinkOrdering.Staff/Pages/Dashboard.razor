@@ -1,0 +1,318 @@
+@page "/"
+@inject IStaffApiService ApiService
+@inject IAuthStateService AuthService
+@inject ISignalRService SignalRService
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<PageTitle>Staff Dashboard</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    <div class="container mt-5">
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Authentication Required</h4>
+            <p>You must be logged in to access the staff dashboard.</p>
+            <hr>
+            <p class="mb-0">
+                <a href="/login" class="btn btn-primary">Go to Login</a>
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col">
+                <h1>Staff Dashboard</h1>
+                <p class="text-muted">Real-time order management and fulfillment</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Quick Stats -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@pendingOrders.Count</h4>
+                                <small>Pending Orders</small>
+                            </div>
+                            <div>
+                                <span class="oi oi-clock" style="font-size: 2rem;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@acceptedOrders.Count</h4>
+                                <small>Accepted Orders</small>
+                            </div>
+                            <div>
+                                <span class="oi oi-check" style="font-size: 2rem;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@inPreparationOrders.Count</h4>
+                                <small>In Preparation</small>
+                            </div>
+                            <div>
+                                <span class="oi oi-wrench" style="font-size: 2rem;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@readyOrders.Count</h4>
+                                <small>Ready for Delivery</small>
+                            </div>
+                            <div>
+                                <span class="oi oi-box" style="font-size: 2rem;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Recent Orders -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Recent Orders</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (recentOrders.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Order #</th>
+                                            <th>Customer</th>
+                                            <th>Seat</th>
+                                            <th>Items</th>
+                                            <th>Status</th>
+                                            <th>Time</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var order in recentOrders.Take(10))
+                                        {
+                                            <tr>
+                                                <td>#@order.Id</td>
+                                                <td>@order.CustomerName</td>
+                                                <td>@order.SeatNumber</td>
+                                                <td>@order.OrderItems.Count item(s)</td>
+                                                <td>
+                                                    <span class="badge @GetStatusBadgeClass(order.Status)">
+                                                        @order.Status
+                                                    </span>
+                                                </td>
+                                                <td>@order.OrderDate.ToString("HH:mm")</td>
+                                                <td>
+                                                    <a href="/order-queue" class="btn btn-sm btn-outline-primary">View</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted py-4">
+                                <span class="oi oi-inbox" style="font-size: 3rem;"></span>
+                                <p class="mt-2">No orders available</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="/order-queue" class="btn btn-primary">
+                                <span class="oi oi-list me-2"></span>View Order Queue
+                            </a>
+                            <a href="/my-orders" class="btn btn-info">
+                                <span class="oi oi-clipboard me-2"></span>My Assigned Orders
+                            </a>
+                            <a href="/stadium-map" class="btn btn-success">
+                                <span class="oi oi-map me-2"></span>Stadium Map
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection Status -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6>Connection Status</h6>
+                        <div class="d-flex align-items-center">
+                            <span class="badge @(SignalRService.IsConnected ? "bg-success" : "bg-danger") me-2">
+                                @(SignalRService.IsConnected ? "Connected" : "Disconnected")
+                            </span>
+                            @if (!SignalRService.IsConnected)
+                            {
+                                <button class="btn btn-sm btn-outline-primary" @onclick="ReconnectSignalR" id="staff-dashboard-reconnect-btn">
+                                    Reconnect
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<OrderDto> allOrders = new();
+    private List<OrderDto> pendingOrders = new();
+    private List<OrderDto> acceptedOrders = new();
+    private List<OrderDto> inPreparationOrders = new();
+    private List<OrderDto> readyOrders = new();
+    private List<OrderDto> recentOrders = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            return;
+        }
+
+        AuthService.OnAuthenticationStateChanged += OnAuthenticationStateChanged;
+        
+        try
+        {
+            await SignalRService.StartAsync();
+            await SignalRService.JoinStaffHub();
+            
+            SignalRService.NewOrder += OnNewOrder;
+            SignalRService.OrderUpdated += OnOrderUpdated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to start SignalR: {ex.Message}");
+        }
+
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        try
+        {
+            var orders = await ApiService.GetActiveOrdersAsync() ?? new List<OrderDto>();
+            allOrders = orders;
+            recentOrders = orders.OrderByDescending(o => o.OrderDate).ToList();
+
+            pendingOrders = orders.Where(o => o.Status == OrderStatus.Pending).ToList();
+            acceptedOrders = orders.Where(o => o.Status == OrderStatus.Accepted).ToList();
+            inPreparationOrders = orders.Where(o => o.Status == OrderStatus.InPreparation).ToList();
+            readyOrders = orders.Where(o => o.Status == OrderStatus.Ready).ToList();
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load orders: {ex.Message}");
+        }
+    }
+
+    private void OnAuthenticationStateChanged()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
+        StateHasChanged();
+    }
+
+    private async void OnNewOrder(OrderDto order)
+    {
+        await InvokeAsync(async () =>
+        {
+            await LoadOrders();
+        });
+    }
+
+    private async void OnOrderUpdated(OrderDto order)
+    {
+        await InvokeAsync(async () =>
+        {
+            await LoadOrders();
+        });
+    }
+
+    private async Task ReconnectSignalR()
+    {
+        try
+        {
+            await SignalRService.StopAsync();
+            await SignalRService.StartAsync();
+            await SignalRService.JoinStaffHub();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to reconnect SignalR: {ex.Message}");
+        }
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-secondary",
+            OrderStatus.Accepted => "bg-primary",
+            OrderStatus.InPreparation => "bg-warning",
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.OutForDelivery => "bg-info",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthenticationStateChanged -= OnAuthenticationStateChanged;
+        
+        if (SignalRService != null)
+        {
+            SignalRService.NewOrder -= OnNewOrder;
+            SignalRService.OrderUpdated -= OnOrderUpdated;
+        }
+    }
+}

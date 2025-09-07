@@ -1,0 +1,175 @@
+@page "/logs"
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Customer.Components
+@inject IApiService ApiService
+@inject IJSRuntime JS
+
+<PageTitle>My Activity</PageTitle>
+
+<AuthenticationGuard>
+    <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📋 My Activity</h2>
+        <p class="text-muted">Track your actions and interactions with the stadium ordering system</p>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Note:</strong> This page shows your personal activity within the stadium ordering system. 
+                Your actions are logged to help improve your experience and provide support when needed.
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span style="font-size: 3rem;">🍺</span>
+                    </div>
+                    <h5 class="card-title">Order Activities</h5>
+                    <p class="card-text">All your drink orders, modifications, and payment activities are tracked for your records.</p>
+                    <button id="customer-log-order-activity-btn" class="btn btn-primary" @onclick="@(() => LogSampleActivity("PlaceOrder", "UserAction", "Viewed order activity information"))">
+                        Log Sample Order Activity
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span style="font-size: 3rem;">🎫</span>
+                    </div>
+                    <h5 class="card-title">Ticket Validation</h5>
+                    <p class="card-text">QR code scans and ticket validations are logged for security and convenience.</p>
+                    <button id="customer-log-qr-activity-btn" class="btn btn-primary" @onclick="@(() => LogSampleActivity("ScanQRCode", "UserAction", "Viewed QR code activity information"))">
+                        Log Sample QR Activity
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span style="font-size: 3rem;">🔐</span>
+                    </div>
+                    <h5 class="card-title">Authentication</h5>
+                    <p class="card-text">Login attempts and security-related activities are monitored for your account safety.</p>
+                    <button id="customer-log-auth-activity-btn" class="btn btn-primary" @onclick="@(() => LogSampleActivity("Login", "Authentication", "Viewed authentication activity information"))">
+                        Log Sample Auth Activity
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Activity Logging</h5>
+                    <p class="card-text">
+                        Your activities within the stadium ordering system are automatically logged to provide:
+                    </p>
+                    <ul>
+                        <li><strong>Order History:</strong> Complete record of all your drink orders and purchases</li>
+                        <li><strong>Support Assistance:</strong> Detailed logs help our support team assist you more effectively</li>
+                        <li><strong>Security Monitoring:</strong> Login and authentication activities for account protection</li>
+                        <li><strong>System Improvements:</strong> Usage patterns help us enhance the ordering experience</li>
+                    </ul>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-shield-alt"></i>
+                        <strong>Privacy Notice:</strong> Your activity logs are kept confidential and used only for service improvement and support purposes.
+                        Only administrators and authorized support staff can access detailed logs.
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Recent Activities Include:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li>✓ Page navigation (Menu, Orders, etc.)</li>
+                                    <li>✓ QR code scanning and validation</li>
+                                    <li>✓ Adding drinks to cart</li>
+                                    <li>✓ Order placement and modifications</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li>✓ Payment processing activities</li>
+                                    <li>✓ Login and authentication events</li>
+                                    <li>✓ Stadium map interactions</li>
+                                    <li>✓ System errors and issues encountered</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="alert @(isSuccessMessage ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+                    <i class="fas @(isSuccessMessage ? "fa-check-circle" : "fa-exclamation-triangle")"></i>
+                    @statusMessage
+                    <button id="customer-log-alert-close-btn" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private string? statusMessage;
+    private bool isSuccessMessage = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Log this page visit
+        await ApiService.LogUserActionAsync("ViewActivityPage", "UserAction", "Customer viewed their activity page");
+    }
+
+    private async Task LogSampleActivity(string action, string category, string details)
+    {
+        try
+        {
+            var success = await ApiService.LogUserActionAsync(action, category, details);
+            
+            if (success)
+            {
+                statusMessage = $"Sample activity '{action}' logged successfully! This demonstrates how your actions are tracked.";
+                isSuccessMessage = true;
+            }
+            else
+            {
+                statusMessage = "Failed to log sample activity. Please try again.";
+                isSuccessMessage = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Error logging activity: {ex.Message}";
+            isSuccessMessage = false;
+        }
+        
+        StateHasChanged();
+        
+        // Clear message after 5 seconds
+        await Task.Delay(5000);
+        statusMessage = null;
+        StateHasChanged();
+    }
+}
+</AuthenticationGuard>

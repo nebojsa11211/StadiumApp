@@ -1,0 +1,25 @@
+@using System.Globalization
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<div class="language-switcher">
+    <select class="form-select form-select-sm" @onchange="OnLanguageChange" value="@CurrentCulture">
+        <option value="hr" selected="@(CurrentCulture == "hr")">Hrvatski</option>
+        <option value="en" selected="@(CurrentCulture == "en")">English</option>
+    </select>
+</div>
+
+@code {
+    private string CurrentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+    private async Task OnLanguageChange(ChangeEventArgs e)
+    {
+        var culture = e.Value?.ToString() ?? "hr";
+        
+        // Set culture in cookie
+        await JSRuntime.InvokeVoidAsync("blazorCulture.set", culture);
+        
+        // Force reload to apply new culture
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+    }
+}

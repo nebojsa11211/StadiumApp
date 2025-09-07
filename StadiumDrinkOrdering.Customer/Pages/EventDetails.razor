@@ -1,0 +1,555 @@
+@page "/events/{EventId:int}"
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Customer.Components
+@inject IApiService ApiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@(eventDetails?.EventName ?? "Event Details")</PageTitle>
+
+<CustomerAuthRoute>
+@if (isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading event details...</span>
+        </div>
+        <p class="mt-2">Loading event details...</p>
+    </div>
+}
+else if (eventDetails == null)
+{
+    <div class="alert alert-danger">
+        <h5><i class="fas fa-exclamation-triangle me-2"></i>Event Not Found</h5>
+        <p>The requested event could not be found or is no longer available.</p>
+        <a href="/events" class="btn btn-primary">Back to Events</a>
+    </div>
+}
+else
+{
+    <div class="container-fluid py-4">
+        <!-- Event Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/events">Events</a></li>
+                        <li class="breadcrumb-item active">@eventDetails.EventName</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Event Info -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">@eventDetails.EventName</h4>
+                        <small class="opacity-75">@eventDetails.EventType</small>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@eventDetails.Description</p>
+                        
+                        <div class="event-info">
+                            <div class="mb-2">
+                                <strong>📅 Date:</strong> @eventDetails.EventDate.ToString("dddd, MMM dd, yyyy")
+                            </div>
+                            <div class="mb-2">
+                                <strong>🕒 Time:</strong> @eventDetails.EventDate.ToString("HH:mm")
+                            </div>
+                            <div class="mb-2">
+                                <strong>🏟️ Venue:</strong> @eventDetails.VenueInfo
+                            </div>
+                            <div class="mb-3">
+                                <strong>🪑 Available Seats:</strong> 
+                                <span class="badge @(eventDetails.AvailableSeats > 100 ? "bg-success" : eventDetails.AvailableSeats > 50 ? "bg-warning" : "bg-danger")">
+                                    @eventDetails.AvailableSeats
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Pricing Tiers -->
+                        <div class="pricing-tiers">
+                            <h6><strong>💰 Pricing Tiers</strong></h6>
+                            @foreach (var tier in eventDetails.PricingTiers)
+                            {
+                                <div class="tier-info mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold">@tier.Name</span>
+                                        <span class="text-success">$@tier.BasePrice.ToString("F2")</span>
+                                    </div>
+                                    <small class="text-muted">@tier.Description</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            🛒 Your Cart 
+                            @if (cartItems.Any())
+                            {
+                                <span class="badge bg-primary">@cartItems.Count</span>
+                            }
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (!cartItems.Any())
+                        {
+                            <p class="text-muted mb-0">No seats selected yet.</p>
+                        }
+                        else
+                        {
+                            @foreach (var item in cartItems)
+                            {
+                                <div class="cart-item d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <strong>@item.SeatCode</strong><br>
+                                        <small class="text-muted">@item.EventName</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div>$@item.Price.ToString("F2")</div>
+                                        <button id="customer-eventdetails-remove-seat-btn-@item.SectorId-@item.RowNumber-@item.SeatNumber" class="btn btn-sm btn-outline-danger" @onclick="() => RemoveSeatFromCart(item)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total:</span>
+                                <span class="text-success">$@cartItems.Sum(i => i.Price).ToString("F2")</span>
+                            </div>
+                            <button id="customer-eventdetails-checkout-btn" class="btn btn-success w-100 mt-2" @onclick="ProceedToCheckout">
+                                <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                            </button>
+                            <button id="customer-eventdetails-clear-cart-btn" class="btn btn-outline-secondary w-100 mt-1" @onclick="ClearCart">
+                                <i class="fas fa-trash me-2"></i>Clear Cart
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stadium Sections -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">🏟️ Stadium Sections</h5>
+                        <small class="text-muted">Click on a section to view available seats</small>
+                    </div>
+                    <div class="card-body">
+                        @if (eventDetails.SectionAvailability.Any())
+                        {
+                            <div class="row">
+                                @foreach (var section in eventDetails.SectionAvailability)
+                                {
+                                    var info = section.Value;
+                                    <div class="col-md-6 col-lg-4 mb-3">
+                                        <div class="section-card @(info.AvailableSeats == 0 ? "sold-out" : "")" 
+                                             @onclick="() => ViewSectionSeats(info.SectionId)">
+                                            <div class="section-header">
+                                                <strong>@info.SectionName</strong>
+                                                @if (info.AvailableSeats == 0)
+                                                {
+                                                    <span class="badge bg-danger ms-2">Sold Out</span>
+                                                }
+                                            </div>
+                                            <div class="section-details">
+                                                <div class="availability">
+                                                    <span class="@(info.AvailableSeats > 20 ? "text-success" : info.AvailableSeats > 10 ? "text-warning" : "text-danger")">
+                                                        @info.AvailableSeats/@info.TotalSeats available
+                                                    </span>
+                                                </div>
+                                                <div class="price">
+                                                    <span class="fw-bold text-success">From $@info.BasePrice.ToString("F2")</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No sections available for this event.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seat Selection Modal -->
+    @if (selectedSection != null)
+    {
+        <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Select Seats - @selectedSection.TribuneName @selectedSection.SectionName
+                        </h5>
+                        <button id="customer-eventdetails-close-modal-btn" type="button" class="btn-close" @onclick="CloseSeatModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (isLoadingSeats)
+                        {
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p>Loading seats...</p>
+                            </div>
+                        }
+                        else if (selectedSection.AvailableSeats.Any())
+                        {
+                            <div class="seat-legend mb-3">
+                                <span class="badge bg-success me-2">Available</span>
+                                <span class="badge bg-warning me-2">Selected</span>
+                                <span class="badge bg-danger me-2">Sold</span>
+                            </div>
+
+                            <div class="seats-container">
+                                @{
+                                    var seatsByRow = selectedSection.AvailableSeats.GroupBy(s => s.RowNumber).OrderBy(g => g.Key);
+                                }
+                                @foreach (var rowGroup in seatsByRow)
+                                {
+                                    <div class="seat-row mb-2">
+                                        <div class="row-label">Row @rowGroup.Key</div>
+                                        <div class="seats">
+                                            @foreach (var seat in rowGroup.OrderBy(s => s.SeatNumber))
+                                            {
+                                                var isSelected = selectedSeats.Any(s => s.SectorId == seat.SectorId && s.RowNumber == seat.RowNumber && s.SeatNumber == seat.SeatNumber);
+                                                <div class="seat @(isSelected ? "selected" : "available")" 
+                                                     @onclick="() => ToggleSeatSelection(seat)"
+                                                     title="Row @seat.RowNumber, Seat @seat.SeatNumber - $@seat.Price.ToString("F2")">
+                                                    @seat.SeatNumber
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-center py-3">No seats available in this section.</p>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        @if (selectedSeats.Any())
+                        {
+                            <div class="me-auto">
+                                <strong>Selected: @selectedSeats.Count seats - $@selectedSeats.Sum(s => s.Price).ToString("F2")</strong>
+                            </div>
+                            <button id="customer-eventdetails-add-to-cart-btn" class="btn btn-success" @onclick="AddSelectedSeatsToCart">
+                                <i class="fas fa-plus me-2"></i>Add to Cart
+                            </button>
+                        }
+                        <button id="customer-eventdetails-close-seat-modal-btn" class="btn btn-secondary" @onclick="CloseSeatModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+    }
+}
+
+<style>
+    .section-card {
+        background: #fff;
+        border: 2px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .section-card:hover:not(.sold-out) {
+        border-color: #0d6efd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .section-card.sold-out {
+        background: #f8f9fa;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .section-header {
+        margin-bottom: 0.5rem;
+    }
+
+    .section-details {
+        font-size: 0.9rem;
+    }
+
+    .cart-item {
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+
+    .seats-container {
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 0.5rem;
+    }
+
+    .seat-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .row-label {
+        min-width: 60px;
+        font-weight: bold;
+        color: #666;
+        margin-right: 1rem;
+    }
+
+    .seats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .seat {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+    }
+
+    .seat.available {
+        background: #28a745;
+        color: white;
+    }
+
+    .seat.available:hover {
+        background: #1e7e34;
+        transform: scale(1.1);
+    }
+
+    .seat.selected {
+        background: #ffc107;
+        color: #000;
+    }
+
+    .seat.selected:hover {
+        background: #e0a800;
+    }
+
+    .tier-info {
+        border-left: 3px solid #0d6efd;
+        padding-left: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .seat {
+            width: 32px;
+            height: 32px;
+            font-size: 0.7rem;
+        }
+        
+        .row-label {
+            min-width: 50px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public int EventId { get; set; }
+
+    private CustomerEventDetailsDto? eventDetails;
+    private SectionAvailabilityDto? selectedSection;
+    private List<CustomerSeatDto> selectedSeats = new();
+    private List<CartItemDto> cartItems = new();
+    private bool isLoading = true;
+    private bool isLoadingSeats = false;
+    private string sessionId = "";
+
+    private bool hasInitialized = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Pre-generate session ID (will be overridden from sessionStorage if it exists)
+        if (string.IsNullOrEmpty(sessionId))
+        {
+            sessionId = Guid.NewGuid().ToString();
+        }
+
+        await LoadEventDetails();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !hasInitialized)
+        {
+            hasInitialized = true;
+            
+            // Get or set session ID from sessionStorage
+            var storedSessionId = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "ticketingSessionId");
+            if (!string.IsNullOrEmpty(storedSessionId))
+            {
+                sessionId = storedSessionId;
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "ticketingSessionId", sessionId);
+            }
+
+            await LoadCart();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadEventDetails()
+    {
+        try
+        {
+            eventDetails = await ApiService.GetEventDetailsAsync(EventId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading event details: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadCart()
+    {
+        try
+        {
+            var cart = await ApiService.GetCartAsync(sessionId);
+            cartItems = cart?.Items ?? new List<CartItemDto>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading cart: {ex.Message}");
+        }
+    }
+
+    private async Task ViewSectionSeats(int sectionId)
+    {
+        if (eventDetails == null) return;
+
+        isLoadingSeats = true;
+        selectedSeats.Clear();
+        
+        try
+        {
+            selectedSection = await ApiService.GetSectionAvailabilityAsync(EventId, sectionId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading section seats: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingSeats = false;
+        }
+    }
+
+    private void ToggleSeatSelection(CustomerSeatDto seat)
+    {
+        var existing = selectedSeats.FirstOrDefault(s => 
+            s.SectorId == seat.SectorId && 
+            s.RowNumber == seat.RowNumber && 
+            s.SeatNumber == seat.SeatNumber);
+
+        if (existing != null)
+        {
+            selectedSeats.Remove(existing);
+        }
+        else
+        {
+            selectedSeats.Add(seat);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task AddSelectedSeatsToCart()
+    {
+        if (!selectedSeats.Any() || eventDetails == null) return;
+
+        foreach (var seat in selectedSeats)
+        {
+            var request = new AddSeatToCartRequest
+            {
+                SessionId = sessionId,
+                EventId = EventId,
+                SectorId = seat.SectorId,
+                RowNumber = seat.RowNumber,
+                SeatNumber = seat.SeatNumber,
+                Price = seat.Price
+            };
+
+            await ApiService.AddSeatToCartAsync(request);
+        }
+
+        selectedSeats.Clear();
+        await LoadCart();
+        CloseSeatModal();
+    }
+
+    private async Task RemoveSeatFromCart(CartItemDto item)
+    {
+        var request = new RemoveSeatFromCartRequest
+        {
+            SessionId = sessionId,
+            EventId = item.EventId,
+            SectorId = item.SectorId,
+            RowNumber = item.RowNumber,
+            SeatNumber = item.SeatNumber
+        };
+
+        var success = await ApiService.RemoveSeatFromCartAsync(request);
+        if (success)
+        {
+            await LoadCart();
+        }
+    }
+
+    private async Task ClearCart()
+    {
+        var success = await ApiService.ClearCartAsync(sessionId);
+        if (success)
+        {
+            await LoadCart();
+        }
+    }
+
+    private void CloseSeatModal()
+    {
+        selectedSection = null;
+        selectedSeats.Clear();
+    }
+
+    private void ProceedToCheckout()
+    {
+        Navigation.NavigateTo($"/checkout?sessionId={sessionId}");
+    }
+}
+</CustomerAuthRoute>

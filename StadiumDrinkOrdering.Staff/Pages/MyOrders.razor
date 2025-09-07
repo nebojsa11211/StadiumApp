@@ -1,0 +1,407 @@
+@page "/my-orders"
+@inject IStaffApiService ApiService
+@inject IAuthStateService AuthService
+@inject ISignalRService SignalRService
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<PageTitle>My Orders</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    <div class="container mt-5">
+        <div class="alert alert-warning" role="alert">
+            You must be logged in to view your assigned orders.
+            <a href="/login" class="btn btn-primary ms-2">Login</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col">
+                <h1>My Assigned Orders</h1>
+                <p class="text-muted">Orders currently assigned to you for delivery</p>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-primary" @onclick="RefreshOrders" id="staff-myorders-refresh-btn">
+                    <span class="oi oi-reload me-2"></span>Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@assignedOrders.Count</h4>
+                                <small>Total Assigned</small>
+                            </div>
+                            <div>
+                                <span class="oi oi-clipboard" style="font-size: 2rem;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@readyForDelivery.Count</h4>
+                                <small>Ready for Delivery</small>
+                            </div>
+                            <div>
+                                <span class="oi oi-box" style="font-size: 2rem;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@outForDelivery.Count</h4>
+                                <small>Out for Delivery</small>
+                            </div>
+                            <div>
+                                <span class="oi oi-arrow-right" style="font-size: 2rem;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>@deliveredToday.Count</h4>
+                                <small>Delivered Today</small>
+                            </div>
+                            <div>
+                                <span class="oi oi-check" style="font-size: 2rem;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Route Optimization -->
+        @if (readyForDelivery.Any())
+        {
+            <div class="row mb-4">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Suggested Delivery Route</h5>
+                            <small class="text-muted">Optimized by stadium section</small>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var sectionGroup in GetOptimizedRoute())
+                            {
+                                <div class="mb-3">
+                                    <h6 class="text-primary">Section @sectionGroup.Key (@sectionGroup.Count() orders)</h6>
+                                    <div class="row">
+                                        @foreach (var order in sectionGroup.OrderBy(o => o.SeatNumber))
+                                        {
+                                            <div class="col-md-6 col-lg-4 mb-2">
+                                                <div class="card border-info">
+                                                    <div class="card-body p-2">
+                                                        <small>
+                                                            <strong>Order #@order.Id</strong><br>
+                                                            Seat: @order.SeatNumber<br>
+                                                            @order.OrderItems.Sum(oi => oi.Quantity) items
+                                                        </small>
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-sm btn-success" @onclick="() => MarkDelivered(order.Id)" id="staff-myorders-delivered-btn-@order.Id">
+                                                                Delivered
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            
+                            @if (readyForDelivery.Any())
+                            {
+                                <div class="mt-3">
+                                    <button class="btn btn-primary" @onclick="StartBatchDelivery" id="staff-myorders-batch-delivery-btn">
+                                        <span class="oi oi-arrow-right me-2"></span>Start Batch Delivery
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Orders List -->
+        <div class="row">
+            @if (assignedOrders.Any())
+            {
+                @foreach (var order in assignedOrders.OrderByDescending(o => o.OrderDate))
+                {
+                    <div class="col-lg-6 col-xl-4 mb-4">
+                        <div class="card @GetOrderCardClass(order.Status)">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Order #@order.Id</h6>
+                                <span class="badge @GetStatusBadgeClass(order.Status)">
+                                    @order.Status
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <strong>Customer:</strong><br>
+                                        <small>@order.CustomerName</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Seat:</strong><br>
+                                        <small>@order.SeatNumber</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <strong>Items:</strong><br>
+                                    @foreach (var item in order.OrderItems)
+                                    {
+                                        <small class="d-block">
+                                            @item.Quantity x @item.DrinkName
+                                        </small>
+                                    }
+                                </div>
+
+                                <div class="mb-2">
+                                    <strong>Total:</strong> $@order.TotalAmount.ToString("F2")
+                                </div>
+
+                                <div class="mb-3">
+                                    <small class="text-muted">
+                                        Ordered: @order.OrderDate.ToString("HH:mm")
+                                        @if (order.AcceptedAt.HasValue)
+                                        {
+                                            <br />@:Accepted: @order.AcceptedAt.Value.ToString("HH:mm")
+                                        }
+                                    </small>
+                                </div>
+
+                                <!-- Order Actions -->
+                                <div class="d-grid gap-2">
+                                    @if (order.Status == OrderStatus.Ready)
+                                    {
+                                        <button class="btn btn-primary btn-sm" @onclick="() => StartDelivery(order.Id)" id="staff-myorders-start-delivery-btn-@order.Id">
+                                            <span class="oi oi-arrow-right me-1"></span>Start Delivery
+                                        </button>
+                                    }
+                                    else if (order.Status == OrderStatus.OutForDelivery)
+                                    {
+                                        <button class="btn btn-success btn-sm" @onclick="() => MarkDelivered(order.Id)" id="staff-myorders-mark-delivered-btn-@order.Id">
+                                            <span class="oi oi-check me-1"></span>Mark Delivered
+                                        </button>
+                                    }
+                                    
+                                    <button class="btn btn-outline-secondary btn-sm" @onclick="() => ViewOrderDetails(order.Id)" id="staff-myorders-details-btn-@order.Id">
+                                        <span class="oi oi-eye me-1"></span>View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <span class="oi oi-clipboard" style="font-size: 4rem; color: #ccc;"></span>
+                        <h4 class="mt-3 text-muted">No orders assigned</h4>
+                        <p class="text-muted">Check the order queue to pick up new orders</p>
+                        <a href="/order-queue" class="btn btn-primary">
+                            <span class="oi oi-list me-2"></span>Go to Order Queue
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<OrderDto> assignedOrders = new();
+    private List<OrderDto> readyForDelivery = new();
+    private List<OrderDto> outForDelivery = new();
+    private List<OrderDto> deliveredToday = new();
+    private int currentStaffId = 1; // This should come from authentication context
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        try
+        {
+            if (!SignalRService.IsConnected)
+            {
+                await SignalRService.StartAsync();
+                await SignalRService.JoinStaffHub();
+            }
+            
+            SignalRService.OrderUpdated += OnOrderUpdated;
+            SignalRService.OrderAssignedToStaff += OnOrderAssigned;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to start SignalR: {ex.Message}");
+        }
+
+        await LoadAssignedOrders();
+    }
+
+    private async Task LoadAssignedOrders()
+    {
+        try
+        {
+            var orders = await ApiService.GetAssignedOrdersAsync(currentStaffId) ?? new List<OrderDto>();
+            assignedOrders = orders;
+
+            readyForDelivery = orders.Where(o => o.Status == OrderStatus.Ready).ToList();
+            outForDelivery = orders.Where(o => o.Status == OrderStatus.OutForDelivery).ToList();
+            deliveredToday = orders.Where(o => o.Status == OrderStatus.Delivered && 
+                                              o.DeliveredAt.HasValue && 
+                                              o.DeliveredAt.Value.Date == DateTime.Today).ToList();
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load assigned orders: {ex.Message}");
+        }
+    }
+
+    private IEnumerable<IGrouping<string, OrderDto>> GetOptimizedRoute()
+    {
+        return readyForDelivery
+            .GroupBy(o => o.SeatNumber?.Substring(0, 1) ?? "Unknown")
+            .OrderBy(g => g.Key);
+    }
+
+    private async Task StartDelivery(int orderId)
+    {
+        var updateDto = new UpdateOrderStatusDto 
+        { 
+            Status = OrderStatus.OutForDelivery,
+            Notes = "Out for delivery"
+        };
+        
+        var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
+        if (success)
+        {
+            await LoadAssignedOrders();
+            await SignalRService.SendOrderStatusChanged(orderId, OrderStatus.OutForDelivery, "");
+        }
+    }
+
+    private async Task MarkDelivered(int orderId)
+    {
+        var updateDto = new UpdateOrderStatusDto 
+        { 
+            Status = OrderStatus.Delivered,
+            Notes = "Delivered successfully"
+        };
+        
+        var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
+        if (success)
+        {
+            await LoadAssignedOrders();
+            await SignalRService.SendOrderStatusChanged(orderId, OrderStatus.Delivered, "");
+        }
+    }
+
+    private async Task StartBatchDelivery()
+    {
+        foreach (var order in readyForDelivery)
+        {
+            await StartDelivery(order.Id);
+            await Task.Delay(100); // Small delay to avoid overwhelming the API
+        }
+    }
+
+    private void ViewOrderDetails(int orderId)
+    {
+        Navigation.NavigateTo($"/order/{orderId}");
+    }
+
+    private async Task RefreshOrders()
+    {
+        await LoadAssignedOrders();
+    }
+
+    private async void OnOrderUpdated(OrderDto order)
+    {
+        await InvokeAsync(async () =>
+        {
+            await LoadAssignedOrders();
+        });
+    }
+
+    private async void OnOrderAssigned(int orderId, int staffId)
+    {
+        if (staffId == currentStaffId)
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadAssignedOrders();
+            });
+        }
+    }
+
+    private string GetOrderCardClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Ready => "border-success",
+            OrderStatus.OutForDelivery => "border-warning",
+            OrderStatus.Delivered => "border-secondary",
+            _ => ""
+        };
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.OutForDelivery => "bg-warning text-dark",
+            OrderStatus.Delivered => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
+    public void Dispose()
+    {
+        if (SignalRService != null)
+        {
+            SignalRService.OrderUpdated -= OnOrderUpdated;
+            SignalRService.OrderAssignedToStaff -= OnOrderAssigned;
+        }
+    }
+}

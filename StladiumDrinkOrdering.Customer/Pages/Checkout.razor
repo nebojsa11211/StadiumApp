@@ -1,0 +1,380 @@
+@page "/checkout"
+@using StladiumDrinkOrdering.Customer.Services
+@using StladiumDrinkOrdering.Shared.DTOs
+@using Microsoft.AspNetCore.Components.Forms
+@inject ApiService ApiService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+<PageTitle>Checkout - Stadium Drinks</PageTitle>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Customer Information</h4>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@checkoutForm" OnValidSubmit="@ProcessCheckout">
+                        <DataAnnotationsValidator />
+                        
+                        <!-- Personal Information -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">First Name *</label>
+                                <InputText id="firstName" class="form-control" @bind-Value="checkoutForm.FirstName" placeholder="Enter first name" />
+                                <ValidationMessage For="@(() => checkoutForm.FirstName)" class="text-danger small" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Last Name *</label>
+                                <InputText id="lastName" class="form-control" @bind-Value="checkoutForm.LastName" placeholder="Enter last name" />
+                                <ValidationMessage For="@(() => checkoutForm.LastName)" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <InputText id="email" type="email" class="form-control" @bind-Value="checkoutForm.Email" placeholder="your.email@example.com" />
+                                <ValidationMessage For="@(() => checkoutForm.Email)" class="text-danger small" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <InputText id="phone" class="form-control" @bind-Value="checkoutForm.Phone" placeholder="+1 (555) 123-4567" />
+                                <ValidationMessage For="@(() => checkoutForm.Phone)" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <!-- Payment Information -->
+                        <div class="card mt-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="cardNumber" class="form-label">Card Number *</label>
+                                        <InputText id="cardNumber" class="form-control" @bind-Value="checkoutForm.CardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
+                                        <ValidationMessage For="@(() => checkoutForm.CardNumber)" class="text-danger small" />
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="expiryDate" class="form-label">Expiry Date *</label>
+                                        <InputText id="expiryDate" class="form-control" @bind-Value="checkoutForm.ExpiryDate" placeholder="MM/YY" maxlength="5" />
+                                        <ValidationMessage For="@(() => checkoutForm.ExpiryDate)" class="text-danger small" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="cvv" class="form-label">CVV *</label>
+                                        <InputText id="cvv" class="form-control" @bind-Value="checkoutForm.CVV" placeholder="123" maxlength="4" />
+                                        <ValidationMessage For="@(() => checkoutForm.CVV)" class="text-danger small" />
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="cardholderName" class="form-label">Cardholder Name *</label>
+                                        <InputText id="cardholderName" class="form-control" @bind-Value="checkoutForm.CardholderName" placeholder="Name as it appears on card" />
+                                        <ValidationMessage For="@(() => checkoutForm.CardholderName)" class="text-danger small" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="form-check mt-4">
+                            <InputCheckbox id="agreeTerms" class="form-check-input" @bind-Value="checkoutForm.AgreeToTerms" />
+                            <label class="form-check-label" for="agreeTerms">
+                                I agree to the <a href="/terms" target="_blank">Terms and Conditions</a> and <a href="/privacy" target="_blank">Privacy Policy</a> *
+                            </label>
+                            <ValidationMessage For="@(() => checkoutForm.AgreeToTerms)" class="text-danger small d-block" />
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h4>
+                </div>
+                <div class="card-body">
+                    @if (cart != null && cart.Items.Any())
+                    {
+                        <!-- Event Information -->
+                        <div class="mb-3 pb-3 border-bottom">
+                            <h6 class="text-muted mb-1">Event</h6>
+                            <strong>@(cart.Items.FirstOrDefault()?.EventName ?? "Unknown Event")</strong>
+                            <div class="text-muted small">
+                                @(cart.Items.FirstOrDefault()?.EventDate.ToString("MMM dd, yyyy - HH:mm") ?? "")
+                            </div>
+                        </div>
+
+                        <!-- Seat Details -->
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Selected Seats</h6>
+                            @foreach (var item in cart.Items)
+                            {
+                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                                    <div>
+                                        <div class="fw-bold">@item.SeatCode</div>
+                                        <div class="text-muted small">@item.SectionName</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold">$@item.Price.ToString("F2")</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Pricing Breakdown -->
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal (@cart.Items.Count tickets)</span>
+                                <span>$@subtotal.ToString("F2")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Service Fee</span>
+                                <span>$@serviceFee.ToString("F2")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Processing Fee</span>
+                                <span>$@processingFee.ToString("F2")</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold h5">
+                                <span>Total</span>
+                                <span>$@total.ToString("F2")</span>
+                            </div>
+                        </div>
+
+                        <!-- Checkout Button -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg" @onclick="ProcessCheckout" disabled="@isProcessing">
+                                @if (isProcessing)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Processing...</span>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-lock me-2"></i>
+                                    <span>Complete Purchase - $@total.ToString("F2")</span>
+                                }
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Your cart is empty</p>
+                            <a href="/events" class="btn btn-primary">Browse Events</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showProcessingModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                    <h4>Processing Your Order</h4>
+                    <p class="text-muted">Please wait while we process your payment and generate your tickets...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private CheckoutFormDto checkoutForm = new();
+    private ShoppingCartDto? cart;
+    private bool isProcessing = false;
+    private bool showProcessingModal = false;
+    
+    private decimal subtotal => cart?.Items?.Sum(i => i.Price) ?? 0;
+    private decimal serviceFee => subtotal * 0.10m; // 10% service fee
+    private decimal processingFee => 2.50m; // Fixed processing fee
+    private decimal total => subtotal + serviceFee + processingFee;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCart();
+        
+        // Pre-fill form with session storage data if available
+        await LoadSavedFormData();
+    }
+
+    private async Task LoadCart()
+    {
+        try
+        {
+            var sessionId = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "sessionId");
+            if (string.IsNullOrEmpty(sessionId))
+            {
+                sessionId = Guid.NewGuid().ToString();
+                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "sessionId", sessionId);
+            }
+
+            cart = await ApiService.GetCartAsync(sessionId);
+            
+            if (cart == null || !cart.Items.Any())
+            {
+                // Redirect to events if cart is empty
+                Navigation.NavigateTo("/events");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading cart: {ex.Message}");
+        }
+    }
+
+    private async Task LoadSavedFormData()
+    {
+        try
+        {
+            var savedEmail = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "checkout_email");
+            var savedFirstName = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "checkout_firstName");
+            var savedLastName = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "checkout_lastName");
+            var savedPhone = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "checkout_phone");
+
+            if (!string.IsNullOrEmpty(savedEmail)) checkoutForm.Email = savedEmail;
+            if (!string.IsNullOrEmpty(savedFirstName)) checkoutForm.FirstName = savedFirstName;
+            if (!string.IsNullOrEmpty(savedLastName)) checkoutForm.LastName = savedLastName;
+            if (!string.IsNullOrEmpty(savedPhone)) checkoutForm.Phone = savedPhone;
+        }
+        catch { /* Ignore localStorage errors */ }
+    }
+
+    private async Task ProcessCheckout()
+    {
+        if (cart == null || !cart.Items.Any())
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Your cart is empty. Please add tickets before checkout.");
+            return;
+        }
+
+        if (!checkoutForm.AgreeToTerms)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Please agree to the terms and conditions to continue.");
+            return;
+        }
+
+        try
+        {
+            isProcessing = true;
+            showProcessingModal = true;
+            StateHasChanged();
+
+            // Save customer info to localStorage for future use
+            await SaveFormData();
+
+            // Create order request
+            var orderRequest = new CreateTicketOrderRequest
+            {
+                CustomerInfo = new CustomerInfoDto
+                {
+                    FirstName = checkoutForm.FirstName,
+                    LastName = checkoutForm.LastName,
+                    Email = checkoutForm.Email,
+                    Phone = checkoutForm.Phone
+                },
+                PaymentInfo = new PaymentInfoDto
+                {
+                    CardNumber = checkoutForm.CardNumber,
+                    ExpiryDate = checkoutForm.ExpiryDate,
+                    CVV = checkoutForm.CVV,
+                    CardholderName = checkoutForm.CardholderName
+                },
+                SessionId = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "sessionId"),
+                Items = cart.Items.Select(i => new OrderItemDto
+                {
+                    EventId = i.EventId,
+                    SectorId = i.SectorId,
+                    RowNumber = i.RowNumber,
+                    SeatNumber = i.SeatNumber,
+                    Price = i.Price,
+                    SeatCode = i.SeatCode,
+                    SectionName = i.SectionName
+                }).ToList(),
+                TotalAmount = total
+            };
+
+            // Process the order
+            var orderResult = await ApiService.ProcessTicketOrderAsync(orderRequest);
+
+            if (orderResult != null && orderResult.Success)
+            {
+                // Clear cart and redirect to confirmation
+                await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", "sessionId");
+                Navigation.NavigateTo($"/order-confirmation/{orderResult.OrderId}");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Payment failed: {orderResult?.ErrorMessage ?? "Unknown error occurred"}");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"An error occurred: {ex.Message}");
+        }
+        finally
+        {
+            isProcessing = false;
+            showProcessingModal = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveFormData()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "checkout_email", checkoutForm.Email);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "checkout_firstName", checkoutForm.FirstName);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "checkout_lastName", checkoutForm.LastName);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "checkout_phone", checkoutForm.Phone);
+        }
+        catch { /* Ignore localStorage errors */ }
+    }
+}
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .btn-success:hover {
+        background-color: #157347;
+        border-color: #146c43;
+    }
+
+    .sticky-top {
+        position: -webkit-sticky;
+        position: sticky;
+    }
+
+    @@media (max-width: 991.98px) {
+        .sticky-top {
+            position: static;
+        }
+    }
+</style>

@@ -26,9 +26,34 @@ public class OrderService : IOrderService
 
     public async Task<OrderDto?> CreateOrderAsync(CreateOrderDto createOrderDto, int customerId)
     {
-        // Validate ticket
-        var ticket = await _context.Tickets
-            .FirstOrDefaultAsync(t => t.TicketNumber == createOrderDto.TicketNumber && t.IsActive);
+        Ticket? ticket = null;
+        TicketSession? ticketSession = null;
+        
+        // Prefer TicketSessionId over TicketNumber for enhanced authentication
+        if (createOrderDto.TicketSessionId.HasValue)
+        {
+            ticketSession = await _context.TicketSessions
+                .Include(ts => ts.Ticket)
+                .Include(ts => ts.Event)
+                .Include(ts => ts.Seat)
+                    .ThenInclude(s => s.Section)
+                .FirstOrDefaultAsync(ts => ts.Id == createOrderDto.TicketSessionId && 
+                                          ts.IsActive && 
+                                          ts.ExpiresAt > DateTime.UtcNow);
+            
+            if (ticketSession == null)
+            {
+                return null; // Invalid or expired ticket session
+            }
+            
+            ticket = ticketSession.Ticket;
+        }
+        else if (!string.IsNullOrEmpty(createOrderDto.TicketNumber))
+        {
+            // Legacy fallback for backward compatibility
+            ticket = await _context.Tickets
+                .FirstOrDefaultAsync(t => t.TicketNumber == createOrderDto.TicketNumber && t.IsActive);
+        }
 
         if (ticket == null)
         {
@@ -56,15 +81,19 @@ public class OrderService : IOrderService
             }
         }
 
-        // Create order
+        // Create order with enhanced session information
         var order = new Order
         {
-            TicketNumber = createOrderDto.TicketNumber,
-            SeatNumber = ticket.SeatNumber,
+            TicketNumber = createOrderDto.TicketNumber ?? ticket.TicketNumber,
+            SeatNumber = ticketSession?.SeatNumber ?? ticket.SeatNumber ?? string.Empty,
             CustomerId = customerId,
             Status = OrderStatus.Pending,
             CustomerNotes = createOrderDto.CustomerNotes,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            // New enhanced fields
+            TicketSessionId = ticketSession?.Id,
+            EventId = ticketSession?.EventId ?? ticket.EventId,
+            SeatId = ticketSession?.SeatId ?? ticket.SeatId
         };
 
         // Create order items
@@ -106,6 +135,9 @@ public class OrderService : IOrderService
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Drink)
             .Include(o => o.Payment)
+            .Include(o => o.Event)
+            .Include(o => o.Seat)
+                .ThenInclude(s => s.Section)
             .FirstOrDefaultAsync(o => o.Id == orderId);
 
         return order != null ? MapToOrderDto(order) : null;
@@ -121,6 +153,9 @@ public class OrderService : IOrderService
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Drink)
             .Include(o => o.Payment)
+            .Include(o => o.Event)
+            .Include(o => o.Seat)
+                .ThenInclude(s => s.Section)
             .AsQueryable();
 
         if (status.HasValue)
@@ -142,6 +177,9 @@ public class OrderService : IOrderService
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Drink)
             .Include(o => o.Payment)
+            .Include(o => o.Event)
+            .Include(o => o.Seat)
+                .ThenInclude(s => s.Section)
             .Where(o => o.CustomerId == customerId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -215,6 +253,8 @@ public class OrderService : IOrderService
             TotalAmount = order.TotalAmount,
             Status = order.Status,
             CreatedAt = order.CreatedAt,
+            EventId = order.EventId,
+            SeatId = order.SeatId,
             AcceptedAt = order.AcceptedAt,
             PreparedAt = order.PreparedAt,
             DeliveredAt = order.DeliveredAt,
@@ -223,6 +263,8 @@ public class OrderService : IOrderService
             DeliveredByUserName = order.DeliveredByUser?.Username,
             Notes = order.Notes,
             CustomerNotes = order.CustomerNotes,
+            Event = order.Event,
+            Seat = order.Seat,
             OrderItems = order.OrderItems.Select(oi => new OrderItemDto
             {
                 Id = oi.Id,
@@ -236,10 +278,10 @@ public class OrderService : IOrderService
             Payment = order.Payment != null ? new PaymentDto
             {
                 Id = order.Payment.Id,
-                OrderId = order.Payment.OrderId,
+                OrderId = order.Payment.OrderId ?? 0,
                 Amount = order.Payment.Amount,
-                Method = order.Payment.Method,
-                Status = order.Payment.Status,
+                Method = Enum.TryParse<PaymentMethod>(order.Payment.PaymentMethod, out var method) ? method : PaymentMethod.CreditCard,
+                Status = Enum.TryParse<PaymentStatus>(order.Payment.Status, out var status) ? status : PaymentStatus.Pending,
                 TransactionId = order.Payment.TransactionId,
                 CreatedAt = order.Payment.CreatedAt,
                 ProcessedAt = order.Payment.ProcessedAt,

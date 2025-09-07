@@ -2,12 +2,15 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
 @inject ICartService CartService
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Stadium Drinks - Order Now</PageTitle>
 
-<div class="container-fluid" id="customer-menu-container">
+<TicketProtectedRoute>
+    <div class="container-fluid" id="customer-menu-container">
     <div class="row">
         <div class="col-md-8">
             <h1 class="mb-4" id="customer-menu-title">🍺 Stadium Drinks Menu</h1>
@@ -177,14 +180,15 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
+</TicketProtectedRoute>
 
 @if (!string.IsNullOrEmpty(alertMessage))
 {
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="customer-alert-container">
         <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="customer-alert-message">
             @alertMessage
-            <button type="button" class="btn-close" @onclick="ClearAlert" id="customer-alert-close-btn"></button>
+            <button type="button" class="btn-close" @onclick="ClearAlert" id="customer-menu-alert-close-btn"></button>
         </div>
     </div>
 }
@@ -265,16 +269,21 @@
 
     private async Task PlaceOrder()
     {
-        if (string.IsNullOrWhiteSpace(ticketNumber) || !CartService.Items.Any())
+        if (!CartService.Items.Any())
             return;
 
         isPlacingOrder = true;
         
         try
         {
+            // Get the current ticket session
+            var sessionToken = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "ticketSessionToken");
+            var ticketSession = !string.IsNullOrEmpty(sessionToken) ? await ApiService.GetTicketSessionAsync(sessionToken) : null;
+            
             var createOrderDto = new CreateOrderDto
             {
-                TicketNumber = ticketNumber.Trim(),
+                TicketSessionId = ticketSession?.Id,
+                TicketNumber = string.IsNullOrWhiteSpace(ticketNumber) ? null : ticketNumber.Trim(),
                 CustomerNotes = string.IsNullOrWhiteSpace(orderNotes) ? null : orderNotes.Trim(),
                 OrderItems = CartService.Items.Select(item => new CreateOrderItemDto
                 {

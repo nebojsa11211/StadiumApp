@@ -1,0 +1,213 @@
+@page "/register"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Customer.Services
+@using System.ComponentModel.DataAnnotations
+@inject IApiService ApiService
+@inject ICustomerAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Account - Stadium Ordering</PageTitle>
+
+<div class="container mt-5" id="customer-register-container">
+    <div class="row justify-content-center" id="customer-register-row">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4" id="customer-register-col">
+            <div class="card" id="customer-register-card">
+                <div class="card-header" id="customer-register-header">
+                    <h3 class="text-center" id="customer-register-title">🎟️ Create Account</h3>
+                    <p class="text-center text-muted mb-0">Join to order drinks and buy tickets</p>
+                </div>
+                <div class="card-body" id="customer-register-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" id="customer-register-error">
+                            @errorMessage
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(successMessage))
+                    {
+                        <div class="alert alert-success" id="customer-register-success">
+                            @successMessage
+                        </div>
+                    }
+                    
+                    <EditForm Model="@registerModel" OnValidSubmit="@HandleRegister" id="customer-register-form">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="mb-3" id="customer-register-username-group">
+                            <label class="form-label" for="customer-register-username-input">Username</label>
+                            <InputText class="form-control" @bind-Value="registerModel.Username" id="customer-register-username-input" placeholder="Choose a username" />
+                            <ValidationMessage For="@(() => registerModel.Username)" class="text-danger" />
+                        </div>
+                        
+                        <div class="mb-3" id="customer-register-email-group">
+                            <label class="form-label" for="customer-register-email-input">Email</label>
+                            <InputText type="email" class="form-control" @bind-Value="registerModel.Email" id="customer-register-email-input" placeholder="Enter your email" />
+                            <ValidationMessage For="@(() => registerModel.Email)" class="text-danger" />
+                        </div>
+                        
+                        <div class="mb-3" id="customer-register-password-group">
+                            <label class="form-label" for="customer-register-password-input">Password</label>
+                            <InputText type="password" class="form-control" @bind-Value="registerModel.Password" id="customer-register-password-input" placeholder="Choose a secure password" />
+                            <ValidationMessage For="@(() => registerModel.Password)" class="text-danger" />
+                            <small class="form-text text-muted">Must be at least 6 characters long</small>
+                        </div>
+                        
+                        <div class="mb-3" id="customer-register-confirm-password-group">
+                            <label class="form-label" for="customer-register-confirm-password-input">Confirm Password</label>
+                            <InputText type="password" class="form-control" @bind-Value="registerModel.ConfirmPassword" id="customer-register-confirm-password-input" placeholder="Re-enter your password" />
+                            <ValidationMessage For="@(() => registerModel.ConfirmPassword)" class="text-danger" />
+                        </div>
+                        
+                        <div class="mb-3 form-check" id="customer-register-terms-group">
+                            <InputCheckbox class="form-check-input" @bind-Value="acceptTerms" id="customer-register-terms-input" />
+                            <label class="form-check-label" for="customer-register-terms-input">
+                                I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                            </label>
+                            @if (!acceptTerms && showTermsError)
+                            {
+                                <div class="text-danger small">You must accept the terms to create an account</div>
+                            }
+                        </div>
+                        
+                        <div class="d-grid" id="customer-register-button-group">
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading" id="customer-register-submit-btn">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" id="customer-register-spinner"></span>
+                                    <span id="customer-register-loading-text">Creating Account...</span>
+                                }
+                                else
+                                {
+                                    <span id="customer-register-button-text">Create Account</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                    
+                    <hr class="mt-4">
+                    
+                    <div class="text-center" id="customer-register-login-section">
+                        <p class="mb-2">Already have an account?</p>
+                        <a href="/login" class="btn btn-outline-secondary" id="customer-register-login-link">Sign In</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegisterModel registerModel = new();
+    private bool acceptTerms = false;
+    private bool showTermsError = false;
+    private string? errorMessage;
+    private string? successMessage;
+    private bool isLoading;
+
+    public class RegisterModel
+    {
+        [Required(ErrorMessage = "Username is required")]
+        [StringLength(100, ErrorMessage = "Username must be less than 100 characters")]
+        public string Username { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Please confirm your password")]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Redirect to home if already authenticated
+        if (AuthStateService.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleRegister()
+    {
+        if (!acceptTerms)
+        {
+            showTermsError = true;
+            return;
+        }
+
+        showTermsError = false;
+        isLoading = true;
+        errorMessage = null;
+        successMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var registerDto = new RegisterDto
+            {
+                Username = registerModel.Username,
+                Email = registerModel.Email,
+                Password = registerModel.Password,
+                ConfirmPassword = registerModel.ConfirmPassword
+            };
+
+            var result = await ApiService.RegisterAsync(registerDto);
+
+            if (result != null)
+            {
+                // Registration successful, now log them in
+                var loginResult = await ApiService.LoginAsync(new LoginDto
+                {
+                    Email = registerModel.Email,
+                    Password = registerModel.Password
+                });
+
+                if (loginResult?.Token != null && loginResult.User != null)
+                {
+                    await AuthStateService.LoginAsync(loginResult.Token, loginResult.User);
+                    await ApiService.LogUserActionAsync("CustomerRegistration", "Authentication", $"New customer registered and logged in: {registerModel.Email}");
+                    
+                    successMessage = "Account created successfully! Redirecting...";
+                    StateHasChanged();
+                    
+                    // Small delay to show success message
+                    await Task.Delay(1500);
+                    NavigationManager.NavigateTo("/");
+                }
+                else
+                {
+                    successMessage = "Account created successfully! Please sign in.";
+                    registerModel = new RegisterModel();
+                    acceptTerms = false;
+                }
+            }
+            else
+            {
+                errorMessage = "Registration failed. Email or username may already be in use.";
+                await ApiService.LogUserActionAsync("CustomerRegistrationFailed", "Authentication", $"Failed registration attempt for {registerModel.Email}");
+            }
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = "Unable to connect to server. Please try again later.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An unexpected error occurred. Please try again.";
+            await ApiService.LogUserActionAsync("CustomerRegistrationError", "Authentication", $"Registration error for {registerModel.Email}: {ex.Message}");
+            Console.WriteLine($"Registration error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}

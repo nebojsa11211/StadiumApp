@@ -1,0 +1,1177 @@
+📊 Current System vs Required Workflow Analysis
+✅ What's Already Working
+
+Basic order creation and tracking
+Drink inventory management
+Staff and admin interfaces
+Authentication system
+
+❌ Major Gaps Identified
+
+Event Management System - Currently missing entirely
+QR Code Ticket System - No QR generation or scanning
+Payment Processing - No integrated payment gateway
+Seat-Based Delivery - Limited seat/location tracking
+Real-time Updates - No SignalR implementation
+Demo Data Generator - No comprehensive test data generation
+
+🏗️ Complete Implementation Plan
+📋 Database Schema Updates Required
+-- New Tables Required for Event-Based Stadium System
+
+-- 1. Events Table (Football matches, concerts, etc.)
+CREATE TABLE Events (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    EventName NVARCHAR(200) NOT NULL,
+    EventType NVARCHAR(50) NOT NULL, -- 'Football', 'Concert', 'Basketball', etc.
+    EventDate DATETIME NOT NULL,
+    VenueId INT,
+    TotalSeats INT NOT NULL,
+    IsActive BIT DEFAULT 1,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME
+);
+
+-- 2. Stadium Sections
+CREATE TABLE StadiumSections (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    SectionCode NVARCHAR(10) NOT NULL, -- 'A', 'B', 'VIP', etc.
+    SectionName NVARCHAR(50) NOT NULL,
+    TotalRows INT NOT NULL,
+    SeatsPerRow INT NOT NULL,
+    PriceMultiplier DECIMAL(3,2) DEFAULT 1.0, -- For VIP pricing
+    IsActive BIT DEFAULT 1
+);
+
+-- 3. Seats Table
+CREATE TABLE Seats (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    SectionId INT FOREIGN KEY REFERENCES StadiumSections(Id),
+    RowNumber INT NOT NULL,
+    SeatNumber INT NOT NULL,
+    SeatCode NVARCHAR(20) NOT NULL, -- 'A-R1-S1'
+    IsAccessible BIT DEFAULT 0,
+    CONSTRAINT UQ_SeatCode UNIQUE(SeatCode)
+);
+
+-- 4. Updated Tickets Table with QR Code
+CREATE TABLE Tickets (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    TicketNumber NVARCHAR(50) UNIQUE NOT NULL,
+    EventId INT FOREIGN KEY REFERENCES Events(Id),
+    SeatId INT FOREIGN KEY REFERENCES Seats(Id),
+    QRCode NVARCHAR(500) NOT NULL, -- Base64 encoded QR image or URL
+    QRCodeToken NVARCHAR(100) UNIQUE NOT NULL, -- Unique token for validation
+    CustomerName NVARCHAR(100),
+    CustomerEmail NVARCHAR(100),
+    CustomerPhone NVARCHAR(20),
+    PurchaseDate DATETIME DEFAULT GETDATE(),
+    Price DECIMAL(10,2) NOT NULL,
+    IsUsed BIT DEFAULT 0,
+    UsedAt DATETIME NULL,
+    Status NVARCHAR(20) DEFAULT 'Active' -- 'Active', 'Used', 'Cancelled'
+);
+
+-- 5. Payments Table
+CREATE TABLE Payments (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    OrderId INT FOREIGN KEY REFERENCES Orders(Id),
+    PaymentMethod NVARCHAR(50) NOT NULL, -- 'CreditCard', 'PayPal', 'Stripe', etc.
+    TransactionId NVARCHAR(100) UNIQUE,
+    Amount DECIMAL(10,2) NOT NULL,
+    Currency NVARCHAR(3) DEFAULT 'EUR',
+    Status NVARCHAR(20) NOT NULL, -- 'Pending', 'Completed', 'Failed', 'Refunded'
+    PaymentDate DATETIME DEFAULT GETDATE(),
+    PaymentGatewayResponse NVARCHAR(MAX), -- JSON response from payment provider
+    RefundAmount DECIMAL(10,2) NULL,
+    RefundDate DATETIME NULL,
+    RefundReason NVARCHAR(500) NULL
+);
+
+-- 6. Order Sessions (for tracking active ordering sessions)
+CREATE TABLE OrderSessions (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    TicketId INT FOREIGN KEY REFERENCES Tickets(Id),
+    SessionToken NVARCHAR(100) UNIQUE NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    ExpiresAt DATETIME NOT NULL,
+    IsActive BIT DEFAULT 1,
+    IpAddress NVARCHAR(50),
+    UserAgent NVARCHAR(500)
+);
+
+-- 7. Updated Orders Table
+ALTER TABLE Orders ADD 
+    EventId INT FOREIGN KEY REFERENCES Events(Id),
+    SeatId INT FOREIGN KEY REFERENCES Seats(Id),
+    PaymentId INT FOREIGN KEY REFERENCES Payments(Id),
+    SessionId INT FOREIGN KEY REFERENCES OrderSessions(Id),
+    DeliveryNotes NVARCHAR(500),
+    EstimatedDeliveryTime DATETIME,
+    ActualDeliveryTime DATETIME,
+    AssignedStaffId INT FOREIGN KEY REFERENCES Users(Id);
+
+-- 8. Staff Assignments for Events
+CREATE TABLE EventStaffAssignments (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    EventId INT FOREIGN KEY REFERENCES Events(Id),
+    StaffId INT FOREIGN KEY REFERENCES Users(Id),
+    AssignedSections NVARCHAR(100), -- JSON array of section IDs
+    Role NVARCHAR(50), -- 'Waiter', 'Bartender', 'Supervisor'
+    ShiftStart DATETIME,
+    ShiftEnd DATETIME,
+    IsActive BIT DEFAULT 1
+);
+
+-- 9. Analytics and Reporting Tables
+CREATE TABLE EventAnalytics (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    EventId INT FOREIGN KEY REFERENCES Events(Id),
+    TotalTicketsSold INT DEFAULT 0,
+    TotalRevenue DECIMAL(12,2) DEFAULT 0,
+    TotalOrders INT DEFAULT 0,
+    TotalDrinksSold INT DEFAULT 0,
+    AverageOrderValue DECIMAL(10,2) DEFAULT 0,
+    PeakOrderTime DATETIME,
+    MostPopularDrink NVARCHAR(100),
+    CalculatedAt DATETIME DEFAULT GETDATE()
+);
+
+-- 10. Notifications Table (for real-time updates)
+CREATE TABLE Notifications (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    UserId INT FOREIGN KEY REFERENCES Users(Id),
+    Type NVARCHAR(50) NOT NULL, -- 'NewOrder', 'OrderReady', 'PaymentReceived', etc.
+    Title NVARCHAR(100) NOT NULL,
+    Message NVARCHAR(500) NOT NULL,
+    Data NVARCHAR(MAX), -- JSON payload
+    IsRead BIT DEFAULT 0,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    ReadAt DATETIME NULL
+);
+
+-- Indexes for Performance
+CREATE INDEX IX_Tickets_EventId ON Tickets(EventId);
+CREATE INDEX IX_Tickets_QRCodeToken ON Tickets(QRCodeToken);
+CREATE INDEX IX_Orders_EventId ON Orders(EventId);
+CREATE INDEX IX_Orders_Status ON Orders(Status);
+CREATE INDEX IX_Orders_AssignedStaffId ON Orders(AssignedStaffId);
+CREATE INDEX IX_Payments_OrderId ON Payments(OrderId);
+CREATE INDEX IX_Payments_Status ON Payments(Status);
+CREATE INDEX IX_EventStaffAssignments_EventId ON EventStaffAssignments(EventId);
+CREATE INDEX IX_EventStaffAssignments_StaffId ON EventStaffAssignments(StaffId);
+
+🔧 Complete Feature Implementation Todo List
+# Stadium Drink Ordering System - Complete Implementation Todo List
+
+## Phase 1: Core Infrastructure (Week 1-2)
+
+### Event Management System
+- [ ] Create Event entity model with all properties
+- [ ] Implement EventService for CRUD operations
+- [ ] Build EventController with API endpoints
+- [ ] Create admin pages for event management
+  - [ ] Event creation form with date/time picker
+  - [ ] Event listing with filtering and search
+  - [ ] Event details and editing
+  - [ ] Event activation/deactivation
+- [ ] Add event validation rules (no overlapping events, minimum setup time)
+
+### Stadium Configuration
+- [ ] Create stadium section management interface
+- [ ] Implement seat mapping system
+- [ ] Build visual stadium layout editor
+- [ ] Add seat categorization (Regular, VIP, Accessible)
+- [ ] Create pricing rules per section
+
+### QR Code Ticket System
+- [ ] Integrate QR code generation library (QRCoder or similar)
+- [ ] Create unique ticket token generation algorithm
+- [ ] Implement ticket purchase workflow
+  - [ ] Seat selection interface
+  - [ ] Customer information collection
+  - [ ] Ticket generation and storage
+- [ ] Build QR code validation endpoint
+- [ ] Create ticket verification page for scanning
+- [ ] Add ticket history and management
+
+## Phase 2: Payment Integration (Week 2-3)
+
+### Payment Gateway Integration
+- [ ] Integrate Stripe payment SDK
+- [ ] Create payment service abstraction layer
+- [ ] Implement payment workflows
+  - [ ] Payment initiation
+  - [ ] 3D Secure handling
+  - [ ] Payment confirmation
+  - [ ] Receipt generation
+- [ ] Add payment failure handling and retry logic
+- [ ] Implement refund processing
+- [ ] Create payment dashboard for admins
+- [ ] Add PCI compliance measures
+
+### Order Session Management
+- [ ] Create order session tokens
+- [ ] Implement session timeout logic
+- [ ] Add cart persistence during session
+- [ ] Build session recovery mechanism
+- [ ] Add fraud detection rules
+
+## Phase 3: Customer Ordering Flow (Week 3-4)
+
+### QR Code Scanning Interface
+- [ ] Create mobile-optimized landing page
+- [ ] Implement QR code scanner (for testing)
+- [ ] Build ticket validation flow
+- [ ] Create order placement interface
+  - [ ] Drink selection with categories
+  - [ ] Quantity selection
+  - [ ] Special instructions
+  - [ ] Order summary
+- [ ] Add real-time price calculation
+- [ ] Implement payment processing UI
+- [ ] Create order confirmation page
+- [ ] Add order tracking interface
+
+### Customer Features
+- [ ] Build order history view
+- [ ] Add favorite items functionality
+- [ ] Create reorder feature
+- [ ] Implement order cancellation (with time limits)
+- [ ] Add customer feedback system
+
+## Phase 4: Staff Application Enhancement (Week 4-5)
+
+### Real-time Order Management
+- [ ] Integrate SignalR for real-time updates
+- [ ] Create order notification system
+- [ ] Build live order queue dashboard
+  - [ ] Section-based filtering
+  - [ ] Priority ordering (VIP, time-based)
+  - [ ] Order clustering by location
+- [ ] Implement order acceptance workflow
+- [ ] Add order preparation tracking
+- [ ] Create delivery confirmation system
+
+### Staff Features
+- [ ] Build staff assignment interface
+- [ ] Create section-based order routing
+- [ ] Implement order batching for efficiency
+- [ ] Add estimated delivery time calculation
+- [ ] Create staff performance metrics
+- [ ] Build shift management system
+- [ ] Add staff communication features
+
+### Mobile Optimization for Staff
+- [ ] Create tablet-optimized interface
+- [ ] Implement offline capability
+- [ ] Add barcode scanner for ticket verification
+- [ ] Build delivery route optimization
+- [ ] Create quick status update buttons
+
+## Phase 5: Admin Dashboard Enhancement (Week 5-6)
+
+### Real-time Analytics
+- [ ] Create live sales dashboard
+- [ ] Build real-time order tracking map
+- [ ] Implement revenue monitoring
+- [ ] Add inventory tracking with alerts
+- [ ] Create staff performance dashboard
+- [ ] Build customer behavior analytics
+
+### Reporting System
+- [ ] Generate event summary reports
+- [ ] Create financial reports
+  - [ ] Sales by category
+  - [ ] Revenue by section
+  - [ ] Payment method breakdown
+- [ ] Build inventory reports
+- [ ] Generate staff performance reports
+- [ ] Create tax compliance reports
+- [ ] Add export functionality (PDF, Excel)
+
+### Event Analytics
+- [ ] Track ticket sales progression
+- [ ] Monitor order patterns
+- [ ] Analyze peak times
+- [ ] Calculate conversion rates
+- [ ] Identify popular products
+- [ ] Generate post-event reports
+
+## Phase 6: Demo Data Generator (Week 6)
+
+### Comprehensive Test Data Generation
+- [ ] Create demo event generator
+  - [ ] Generate multiple event types
+  - [ ] Randomize dates and times
+  - [ ] Set varying capacities
+- [ ] Build ticket sales simulator
+  - [ ] Generate realistic sales patterns
+  - [ ] Create customer profiles
+  - [ ] Randomize seat selection
+- [ ] Implement order generation
+  - [ ] Realistic order distribution
+  - [ ] Time-based ordering patterns
+  - [ ] Various payment methods
+  - [ ] Random order statuses
+- [ ] Create historical data
+  - [ ] Past events with complete data
+  - [ ] Analytics history
+  - [ ] Customer purchase patterns
+
+### Testing Scenarios
+- [ ] Create load testing scenarios
+- [ ] Build integration test suites
+- [ ] Implement end-to-end testing
+- [ ] Add performance benchmarks
+- [ ] Create user acceptance test cases
+
+## Phase 7: Security & Optimization (Week 7)
+
+### Security Enhancements
+- [ ] Implement rate limiting
+- [ ] Add CAPTCHA for public endpoints
+- [ ] Enhance JWT token security
+- [ ] Implement API versioning
+- [ ] Add request validation middleware
+- [ ] Create audit logging system
+- [ ] Implement data encryption for sensitive data
+
+### Performance Optimization
+- [ ] Add Redis caching layer
+- [ ] Implement database query optimization
+- [ ] Add CDN for static assets
+- [ ] Optimize image delivery
+- [ ] Implement lazy loading
+- [ ] Add response compression
+- [ ] Create database indexing strategy
+
+## Phase 8: Additional Features (Week 8)
+
+### Advanced Features
+- [ ] Multi-language support
+- [ ] Email notification system
+- [ ] SMS notifications for orders
+- [ ] Loyalty program integration
+- [ ] Group ordering for boxes/suites
+- [ ] Pre-event ordering
+- [ ] Allergen information display
+- [ ] Nutritional information
+
+### Integration Capabilities
+- [ ] Create webhook system
+- [ ] Build third-party API integrations
+- [ ] Add accounting software export
+- [ ] Implement inventory management sync
+- [ ] Create partner venue integration
+
+## Technical Debt & Documentation
+
+### Code Quality
+- [ ] Refactor duplicate code
+- [ ] Improve error handling
+- [ ] Add comprehensive logging
+- [ ] Update unit tests (80% coverage)
+- [ ] Create integration tests
+- [ ] Add performance tests
+
+### Documentation
+- [ ] Update API documentation
+- [ ] Create user manuals
+- [ ] Write deployment guides
+- [ ] Document security procedures
+- [ ] Create troubleshooting guide
+- [ ] Build developer onboarding docs
+
+## Deployment & DevOps
+
+### Infrastructure
+- [ ] Update Docker configurations
+- [ ] Create Kubernetes manifests
+- [ ] Set up CI/CD pipelines
+- [ ] Configure monitoring (Prometheus/Grafana)
+- [ ] Set up log aggregation (ELK stack)
+- [ ] Create backup strategies
+- [ ] Implement disaster recovery
+
+### Environment Management
+- [ ] Create staging environment
+- [ ] Set up feature flags
+- [ ] Implement blue-green deployment
+- [ ] Create rollback procedures
+- [ ] Set up health monitoring
+- [ ] Configure auto-scaling
+
+## Priority Order for Implementation
+
+### Must Have (MVP)
+1. Event Management System
+2. QR Code Ticket System
+3. Payment Integration
+4. Basic Order Flow
+5. Real-time Staff Updates
+6. Admin Dashboard
+
+### Should Have
+1. Demo Data Generator
+2. Advanced Analytics
+3. Performance Optimization
+4. Mobile Optimization
+
+### Nice to Have
+1. Loyalty Program
+2. Multi-language Support
+3. Advanced Integrations
+4. AI-powered Features
+
+
+🎯 API Endpoints Required for Complete System
+# Stadium System - Complete API Endpoints Specification
+
+## Event Management Endpoints
+
+### Events
+```
+GET    /api/events                      - List all events (paginated)
+GET    /api/events/{id}                 - Get event details
+GET    /api/events/active               - Get currently active events
+GET    /api/events/{id}/analytics       - Get event analytics
+POST   /api/events                      - Create new event (Admin)
+PUT    /api/events/{id}                 - Update event (Admin)
+DELETE /api/events/{id}                 - Delete event (Admin)
+POST   /api/events/{id}/activate        - Activate event (Admin)
+POST   /api/events/{id}/deactivate      - Deactivate event (Admin)
+```
+
+### Stadium Configuration
+```
+GET    /api/stadium/sections            - Get all sections
+GET    /api/stadium/sections/{id}       - Get section details
+GET    /api/stadium/seats               - Get all seats
+GET    /api/stadium/layout              - Get stadium layout JSON
+POST   /api/stadium/sections            - Create section (Admin)
+PUT    /api/stadium/sections/{id}       - Update section (Admin)
+DELETE /api/stadium/sections/{id}       - Delete section (Admin)
+```
+
+## Ticket System Endpoints
+
+### Ticket Management
+```
+GET    /api/tickets                     - List tickets (Admin)
+GET    /api/tickets/{ticketNumber}      - Get ticket details
+GET    /api/tickets/event/{eventId}     - Get tickets for event
+POST   /api/tickets/purchase            - Purchase tickets
+POST   /api/tickets/validate            - Validate QR code
+POST   /api/tickets/generate-qr         - Generate QR code
+GET    /api/tickets/{id}/qr-code        - Get QR code image
+POST   /api/tickets/{id}/cancel         - Cancel ticket
+POST   /api/tickets/{id}/transfer       - Transfer ticket
+```
+
+### Seat Availability
+```
+GET    /api/events/{eventId}/availability     - Get available seats
+GET    /api/events/{eventId}/sections/{sectionId}/availability
+POST   /api/events/{eventId}/seats/reserve    - Reserve seats temporarily
+POST   /api/events/{eventId}/seats/release    - Release seat reservation
+```
+
+## Payment Endpoints
+
+### Payment Processing
+```
+POST   /api/payments/initiate           - Start payment process
+POST   /api/payments/confirm            - Confirm payment
+POST   /api/payments/cancel             - Cancel payment
+GET    /api/payments/{id}               - Get payment details
+POST   /api/payments/{id}/refund        - Process refund
+GET    /api/payments/methods            - Get available payment methods
+POST   /api/payments/webhook            - Payment provider webhook
+```
+
+### Payment History
+```
+GET    /api/payments/history            - Get payment history
+GET    /api/payments/receipts/{id}      - Get receipt
+POST   /api/payments/receipts/{id}/send - Email receipt
+```
+
+## Order Management Endpoints
+
+### Customer Ordering
+```
+POST   /api/orders/session/start        - Start ordering session
+GET    /api/orders/session/{token}      - Get session details
+POST   /api/orders/session/{token}/add-item    - Add item to cart
+DELETE /api/orders/session/{token}/remove-item - Remove item
+POST   /api/orders/session/{token}/checkout    - Proceed to checkout
+POST   /api/orders/create               - Create order with payment
+GET    /api/orders/{id}/track           - Track order status
+POST   /api/orders/{id}/cancel          - Cancel order
+GET    /api/orders/my-orders            - Get customer's orders
+```
+
+### Staff Order Management
+```
+GET    /api/staff/orders/queue          - Get order queue (real-time)
+GET    /api/staff/orders/section/{sectionId} - Orders by section
+POST   /api/staff/orders/{id}/accept    - Accept order
+POST   /api/staff/orders/{id}/prepare   - Start preparation
+POST   /api/staff/orders/{id}/ready     - Mark as ready
+POST   /api/staff/orders/{id}/deliver   - Confirm delivery
+POST   /api/staff/orders/{id}/assign    - Assign to staff member
+GET    /api/staff/orders/my-assignments - Get assigned orders
+POST   /api/staff/orders/batch-update   - Update multiple orders
+```
+
+## Real-time Communication Endpoints (SignalR Hubs)
+
+### Order Updates Hub
+```
+/hubs/orders
+  - ReceiveNewOrder(order)             - New order notification
+  - OrderStatusChanged(orderId, status) - Status update
+  - OrderAssigned(orderId, staffId)    - Assignment notification
+  - OrderDelivered(orderId)            - Delivery confirmation
+```
+
+### Staff Coordination Hub
+```
+/hubs/staff
+  - StaffLocationUpdate(staffId, location)
+  - RequestAssistance(location, message)
+  - BroadcastMessage(message)
+  - ShiftChange(staffId, status)
+```
+
+## Analytics & Reporting Endpoints
+
+### Real-time Analytics
+```
+GET    /api/analytics/dashboard         - Main dashboard data
+GET    /api/analytics/live              - Live statistics
+GET    /api/analytics/sales             - Sales analytics
+GET    /api/analytics/inventory         - Inventory status
+GET    /api/analytics/staff-performance - Staff metrics
+```
+
+### Reports
+```
+GET    /api/reports/event/{eventId}     - Event summary report
+GET    /api/reports/financial/daily     - Daily financial report
+GET    /api/reports/financial/monthly   - Monthly financial report
+GET    /api/reports/inventory           - Inventory report
+GET    /api/reports/tax                 - Tax report
+POST   /api/reports/generate            - Generate custom report
+GET    /api/reports/{id}/download       - Download report (PDF/Excel)
+```
+
+## Demo Data Endpoints
+
+### Test Data Generation
+```
+POST   /api/demo/generate-event         - Generate demo event
+POST   /api/demo/generate-tickets       - Generate ticket sales
+POST   /api/demo/generate-orders        - Generate orders
+POST   /api/demo/simulate-event         - Simulate complete event
+POST   /api/demo/reset                  - Reset to clean state
+GET    /api/demo/status                 - Get demo data status
+```
+
+## Staff Management Endpoints
+
+### Staff Assignment
+```
+GET    /api/staff                       - List all staff
+GET    /api/staff/{id}                  - Get staff details
+POST   /api/staff/assign-event          - Assign to event
+POST   /api/staff/assign-section        - Assign to section
+GET    /api/staff/schedule              - Get staff schedule
+POST   /api/staff/clock-in              - Clock in
+POST   /api/staff/clock-out             - Clock out
+GET    /api/staff/active                - Get active staff
+```
+
+### Shift Management
+```
+GET    /api/shifts                      - List shifts
+POST   /api/shifts                      - Create shift
+PUT    /api/shifts/{id}                 - Update shift
+DELETE /api/shifts/{id}                 - Delete shift
+POST   /api/shifts/{id}/swap            - Request shift swap
+```
+
+## System Administration Endpoints
+
+### User Management
+```
+GET    /api/admin/users                 - List all users
+POST   /api/admin/users                 - Create user
+PUT    /api/admin/users/{id}            - Update user
+DELETE /api/admin/users/{id}            - Delete user
+POST   /api/admin/users/{id}/roles      - Assign roles
+POST   /api/admin/users/{id}/reset-password - Reset password
+```
+
+### System Configuration
+```
+GET    /api/admin/settings              - Get system settings
+PUT    /api/admin/settings              - Update settings
+GET    /api/admin/logs                  - View system logs
+GET    /api/admin/health                - Health check
+POST   /api/admin/cache/clear           - Clear cache
+GET    /api/admin/metrics               - System metrics
+```
+
+## Integration Endpoints
+
+### External Systems
+```
+POST   /api/integrations/webhook        - Receive webhooks
+GET    /api/integrations/status         - Integration status
+POST   /api/integrations/sync           - Trigger sync
+GET    /api/integrations/mappings       - Get field mappings
+```
+
+### Export/Import
+```
+POST   /api/export/orders               - Export orders
+POST   /api/export/customers            - Export customers
+POST   /api/export/financial            - Export financial data
+POST   /api/import/inventory            - Import inventory
+POST   /api/import/products             - Import products
+```
+
+## Authentication & Authorization
+
+All endpoints require appropriate authentication except:
+- POST /api/auth/login
+- POST /api/auth/register (if public registration enabled)
+- POST /api/tickets/validate (public QR validation)
+- GET /api/health (health check)
+
+### Authorization Levels
+- **Public**: QR validation, order placement (with valid ticket)
+- **Customer**: Own orders, order history
+- **Staff**: Order management, delivery confirmation
+- **Admin**: Full system access
+- **Super Admin**: System configuration, user management
+
+
+
+
+🔄 Critical Workflow Validation
+Based on the complete workflow analysis, here are the critical missing pieces that need immediate attention:
+# Critical Gaps Analysis & Immediate Actions
+
+## 🚨 Critical Missing Components
+
+### 1. Event Management System (CRITICAL - Week 1)
+**Current State**: ❌ Completely missing
+**Impact**: Cannot organize events or sell tickets
+**Immediate Actions**:
+- Create Event model and database tables
+- Build basic CRUD operations for events
+- Add event-ticket relationship
+- Implement event status management
+
+### 2. QR Code Generation & Validation (CRITICAL - Week 1)
+**Current State**: ❌ No QR functionality
+**Impact**: Cannot validate customers or enable ordering
+**Immediate Actions**:
+- Integrate QRCoder NuGet package
+- Create QR generation service
+- Build validation endpoint
+- Implement scanning interface
+
+### 3. Payment Processing (CRITICAL - Week 2)
+**Current State**: ❌ No payment integration
+**Impact**: Cannot process customer payments
+**Immediate Actions**:
+- Integrate Stripe SDK
+- Create payment service
+- Implement payment flow
+- Add payment status tracking
+
+### 4. Real-time Updates with SignalR (HIGH - Week 2)
+**Current State**: ❌ No real-time capabilities
+**Impact**: Staff cannot see orders in real-time
+**Immediate Actions**:
+- Add SignalR to API project
+- Create OrderHub for notifications
+- Implement client-side listeners
+- Add connection management
+
+### 5. Seat-Based Order Delivery (HIGH - Week 2)
+**Current State**: ⚠️ Partial (tickets exist but not linked to orders properly)
+**Impact**: Cannot deliver to specific seats
+**Immediate Actions**:
+- Link orders to seats
+- Add seat information to order display
+- Create section-based filtering
+- Implement delivery confirmation
+
+## ✅ Components That Can Be Adapted
+
+### 1. User Authentication System
+**Current State**: ✅ Working
+**Adaptations Needed**:
+- Add event-specific staff assignments
+- Implement section-based permissions
+- Add shift management
+
+### 2. Drink Management
+**Current State**: ✅ Working
+**Adaptations Needed**:
+- Add event-specific pricing
+- Implement inventory per event
+- Add availability scheduling
+
+### 3. Basic Order System
+**Current State**: ⚠️ Partially working
+**Adaptations Needed**:
+- Add event context
+- Link to payment system
+- Add QR validation requirement
+- Implement delivery tracking
+
+## 📊 Demo Data Generator Requirements
+
+### Essential Test Data Components
+```csharp
+public class DemoDataGenerator
+{
+    // Events
+    - Generate 5-10 events (past, current, future)
+    - Different event types (football, concert, etc.)
+    
+    // Tickets per Event
+    - 60-80% capacity sold
+    - Random distribution across sections
+    - Mix of single and group purchases
+    
+    // Orders per Event
+    - 30-50% of tickets generate orders
+    - 1-3 orders per ticket
+    - Random time distribution during event
+    - Various order statuses
+    
+    // Payments
+    - 95% successful payments
+    - 3% failed payments
+    - 2% refunds
+    
+    // Staff Assignments
+    - 10-15 staff per event
+    - Section assignments
+    - Shift schedules
+}
+```
+
+## 🎯 Minimum Viable Product (MVP) Checklist
+
+### Phase 1: Core Infrastructure (Must Complete First)
+- [ ] Event management system
+- [ ] Stadium configuration (sections, seats)
+- [ ] QR code generation for tickets
+- [ ] Basic ticket purchase flow
+
+### Phase 2: Ordering System
+- [ ] QR code validation endpoint
+- [ ] Session-based ordering
+- [ ] Payment integration (Stripe)
+- [ ] Order creation with seat info
+
+### Phase 3: Staff Operations
+- [ ] Real-time order notifications
+- [ ] Order assignment system
+- [ ] Delivery confirmation
+- [ ] Basic staff dashboard
+
+### Phase 4: Admin Oversight
+- [ ] Event analytics
+- [ ] Sales reporting
+- [ ] Staff management
+- [ ] System monitoring
+
+## 🚀 Quick Win Implementations
+
+### Day 1-2: Database and Models
+```csharp
+// Priority entities to create
+- Event.cs
+- EventTicket.cs (updated Ticket)
+- Payment.cs
+- OrderSession.cs
+- EventStaffAssignment.cs
+```
+
+### Day 3-4: Core Services
+```csharp
+// Essential services
+- IEventService
+- IQRCodeService
+- IPaymentService
+- IOrderSessionService
+```
+
+### Day 5-6: API Endpoints
+```csharp
+// Minimum required endpoints
+- EventController (CRUD)
+- TicketValidationController
+- PaymentController
+- OrderSessionController
+```
+
+### Day 7-8: UI Updates
+```razor
+// Customer App
+- QRLandingPage.razor
+- TicketValidation.razor
+- PaymentProcess.razor
+
+// Staff App
+- LiveOrderQueue.razor
+- DeliveryConfirmation.razor
+
+// Admin App
+- EventManagement.razor
+- EventAnalytics.razor
+```
+
+## 📝 Configuration Updates Required
+
+### appsettings.json additions:
+```json
+{
+  "PaymentSettings": {
+    "StripeApiKey": "",
+    "StripeWebhookSecret": "",
+    "Currency": "EUR"
+  },
+  "QRSettings": {
+    "BaseUrl": "https://stadium.example.com",
+    "TokenExpiration": 240
+  },
+  "SignalR": {
+    "EnableDetailedErrors": true
+  },
+  "DemoMode": {
+    "Enabled": false,
+    "AutoGenerateData": false
+  }
+}
+```
+
+### Docker Compose Updates:
+```yaml
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - stadium-network
+```
+
+## ⚡ Performance Considerations
+
+### Caching Strategy
+- Cache event data (Redis, 5 min TTL)
+- Cache seat availability (1 min TTL)
+- Cache user sessions (30 min TTL)
+
+### Database Optimizations
+- Index on QRCodeToken
+- Index on EventId + Status for orders
+- Partition orders table by EventId
+
+### Real-time Optimizations
+- Use SignalR groups per section
+- Implement message throttling
+- Add connection retry logic
+
+## 🔒 Security Requirements
+
+### Payment Security
+- PCI DSS compliance
+- Tokenize card data (never store)
+- Use HTTPS for all payment endpoints
+- Implement 3D Secure authentication
+- Add payment fraud detection
+
+### QR Code Security
+- Time-limited tokens (4 hours)
+- One-time use validation
+- IP-based rate limiting
+- Encrypted QR payload
+- Session binding to prevent sharing
+
+### API Security
+- Rate limiting per endpoint
+- CORS configuration for mobile apps
+- API key rotation
+- Request signing for webhooks
+- Audit logging for all transactions
+
+## 🎮 Demo Data Generator Implementation
+
+### Complete Demo Data Service
+```csharp
+public interface IDemoDataService
+{
+    Task<DemoDataResult> GenerateCompleteEventScenario(DemoEventOptions options);
+    Task<DemoDataResult> GenerateHistoricalData(int monthsBack);
+    Task ResetToCleanState();
+}
+
+public class DemoEventOptions
+{
+    public string EventName { get; set; }
+    public DateTime EventDate { get; set; }
+    public int TotalSeats { get; set; } = 50000;
+    public decimal TicketSalesPercentage { get; set; } = 0.75m;
+    public decimal OrderGenerationRate { get; set; } = 0.40m;
+    public int StaffCount { get; set; } = 15;
+    public bool SimulateRealTime { get; set; } = false;
+}
+```
+
+### Demo Scenarios to Generate
+1. **Past Football Match** - Complete with all orders delivered
+2. **Current Live Event** - Orders in various states
+3. **Upcoming Concert** - Only ticket sales, no orders yet
+4. **VIP Boxing Event** - High-value orders, premium pricing
+5. **Family Event** - High soft drink/snack orders
+
+## 📱 Mobile Optimization Requirements
+
+### Customer Mobile Experience
+- Progressive Web App (PWA) setup
+- Offline capability for order history
+- Touch-optimized interfaces
+- Camera API for QR scanning
+- Mobile payment SDKs integration
+
+### Staff Tablet Interface
+- Landscape orientation optimization
+- Large touch targets
+- Swipe gestures for order management
+- Offline queue synchronization
+- Battery optimization
+
+## 🔄 Complete Order Workflow Validation
+
+### Customer Journey
+```mermaid
+graph TD
+    A[Buy Ticket Online] --> B[Receive QR Code Ticket]
+    B --> C[Arrive at Stadium]
+    C --> D[Scan QR with Phone]
+    D --> E[Validate Ticket]
+    E --> F[Open Order Interface]
+    F --> G[Select Drinks]
+    G --> H[Add to Cart]
+    H --> I[Proceed to Payment]
+    I --> J[Enter Payment Details]
+    J --> K[Payment Processing]
+    K --> L[Order Confirmed]
+    L --> M[Real-time Tracking]
+    M --> N[Receive Delivery]
+    N --> O[Confirm Receipt]
+```
+
+### Staff Workflow
+```mermaid
+graph TD
+    A[Clock In] --> B[Assign to Section]
+    B --> C[Monitor Order Queue]
+    C --> D[New Order Alert]
+    D --> E[Accept Order]
+    E --> F[Prepare Drinks]
+    F --> G[Mark Ready]
+    G --> H[Navigate to Seat]
+    H --> I[Deliver Order]
+    I --> J[Confirm Delivery]
+    J --> K[Return to Queue]
+```
+
+## 🏁 Final Implementation Checklist
+
+### Week 1: Foundation
+- [x] Analyze current system
+- [ ] Create database schema updates
+- [ ] Implement Event management
+- [ ] Build QR code system
+- [ ] Create ticket validation
+
+### Week 2: Payment & Orders
+- [ ] Integrate Stripe
+- [ ] Build payment flow
+- [ ] Create order sessions
+- [ ] Link orders to seats
+- [ ] Implement order tracking
+
+### Week 3: Real-time Features
+- [ ] Add SignalR
+- [ ] Create notification system
+- [ ] Build live dashboards
+- [ ] Implement order queue
+- [ ] Add staff coordination
+
+### Week 4: Staff Application
+- [ ] Create staff dashboard
+- [ ] Build delivery system
+- [ ] Add section assignments
+- [ ] Implement performance tracking
+- [ ] Create shift management
+
+### Week 5: Admin Features
+- [ ] Build event analytics
+- [ ] Create financial reports
+- [ ] Add inventory management
+- [ ] Implement user management
+- [ ] Create system monitoring
+
+### Week 6: Testing & Demo
+- [ ] Create demo data generator
+- [ ] Build test scenarios
+- [ ] Perform load testing
+- [ ] User acceptance testing
+- [ ] Bug fixes and optimization
+
+### Week 7: Deployment
+- [ ] Production environment setup
+- [ ] Security hardening
+- [ ] Performance optimization
+- [ ] Documentation completion
+- [ ] Team training
+
+### Week 8: Launch & Monitor
+- [ ] Soft launch with limited events
+- [ ] Monitor system performance
+- [ ] Gather user feedback
+- [ ] Iterate and improve
+- [ ] Full production rollout
+
+## 📚 Required NuGet Packages to Add
+
+```xml
+<!-- Payment Processing -->
+<PackageReference Include="Stripe.net" Version="43.0.0" />
+
+<!-- QR Code Generation -->
+<PackageReference Include="QRCoder" Version="1.4.3" />
+
+<!-- Real-time Communication -->
+<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="8.0.0" />
+<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
+
+<!-- Caching -->
+<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.0" />
+
+<!-- PDF Generation for Reports -->
+<PackageReference Include="iTextSharp" Version="5.5.13" />
+
+<!-- Excel Export -->
+<PackageReference Include="ClosedXML" Version="0.102.0" />
+
+<!-- SMS Notifications (optional) -->
+<PackageReference Include="Twilio" Version="6.0.0" />
+
+<!-- Email Service -->
+<PackageReference Include="SendGrid" Version="9.28.1" />
+```
+
+## 🎯 Success Metrics
+
+### Technical KPIs
+- API response time < 200ms
+- Order processing time < 5 seconds
+- Payment success rate > 98%
+- System uptime > 99.9%
+- Real-time notification delay < 1 second
+
+### Business KPIs
+- Order completion rate > 95%
+- Average delivery time < 10 minutes
+- Customer satisfaction > 4.5/5
+- Staff efficiency: 50+ orders/shift
+- Revenue per event increase > 20%
+
+## 🚦 Go/No-Go Criteria for Launch
+
+### Must Have (Launch Blockers)
+✅ Event creation and management
+✅ QR ticket generation and validation
+✅ Payment processing working
+✅ Order placement and tracking
+✅ Staff order management
+✅ Basic admin dashboard
+✅ Security measures in place
+✅ Load tested for 10,000 concurrent users
+
+### Should Have (Post-Launch Priority)
+- Advanced analytics
+- Loyalty program
+- Multi-language support
+- Advanced reporting
+- Third-party integrations
+
+### Nice to Have (Future Enhancements)
+- AI demand forecasting
+- Voice ordering
+- AR seat finding
+- Blockchain ticketing
+- Cryptocurrency payments
+
+## 💡 Key Recommendations
+
+1. **Start with Event Management** - This is the foundation everything else depends on
+2. **Prioritize Payment Integration** - Test thoroughly in sandbox before production
+3. **Focus on Mobile Experience** - Most customers will order from phones
+4. **Implement Caching Early** - Redis will be crucial for performance
+5. **Build Demo Generator First** - Use it to test all workflows before go-live
+6. **Plan for Offline Scenarios** - Stadium networks can be unreliable
+7. **Security First Approach** - Especially for payment and personal data
+8. **Incremental Rollout** - Start with one small event before full deployment
+
+
+
+Summary
+Based on the comprehensive analysis of your Stadium Drink Ordering System, the current application cannot support the complete business workflow you've described. Here are the key findings:
+❌ Major Missing Components:
+
+Event Management System - No way to create/manage stadium events
+QR Code Functionality - Cannot generate or validate QR tickets
+Payment Processing - No integrated payment gateway
+Real-time Updates - Missing SignalR for live order notifications
+Proper Seat-Order Linking - Orders aren't properly connected to specific seats/sections
+
+✅ What's Already Working:
+
+Basic authentication and user management
+Drink inventory system
+Simple order creation
+Staff and admin interfaces (need major updates)
+
+🎯 Recommended Approach:
+The system needs substantial development to support your workflow. I've created three detailed artifacts above:
+
+Database Schema Updates - All required tables for events, payments, QR codes, etc.
+Complete Implementation Todo List - 8-week detailed plan with priorities
+API Endpoints Specification - All endpoints needed for the complete system
+Critical Gaps Analysis - What needs immediate attention with quick wins
+
+🚀 Next Steps Priority:
+
+Week 1: Implement Event Management and QR system
+Week 2: Add Payment Processing (Stripe) and link orders to seats
+Week 3: Integrate SignalR for real-time updates
+Week 4: Enhance Staff App for delivery management
+Week 5-6: Complete Admin Analytics and Demo Data Generator
+
+The demo data generator you mentioned is crucial and should include generating events, ticket sales (60-80% capacity), and orders (30-50% of tickets placing 1-3 orders each) with realistic patterns.
+With focused development following the provided plan, you can have a working MVP in 4 weeks and a complete system in 8 weeks.RetryClaude can make mistakes. Please double-check responses.

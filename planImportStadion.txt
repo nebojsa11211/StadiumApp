@@ -1,0 +1,991 @@
+🏗️ Stadium Structure Administration Implementation Plan
+📋 Phase 1: Database Preparation
+1.1 Create Required Tables
+sql
+-- Table for tribunes
+CREATE TABLE Tribunes (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Code NVARCHAR(1) NOT NULL UNIQUE CHECK (Code IN ('N', 'S', 'E', 'W')),
+    Name NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(500) NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE()
+);
+
+-- Table for rings
+CREATE TABLE Rings (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    TribuneId INT NOT NULL FOREIGN KEY REFERENCES Tribunes(Id) ON DELETE CASCADE,
+    Number INT NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT UK_Rings_Tribune_Number UNIQUE (TribuneId, Number)
+);
+
+-- Table for sectors
+CREATE TABLE Sectors (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    RingId INT NOT NULL FOREIGN KEY REFERENCES Rings(Id) ON DELETE CASCADE,
+    Code NVARCHAR(5) NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    TotalRows INT NOT NULL CHECK (TotalRows > 0),
+    SeatsPerRow INT NOT NULL CHECK (SeatsPerRow > 0),
+    StartRow INT NOT NULL DEFAULT 1,
+    StartSeat INT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT UK_Sectors_Ring_Code UNIQUE (RingId, Code)
+);
+
+-- Table for seats
+CREATE TABLE Seats (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    SectorId INT NOT NULL FOREIGN KEY REFERENCES Sectors(Id) ON DELETE CASCADE,
+    RowNumber INT NOT NULL,
+    SeatNumber INT NOT NULL,
+    UniqueCode NVARCHAR(20) NOT NULL UNIQUE,
+    IsAvailable BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT UK_Seats_Sector_Row_Number UNIQUE (SectorId, RowNumber, SeatNumber)
+);
+1.2 C# Models
+csharp
+// StadiumModels.cs
+public class Tribune
+{
+    public int Id { get; set; }
+    
+    [Required]
+    [StringLength(1)]
+    public string Code { get; set; } = string.Empty; // N, S, E, W
+    
+    [Required]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+    
+    [StringLength(500)]
+    public string? Description { get; set; }
+    
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    public List<Ring> Rings { get; set; } = new();
+}
+
+public class Ring
+{
+    public int Id { get; set; }
+    public int TribuneId { get; set; }
+    
+    [Required]
+    public int Number { get; set; }
+    
+    [Required]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+    
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    public Tribune? Tribune { get; set; }
+    public List<Sector> Sectors { get; set; } = new();
+}
+
+public class Sector
+{
+    public int Id { get; set; }
+    public int RingId { get; set; }
+    
+    [Required]
+    [StringLength(5)]
+    public string Code { get; set; } = string.Empty;
+    
+    [Required]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+    
+    [Range(1, int.MaxValue)]
+    public int TotalRows { get; set; }
+    
+    [Range(1, int.MaxValue)]
+    public int SeatsPerRow { get; set; }
+    
+    public int StartRow { get; set; } = 1;
+    public int StartSeat { get; set; } = 1;
+    
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    public Ring? Ring { get; set; }
+    public List<Seat> Seats { get; set; } = new();
+}
+
+public class Seat
+{
+    public int Id { get; set; }
+    public int SectorId { get; set; }
+    
+    [Required]
+    public int RowNumber { get; set; }
+    
+    [Required]
+    public int SeatNumber { get; set; }
+    
+    [Required]
+    [StringLength(20)]
+    public string UniqueCode { get; set; } = string.Empty;
+    
+    public bool IsAvailable { get; set; } = true;
+    
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    public Sector? Sector { get; set; }
+}
+📋 Phase 2: Structure Management Services
+2.1 Structure Management Service
+csharp
+// IStadiumStructureService.cs
+public interface IStadiumStructureService
+{
+    Task<bool> ImportFromJsonAsync(IFormFile jsonFile);
+    Task<bool> ImportFromCsvAsync(IFormFile csvFile);
+    Task<bool> ClearExistingStructureAsync();
+    Task<StadiumSummaryDto> GetStadiumSummaryAsync();
+    Task<List<Tribune>> GetFullStructureAsync();
+    Task<int> GetTotalSeatsCountAsync();
+    Task<bool> GenerateSeatsForSectorAsync(int sectorId);
+    Task<MemoryStream> ExportToJsonAsync();
+    Task<MemoryStream> ExportToCsvAsync();
+}
+
+// StadiumStructureService.cs
+public class StadiumStructureService : IStadiumStructureService
+{
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<StadiumStructureService> _logger;
+
+    public StadiumStructureService(ApplicationDbContext context, ILogger<StadiumStructureService> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    public async Task<bool> ImportFromJsonAsync(IFormFile jsonFile)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        
+        try
+        {
+            // 1. Clear existing structure
+            await ClearExistingStructureAsync();
+            
+            // 2. Read and parse JSON
+            using var streamReader = new StreamReader(jsonFile.OpenReadStream());
+            var jsonContent = await streamReader.ReadToEndAsync();
+            var stadiumData = JsonSerializer.Deserialize<StadiumImportDto>(jsonContent);
+            
+            if (stadiumData?.Tribunes == null)
+                throw new ArgumentException("Invalid JSON structure");
+            
+            // 3. Validate data
+            var validationResult = StadiumValidator.Validate(stadiumData);
+            if (!validationResult.IsValid)
+                throw new ArgumentException($"Validation failed: {string.Join(", ", validationResult.Errors)}");
+            
+            // 4. Save new structure
+            foreach (var tribuneDto in stadiumData.Tribunes)
+            {
+                var tribune = new Tribune 
+                { 
+                    Code = tribuneDto.Code, 
+                    Name = tribuneDto.Name,
+                    Description = tribuneDto.Description
+                };
+                
+                _context.Tribunes.Add(tribune);
+                await _context.SaveChangesAsync();
+                
+                foreach (var ringDto in tribuneDto.Rings)
+                {
+                    var ring = new Ring 
+                    { 
+                        TribuneId = tribune.Id, 
+                        Number = ringDto.Number, 
+                        Name = ringDto.Name 
+                    };
+                    
+                    _context.Rings.Add(ring);
+                    await _context.SaveChangesAsync();
+                    
+                    foreach (var sectorDto in ringDto.Sectors)
+                    {
+                        var sector = new Sector 
+                        { 
+                            RingId = ring.Id,
+                            Code = sectorDto.Code,
+                            Name = sectorDto.Name,
+                            TotalRows = sectorDto.Rows,
+                            SeatsPerRow = sectorDto.SeatsPerRow,
+                            StartRow = sectorDto.StartRow,
+                            StartSeat = sectorDto.StartSeat
+                        };
+                        
+                        _context.Sectors.Add(sector);
+                        await _context.SaveChangesAsync();
+                        
+                        // Generate seats for sector
+                        await GenerateSeatsForSectorAsync(sector.Id);
+                    }
+                }
+            }
+            
+            await transaction.CommitAsync();
+            _logger.LogInformation("Stadium structure imported successfully from JSON");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Failed to import stadium structure from JSON");
+            return false;
+        }
+    }
+
+    public async Task<bool> GenerateSeatsForSectorAsync(int sectorId)
+    {
+        var sector = await _context.Sectors
+            .Include(s => s.Ring)
+            .ThenInclude(r => r.Tribune)
+            .FirstOrDefaultAsync(s => s.Id == sectorId);
+        
+        if (sector == null) return false;
+        
+        var seats = new List<Seat>();
+        
+        for (int row = sector.StartRow; row < sector.StartRow + sector.TotalRows; row++)
+        {
+            for (int seatNum = sector.StartSeat; seatNum < sector.StartSeat + sector.SeatsPerRow; seatNum++)
+            {
+                var uniqueCode = $"{sector.Ring.Tribune.Code}-{sector.Ring.Number}-{sector.Code}-{row}-{seatNum}";
+                
+                seats.Add(new Seat 
+                { 
+                    SectorId = sector.Id,
+                    RowNumber = row,
+                    SeatNumber = seatNum,
+                    UniqueCode = uniqueCode,
+                    IsAvailable = true
+                });
+            }
+        }
+        
+        _context.Seats.AddRange(seats);
+        await _context.SaveChangesAsync();
+        
+        return true;
+    }
+
+    public async Task<bool> ClearExistingStructureAsync()
+    {
+        try
+        {
+            // Delete in order due to foreign key constraints
+            await _context.Seats.ExecuteDeleteAsync();
+            await _context.Sectors.ExecuteDeleteAsync();
+            await _context.Rings.ExecuteDeleteAsync();
+            await _context.Tribunes.ExecuteDeleteAsync();
+            
+            _logger.LogInformation("Existing stadium structure cleared");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to clear existing stadium structure");
+            return false;
+        }
+    }
+
+    public async Task<StadiumSummaryDto> GetStadiumSummaryAsync()
+    {
+        var summary = new StadiumSummaryDto
+        {
+            TotalTribunes = await _context.Tribunes.CountAsync(),
+            TotalRings = await _context.Rings.CountAsync(),
+            TotalSectors = await _context.Sectors.CountAsync(),
+            TotalSeats = await _context.Seats.CountAsync(),
+            AvailableSeats = await _context.Seats.CountAsync(s => s.IsAvailable),
+            OccupiedSeats = await _context.Seats.CountAsync(s => !s.IsAvailable)
+        };
+        
+        return summary;
+    }
+}
+2.2 DTO Classes for Import/Export
+csharp
+// StadiumImportDto.cs
+public class StadiumImportDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public List<TribuneImportDto> Tribunes { get; set; } = new();
+}
+
+public class TribuneImportDto
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public List<RingImportDto> Rings { get; set; } = new();
+}
+
+public class RingImportDto
+{
+    public int Number { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public List<SectorImportDto> Sectors { get; set; } = new();
+}
+
+public class SectorImportDto
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public int Rows { get; set; }
+    public int SeatsPerRow { get; set; }
+    public int StartRow { get; set; } = 1;
+    public int StartSeat { get; set; } = 1;
+}
+
+// StadiumSummaryDto.cs
+public class StadiumSummaryDto
+{
+    public int TotalTribunes { get; set; }
+    public int TotalRings { get; set; }
+    public int TotalSectors { get; set; }
+    public int TotalSeats { get; set; }
+    public int AvailableSeats { get; set; }
+    public int OccupiedSeats { get; set; }
+}
+2.3 Validator
+csharp
+// StadiumValidator.cs
+public static class StadiumValidator
+{
+    public static ValidationResult Validate(StadiumImportDto stadium)
+    {
+        var errors = new List<string>();
+        
+        if (string.IsNullOrEmpty(stadium.Name))
+            errors.Add("Stadium name is required");
+        
+        if (stadium.Tribunes == null || !stadium.Tribunes.Any())
+            errors.Add("At least one tribune is required");
+        
+        var validCodes = new[] { "N", "S", "E", "W" };
+        var usedCodes = new HashSet<string>();
+        
+        foreach (var tribune in stadium.Tribunes)
+        {
+            if (string.IsNullOrEmpty(tribune.Code) || tribune.Code.Length != 1)
+                errors.Add($"Tribune '{tribune.Name}' must have a single character code");
+            else if (!validCodes.Contains(tribune.Code))
+                errors.Add($"Tribune '{tribune.Name}' has invalid code '{tribune.Code}'. Valid codes: N, S, E, W");
+            else if (!usedCodes.Add(tribune.Code))
+                errors.Add($"Duplicate tribune code '{tribune.Code}'");
+            
+            if (tribune.Rings == null || !tribune.Rings.Any())
+                errors.Add($"Tribune '{tribune.Name}' must have at least one ring");
+            
+            var ringNumbers = new HashSet<int>();
+            foreach (var ring in tribune.Rings)
+            {
+                if (ring.Number < 1)
+                    errors.Add($"Ring number must be positive in tribune '{tribune.Name}'");
+                else if (!ringNumbers.Add(ring.Number))
+                    errors.Add($"Duplicate ring number {ring.Number} in tribune '{tribune.Name}'");
+                
+                if (ring.Sectors == null || !ring.Sectors.Any())
+                    errors.Add($"Ring {ring.Number} in tribune '{tribune.Name}' must have at least one sector");
+                
+                var sectorCodes = new HashSet<string>();
+                foreach (var sector in ring.Sectors)
+                {
+                    if (string.IsNullOrEmpty(sector.Code))
+                        errors.Add($"Sector must have a code in ring {ring.Number} of tribune '{tribune.Name}'");
+                    else if (!sectorCodes.Add(sector.Code))
+                        errors.Add($"Duplicate sector code '{sector.Code}' in ring {ring.Number} of tribune '{tribune.Name}'");
+                    
+                    if (sector.Rows <= 0)
+                        errors.Add($"Sector '{sector.Code}' must have positive number of rows");
+                    
+                    if (sector.SeatsPerRow <= 0)
+                        errors.Add($"Sector '{sector.Code}' must have positive number of seats per row");
+                }
+            }
+        }
+        
+        return new ValidationResult 
+        { 
+            IsValid = errors.Count == 0, 
+            Errors = errors 
+        };
+    }
+}
+
+public class ValidationResult
+{
+    public bool IsValid { get; set; }
+    public List<string> Errors { get; set; } = new();
+}
+📋 Phase 3: Blazor Components for Admin Interface
+3.1 Main Structure Management Component
+razor
+@page "/admin/stadium-structure"
+@inject IStadiumStructureService StructureService
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+
+<PageTitle>Stadium Structure Management</PageTitle>
+
+<h3>🏟️ Stadium Structure Management</h3>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Import Structure</h5>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@importModel" OnValidSubmit="@HandleImport" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Select format:</label>
+                        <div>
+                            <input type="radio" id="formatJson" name="importFormat" value="json" 
+                                   @bind="importFormat" checked />
+                            <label for="formatJson" class="form-check-label ms-1">JSON</label>
+                            
+                            <input type="radio" id="formatCsv" name="importFormat" value="csv" 
+                                   @bind="importFormat" class="ms-3" />
+                            <label for="formatCsv" class="form-check-label ms-1">CSV</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Select file:</label>
+                        <InputFile OnChange="@HandleFileSelected" 
+                                  accept="@(importFormat == "json" ? ".json" : ".csv")" 
+                                  class="form-control" />
+                        @if (selectedFile != null)
+                        {
+                            <div class="form-text">Selected file: @selectedFile.Name</div>
+                        }
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> Import will delete the existing stadium structure!
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" disabled="@(selectedFile == null || isImporting)">
+                        @if (isImporting)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                        }
+                        Import Structure
+                    </button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Current Structure</h5>
+            </div>
+            <div class="card-body">
+                @if (summary != null)
+                {
+                    <dl class="row">
+                        <dt class="col-sm-6">Tribunes:</dt>
+                        <dd class="col-sm-6">@summary.TotalTribunes</dd>
+                        
+                        <dt class="col-sm-6">Rings:</dt>
+                        <dd class="col-sm-6">@summary.TotalRings</dd>
+                        
+                        <dt class="col-sm-6">Sectors:</dt>
+                        <dd class="col-sm-6">@summary.TotalSectors</dd>
+                        
+                        <dt class="col-sm-6">Total Seats:</dt>
+                        <dd class="col-sm-6">@summary.TotalSeats</dd>
+                        
+                        <dt class="col-sm-6">Available Seats:</dt>
+                        <dd class="col-sm-6">@summary.AvailableSeats</dd>
+                        
+                        <dt class="col-sm-6">Occupied Seats:</dt>
+                        <dd class="col-sm-6">@summary.OccupiedSeats</dd>
+                    </dl>
+                }
+                else
+                {
+                    <p>Loading data...</p>
+                }
+                
+                <div class="mt-3">
+                    <button class="btn btn-outline-danger me-2" @onclick="ShowClearConfirmation">
+                        Clear Structure
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary" @onclick="ExportStructure">
+                        Export to JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showClearModal)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Confirmation</h5>
+                    <button type="button" class="btn-close" @onclick="HideClearConfirmation"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the entire stadium structure?</p>
+                    <p class="text-danger"><strong>This action is irreversible!</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideClearConfirmation">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="ClearStructure">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (importResult != null)
+{
+    <div class="alert alert-@(importResult.Success ? "success" : "danger") mt-3">
+        <h5>@(importResult.Success ? "Success!" : "Error!")</h5>
+        <p>@importResult.Message</p>
+        @if (!importResult.Success && importResult.Errors.Any())
+        {
+            <ul>
+                @foreach (var error in importResult.Errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        }
+    </div>
+}
+
+@code {
+    private ImportModel importModel = new();
+    private IBrowserFile? selectedFile;
+    private string importFormat = "json";
+    private bool isImporting = false;
+    private bool showClearModal = false;
+    private StadiumSummaryDto? summary;
+    private ImportResult? importResult;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSummary();
+    }
+    
+    private async Task LoadSummary()
+    {
+        summary = await StructureService.GetStadiumSummaryAsync();
+    }
+    
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        importResult = null;
+    }
+    
+    private async Task HandleImport()
+    {
+        if (selectedFile == null) return;
+        
+        isImporting = true;
+        importResult = null;
+        
+        try
+        {
+            bool success;
+            if (importFormat == "json")
+            {
+                success = await StructureService.ImportFromJsonAsync(selectedFile);
+            }
+            else
+            {
+                success = await StructureService.ImportFromCsvAsync(selectedFile);
+            }
+            
+            importResult = new ImportResult
+            {
+                Success = success,
+                Message = success ? "Structure successfully imported!" : "Error occurred during import."
+            };
+            
+            if (success)
+            {
+                await ToastService.ShowSuccessAsync("Structure imported", "Stadium structure successfully imported");
+                await LoadSummary();
+                selectedFile = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            importResult = new ImportResult
+            {
+                Success = false,
+                Message = $"Error occurred: {ex.Message}",
+                Errors = new List<string> { ex.Message }
+            };
+        }
+        finally
+        {
+            isImporting = false;
+        }
+    }
+    
+    private void ShowClearConfirmation() => showClearModal = true;
+    private void HideClearConfirmation() => showClearModal = false;
+    
+    private async Task ClearStructure()
+    {
+        var success = await StructureService.ClearExistingStructureAsync();
+        
+        if (success)
+        {
+            await ToastService.ShowSuccessAsync("Structure cleared", "Stadium structure successfully cleared");
+            await LoadSummary();
+        }
+        else
+        {
+            await ToastService.ShowErrorAsync("Error", "Error occurred while clearing structure");
+        }
+        
+        showClearModal = false;
+    }
+    
+    private async Task ExportStructure()
+    {
+        try
+        {
+            var stream = await StructureService.ExportToJsonAsync();
+            var fileName = $"stadium-structure-{DateTime.Now:yyyyMMdd-HHmmss}.json";
+            
+            // Download logic here
+            await ToastService.ShowSuccessAsync("Export successful", "Structure successfully exported");
+        }
+        catch (Exception ex)
+        {
+            await ToastService.ShowErrorAsync("Error", $"Error occurred during export: {ex.Message}");
+        }
+    }
+    
+    public class ImportModel { }
+    
+    public class ImportResult
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public List<string> Errors { get; set; } = new();
+    }
+}
+3.2 Structure Overview Component
+razor
+@page "/admin/stadium-overview"
+@inject IStadiumStructureService StructureService
+
+<PageTitle>Stadium Structure Overview</PageTitle>
+
+<h3>🏟️ Stadium Structure Overview</h3>
+
+@if (tribunes == null)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (!tribunes.Any())
+{
+    <div class="alert alert-info">
+        <h5>No stadium structure data</h5>
+        <p>Import stadium structure via <a href="/admin/stadium-structure">import page</a>.</p>
+    </div>
+}
+else
+{
+    <div class="stadium-visualization">
+        <!-- North Tribune -->
+        <div class="tribune-section tribune-north">
+            <h4>🔝 North Tribune (N)</h4>
+            @foreach (var ring in tribunes.FirstOrDefault(t => t.Code == "N")?.Rings ?? new())
+            {
+                <div class="ring-section">
+                    <h5>@ring.Name (Ring @ring.Number)</h5>
+                    <div class="sectors-container">
+                        @foreach (var sector in ring.Sectors)
+                        {
+                            <div class="sector-card">
+                                <h6>@sector.Name (@sector.Code)</h6>
+                                <div>Rows: @sector.TotalRows</div>
+                                <div>Seats per row: @sector.SeatsPerRow</div>
+                                <div>Total: @(sector.TotalRows * sector.SeatsPerRow) seats</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="middle-section">
+            <!-- West Tribune -->
+            <div class="tribune-section tribune-west">
+                <h4>◀️ West Tribune (W)</h4>
+                @foreach (var ring in tribunes.FirstOrDefault(t => t.Code == "W")?.Rings ?? new())
+                {
+                    <div class="ring-section">
+                        <h5>@ring.Name (Ring @ring.Number)</h5>
+                        <div class="sectors-container vertical">
+                            @foreach (var sector in ring.Sectors)
+                            {
+                                <div class="sector-card">
+                                    <h6>@sector.Name (@sector.Code)</h6>
+                                    <div>Rows: @sector.TotalRows</div>
+                                    <div>Seats: @sector.SeatsPerRow/row</div>
+                                    <div>Total: @(sector.TotalRows * sector.SeatsPerRow) seats</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Playing Field -->
+            <div class="playing-field">
+                <div class="field-content">
+                    <h5>⚽ PLAYING FIELD</h5>
+                    <div class="field-lines"></div>
+                </div>
+            </div>
+
+            <!-- East Tribune -->
+            <div class="tribune-section tribune-east">
+                <h4>▶️ East Tribune (E)</h4>
+                @foreach (var ring in tribunes.FirstOrDefault(t => t.Code == "E")?.Rings ?? new())
+                {
+                    <div class="ring-section">
+                        <h5>@ring.Name (Ring @ring.Number)</h5>
+                        <div class="sectors-container vertical">
+                            @foreach (var sector in ring.Sectors)
+                            {
+                                <div class="sector-card">
+                                    <h6>@sector.Name (@sector.Code)</h6>
+                                    <div>Rows: @sector.TotalRows</div>
+                                    <div>Seats: @sector.SeatsPerRow/row</div>
+                                    <div>Total: @(sector.TotalRows * sector.SeatsPerRow) seats</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- South Tribune -->
+        <div class="tribune-section tribune-south">
+            <h4>🔻 South Tribune (S)</h4>
+            @foreach (var ring in tribunes.FirstOrDefault(t => t.Code == "S")?.Rings ?? new())
+            {
+                <div class="ring-section">
+                    <h5>@ring.Name (Ring @ring.Number)</h5>
+                    <div class="sectors-container">
+                        @foreach (var sector in ring.Sectors)
+                        {
+                            <div class="sector-card">
+                                <h6>@sector.Name (@sector.Code)</h6>
+                                <div>Rows: @sector.TotalRows</div>
+                                <div>Seats per row: @sector.SeatsPerRow</div>
+                                <div>Total: @(sector.TotalRows * sector.SeatsPerRow) seats</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<Tribune>? tribunes;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        tribunes = await StructureService.GetFullStructureAsync();
+    }
+}
+3.3 CSS for Visual Display
+css
+/* stadium-overview.css */
+.stadium-visualization {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.tribune-section {
+    padding: 1.5rem;
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+    background: #f8f9fa;
+}
+
+.tribune-north {
+    border-top: 4px solid #dc3545;
+}
+
+.tribune-south {
+    border-bottom: 4px solid #dc3545;
+}
+
+.tribune-west {
+    border-left: 4px solid #0d6efd;
+}
+
+.tribune-east {
+    border-right: 4px solid #0d6efd;
+}
+
+.middle-section {
+    display: flex;
+    gap: 2rem;
+    min-height: 400px;
+}
+
+.tribune-west, .tribune-east {
+    flex: 1;
+    max-width: 300px;
+}
+
+.playing-field {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #28a745;
+    border-radius: 0.5rem;
+    min-height: 300px;
+}
+
+.field-content {
+    text-align: center;
+    color: white;
+}
+
+.field-lines {
+    width: 80%;
+    height: 200px;
+    border: 2px solid white;
+    border-radius: 0.5rem;
+    margin: 0 auto;
+    position: relative;
+}
+
+.field-lines::before, .field-lines::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 0;
+    border-top: 1px solid white;
+    top: 50%;
+    left: 0;
+}
+
+.field-lines::after {
+    width: 0;
+    height: 100%;
+    border-left: 1px solid white;
+    left: 50%;
+    top: 0;
+}
+
+.ring-section {
+    margin-bottom: 1.5rem;
+}
+
+.ring-section h5 {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.sectors-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.sectors-container.vertical {
+    flex-direction: column;
+}
+
+.sector-card {
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    background: white;
+    min-width: 150px;
+}
+
+.sector-card h6 {
+    margin: 0 0 0.5rem 0;
+    color: #495057;
+    font-weight: bold;
+}
+📋 Phase 4: Service Registration
+4.1 Dependency Injection
+csharp
+// Program.cs or Startup.cs
+builder.Services.AddScoped<IStadiumStructureService, StadiumStructureService>();
+4.2 Navigation in Admin Menu
+razor
+<!-- AdminMenu.razor -->
+<div class="nav-item">
+    <NavLink class="nav-link" href="/admin/stadium-structure">
+        <span class="oi oi-map-marker" aria-hidden="true"></span> Stadium Structure
+    </NavLink>
+</div>
+
+<div class="nav-item">
+    <NavLink class="nav-link" href="/admin/stadium-overview">
+        <span class="oi oi-eye" aria-hidden="true"></span> Stadium Overview
+    </NavLink>
+</div>
+🎯 Final Implementation Steps
+Create database - Add tables for stadium structure
+
+Implement services - Stadium structure service with all methods
+
+Add Blazor components - For import, overview and management
+
+Add navigation - In admin menu
+
+Test functionality - With different JSON configurations
+
+Add error handling - User notifications
+
+Optimize performance - For large stadiums
+
+This implementation provides complete stadium structure management through the admin interface, with JSON import/export capability and visual overview of the entire structure.

@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using StadiumDrinkOrdering.Admin.Components.Shared
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
 
 <PageTitle>StadiumDrinkOrdering.Admin</PageTitle>
 
@@ -9,7 +13,27 @@
 
     <main id="admin-layout-main">
         <div class="top-row px-4" id="admin-layout-top-row">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank" id="admin-layout-about-link">About</a>
+            <div class="d-flex align-center justify-between w-full">
+                <div class="d-flex align-center gap-4">
+                    <h6 class="mb-0 text-primary">Admin Dashboard</h6>
+                </div>
+                <div class="d-flex align-center gap-4">
+                    <LanguageSwitcher />
+                    <SignalRConnection ApiBaseUrl="http://localhost:9000" OnNewOrder="HandleNewOrder" OnOrderStatusChanged="HandleOrderStatusChanged" OnNotificationReceived="HandleNotification" OnSystemAlert="HandleSystemAlert" />
+                    @if (AuthStateService.IsAuthenticated)
+                    {
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-muted">
+                                <small>👤 @AuthStateService.UserEmail</small>
+                            </span>
+                            <button class="btn btn-outline-secondary btn-sm" @onclick="HandleLogout" id="admin-layout-logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    }
+                    <a href="https://docs.microsoft.com/aspnet/" target="_blank" id="admin-layout-about-link" class="btn-link">Help</a>
+                </div>
+            </div>
         </div>
 
         <article class="content px-4" id="admin-layout-content">
@@ -17,3 +41,44 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthStateService.InitializeAsync();
+    }
+
+    private void HandleNewOrder(string orderInfo)
+    {
+        // Handle new order notifications
+        // Format: "orderId:customerName:seatNumber"
+        StateHasChanged();
+    }
+
+    private void HandleOrderStatusChanged(string statusUpdate)
+    {
+        // Handle real-time order status updates
+        // Format: "orderId:status"
+        StateHasChanged();
+    }
+
+    private void HandleNotification(string notification)
+    {
+        // Handle real-time notifications
+        // Format: "type:message"
+        StateHasChanged();
+    }
+
+    private void HandleSystemAlert(string alert)
+    {
+        // Handle system alerts
+        // Format: "severity:message"
+        StateHasChanged();
+    }
+
+    private async Task HandleLogout()
+    {
+        await AuthStateService.LogoutAsync();
+        NavigationManager.NavigateTo("/login");
+    }
+}

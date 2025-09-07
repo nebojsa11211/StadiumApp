@@ -6,6 +6,22 @@ public class Order
 {
     public int Id { get; set; }
     
+    // New event-based fields
+    public int? EventId { get; set; }
+    public int? SeatId { get; set; }
+    public int? PaymentId { get; set; }
+    public int? SessionId { get; set; }
+    public int? TicketSessionId { get; set; }
+    
+    [StringLength(500)]
+    public string? DeliveryNotes { get; set; }
+    
+    public DateTime? EstimatedDeliveryTime { get; set; }
+    public DateTime? ActualDeliveryTime { get; set; }
+    
+    public int? AssignedStaffId { get; set; }
+    
+    // Legacy fields (keeping for backward compatibility)
     [Required]
     [StringLength(50)]
     public string TicketNumber { get; set; } = string.Empty;
@@ -43,6 +59,14 @@ public class Order
     public string? CustomerNotes { get; set; }
     
     // Navigation properties
+    public virtual Event? Event { get; set; }
+    public virtual Seat? Seat { get; set; }
+    public virtual Payment? PaymentDetails { get; set; }
+    public virtual OrderSession? Session { get; set; }
+    public virtual TicketSession? TicketSession { get; set; }
+    public virtual User? AssignedStaff { get; set; }
+    
+    // Legacy navigation properties
     public virtual User Customer { get; set; } = null!;
     public virtual User? AcceptedByUser { get; set; }
     public virtual User? PreparedByUser { get; set; }
@@ -57,7 +81,8 @@ public enum OrderStatus
     Accepted = 2,
     InPreparation = 3,
     Ready = 4,
-    Delivered = 5,
-    Cancelled = 6
+    OutForDelivery = 5,
+    Delivered = 6,
+    Cancelled = 7
 }
 

@@ -1,45 +1,79 @@
 # 🏟️ Stadium Drink Ordering System
 
-A complete, production-ready drink ordering system for stadium events, built with modern .NET technologies, Docker containers, and cloud-native architecture.
+A complete, production-ready drink ordering and ticketing system for stadium events, built with modern .NET technologies, Docker containers, and cloud-native architecture.
 
 ## 🎯 System Overview
 
-The Stadium Drink Ordering System is a **microservices-based application** that enables seamless drink ordering at stadium events. It consists of three main applications working together to provide a complete solution for customers, staff, and administrators.
+The Stadium Drink Ordering System is a **microservices-based application** that enables seamless drink ordering and event ticket purchasing at stadium events. It consists of four main applications working together to provide a complete solution for customers, staff, and administrators.
 
 ### 🏗️ Architecture Components
 
 | Component | Technology | Port | Purpose |
 |-----------|------------|------|---------|
 | **API Backend** | ASP.NET Core 8.0 | 9000/8080 | RESTful API with authentication & business logic |
-| **Customer App** | Blazor Server | 9001/8081 | Customer-facing drink ordering interface |
-| **Admin App** | Blazor Server | 9002/8082 | Staff dashboard for order & inventory management |
-| **SQL Server** | SQL Server 2022 | 14330/1433 | Database with Entity Framework Core |
+| **Customer App** | Blazor Server | 9001/8081 | Customer-facing ticketing & drink ordering interface |
+| **Admin App** | Blazor Server | 9002/8082 | Management dashboard for analytics & administration |
+| **Staff App** | Blazor Server | 9003/8083 | Order fulfillment & delivery management |
+| **Database** | PostgreSQL/Supabase | Cloud | Enterprise-grade database with Entity Framework Core |
 
 ## ✨ Key Features
 
 ### 👥 Customer Features
+- **Event Ticketing System** - Browse events, select seats, and purchase tickets
+- **Interactive Seat Selection** - Visual stadium map with real-time availability
+- **Shopping Cart** - Session-based cart with 15-minute seat reservations
 - **Intuitive Drink Browsing** - Filter by category (Beer, Soft Drinks, Water, Coffee, etc.)
 - **Smart Cart Management** - Add items with quantity and special instructions
 - **Ticket-Based Ordering** - Use seat ticket numbers for verification
 - **Real-Time Order Tracking** - Live status updates from Pending to Delivered
-- **Order History** - Complete history of past orders
+- **Order History** - Complete history of past orders and tickets
 - **Responsive Design** - Works on mobile, tablet, and desktop
+- **Multi-language Support** - English and Croatian with cookie persistence
 
 ### 🛠️ Admin Features
-- **Comprehensive Dashboard** - Real-time order statistics and metrics
-- **Order Lifecycle Management** - Track orders through all stages
+- **Business Analytics Dashboard** - Revenue tracking and performance metrics
+- **Customer Analytics** - User behavior tracking and engagement metrics
 - **Inventory Management** - CRUD operations for drinks and stock levels
+- **Event Management** - Create and manage stadium events with pricing tiers
 - **Staff Role Management** - Different access levels (Admin, Bartender, Waiter)
-- **Advanced Filtering** - Search and filter orders by status, date, or customer
+- **Financial Reporting** - Sales summaries and tax reports
+- **System Administration** - User management and configuration
 - **Performance Analytics** - Track popular items and peak times
+- **Stadium Structure Management** - Import/export stadium layouts via JSON
+- **Interactive Stadium Visualization** - Visual seat mapping and management
+- **Centralized Logging** - Enterprise-grade logging with search and analytics
+- **Data Grid Management** - Advanced data tables with filtering and export
+
+### 👨‍💼 Staff Features  
+- **Real-time Order Queue** - Live order management with priority sorting
+- **Order Assignment System** - Accept and assign orders to staff members
+- **Interactive Stadium Map** - Visual seat-based order tracking
+- **Delivery Route Optimization** - Batch orders by stadium section
+- **Mobile-Optimized Interface** - Tablet-friendly for on-the-go staff
+- **Status Management** - Track orders from preparation to delivery
 
 ### 🔧 Technical Features
-- **JWT Authentication** - Secure token-based authentication
+- **JWT Authentication** - Secure token-based authentication with persistent tokens
 - **Role-Based Authorization** - Granular permission system
-- **Database Migrations** - Automatic schema updates
-- **Health Checks** - Service health monitoring
-- **Docker Support** - Complete containerization
+- **PostgreSQL Database** - Enterprise-grade database with Supabase cloud hosting
+- **Entity Framework Core** - Code-first migrations with PostgreSQL provider
+- **Database Migrations** - Automatic schema updates with rollback support
+- **Health Checks** - Service health monitoring with database connectivity checks
+- **Docker Support** - Complete containerization with multi-stage builds
 - **Multi-Environment** - Development, staging, and production configs
+- **JSON Data Import/Export** - Stadium structure management with validation
+- **SignalR Real-time Updates** - Live order status notifications via hubs
+- **Centralized Logging** - High-performance batch processing with retention management
+- **Background Services** - Automated cleanup and maintenance tasks
+
+### 🎨 UI/UX Features
+- **Responsive Design** - Mobile-first approach with Bootstrap 5
+- **Modern Authentication UI** - Polished login/registration forms with gradient headers
+- **Top Navigation Bar** - Login/Sign-up buttons prominently placed in top-right corner
+- **Adaptive Form Layouts** - Optimized column widths for all screen sizes
+- **Custom Styling** - Professional auth pages with shadows, rounded corners, and hover effects
+- **User Dropdown Menu** - Clean profile management for authenticated users
+- **Consistent Theming** - Unified design language across Customer, Admin, and Staff apps
 
 ## 🚀 Quick Start
 
@@ -65,6 +99,7 @@ chmod +x scripts/*.sh
 **Access URLs:**
 - 🎯 **Customer App**: http://localhost:9001
 - 🛠️ **Admin App**: http://localhost:9002
+- 👨‍💼 **Staff App**: http://localhost:9003
 - 🔧 **API**: http://localhost:9000
 - 📚 **API Documentation**: http://localhost:9000/swagger
 
@@ -84,6 +119,7 @@ nano .env
 **Production URLs:**
 - Customer App: http://localhost:8081
 - Admin App: http://localhost:8082
+- Staff App: http://localhost:8083
 - API: http://localhost:8080
 
 ### 💻 Local Development Setup
@@ -109,6 +145,10 @@ dotnet run --urls "https://localhost:7002;http://localhost:7003"
 # Start Admin App (new terminal)
 cd StadiumDrinkOrdering.Admin
 dotnet run --urls "https://localhost:7004;http://localhost:7005"
+
+# Start Staff App (new terminal)
+cd StadiumDrinkOrdering.Staff
+dotnet run --urls "https://localhost:7006;http://localhost:7007"
 ```
 
 ## 🔐 Default Credentials
@@ -116,7 +156,9 @@ dotnet run --urls "https://localhost:7004;http://localhost:7005"
 | Role | Email | Password | Access |
 |------|-------|----------|---------|
 | **Admin** | `admin@stadium.com` | `admin123` | Full system access |
+| **Staff** | `staff@stadium.com` | `staff123` | Order management |
 | **Customer** | Register new account | - | Customer features |
+| **Test User** | `test@test.com` | `test123` | Testing purposes |
 
 ## 📊 Database & Sample Data
 
@@ -152,6 +194,11 @@ StadiumDrinkOrdering/
 │   ├── Shared/                         # Shared Components
 │   └── Program.cs                      # App Configuration
 ├── 📁 StadiumDrinkOrdering.Admin/       # Admin Blazor App
+│   ├── Pages/                          # Blazor Pages
+│   ├── Services/                       # HTTP Services
+│   ├── Shared/                         # Shared Components
+│   └── Program.cs                      # App Configuration
+├── 📁 StadiumDrinkOrdering.Staff/       # Staff Blazor App
 │   ├── Pages/                          # Blazor Pages
 │   ├── Services/                       # HTTP Services
 │   ├── Shared/                         # Shared Components
@@ -204,14 +251,14 @@ graph TD
 
 ### Development Stack
 ```
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   SQL Server    │  │   API Backend   │  │  Customer App   │  │   Admin App     │
-│   Port: 14330   │  │   Port: 9000    │  │   Port: 9001    │  │   Port: 9002    │
-│   Volume: sql   │  │   Health Check  │  │   Health Check  │  │   Health Check  │
-└─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘
-         │                      │                      │                      │
-         └──────────────────────┼──────────────────────┼──────────────────────┘
-                                │                      │
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+│   SQL Server    │  │   API Backend   │  │  Customer App   │  │   Admin App     │  │   Staff App     │
+│   Port: 14330   │  │   Port: 9000    │  │   Port: 9001    │  │   Port: 9002    │  │   Port: 9003    │
+│   Volume: sql   │  │   Health Check  │  │   Health Check  │  │   Health Check  │  │   Health Check  │
+└─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘
+         │                      │                      │                      │                      │
+         └──────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┘
+                                │                      │                      │
                           stadium-network (Docker Bridge)
 ```
 
@@ -284,9 +331,42 @@ FRONTEND_MEMORY_LIMIT=256M
 - `PUT /api/orders/{id}/status` - Update order status
 - `POST /api/orders/{id}/cancel` - Cancel order
 
+### 🎫 Event Ticketing
+- `GET /api/customer/ticketing/events` - Browse available events
+- `GET /api/customer/ticketing/events/{eventId}` - Get event details
+- `GET /api/customer/ticketing/events/{eventId}/sections/{sectionId}/availability` - Check seat availability
+- `POST /api/customer/orders/create` - Process ticket purchase
+
+### 🛒 Shopping Cart
+- `GET /api/customer/cart?sessionId={sessionId}` - Get cart contents
+- `POST /api/customer/cart/add` - Add seat to cart
+- `DELETE /api/customer/cart/remove` - Remove from cart
+- `DELETE /api/customer/cart/clear` - Clear entire cart
+
 ### 🎫 Tickets
 - `GET /api/tickets/validate/{ticketNumber}` - Validate ticket
 - `GET /api/tickets/{ticketNumber}` - Get ticket details
+
+### 🏟️ Stadium Structure
+- `GET /api/stadiumstructure/summary` - Get stadium summary statistics
+- `GET /api/stadiumstructure/full-structure` - Get complete stadium structure
+- `POST /api/stadiumstructure/import/json` - Import stadium structure from JSON
+- `GET /api/stadiumstructure/export/json` - Export stadium structure to JSON
+- `DELETE /api/stadiumstructure/clear` - Clear all stadium structure data
+
+### 📊 Analytics & Logging
+- `GET /api/analytics/dashboard` - Dashboard metrics
+- `GET /api/customeranalytics/overview` - Customer behavior analytics
+- `POST /api/logs/search` - Search centralized logs
+- `GET /api/logs/summary` - Log statistics
+
+### 👥 User Management (Admin only)
+- `POST /api/users/search` - Search users with filters
+- `GET /api/users/{id}` - Get user details
+- `POST /api/users` - Create new user
+- `PUT /api/users/{id}` - Update user
+- `DELETE /api/users/{id}` - Delete user
+- `PUT /api/users/{id}/password` - Change user password
 
 ## 🧪 Testing & Development
 
@@ -300,6 +380,15 @@ dotnet test StadiumDrinkOrdering.Tests
 
 # Run with coverage
 dotnet test /p:CollectCoverage=true
+
+# Run Playwright tests
+npx playwright test
+
+# Run Playwright tests in headed mode
+npx playwright test --headed
+
+# Run specific Playwright test
+npx playwright test tests/login.spec.ts
 ```
 
 ### Database Migrations
@@ -351,6 +440,25 @@ All services include health checks:
 - **API**: http://localhost:9000/health
 - **Customer**: http://localhost:9001/health
 - **Admin**: http://localhost:9002/health
+- **Staff**: http://localhost:9003/health
+
+## 🔧 Recent Bug Fixes & Improvements
+
+### Authentication Token Persistence (Fixed) ✅
+**Issue**: Admin authentication tokens were lost after page navigation, requiring re-login.
+**Solution**: Implemented `TokenStorageService` singleton to persist authentication tokens across scoped service instances.
+
+### File Upload Issues (Fixed) ✅
+**Issue**: Stadium structure JSON imports failed with "file length = 0" errors.
+**Solution**: Added stream position reset (`fileStream.Position = 0`) before HTTP multipart uploads.
+
+### JSON Deserialization (Fixed) ✅
+**Issue**: Valid JSON files were rejected with validation errors like "Stadium name is required".
+**Solution**: Configured `JsonSerializer` with `PropertyNamingPolicy.CamelCase` for proper camelCase to PascalCase mapping.
+
+### HttpClient BaseAddress Configuration (Fixed) ✅
+**Issue**: "Invalid request URI" errors when using singleton service patterns.
+**Solution**: Properly configured HttpClient with dependency injection using `IHttpClientFactory` and named clients.
 
 ## 📈 Monitoring & Logging
 
@@ -414,23 +522,36 @@ jobs:
 
 ## 🎯 Future Enhancements
 
-### Phase 1 - Immediate
-- [ ] Real-time notifications with SignalR
+### Phase 1 - Immediate (Completed)
+- [x] Real-time notifications with SignalR ✅
+- [x] Stadium structure management ✅
+- [x] Event ticketing system ✅
+- [x] Shopping cart with seat reservations ✅
+- [x] Multi-language support (EN/HR) ✅
+- [x] Centralized logging system ✅
+- [x] Customer analytics ✅
+
+### Phase 2 - In Progress
 - [ ] Payment processing integration (Stripe/PayPal)
 - [ ] Mobile app with MAUI
-- [ ] QR code ordering
+- [ ] QR code ticket validation
+- [ ] Email notifications
+- [ ] PDF ticket generation
 
-### Phase 2 - Advanced
+### Phase 3 - Advanced
 - [ ] AI-powered demand forecasting
 - [ ] Loyalty program integration
-- [ ] Multi-language support
-- [ ] Advanced analytics dashboard
+- [ ] Advanced analytics dashboard with ML insights
+- [ ] Seat recommendation engine
+- [ ] Dynamic pricing
 
-### Phase 3 - Enterprise
+### Phase 4 - Enterprise
 - [ ] Multi-venue support
 - [ ] Franchise management
 - [ ] API rate limiting
 - [ ] Advanced caching (Redis)
+- [ ] Microservices decomposition
+- [ ] Kubernetes deployment
 
 ## 🤝 Contributing
 

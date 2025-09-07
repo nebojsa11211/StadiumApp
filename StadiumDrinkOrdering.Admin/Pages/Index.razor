@@ -1,88 +1,132 @@
 ﻿@page "/"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Stadium Admin Dashboard</PageTitle>
+<PageTitle>@Localizer["PageTitle"]</PageTitle>
 
-<div class="container-fluid">
-    <div class="hero-section text-center py-5 mb-4" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">
+<div class="container-fluid" id="admin-dashboard-container">
+    <div class="hero-section text-center py-5 mb-4" id="admin-hero-section" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">
         <div class="container">
-            <h1 class="display-4 mb-3">🏟️ Stadium Admin</h1>
-            <p class="lead mb-4">Manage orders, drinks, and monitor stadium operations</p>
-            <div class="row justify-content-center">
+            <h1 class="display-4 mb-3" id="admin-main-title">🏟️ @Localizer["AdminTitle"]</h1>
+            <p class="lead mb-4" id="admin-subtitle">@Localizer["AdminSubtitle"]</p>
+            <div class="row justify-content-center" id="admin-hero-buttons">
                 <div class="col-auto">
-                    <a href="/orders" class="btn btn-light btn-lg me-3">
-                        <i class="bi bi-list-check"></i> Manage Orders
+                    <a href="/orders" class="btn btn-light btn-lg me-3" id="admin-hero-orders-btn">
+                        <i class="bi bi-list-check"></i> @Localizer["ManageOrders"]
                     </a>
                 </div>
                 <div class="col-auto">
-                    <a href="/drinks" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-cup-straw"></i> Manage Drinks
+                    <a href="/drinks" class="btn btn-outline-light btn-lg" id="admin-hero-drinks-btn">
+                        <i class="bi bi-cup-straw"></i> @Localizer["ManageDrinks"]
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card text-center h-100">
+    <div class="container" id="admin-cards-container">
+        <div class="row" id="admin-cards-row">
+            <div class="col-md-4 mb-4" id="admin-orders-card-col">
+                <div class="card text-center h-100" id="admin-orders-card">
                     <div class="card-body">
-                        <div class="mb-3">
+                        <div class="mb-3" id="admin-orders-icon">
                             <span style="font-size: 3rem;">📋</span>
                         </div>
-                        <h5 class="card-title">Order Management</h5>
-                        <p class="card-text">View, process, and track customer orders in real-time.</p>
-                        <a href="/orders" class="btn btn-primary">View Orders</a>
+                        <h5 class="card-title" id="admin-orders-title">@Localizer["OrderManagement"]</h5>
+                        <p class="card-text" id="admin-orders-description">@Localizer["OrderManagementDesc"]</p>
+                        <a href="/orders" class="btn btn-primary" id="admin-orders-btn">@Localizer["ViewOrders"]</a>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4 mb-4">
-                <div class="card text-center h-100">
+            <div class="col-md-4 mb-4" id="admin-drinks-card-col">
+                <div class="card text-center h-100" id="admin-drinks-card">
                     <div class="card-body">
-                        <div class="mb-3">
+                        <div class="mb-3" id="admin-drinks-icon">
                             <span style="font-size: 3rem;">🍺</span>
                         </div>
-                        <h5 class="card-title">Drink Catalog</h5>
-                        <p class="card-text">Manage drinks, prices, stock levels, and availability.</p>
-                        <a href="/drinks" class="btn btn-primary">Manage Drinks</a>
+                        <h5 class="card-title" id="admin-drinks-title">@Localizer["DrinkCatalog"]</h5>
+                        <p class="card-text" id="admin-drinks-description">@Localizer["DrinkCatalogDesc"]</p>
+                        <a href="/drinks" class="btn btn-primary" id="admin-drinks-btn">@Localizer["ManageDrinksBtn"]</a>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4 mb-4">
-                <div class="card text-center h-100">
+            <div class="col-md-4 mb-4" id="admin-analytics-card-col">
+                <div class="card text-center h-100" id="admin-analytics-card">
                     <div class="card-body">
-                        <div class="mb-3">
+                        <div class="mb-3" id="admin-analytics-icon">
                             <span style="font-size: 3rem;">📊</span>
                         </div>
-                        <h5 class="card-title">Analytics</h5>
-                        <p class="card-text">View sales reports, popular items, and performance metrics.</p>
-                        <button class="btn btn-secondary" disabled>Coming Soon</button>
+                        <h5 class="card-title" id="admin-analytics-title">@Localizer["Analytics"]</h5>
+                        <p class="card-text" id="admin-analytics-description">@Localizer["AnalyticsDesc"]</p>
+                        <a href="/analytics" class="btn btn-primary" id="admin-analytics-btn">@Localizer["ViewAnalytics"]</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-5">
-            <div class="col-md-6 offset-md-3 text-center">
-                <h3>Quick Setup Guide</h3>
-                <ol class="list-unstyled">
-                    <li class="mb-3">
-                        <span class="badge bg-primary rounded-circle me-3">1</span>
-                        Add drinks to your catalog with prices and descriptions
+        <!-- Second Row of Management Cards -->
+        <div class="row" id="admin-management-cards-row">
+            <div class="col-md-4 mb-4" id="admin-users-card-col">
+                <div class="card text-center h-100" id="admin-users-card">
+                    <div class="card-body">
+                        <div class="mb-3" id="admin-users-icon">
+                            <span style="font-size: 3rem;">👥</span>
+                        </div>
+                        <h5 class="card-title" id="admin-users-title">@Localizer["UserManagement"]</h5>
+                        <p class="card-text" id="admin-users-description">@Localizer["UserManagementDesc"]</p>
+                        <a href="/users" class="btn btn-success" id="admin-users-btn">@Localizer["ManageUsers"]</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4" id="admin-bartender-card-col">
+                <div class="card text-center h-100" id="admin-bartender-card">
+                    <div class="card-body">
+                        <div class="mb-3" id="admin-bartender-icon">
+                            <span style="font-size: 3rem;">🍸</span>
+                        </div>
+                        <h5 class="card-title" id="admin-bartender-title">@Localizer["BartenderDashboard"]</h5>
+                        <p class="card-text" id="admin-bartender-description">@Localizer["BartenderDashboardDesc"]</p>
+                        <a href="/bartender" class="btn btn-warning" id="admin-bartender-btn">@Localizer["ViewDashboard"]</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4" id="admin-events-card-col">
+                <div class="card text-center h-100" id="admin-events-card">
+                    <div class="card-body">
+                        <div class="mb-3" id="admin-events-icon">
+                            <span style="font-size: 3rem;">🎫</span>
+                        </div>
+                        <h5 class="card-title" id="admin-events-title">@Localizer["EventsManagement"]</h5>
+                        <p class="card-text" id="admin-events-description">@Localizer["EventsManagementDesc"]</p>
+                        <a href="/events" class="btn btn-info" id="admin-events-btn">@Localizer["ManageEvents"]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5" id="admin-setup-guide-row">
+            <div class="col-md-6 offset-md-3 text-center" id="admin-setup-guide-col">
+                <h3 id="admin-setup-guide-title">@Localizer["QuickSetupGuide"]</h3>
+                <ol class="list-unstyled" id="admin-setup-guide-list">
+                    <li class="mb-3" id="admin-setup-step-1">
+                        <span class="badge bg-primary rounded-circle me-3" id="admin-setup-badge-1">1</span>
+                        @Localizer["SetupStep1"]
                     </li>
-                    <li class="mb-3">
-                        <span class="badge bg-primary rounded-circle me-3">2</span>
-                        Monitor incoming orders from customers
+                    <li class="mb-3" id="admin-setup-step-2">
+                        <span class="badge bg-primary rounded-circle me-3" id="admin-setup-badge-2">2</span>
+                        @Localizer["SetupStep2"]
                     </li>
-                    <li class="mb-3">
-                        <span class="badge bg-primary rounded-circle me-3">3</span>
-                        Process orders through preparation to delivery
+                    <li class="mb-3" id="admin-setup-step-3">
+                        <span class="badge bg-primary rounded-circle me-3" id="admin-setup-badge-3">3</span>
+                        @Localizer["SetupStep3"]
                     </li>
-                    <li class="mb-3">
-                        <span class="badge bg-primary rounded-circle me-3">4</span>
-                        Track performance and customer satisfaction
+                    <li class="mb-3" id="admin-setup-step-4">
+                        <span class="badge bg-primary rounded-circle me-3" id="admin-setup-badge-4">4</span>
+                        @Localizer["SetupStep4"]
                     </li>
                 </ol>
             </div>

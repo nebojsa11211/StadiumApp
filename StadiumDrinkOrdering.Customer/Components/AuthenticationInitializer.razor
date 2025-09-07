@@ -1,0 +1,41 @@
+@using StadiumDrinkOrdering.Customer.Services
+@inject ICustomerAuthStateService AuthStateService
+
+@if (isInitialized)
+{
+    @ChildContent
+}
+else
+{
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="text-center">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted">Initializing Stadium Ordering...</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    private bool isInitialized = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await AuthStateService.InitializeAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing authentication: {ex.Message}");
+        }
+        finally
+        {
+            isInitialized = true;
+            StateHasChanged();
+        }
+    }
+}

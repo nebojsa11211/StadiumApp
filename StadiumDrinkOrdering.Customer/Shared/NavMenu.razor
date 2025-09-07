@@ -1,7 +1,14 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+@using StadiumDrinkOrdering.Customer.Services
+@using Microsoft.Extensions.Localization
+@inject ICustomerAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">StadiumDrinkOrdering.Customer</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <a class="navbar-brand" href="">🎟️ @Localizer["AppTitle"]</a>
+        <button id="customer-nav-menu-toggle-btn" title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
@@ -11,19 +18,32 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="events">
+                <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["Events"]
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="menu">
-                <span class="oi oi-fork" aria-hidden="true"></span> Order Drinks
+                <span class="oi oi-fork" aria-hidden="true"></span> @Localizer["Menu"]
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="orders">
-                <span class="oi oi-list" aria-hidden="true"></span> My Orders
-            </NavLink>
-        </div>
+        @if (AuthStateService.IsAuthenticated)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="orders">
+                    <span class="oi oi-list" aria-hidden="true"></span> @Localizer["MyOrders"]
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="logs">
+                    <span class="oi oi-document" aria-hidden="true"></span> My Activity
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
@@ -32,8 +52,23 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    protected override void OnInitialized()
+    {
+        AuthStateService.OnAuthenticationStateChanged += OnAuthenticationStateChanged;
+    }
+
+    private void OnAuthenticationStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    public void Dispose()
+    {
+        AuthStateService.OnAuthenticationStateChanged -= OnAuthenticationStateChanged;
     }
 }

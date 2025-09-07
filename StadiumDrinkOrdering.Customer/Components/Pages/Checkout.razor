@@ -1,0 +1,960 @@
+@page "/checkout/{sessionToken}"
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@using Microsoft.AspNetCore.SignalR.Client
+@inject ApiService ApiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode @(new InteractiveServerRenderMode())
+
+<PageTitle>Checkout - Stadium Ordering</PageTitle>
+
+<div class="checkout-container">
+    @if (isLoading)
+    {
+        <div class="loading-screen">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <h2>Loading Checkout...</h2>
+        </div>
+    }
+    else if (orderSession == null || !cartItems.Any())
+    {
+        <div class="error-screen">
+            <div class="error-icon">🛒</div>
+            <h2>No Items to Checkout</h2>
+            <p>Your cart is empty or session has expired.</p>
+            <button id="customer-checkout-continue-shopping-btn" class="btn btn-primary" @onclick="GoBackToOrder">Continue Shopping</button>
+        </div>
+    }
+    else if (orderCompleted)
+    {
+        <div class="success-screen">
+            <div class="success-animation">
+                <div class="checkmark">✓</div>
+            </div>
+            <h2>Order Placed Successfully!</h2>
+            <div class="order-summary-card">
+                <h3>Order #@createdOrder?.Id</h3>
+                <p class="order-details">Your drinks will be delivered to:</p>
+                <div class="delivery-info">
+                    <strong>@orderSession.Ticket?.Seat?.Section?.SectionName - Row @orderSession.Ticket?.Seat?.RowNumber, Seat @orderSession.Ticket?.Seat?.SeatNumber</strong>
+                </div>
+                <div class="order-total-final">
+                    <strong>Total: €@cartTotal.ToString("F2")</strong>
+                </div>
+            </div>
+            <div class="next-steps">
+                <p>📱 You'll receive updates on your order status</p>
+                <p>⏱️ Estimated delivery: 10-15 minutes</p>
+            </div>
+            <button id="customer-checkout-track-order-btn" class="btn btn-primary btn-large" @onclick="TrackOrder">Track Order</button>
+            <button id="customer-checkout-go-home-btn" class="btn btn-secondary" @onclick="GoHome">Back to Home</button>
+        </div>
+    }
+    else
+    {
+        <!-- Checkout Form -->
+        <div class="checkout-header">
+            <h1>Checkout</h1>
+            <div class="progress-indicator">
+                <div class="progress-step @(currentStep >= 1 ? "completed" : "")">
+                    <span class="step-number">1</span>
+                    <span class="step-label">Review Order</span>
+                </div>
+                <div class="progress-line @(currentStep >= 2 ? "completed" : "")"></div>
+                <div class="progress-step @(currentStep >= 2 ? "completed" : "")">
+                    <span class="step-number">2</span>
+                    <span class="step-label">Payment</span>
+                </div>
+                <div class="progress-line @(currentStep >= 3 ? "completed" : "")"></div>
+                <div class="progress-step @(currentStep >= 3 ? "completed" : "")">
+                    <span class="step-number">3</span>
+                    <span class="step-label">Confirm</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkout-content">
+            <!-- Order Summary -->
+            <div class="order-summary-section">
+                <h3>📍 Delivery Information</h3>
+                <div class="delivery-card">
+                    <div class="event-info">
+                        <strong>@orderSession.Ticket?.EventName</strong>
+                        <span>@orderSession.Ticket?.Event?.EventDate.ToString("MMM dd, yyyy • h:mm tt")</span>
+                    </div>
+                    <div class="seat-info">
+                        <div class="seat-badge">@orderSession.Ticket?.Seat?.Section?.SectionName</div>
+                        <span>Row @orderSession.Ticket?.Seat?.RowNumber, Seat @orderSession.Ticket?.Seat?.SeatNumber</span>
+                    </div>
+                </div>
+
+                <h3>🛒 Order Summary</h3>
+                <div class="order-items">
+                    @foreach (var item in cartItems)
+                    {
+                        <div class="order-item">
+                            <div class="item-details">
+                                <div class="item-name">@item.DrinkName</div>
+                                @if (!string.IsNullOrEmpty(item.SpecialInstructions))
+                                {
+                                    <div class="special-notes">Note: @item.SpecialInstructions</div>
+                                }
+                            </div>
+                            <div class="item-quantity">×@item.Quantity</div>
+                            <div class="item-total">€@item.TotalPrice.ToString("F2")</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="order-totals">
+                    <div class="subtotal">
+                        <span>Subtotal</span>
+                        <span>€@cartTotal.ToString("F2")</span>
+                    </div>
+                    <div class="service-fee">
+                        <span>Service Fee</span>
+                        <span>€@serviceFee.ToString("F2")</span>
+                    </div>
+                    <div class="total">
+                        <span>Total</span>
+                        <span>€@finalTotal.ToString("F2")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <h3>💳 Payment Method</h3>
+                
+                @if (currentStep == 1)
+                {
+                    <div class="payment-methods">
+                        <div class="payment-method @(selectedPaymentMethod == "card" ? "selected" : "")" 
+                             @onclick="SelectCard">
+                            <div class="method-icon">💳</div>
+                            <div class="method-info">
+                                <strong>Credit/Debit Card</strong>
+                                <span>Visa, Mastercard, American Express</span>
+                            </div>
+                            <div class="method-radio">
+                                @if (selectedPaymentMethod == "card") { <span>✓</span> }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-actions">
+                        <button id="customer-checkout-proceed-payment-btn" class="btn btn-primary btn-large" @onclick="ProceedToPayment">
+                            Continue to Payment
+                        </button>
+                    </div>
+                }
+                else if (currentStep == 2)
+                {
+                    <div class="payment-form">
+                        @if (isProcessingPayment)
+                        {
+                            <div class="processing-payment">
+                                <div class="payment-spinner">
+                                    <div class="spinner"></div>
+                                </div>
+                                <h4>Processing Payment...</h4>
+                                <p>Please don't close this page or navigate away.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Stripe Elements will be inserted here -->
+                            <div id="stripe-card-element" class="stripe-element">
+                                <!-- Stripe card element -->
+                            </div>
+                            <div id="stripe-card-errors" class="stripe-errors"></div>
+                            
+                            <div class="payment-security">
+                                <div class="security-badge">🔒 Secure Payment</div>
+                                <p>Your payment information is encrypted and secure.</p>
+                            </div>
+
+                            <div class="step-actions">
+                                <button id="customer-checkout-back-to-review-btn" class="btn btn-secondary" @onclick="GoBackToReview">
+                                    ← Back to Review
+                                </button>
+                                <button id="customer-checkout-pay-btn" class="btn btn-primary btn-large" @onclick="ProcessPayment" disabled="@(!paymentFormReady)">
+                                    Pay €@finalTotal.ToString("F2")
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@if (showError)
+{
+    <div class="error-toast">
+        <div class="toast-content">
+            <span class="error-icon">⚠️</span>
+            <span class="error-message">@errorMessage</span>
+            <button id="customer-checkout-close-error-btn" class="btn-close" @onclick="CloseError">×</button>
+        </div>
+    </div>
+}
+
+<style>
+    .checkout-container {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+        padding: 20px;
+    }
+
+    .loading-screen, .error-screen, .success-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        text-align: center;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .success-animation {
+        margin-bottom: 30px;
+    }
+
+    .checkmark {
+        font-size: 5rem;
+        color: #28a745;
+        animation: checkmark 0.6s ease-in-out;
+        background: #d4edda;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    @@keyframes checkmark {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .checkout-header {
+        max-width: 800px;
+        margin: 0 auto 30px auto;
+        text-align: center;
+    }
+
+    .checkout-header h1 {
+        margin: 0 0 30px 0;
+        font-size: 2.5rem;
+        color: #333;
+    }
+
+    .progress-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .progress-step.completed .step-number {
+        background: #007bff;
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+
+    .progress-step.completed .step-label {
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .progress-line {
+        width: 80px;
+        height: 2px;
+        background: #e9ecef;
+        margin: 0 20px;
+        transition: all 0.3s ease;
+    }
+
+    .progress-line.completed {
+        background: #007bff;
+    }
+
+    .checkout-content {
+        max-width: 800px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    .order-summary-section, .payment-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        height: fit-content;
+    }
+
+    .order-summary-section h3, .payment-section h3 {
+        margin: 0 0 20px 0;
+        font-size: 1.3rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .delivery-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-left: 4px solid #007bff;
+    }
+
+    .event-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+
+    .event-info strong {
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    .event-info span {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .seat-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .seat-badge {
+        background: #007bff;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+
+    .order-items {
+        margin-bottom: 20px;
+    }
+
+    .order-item {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 15px;
+        align-items: start;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-details {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .item-name {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .special-notes {
+        font-size: 0.8rem;
+        color: #666;
+        font-style: italic;
+    }
+
+    .item-quantity {
+        font-weight: bold;
+        color: #666;
+    }
+
+    .item-total {
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .order-totals {
+        border-top: 2px solid #eee;
+        padding-top: 15px;
+    }
+
+    .subtotal, .service-fee, .total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+    }
+
+    .total {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #007bff;
+        border-top: 1px solid #eee;
+        margin-top: 10px;
+        padding-top: 15px;
+    }
+
+    .payment-methods {
+        margin-bottom: 30px;
+    }
+
+    .payment-method {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .payment-method:hover {
+        border-color: #007bff;
+        background: rgba(0, 123, 255, 0.05);
+    }
+
+    .payment-method.selected {
+        border-color: #007bff;
+        background: rgba(0, 123, 255, 0.1);
+    }
+
+    .method-icon {
+        font-size: 2rem;
+    }
+
+    .method-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .method-info strong {
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .method-info span {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .method-radio {
+        width: 30px;
+        height: 30px;
+        border: 2px solid #e9ecef;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .payment-method.selected .method-radio {
+        border-color: #007bff;
+        background: #007bff;
+        color: white;
+    }
+
+    .payment-form {
+        margin-bottom: 30px;
+    }
+
+    .processing-payment {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .payment-spinner {
+        margin-bottom: 20px;
+    }
+
+    .stripe-element {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: border-color 0.3s ease;
+    }
+
+    .stripe-element:focus-within {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .stripe-errors {
+        color: #dc3545;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        min-height: 20px;
+    }
+
+    .payment-security {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .security-badge {
+        font-weight: bold;
+        color: #155724;
+        margin-bottom: 5px;
+    }
+
+    .payment-security p {
+        margin: 0;
+        color: #155724;
+        font-size: 0.9rem;
+    }
+
+    .step-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .order-summary-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border: 2px solid #28a745;
+    }
+
+    .order-summary-card h3 {
+        margin: 0 0 15px 0;
+        color: #28a745;
+        font-size: 1.5rem;
+    }
+
+    .delivery-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        text-align: center;
+    }
+
+    .order-total-final {
+        text-align: center;
+        font-size: 1.3rem;
+        color: #007bff;
+        margin-top: 15px;
+    }
+
+    .next-steps {
+        background: #e7f3ff;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .next-steps p {
+        margin: 8px 0;
+        color: #0056b3;
+    }
+
+    .error-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @@keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+
+    .toast-content {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px 20px;
+        border-radius: 8px;
+        border: 1px solid #f5c6cb;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        max-width: 300px;
+    }
+
+    .error-icon {
+        font-size: 1.2rem;
+    }
+
+    .error-message {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    /* Button Styles */
+    .btn {
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #545b62;
+        transform: translateY(-1px);
+    }
+
+    .btn-large {
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        margin: 10px 5px;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: inherit;
+        padding: 0;
+        margin-left: 10px;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #007bff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .checkout-content {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .progress-indicator {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .progress-line {
+            width: 2px;
+            height: 30px;
+            margin: 0;
+        }
+
+        .step-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .order-summary-section, .payment-section {
+            padding: 20px;
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public string sessionToken { get; set; } = string.Empty;
+    
+    private bool isLoading = true;
+    private bool orderCompleted = false;
+    private bool isProcessingPayment = false;
+    private bool paymentFormReady = false;
+    private bool showError = false;
+    private string errorMessage = string.Empty;
+    private int currentStep = 1;
+    private string selectedPaymentMethod = "card";
+    
+    private OrderSession? orderSession = null;
+    private List<CartItem> cartItems = new();
+    private decimal cartTotal = 0;
+    private decimal serviceFee = 1.50m; // Fixed service fee
+    private decimal finalTotal = 0;
+    private OrderDto? createdOrder = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCheckoutData();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && currentStep == 2 && !isProcessingPayment)
+        {
+            await InitializeStripeElements();
+        }
+    }
+
+    private async Task LoadCheckoutData()
+    {
+        try
+        {
+            orderSession = await ApiService.GetOrderSessionAsync(sessionToken);
+            if (orderSession != null)
+            {
+                if (!string.IsNullOrEmpty(orderSession.CartData))
+                {
+                    cartItems = System.Text.Json.JsonSerializer.Deserialize<List<CartItem>>(orderSession.CartData) ?? new();
+                    cartTotal = cartItems.Sum(x => x.TotalPrice);
+                    finalTotal = cartTotal + serviceFee;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError("Failed to load checkout data. Please try again.");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectPaymentMethod(string method)
+    {
+        selectedPaymentMethod = method;
+        StateHasChanged();
+    }
+
+    private void SelectCard()
+    {
+        SelectPaymentMethod("card");
+    }
+
+    private void ProceedToPayment()
+    {
+        currentStep = 2;
+        StateHasChanged();
+    }
+
+    private void GoBackToReview()
+    {
+        currentStep = 1;
+        StateHasChanged();
+    }
+
+    private async Task InitializeStripeElements()
+    {
+        try
+        {
+            // Initialize Stripe Elements via JavaScript
+            await JSRuntime.InvokeVoidAsync("initializeStripe", finalTotal);
+            paymentFormReady = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            ShowError("Failed to initialize payment form. Please refresh the page.");
+        }
+    }
+
+    private async Task ProcessPayment()
+    {
+        if (!paymentFormReady || isProcessingPayment) return;
+
+        try
+        {
+            isProcessingPayment = true;
+            currentStep = 3;
+            StateHasChanged();
+
+            // Create order first
+            var order = await ApiService.CheckoutSessionAsync(sessionToken);
+            if (order == null)
+            {
+                throw new Exception("Failed to create order");
+            }
+
+            // Create payment intent
+            var paymentIntent = await ApiService.CreatePaymentIntentAsync(order.Id);
+            if (paymentIntent == null)
+            {
+                throw new Exception("Failed to initialize payment");
+            }
+
+            // Process payment with Stripe
+            var paymentResult = await JSRuntime.InvokeAsync<bool>("processStripePayment", paymentIntent.ClientSecret);
+            
+            if (paymentResult)
+            {
+                // Confirm payment on server
+                var confirmation = await ApiService.ConfirmPaymentAsync(paymentIntent.PaymentIntentId);
+                if (confirmation != null && confirmation.Status == "Completed")
+                {
+                    createdOrder = order;
+                    orderCompleted = true;
+                }
+                else
+                {
+                    throw new Exception("Payment confirmation failed");
+                }
+            }
+            else
+            {
+                throw new Exception("Payment was declined or failed");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Payment failed: {ex.Message}");
+            currentStep = 2; // Go back to payment step
+        }
+        finally
+        {
+            isProcessingPayment = false;
+            StateHasChanged();
+        }
+    }
+
+    private void TrackOrder()
+    {
+        if (createdOrder != null)
+        {
+            Navigation.NavigateTo($"/track/{createdOrder.Id}");
+        }
+    }
+
+    private void GoBackToOrder()
+    {
+        Navigation.NavigateTo($"/order/{orderSession?.Ticket?.QRCodeToken}");
+    }
+
+    private void GoHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void ShowError(string message)
+    {
+        errorMessage = message;
+        showError = true;
+        StateHasChanged();
+        
+        // Auto-hide after 5 seconds
+        Task.Delay(5000).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                showError = false;
+                StateHasChanged();
+            });
+        });
+    }
+
+    private void CloseError()
+    {
+        showError = false;
+        StateHasChanged();
+    }
+
+    public class CartItem
+    {
+        public int DrinkId { get; set; }
+        public string DrinkName { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+        public string? SpecialInstructions { get; set; }
+    }
+}

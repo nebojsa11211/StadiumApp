@@ -1,0 +1,171 @@
+@page "/login"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Customer.Services
+@using Microsoft.Extensions.Localization
+@inject IApiService ApiService
+@inject ICustomerAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["PageTitle"]</PageTitle>
+
+<div class="container mt-5" id="customer-login-container">
+    <div class="row justify-content-center" id="customer-login-row">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4" id="customer-login-col">
+            <div class="card" id="customer-login-card">
+                <div class="card-header" id="customer-login-header">
+                    <h3 class="text-center" id="customer-login-title">🎟️ @Localizer["LoginTitle"]</h3>
+                    <p class="text-center text-muted mb-0">@Localizer["LoginSubtitle"]</p>
+                </div>
+                <div class="card-body" id="customer-login-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" id="customer-login-error">
+                            @errorMessage
+                        </div>
+                    }
+                    
+                    <form @onsubmit="HandleLogin" id="customer-login-form">
+                        <div class="mb-3" id="customer-login-email-group">
+                            <label class="form-label" for="customer-login-email-input">@Localizer["EmailLabel"]</label>
+                            <input type="email" class="form-control" @bind="email" required id="customer-login-email-input" placeholder="@Localizer["EmailPlaceholder"]" />
+                        </div>
+                        
+                        <div class="mb-3" id="customer-login-password-group">
+                            <label class="form-label" for="customer-login-password-input">@Localizer["PasswordLabel"]</label>
+                            <input type="password" class="form-control" @bind="password" required id="customer-login-password-input" placeholder="@Localizer["PasswordPlaceholder"]" />
+                        </div>
+                        
+                        <div class="mb-3 form-check" id="customer-login-remember-group">
+                            <input type="checkbox" class="form-check-input" @bind="rememberMe" id="customer-login-remember-input">
+                            <label class="form-check-label" for="customer-login-remember-input">
+                                @Localizer["RememberMe"]
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid" id="customer-login-button-group">
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading" id="customer-login-submit-btn">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" id="customer-login-spinner"></span>
+                                    <span id="customer-login-loading-text">@Localizer["SigningIn"]</span>
+                                }
+                                else
+                                {
+                                    <span id="customer-login-button-text">@Localizer["SignInButton"]</span>
+                                }
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="mt-4">
+                    
+                    <div class="text-center" id="customer-login-register-section">
+                        <p class="mb-2">@Localizer["NoAccount"]</p>
+                        <a href="/register" class="btn btn-outline-secondary" id="customer-login-register-link">@Localizer["CreateAccount"]</a>
+                    </div>
+                    
+                    <div class="mt-3 text-center" id="customer-login-demo-info">
+                        <small class="text-muted" id="customer-login-demo-text">
+                            @Localizer["DemoCredentials"]
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string email = "";
+    private string password = "";
+    private bool rememberMe = false;
+    private string? errorMessage;
+    private bool isLoading;
+    private string? returnUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if user is already authenticated
+        if (AuthStateService.IsAuthenticated)
+        {
+            NavigateToReturnUrl();
+            return;
+        }
+
+        // Get return URL from query string
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        returnUrl = query["returnUrl"];
+    }
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var loginDto = new LoginDto 
+            { 
+                Email = email, 
+                Password = password,
+                RememberMe = rememberMe
+            };
+            
+            var result = await ApiService.LoginAsync(loginDto);
+            
+            if (result?.Token != null && result.User != null)
+            {
+                await AuthStateService.LoginAsync(result.Token, result.User);
+                await ApiService.LogUserActionAsync("CustomerLogin", "Authentication", $"Customer user {email} logged in successfully");
+                NavigateToReturnUrl();
+            }
+            else
+            {
+                errorMessage = Localizer["InvalidCredentials"];
+                await ApiService.LogUserActionAsync("CustomerLoginFailed", "Authentication", $"Failed login attempt for {email}");
+            }
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = Localizer["ConnectionError"];
+        }
+        catch (Exception ex)
+        {
+            errorMessage = Localizer["UnexpectedError"];
+            await ApiService.LogUserActionAsync("CustomerLoginError", "Authentication", $"Login error for {email}: {ex.Message}");
+            Console.WriteLine($"Login error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void NavigateToReturnUrl()
+    {
+        var targetUrl = "/";
+        
+        if (!string.IsNullOrEmpty(returnUrl))
+        {
+            try
+            {
+                targetUrl = Uri.UnescapeDataString(returnUrl);
+                // Ensure it's a relative URL for security
+                if (targetUrl.StartsWith("http"))
+                {
+                    targetUrl = "/";
+                }
+            }
+            catch
+            {
+                targetUrl = "/";
+            }
+        }
+
+        NavigationManager.NavigateTo(targetUrl, forceLoad: true);
+    }
+}

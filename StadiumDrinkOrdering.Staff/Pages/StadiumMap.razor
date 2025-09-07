@@ -1,0 +1,418 @@
+@page "/stadium-map"
+@inject IStaffApiService ApiService
+@inject IAuthStateService AuthService
+@inject ISignalRService SignalRService
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<PageTitle>Stadium Map</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    <div class="container mt-5">
+        <div class="alert alert-warning" role="alert">
+            You must be logged in to view the stadium map.
+            <a href="/login" class="btn btn-primary ms-2">Login</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col">
+                <h1>Stadium Map</h1>
+                <p class="text-muted">Interactive stadium map showing orders by location</p>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-primary" @onclick="RefreshMap" id="staff-stadiummap-refresh-btn">
+                    <span class="oi oi-reload me-2"></span>Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Map Legend -->
+        <div class="row mb-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body py-2">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <strong>Legend:</strong>
+                            </div>
+                            <div class="col-auto">
+                                <span class="badge bg-secondary me-2">⚪ No Orders</span>
+                                <span class="badge bg-warning me-2">⚠️ Pending</span>
+                                <span class="badge bg-primary me-2">🔵 In Progress</span>
+                                <span class="badge bg-success me-2">✅ Ready</span>
+                                <span class="badge bg-info me-2">🚚 Out for Delivery</span>
+                            </div>
+                            <div class="col text-end">
+                                <small class="text-muted">
+                                    Total Orders: @stadiumLayout.ActiveOrders | 
+                                    Total Seats: @stadiumLayout.TotalSeats
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stadium Map -->
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="stadium-map-container">
+                            <svg viewBox="0 0 800 600" class="stadium-svg">
+                                <!-- Field/Pitch in the center -->
+                                <rect x="250" y="200" width="300" height="150" 
+                                      fill="#2d8a2f" stroke="#1a5f1a" stroke-width="2" rx="10">
+                                </rect>
+                                <text x="400" y="275" text-anchor="middle" fill="white" font-size="16" font-weight="bold">
+                                    FIELD
+                                </text>
+
+                                @foreach (var stadiumSection in stadiumLayout.Sections)
+                                {
+                                    <g class="section-group">
+                                        <!-- Section Label -->
+                                        <text x="@GetSectionLabelX(stadiumSection.SectionName)" y="@GetSectionLabelY(stadiumSection.SectionName)" 
+                                              text-anchor="middle" fill="#333" font-size="18" font-weight="bold">
+                                            Area @stadiumSection.SectionName
+                                        </text>
+
+                                        @foreach (var seat in stadiumSection.Seats)
+                                        {
+                                            <circle cx="@seat.XCoordinate" cy="@seat.YCoordinate" r="6"
+                                                    fill="@GetSeatColor(seat)"
+                                                    stroke="@GetSeatStroke(seat)"
+                                                    stroke-width="2"
+                                                    class="seat-circle @GetSeatCssClass(seat)"
+                                                    @onclick="() => OnSeatClick(seat)"
+                                                    style="cursor: pointer;">
+                                                <title>Seat: @seat.SeatLabel @(seat.HasActiveOrder ? $" - Order #{seat.ActiveOrder?.Id}" : " - No orders")</title>
+                                            </circle>
+                                        }
+                                    </g>
+                                }
+
+                                <!-- Section boundaries (visual guides) -->
+                                <line x1="200" y1="50" x2="200" y2="550" stroke="#ddd" stroke-width="1" stroke-dasharray="5,5"/>
+                                <line x1="600" y1="50" x2="600" y2="550" stroke="#ddd" stroke-width="1" stroke-dasharray="5,5"/>
+                                <line x1="50" y1="200" x2="750" y2="200" stroke="#ddd" stroke-width="1" stroke-dasharray="5,5"/>
+                                <line x1="50" y1="350" x2="750" y2="350" stroke="#ddd" stroke-width="1" stroke-dasharray="5,5"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Area Summary -->
+        <div class="row mt-4">
+            @foreach (var area in stadiumLayout.Sections)
+            {
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Area @area.SectionName</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col">
+                                    <div class="h5 text-primary">@area.TotalSeats</div>
+                                    <small class="text-muted">Total Seats</small>
+                                </div>
+                                <div class="col">
+                                    <div class="h5 text-warning">@area.ActiveOrders</div>
+                                    <small class="text-muted">Active Orders</small>
+                                </div>
+                            </div>
+                            
+                            @if (area.ActiveOrders > 0)
+                            {
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary w-100" 
+                                            @onclick='() => ViewSectionOrders(area.SectionName)' id="staff-stadiummap-vieworders-btn-@area.SectionName">
+                                        View Orders
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Seat Details Modal -->
+    @if (selectedSeat != null)
+    {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Seat @selectedSeat.SeatLabel</h5>
+                        <button type="button" class="btn-close" @onclick="CloseSeatModal" id="staff-stadiummap-close-modal-btn"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (selectedSeat.HasActiveOrder && selectedSeat.ActiveOrder != null)
+                        {
+                            var order = selectedSeat.ActiveOrder;
+                            <div class="mb-3">
+                                <h6>Active Order #@order.Id</h6>
+                                <p><strong>Customer:</strong> @order.CustomerName</p>
+                                <p><strong>Status:</strong> 
+                                    <span class="badge @GetStatusBadgeClass(order.Status)">@order.Status</span>
+                                </p>
+                                <p><strong>Order Time:</strong> @order.OrderDate.ToString("HH:mm:ss")</p>
+                                <p><strong>Total Amount:</strong> $@order.TotalAmount.ToString("F2")</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>Items:</h6>
+                                <ul class="list-unstyled">
+                                    @foreach (var item in order.OrderItems)
+                                    {
+                                        <li class="mb-1">
+                                            <small>@item.Quantity x @item.DrinkName - $@item.TotalPrice.ToString("F2")</small>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(order.CustomerNotes))
+                            {
+                                <div class="mb-3">
+                                    <h6>Customer Notes:</h6>
+                                    <p class="text-muted">@order.CustomerNotes</p>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No active orders for this seat.</p>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        @if (selectedSeat.HasActiveOrder && selectedSeat.ActiveOrder != null)
+                        {
+                            <button type="button" class="btn btn-primary" 
+                                    @onclick="() => GoToOrderDetails(selectedSeat.ActiveOrder.Id)" id="staff-stadiummap-order-details-btn">
+                                View Order Details
+                            </button>
+                        }
+                        <button type="button" class="btn btn-secondary" @onclick="CloseSeatModal" id="staff-stadiummap-close-btn">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<style>
+    .stadium-map-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .stadium-svg {
+        width: 100%;
+        height: auto;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 8px;
+    }
+
+    .seat-circle {
+        transition: all 0.2s ease;
+    }
+
+    .seat-circle:hover {
+        stroke-width: 3;
+        opacity: 0.8;
+    }
+
+    .modal.show.d-block {
+        display: block !important;
+    }
+</style>
+
+@code {
+    private StadiumLayoutDto stadiumLayout = new();
+    private StadiumSeatDto? selectedSeat = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadStadiumLayout();
+
+        try
+        {
+            if (!SignalRService.IsConnected)
+            {
+                await SignalRService.StartAsync();
+                await SignalRService.JoinStaffHub();
+            }
+            
+            SignalRService.OrderUpdated += OnOrderUpdated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to start SignalR: {ex.Message}");
+        }
+    }
+
+    private async Task LoadStadiumLayout()
+    {
+        try
+        {
+            var layout = await ApiService.GetStadiumLayoutAsync();
+            if (layout != null)
+            {
+                stadiumLayout = layout;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load stadium layout: {ex.Message}");
+        }
+    }
+
+    private async Task RefreshMap()
+    {
+        await LoadStadiumLayout();
+    }
+
+    private void OnSeatClick(StadiumSeatDto seat)
+    {
+        selectedSeat = seat;
+        StateHasChanged();
+    }
+
+    private void CloseSeatModal()
+    {
+        selectedSeat = null;
+        StateHasChanged();
+    }
+
+    private void GoToOrderDetails(int orderId)
+    {
+        Navigation.NavigateTo($"/order/{orderId}");
+    }
+
+    private void ViewSectionOrders(string sectionName)
+    {
+        Navigation.NavigateTo($"/section/{sectionName}/orders");
+    }
+
+    private string GetSeatColor(StadiumSeatDto seat)
+    {
+        if (!seat.HasActiveOrder) return "#e9ecef"; // No orders - light gray
+
+        return seat.ActiveOrder?.Status switch
+        {
+            OrderStatus.Pending => "#ffc107", // Warning yellow
+            OrderStatus.Accepted or OrderStatus.InPreparation => "#0d6efd", // Primary blue
+            OrderStatus.Ready => "#198754", // Success green
+            OrderStatus.OutForDelivery => "#0dcaf0", // Info cyan
+            OrderStatus.Delivered => "#6c757d", // Secondary gray
+            OrderStatus.Cancelled => "#dc3545", // Danger red
+            _ => "#e9ecef"
+        };
+    }
+
+    private string GetSeatStroke(StadiumSeatDto seat)
+    {
+        if (!seat.HasActiveOrder) return "#6c757d";
+
+        return seat.ActiveOrder?.Status switch
+        {
+            OrderStatus.Pending => "#ff8800",
+            OrderStatus.Accepted or OrderStatus.InPreparation => "#0041a3",
+            OrderStatus.Ready => "#0d5a2b",
+            OrderStatus.OutForDelivery => "#0aa3b8",
+            _ => "#495057"
+        };
+    }
+
+    private string GetSeatCssClass(StadiumSeatDto seat)
+    {
+        if (!seat.HasActiveOrder) return "";
+
+        return seat.ActiveOrder?.Status switch
+        {
+            OrderStatus.Pending => "seat-pending",
+            OrderStatus.Ready => "seat-ready",
+            _ => ""
+        };
+    }
+
+    private int GetSectionLabelX(string sectionName)
+    {
+        return sectionName switch
+        {
+            "A" => 125,
+            "B" => 400,
+            "C" => 675,
+            "D" => 400,
+            _ => 400
+        };
+    }
+
+    private int GetSectionLabelY(string sectionName)
+    {
+        return sectionName switch
+        {
+            "A" => 30,
+            "B" => 30,
+            "C" => 30,
+            "D" => 580,
+            _ => 300
+        };
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning",
+            OrderStatus.Accepted => "bg-primary",
+            OrderStatus.InPreparation => "bg-info",
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.OutForDelivery => "bg-dark",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private async void OnOrderUpdated(OrderDto order)
+    {
+        await InvokeAsync(async () =>
+        {
+            await LoadStadiumLayout();
+        });
+    }
+
+    public void Dispose()
+    {
+        if (SignalRService != null)
+        {
+            SignalRService.OrderUpdated -= OnOrderUpdated;
+        }
+    }
+}

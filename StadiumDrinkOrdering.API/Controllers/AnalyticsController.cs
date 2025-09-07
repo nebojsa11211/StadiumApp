@@ -1,0 +1,145 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using StadiumDrinkOrdering.API.Services;
+
+namespace StadiumDrinkOrdering.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize(Roles = "Admin,Staff")]
+public class AnalyticsController : ControllerBase
+{
+    private readonly IAnalyticsService _analyticsService;
+    private readonly ILogger<AnalyticsController> _logger;
+
+    public AnalyticsController(IAnalyticsService analyticsService, ILogger<AnalyticsController> logger)
+    {
+        _analyticsService = analyticsService;
+        _logger = logger;
+    }
+
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> GetDashboardSummary()
+    {
+        try
+        {
+            var summary = await _analyticsService.GetDashboardSummaryAsync();
+            return Ok(summary);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting dashboard summary");
+            return StatusCode(500, new { message = "An error occurred while getting dashboard summary" });
+        }
+    }
+
+    [HttpGet("event/{eventId}")]
+    public async Task<IActionResult> GetEventAnalytics(int eventId)
+    {
+        try
+        {
+            var analytics = await _analyticsService.GetEventAnalyticsAsync(eventId);
+            return Ok(analytics);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting event analytics for event {EventId}", eventId);
+            return StatusCode(500, new { message = "An error occurred while getting event analytics" });
+        }
+    }
+
+    [HttpGet("event/{eventId}/trends")]
+    public async Task<IActionResult> GetOrderTrends(int eventId, [FromQuery] int hours = 24)
+    {
+        try
+        {
+            var trends = await _analyticsService.GetOrderTrendsAsync(eventId, hours);
+            return Ok(trends);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting order trends for event {EventId}", eventId);
+            return StatusCode(500, new { message = "An error occurred while getting order trends" });
+        }
+    }
+
+    [HttpGet("drinks/popularity")]
+    public async Task<IActionResult> GetDrinkPopularity([FromQuery] int? eventId = null, [FromQuery] int days = 7)
+    {
+        try
+        {
+            var popularity = await _analyticsService.GetDrinkPopularityAsync(eventId, days);
+            return Ok(popularity);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting drink popularity");
+            return StatusCode(500, new { message = "An error occurred while getting drink popularity" });
+        }
+    }
+
+    [HttpGet("event/{eventId}/sections")]
+    public async Task<IActionResult> GetSectionPerformance(int eventId)
+    {
+        try
+        {
+            var performance = await _analyticsService.GetSectionPerformanceAsync(eventId);
+            return Ok(performance);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting section performance for event {EventId}", eventId);
+            return StatusCode(500, new { message = "An error occurred while getting section performance" });
+        }
+    }
+
+    [HttpGet("revenue")]
+    public async Task<IActionResult> GetRevenueAnalytics([FromQuery] int? eventId = null, [FromQuery] int days = 30)
+    {
+        try
+        {
+            var analytics = await _analyticsService.GetRevenueAnalyticsAsync(eventId, days);
+            return Ok(analytics);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting revenue analytics");
+            return StatusCode(500, new { message = "An error occurred while getting revenue analytics" });
+        }
+    }
+
+    [HttpGet("staff/performance")]
+    public async Task<IActionResult> GetStaffPerformance([FromQuery] int? eventId = null, [FromQuery] int days = 7)
+    {
+        try
+        {
+            var performance = await _analyticsService.GetStaffPerformanceAsync(eventId, days);
+            return Ok(performance);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting staff performance");
+            return StatusCode(500, new { message = "An error occurred while getting staff performance" });
+        }
+    }
+
+    [HttpPost("event/{eventId}/update")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateEventAnalytics(int eventId)
+    {
+        try
+        {
+            await _analyticsService.UpdateEventAnalyticsAsync(eventId);
+            return Ok(new { message = "Event analytics updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating event analytics for event {EventId}", eventId);
+            return StatusCode(500, new { message = "An error occurred while updating event analytics" });
+        }
+    }
+}

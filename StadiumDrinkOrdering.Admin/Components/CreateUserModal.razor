@@ -1,0 +1,130 @@
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService ApiService
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="create-user-modal">
+    <div class="modal-dialog modal-lg" id="create-user-modal-dialog">
+        <div class="modal-content" id="create-user-modal-content">
+            <div class="modal-header" id="create-user-modal-header">
+                <h5 class="modal-title" id="create-user-modal-title">Create New User</h5>
+                <button type="button" class="btn-close" @onclick="OnCancel" id="create-user-modal-close-btn"></button>
+            </div>
+            <EditForm Model="@createUserDto" OnValidSubmit="@HandleValidSubmit" id="create-user-form">
+                <DataAnnotationsValidator />
+                <div class="modal-body" id="create-user-modal-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" id="create-user-error-alert">@errorMessage</div>
+                    }
+                    
+                    <div class="row" id="create-user-name-row">
+                        <div class="col-md-6" id="create-user-username-col">
+                            <div class="mb-3" id="create-user-username-group">
+                                <label for="username" class="form-label" id="create-user-username-label">Username *</label>
+                                <InputText id="username" class="form-control" @bind-Value="createUserDto.Username" />
+                                <ValidationMessage For="@(() => createUserDto.Username)" />
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="create-user-email-col">
+                            <div class="mb-3" id="create-user-email-group">
+                                <label for="email" class="form-label" id="create-user-email-label">Email *</label>
+                                <InputText id="email" type="email" class="form-control" @bind-Value="createUserDto.Email" />
+                                <ValidationMessage For="@(() => createUserDto.Email)" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row" id="create-user-password-row">
+                        <div class="col-md-6" id="create-user-password-col">
+                            <div class="mb-3" id="create-user-password-group">
+                                <label for="password" class="form-label" id="create-user-password-label">Password *</label>
+                                <InputText id="password" type="password" class="form-control" @bind-Value="createUserDto.Password" />
+                                <ValidationMessage For="@(() => createUserDto.Password)" />
+                                <div class="form-text" id="create-user-password-help">Minimum 6 characters required.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="create-user-confirm-password-col">
+                            <div class="mb-3" id="create-user-confirm-password-group">
+                                <label for="confirmPassword" class="form-label" id="create-user-confirm-password-label">Confirm Password *</label>
+                                <InputText id="confirmPassword" type="password" class="form-control" @bind-Value="createUserDto.ConfirmPassword" />
+                                <ValidationMessage For="@(() => createUserDto.ConfirmPassword)" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3" id="create-user-role-group">
+                        <label for="role" class="form-label" id="create-user-role-label">Role *</label>
+                        <InputSelect id="role" class="form-select" @bind-Value="createUserDto.Role">
+                            <option value="">-- Select Role --</option>
+                            <option value="@UserRole.Admin">Admin</option>
+                            <option value="@UserRole.Customer">Customer</option>
+                            <option value="@UserRole.Bartender">Bartender</option>
+                            <option value="@UserRole.Waiter">Waiter</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => createUserDto.Role)" />
+                    </div>
+                    
+                    <div class="alert alert-info" id="create-user-role-info">
+                        <small id="create-user-role-descriptions">
+                            <strong>Role Descriptions:</strong><br/>
+                            <strong>Admin:</strong> Full system access and user management<br/>
+                            <strong>Bartender:</strong> Order processing and drink preparation<br/>
+                            <strong>Waiter:</strong> Order delivery and customer service<br/>
+                            <strong>Customer:</strong> Place orders and view order status
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer" id="create-user-modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="OnCancel" id="create-user-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@isSubmitting" id="create-user-submit-btn">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" id="create-user-submit-spinner"></span>
+                        }
+                        Create User
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnUserCreated { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private CreateUserDto createUserDto = new CreateUserDto();
+    private bool isSubmitting = false;
+    private string errorMessage = "";
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            var result = await ApiService.CreateUserAsync(createUserDto);
+            
+            if (result != null)
+            {
+                await OnUserCreated.InvokeAsync();
+            }
+            else
+            {
+                errorMessage = "Failed to create user. User with this email or username may already exist.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error creating user: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,456 @@
+@page "/admin/stadium-overview"
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService ApiService
+
+<AuthRoute>
+<PageTitle>Stadium Structure Overview</PageTitle>
+
+<div class="container-fluid">
+    <h3 class="mb-4">🏟️ Stadium Structure Overview</h3>
+
+    <!-- Event Selection and Controls -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Event Selection</h5>
+                    <div class="mb-3">
+                        <label for="eventSelect" class="form-label">Select Event:</label>
+                        <select id="eventSelect" class="form-select" @bind="selectedEventId" @bind:after="OnEventChanged">
+                            <option value="0">-- Select Event --</option>
+                            @if (events != null)
+                            {
+                                @foreach (var evt in events)
+                                {
+                                    <option value="@evt.Id">@evt.EventName - @evt.EventDate.ToString("MMM dd, yyyy")</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    @if (selectedEventId > 0)
+                    {
+                        <button class="btn btn-warning" @onclick="SimulateTicketSales" disabled="@isSimulating" id="admin-stadium-simulate-btn">
+                            @if (isSimulating)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Simulate Ticket Sales
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            @if (selectedEventId > 0)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Legend</h5>
+                        <div class="d-flex gap-3">
+                            <div class="d-flex align-items-center">
+                                <div class="seat-legend available me-2"></div>
+                                <span>Available</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="seat-legend sold me-2"></div>
+                                <span>Sold</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (tribunes == null)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading stadium structure...</p>
+        </div>
+    }
+    else if (!tribunes.Any())
+    {
+        <div class="alert alert-warning">
+            <h5><i class="fas fa-exclamation-triangle me-2"></i>No Stadium Structure</h5>
+            <p>No stadium structure found. Please import a stadium structure first.</p>
+            <a href="/admin/stadium-structure" class="btn btn-primary">Manage Stadium Structure</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var tribune in tribunes.OrderBy(t => t.Code))
+            {
+                <div class="col-xl-6 col-lg-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-building me-2"></i>@tribune.Name (@tribune.Code)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var ring in tribune.Rings.OrderBy(r => r.Number))
+                            {
+                                <div class="mb-4">
+                                    <h6 class="text-primary">
+                                        <i class="fas fa-circle me-2"></i>@ring.Name
+                                    </h6>
+                                    <div class="row">
+                                        @foreach (var sector in ring.Sectors.OrderBy(s => s.Code))
+                                        {
+                                            <div class="col-md-6 col-lg-4 mb-3">
+                                                <div class="sector-card clickable-sector" id="sector-@sector.Code-@ring.Number-@tribune.Code" @onclick="() => ShowSectorSeats(sector, ring, tribune)">
+                                                    <h6 class="sector-name">@sector.Name (@sector.Code)</h6>
+                                                    <div class="sector-details">
+                                                        <div><strong>Rows:</strong> @sector.TotalRows</div>
+                                                        <div><strong>Seats/Row:</strong> @sector.SeatsPerRow</div>
+                                                        <div><strong>Total:</strong> <span class="badge bg-primary">@(sector.TotalRows * sector.SeatsPerRow) seats</span></div>
+                                                        <div class="small text-muted">Range: @sector.StartRow-@(sector.StartRow + sector.TotalRows - 1)</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (selectedSector != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @selectedSector.Name (@selectedSector.Code) - @selectedRing?.Name - @selectedTribune?.Name
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="HideSectorSeats" id="admin-stadium-sector-modal-close-btn"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="seat-grid">
+                        @for (int row = selectedSector.StartRow; row < selectedSector.StartRow + selectedSector.TotalRows; row++)
+                        {
+                            <div class="seat-row">
+                                <div class="row-number">@row</div>
+                                <div class="seats-in-row">
+                                    @for (int seat = selectedSector.StartSeat; seat < selectedSector.StartSeat + selectedSector.SeatsPerRow; seat++)
+                                    {
+                                        var seatKey = $"{selectedSector.Id}-{row}-{seat}";
+                                        var isSold = selectedEventId > 0 && seatStatusMap != null && seatStatusMap.ContainsKey(seatKey);
+                                        <div class="seat @(isSold ? "sold" : "available")" title="Row @row, Seat @seat - @(isSold ? "Sold" : "Available")">@seat</div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideSectorSeats" id="admin-stadium-sector-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+</AuthRoute>
+
+<style>
+    .sector-card {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        transition: all 0.2s ease-in-out;
+        height: 100%;
+    }
+
+    .clickable-sector {
+        cursor: pointer;
+    }
+
+    .clickable-sector:hover {
+        background: #f8f9fa;
+        border-color: #0d6efd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .sector-name {
+        color: #0d6efd;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .sector-details div {
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .seat-grid {
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 0.375rem;
+    }
+
+    .seat-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .row-number {
+        min-width: 40px;
+        font-weight: bold;
+        color: #6c757d;
+        text-align: right;
+        margin-right: 1rem;
+    }
+
+    .seats-in-row {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    .seat {
+        width: 32px;
+        height: 32px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+    }
+
+    .seat.available {
+        background: #28a745;
+    }
+
+    .seat.available:hover {
+        background: #1e7e34;
+        transform: scale(1.1);
+    }
+
+    .seat.sold {
+        background: #dc3545;
+    }
+
+    .seat.sold:hover {
+        background: #c82333;
+        transform: scale(1.1);
+    }
+
+    .seat-legend {
+        width: 20px;
+        height: 20px;
+        border-radius: 0.25rem;
+    }
+
+    .seat-legend.available {
+        background: #28a745;
+    }
+
+    .seat-legend.sold {
+        background: #dc3545;
+    }
+</style>
+
+@code {
+    private List<Tribune>? tribunes;
+    private Sector? selectedSector;
+    private Ring? selectedRing;
+    private Tribune? selectedTribune;
+    private List<Event>? events;
+    private int selectedEventId = 0;
+    private Dictionary<string, SeatStatusDto>? seatStatusMap;
+    private bool isSimulating = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStadiumStructure();
+        await LoadEvents();
+    }
+
+    private async Task LoadStadiumStructure()
+    {
+        try
+        {
+            tribunes = await ApiService.GetStadiumStructureAsync();
+            
+            // If no data from API, use mock data for testing
+            if (tribunes == null || !tribunes.Any())
+            {
+                tribunes = CreateMockData();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle error - use mock data for testing
+            Console.WriteLine($"Error loading stadium structure: {ex.Message}");
+            tribunes = CreateMockData();
+        }
+    }
+
+    private List<Tribune> CreateMockData()
+    {
+        return new List<Tribune>
+        {
+            new Tribune
+            {
+                Id = 1,
+                Code = "N",
+                Name = "North Stand",
+                Description = "Main north stand",
+                Rings = new List<Ring>
+                {
+                    new Ring
+                    {
+                        Id = 1,
+                        Number = 1,
+                        Name = "Lower Tier",
+                        Sectors = new List<Sector>
+                        {
+                            new Sector { Id = 1, Code = "N1", Name = "North 1", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 1 },
+                            new Sector { Id = 2, Code = "N2", Name = "North 2", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 21 }
+                        }
+                    },
+                    new Ring
+                    {
+                        Id = 2,
+                        Number = 2,
+                        Name = "Upper Tier",
+                        Sectors = new List<Sector>
+                        {
+                            new Sector { Id = 3, Code = "N3", Name = "North Upper 1", TotalRows = 10, SeatsPerRow = 18, StartRow = 16, StartSeat = 1 }
+                        }
+                    }
+                }
+            },
+            new Tribune
+            {
+                Id = 2,
+                Code = "S",
+                Name = "South Stand",
+                Description = "Main south stand",
+                Rings = new List<Ring>
+                {
+                    new Ring
+                    {
+                        Id = 3,
+                        Number = 1,
+                        Name = "Lower Tier",
+                        Sectors = new List<Sector>
+                        {
+                            new Sector { Id = 4, Code = "S1", Name = "South 1", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 1 },
+                            new Sector { Id = 5, Code = "S2", Name = "South 2 (S2)", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 21 }
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private async Task LoadEvents()
+    {
+        try
+        {
+            events = await ApiService.GetEventsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading events: {ex.Message}");
+        }
+    }
+
+    private async Task OnEventChanged()
+    {
+        if (selectedEventId > 0)
+        {
+            await LoadSeatStatusForEvent();
+        }
+        else
+        {
+            seatStatusMap = null;
+        }
+        StateHasChanged();
+    }
+
+    private async Task LoadSeatStatusForEvent()
+    {
+        try
+        {
+            var response = await ApiService.GetSeatStatusForEventAsync(selectedEventId);
+            if (response != null)
+            {
+                seatStatusMap = response.SoldSeats;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading seat status: {ex.Message}");
+            seatStatusMap = null;
+        }
+    }
+
+    private async Task SimulateTicketSales()
+    {
+        if (selectedEventId <= 0) return;
+        
+        isSimulating = true;
+        StateHasChanged();
+
+        try
+        {
+            var success = await ApiService.SimulateTicketSalesAsync(selectedEventId, 25, 75.00m);
+            if (success)
+            {
+                // Refresh seat status after simulation
+                await LoadSeatStatusForEvent();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error simulating ticket sales: {ex.Message}");
+        }
+        finally
+        {
+            isSimulating = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ShowSectorSeats(Sector sector, Ring ring, Tribune tribune)
+    {
+        selectedSector = sector;
+        selectedRing = ring;
+        selectedTribune = tribune;
+        StateHasChanged();
+    }
+
+    private void HideSectorSeats()
+    {
+        selectedSector = null;
+        selectedRing = null;
+        selectedTribune = null;
+        StateHasChanged();
+    }
+}

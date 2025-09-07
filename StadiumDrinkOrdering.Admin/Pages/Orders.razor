@@ -213,7 +213,7 @@
                 <div class="modal-content" id="admin-order-modal-content">
                     <div class="modal-header" id="admin-order-modal-header">
                         <h5 class="modal-title" id="admin-order-modal-title">Order #@selectedOrder.Id Details</h5>
-                        <button type="button" class="btn-close" @onclick="() => selectedOrder = null" id="admin-order-modal-close-btn"></button>
+                        <button type="button" class="btn-close" @onclick="() => selectedOrder = null" id="admin-orders-modal-close-btn"></button>
                     </div>
                     <div class="modal-body" id="admin-order-modal-body">
                         <div class="row">
@@ -277,7 +277,7 @@
                                 @GetNextStatusAction(selectedOrder.Status)
                             </button>
                         }
-                        <button type="button" class="btn btn-secondary" @onclick="() => selectedOrder = null" id="admin-order-modal-close-btn">
+                        <button type="button" class="btn btn-secondary" @onclick="() => selectedOrder = null" id="admin-orders-modal-cancel-btn">
                             Close
                         </button>
                     </div>
@@ -291,7 +291,7 @@
         <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-alert-container">
             <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="admin-alert-message">
                 @alertMessage
-                <button type="button" class="btn-close" @onclick="ClearAlert" id="admin-alert-close-btn"></button>
+                <button type="button" class="btn-close" @onclick="ClearAlert" id="admin-orders-alert-close-btn"></button>
             </div>
         </div>
     }

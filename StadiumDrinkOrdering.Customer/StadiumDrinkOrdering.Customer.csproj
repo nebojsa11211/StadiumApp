@@ -14,4 +14,10 @@
     <ProjectReference Include="..\StadiumDrinkOrdering.Shared\StadiumDrinkOrdering.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\**\*.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

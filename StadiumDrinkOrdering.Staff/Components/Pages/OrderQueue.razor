@@ -1,0 +1,1553 @@
+@page "/orders"
+@page "/orders/queue"
+@using StadiumDrinkOrdering.Staff.Services
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Staff,Admin")]
+@inject StaffApiService ApiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject ILogger<OrderQueue> Logger
+@rendermode @(new InteractiveServerRenderMode())
+
+<PageTitle>Order Queue - Stadium Staff</PageTitle>
+
+<div class="order-queue-container">
+    <!-- Header with Stats -->
+    <div class="queue-header">
+        <div class="header-left">
+            <h1>📋 Order Queue</h1>
+            <div class="queue-stats">
+                <div class="stat-card pending">
+                    <div class="stat-number">@pendingOrders.Count</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card active">
+                    <div class="stat-number">@activeOrders.Count</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-card ready">
+                    <div class="stat-number">@readyOrders.Count</div>
+                    <div class="stat-label">Ready</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <div class="filter-controls">
+                <button class="filter-btn @(selectedSection == "All" ? "active" : "")" 
+                        @onclick="FilterAllSections" id="staff-orderqueue-filter-all-sections-btn">
+                    All Sections
+                </button>
+                @foreach (var section in availableSections)
+                {
+                    <button class="filter-btn @(selectedSection == section ? "active" : "")" 
+                            @onclick="() => FilterBySection(section)" id="staff-orderqueue-filter-section-btn-@(section)">
+                        Section @(section)
+                    </button>
+                }
+            </div>
+            
+            <div class="refresh-controls">
+                <button class="btn btn-secondary" @onclick="RefreshOrders" id="staff-orderqueue-refresh-btn">
+                    🔄 Refresh
+                </button>
+                <div class="connection-status @(isConnected ? "connected" : "disconnected")">
+                    @if (isConnected)
+                    {
+                        <span>🟢 Live Updates</span>
+                    }
+                    else
+                    {
+                        <span>🔴 Reconnecting...</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Columns -->
+    <div class="order-columns">
+        <!-- Pending Orders -->
+        <div class="order-column">
+            <div class="column-header pending-header">
+                <h3>🟡 Pending Orders (@pendingOrders.Count)</h3>
+                <small>New orders awaiting acceptance</small>
+            </div>
+            <div class="order-cards">
+                @foreach (var order in GetFilteredOrders(pendingOrders))
+                {
+                    <div class="order-card pending @GetPriorityClass(order)" @onclick="() => ShowOrderDetails(order)">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <strong>Order #@order.Id</strong>
+                                <span class="order-time">@GetTimeAgo(order.CreatedAt)</span>
+                            </div>
+                            <div class="order-priority">
+                                @GetPriorityIcon(order)
+                            </div>
+                        </div>
+                        
+                        <div class="seat-info">
+                            <span class="section-badge">@GetEnhancedSectionInfo(order)</span>
+                            <span class="seat-details">@GetEnhancedSeatInfo(order)</span>
+                            @if (order.Event != null)
+                            {
+                                <span class="event-info">🎪 @order.Event.EventName</span>
+                            }
+                        </div>
+                        
+                        <div class="order-items">
+                            @foreach (var item in order.OrderItems.Take(2))
+                            {
+                                <div class="item-summary">
+                                    <span class="quantity">@item.Quantity×</span>
+                                    <span class="name">@item.Drink?.Name</span>
+                                </div>
+                            }
+                            @if (order.OrderItems.Count > 2)
+                            {
+                                <div class="item-more">+@(order.OrderItems.Count - 2) more</div>
+                            }
+                        </div>
+                        
+                        <div class="order-footer">
+                            <div class="order-total">€@order.TotalAmount.ToString("F2")</div>
+                            <button class="btn btn-accept" @onclick:stopPropagation="true" @onclick="() => AcceptOrder(order)" id="staff-orderqueue-accept-btn-@order.Id">
+                                Accept
+                            </button>
+                        </div>
+                    </div>
+                }
+                
+                @if (!GetFilteredOrders(pendingOrders).Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">🎉</div>
+                        <p>No pending orders!</p>
+                        <small>Great job staying on top of orders</small>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- In Progress Orders -->
+        <div class="order-column">
+            <div class="column-header active-header">
+                <h3>🔵 In Progress (@activeOrders.Count)</h3>
+                <small>Orders being prepared</small>
+            </div>
+            <div class="order-cards">
+                @foreach (var order in GetFilteredOrders(activeOrders))
+                {
+                    <div class="order-card active" @onclick="() => ShowOrderDetails(order)">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <strong>Order #@order.Id</strong>
+                                <span class="order-time">@GetTimeAgo(order.AcceptedAt ?? order.CreatedAt)</span>
+                            </div>
+                            <div class="progress-indicator">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: @GetProgressPercentage(order)%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="seat-info">
+                            <span class="section-badge">@GetEnhancedSectionInfo(order)</span>
+                            <span class="seat-details">@GetEnhancedSeatInfo(order)</span>
+                            @if (order.Event != null)
+                            {
+                                <span class="event-info">🎪 @order.Event.EventName</span>
+                            }
+                        </div>
+                        
+                        <div class="assigned-staff">
+                            @if (order.AcceptedByUser != null)
+                            {
+                                <span class="staff-avatar">👤</span>
+                                <span class="staff-name">@order.AcceptedByUser</span>
+                            }
+                        </div>
+                        
+                        <div class="order-items">
+                            @foreach (var item in order.OrderItems)
+                            {
+                                <div class="item-summary">
+                                    <span class="quantity">@item.Quantity×</span>
+                                    <span class="name">@item.Drink?.Name</span>
+                                    @if (!string.IsNullOrEmpty(item.SpecialInstructions))
+                                    {
+                                        <span class="special-note">Note: @item.SpecialInstructions</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="order-actions">
+                            @if (order.Status == OrderStatus.Accepted)
+                            {
+                                <button class="btn btn-start" @onclick:stopPropagation="true" @onclick="() => StartPreparation(order)" id="staff-orderqueue-start-prep-btn-@order.Id">
+                                    Start Prep
+                                </button>
+                            }
+                            else if (order.Status == OrderStatus.InPreparation)
+                            {
+                                <button class="btn btn-ready" @onclick:stopPropagation="true" @onclick="() => MarkReady(order)" id="staff-orderqueue-mark-ready-btn-@order.Id">
+                                    Mark Ready
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+                
+                @if (!GetFilteredOrders(activeOrders).Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">⏳</div>
+                        <p>No orders in progress</p>
+                        <small>Accept pending orders to get started</small>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Ready for Delivery -->
+        <div class="order-column">
+            <div class="column-header ready-header">
+                <h3>🟢 Ready for Delivery (@readyOrders.Count)</h3>
+                <small>Orders ready to be delivered</small>
+            </div>
+            <div class="order-cards">
+                @foreach (var order in GetFilteredOrders(readyOrders))
+                {
+                    <div class="order-card ready" @onclick="() => ShowOrderDetails(order)">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <strong>Order #@order.Id</strong>
+                                <span class="ready-time">Ready @GetTimeAgo(order.PreparedAt ?? DateTime.UtcNow)</span>
+                            </div>
+                            <div class="urgency-indicator @GetUrgencyClass(order)">
+                                @GetUrgencyIcon(order)
+                            </div>
+                        </div>
+                        
+                        <div class="seat-info">
+                            <span class="section-badge highlighted">@GetSectionFromSeat(order.SeatNumber)</span>
+                            <span class="seat-details">@order.SeatNumber</span>
+                            <button class="btn btn-map" @onclick:stopPropagation="true" @onclick="() => ShowSeatLocation(order)" id="staff-orderqueue-show-map-btn-@order.Id">
+                                📍 Map
+                            </button>
+                        </div>
+                        
+                        <div class="order-summary">
+                            <div class="item-count">@order.OrderItems.Sum(x => x.Quantity) drinks</div>
+                            <div class="order-total">€@order.TotalAmount.ToString("F2")</div>
+                        </div>
+                        
+                        <div class="delivery-actions">
+                            <button class="btn btn-deliver" @onclick:stopPropagation="true" @onclick="() => StartDelivery(order)" id="staff-orderqueue-start-delivery-btn-@order.Id">
+                                🚀 Start Delivery
+                            </button>
+                        </div>
+                    </div>
+                }
+                
+                @if (!GetFilteredOrders(readyOrders).Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <p>No orders ready</p>
+                        <small>Orders will appear here when ready for delivery</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+@if (selectedOrder != null)
+{
+    <div class="modal-overlay" @onclick="CloseOrderDetails">
+        <div class="order-modal" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h3>Order #@selectedOrder.Id</h3>
+                    <span class="status-badge @selectedOrder.Status.ToString().ToLower()">
+                        @selectedOrder.Status.ToString()
+                    </span>
+                </div>
+                <button class="btn-close" @onclick="CloseOrderDetails" id="staff-orderqueue-close-details-btn">✕</button>
+            </div>
+            
+            <div class="modal-content">
+                <div class="order-details-grid">
+                    <!-- Customer & Seat Info -->
+                    <div class="detail-section">
+                        <h4>📍 Delivery Information</h4>
+                        <div class="detail-card">
+                            <div class="seat-display">
+                                <strong>@GetEnhancedSeatInfo(selectedOrder)</strong>
+                                <span>Section @GetEnhancedSectionInfo(selectedOrder)</span>
+                            </div>
+                            @if (selectedOrder.Event != null)
+                            {
+                                <div class="event-info">
+                                    <strong>@selectedOrder.Event.EventName</strong>
+                                    <span>@selectedOrder.Event.EventDate.ToString("MMM dd, yyyy")</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Order Timeline -->
+                    <div class="detail-section">
+                        <h4>⏱️ Order Timeline</h4>
+                        <div class="timeline">
+                            <div class="timeline-item completed">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <strong>Ordered</strong>
+                                    <span>@selectedOrder.CreatedAt.ToString("HH:mm")</span>
+                                </div>
+                            </div>
+                            @if (selectedOrder.AcceptedAt.HasValue)
+                            {
+                                <div class="timeline-item completed">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <strong>Accepted</strong>
+                                        <span>@selectedOrder.AcceptedAt.Value.ToString("HH:mm")</span>
+                                    </div>
+                                </div>
+                            }
+                            @if (selectedOrder.PreparedAt.HasValue)
+                            {
+                                <div class="timeline-item completed">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <strong>Prepared</strong>
+                                        <span>@selectedOrder.PreparedAt.Value.ToString("HH:mm")</span>
+                                    </div>
+                                </div>
+                            }
+                            @if (selectedOrder.DeliveredAt.HasValue)
+                            {
+                                <div class="timeline-item completed">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <strong>Delivered</strong>
+                                        <span>@selectedOrder.DeliveredAt.Value.ToString("HH:mm")</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Items -->
+                <div class="detail-section full-width">
+                    <h4>🍻 Order Items</h4>
+                    <div class="items-list">
+                        @foreach (var item in selectedOrder.OrderItems)
+                        {
+                            <div class="item-detail">
+                                <div class="item-info">
+                                    <div class="item-name">@item.Drink?.Name</div>
+                                    @if (!string.IsNullOrEmpty(item.SpecialInstructions))
+                                    {
+                                        <div class="special-instructions">
+                                            📝 @item.SpecialInstructions
+                                        </div>
+                                    }
+                                </div>
+                                <div class="item-quantity">×@item.Quantity</div>
+                                <div class="item-price">€@item.TotalPrice.ToString("F2")</div>
+                            </div>
+                        }
+                    </div>
+                    <div class="order-total-detail">
+                        <strong>Total: €@selectedOrder.TotalAmount.ToString("F2")</strong>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="modal-actions">
+                    @if (selectedOrder.Status == OrderStatus.Pending)
+                    {
+                        <button class="btn btn-primary btn-large" @onclick="() => AcceptOrder(selectedOrder)" id="staff-orderqueue-modal-accept-btn">
+                            Accept Order
+                        </button>
+                    }
+                    else if (selectedOrder.Status == OrderStatus.Accepted)
+                    {
+                        <button class="btn btn-primary btn-large" @onclick="() => StartPreparation(selectedOrder)" id="staff-orderqueue-modal-start-prep-btn">
+                            Start Preparation
+                        </button>
+                    }
+                    else if (selectedOrder.Status == OrderStatus.InPreparation)
+                    {
+                        <button class="btn btn-success btn-large" @onclick="() => MarkReady(selectedOrder)" id="staff-orderqueue-modal-mark-ready-btn">
+                            Mark as Ready
+                        </button>
+                    }
+                    else if (selectedOrder.Status == OrderStatus.Ready)
+                    {
+                        <button class="btn btn-success btn-large" @onclick="() => StartDelivery(selectedOrder)" id="staff-orderqueue-modal-start-delivery-btn">
+                            Start Delivery
+                        </button>
+                    }
+                    else if (selectedOrder.Status == OrderStatus.OutForDelivery)
+                    {
+                        <button class="btn btn-success btn-large" @onclick="() => ConfirmDelivery(selectedOrder)" id="staff-orderqueue-modal-confirm-delivered-btn">
+                            Confirm Delivered
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .order-queue-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 20px;
+    }
+
+    /* Header Styles */
+    .queue-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .header-left h1 {
+        margin: 0 0 15px 0;
+        font-size: 2rem;
+        color: #333;
+    }
+
+    .queue-stats {
+        display: flex;
+        gap: 15px;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 15px 20px;
+        border-radius: 10px;
+        min-width: 80px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .stat-card.pending {
+        background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+        color: #2d3436;
+    }
+
+    .stat-card.active {
+        background: linear-gradient(135deg, #74b9ff, #0984e3);
+        color: white;
+    }
+
+    .stat-card.ready {
+        background: linear-gradient(135deg, #00b894, #00a085);
+        color: white;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        margin-top: 5px;
+        opacity: 0.9;
+    }
+
+    .header-right {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-end;
+    }
+
+    .filter-controls {
+        display: flex;
+        gap: 10px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        border: 2px solid #ddd;
+        background: white;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .filter-btn:hover:not(.active) {
+        border-color: #007bff;
+        background: rgba(0, 123, 255, 0.1);
+    }
+
+    .refresh-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .connection-status {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .connection-status.connected {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .connection-status.disconnected {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Order Columns */
+    .order-columns {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        height: calc(100vh - 200px);
+    }
+
+    .order-column {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .column-header {
+        padding: 20px;
+        color: white;
+        text-align: center;
+    }
+
+    .pending-header {
+        background: linear-gradient(135deg, #fdcb6e, #e17055);
+    }
+
+    .active-header {
+        background: linear-gradient(135deg, #74b9ff, #0984e3);
+    }
+
+    .ready-header {
+        background: linear-gradient(135deg, #00b894, #00a085);
+    }
+
+    .column-header h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.2rem;
+    }
+
+    .column-header small {
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    .order-cards {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Order Card Styles */
+    .order-card {
+        background: white;
+        border-radius: 12px;
+        padding: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+
+    .order-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+    }
+
+    .order-card.pending {
+        border-left-color: #fdcb6e;
+    }
+
+    .order-card.active {
+        border-left-color: #74b9ff;
+    }
+
+    .order-card.ready {
+        border-left-color: #00b894;
+    }
+
+    .order-card.high-priority {
+        border-left-color: #e17055;
+        background: linear-gradient(to right, #fff, #ffeaa7);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+
+    .order-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .order-info strong {
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    .order-time, .ready-time {
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    .order-priority {
+        font-size: 1.2rem;
+    }
+
+    .progress-indicator {
+        width: 60px;
+    }
+
+    .progress-bar {
+        background: #e9ecef;
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        background: #28a745;
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+
+    .seat-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .section-badge {
+        background: #007bff;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .section-badge.highlighted {
+        background: #28a745;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+
+    .seat-details {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .event-info {
+        font-size: 0.8rem;
+        color: #28a745;
+        font-weight: 600;
+        background: rgba(40, 167, 69, 0.1);
+        padding: 2px 6px;
+        border-radius: 8px;
+        margin-left: 8px;
+    }
+
+    .assigned-staff {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .staff-avatar {
+        background: #f8f9fa;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+    }
+
+    .order-items {
+        margin-bottom: 15px;
+    }
+
+    .item-summary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+    }
+
+    .quantity {
+        background: #e9ecef;
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 0.8rem;
+        min-width: 30px;
+        text-align: center;
+    }
+
+    .name {
+        flex: 1;
+        color: #333;
+    }
+
+    .special-note {
+        font-style: italic;
+        color: #666;
+        font-size: 0.8rem;
+        display: block;
+        margin-top: 2px;
+        margin-left: 38px;
+    }
+
+    .item-more {
+        color: #666;
+        font-size: 0.8rem;
+        font-style: italic;
+        margin-left: 38px;
+    }
+
+    .order-footer, .order-actions, .delivery-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .order-total {
+        font-weight: bold;
+        color: #007bff;
+        font-size: 1.1rem;
+    }
+
+    .order-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .item-count {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .urgency-indicator {
+        font-size: 1.5rem;
+        animation: bounce 1s infinite;
+    }
+
+    .urgency-indicator.urgent {
+        color: #e17055;
+    }
+
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-5px); }
+        60% { transform: translateY(-3px); }
+    }
+
+    /* Empty States */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.7;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        margin: 0 0 8px 0;
+        color: #333;
+    }
+
+    .empty-state small {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+    }
+
+    .order-modal {
+        background: white;
+        border-radius: 15px;
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px;
+        border-bottom: 1px solid #eee;
+        background: #f8f9fa;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .modal-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .modal-title h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .status-badge.pending { background: #ffeaa7; color: #2d3436; }
+    .status-badge.accepted { background: #a8dafc; color: #0984e3; }
+    .status-badge.inpreparation { background: #74b9ff; color: white; }
+    .status-badge.ready { background: #00b894; color: white; }
+    .status-badge.outfordelivery { background: #fdcb6e; color: #2d3436; }
+    .status-badge.delivered { background: #00b894; color: white; }
+
+    .modal-content {
+        padding: 25px;
+    }
+
+    .order-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+
+    .detail-section {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .detail-section.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .detail-section h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .detail-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #007bff;
+    }
+
+    .seat-display {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .seat-display strong {
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .event-info {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .event-info strong {
+        color: #333;
+    }
+
+    .event-info span {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+    }
+
+    .timeline-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 24px;
+        width: 2px;
+        height: 20px;
+        background: #ddd;
+    }
+
+    .timeline-item.completed::after {
+        background: #28a745;
+    }
+
+    .timeline-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ddd;
+        flex-shrink: 0;
+    }
+
+    .timeline-item.completed .timeline-dot {
+        background: #28a745;
+    }
+
+    .timeline-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .timeline-content strong {
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    .timeline-content span {
+        color: #666;
+        font-size: 0.8rem;
+    }
+
+    .items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .item-detail {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 4px solid #28a745;
+    }
+
+    .item-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .item-name {
+        font-weight: bold;
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .special-instructions {
+        color: #666;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+
+    .item-quantity {
+        font-weight: bold;
+        color: #666;
+        margin: 0 15px;
+        font-size: 1.1rem;
+    }
+
+    .item-price {
+        font-weight: bold;
+        color: #007bff;
+        font-size: 1.1rem;
+    }
+
+    .order-total-detail {
+        text-align: right;
+        padding: 15px 0;
+        border-top: 2px solid #eee;
+        font-size: 1.2rem;
+        color: #007bff;
+    }
+
+    .modal-actions {
+        padding: 20px 0 0 0;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* Button Styles */
+    .btn {
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+
+    .btn-large {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #545b62;
+        transform: translateY(-1px);
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #1e7e34;
+        transform: translateY(-1px);
+    }
+
+    .btn-accept {
+        background: #28a745;
+        color: white;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .btn-start {
+        background: #007bff;
+        color: white;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .btn-ready {
+        background: #ffc107;
+        color: #212529;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .btn-deliver {
+        background: #28a745;
+        color: white;
+        font-size: 0.8rem;
+        padding: 8px 12px;
+        width: 100%;
+    }
+
+    .btn-map {
+        background: #17a2b8;
+        color: white;
+        font-size: 0.7rem;
+        padding: 4px 8px;
+        margin-left: auto;
+    }
+
+    .btn-close {
+        background: #f8f9fa;
+        color: #666;
+        border: 1px solid #ddd;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .btn-close:hover {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 1200px) {
+        .order-columns {
+            grid-template-columns: 1fr;
+            height: auto;
+        }
+        
+        .order-column {
+            max-height: 500px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .queue-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 20px;
+        }
+
+        .header-right {
+            align-items: stretch;
+        }
+
+        .filter-controls {
+            flex-wrap: wrap;
+        }
+
+        .refresh-controls {
+            justify-content: space-between;
+        }
+
+        .order-details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+@code {
+    private List<OrderDto> allOrders = new();
+    private List<OrderDto> pendingOrders = new();
+    private List<OrderDto> activeOrders = new();
+    private List<OrderDto> readyOrders = new();
+    private List<string> availableSections = new();
+    private string selectedSection = "All";
+    private OrderDto? selectedOrder = null;
+    private HubConnection? hubConnection;
+    private bool isConnected = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrders();
+        await InitializeSignalR();
+    }
+
+    private async Task LoadOrders()
+    {
+        try
+        {
+            allOrders = await ApiService.GetOrderQueueAsync() ?? new List<OrderDto>();
+            CategorizeOrders();
+            ExtractSections();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load orders");
+        }
+    }
+
+    private void CategorizeOrders()
+    {
+        pendingOrders = allOrders.Where(o => o.Status == OrderStatus.Pending).OrderBy(o => o.CreatedAt).ToList();
+        activeOrders = allOrders.Where(o => o.Status == OrderStatus.Accepted || o.Status == OrderStatus.InPreparation).OrderBy(o => o.AcceptedAt ?? o.CreatedAt).ToList();
+        readyOrders = allOrders.Where(o => o.Status == OrderStatus.Ready).OrderBy(o => o.PreparedAt ?? DateTime.MaxValue).ToList();
+    }
+
+    private void ExtractSections()
+    {
+        availableSections = allOrders
+            .Select(o => GetSectionFromSeat(o.SeatNumber))
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Distinct()
+            .OrderBy(s => s)
+            .ToList();
+    }
+
+    private async Task InitializeSignalR()
+    {
+        try
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(Navigation.ToAbsoluteUri("/bartenderHub"))
+                .Build();
+
+            hubConnection.On<OrderDto>("NewOrder", OnNewOrder);
+            hubConnection.On<object>("OrderStatusChanged", OnOrderStatusChanged);
+            
+            hubConnection.Closed += async (error) =>
+            {
+                isConnected = false;
+                StateHasChanged();
+                await Task.Delay(5000);
+                await StartSignalRConnection();
+            };
+
+            await StartSignalRConnection();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to initialize SignalR");
+        }
+    }
+
+    private async Task StartSignalRConnection()
+    {
+        try
+        {
+            await hubConnection!.StartAsync();
+            isConnected = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to start SignalR connection");
+            isConnected = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnNewOrder(OrderDto order)
+    {
+        allOrders.Insert(0, order);
+        CategorizeOrders();
+        ExtractSections();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnOrderStatusChanged(object statusUpdate)
+    {
+        InvokeAsync(async () =>
+        {
+            await LoadOrders(); // Refresh all orders when status changes
+        });
+    }
+
+    private List<OrderDto> GetFilteredOrders(List<OrderDto> orders)
+    {
+        if (selectedSection == "All")
+            return orders;
+        
+        return orders.Where(o => GetSectionFromSeat(o.SeatNumber) == selectedSection).ToList();
+    }
+
+    private void FilterBySection(string section)
+    {
+        selectedSection = section;
+        StateHasChanged();
+    }
+
+    private void FilterAllSections()
+    {
+        FilterBySection("All");
+    }
+
+    private async Task RefreshOrders()
+    {
+        await LoadOrders();
+    }
+
+    private void ShowOrderDetails(OrderDto order)
+    {
+        selectedOrder = order;
+        StateHasChanged();
+    }
+
+    private void CloseOrderDetails()
+    {
+        selectedOrder = null;
+        StateHasChanged();
+    }
+
+    private async Task AcceptOrder(OrderDto order)
+    {
+        try
+        {
+            await ApiService.AcceptOrderAsync(order.Id);
+            await LoadOrders();
+            if (selectedOrder?.Id == order.Id)
+            {
+                selectedOrder = allOrders.FirstOrDefault(o => o.Id == order.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to accept order {OrderId}", order.Id);
+        }
+    }
+
+    private async Task StartPreparation(OrderDto order)
+    {
+        try
+        {
+            await ApiService.StartPreparationAsync(order.Id);
+            await LoadOrders();
+            if (selectedOrder?.Id == order.Id)
+            {
+                selectedOrder = allOrders.FirstOrDefault(o => o.Id == order.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to start preparation for order {OrderId}", order.Id);
+        }
+    }
+
+    private async Task MarkReady(OrderDto order)
+    {
+        try
+        {
+            await ApiService.MarkReadyAsync(order.Id);
+            await LoadOrders();
+            if (selectedOrder?.Id == order.Id)
+            {
+                selectedOrder = allOrders.FirstOrDefault(o => o.Id == order.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to mark order ready {OrderId}", order.Id);
+        }
+    }
+
+    private async Task StartDelivery(OrderDto order)
+    {
+        try
+        {
+            await ApiService.StartDeliveryAsync(order.Id);
+            Navigation.NavigateTo($"/delivery/{order.Id}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to start delivery for order {OrderId}", order.Id);
+        }
+    }
+
+    private async Task ConfirmDelivery(OrderDto order)
+    {
+        try
+        {
+            await ApiService.ConfirmDeliveryAsync(order.Id);
+            await LoadOrders();
+            CloseOrderDetails();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to confirm delivery for order {OrderId}", order.Id);
+        }
+    }
+
+    private void ShowSeatLocation(OrderDto order)
+    {
+        Navigation.NavigateTo($"/map/{order.SeatNumber}");
+    }
+
+    // Helper Methods
+    private string GetSectionFromSeat(string seatNumber)
+    {
+        if (string.IsNullOrEmpty(seatNumber)) return "";
+        var parts = seatNumber.Split('-');
+        return parts.Length > 0 ? parts[0] : "";
+    }
+    
+    private string GetEnhancedSectionInfo(OrderDto order)
+    {
+        if (order.Seat?.Section != null)
+        {
+            return order.Seat.Section.SectionName;
+        }
+        return GetSectionFromSeat(order.SeatNumber);
+    }
+    
+    private string GetEnhancedSeatInfo(OrderDto order)
+    {
+        if (order.Seat?.Section != null)
+        {
+            return $"Row {order.Seat.RowNumber}, Seat {order.Seat.SeatNumber}";
+        }
+        return order.SeatNumber;
+    }
+
+    private string GetTimeAgo(DateTime dateTime)
+    {
+        var timeSpan = DateTime.UtcNow - dateTime;
+        
+        if (timeSpan.TotalMinutes < 1)
+            return "Just now";
+        else if (timeSpan.TotalMinutes < 60)
+            return $"{(int)timeSpan.TotalMinutes}m ago";
+        else if (timeSpan.TotalHours < 24)
+            return $"{(int)timeSpan.TotalHours}h ago";
+        else
+            return dateTime.ToString("HH:mm");
+    }
+
+    private string GetPriorityClass(OrderDto order)
+    {
+        var minutesOld = (DateTime.UtcNow - order.CreatedAt).TotalMinutes;
+        return minutesOld > 10 ? "high-priority" : "";
+    }
+
+    private string GetPriorityIcon(OrderDto order)
+    {
+        var minutesOld = (DateTime.UtcNow - order.CreatedAt).TotalMinutes;
+        if (minutesOld > 15) return "🔥";
+        if (minutesOld > 10) return "⚡";
+        return "";
+    }
+
+    private int GetProgressPercentage(OrderDto order)
+    {
+        return order.Status switch
+        {
+            OrderStatus.Accepted => 25,
+            OrderStatus.InPreparation => 75,
+            OrderStatus.Ready => 100,
+            _ => 0
+        };
+    }
+
+    private string GetUrgencyClass(OrderDto order)
+    {
+        if (order.PreparedAt.HasValue)
+        {
+            var minutesReady = (DateTime.UtcNow - order.PreparedAt.Value).TotalMinutes;
+            return minutesReady > 5 ? "urgent" : "";
+        }
+        return "";
+    }
+
+    private string GetUrgencyIcon(OrderDto order)
+    {
+        if (order.PreparedAt.HasValue)
+        {
+            var minutesReady = (DateTime.UtcNow - order.PreparedAt.Value).TotalMinutes;
+            if (minutesReady > 10) return "🚨";
+            if (minutesReady > 5) return "⏰";
+        }
+        return "✅";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

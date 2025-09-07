@@ -1,0 +1,427 @@
+@page "/users"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Admin.Services
+@using StadiumDrinkOrdering.Admin.Components
+@inject IAdminApiService ApiService
+@inject IJSRuntime JSRuntime
+
+<AuthRoute>
+<PageTitle>User Management</PageTitle>
+
+<div class="container-fluid" id="admin-users-container">
+    <div class="d-flex justify-content-between align-items-center mb-4" id="admin-users-header">
+        <h1 id="admin-users-title">👥 User Management</h1>
+        <button class="btn btn-primary" @onclick="ShowCreateUserModal" id="admin-users-add-btn">
+            <i class="bi bi-plus"></i> Add New User
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center" id="admin-users-loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading users...</p>
+        </div>
+    }
+    else
+    {
+        <!-- Filter Controls -->
+        <div class="card mb-4" id="admin-users-filter-card">
+            <div class="card-header" id="admin-users-filter-header">
+                <h6 id="admin-users-filter-title">Filter Users</h6>
+            </div>
+            <div class="card-body" id="admin-users-filter-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="admin-users-search-input" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="admin-users-search-input" 
+                                   @bind="searchTerm" @bind:event="oninput" @onkeypress="OnSearchKeyPress"
+                                   placeholder="Search by username or email..." />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="admin-users-role-filter" class="form-label">Role</label>
+                            <select class="form-select" id="admin-users-role-filter" @bind="selectedRole">
+                                <option value="">All Roles</option>
+                                <option value="@UserRole.Admin">Admin</option>
+                                <option value="@UserRole.Customer">Customer</option>
+                                <option value="@UserRole.Bartender">Bartender</option>
+                                <option value="@UserRole.Waiter">Waiter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="admin-users-page-size" class="form-label">Page Size</label>
+                            <select class="form-select" id="admin-users-page-size" @bind="pageSize">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn btn-outline-primary mb-3" @onclick="OnFilterChanged" id="admin-users-search-btn">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (userList?.Users?.Any() == true)
+        {
+            <!-- Users Table -->
+            <div class="card" id="admin-users-table-card">
+                <div class="card-header d-flex justify-content-between align-items-center" id="admin-users-table-header">
+                    <h6 class="mb-0" id="admin-users-table-title">Users (@userList.TotalCount total)</h6>
+                    <span class="text-muted" id="admin-users-table-pagination-info">Page @userList.Page of @userList.TotalPages</span>
+                </div>
+                <div class="table-responsive" id="admin-users-table-wrapper">
+                    <table class="table table-striped table-hover mb-0" id="admin-users-table">
+                        <thead class="table-dark" id="admin-users-table-head">
+                            <tr id="admin-users-table-header-row">
+                                <th id="admin-users-table-header-id">ID</th>
+                                <th id="admin-users-table-header-username">Username</th>
+                                <th id="admin-users-table-header-email">Email</th>
+                                <th id="admin-users-table-header-role">Role</th>
+                                <th id="admin-users-table-header-created">Created</th>
+                                <th id="admin-users-table-header-login">Last Login</th>
+                                <th id="admin-users-table-header-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in userList.Users)
+                            {
+                                <tr id="admin-users-row-@user.Id">
+                                    <td id="admin-users-id-@user.Id">@user.Id</td>
+                                    <td id="admin-users-username-@user.Id">
+                                        <strong>@user.Username</strong>
+                                    </td>
+                                    <td id="admin-users-email-@user.Id">@user.Email</td>
+                                    <td id="admin-users-role-@user.Id">
+                                        <span class="badge @GetRoleBadgeClass(user.Role)">
+                                            @user.Role
+                                        </span>
+                                    </td>
+                                    <td id="admin-users-created-@user.Id">@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td id="admin-users-login-@user.Id">
+                                        @if (user.LastLoginAt.HasValue)
+                                        {
+                                            @user.LastLoginAt.Value.ToString("yyyy-MM-dd HH:mm")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Never</span>
+                                        }
+                                    </td>
+                                    <td id="admin-users-actions-@user.Id">
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-outline-primary" 
+                                                    @onclick="() => ShowEditUserModal(user)"
+                                                    title="Edit User"
+                                                    id="admin-users-edit-@user.Id">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" 
+                                                    @onclick="() => ShowChangePasswordModal(user)"
+                                                    title="Change Password"
+                                                    id="admin-users-password-@user.Id">
+                                                <i class="bi bi-key"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" 
+                                                    @onclick="() => ShowDeleteUserModal(user)"
+                                                    title="Delete User"
+                                                    disabled="@(user.Role == UserRole.Admin && GetAdminCount() <= 1)"
+                                                    id="admin-users-delete-@user.Id">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (userList.TotalPages > 1)
+                {
+                    <div class="card-footer">
+                        <nav>
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                                    <button class="page-link" @onclick="() => GoToPage(currentPage - 1)" disabled="@(currentPage <= 1)" id="admin-users-prev-page-btn">
+                                        Previous
+                                    </button>
+                                </li>
+                                
+                                @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(userList.TotalPages, currentPage + 2); i++)
+                                {
+                                    <li class="page-item @(i == currentPage ? "active" : "")">
+                                        <button class="page-link" @onclick="() => GoToPage(i)" id="admin-users-page-@i-btn">@i</button>
+                                    </li>
+                                }
+                                
+                                <li class="page-item @(currentPage >= userList.TotalPages ? "disabled" : "")">
+                                    <button class="page-link" @onclick="() => GoToPage(currentPage + 1)" disabled="@(currentPage >= userList.TotalPages)" id="admin-users-next-page-btn">
+                                        Next
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5" id="admin-users-empty">
+                <div class="mb-4">
+                    <span style="font-size: 4rem;">👥</span>
+                </div>
+                <h3 id="admin-users-empty-title">No users found</h3>
+                <p class="text-muted" id="admin-users-empty-message">
+                    @if (string.IsNullOrWhiteSpace(searchTerm) && !selectedRole.HasValue)
+                    {
+                        <text>Start by adding your first user.</text>
+                    }
+                    else
+                    {
+                        <text>No users match your current filters. Try adjusting your search criteria.</text>
+                    }
+                </p>
+                @if (string.IsNullOrWhiteSpace(searchTerm) && !selectedRole.HasValue)
+                {
+                    <button class="btn btn-primary btn-lg" @onclick="ShowCreateUserModal" id="admin-add-first-user-btn">
+                        Add First User
+                    </button>
+                }
+            </div>
+        }
+    }
+</div>
+
+<!-- Create User Modal -->
+@if (showCreateModal)
+{
+    <CreateUserModal @ref="createUserModal" 
+                     OnUserCreated="OnUserCreated" 
+                     OnCancel="() => showCreateModal = false" />
+}
+
+<!-- Edit User Modal -->
+@if (showEditModal && selectedUser != null)
+{
+    <EditUserModal @ref="editUserModal" 
+                   User="selectedUser"
+                   OnUserUpdated="OnUserUpdated" 
+                   OnCancel="() => showEditModal = false" />
+}
+
+<!-- Change Password Modal -->
+@if (showChangePasswordModal && selectedUser != null)
+{
+    <ChangePasswordModal @ref="changePasswordModal" 
+                         User="selectedUser"
+                         OnPasswordChanged="OnPasswordChanged" 
+                         OnCancel="() => showChangePasswordModal = false" />
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal && selectedUser != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" @onclick="() => showDeleteModal = false" id="admin-users-delete-modal-close-btn"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete user <strong>@selectedUser.Username</strong>?</p>
+                    <p class="text-danger"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showDeleteModal = false" id="admin-users-delete-cancel-btn">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmDeleteUser" disabled="@isDeleting" id="admin-users-delete-confirm-btn">
+                        @if (isDeleting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Delete User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+</AuthRoute>
+
+@code {
+    private UserListDto? userList;
+    private bool isLoading = true;
+    private string searchTerm = "";
+    private UserRole? selectedRole;
+    private int currentPage = 1;
+    private int pageSize = 20;
+
+    // Modal states
+    private bool showCreateModal = false;
+    private bool showEditModal = false;
+    private bool showChangePasswordModal = false;
+    private bool showDeleteModal = false;
+    private bool isDeleting = false;
+    private UserDto? selectedUser;
+
+    // Modal references
+    private CreateUserModal? createUserModal;
+    private EditUserModal? editUserModal;
+    private ChangePasswordModal? changePasswordModal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        var filter = new UserFilterDto
+        {
+            SearchTerm = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm,
+            Role = selectedRole,
+            Page = currentPage,
+            PageSize = pageSize
+        };
+
+        userList = await ApiService.GetUsersAsync(filter);
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task OnFilterChanged()
+    {
+        currentPage = 1; // Reset to first page when filtering
+        await LoadUsers();
+    }
+
+    private async Task OnPageSizeChanged()
+    {
+        currentPage = 1; // Reset to first page when changing page size
+        await LoadUsers();
+    }
+
+    private async Task OnSearchKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await OnFilterChanged();
+        }
+    }
+
+    private async Task GoToPage(int page)
+    {
+        if (page >= 1 && page <= (userList?.TotalPages ?? 1))
+        {
+            currentPage = page;
+            await LoadUsers();
+        }
+    }
+
+    private string GetRoleBadgeClass(UserRole role)
+    {
+        return role switch
+        {
+            UserRole.Admin => "bg-danger",
+            UserRole.Bartender => "bg-warning text-dark",
+            UserRole.Waiter => "bg-info",
+            UserRole.Customer => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
+    private int GetAdminCount()
+    {
+        return userList?.Users?.Count(u => u.Role == UserRole.Admin) ?? 0;
+    }
+
+    // Modal methods
+    private void ShowCreateUserModal()
+    {
+        showCreateModal = true;
+        StateHasChanged();
+    }
+
+    private void ShowEditUserModal(UserDto user)
+    {
+        selectedUser = user;
+        showEditModal = true;
+        StateHasChanged();
+    }
+
+    private void ShowChangePasswordModal(UserDto user)
+    {
+        selectedUser = user;
+        showChangePasswordModal = true;
+        StateHasChanged();
+    }
+
+    private void ShowDeleteUserModal(UserDto user)
+    {
+        selectedUser = user;
+        showDeleteModal = true;
+        StateHasChanged();
+    }
+
+    private async Task OnUserCreated()
+    {
+        showCreateModal = false;
+        await LoadUsers();
+        await JSRuntime.InvokeVoidAsync("alert", "User created successfully!");
+    }
+
+    private async Task OnUserUpdated()
+    {
+        showEditModal = false;
+        await LoadUsers();
+        await JSRuntime.InvokeVoidAsync("alert", "User updated successfully!");
+    }
+
+    private async Task OnPasswordChanged()
+    {
+        showChangePasswordModal = false;
+        await JSRuntime.InvokeVoidAsync("alert", "Password changed successfully!");
+    }
+
+    private async Task ConfirmDeleteUser()
+    {
+        if (selectedUser == null) return;
+
+        isDeleting = true;
+        StateHasChanged();
+
+        var success = await ApiService.DeleteUserAsync(selectedUser.Id);
+        
+        isDeleting = false;
+        showDeleteModal = false;
+        
+        if (success)
+        {
+            await LoadUsers();
+            await JSRuntime.InvokeVoidAsync("alert", "User deleted successfully!");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Failed to delete user. Cannot delete the last admin user.");
+        }
+    }
+}

@@ -12,6 +12,12 @@ public class TicketDto
     public string? EventName { get; set; }
     public DateTime? EventDate { get; set; }
     public bool IsActive { get; set; }
+    public int? EventId { get; set; }
+    public int? OrderId { get; set; }
+    public DateTime? PurchaseDate { get; set; }
+    public string? CustomerEmail { get; set; }
+    public string? CustomerName { get; set; }
+    public decimal Price { get; set; }
 }
 
 public class ValidateTicketDto

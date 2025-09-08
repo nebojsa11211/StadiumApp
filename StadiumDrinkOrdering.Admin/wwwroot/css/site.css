@@ -1013,3 +1013,157 @@ a:hover {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* Enhanced Admin Sidebar Styles */
+#admin-layout-sidebar {
+    background: linear-gradient(180deg, #ffffff 0%, var(--stadium-gray-50) 100%);
+    border-right: 1px solid var(--stadium-gray-200);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+}
+
+#admin-layout-sidebar .navbar {
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+#admin-layout-sidebar .navbar-brand {
+    padding: 1rem 1.5rem;
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar Scrollbar Styling */
+#admin-layout-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#admin-layout-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#admin-layout-sidebar::-webkit-scrollbar-thumb {
+    background: var(--stadium-gray-300);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+#admin-layout-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--stadium-gray-400);
+}
+
+/* Navigation Enhancements */
+#admin-layout-sidebar .nav-item {
+    position: relative;
+}
+
+#admin-layout-sidebar .nav-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: var(--admin-primary);
+    border-radius: 0 3px 3px 0;
+    transition: height 0.3s ease;
+}
+
+#admin-layout-sidebar .nav-item:has(.active)::before {
+    height: 70%;
+}
+
+/* Section Headers Enhancement */
+#admin-layout-sidebar .nav-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    padding-left: 1rem;
+}
+
+#admin-layout-sidebar .nav-section-header::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--admin-primary);
+    border-radius: 50%;
+}
+
+/* Admin Content Area Enhancement */
+#admin-layout-content {
+    background: var(--stadium-gray-50);
+    min-height: calc(100vh - 4rem);
+    position: relative;
+}
+
+#admin-layout-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(180deg, rgba(124, 58, 237, 0.03) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+#admin-layout-content > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Top Row Enhancement */
+#admin-layout-top-row {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+}
+
+#admin-layout-top-row:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Sidebar Footer - Add some spacing at bottom */
+#admin-layout-sidebar nav::after {
+    content: "";
+    display: block;
+    height: 2rem;
+}
+
+/* Mobile Sidebar Overlay Enhancement */
+@media (max-width: 640px) {
+    #admin-layout-sidebar {
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 280px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    #admin-layout-sidebar.show {
+        transform: translateX(0);
+    }
+    
+    /* Mobile backdrop */
+    #admin-layout-sidebar.show::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 280px;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: -1;
+    }
+}

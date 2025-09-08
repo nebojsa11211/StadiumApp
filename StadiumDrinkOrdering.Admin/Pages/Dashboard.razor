@@ -4,7 +4,6 @@
 @using StadiumDrinkOrdering.Admin.Services
 @inject IAdminApiService ApiService
 
-<AuthRoute>
 <PageTitle>Stadium Admin Dashboard</PageTitle>
 
 <div class="container-fluid" id="admin-dashboard-container">
@@ -202,7 +201,6 @@
         </div>
     }
 </div>
-</AuthRoute>
 
 @if (!string.IsNullOrEmpty(alertMessage))
 {

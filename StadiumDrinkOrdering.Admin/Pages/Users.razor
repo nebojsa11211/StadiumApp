@@ -6,7 +6,6 @@
 @inject IAdminApiService ApiService
 @inject IJSRuntime JSRuntime
 
-<AuthRoute>
 <PageTitle>User Management</PageTitle>
 
 <div class="container-fluid" id="admin-users-container">
@@ -261,8 +260,6 @@
         </div>
     </div>
 }
-
-</AuthRoute>
 
 @code {
     private UserListDto? userList;

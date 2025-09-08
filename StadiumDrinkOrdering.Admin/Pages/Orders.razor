@@ -3,11 +3,12 @@
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Admin.Services
 @inject IAdminApiService ApiService
+@inject NavigationManager NavigationManager
+@implements IDisposable
 
-<AuthRoute>
-    <PageTitle>Order Management</PageTitle>
+<PageTitle>Order Management</PageTitle>
 
-    <div class="container-fluid" id="admin-orders-container">
+<div class="container-fluid" id="admin-orders-container">
         <div class="d-flex justify-content-between align-items-center mb-4" id="admin-orders-header">
             <h1 id="admin-orders-title">📋 Order Management</h1>
             <button class="btn btn-primary" @onclick="RefreshOrders" id="admin-orders-refresh-btn">
@@ -368,9 +369,8 @@
                 @alertMessage
                 <button type="button" class="btn-close" @onclick="ClearAlert" id="admin-orders-alert-close-btn"></button>
             </div>
-        </div>
-    }
-</AuthRoute>
+    </div>
+}
 
 @code {
     private List<OrderDto>? orders;
@@ -383,22 +383,101 @@
     private string viewMode = "table";
     private string alertMessage = "";
     private string alertType = "";
+    private bool isLoadingOrders = false;
+    private CancellationTokenSource? loadOrdersCts;
+    private static int instanceCounter = 0;
+    private int instanceId;
+
+    public Orders()
+    {
+        instanceId = ++instanceCounter;
+        Console.WriteLine($"Orders Component Constructor - Instance #{instanceId} created at {DateTime.Now:HH:mm:ss.fff}");
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"Orders #{instanceId} - OnInitializedAsync called at {DateTime.Now:HH:mm:ss.fff}");
         await LoadOrders();
     }
 
     private async Task LoadOrders()
     {
-        orders = await ApiService.GetOrdersAsync();
+        var callId = Guid.NewGuid().ToString()[..8];
+        var stackTrace = Environment.StackTrace;
+        Console.WriteLine($"🔍 LoadOrders ENTRY #{callId} at {DateTime.Now:HH:mm:ss.fff}");
+        Console.WriteLine($"🔍 Call Stack (first 3 lines): {string.Join(" -> ", stackTrace.Split('\n').Take(3).Select(line => line.Trim()))}");
+        
+        // Prevent concurrent API calls
+        if (isLoadingOrders)
+        {
+            Console.WriteLine($"🔍 LoadOrders #{callId}: Already loading, skipping duplicate call");
+            return;
+        }
+
+        // Cancel any pending load operation
+        loadOrdersCts?.Cancel();
+        loadOrdersCts = new CancellationTokenSource();
+        var token = loadOrdersCts.Token;
+
+        try
+        {
+            isLoadingOrders = true;
+            Console.WriteLine($"🔍 LoadOrders #{callId}: Setting isLoadingOrders=true, starting API call");
+            
+            var loadedOrders = await ApiService.GetOrdersAsync();
+            
+            // Check if this operation was cancelled
+            if (token.IsCancellationRequested)
+            {
+                Console.WriteLine($"🔍 LoadOrders #{callId}: Operation was cancelled");
+                return;
+            }
+            
+            orders = loadedOrders;
+            Console.WriteLine($"🔍 LoadOrders #{callId}: Completed successfully, loaded {orders?.Count ?? 0} orders");
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("LoadOrders: Operation cancelled");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Console.WriteLine($"LoadOrders: Authentication error - {ex.Message}");
+            ShowAlert("Please log in to view orders", "warning");
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"LoadOrders: Error - {ex.Message}");
+            ShowAlert($"Failed to load orders: {ex.Message}", "danger");
+        }
+        finally
+        {
+            isLoadingOrders = false;
+            Console.WriteLine($"🔍 LoadOrders #{callId}: Setting isLoadingOrders=false in finally block");
+        }
     }
 
     private async Task RefreshOrders()
     {
+        Console.WriteLine($"🔍 RefreshOrders: User clicked refresh button at {DateTime.Now:HH:mm:ss.fff}");
+        
+        // Don't refresh if already loading
+        if (isLoadingOrders)
+        {
+            Console.WriteLine("🔍 RefreshOrders: Already loading, skipping");
+            return;
+        }
+
+        Console.WriteLine("🔍 RefreshOrders: Calling LoadOrders()");
         await LoadOrders();
-        StateHasChanged();
-        ShowAlert("Orders refreshed", "success");
+        Console.WriteLine("🔍 RefreshOrders: LoadOrders() completed");
+        
+        // Only show success if orders were actually loaded
+        if (orders != null && !isLoadingOrders)
+        {
+            ShowAlert("Orders refreshed", "success");
+        }
     }
 
     private IEnumerable<OrderDto> filteredOrders
@@ -439,10 +518,12 @@
         }
     }
 
-    private async Task FilterOrders()
+    private void FilterOrders()
     {
-        await Task.Delay(1); // Allow UI to update
-        StateHasChanged();
+        // No need for async or StateHasChanged
+        // The filteredOrders computed property will automatically update
+        // and Blazor will detect the change and re-render
+        Console.WriteLine($"FilterOrders: Filtering with status='{selectedStatus}', search='{searchTerm}', sort='{sortBy}'");
     }
 
     private void ShowOrderDetails(OrderDto order)
@@ -577,5 +658,11 @@
     private void ClearAlert()
     {
         alertMessage = "";
+    }
+
+    public void Dispose()
+    {
+        loadOrdersCts?.Cancel();
+        loadOrdersCts?.Dispose();
     }
 }

@@ -234,6 +234,8 @@ public class AdminApiService : IAdminApiService
                 Console.WriteLine($"URL: {url}");
                 Console.WriteLine($"Full URL: {_httpClient.BaseAddress}{url}");
                 Console.WriteLine($"HasToken: {!string.IsNullOrEmpty(Token)}");
+                Console.WriteLine($"Token Value: {(string.IsNullOrEmpty(Token) ? "NULL/EMPTY" : $"Bearer {Token[..Math.Min(20, Token.Length)]}...")}");
+                Console.WriteLine($"HttpClient Headers: {string.Join(", ", _httpClient.DefaultRequestHeaders.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
                 
                 // Use progressively longer timeouts for retries
                 var timeoutSeconds = 10 + (attempt * 10);
@@ -241,28 +243,45 @@ public class AdminApiService : IAdminApiService
                 
                 var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseContentRead, cts.Token);
                 
-                Console.WriteLine($"Response Status: {response.StatusCode}");
+                Console.WriteLine($"Response Status: {response.StatusCode} ({(int)response.StatusCode})");
+                Console.WriteLine($"Response Headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
+                Console.WriteLine($"Content Headers: {string.Join(", ", response.Content.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
+                
+                var responseContent = await response.Content.ReadAsStringAsync(cts.Token);
+                Console.WriteLine($"Response Content Length: {responseContent?.Length ?? 0}");
+                Console.WriteLine($"Response Content (first 200 chars): {(responseContent?.Length > 200 ? responseContent[..200] + "..." : responseContent ?? "NULL")}");
                 
                 if (response.IsSuccessStatusCode)
                 {
-                    var json = await response.Content.ReadAsStringAsync(cts.Token);
-                    Console.WriteLine($"Response Length: {json?.Length ?? 0}");
-                    var result = JsonSerializer.Deserialize<List<OrderDto>>(json, _jsonOptions);
-                    Console.WriteLine($"✅ SUCCESS: Deserialized Orders Count: {result?.Count ?? 0}");
-                    return result;
+                    Console.WriteLine($"✅ SUCCESS PATH: Attempting to deserialize JSON");
+                    Console.WriteLine($"JSON to deserialize: {(responseContent?.Length > 500 ? responseContent[..500] + "..." : responseContent ?? "NULL")}");
+                    
+                    try
+                    {
+                        var result = JsonSerializer.Deserialize<List<OrderDto>>(responseContent, _jsonOptions);
+                        Console.WriteLine($"✅ SUCCESS: Deserialized Orders Count: {result?.Count ?? 0}");
+                        return result;
+                    }
+                    catch (JsonException jsonEx)
+                    {
+                        Console.WriteLine($"🚨 JSON DESERIALIZATION ERROR: {jsonEx.Message}");
+                        Console.WriteLine($"🚨 Raw response causing error: {responseContent}");
+                        throw; // Re-throw to trigger retry
+                    }
                 }
                 else
                 {
-                    var errorContent = await response.Content.ReadAsStringAsync(cts.Token);
-                    Console.WriteLine($"❌ HTTP Error {response.StatusCode}: {errorContent}");
+                    Console.WriteLine($"❌ ERROR PATH: HTTP Error {response.StatusCode}: {responseContent}");
                     
                     // Don't retry on authorization errors
                     if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized || 
                         response.StatusCode == System.Net.HttpStatusCode.Forbidden)
                     {
-                        Console.WriteLine($"⚠️ Authorization error - not retrying");
-                        break;
+                        Console.WriteLine($"⚠️ Authorization error - throwing exception immediately");
+                        throw new UnauthorizedAccessException("Authentication required. Please log in to access this resource.");
                     }
+                    
+                    Console.WriteLine($"⚠️ Non-auth error - will retry if attempts remain");
                 }
             }
             catch (HttpRequestException ex) when (ex.Message.Contains("ResponseEnded"))
@@ -298,6 +317,11 @@ public class AdminApiService : IAdminApiService
                     await Task.Delay(1000);
                     continue;
                 }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Re-throw authentication errors immediately - don't retry
+                throw;
             }
             catch (Exception ex)
             {

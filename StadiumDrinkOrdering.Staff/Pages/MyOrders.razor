@@ -248,6 +248,8 @@ else
     private List<OrderDto> outForDelivery = new();
     private List<OrderDto> deliveredToday = new();
     private int currentStaffId = 1; // This should come from authentication context
+    private bool isLoadingOrders = false;
+    private CancellationTokenSource? loadOrdersCts;
 
     protected override async Task OnInitializedAsync()
     {
@@ -278,9 +280,32 @@ else
 
     private async Task LoadAssignedOrders()
     {
+        // Prevent concurrent API calls
+        if (isLoadingOrders)
+        {
+            Console.WriteLine("LoadAssignedOrders: Already loading, skipping duplicate call");
+            return;
+        }
+
+        // Cancel any pending load operation
+        loadOrdersCts?.Cancel();
+        loadOrdersCts = new CancellationTokenSource();
+        var token = loadOrdersCts.Token;
+
         try
         {
+            isLoadingOrders = true;
+            Console.WriteLine($"LoadAssignedOrders: Starting API call at {DateTime.Now:HH:mm:ss.fff}");
+            
             var orders = await ApiService.GetAssignedOrdersAsync(currentStaffId) ?? new List<OrderDto>();
+            
+            // Check if this operation was cancelled
+            if (token.IsCancellationRequested)
+            {
+                Console.WriteLine("LoadAssignedOrders: Operation was cancelled");
+                return;
+            }
+            
             assignedOrders = orders;
 
             readyForDelivery = orders.Where(o => o.Status == OrderStatus.Ready).ToList();
@@ -289,11 +314,20 @@ else
                                               o.DeliveredAt.HasValue && 
                                               o.DeliveredAt.Value.Date == DateTime.Today).ToList();
 
+            Console.WriteLine($"LoadAssignedOrders: Completed API call at {DateTime.Now:HH:mm:ss.fff}, loaded {orders.Count} orders");
             StateHasChanged();
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("LoadAssignedOrders: Operation cancelled");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to load assigned orders: {ex.Message}");
+            Console.WriteLine($"LoadAssignedOrders: Error - {ex.Message}");
+        }
+        finally
+        {
+            isLoadingOrders = false;
         }
     }
 
@@ -352,6 +386,13 @@ else
 
     private async Task RefreshOrders()
     {
+        // Don't refresh if already loading
+        if (isLoadingOrders)
+        {
+            Console.WriteLine("RefreshOrders: Already loading, skipping");
+            return;
+        }
+
         await LoadAssignedOrders();
     }
 
@@ -398,6 +439,9 @@ else
 
     public void Dispose()
     {
+        loadOrdersCts?.Cancel();
+        loadOrdersCts?.Dispose();
+        
         if (SignalRService != null)
         {
             SignalRService.OrderUpdated -= OnOrderUpdated;

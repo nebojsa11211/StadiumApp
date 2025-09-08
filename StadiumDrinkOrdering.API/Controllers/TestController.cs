@@ -30,6 +30,44 @@ public class TestController : ControllerBase
         return Ok(new { message = "Demo generation placeholder from TestController", timestamp = DateTime.UtcNow });
     }
 
+    [HttpGet("test-admin-orders-call")]
+    public async Task<IActionResult> TestAdminOrdersCall()
+    {
+        try 
+        {
+            _logger.LogInformation("Testing direct call to orders endpoint (simulating AdminApiService)");
+            
+            // Simulate what AdminApiService would do - create HttpClient and call orders endpoint
+            using var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://localhost:7000/");
+            httpClient.Timeout = TimeSpan.FromSeconds(30);
+            
+            _logger.LogInformation("Making GET request to api/orders (no auth token)");
+            var response = await httpClient.GetAsync("api/orders");
+            
+            var responseContent = await response.Content.ReadAsStringAsync();
+            
+            var result = new {
+                statusCode = (int)response.StatusCode,
+                statusText = response.StatusCode.ToString(),
+                contentLength = responseContent?.Length ?? 0,
+                content = responseContent,
+                headers = response.Headers.Select(h => new { key = h.Key, value = string.Join(", ", h.Value) }),
+                requestUri = response.RequestMessage?.RequestUri?.ToString(),
+                message = "This simulates what AdminApiService sees"
+            };
+            
+            _logger.LogInformation($"Response: {response.StatusCode}, Content Length: {responseContent?.Length ?? 0}");
+            
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in test admin orders call");
+            return StatusCode(500, new { message = "Error", error = ex.Message, stackTrace = ex.StackTrace });
+        }
+    }
+
     [HttpPost("create-test-tickets")]
     public async Task<IActionResult> CreateTestTickets()
     {

@@ -126,15 +126,19 @@
                                                 <div class="btn-group btn-group-sm" id="admin-order-actions-@order.Id">
                                                     <button class="btn btn-outline-primary btn-sm" 
                                                             @onclick="() => ShowOrderDetails(order)"
-                                                            id="admin-order-details-btn-@order.Id">
+                                                            id="admin-order-details-btn-@order.Id"
+                                                            title="View Details">
                                                         <i class="bi bi-eye"></i>
+                                                        <span class="d-none d-md-inline ms-1">View</span>
                                                     </button>
                                                     @if (CanUpdateStatus(order.Status))
                                                     {
                                                         <button class="btn btn-outline-success btn-sm" 
                                                                 @onclick="() => AdvanceOrderStatus(order)"
-                                                                id="admin-order-advance-btn-@order.Id">
+                                                                id="admin-order-advance-btn-@order.Id"
+                                                                title="@GetNextStatusAction(order.Status)">
                                                             <i class="bi bi-arrow-right"></i>
+                                                            <span class="d-none d-lg-inline ms-1">@GetNextStatusAction(order.Status)</span>
                                                         </button>
                                                     }
                                                 </div>
@@ -208,7 +212,8 @@
     <!-- Order Details Modal -->
     @if (selectedOrder != null)
     {
-        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="admin-order-modal">
+        <div class="modal-backdrop fade show"></div>
+        <div class="modal fade show d-block" tabindex="-1" style="z-index: 1055;" id="admin-order-modal">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content" id="admin-order-modal-content">
                     <div class="modal-header" id="admin-order-modal-header">
@@ -222,7 +227,7 @@
                                 <table class="table table-sm" id="admin-order-info-table">
                                     <tr><td>Order ID:</td><td id="admin-order-info-id">#@selectedOrder.Id</td></tr>
                                     <tr><td>Status:</td><td><span class="badge @GetStatusBadgeClass(selectedOrder.Status)" id="admin-order-info-status">@GetStatusText(selectedOrder.Status)</span></td></tr>
-                                    <tr><td>Ticket:</td><td id="admin-order-info-ticket">@selectedOrder.TicketNumber</td></tr>
+                                    <tr><td>Ticket:</td><td id="admin-order-info-ticket"><button class="btn btn-link p-0 text-decoration-underline" @onclick="() => ShowTicketDetails(selectedOrder.TicketNumber)" title="Click to view ticket details">@selectedOrder.TicketNumber</button></td></tr>
                                     <tr><td>Seat:</td><td id="admin-order-info-seat">@selectedOrder.SeatNumber</td></tr>
                                     <tr><td>Total:</td><td class="fw-bold" id="admin-order-info-total">$@selectedOrder.TotalAmount.ToString("F2")</td></tr>
                                     <tr><td>Ordered:</td><td id="admin-order-info-ordered">@selectedOrder.CreatedAt.ToString("MMM dd, yyyy HH:mm")</td></tr>
@@ -286,6 +291,76 @@
         </div>
     }
 
+    <!-- Ticket Details Modal -->
+    @if (selectedTicket != null)
+    {
+        <div class="modal-backdrop fade show"></div>
+        <div class="modal fade show d-block" tabindex="-1" style="z-index: 1056;" id="admin-ticket-modal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" id="admin-ticket-modal-content">
+                    <div class="modal-header" id="admin-ticket-modal-header">
+                        <h5 class="modal-title" id="admin-ticket-modal-title">Ticket Details: @selectedTicket.TicketNumber</h5>
+                        <button type="button" class="btn-close" @onclick="() => selectedTicket = null" id="admin-ticket-modal-close-btn"></button>
+                    </div>
+                    <div class="modal-body" id="admin-ticket-modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 id="admin-ticket-info-title">Ticket Information</h6>
+                                <table class="table table-sm" id="admin-ticket-info-table">
+                                    <tr><td>Ticket Number:</td><td class="fw-bold" id="admin-ticket-info-number">@selectedTicket.TicketNumber</td></tr>
+                                    <tr><td>Status:</td><td><span class="badge @(selectedTicket.IsActive ? "bg-success" : "bg-secondary")" id="admin-ticket-info-status">@(selectedTicket.IsActive ? "Active" : "Inactive")</span></td></tr>
+                                    <tr><td>Price:</td><td class="fw-bold" id="admin-ticket-info-price">$@selectedTicket.Price.ToString("F2")</td></tr>
+                                    <tr><td>Purchase Date:</td><td id="admin-ticket-info-purchase-date">@(selectedTicket.PurchaseDate?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 id="admin-ticket-customer-title">Customer Information</h6>
+                                <table class="table table-sm" id="admin-ticket-customer-table">
+                                    <tr><td>Name:</td><td id="admin-ticket-customer-name">@(!string.IsNullOrEmpty(selectedTicket.CustomerName) ? selectedTicket.CustomerName : "N/A")</td></tr>
+                                    <tr><td>Email:</td><td id="admin-ticket-customer-email">@(!string.IsNullOrEmpty(selectedTicket.CustomerEmail) ? selectedTicket.CustomerEmail : "N/A")</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h6 id="admin-ticket-seat-title">Stadium Location</h6>
+                                <table class="table table-sm" id="admin-ticket-seat-table">
+                                    <tr><td>Seat Number:</td><td class="fw-bold" id="admin-ticket-seat-number">@(!string.IsNullOrEmpty(selectedTicket.SeatNumber) ? selectedTicket.SeatNumber : "N/A")</td></tr>
+                                    <tr><td>Section:</td><td id="admin-ticket-seat-section">@(!string.IsNullOrEmpty(selectedTicket.Section) ? selectedTicket.Section : "N/A")</td></tr>
+                                    <tr><td>Row:</td><td id="admin-ticket-seat-row">@(!string.IsNullOrEmpty(selectedTicket.Row) ? selectedTicket.Row : "N/A")</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 id="admin-ticket-event-title">Event Information</h6>
+                                <table class="table table-sm" id="admin-ticket-event-table">
+                                    <tr><td>Event:</td><td id="admin-ticket-event-name">@(!string.IsNullOrEmpty(selectedTicket.EventName) ? selectedTicket.EventName : "N/A")</td></tr>
+                                    <tr><td>Event Date:</td><td id="admin-ticket-event-date">@(selectedTicket.EventDate?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</td></tr>
+                                    @if (selectedTicket.OrderId.HasValue)
+                                    {
+                                        <tr><td>Order ID:</td><td id="admin-ticket-order-id">#@selectedTicket.OrderId</td></tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                        
+                        @if (ticketErrorMessage != null)
+                        {
+                            <div class="alert alert-warning mt-3" id="admin-ticket-error">
+                                <i class="bi bi-exclamation-triangle"></i> @ticketErrorMessage
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer" id="admin-ticket-modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="() => selectedTicket = null" id="admin-ticket-modal-close-footer-btn">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     @if (!string.IsNullOrEmpty(alertMessage))
     {
         <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-alert-container">
@@ -300,6 +375,8 @@
 @code {
     private List<OrderDto>? orders;
     private OrderDto? selectedOrder;
+    private TicketDto? selectedTicket;
+    private string? ticketErrorMessage = null;
     private string selectedStatus = "";
     private string searchTerm = "";
     private string sortBy = "newest";
@@ -320,6 +397,7 @@
     private async Task RefreshOrders()
     {
         await LoadOrders();
+        StateHasChanged();
         ShowAlert("Orders refreshed", "success");
     }
 
@@ -370,6 +448,35 @@
     private void ShowOrderDetails(OrderDto order)
     {
         selectedOrder = order;
+    }
+
+    private async Task ShowTicketDetails(string ticketNumber)
+    {
+        if (string.IsNullOrEmpty(ticketNumber))
+        {
+            ticketErrorMessage = "Invalid ticket number";
+            return;
+        }
+
+        try
+        {
+            ticketErrorMessage = null;
+            selectedTicket = await ApiService.GetTicketByNumberAsync(ticketNumber);
+            
+            if (selectedTicket == null)
+            {
+                ticketErrorMessage = $"Ticket '{ticketNumber}' not found or access denied";
+                selectedTicket = new TicketDto { TicketNumber = ticketNumber };
+            }
+        }
+        catch (Exception ex)
+        {
+            ticketErrorMessage = $"Error loading ticket details: {ex.Message}";
+            selectedTicket = new TicketDto { TicketNumber = ticketNumber };
+            Console.WriteLine($"Error loading ticket details: {ex}");
+        }
+        
+        StateHasChanged();
     }
 
     private async Task AdvanceOrderStatus(OrderDto order)

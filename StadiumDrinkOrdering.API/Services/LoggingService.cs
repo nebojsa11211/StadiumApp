@@ -32,6 +32,7 @@ namespace StadiumDrinkOrdering.API.Services
         Task<PagedLogsDto> GetLogsAsync(LogFilterDto filter);
         Task<LogSummaryDto> GetLogSummaryAsync();
         Task<bool> ClearOldLogsAsync(int daysToKeep = 30);
+        Task<bool> ClearAllLogsAsync();
     }
 
     public class LoggingService : ILoggingService
@@ -293,6 +294,32 @@ namespace StadiumDrinkOrdering.API.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to clear old logs: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> ClearAllLogsAsync()
+        {
+            try
+            {
+                var allLogs = await _context.LogEntries.ToListAsync();
+
+                if (allLogs.Any())
+                {
+                    _context.LogEntries.RemoveRange(allLogs);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine($"Successfully cleared all {allLogs.Count} log entries");
+                }
+                else
+                {
+                    Console.WriteLine("No logs found to clear");
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to clear all logs: {ex.Message}");
                 return false;
             }
         }

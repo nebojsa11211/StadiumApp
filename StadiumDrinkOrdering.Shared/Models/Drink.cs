@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace StadiumDrinkOrdering.Shared.Models;
 
@@ -32,6 +33,7 @@ public class Drink
     public DateTime? UpdatedAt { get; set; }
     
     // Navigation properties
+    [JsonIgnore] // Ignore to prevent circular references in JSON serialization
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }
 

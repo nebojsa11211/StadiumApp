@@ -54,6 +54,7 @@ public interface IAdminApiService
     Task<PagedLogsDto?> GetLogsAsync(LogFilterDto filter);
     Task<LogSummaryDto?> GetLogSummaryAsync();
     Task<bool> ClearOldLogsAsync(int daysToKeep = 30);
+    Task<bool> ClearAllLogsAsync();
     Task<bool> LogUserActionAsync(string action, string category, string? details = null);
     
     // User management methods
@@ -70,6 +71,7 @@ public interface IAdminApiService
     
     // Ticket methods
     Task<List<TicketDto>?> GetTicketsAsync(int? eventId = null, bool? isActive = null);
+    Task<TicketDto?> GetTicketByNumberAsync(string ticketNumber);
     Task<TicketValidationResultDto?> ValidateTicketAsync(ValidateTicketDto validateDto);
     
     // Customer Analytics methods
@@ -84,6 +86,8 @@ public interface IAdminApiService
     Task<HttpResponseMessage> GetAsync(string endpoint);
     Task<T?> GetAsync<T>(string endpoint);
     Task<T?> PostAsync<T>(string endpoint, object data);
+    Task<HttpResponseMessage> PostAsync(string endpoint, object data);
+    Task<(bool success, string? errorMessage)> DeleteAsync(string endpoint);
     
     string? Token { get; set; }
 }
@@ -615,6 +619,7 @@ public class AdminApiService : IAdminApiService
     {
         try
         {
+            SetAuthHeader();
             var json = JsonSerializer.Serialize(filter, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
@@ -624,42 +629,103 @@ public class AdminApiService : IAdminApiService
                 var responseJson = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<PagedLogsDto>(responseJson, _jsonOptions);
             }
+            else
+            {
+                var errorMessage = $"API Error: {response.StatusCode} - {response.ReasonPhrase}";
+                var errorContent = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(errorContent))
+                {
+                    errorMessage += $" Details: {errorContent}";
+                }
+                Console.WriteLine($"Error getting logs: {errorMessage}");
+                throw new HttpRequestException(errorMessage);
+            }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!(ex is HttpRequestException))
         {
             Console.WriteLine($"Error getting logs: {ex.Message}");
+            throw new Exception($"Failed to get logs: {ex.Message}", ex);
         }
-        return null;
     }
 
     public async Task<LogSummaryDto?> GetLogSummaryAsync()
     {
         try
         {
+            SetAuthHeader();
             var response = await _httpClient.GetAsync("api/logs/summary");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<LogSummaryDto>(json, _jsonOptions);
             }
+            else
+            {
+                var errorMessage = $"API Error: {response.StatusCode} - {response.ReasonPhrase}";
+                var errorContent = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(errorContent))
+                {
+                    errorMessage += $" Details: {errorContent}";
+                }
+                Console.WriteLine($"Error getting log summary: {errorMessage}");
+                throw new HttpRequestException(errorMessage);
+            }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!(ex is HttpRequestException))
         {
             Console.WriteLine($"Error getting log summary: {ex.Message}");
+            throw new Exception($"Failed to get log summary: {ex.Message}", ex);
         }
-        return null;
     }
 
     public async Task<bool> ClearOldLogsAsync(int daysToKeep = 30)
     {
         try
         {
+            SetAuthHeader();
             var response = await _httpClient.DeleteAsync($"api/logs/clear-old?daysToKeep={daysToKeep}");
-            return response.IsSuccessStatusCode;
+            
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Successfully cleared logs older than {daysToKeep} days");
+                return true;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to clear logs. Status: {response.StatusCode}, Response: {errorContent}");
+                return false;
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error clearing old logs: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> ClearAllLogsAsync()
+    {
+        try
+        {
+            SetAuthHeader();
+            var response = await _httpClient.DeleteAsync("api/logs/clear-all");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Successfully cleared all logs");
+                return true;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to clear all logs. Status: {response.StatusCode}, Response: {errorContent}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error clearing all logs: {ex.Message}");
             return false;
         }
     }
@@ -873,6 +939,27 @@ public class AdminApiService : IAdminApiService
         return null;
     }
 
+    public async Task<TicketDto?> GetTicketByNumberAsync(string ticketNumber)
+    {
+        try
+        {
+            SetAuthHeader();
+            var encodedTicketNumber = Uri.EscapeDataString(ticketNumber);
+            var response = await _httpClient.GetAsync($"api/tickets/{encodedTicketNumber}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<TicketDto>(json, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting ticket by number: {ex.Message}");
+        }
+        return null;
+    }
+
     public async Task<TicketValidationResultDto?> ValidateTicketAsync(ValidateTicketDto validateDto)
     {
         try
@@ -933,6 +1020,71 @@ public class AdminApiService : IAdminApiService
             Console.WriteLine($"Error posting to {endpoint}: {ex.Message}");
         }
         return default(T);
+    }
+
+    public async Task<HttpResponseMessage> PostAsync(string endpoint, object data)
+    {
+        try
+        {
+            SetAuthHeader();
+            var content = new StringContent(JsonSerializer.Serialize(data, _jsonOptions), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"api/{endpoint.TrimStart('/')}", content);
+            return response;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error posting to {endpoint}: {ex.Message}");
+            throw;
+        }
+    }
+
+    public async Task<(bool success, string? errorMessage)> DeleteAsync(string endpoint)
+    {
+        try
+        {
+            SetAuthHeader();
+            var response = await _httpClient.DeleteAsync($"api/{endpoint.TrimStart('/')}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, null);
+            }
+            
+            // Try to get error message from response
+            string? errorMessage = null;
+            try
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    // Try to parse as JSON to get the message
+                    using var doc = JsonDocument.Parse(content);
+                    if (doc.RootElement.TryGetProperty("message", out var messageProp))
+                    {
+                        errorMessage = messageProp.GetString();
+                    }
+                    else if (doc.RootElement.TryGetProperty("Message", out var messageCapProp))
+                    {
+                        errorMessage = messageCapProp.GetString();
+                    }
+                    else
+                    {
+                        errorMessage = content;
+                    }
+                }
+            }
+            catch
+            {
+                errorMessage = await response.Content.ReadAsStringAsync();
+            }
+            
+            return (false, errorMessage ?? $"Failed with status {response.StatusCode}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting from {endpoint}: {ex.Message}");
+            return (false, ex.Message);
+        }
     }
 
     public async Task<HttpResponseMessage> GetAsync(string endpoint)

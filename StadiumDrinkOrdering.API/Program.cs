@@ -12,12 +12,43 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure logging to include database logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+// Configure database logging from appsettings
+var databaseLoggingConfig = builder.Configuration.GetSection("Logging:Database");
+builder.Logging.AddDatabaseLogger(config =>
+{
+    config.IsEnabled = databaseLoggingConfig.GetValue<bool>("Enabled", true);
+    config.MinimumLevel = Enum.Parse<LogLevel>(databaseLoggingConfig.GetValue<string>("MinLevel") ?? "Information");
+    config.BatchingEnabled = databaseLoggingConfig.GetValue<bool>("BatchingEnabled", true);
+    
+    // Load excluded categories
+    var excludeCategories = databaseLoggingConfig.GetSection("ExcludeCategories").Get<List<string>>();
+    if (excludeCategories != null)
+    {
+        config.ExcludeCategories = new HashSet<string>(excludeCategories);
+    }
+    
+    // Load critical categories
+    var criticalCategories = databaseLoggingConfig.GetSection("CriticalCategories").Get<List<string>>();
+    if (criticalCategories != null)
+    {
+        config.CriticalCategories = new HashSet<string>(criticalCategories);
+    }
+});
+
 // Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.WriteIndented = true;
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.MaxDepth = 64; // Increase max depth to handle complex object graphs
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -168,6 +199,7 @@ builder.Services.AddScoped<ILoggingService, LoggingService>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<ITicketAuthService, TicketAuthService>();
 builder.Services.AddScoped<ICustomerAnalyticsService, CustomerAnalyticsService>();
+builder.Services.AddScoped<TicketingDataImportService>();
 
 // Add background services
 builder.Services.AddHostedService<LogRetentionBackgroundService>();

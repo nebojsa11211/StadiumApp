@@ -887,6 +887,124 @@ a:hover {
     }
 }
 
+/* Order Details Modal */
+.modal.show {
+    display: block !important;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+}
+
+.modal-backdrop.fade {
+    opacity: 0;
+}
+
+.modal-backdrop.show {
+    opacity: 0.5;
+}
+
+/* Ensure modal appears above other content */
+#admin-order-modal {
+    z-index: 1055 !important;
+}
+
+#admin-order-modal .modal-dialog {
+    margin: 1.75rem auto;
+    max-width: 800px;
+}
+
+#admin-order-modal .modal-content {
+    border: none;
+    border-radius: var(--stadium-radius-lg);
+    box-shadow: var(--stadium-shadow-xl);
+}
+
+#admin-order-modal .modal-header {
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-dark));
+    color: white;
+    border-radius: var(--stadium-radius-lg) var(--stadium-radius-lg) 0 0;
+    border-bottom: none;
+}
+
+#admin-order-modal .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+#admin-order-modal .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* Admin Order Action Buttons */
+[id^="admin-order-actions-"] {
+    white-space: nowrap;
+}
+
+[id^="admin-order-actions-"] .btn {
+    margin: 0 2px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    min-width: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+[id^="admin-order-actions-"] .btn i {
+    font-size: 0.875rem;
+    line-height: 1;
+}
+
+[id^="admin-order-actions-"] .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Action Buttons */
+[id^="admin-order-card-actions-"] {
+    gap: 8px;
+}
+
+[id^="admin-order-card-actions-"] .btn {
+    flex: 1;
+    padding: 8px 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+[id^="admin-order-card-actions-"] .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Ensure proper button spacing in table view */
+.table td {
+    vertical-align: middle;
+    padding: 12px 8px;
+}
+
+/* Bootstrap Icons fallback - if icons don't load, show text */
+.bi-eye:before {
+    content: "👁";
+    font-family: inherit;
+}
+
+.bi-arrow-right:before {
+    content: "→";
+    font-family: inherit;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
     * {

@@ -68,6 +68,14 @@
                                 <button class="btn btn-info" @onclick="ShowTableInfo" title="Table Information">
                                     <i class="oi oi-info"></i> Info
                                 </button>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-warning" @onclick="ShowGenerateModal" title="Generate Data">
+                                        <i class="oi oi-plus"></i> Generate
+                                    </button>
+                                    <button class="btn btn-danger" @onclick="ShowDeleteModal" title="Delete All Data">
+                                        <i class="oi oi-trash"></i> Clear Table
+                                    </button>
+                                </div>
                             </div>
                             <div class="record-count">
                                 <span class="badge bg-primary">@totalCount Records</span>
@@ -317,6 +325,165 @@
     </div>
 </div>
 
+<!-- Generate Data Modal -->
+@if (showGenerateModal)
+{
+    <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="oi oi-plus text-warning"></i>
+                        Generate Data for @selectedTable
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="HideGenerateModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(generateValidationMessage))
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <i class="oi oi-warning"></i>
+                            @generateValidationMessage
+                            @if (generateDependencies.Any())
+                            {
+                                <ul class="mb-0 mt-2">
+                                    @foreach (var dep in generateDependencies)
+                                    {
+                                        <li>@dep</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group mb-3">
+                            <label for="recordCount" class="form-label">Number of records to generate:</label>
+                            <input type="number" class="form-control" id="recordCount" @bind="recordCount" 
+                                   min="1" max="1000" placeholder="Enter count (1-1000)"/>
+                            <div class="form-text">
+                                Generate up to 1000 sample records with realistic data for testing purposes.
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="oi oi-info"></i>
+                            <strong>About Generated Data:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Data will be created with realistic sample values</li>
+                                <li>All required relationships will be properly linked</li>
+                                <li>Generated data is safe for testing and development</li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideGenerateModal">Cancel</button>
+                    @if (string.IsNullOrEmpty(generateValidationMessage))
+                    {
+                        <button type="button" class="btn btn-warning" @onclick="GenerateData" disabled="@isGenerating">
+                            @if (isGenerating)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span>Generating...</span>
+                            }
+                            else
+                            {
+                                <i class="oi oi-plus"></i>
+                                <span>Generate @recordCount Records</span>
+                            }
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal)
+{
+    <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="oi oi-warning text-danger"></i>
+                        Clear Table @selectedTable
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="HideDeleteModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(deleteValidationMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="oi oi-warning"></i>
+                            <strong>Cannot Delete:</strong>
+                            <p>@deleteValidationMessage</p>
+                            @if (deleteDependencies.Any())
+                            {
+                                <p><strong>Dependencies found:</strong></p>
+                                <ul class="mb-0">
+                                    @foreach (var dep in deleteDependencies)
+                                    {
+                                        <li>@dep</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">
+                            <i class="oi oi-warning"></i>
+                            <strong>Warning: This action cannot be undone!</strong>
+                        </div>
+                        <p>You are about to delete <strong>ALL @totalCount records</strong> from the <strong>@selectedTable</strong> table.</p>
+                        <p>Type <strong>DELETE</strong> to confirm this action:</p>
+                        <input type="text" class="form-control" @bind="deleteConfirmation" placeholder="Type DELETE to confirm" />
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideDeleteModal">Cancel</button>
+                    @if (string.IsNullOrEmpty(deleteValidationMessage))
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="DeleteAllData" 
+                                disabled="@(deleteConfirmation != "DELETE" || isDeleting)">
+                            @if (isDeleting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span>Deleting...</span>
+                            }
+                            else
+                            {
+                                <i class="oi oi-trash"></i>
+                                <span>Delete All Records</span>
+                            }
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Success/Error Toast -->
+@if (!string.IsNullOrEmpty(toastMessage))
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast show" role="alert">
+            <div class="toast-header">
+                <i class="oi @toastIcon me-2"></i>
+                <strong class="me-auto">@toastTitle</strong>
+                <button type="button" class="btn-close" @onclick="HideToast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @toastMessage
+            </div>
+        </div>
+    </div>
+}
+
 <style>
     .database-explorer {
         padding: 20px;
@@ -522,6 +689,27 @@
     private bool isLoading = true;
     private bool isLoadingData = false;
     private string errorMessage = "";
+    
+    // Modal states
+    private bool showGenerateModal = false;
+    private bool showDeleteModal = false;
+    private bool isGenerating = false;
+    private bool isDeleting = false;
+    
+    // Generate data properties
+    private int recordCount = 10;
+    private string generateValidationMessage = "";
+    private List<string> generateDependencies = new List<string>();
+    
+    // Delete confirmation properties
+    private string deleteConfirmation = "";
+    private string deleteValidationMessage = "";
+    private List<string> deleteDependencies = new List<string>();
+    
+    // Toast notification properties
+    private string toastMessage = "";
+    private string toastTitle = "";
+    private string toastIcon = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -790,5 +978,193 @@
         {
             errorMessage = $"Error exporting data: {ex.Message}";
         }
+    }
+
+    #region Modal and Action Methods
+
+    private async Task ShowGenerateModal()
+    {
+        generateValidationMessage = "";
+        generateDependencies.Clear();
+        recordCount = 10;
+        
+        try
+        {
+            var response = await ApiService.GetAsync($"datagrid/dependencies/{selectedTable}");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<DependencyCheckResult>(json, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (result != null && !result.CanProceed)
+                {
+                    generateValidationMessage = result.Message;
+                    generateDependencies = result.Dependencies ?? new List<string>();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            generateValidationMessage = $"Error checking dependencies: {ex.Message}";
+        }
+        
+        showGenerateModal = true;
+    }
+
+    private void HideGenerateModal()
+    {
+        showGenerateModal = false;
+        generateValidationMessage = "";
+        generateDependencies.Clear();
+        recordCount = 10;
+    }
+
+    private async Task GenerateData()
+    {
+        try
+        {
+            isGenerating = true;
+            
+            var request = new { Count = recordCount };
+            var response = await ApiService.PostAsync($"datagrid/generate-data/{selectedTable}", request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<Dictionary<string, object>>(json, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (result != null && result.ContainsKey("generatedCount"))
+                {
+                    var generatedCount = result["generatedCount"].ToString();
+                    ShowToast("Success", $"Successfully generated {generatedCount} records", "oi-check", "success");
+                    await LoadTableData();
+                }
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var errorResult = JsonSerializer.Deserialize<Dictionary<string, object>>(errorContent, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                var message = errorResult?.ContainsKey("message") == true 
+                    ? errorResult["message"].ToString() 
+                    : "Failed to generate data";
+                    
+                ShowToast("Error", message, "oi-warning", "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowToast("Error", $"Error generating data: {ex.Message}", "oi-warning", "danger");
+        }
+        finally
+        {
+            isGenerating = false;
+            HideGenerateModal();
+        }
+    }
+
+    private async Task ShowDeleteModal()
+    {
+        deleteValidationMessage = "";
+        deleteDependencies.Clear();
+        deleteConfirmation = "";
+        
+        try
+        {
+            var response = await ApiService.GetAsync($"datagrid/dependencies/{selectedTable}");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<DependencyCheckResult>(json, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (result != null && result.Dependencies?.Any() == true)
+                {
+                    deleteValidationMessage = result.Message;
+                    deleteDependencies = result.Dependencies ?? new List<string>();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            deleteValidationMessage = $"Error checking dependencies: {ex.Message}";
+        }
+        
+        showDeleteModal = true;
+    }
+
+    private void HideDeleteModal()
+    {
+        showDeleteModal = false;
+        deleteValidationMessage = "";
+        deleteDependencies.Clear();
+        deleteConfirmation = "";
+    }
+
+    private async Task DeleteAllData()
+    {
+        try
+        {
+            isDeleting = true;
+            
+            var (success, errorMessage) = await ApiService.DeleteAsync($"datagrid/clear-table/{selectedTable}");
+            
+            if (success)
+            {
+                ShowToast("Success", "Successfully deleted all records from the table", "oi-check", "success");
+                await LoadTableData();
+            }
+            else
+            {
+                // Show the actual error message from the API
+                ShowToast("Error", errorMessage ?? "Failed to delete data", "oi-warning", "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowToast("Error", $"Error deleting data: {ex.Message}", "oi-warning", "danger");
+        }
+        finally
+        {
+            isDeleting = false;
+            HideDeleteModal();
+        }
+    }
+
+    private void ShowToast(string title, string message, string icon, string type)
+    {
+        toastTitle = title;
+        toastMessage = message;
+        toastIcon = icon;
+        
+        // Auto-hide toast after 5 seconds
+        Task.Run(async () =>
+        {
+            await Task.Delay(5000);
+            await InvokeAsync(() =>
+            {
+                HideToast();
+                StateHasChanged();
+            });
+        });
+    }
+
+    private void HideToast()
+    {
+        toastMessage = "";
+        toastTitle = "";
+        toastIcon = "";
+    }
+
+    #endregion
+
+    public class DependencyCheckResult
+    {
+        public bool CanProceed { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public List<string> Dependencies { get; set; } = new List<string>();
     }
 }

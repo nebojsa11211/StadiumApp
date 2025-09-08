@@ -101,6 +101,7 @@ public class TicketsController : ControllerBase
     public async Task<ActionResult<TicketDto>> GetTicketByNumber(string ticketNumber)
     {
         var ticket = await _context.Tickets
+            .Include(t => t.Orders)
             .FirstOrDefaultAsync(t => t.TicketNumber == ticketNumber);
 
         if (ticket == null)
@@ -117,7 +118,13 @@ public class TicketsController : ControllerBase
             Row = ticket.Row,
             EventName = ticket.EventName,
             EventDate = ticket.EventDate,
-            IsActive = ticket.IsActive
+            IsActive = ticket.IsActive,
+            EventId = ticket.EventId,
+            OrderId = ticket.Orders.Any() ? ticket.Orders.First().Id : null,
+            PurchaseDate = ticket.PurchaseDate,
+            CustomerEmail = ticket.CustomerEmail,
+            CustomerName = ticket.CustomerName,
+            Price = ticket.Price
         };
 
         return Ok(ticketDto);

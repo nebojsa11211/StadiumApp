@@ -3,26 +3,26 @@ export const testConfig = {
   // API endpoint
   api: process.env.API_URL || 'https://localhost:7000',
   
-  // Application URLs - using local development ports (HTTPS)
-  adminApp: process.env.ADMIN_URL || 'https://localhost:7004',
-  customerApp: process.env.CUSTOMER_URL || 'https://localhost:7002',
-  staffApp: process.env.STAFF_URL || 'https://localhost:7006',
+  // Application URLs - using local development ports (HTTP)
+  adminApp: process.env.ADMIN_URL || 'http://localhost:7005',
+  customerApp: process.env.CUSTOMER_URL || 'http://localhost:7002',
+  staffApp: process.env.STAFF_URL || 'http://localhost:7006',
   
   // Test credentials - using admin account for all tests since other accounts may not exist
   credentials: {
     admin: {
       email: 'admin@stadium.com',
-      password: 'admin123'
+      password: 'password123'
     },
     customer: {
       email: 'admin@stadium.com',  // Using admin account for testing
-      password: 'admin123'
+      password: 'password123'
     },
     staff: {
       email: 'admin@stadium.com',  // Using admin account for testing
-      password: 'admin123',
+      password: 'password123',
       altEmail: 'admin@stadium.com',
-      altPassword: 'admin123'
+      altPassword: 'password123'
     }
   },
   

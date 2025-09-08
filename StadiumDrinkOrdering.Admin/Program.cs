@@ -86,6 +86,10 @@ else
 
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Admin");
 
+// Add console logging services
+builder.Services.AddScoped<IConsoleLoggingService, ConsoleLoggingService>();
+builder.Services.AddScoped<IConsoleLoggingToggleService, ConsoleLoggingToggleService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

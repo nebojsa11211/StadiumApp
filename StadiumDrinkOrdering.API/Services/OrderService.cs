@@ -145,26 +145,35 @@ public class OrderService : IOrderService
 
     public async Task<List<OrderDto>> GetOrdersAsync(OrderStatus? status = null)
     {
-        var query = _context.Orders
-            .Include(o => o.Customer)
-            .Include(o => o.AcceptedByUser)
-            .Include(o => o.PreparedByUser)
-            .Include(o => o.DeliveredByUser)
-            .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Drink)
-            .Include(o => o.Payment)
-            .Include(o => o.Event)
-            .Include(o => o.Seat)
-                .ThenInclude(s => s.Section)
-            .AsQueryable();
-
-        if (status.HasValue)
+        try
         {
-            query = query.Where(o => o.Status == status.Value);
+            var query = _context.Orders
+    .Include(o => o.Customer)
+    .Include(o => o.AcceptedByUser)
+    .Include(o => o.PreparedByUser)
+    .Include(o => o.DeliveredByUser)
+    .Include(o => o.OrderItems)
+        .ThenInclude(oi => oi.Drink)
+    .Include(o => o.Payment)
+    .Include(o => o.Event)
+    .Include(o => o.Seat)
+        .ThenInclude(s => s.Section)
+    .AsQueryable();
+
+            if (status.HasValue)
+            {
+                query = query.Where(o => o.Status == status.Value);
+            }
+
+            var orders = await query.OrderByDescending(o => o.CreatedAt).ToListAsync();
+            var tmp = orders.Select(MapToOrderDto).ToList();
+            return tmp; 
+        }
+        catch (Exception ex)
+        {
+            return null;
         }
 
-        var orders = await query.OrderByDescending(o => o.CreatedAt).ToListAsync();
-        return orders.Select(MapToOrderDto).ToList();
     }
 
     public async Task<List<OrderDto>> GetOrdersByCustomerAsync(int customerId)

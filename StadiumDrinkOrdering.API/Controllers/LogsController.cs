@@ -169,6 +169,61 @@ namespace StadiumDrinkOrdering.API.Controllers
         }
 
         /// <summary>
+        /// Clear ALL logs (Admin only)
+        /// </summary>
+        [HttpDelete("clear-all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> ClearAllLogs()
+        {
+            try
+            {
+                // Log this action
+                await _loggingService.LogUserActionAsync(
+                    action: "ClearAllLogs",
+                    category: "UserAction",
+                    userId: User.GetUserIdFromClaims(),
+                    userEmail: User.GetUserEmailFromClaims(),
+                    userRole: User.GetUserRoleFromClaims(),
+                    details: "Admin cleared ALL logs",
+                    requestPath: Request.Path,
+                    httpMethod: Request.Method,
+                    ipAddress: GetClientIpAddress(),
+                    userAgent: Request.Headers.UserAgent.ToString(),
+                    source: "API"
+                );
+
+                var success = await _loggingService.ClearAllLogsAsync();
+                
+                if (success)
+                {
+                    return Ok(new { message = "Successfully cleared all logs" });
+                }
+                else
+                {
+                    return StatusCode(500, new { message = "Failed to clear all logs" });
+                }
+            }
+            catch (Exception ex)
+            {
+                await _loggingService.LogErrorAsync(
+                    exception: ex,
+                    action: "ClearAllLogs",
+                    category: "SystemError",
+                    userId: User.GetUserIdFromClaims(),
+                    userEmail: User.GetUserEmailFromClaims(),
+                    userRole: User.GetUserRoleFromClaims(),
+                    requestPath: Request.Path,
+                    httpMethod: Request.Method,
+                    ipAddress: GetClientIpAddress(),
+                    userAgent: Request.Headers.UserAgent.ToString(),
+                    source: "API"
+                );
+
+                return StatusCode(500, new { message = "Failed to clear all logs", error = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Log a custom user action (for frontend applications)
         /// </summary>
         [HttpPost("log-action")]

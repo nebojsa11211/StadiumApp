@@ -1,0 +1,25 @@
+{
+  "name": "Basic Stadium",
+  "description": "Simple single-tribune stadium",
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Main Ring",
+          "sectors": [
+            {
+              "code": "N1",
+              "name": "Section 1",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 20
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

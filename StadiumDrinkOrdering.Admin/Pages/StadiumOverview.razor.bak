@@ -1,0 +1,520 @@
+@page "/admin/stadium-overview"
+@using StladiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Admin.Services
+@using System.Text.Json
+@inject IAdminApiService ApiService
+@inject IJSRuntime JSRuntime
+@inject ILogger<StadiumOverview> Logger
+
+<PageTitle>Stadium Overview - Admin</PageTitle>
+
+<div class="container-fluid">
+    <h3 class="mb-4">🏟️ Stadium Structure Overview</h3>
+
+    <!-- Event Selection and Stadium View Controls -->
+    <div class="stadium-viewer-container">
+        <div class="viewer-header">
+            <div class="viewer-controls">
+                <div class="event-selector">
+                    <label for="eventSelect">Select Event:</label>
+                    <select id="eventSelect" class="form-select" @bind="selectedEventId" @bind:after="OnEventChanged">
+                        <option value="0">-- No Event Selected --</option>
+                        @if (events != null)
+                        {
+                            @foreach (var evt in events)
+                            {
+                                <option value="@evt.Id">@evt.EventName - @(evt.EventDate?.ToString("MMM dd, yyyy") ?? "TBD")</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="search-seat">
+                    <input type="text" class="form-control" placeholder="Search seat (e.g., N1A-R5S12)" 
+                           @bind="searchSeatCode" @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchSeat(); })" />
+                    <button class="btn btn-sm btn-primary" @onclick="SearchSeat">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+
+                <div class="view-options">
+                    <button class="btn btn-sm @(showLegend ? "btn-primary" : "btn-outline-primary")" 
+                            @onclick="() => showLegend = !showLegend">
+                        <i class="bi bi-info-circle"></i> Legend
+                    </button>
+                    <button class="btn btn-sm @(showOccupancy ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="() => showOccupancy = !showOccupancy">
+                        <i class="bi bi-pie-chart"></i> Occupancy
+                    </button>
+                    @if (selectedEventId > 0)
+                    {
+                        <button class="btn btn-sm btn-warning" @onclick="SimulateTicketSales" disabled="@isSimulating" id="admin-stadium-simulate-btn">
+                            @if (isSimulating)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Simulate Sales
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Loading stadium layout...</p>
+            </div>
+        }
+        else if (stadiumData != null)
+        {
+            <div class="stadium-main-view">
+                <div class="svg-container" @ref="svgContainer">
+                    <svg viewBox="0 0 @stadiumData.CoordinateSystem.Width @stadiumData.CoordinateSystem.Height" 
+                         preserveAspectRatio="xMidYMid meet"
+                         class="stadium-svg">
+                        
+                        <!-- Field -->
+                        <g class="field-group">
+                            <polygon points="@GetPolygonPoints(stadiumData.Field.Polygon)"
+                                     fill="@stadiumData.Field.FillColor"
+                                     stroke="@stadiumData.Field.StrokeColor"
+                                     stroke-width="2" />
+                            <text x="@(stadiumData.CoordinateSystem.Width / 2)" 
+                                  y="@(stadiumData.CoordinateSystem.Height / 2)"
+                                  text-anchor="middle" 
+                                  fill="white" 
+                                  font-size="24">FIELD</text>
+                        </g>
+
+                        <!-- Stands and Sectors -->
+                        @foreach (var stand in stadiumData.Stands)
+                        {
+                            <g class="stand-group" data-stand="@stand.Id">
+                                @foreach (var sector in stand.Sectors)
+                                {
+                                    <g class="sector-group" 
+                                       data-sector="@sector.Id"
+                                       @onclick="() => OpenSectorModal(sector)"
+                                       @onmouseover="() => OnSectorHover(sector, true)"
+                                       @onmouseout="() => OnSectorHover(sector, false)">
+                                        
+                                        <polygon points="@GetPolygonPoints(sector.Polygon)"
+                                                 fill="@(hoveredSector == sector.Id ? sector.HoverColor : GetSectorFillColor(sector))"
+                                                 stroke="#333"
+                                                 stroke-width="1"
+                                                 style="cursor: pointer; transition: fill 0.2s;" />
+                                        
+                                        <text x="@GetSectorCenterX(sector.Polygon)" 
+                                              y="@GetSectorCenterY(sector.Polygon)"
+                                              text-anchor="middle"
+                                              font-size="14"
+                                              fill="#333"
+                                              style="pointer-events: none;">
+                                            @sector.Name
+                                        </text>
+                                        
+                                        @if (showOccupancy && eventSeatStatus != null)
+                                        {
+                                            var summary = GetSectorSummary(sector.Id);
+                                            if (summary != null)
+                                            {
+                                                @:<text x="@GetSectorCenterX(sector.Polygon)" y="@(GetSectorCenterY(sector.Polygon) + 15)" text-anchor="middle" font-size="10" fill="#666" style="pointer-events: none;">@summary.OccupancyPercentage.ToString("0")%</text>
+                                            }
+                                        }
+                                    </g>
+                                }
+                            </g>
+                        }
+                    </svg>
+                </div>
+
+                @if (showLegend)
+                {
+                    <div class="legend-panel">
+                        <h5>Legend</h5>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #4CAF50;"></span>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #FF9800;"></span>
+                            <span>Partially Occupied</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #F44336;"></span>
+                            <span>Fully Occupied</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #9E9E9E;"></span>
+                            <span>No Event Selected</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (hoveredSector != null && GetHoveredSectorData() != null)
+            {
+                var sector = GetHoveredSectorData();
+                var summary = GetSectorSummary(hoveredSector);
+                <div class="sector-tooltip" style="left: @(tooltipX)px; top: @(tooltipY)px;">
+                    <strong>@sector.Name</strong><br />
+                    Total Seats: @sector.TotalSeats<br />
+                    @if (summary != null)
+                    {
+                        <span>Available: @summary.FreeSeats</span><br />
+                        <span>Sold: @summary.SoldSeats</span><br />
+                        <span>Reserved: @summary.HeldSeats</span>
+                    }
+                </div>
+            }
+        }
+        else if (errorMessage != null)
+        {
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i> @errorMessage
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                <h5><i class="fas fa-exclamation-triangle me-2"></i>No Stadium Structure</h5>
+                <p>No stadium structure found. Please import a stadium structure first.</p>
+                <a href="/admin/stadium-structure" class="btn btn-primary">Manage Stadium Structure</a>
+            </div>
+        }
+    </div>
+</div>
+
+@if (selectedSector != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @selectedSector.Name (@selectedSector.Code) - @selectedRing?.Name - @selectedTribune?.Name
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="HideSectorSeats" id="admin-stadium-sector-modal-close-btn"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="seat-grid">
+                        @for (int row = selectedSector.StartRow; row < selectedSector.StartRow + selectedSector.TotalRows; row++)
+                        {
+                            <div class="seat-row">
+                                <div class="row-number">@row</div>
+                                <div class="seats-in-row">
+                                    @for (int seat = selectedSector.StartSeat; seat < selectedSector.StartSeat + selectedSector.SeatsPerRow; seat++)
+                                    {
+                                        var seatKey = $"{selectedSector.Id}-{row}-{seat}";
+                                        var isSold = selectedEventId > 0 && seatStatusMap != null && seatStatusMap.ContainsKey(seatKey);
+                                        <div class="seat @(isSold ? "sold" : "available")" title="Row @row, Seat @seat - @(isSold ? "Sold" : "Available")">@seat</div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideSectorSeats" id="admin-stadium-sector-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+<style>
+    .sector-card {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        transition: all 0.2s ease-in-out;
+        height: 100%;
+    }
+
+    .clickable-sector {
+        cursor: pointer;
+    }
+
+    .clickable-sector:hover {
+        background: #f8f9fa;
+        border-color: #0d6efd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .sector-name {
+        color: #0d6efd;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .sector-details div {
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .seat-grid {
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 0.375rem;
+    }
+
+    .seat-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .row-number {
+        min-width: 40px;
+        font-weight: bold;
+        color: #6c757d;
+        text-align: right;
+        margin-right: 1rem;
+    }
+
+    .seats-in-row {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    .seat {
+        width: 32px;
+        height: 32px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+    }
+
+    .seat.available {
+        background: #28a745;
+    }
+
+    .seat.available:hover {
+        background: #1e7e34;
+        transform: scale(1.1);
+    }
+
+    .seat.sold {
+        background: #dc3545;
+    }
+
+    .seat.sold:hover {
+        background: #c82333;
+        transform: scale(1.1);
+    }
+
+    .seat-legend {
+        width: 20px;
+        height: 20px;
+        border-radius: 0.25rem;
+    }
+
+    .seat-legend.available {
+        background: #28a745;
+    }
+
+    .seat-legend.sold {
+        background: #dc3545;
+    }
+</style>
+
+@code {
+    private List<Tribune>? tribunes;
+    private Sector? selectedSector;
+    private Ring? selectedRing;
+    private Tribune? selectedTribune;
+    private List<Event>? events;
+    private int selectedEventId = 0;
+    private Dictionary<string, SeatStatusDto>? seatStatusMap;
+    private bool isSimulating = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStadiumStructure();
+        await LoadEvents();
+    }
+
+    private async Task LoadStadiumStructure()
+    {
+        try
+        {
+            tribunes = await ApiService.GetStadiumStructureAsync();
+            
+            // If no data from API, use mock data for testing
+            if (tribunes == null || !tribunes.Any())
+            {
+                tribunes = CreateMockData();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle error - use mock data for testing
+            Console.WriteLine($"Error loading stadium structure: {ex.Message}");
+            tribunes = CreateMockData();
+        }
+    }
+
+    private List<Tribune> CreateMockData()
+    {
+        return new List<Tribune>
+        {
+            new Tribune
+            {
+                Id = 1,
+                Code = "N",
+                Name = "North Stand",
+                Description = "Main north stand",
+                Rings = new List<Ring>
+                {
+                    new Ring
+                    {
+                        Id = 1,
+                        Number = 1,
+                        Name = "Lower Tier",
+                        Sectors = new List<Sector>
+                        {
+                            new Sector { Id = 1, Code = "N1", Name = "North 1", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 1 },
+                            new Sector { Id = 2, Code = "N2", Name = "North 2", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 21 }
+                        }
+                    },
+                    new Ring
+                    {
+                        Id = 2,
+                        Number = 2,
+                        Name = "Upper Tier",
+                        Sectors = new List<Sector>
+                        {
+                            new Sector { Id = 3, Code = "N3", Name = "North Upper 1", TotalRows = 10, SeatsPerRow = 18, StartRow = 16, StartSeat = 1 }
+                        }
+                    }
+                }
+            },
+            new Tribune
+            {
+                Id = 2,
+                Code = "S",
+                Name = "South Stand",
+                Description = "Main south stand",
+                Rings = new List<Ring>
+                {
+                    new Ring
+                    {
+                        Id = 3,
+                        Number = 1,
+                        Name = "Lower Tier",
+                        Sectors = new List<Sector>
+                        {
+                            new Sector { Id = 4, Code = "S1", Name = "South 1", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 1 },
+                            new Sector { Id = 5, Code = "S2", Name = "South 2 (S2)", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 21 }
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private async Task LoadEvents()
+    {
+        try
+        {
+            events = await ApiService.GetEventsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading events: {ex.Message}");
+        }
+    }
+
+    private async Task OnEventChanged()
+    {
+        if (selectedEventId > 0)
+        {
+            await LoadSeatStatusForEvent();
+        }
+        else
+        {
+            seatStatusMap = null;
+        }
+        StateHasChanged();
+    }
+
+    private async Task LoadSeatStatusForEvent()
+    {
+        try
+        {
+            var response = await ApiService.GetSeatStatusForEventAsync(selectedEventId);
+            if (response != null)
+            {
+                seatStatusMap = response.SoldSeats;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading seat status: {ex.Message}");
+            seatStatusMap = null;
+        }
+    }
+
+    private async Task SimulateTicketSales()
+    {
+        if (selectedEventId <= 0) return;
+        
+        isSimulating = true;
+        StateHasChanged();
+
+        try
+        {
+            var success = await ApiService.SimulateTicketSalesAsync(selectedEventId, 25, 75.00m);
+            if (success)
+            {
+                // Refresh seat status after simulation
+                await LoadSeatStatusForEvent();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error simulating ticket sales: {ex.Message}");
+        }
+        finally
+        {
+            isSimulating = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ShowSectorSeats(Sector sector, Ring ring, Tribune tribune)
+    {
+        selectedSector = sector;
+        selectedRing = ring;
+        selectedTribune = tribune;
+        StateHasChanged();
+    }
+
+    private void HideSectorSeats()
+    {
+        selectedSector = null;
+        selectedRing = null;
+        selectedTribune = null;
+        StateHasChanged();
+    }
+}

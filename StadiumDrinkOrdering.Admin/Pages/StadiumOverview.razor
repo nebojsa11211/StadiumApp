@@ -1,369 +1,1138 @@
 @page "/admin/stadium-overview"
 @using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Admin.Services
+@using StadiumDrinkOrdering.Admin.Components
+@using System.Text.Json
+@using Microsoft.JSInterop
 @inject IAdminApiService ApiService
+@inject IJSRuntime JSRuntime
+@inject ILogger<StadiumOverview> Logger
 
-<PageTitle>Stadium Structure Overview</PageTitle>
+<PageTitle>Stadium Overview - Admin</PageTitle>
 
-<div class="container-fluid">
-    <h3 class="mb-4">🏟️ Stadium Structure Overview</h3>
+<div class="container-fluid stadium-overview-container" id="stadium-overview-container">
+    <h3 class="mb-4" id="stadium-overview-title">🏟️ Stadium Overview</h3>
 
-    <!-- Event Selection and Controls -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Event Selection</h5>
-                    <div class="mb-3">
-                        <label for="eventSelect" class="form-label">Select Event:</label>
-                        <select id="eventSelect" class="form-select" @bind="selectedEventId" @bind:after="OnEventChanged">
-                            <option value="0">-- Select Event --</option>
-                            @if (events != null)
+    <!-- Stadium Information and Map Layout -->
+    <div class="stadium-layout-container @(isInfoPanelCollapsed ? "info-panel-collapsed" : "info-panel-expanded")" id="stadium-layout-container">
+        <!-- Stadium Information Panel -->
+        <StadiumInfoPanel 
+            StadiumData="stadiumData" 
+            SelectedEvent="GetSelectedEvent()" 
+            EventSeatStatus="eventSeatStatus" 
+            IsCollapsed="isInfoPanelCollapsed" 
+            OnTogglePanel="HandleInfoPanelToggle"
+            OnTribuneSelected="OnTribuneSelected"
+            OnTribuneHovered="OnTribuneHovered" />
+
+        <!-- Stadium Map Section -->
+        <div class="stadium-viewer-container" id="stadium-viewer-container">
+            <div class="viewer-header" id="stadium-viewer-header">
+            <div class="viewer-controls" id="stadium-viewer-controls">
+                <div class="event-selector" id="event-selector-container">
+                    <label for="eventSelect" id="event-select-label">Select Event:</label>
+                    <select id="eventSelect" class="form-select" @bind="selectedEventId" @bind:after="OnEventChanged">
+                        <option value="0">-- No Event Selected --</option>
+                        @if (events != null)
+                        {
+                            @foreach (var evt in events)
                             {
-                                @foreach (var evt in events)
-                                {
-                                    <option value="@evt.Id">@evt.EventName - @evt.EventDate.ToString("MMM dd, yyyy")</option>
-                                }
+                                <option value="@evt.Id">@evt.EventName - @evt.EventDate.ToString("MMM dd, yyyy")</option>
                             }
-                        </select>
-                    </div>
+                        }
+                    </select>
+                </div>
+
+                <div class="search-seat" id="seat-search-container">
+                    <input type="text" class="form-control" placeholder="Search seat (e.g., N1A-R5S12)" 
+                           @bind="searchSeatCode" @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchSeat(); })" 
+                           id="seat-search-input" />
+                    <button class="btn btn-sm btn-primary" @onclick="SearchSeat" id="seat-search-button">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+
+                <div class="view-options" id="view-options-container">
+                    <button class="btn btn-sm @(showLegend ? "btn-primary" : "btn-outline-primary")" 
+                            @onclick="() => showLegend = !showLegend" 
+                            id="toggle-legend-button">
+                        <i class="bi bi-info-circle"></i> Legend
+                    </button>
+                    <button class="btn btn-sm @(showOccupancy ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="() => showOccupancy = !showOccupancy" 
+                            id="toggle-occupancy-button">
+                        <i class="bi bi-pie-chart"></i> Occupancy
+                    </button>
                     @if (selectedEventId > 0)
                     {
-                        <button class="btn btn-warning" @onclick="SimulateTicketSales" disabled="@isSimulating" id="admin-stadium-simulate-btn">
+                        <button class="btn btn-sm btn-warning" @onclick="SimulateTicketSales" disabled="@isSimulating" id="admin-stadium-simulate-btn">
                             @if (isSimulating)
                             {
                                 <span class="spinner-border spinner-border-sm me-2"></span>
                             }
-                            Simulate Ticket Sales
+                            Simulate Sales
                         </button>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            @if (selectedEventId > 0)
-            {
-                <div class="card">
-                    <div class="card-body">
-                        <h5>Legend</h5>
-                        <div class="d-flex gap-3">
-                            <div class="d-flex align-items-center">
-                                <div class="seat-legend available me-2"></div>
-                                <span>Available</span>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div class="seat-legend sold me-2"></div>
-                                <span>Sold</span>
-                            </div>
+
+        @if (isLoading)
+        {
+            <div class="loading-spinner" id="loading-spinner">
+                <div class="spinner-border text-primary" role="status" id="loading-spinner-element">
+                    <span class="visually-hidden" id="loading-spinner-text">Loading...</span>
+                </div>
+                <p id="loading-message">Loading stadium layout...</p>
+            </div>
+        }
+        else if (stadiumData != null)
+        {
+            <div class="stadium-main-view" id="stadium-main-view">
+                <div class="svg-container" @ref="svgContainer" id="stadium-svg-container">
+                    <svg viewBox="0 0 @stadiumData.CoordinateSystem.Width @stadiumData.CoordinateSystem.Height" 
+                         preserveAspectRatio="xMidYMid meet"
+                         class="stadium-svg" 
+                         id="stadium-svg">
+                        
+                        <!-- Field -->
+                        <g class="field-group" id="stadium-field-group">
+                            <polygon points="@GetPolygonPoints(stadiumData.Field.Polygon)"
+                                     fill="@stadiumData.Field.FillColor"
+                                     stroke="@stadiumData.Field.StrokeColor"
+                                     stroke-width="2"
+                                     id="stadium-field-polygon" />
+                            <text x="@(stadiumData.CoordinateSystem.Width / 2)" 
+                                  y="@(stadiumData.CoordinateSystem.Height / 2)"
+                                  text-anchor="middle" 
+                                  fill="white" 
+                                  font-size="24"
+                                  id="stadium-field-text">FIELD</text>
+                        </g>
+
+                        <!-- Stands and Sectors -->
+                        @foreach (var stand in stadiumData.Stands)
+                        {
+                            <g class="stand-group" data-stand="@stand.Id" id="stand-group-@stand.Id">
+                                @foreach (var sector in stand.Sectors)
+                                {
+                                    <g class="sector-group" 
+                                       data-sector="@sector.Id"
+                                       @onclick="() => OpenSectorModal(sector)"
+                                       @onmouseover="() => OnSectorHover(sector, true)"
+                                       @onmouseout="() => OnSectorHover(sector, false)"
+                                       id="sector-group-@sector.Id">
+                                        
+                                        <polygon points="@GetPolygonPoints(sector.Polygon)"
+                                                 fill="@(hoveredSector == sector.Id ? sector.HoverColor : GetSectorFillColor(sector))"
+                                                 stroke="#333"
+                                                 stroke-width="1"
+                                                 style="cursor: pointer; transition: fill 0.2s;"
+                                                 id="sector-polygon-@sector.Id" />
+                                        
+                                        <text x="@GetSectorCenterX(sector.Polygon)" 
+                                              y="@GetSectorCenterY(sector.Polygon)"
+                                              text-anchor="middle"
+                                              font-size="14"
+                                              fill="#333"
+                                              style="pointer-events: none;"
+                                              id="sector-text-@sector.Id">
+                                            @sector.Name
+                                        </text>
+                                        
+                                        @if (showOccupancy && eventSeatStatus != null)
+                                        {
+                                            var summary = GetSectorSummary(sector.Id);
+                                            if (summary != null)
+                                            {
+                                                @:<text x="@GetSectorCenterX(sector.Polygon)" y="@(GetSectorCenterY(sector.Polygon) + 15)" text-anchor="middle" font-size="10" fill="#666" style="pointer-events: none;" id="sector-occupancy-text-@sector.Id">@summary.OccupancyPercentage.ToString("0")%</text>
+                                            }
+                                        }
+                                    </g>
+                                }
+                            </g>
+                        }
+                    </svg>
+                </div>
+
+                @if (showLegend)
+                {
+                    <div class="legend-panel" id="legend-panel">
+                        <h5 id="legend-title">Legend</h5>
+                        <div class="legend-item" id="legend-available">
+                            <span class="legend-color" style="background: #4CAF50;" id="legend-available-color"></span>
+                            <span id="legend-available-text">Available</span>
+                        </div>
+                        <div class="legend-item" id="legend-partial">
+                            <span class="legend-color" style="background: #FF9800;" id="legend-partial-color"></span>
+                            <span id="legend-partial-text">Partially Occupied</span>
+                        </div>
+                        <div class="legend-item" id="legend-full">
+                            <span class="legend-color" style="background: #F44336;" id="legend-full-color"></span>
+                            <span id="legend-full-text">Fully Occupied</span>
+                        </div>
+                        <div class="legend-item" id="legend-no-event">
+                            <span class="legend-color" style="background: #9E9E9E;" id="legend-no-event-color"></span>
+                            <span id="legend-no-event-text">No Event Selected</span>
                         </div>
                     </div>
+                }
+            </div>
+
+            @if (hoveredSector != null && GetHoveredSectorData() != null)
+            {
+                var sector = GetHoveredSectorData();
+                var summary = GetSectorSummary(hoveredSector);
+                <div class="sector-tooltip" style="left: @(tooltipX)px; top: @(tooltipY)px;" id="sector-tooltip">
+                    <strong id="sector-tooltip-name">@sector.Name</strong><br />
+                    <span id="sector-tooltip-total">Total Seats: @sector.TotalSeats</span><br />
+                    @if (summary != null)
+                    {
+                        <span id="sector-tooltip-available">Available: @summary.FreeSeats</span><br />
+                        <span id="sector-tooltip-sold">Sold: @summary.SoldSeats</span><br />
+                        <span id="sector-tooltip-reserved">Reserved: @summary.HeldSeats</span>
+                    }
                 </div>
             }
+        }
+        else if (errorMessage != null)
+        {
+            <div class="alert alert-danger" id="error-message-alert">
+                <i class="bi bi-exclamation-triangle" id="error-message-icon"></i> <span id="error-message-text">@errorMessage</span>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning" id="no-stadium-alert">
+                <h5 id="no-stadium-title"><i class="fas fa-exclamation-triangle me-2" id="no-stadium-icon"></i>No Stadium Structure</h5>
+                <p id="no-stadium-message">No stadium structure found. Please import a stadium structure first.</p>
+                <a href="/admin/stadium-structure" class="btn btn-primary" id="manage-stadium-structure-link">Manage Stadium Structure</a>
+            </div>
+        }
         </div>
     </div>
-
-    @if (tribunes == null)
-    {
-        <div class="text-center">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p>Loading stadium structure...</p>
-        </div>
-    }
-    else if (!tribunes.Any())
-    {
-        <div class="alert alert-warning">
-            <h5><i class="fas fa-exclamation-triangle me-2"></i>No Stadium Structure</h5>
-            <p>No stadium structure found. Please import a stadium structure first.</p>
-            <a href="/admin/stadium-structure" class="btn btn-primary">Manage Stadium Structure</a>
-        </div>
-    }
-    else
-    {
-        <div class="row">
-            @foreach (var tribune in tribunes.OrderBy(t => t.Code))
-            {
-                <div class="col-xl-6 col-lg-12 mb-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-building me-2"></i>@tribune.Name (@tribune.Code)
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            @foreach (var ring in tribune.Rings.OrderBy(r => r.Number))
-                            {
-                                <div class="mb-4">
-                                    <h6 class="text-primary">
-                                        <i class="fas fa-circle me-2"></i>@ring.Name
-                                    </h6>
-                                    <div class="row">
-                                        @foreach (var sector in ring.Sectors.OrderBy(s => s.Code))
-                                        {
-                                            <div class="col-md-6 col-lg-4 mb-3">
-                                                <div class="sector-card clickable-sector" id="sector-@sector.Code-@ring.Number-@tribune.Code" @onclick="() => ShowSectorSeats(sector, ring, tribune)">
-                                                    <h6 class="sector-name">@sector.Name (@sector.Code)</h6>
-                                                    <div class="sector-details">
-                                                        <div><strong>Rows:</strong> @sector.TotalRows</div>
-                                                        <div><strong>Seats/Row:</strong> @sector.SeatsPerRow</div>
-                                                        <div><strong>Total:</strong> <span class="badge bg-primary">@(sector.TotalRows * sector.SeatsPerRow) seats</span></div>
-                                                        <div class="small text-muted">Range: @sector.StartRow-@(sector.StartRow + sector.TotalRows - 1)</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
 </div>
 
-@if (selectedSector != null)
+<!-- Sector Detail Modal -->
+@if (showSectorModal && selectedSector != null)
 {
-    <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        @selectedSector.Name (@selectedSector.Code) - @selectedRing?.Name - @selectedTribune?.Name
-                    </h5>
-                    <button type="button" class="btn-close" @onclick="HideSectorSeats" id="admin-stadium-sector-modal-close-btn"></button>
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);" id="sector-detail-modal">
+        <div class="modal-dialog modal-xl" id="sector-modal-dialog">
+            <div class="modal-content" id="sector-modal-content">
+                <div class="modal-header" id="sector-modal-header">
+                    <h5 class="modal-title" id="sector-modal-title">@selectedSector.Name - Admin View</h5>
+                    <button type="button" class="btn-close" @onclick="CloseSectorModal" id="sector-modal-close-button"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="seat-grid">
-                        @for (int row = selectedSector.StartRow; row < selectedSector.StartRow + selectedSector.TotalRows; row++)
+                <div class="modal-body" id="sector-modal-body">
+                    <div class="seat-canvas-container" id="seat-canvas-container">
+                        <canvas @ref="seatCanvas" width="1200" height="600" id="seat-canvas"></canvas>
+                    </div>
+                    <div class="seat-info-panel" id="seat-info-panel">
+                        @if (selectedSeats.Any())
                         {
-                            <div class="seat-row">
-                                <div class="row-number">@row</div>
-                                <div class="seats-in-row">
-                                    @for (int seat = selectedSector.StartSeat; seat < selectedSector.StartSeat + selectedSector.SeatsPerRow; seat++)
-                                    {
-                                        var seatKey = $"{selectedSector.Id}-{row}-{seat}";
-                                        var isSold = selectedEventId > 0 && seatStatusMap != null && seatStatusMap.ContainsKey(seatKey);
-                                        <div class="seat @(isSold ? "sold" : "available")" title="Row @row, Seat @seat - @(isSold ? "Sold" : "Available")">@seat</div>
-                                    }
-                                </div>
-                            </div>
+                            <h6 id="selected-seats-title">Selected Seats:</h6>
+                            <ul id="selected-seats-list">
+                                @foreach (var seat in selectedSeats)
+                                {
+                                    <li id="selected-seat-@seat.Replace(" ", "-")">@seat</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted" id="no-selected-seats-message">Click on seats to view details</p>
                         }
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="HideSectorSeats" id="admin-stadium-sector-close-btn">Close</button>
+                <div class="modal-footer" id="sector-modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseSectorModal" id="sector-modal-close-footer-button">Close</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show"></div>
 }
 
 <style>
-    .sector-card {
-        background: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        padding: 1rem;
-        transition: all 0.2s ease-in-out;
-        height: 100%;
-    }
-
-    .clickable-sector {
-        cursor: pointer;
-    }
-
-    .clickable-sector:hover {
-        background: #f8f9fa;
-        border-color: #0d6efd;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .sector-name {
-        color: #0d6efd;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        font-size: 1rem;
-    }
-
-    .sector-details div {
-        margin-bottom: 0.25rem;
-        font-size: 0.9rem;
-    }
-
-    .seat-grid {
-        max-height: 60vh;
-        overflow-y: auto;
-        padding: 1rem;
-        background: #f8f9fa;
-        border-radius: 0.375rem;
-    }
-
-    .seat-row {
+    /* Stadium Layout Container */
+    .stadium-layout-container {
         display: flex;
-        align-items: center;
-        margin-bottom: 0.5rem;
+        gap: 1rem;
+        height: calc(100vh - 200px);
+        transition: all 0.3s ease;
     }
 
-    .row-number {
-        min-width: 40px;
-        font-weight: bold;
-        color: #6c757d;
-        text-align: right;
-        margin-right: 1rem;
+    .stadium-layout-container.info-panel-collapsed .stadium-viewer-container {
+        margin-left: 60px; /* Space for collapsed toggle button */
     }
 
-    .seats-in-row {
-        display: flex;
-        gap: 0.25rem;
-        flex-wrap: wrap;
+    .stadium-layout-container.info-panel-expanded .stadium-viewer-container {
+        margin-left: 0; /* No extra margin when expanded */
     }
 
-    .seat {
-        width: 32px;
-        height: 32px;
+    /* Stadium Information Panel Styles */
+    .stadium-info-panel {
+        position: relative;
+        width: 380px;
+        background: white;
+        border-radius: var(--stadium-radius-lg);
+        box-shadow: var(--stadium-shadow-lg);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 100;
+        overflow: hidden;
+        height: fit-content;
+        max-height: calc(100vh - 200px);
+    }
+
+    .stadium-info-panel.collapsed {
+        width: 60px;
+        box-shadow: var(--stadium-shadow);
+    }
+
+    .stadium-info-panel.expanded {
+        width: 380px;
+    }
+
+    /* Toggle Button */
+    .info-panel-toggle {
+        position: absolute;
+        top: 50%;
+        right: -20px;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+        border: none;
+        border-radius: 50%;
         color: white;
+        box-shadow: var(--stadium-shadow-md);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 101;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        font-weight: bold;
+    }
+
+    .info-panel-toggle:hover {
+        background: linear-gradient(135deg, var(--admin-primary-dark) 0%, #5b21b6 100%);
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: var(--stadium-shadow-lg);
+    }
+
+    .info-panel-toggle i {
+        font-size: 14px;
+        transition: transform 0.2s ease;
+    }
+
+    /* Panel Content */
+    .info-panel-content {
+        padding: 1.5rem;
+        height: 100%;
+        overflow-y: auto;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+
+    .stadium-info-panel.collapsed .info-panel-content {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Information Cards */
+    .info-card {
+        background: white;
+        border: 1px solid var(--stadium-gray-200);
+        border-radius: var(--stadium-radius-lg);
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+        overflow: hidden;
+    }
+
+    .info-card:hover {
+        box-shadow: var(--stadium-shadow-md);
+        transform: translateY(-1px);
+    }
+
+    .info-card .card-header {
+        background: linear-gradient(135deg, var(--stadium-gray-50) 0%, var(--stadium-gray-100) 100%);
+        border-bottom: 1px solid var(--stadium-gray-200);
+        padding: 1rem 1.25rem;
+    }
+
+    .info-card .card-title {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--stadium-gray-800);
+        display: flex;
+        align-items: center;
+    }
+
+    .info-card .card-body {
+        padding: 1.25rem;
+    }
+
+    /* Stadium Overview Card Styles */
+    .stadium-overview-card .card-header {
+        background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+        color: white;
+    }
+
+    .stadium-overview-card .card-title {
+        color: white;
+    }
+
+    .stadium-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--stadium-gray-900);
+        margin-bottom: 1rem;
+        word-wrap: break-word;
+    }
+
+    .capacity-display {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .capacity-value {
+        display: block;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--admin-primary);
+        line-height: 1;
+    }
+
+    .capacity-label {
+        font-size: 0.875rem;
+        color: var(--stadium-gray-600);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .active-event {
+        padding: 0.75rem;
+        background: var(--stadium-gray-50);
+        border-radius: var(--stadium-radius);
+        border-left: 3px solid var(--stadium-success);
+    }
+
+    .event-name {
+        font-weight: 500;
+        color: var(--stadium-gray-800);
+    }
+
+    .event-date {
+        margin-top: 0.25rem;
+    }
+
+    /* Structure Statistics Styles */
+    .stat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--stadium-gray-100);
+    }
+
+    .stat-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--stadium-gray-600);
+        font-weight: 500;
+    }
+
+    .stat-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--stadium-gray-800);
+    }
+
+    /* Tribune List */
+    .tribune-list {
+        margin: 1rem 0;
+    }
+
+    .tribune-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem;
+        margin-bottom: 0.5rem;
+        background: var(--stadium-gray-50);
+        border-radius: var(--stadium-radius);
         cursor: pointer;
-        transition: all 0.2s;
-        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
     }
 
-    .seat.available {
-        background: #28a745;
+    .tribune-item:hover {
+        background: var(--stadium-gray-100);
+        border-color: var(--admin-primary);
+        transform: translateX(2px);
     }
 
-    .seat.available:hover {
-        background: #1e7e34;
-        transform: scale(1.1);
+    .tribune-code {
+        width: 24px;
+        height: 24px;
+        background: var(--admin-primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+        flex-shrink: 0;
     }
 
-    .seat.sold {
-        background: #dc3545;
+    .tribune-name {
+        font-weight: 500;
+        color: var(--stadium-gray-800);
+        flex: 1;
     }
 
-    .seat.sold:hover {
-        background: #c82333;
-        transform: scale(1.1);
+    .tribune-sectors {
+        font-size: 0.8rem;
+        color: var(--stadium-gray-500);
     }
 
-    .seat-legend {
+    /* Occupancy Card Styles */
+    .occupancy-overview {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .occupancy-percentage {
+        margin-bottom: 0.75rem;
+    }
+
+    .percentage-value {
+        display: block;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--stadium-warning);
+        line-height: 1;
+    }
+
+    .percentage-label {
+        font-size: 0.8rem;
+        color: var(--stadium-gray-600);
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .occupancy-progress .progress {
+        height: 8px;
+        background: var(--stadium-gray-200);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .occupancy-progress .progress-bar {
+        background: linear-gradient(90deg, var(--stadium-warning) 0%, #ea580c 100%);
+        transition: width 0.6s ease-in-out;
+    }
+
+    /* Occupancy Breakdown */
+    .occupancy-breakdown {
+        margin-bottom: 1.5rem;
+    }
+
+    .breakdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--stadium-gray-100);
+    }
+
+    .breakdown-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .breakdown-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
+
+    .breakdown-item.available .breakdown-color {
+        background: var(--stadium-success);
+    }
+
+    .breakdown-item.sold .breakdown-color {
+        background: var(--stadium-danger);
+    }
+
+    .breakdown-item.reserved .breakdown-color {
+        background: var(--stadium-info);
+    }
+
+    .breakdown-label {
+        flex: 1;
+        font-size: 0.875rem;
+        color: var(--stadium-gray-600);
+    }
+
+    .breakdown-value {
+        font-weight: 600;
+        color: var(--stadium-gray-800);
+        font-size: 0.875rem;
+    }
+
+    /* Tribune Occupancy */
+    .tribune-occupancy {
+        border-top: 1px solid var(--stadium-gray-200);
+        padding-top: 1rem;
+    }
+
+    .section-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--stadium-gray-700);
+        margin-bottom: 0.75rem;
+    }
+
+    .tribune-occupancy-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.625rem;
+    }
+
+    .tribune-label {
+        width: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--stadium-gray-700);
+        flex-shrink: 0;
+    }
+
+    .mini-progress {
+        flex: 1;
+        height: 6px;
+        background: var(--stadium-gray-200);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .mini-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--stadium-success) 0%, var(--stadium-warning) 50%, var(--stadium-danger) 100%);
+        transition: width 0.4s ease;
+        min-width: 2px;
+    }
+
+    .occupancy-value {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--stadium-gray-600);
+        min-width: 35px;
+        text-align: right;
+    }
+
+    /* Technical Card */
+    .technical-card .card-header.clickable {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .technical-card .card-header.clickable:hover {
+        background: linear-gradient(135deg, var(--stadium-gray-100) 0%, var(--stadium-gray-200) 100%);
+    }
+
+    .text-monospace {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+    }
+
+    /* Scrollbar Styling for Panel */
+    .info-panel-content::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .info-panel-content::-webkit-scrollbar-track {
+        background: var(--stadium-gray-100);
+        border-radius: 3px;
+    }
+
+    .info-panel-content::-webkit-scrollbar-thumb {
+        background: var(--stadium-gray-400);
+        border-radius: 3px;
+        transition: background 0.2s ease;
+    }
+
+    .info-panel-content::-webkit-scrollbar-thumb:hover {
+        background: var(--stadium-gray-500);
+    }
+
+    .stadium-viewer-container {
+        flex: 1;
+        padding: 20px;
+        height: calc(100vh - 200px);
+        display: flex;
+        flex-direction: column;
+        transition: margin-left 0.3s ease;
+    }
+
+    .viewer-header {
+        margin-bottom: 20px;
+    }
+
+    .viewer-controls {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .event-selector select {
+        width: 200px;
+    }
+
+    .search-seat {
+        display: flex;
+        gap: 5px;
+    }
+
+    .search-seat input {
+        width: 150px;
+    }
+
+    .stadium-main-view {
+        flex: 1;
+        position: relative;
+        background: #f5f5f5;
+        border-radius: 8px;
+        padding: 20px;
+        min-height: 400px;
+    }
+
+    .svg-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .stadium-svg {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+    }
+
+    .legend-panel {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 5px 0;
+    }
+
+    .legend-color {
         width: 20px;
         height: 20px;
-        border-radius: 0.25rem;
+        border-radius: 4px;
     }
 
-    .seat-legend.available {
-        background: #28a745;
+    .sector-tooltip {
+        position: absolute;
+        background: white;
+        padding: 10px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        pointer-events: none;
+        z-index: 1000;
+        font-size: 12px;
     }
 
-    .seat-legend.sold {
-        background: #dc3545;
+    .loading-spinner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 400px;
+    }
+
+    .seat-canvas-container {
+        width: 100%;
+        height: 500px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: auto;
+    }
+
+    .seat-info-panel {
+        margin-top: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    /* Responsive Design for Stadium Info Panel */
+    
+    /* Tablet (768px - 1199px) */
+    @@media (max-width: 1199px) and (min-width: 768px) {
+        .stadium-info-panel {
+            width: 320px;
+        }
+
+        .stadium-info-panel.expanded {
+            width: 320px;
+        }
+
+        .capacity-value {
+            font-size: 2rem;
+        }
+
+        .percentage-value {
+            font-size: 1.75rem;
+        }
+
+        .info-card .card-body {
+            padding: 1rem;
+        }
+    }
+
+    /* Mobile (max-width: 767px) */
+    @@media (max-width: 767px) {
+        .stadium-layout-container {
+            flex-direction: column;
+            height: auto;
+            gap: 0;
+        }
+
+        .stadium-layout-container.info-panel-collapsed .stadium-viewer-container,
+        .stadium-layout-container.info-panel-expanded .stadium-viewer-container {
+            margin-left: 0;
+        }
+
+        .stadium-info-panel {
+            position: relative;
+            width: 100%;
+            height: auto;
+            margin-bottom: 1rem;
+            order: 1;
+        }
+
+        .stadium-info-panel.collapsed {
+            width: 100%;
+            height: 60px;
+            overflow: hidden;
+        }
+
+        .stadium-info-panel.expanded {
+            width: 100%;
+            height: auto;
+        }
+
+        .info-panel-toggle {
+            right: 10px;
+            top: 15px;
+            transform: none;
+            position: absolute;
+        }
+
+        .info-panel-content {
+            padding: 1rem;
+        }
+
+        .stadium-info-panel.collapsed .info-panel-content {
+            display: none;
+        }
+
+        .stadium-viewer-container {
+            height: calc(100vh - 300px);
+            order: 2;
+            padding: 10px;
+        }
+
+        /* Mobile-specific card adjustments */
+        .info-card {
+            margin-bottom: 0.75rem;
+        }
+
+        .info-card .card-body {
+            padding: 0.875rem;
+        }
+
+        .capacity-value {
+            font-size: 1.75rem;
+        }
+
+        .percentage-value {
+            font-size: 1.5rem;
+        }
+
+        .tribune-item {
+            padding: 0.5rem;
+        }
+
+        .tribune-code {
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+        }
+
+        .tribune-name {
+            font-size: 0.875rem;
+        }
+
+        .tribune-sectors {
+            font-size: 0.75rem;
+        }
+
+        /* Accordion-style for mobile */
+        .info-card:not(.stadium-overview-card) {
+            margin-bottom: 0.5rem;
+        }
+
+        .technical-card .card-header {
+            padding: 0.75rem 1rem;
+        }
+
+        .technical-card .card-body {
+            padding: 0.75rem 1rem;
+        }
+    }
+
+    /* Large Mobile / Small Tablet (max-width: 576px) */
+    @@media (max-width: 576px) {
+        .stadium-layout-container {
+            padding: 0;
+        }
+
+        .container-fluid {
+            padding: 0.5rem;
+        }
+
+        .stadium-info-panel {
+            border-radius: var(--stadium-radius);
+            box-shadow: var(--stadium-shadow);
+        }
+
+        .info-panel-content {
+            padding: 0.75rem;
+        }
+
+        .info-card .card-header {
+            padding: 0.75rem;
+        }
+
+        .info-card .card-body {
+            padding: 0.75rem;
+        }
+
+        .capacity-display {
+            margin-bottom: 0.75rem;
+        }
+
+        .capacity-value {
+            font-size: 1.5rem;
+        }
+
+        .percentage-value {
+            font-size: 1.25rem;
+        }
+
+        .stat-row {
+            margin-bottom: 0.5rem;
+            padding: 0.375rem 0;
+        }
+
+        .tribune-item {
+            padding: 0.375rem;
+            gap: 0.5rem;
+        }
+
+        .tribune-occupancy-item {
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-item {
+            gap: 0.5rem;
+            margin-bottom: 0.375rem;
+            padding: 0.375rem 0;
+        }
+    }
+
+    /* High DPI / Retina Display Support */
+    @@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .info-panel-toggle {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tribune-code {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    }
+
+    /* Accessibility - Reduced Motion */
+    @@media (prefers-reduced-motion: reduce) {
+        .stadium-info-panel,
+        .info-panel-toggle,
+        .tribune-item,
+        .info-card,
+        .occupancy-progress .progress-bar,
+        .mini-progress-bar {
+            transition: none !important;
+        }
+    }
+
+    /* Dark Mode Support (if needed) */
+    @@media (prefers-color-scheme: dark) {
+        .stadium-info-panel {
+            background: var(--stadium-gray-800);
+            color: var(--stadium-gray-100);
+        }
+
+        .info-card {
+            background: var(--stadium-gray-700);
+            border-color: var(--stadium-gray-600);
+            color: var(--stadium-gray-100);
+        }
+    }
+
+    /* Tribune highlighting styles */
+    .tribune-highlighted {
+        filter: brightness(1.3) saturate(1.2) !important;
+        animation: pulse-glow 2s infinite alternate;
+    }
+
+    @@keyframes pulse-glow {
+        0% {
+            filter: brightness(1.3) saturate(1.2) drop-shadow(0 0 5px rgba(59, 130, 246, 0.6));
+        }
+        100% {
+            filter: brightness(1.5) saturate(1.4) drop-shadow(0 0 15px rgba(59, 130, 246, 0.8));
+        }
+    }
+
+    /* Error handling for disconnected circuits */
+    .blazor-error-boundary {
+        background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTI1IDEwQzMwLjUyMjggMTAgMzUgMTQuNDc3MiAzNSAyMFM0NS41MjI4IDI1IDQwIDI1UzQ1IDI5LjQ3NzIgNDUgMzVTNDAuNTIyOCA0MCAzNSA0MFMzMCA0NC40NzcyIDMwIDUwSDIwQzE0LjQ3NzIgNTAgMTAgNDUuNTIyOCAxMCA0MFM1LjQ3NzE2IDM1IDAgMzVTNSAyOS40NzcyIDUgMjVTOS40NzcxNiAyMCAxNSAyMFMyNSAxNC40NzcyIDI1IDEwWiIgZmlsbD0iIzM3NDE1MSIvPgo8L3N2Zz4K) center/cover;
+        opacity: 0.1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
     }
 </style>
 
 @code {
-    private List<Tribune>? tribunes;
-    private Sector? selectedSector;
-    private Ring? selectedRing;
-    private Tribune? selectedTribune;
+    // Stadium viewer properties
+    private StadiumViewerDto? stadiumData;
+    private EventSeatStatusDto? eventSeatStatus;
+    private bool isLoading = true;
+    private string? errorMessage;
+    private bool showLegend = false;
+    private bool showOccupancy = true;
+    private string? hoveredSector;
+    private string searchSeatCode = "";
+    private double tooltipX;
+    private double tooltipY;
+
+    // Modal properties
+    private bool showSectorModal = false;
+    private StadiumSectorDto? selectedSector;
+    private StadiumSectorDto? sectorWithSeats;
+    private List<string> selectedSeats = new();
+    private ElementReference svgContainer;
+    private ElementReference seatCanvas;
+
+    // Existing properties for event management
     private List<Event>? events;
     private int selectedEventId = 0;
     private Dictionary<string, SeatStatusDto>? seatStatusMap;
     private bool isSimulating = false;
 
+    // Stadium information panel properties
+    private bool isInfoPanelCollapsed = false; // Start expanded for better UX
+    private Event? selectedEvent;
+    private DateTime? lastUpdateTime = DateTime.Now;
+    private string? highlightedTribune;
+
     protected override async Task OnInitializedAsync()
     {
-        await LoadStadiumStructure();
-        await LoadEvents();
+        // Load stadium data first (fast and essential)
+        await LoadStadiumData();
+        
+        // Don't wait for events - they can timeout without affecting stadium display
+        _ = LoadEventsBackground();
     }
-
-    private async Task LoadStadiumStructure()
+    
+    private async Task LoadEventsBackground()
     {
         try
         {
-            tribunes = await ApiService.GetStadiumStructureAsync();
+            await Task.Delay(100); // Small delay to ensure stadium renders first
+            events = await ApiService.GetEventsAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            // Events loading failed - stadium should still work
+            Logger?.LogError(ex, "Failed to load events in background");
+        }
+    }
+
+    private async Task LoadStadiumData()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged(); // Ensure UI shows loading state
             
-            // If no data from API, use mock data for testing
-            if (tribunes == null || !tribunes.Any())
+            Logger.LogInformation("Starting to load stadium data from API...");
+            var response = await ApiService.GetAsync<StadiumViewerDto>("stadium-viewer/overview");
+            
+            if (response != null)
             {
-                tribunes = CreateMockData();
+                Logger.LogInformation($"Stadium data loaded successfully: {response.Name}");
+                stadiumData = response;
+            }
+            else
+            {
+                Logger.LogWarning("Stadium data response was null");
+                errorMessage = "Failed to load stadium data - API returned null";
             }
         }
         catch (Exception ex)
         {
-            // Handle error - use mock data for testing
-            Console.WriteLine($"Error loading stadium structure: {ex.Message}");
-            tribunes = CreateMockData();
+            Logger.LogError(ex, "Exception loading stadium data: {Message}", ex.Message);
+            errorMessage = $"Error loading stadium layout: {ex.Message}";
         }
-    }
-
-    private List<Tribune> CreateMockData()
-    {
-        return new List<Tribune>
+        finally
         {
-            new Tribune
-            {
-                Id = 1,
-                Code = "N",
-                Name = "North Stand",
-                Description = "Main north stand",
-                Rings = new List<Ring>
-                {
-                    new Ring
-                    {
-                        Id = 1,
-                        Number = 1,
-                        Name = "Lower Tier",
-                        Sectors = new List<Sector>
-                        {
-                            new Sector { Id = 1, Code = "N1", Name = "North 1", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 1 },
-                            new Sector { Id = 2, Code = "N2", Name = "North 2", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 21 }
-                        }
-                    },
-                    new Ring
-                    {
-                        Id = 2,
-                        Number = 2,
-                        Name = "Upper Tier",
-                        Sectors = new List<Sector>
-                        {
-                            new Sector { Id = 3, Code = "N3", Name = "North Upper 1", TotalRows = 10, SeatsPerRow = 18, StartRow = 16, StartSeat = 1 }
-                        }
-                    }
-                }
-            },
-            new Tribune
-            {
-                Id = 2,
-                Code = "S",
-                Name = "South Stand",
-                Description = "Main south stand",
-                Rings = new List<Ring>
-                {
-                    new Ring
-                    {
-                        Id = 3,
-                        Number = 1,
-                        Name = "Lower Tier",
-                        Sectors = new List<Sector>
-                        {
-                            new Sector { Id = 4, Code = "S1", Name = "South 1", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 1 },
-                            new Sector { Id = 5, Code = "S2", Name = "South 2 (S2)", TotalRows = 15, SeatsPerRow = 20, StartRow = 1, StartSeat = 21 }
-                        }
-                    }
-                }
-            }
-        };
+            isLoading = false;
+            Logger.LogInformation($"LoadStadiumData completed. stadiumData is null: {stadiumData == null}");
+            StateHasChanged(); // Ensure UI updates after loading
+        }
     }
 
     private async Task LoadEvents()
@@ -374,7 +1143,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading events: {ex.Message}");
+            Logger.LogError(ex, "Error loading events");
         }
     }
 
@@ -382,13 +1151,31 @@
     {
         if (selectedEventId > 0)
         {
-            await LoadSeatStatusForEvent();
+            selectedEvent = events?.FirstOrDefault(e => e.Id == selectedEventId);
+            await LoadEventSeatStatus(selectedEventId);
+            await LoadSeatStatusForEvent(); // Keep existing functionality
         }
         else
         {
+            selectedEventId = 0;
+            selectedEvent = null;
+            eventSeatStatus = null;
             seatStatusMap = null;
         }
         StateHasChanged();
+    }
+
+    private async Task LoadEventSeatStatus(int eventId)
+    {
+        try
+        {
+            var response = await ApiService.GetAsync<EventSeatStatusDto>($"stadium-viewer/event/{eventId}/seat-status");
+            eventSeatStatus = response;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading event seat status");
+        }
     }
 
     private async Task LoadSeatStatusForEvent()
@@ -403,7 +1190,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading seat status: {ex.Message}");
+            Logger.LogError(ex, "Error loading seat status");
             seatStatusMap = null;
         }
     }
@@ -420,14 +1207,14 @@
             var success = await ApiService.SimulateTicketSalesAsync(selectedEventId, 25, 75.00m);
             if (success)
             {
-                // Refresh seat status after simulation
                 await LoadSeatStatusForEvent();
+                await LoadEventSeatStatus(selectedEventId);
                 StateHasChanged();
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error simulating ticket sales: {ex.Message}");
+            Logger.LogError(ex, "Error simulating ticket sales");
         }
         finally
         {
@@ -436,19 +1223,196 @@
         }
     }
 
-    private void ShowSectorSeats(Sector sector, Ring ring, Tribune tribune)
+    private async Task OpenSectorModal(StadiumSectorDto sector)
     {
         selectedSector = sector;
-        selectedRing = ring;
-        selectedTribune = tribune;
-        StateHasChanged();
+        selectedSeats.Clear();
+        showSectorModal = true;
+
+        try
+        {
+            var response = await ApiService.GetAsync<StadiumSectorDto>($"stadium-viewer/sector/{sector.Id}/seats");
+            if (response != null)
+            {
+                sectorWithSeats = response;
+                StateHasChanged();
+                await Task.Delay(100);
+                await RenderSeatsOnCanvas();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading sector seats");
+        }
     }
 
-    private void HideSectorSeats()
+    private void CloseSectorModal()
     {
+        showSectorModal = false;
         selectedSector = null;
-        selectedRing = null;
-        selectedTribune = null;
+        sectorWithSeats = null;
+        selectedSeats.Clear();
+    }
+
+    private async Task RenderSeatsOnCanvas()
+    {
+        if (sectorWithSeats?.Rows != null)
+        {
+            await JSRuntime.InvokeVoidAsync("renderSeatsOnCanvas", seatCanvas, sectorWithSeats, selectedEventId);
+        }
+    }
+
+    private async Task SearchSeat()
+    {
+        if (string.IsNullOrWhiteSpace(searchSeatCode))
+            return;
+
+        try
+        {
+            var request = new { seatCode = searchSeatCode };
+            var response = await ApiService.PostAsync<SearchSeatResultDto>("stadium-viewer/search-seat", request);
+            
+            if (response != null)
+            {
+                var sector = stadiumData?.Stands
+                    .SelectMany(s => s.Sectors)
+                    .FirstOrDefault(s => s.Id == response.SectorId);
+                    
+                if (sector != null)
+                {
+                    await OpenSectorModal(sector);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error searching for seat");
+        }
+    }
+
+    private void OnSectorHover(StadiumSectorDto sector, bool isHovering)
+    {
+        if (isHovering)
+        {
+            hoveredSector = sector.Id;
+            tooltipX = 500;
+            tooltipY = 300;
+        }
+        else
+        {
+            hoveredSector = null;
+        }
+    }
+
+    private StadiumSectorDto? GetHoveredSectorData()
+    {
+        if (hoveredSector == null || stadiumData == null)
+            return null;
+
+        return stadiumData.Stands
+            .SelectMany(s => s.Sectors)
+            .FirstOrDefault(s => s.Id == hoveredSector);
+    }
+
+    private SeatStatusSummaryDto? GetSectorSummary(string sectorId)
+    {
+        if (eventSeatStatus?.SectorSummaries.TryGetValue(sectorId, out var summary) == true)
+        {
+            return summary;
+        }
+        return null;
+    }
+
+    private string GetSectorFillColor(StadiumSectorDto sector)
+    {
+        if (selectedEventId == 0 || eventSeatStatus == null)
+        {
+            return sector.FillColor; // Use sector's original color when no event selected
+        }
+
+        var summary = GetSectorSummary(sector.Id);
+        if (summary == null)
+            return sector.FillColor;
+
+        if (summary.OccupancyPercentage >= 90)
+            return "#F44336"; // Red - nearly full
+        else if (summary.OccupancyPercentage >= 50)
+            return "#FF9800"; // Orange - partially full
+        else
+            return "#4CAF50"; // Green - mostly available
+    }
+
+    private string GetPolygonPoints(List<PointDto> points)
+    {
+        return string.Join(" ", points.Select(p => $"{p.X},{p.Y}"));
+    }
+
+    private double GetSectorCenterX(List<PointDto> polygon)
+    {
+        return polygon.Average(p => p.X);
+    }
+
+    private double GetSectorCenterY(List<PointDto> polygon)
+    {
+        return polygon.Average(p => p.Y);
+    }
+
+    // Stadium Information Panel Event Handlers
+    private async Task HandleInfoPanelToggle()
+    {
+        isInfoPanelCollapsed = !isInfoPanelCollapsed;
         StateHasChanged();
+        await Task.Delay(300); // Allow CSS transition to complete
+        // Optionally trigger map resize/redraw
+    }
+
+    private async Task OnTribuneSelected(StadiumStandDto stand)
+    {
+        highlightedTribune = stand.TribuneCode;
+        StateHasChanged();
+        
+        // Optional: Scroll to or highlight tribune on map
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("highlightTribune", stand.TribuneCode);
+        }
+        catch (JSDisconnectedException)
+        {
+            Logger.LogWarning("Could not highlight tribune on map: Blazor circuit disconnected");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not highlight tribune on map: {TribuneCode}", stand.TribuneCode);
+        }
+    }
+
+    private async Task OnTribuneHovered((StadiumStandDto stand, bool isHovering) tribuneData)
+    {
+        try
+        {
+            if (tribuneData.isHovering)
+            {
+                // Optional: Add hover effects on the map
+                await JSRuntime.InvokeVoidAsync("hoverTribune", tribuneData.stand.TribuneCode);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("unhoverTribune");
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            Logger.LogWarning("Could not invoke JavaScript function for tribune hover: Blazor circuit disconnected");
+        }
+        catch (Exception ex)
+        {
+            // Handle circuit disconnection gracefully
+            Logger.LogWarning(ex, "Could not invoke JavaScript function for tribune hover. Circuit may be disconnected.");
+        }
+    }
+
+    private Event? GetSelectedEvent()
+    {
+        return selectedEvent;
     }
 }

@@ -51,6 +51,10 @@ public interface IApiService
     Task<TicketSessionDto?> GetTicketSessionAsync(string sessionToken);
     Task<bool> LogoutTicketAsync(string sessionId);
     
+    // Generic HTTP methods
+    Task<T?> GetAsync<T>(string endpoint) where T : class;
+    Task<TResponse?> PostAsync<TRequest, TResponse>(string endpoint, TRequest data) where TResponse : class;
+    
     string? Token { get; set; }
 }
 
@@ -764,6 +768,71 @@ public class ApiService : IApiService
         {
             Console.WriteLine($"Error logging out ticket session: {ex.Message}");
             return false;
+        }
+    }
+
+    private void SetAuthorizationHeader()
+    {
+        if (!string.IsNullOrEmpty(Token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+        }
+    }
+
+    // Generic HTTP methods
+    public async Task<T?> GetAsync<T>(string endpoint) where T : class
+    {
+        try
+        {
+            SetAuthorizationHeader();
+            Console.WriteLine($"Making GET request to: {_httpClient.BaseAddress}{endpoint}");
+            var response = await _httpClient.GetAsync(endpoint);
+            Console.WriteLine($"Response status: {response.StatusCode}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Response received, length: {json.Length}");
+                return JsonSerializer.Deserialize<T>(json, _jsonOptions);
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"HTTP Error {response.StatusCode}: {errorContent}");
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception in GetAsync: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            return null;
+        }
+    }
+
+    public async Task<TResponse?> PostAsync<TRequest, TResponse>(string endpoint, TRequest data) where TResponse : class
+    {
+        try
+        {
+            SetAuthorizationHeader();
+            var json = JsonSerializer.Serialize(data, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            
+            var response = await _httpClient.PostAsync(endpoint, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<TResponse>(responseJson, _jsonOptions);
+            }
+
+            return null;
+        }
+        catch (Exception)
+        {
+            return null;
         }
     }
 

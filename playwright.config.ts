@@ -42,6 +42,35 @@ export default defineConfig({
         viewport: { width: 1280, height: 720 },
       },
     },
+    // Stadium Viewer specific test configuration
+    {
+      name: 'stadium-viewer-desktop',
+      testMatch: '**/stadium-viewer.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+        // Stadium viewer specific environment variables
+        extraHTTPHeaders: {
+          'Accept': 'application/json, text/html',
+        },
+      },
+    },
+    {
+      name: 'stadium-viewer-tablet',
+      testMatch: '**/stadium-viewer.spec.ts',
+      use: {
+        ...devices['iPad Pro'],
+        viewport: { width: 1024, height: 768 },
+      },
+    },
+    {
+      name: 'stadium-viewer-mobile',
+      testMatch: '**/stadium-viewer.spec.ts',
+      use: {
+        ...devices['iPhone 12'],
+        viewport: { width: 390, height: 844 },
+      },
+    },
   ],
   // Remove webServer since containers are already running
 });

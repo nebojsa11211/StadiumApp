@@ -1,0 +1,752 @@
+/* ========================================
+   Admin Stadium Overview Component Styles
+   Professional Admin Interface Design
+   ======================================== */
+
+/* Admin Design System Variables */
+.stadium-viewer-container {
+    --viewer-primary: #0f172a;
+    --viewer-primary-hover: #1e293b;
+    --viewer-secondary: #64748b;
+    --viewer-surface: #ffffff;
+    --viewer-surface-alt: #f8fafc;
+    --viewer-surface-elevated: #f1f5f9;
+    --viewer-surface-dark: #334155;
+    --viewer-border: #e2e8f0;
+    --viewer-border-focus: #0f172a;
+    --viewer-text-primary: #1e293b;
+    --viewer-text-secondary: #64748b;
+    --viewer-text-muted: #94a3b8;
+    --viewer-admin-accent: #dc2626;
+    
+    /* WCAG AA Compliant Colors */
+    --seat-available: #16a34a;
+    --seat-available-hover: #15803d;
+    --seat-partial: #ca8a04;
+    --seat-partial-hover: #a16207;
+    --seat-full: #dc2626;
+    --seat-full-hover: #b91c1c;
+    --seat-unavailable: #6b7280;
+    --seat-unavailable-hover: #4b5563;
+    
+    /* Admin-specific colors */
+    --admin-primary: #1e40af;
+    --admin-secondary: #7c3aed;
+    --admin-warning: #f59e0b;
+    --admin-danger: #dc2626;
+    --admin-success: #16a34a;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    
+    /* Borders */
+    --radius-sm: 6px;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition: 200ms ease;
+    --transition-slow: 300ms ease;
+}
+
+/* Main Container */
+.stadium-viewer-container {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: calc(100vh - 120px);
+    background: linear-gradient(135deg, var(--viewer-surface-dark) 0%, var(--viewer-primary) 100%);
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: white;
+}
+
+/* Admin Header */
+.viewer-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--viewer-border);
+    padding: var(--space-lg);
+    position: relative;
+    color: var(--viewer-text-primary);
+}
+
+.viewer-header h3 {
+    color: var(--viewer-primary);
+    font-weight: 700;
+    font-size: 1.875rem;
+    margin: 0 0 var(--space-md) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    line-height: 1.2;
+}
+
+.viewer-header h3::before {
+    content: "🏟️";
+    font-size: 1.75rem;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Admin-specific Control Layout */
+.viewer-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    align-items: end;
+}
+
+@media (min-width: 640px) {
+    .viewer-controls {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .viewer-controls {
+        grid-template-columns: 300px 250px 1fr auto;
+    }
+}
+
+/* Enhanced Admin Form Controls */
+.event-selector,
+.search-seat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.form-label {
+    color: var(--viewer-text-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: 0;
+}
+
+.form-label i {
+    color: var(--admin-primary);
+}
+
+.form-select,
+.form-control {
+    min-height: 44px;
+    border: 2px solid var(--viewer-border);
+    border-radius: var(--radius);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.875rem;
+    transition: var(--transition);
+    background: var(--viewer-surface);
+    color: var(--viewer-text-primary);
+}
+
+.form-select:focus,
+.form-control:focus {
+    outline: none;
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 3px rgb(30 64 175 / 0.1);
+}
+
+.form-select:hover,
+.form-control:hover {
+    border-color: var(--admin-primary);
+}
+
+/* Admin Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    min-height: 44px;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: var(--admin-primary);
+    color: white;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: var(--viewer-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+    background: var(--viewer-surface-elevated);
+    color: var(--viewer-text-primary);
+    border-color: var(--viewer-border);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background: var(--viewer-surface);
+    border-color: var(--admin-primary);
+    color: var(--admin-primary);
+}
+
+.btn-outline-primary {
+    background: transparent;
+    color: var(--admin-primary);
+    border-color: var(--admin-primary);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background: var(--admin-primary);
+    color: white;
+}
+
+.btn-outline-primary.active {
+    background: var(--admin-primary);
+    color: white;
+}
+
+.btn-warning {
+    background: var(--admin-warning);
+    color: white;
+}
+
+.btn-warning:hover,
+.btn-warning:focus {
+    background: #f59e0b;
+    color: white;
+}
+
+/* Admin Stadium View */
+.stadium-main-view {
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* SVG Container */
+.svg-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Enhanced Stadium SVG */
+.stadium-svg {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Admin Sector Interactions */
+::deep .sector-group {
+    cursor: pointer;
+    transition: all var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::deep .sector-group:hover polygon {
+    filter: brightness(1.1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+    transform: scale(1.02);
+    transform-origin: center;
+}
+
+::deep .sector-group:focus {
+    outline: none;
+}
+
+::deep .sector-group:focus polygon {
+    stroke: var(--admin-primary);
+    stroke-width: 3;
+    filter: drop-shadow(0 0 8px var(--admin-primary));
+}
+
+::deep .sector-group:active polygon {
+    transform: scale(0.98);
+}
+
+/* Admin Legend Panel */
+.legend-panel {
+    position: absolute;
+    top: var(--space-lg);
+    right: var(--space-lg);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 200px;
+    z-index: 10;
+}
+
+.legend-panel h5 {
+    color: var(--viewer-text-primary);
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 0 0 var(--space-md) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.legend-panel h5::before {
+    content: "ℹ️";
+    font-size: 1.25rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: var(--space-sm) 0;
+    font-size: 0.875rem;
+    color: var(--viewer-text-secondary);
+}
+
+.legend-color {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--viewer-border);
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* Admin Enhanced Tooltips */
+.sector-tooltip {
+    position: fixed;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+    z-index: 1000;
+    font-size: 0.875rem;
+    max-width: 280px;
+    transition: opacity var(--transition);
+}
+
+.tooltip-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-xs);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: var(--space-xs);
+}
+
+.tooltip-header strong {
+    color: white;
+    font-weight: 700;
+}
+
+.badge {
+    background: var(--admin-primary);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge.badge-admin {
+    background: linear-gradient(45deg, var(--admin-primary), var(--admin-secondary));
+}
+
+.tooltip-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: rgba(255, 255, 255, 0.9);
+    margin: 4px 0;
+}
+
+.tooltip-stat i {
+    width: 16px;
+    color: var(--admin-warning);
+}
+
+/* Admin Loading States */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    gap: var(--space-lg);
+    color: white;
+}
+
+.loading-stages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    max-width: 320px;
+}
+
+.stage {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    border-radius: var(--radius);
+    transition: var(--transition);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.stage.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.stage.completed {
+    color: var(--admin-success);
+}
+
+.stage.pending {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.stage-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner-sm {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.stage-pending {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+.loading-progress {
+    width: 100%;
+    max-width: 320px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--admin-primary), var(--admin-secondary));
+    border-radius: 2px;
+    transition: width var(--transition-slow);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Admin Modal System */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    animation: fadeIn var(--transition) ease;
+}
+
+.modal-container {
+    background: var(--viewer-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--viewer-border);
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn var(--transition-slow) ease;
+}
+
+@media (min-width: 1280px) {
+    .modal-container {
+        max-width: 1200px;
+    }
+}
+
+.modal-header {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--viewer-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, var(--viewer-surface) 0%, var(--viewer-surface-alt) 100%);
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+}
+
+.modal-title h5 {
+    color: var(--viewer-text-primary);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.sector-meta {
+    color: var(--viewer-text-muted);
+    font-size: 0.875rem;
+    font-weight: normal;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--viewer-text-muted);
+    cursor: pointer;
+    padding: var(--space-sm);
+    border-radius: var(--radius);
+    transition: var(--transition);
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close:hover,
+.btn-close:focus {
+    background: var(--viewer-surface-elevated);
+    color: var(--viewer-text-primary);
+    outline: none;
+}
+
+.modal-body {
+    padding: var(--space-lg);
+    flex: 1;
+    overflow: auto;
+}
+
+.modal-footer {
+    padding: var(--space-lg);
+    border-top: 1px solid var(--viewer-border);
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+    background: var(--viewer-surface-alt);
+    border-bottom-left-radius: var(--radius-xl);
+    border-bottom-right-radius: var(--radius-xl);
+}
+
+/* Admin Alert Styles */
+.alert {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    border: 1px solid;
+    margin: var(--space-md) 0;
+    backdrop-filter: blur(10px);
+}
+
+.alert-danger {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.3);
+    color: #dc2626;
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #2563eb;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+}
+
+/* Canvas Controls */
+.seat-canvas-container {
+    width: 100%;
+    min-height: 400px;
+    border: 2px solid var(--viewer-border);
+    border-radius: var(--radius-lg);
+    overflow: auto;
+    position: relative;
+    background: var(--viewer-surface-alt);
+}
+
+.seat-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.seat-info-panel {
+    margin-top: var(--space-lg);
+    padding: var(--space-lg);
+    background: var(--viewer-surface-elevated);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--viewer-border);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.fade-in {
+    animation: fadeIn var(--transition) ease;
+}
+
+/* Admin Mobile Optimizations */
+@media (max-width: 768px) {
+    .stadium-viewer-container {
+        padding: var(--space-md);
+        gap: var(--space-md);
+        min-height: calc(100vh - 80px);
+        background: linear-gradient(135deg, var(--viewer-surface-dark) 0%, #1e293b 100%);
+    }
+    
+    .viewer-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+    
+    .viewer-controls {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+    
+    .view-options {
+        justify-content: center;
+    }
+    
+    .legend-panel {
+        position: fixed;
+        top: auto;
+        bottom: var(--space-lg);
+        right: var(--space-lg);
+        left: var(--space-lg);
+        transform: translateY(100%);
+        transition: transform var(--transition-slow);
+    }
+    
+    .legend-panel.visible {
+        transform: translateY(0);
+    }
+    
+    .stadium-main-view {
+        padding: var(--space-md);
+        min-height: 400px;
+    }
+    
+    .modal-backdrop {
+        padding: 0;
+    }
+    
+    .modal-container {
+        max-width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+        border: none;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .stadium-viewer-container {
+        --viewer-border: #000000;
+        --seat-available: #008000;
+        --seat-partial: #ffaa00;
+        --seat-full: #ff0000;
+    }
+    
+    .btn,
+    .form-control,
+    .form-select {
+        border-width: 3px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

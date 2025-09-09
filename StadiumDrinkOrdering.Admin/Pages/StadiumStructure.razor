@@ -8,7 +8,12 @@
 <PageTitle>Stadium Structure Management</PageTitle>
 
 <div class="container-fluid">
-    <h3 class="mb-4">🏟️ Stadium Structure Management</h3>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h3 class="mb-0">🏟️ Stadium Structure Management</h3>
+        <a href="/admin/structure-help" class="btn btn-outline-info">
+            <i class="fas fa-question-circle me-2"></i>Import Guide & Samples
+        </a>
+    </div>
 
     <div class="row mb-4">
         <div class="col-md-6">
@@ -17,6 +22,23 @@
                     <h5 class="mb-0">Import Structure</h5>
                 </div>
                 <div class="card-body">
+                    <div class="alert alert-info mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-info-circle me-2 mt-1"></i>
+                            <div>
+                                <strong>Quick Start:</strong>
+                                <ul class="mb-0 small mt-1">
+                                    <li>JSON file must contain stadium name and tribunes</li>
+                                    <li>Tribune codes: N, S, E, W (North, South, East, West)</li>
+                                    <li>Each sector needs rows and seatsPerRow values</li>
+                                </ul>
+                                <a href="/admin/structure-help" class="btn btn-sm btn-outline-primary mt-2">
+                                    <i class="fas fa-external-link-alt me-1"></i>View Complete Guide & Samples
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Select JSON file:</label>
                         <InputFile OnChange="@HandleFileSelected" 

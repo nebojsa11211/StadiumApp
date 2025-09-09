@@ -1,0 +1,748 @@
+/* ========================================
+   Stadium Information Panel Component
+   Professional Admin Dashboard Design
+   ======================================== */
+
+/* Panel Variables */
+.stadium-info-panel {
+    --info-primary: #7c3aed;
+    --info-primary-dark: #6d28d9;
+    --info-secondary: #1e293b;
+    --info-surface: #ffffff;
+    --info-surface-alt: #f8fafc;
+    --info-surface-elevated: #f1f5f9;
+    --info-border: #e2e8f0;
+    --info-text-primary: #1e293b;
+    --info-text-secondary: #64748b;
+    --info-text-muted: #94a3b8;
+    --info-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --info-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    
+    /* Tribune Colors */
+    --tribune-north: #3b82f6;
+    --tribune-south: #ef4444;
+    --tribune-east: #10b981;
+    --tribune-west: #f59e0b;
+    
+    /* Seat Status Colors - WCAG AA Compliant */
+    --seat-available-color: #16a34a;
+    --seat-sold-color: #dc2626;
+    --seat-reserved-color: #2563eb;
+    
+    /* Transitions */
+    --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: 150ms ease;
+}
+
+/* Main Panel Container */
+.stadium-info-panel {
+    position: relative;
+    width: 380px;
+    height: 100%;
+    background: var(--info-surface);
+    border-radius: 16px;
+    box-shadow: var(--info-shadow-lg);
+    border: 1px solid var(--info-border);
+    transition: all var(--transition);
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    flex-shrink: 0;
+}
+
+.stadium-info-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.stadium-info-panel.collapsed {
+    width: 60px;
+}
+
+/* Panel Header */
+.panel-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--info-primary) 0%, var(--info-primary-dark) 100%);
+    color: white;
+    min-height: 60px;
+    position: relative;
+}
+
+.toggle-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.toggle-btn:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+.panel-title {
+    margin: 0 0 0 12px;
+    font-size: 1.125rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.panel-title i {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Panel Content */
+.panel-content {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--info-border) transparent;
+}
+
+.panel-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+    background: var(--info-border);
+    border-radius: 3px;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+    background: var(--info-text-muted);
+}
+
+/* Info Cards */
+.info-card {
+    background: var(--info-surface);
+    border: 1px solid var(--info-border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.info-card:hover {
+    box-shadow: var(--info-shadow);
+    border-color: var(--info-primary);
+}
+
+.info-card:last-child {
+    margin-bottom: 0;
+}
+
+/* Card Headers */
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--info-surface-alt) 0%, var(--info-surface-elevated) 100%);
+    border-bottom: 1px solid var(--info-border);
+    position: relative;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--info-text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-header i {
+    color: var(--info-primary);
+    font-size: 1rem;
+}
+
+/* Badges */
+.badge {
+    background: var(--info-primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+}
+
+.badge-admin {
+    background: linear-gradient(135deg, var(--info-primary) 0%, #8b5cf6 100%);
+    box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
+}
+
+/* Card Content */
+.card-content {
+    padding: 20px;
+}
+
+/* Stadium Overview Card Styles */
+.stadium-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--info-text-primary);
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.stadium-name i {
+    color: var(--info-primary);
+    font-size: 1rem;
+}
+
+.capacity-display {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--info-surface-alt) 0%, var(--info-surface-elevated) 100%);
+    border-radius: 10px;
+    border: 1px solid var(--info-border);
+}
+
+.capacity-number {
+    display: block;
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: var(--info-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.025em;
+}
+
+.capacity-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--info-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.current-event,
+.no-event {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--info-border);
+}
+
+.current-event {
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+    border-color: #3b82f6;
+}
+
+.no-event {
+    background: var(--info-surface-alt);
+    color: var(--info-text-muted);
+}
+
+.current-event i {
+    color: #3b82f6;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.no-event i {
+    color: var(--info-text-muted);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.current-event strong {
+    color: #1e40af;
+    font-weight: 600;
+    display: block;
+    line-height: 1.2;
+}
+
+.current-event small {
+    color: #4338ca;
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+/* Structure Statistics Card */
+.stat-item {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: var(--info-surface-alt);
+    border-radius: 8px;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: var(--info-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--info-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Tribunes List */
+.tribunes-list {
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tribune-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--info-border);
+    background: var(--info-surface);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.tribune-item:hover {
+    background: var(--info-surface-alt);
+    border-color: var(--info-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tribune-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.875rem;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.tribune-badge.tribune-n { background: var(--tribune-north); }
+.tribune-badge.tribune-s { background: var(--tribune-south); }
+.tribune-badge.tribune-e { background: var(--tribune-east); }
+.tribune-badge.tribune-w { background: var(--tribune-west); }
+
+.tribune-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.tribune-info strong {
+    display: block;
+    font-weight: 600;
+    color: var(--info-text-primary);
+    font-size: 0.875rem;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.tribune-info small {
+    font-size: 0.75rem;
+    color: var(--info-text-secondary);
+    line-height: 1.2;
+}
+
+/* Summary Stats */
+.summary-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--info-border);
+}
+
+.stat-pair {
+    text-align: center;
+    padding: 8px;
+    background: var(--info-surface-alt);
+    border-radius: 6px;
+}
+
+.stat-pair .stat-number {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+}
+
+.stat-pair .stat-label {
+    font-size: 0.6875rem;
+}
+
+/* Occupancy Analytics Card */
+.overall-occupancy {
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--info-surface-alt) 0%, var(--info-surface-elevated) 100%);
+    border-radius: 12px;
+    border: 1px solid var(--info-border);
+}
+
+.occupancy-percentage {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--info-primary);
+    line-height: 1;
+    margin-bottom: 12px;
+    letter-spacing: -0.025em;
+}
+
+.occupancy-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--info-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.occupancy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--info-primary) 0%, #8b5cf6 100%);
+    border-radius: 4px;
+    transition: width var(--transition);
+}
+
+.occupancy-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--info-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Seat Breakdown */
+.seat-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.seat-stat {
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 8px;
+    border: 1px solid;
+    transition: var(--transition-fast);
+}
+
+.seat-stat.seat-available {
+    background: rgba(22, 163, 74, 0.1);
+    border-color: var(--seat-available-color);
+}
+
+.seat-stat.seat-sold {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: var(--seat-sold-color);
+}
+
+.seat-stat.seat-reserved {
+    background: rgba(37, 99, 235, 0.1);
+    border-color: var(--seat-reserved-color);
+}
+
+.seat-stat i {
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.seat-stat.seat-available i { color: var(--seat-available-color); }
+.seat-stat.seat-sold i { color: var(--seat-sold-color); }
+.seat-stat.seat-reserved i { color: var(--seat-reserved-color); }
+
+.seat-count {
+    display: block;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--info-text-primary);
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.seat-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--info-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Tribune Occupancy */
+.tribune-occupancy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tribune-occupancy-item {
+    background: var(--info-surface);
+    border: 1px solid var(--info-border);
+    border-radius: 8px;
+    padding: 10px;
+    transition: var(--transition-fast);
+}
+
+.tribune-occupancy-item:hover {
+    background: var(--info-surface-alt);
+    border-color: var(--info-primary);
+}
+
+.tribune-occupancy-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.tribune-occupancy-header .tribune-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+}
+
+.occupancy-percent {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--info-text-primary);
+}
+
+.mini-progress {
+    width: 100%;
+    height: 4px;
+    background: var(--info-border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--info-primary);
+    border-radius: 2px;
+    transition: width var(--transition);
+}
+
+/* Technical Information Card */
+.card-header.collapsible {
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 16px;
+    transition: var(--transition-fast);
+}
+
+.card-header.collapsible:hover {
+    background: var(--info-surface-alt);
+}
+
+.technical-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tech-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--info-border);
+}
+
+.tech-item:last-child {
+    border-bottom: none;
+}
+
+.tech-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--info-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tech-value {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--info-text-primary);
+    font-family: 'SF Mono', Consolas, monospace;
+    text-align: right;
+}
+
+/* No Data Card */
+.no-data .card-content {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--info-text-muted);
+}
+
+.no-data i {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    color: var(--info-text-muted);
+    display: block;
+}
+
+.no-data h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: var(--info-text-secondary);
+}
+
+.no-data p {
+    font-size: 0.75rem;
+    margin: 0;
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 1399px) {
+    .stadium-info-panel {
+        width: 320px;
+    }
+    
+    .stadium-info-panel.collapsed {
+        width: 50px;
+    }
+    
+    .card-content {
+        padding: 16px;
+    }
+    
+    .capacity-number {
+        font-size: 1.875rem;
+    }
+    
+    .occupancy-percentage {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 1199px) {
+    .stadium-info-panel {
+        width: 300px;
+    }
+    
+    .summary-stats {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .seat-breakdown {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .stadium-info-panel {
+        width: 100%;
+        max-width: none;
+        max-height: none;
+        margin-bottom: 20px;
+        border-radius: 12px;
+    }
+    
+    .stadium-info-panel.collapsed {
+        width: 100%;
+        height: 60px;
+    }
+    
+    .panel-content {
+        max-height: 400px;
+    }
+    
+    .tribunes-list {
+        grid-template-columns: repeat(2, 1fr);
+        display: grid;
+        gap: 8px;
+    }
+    
+    .seat-breakdown {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .stadium-info-panel,
+    .info-card,
+    .tribune-item,
+    .toggle-btn,
+    .occupancy-fill,
+    .progress-fill {
+        transition: none !important;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .stadium-info-panel {
+        --info-border: #000000;
+        --info-text-muted: #666666;
+        border-width: 2px;
+    }
+    
+    .info-card,
+    .tribune-item,
+    .seat-stat {
+        border-width: 2px;
+    }
+    
+    .toggle-btn:focus {
+        outline-width: 3px;
+    }
+}

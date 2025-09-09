@@ -351,11 +351,13 @@ environment:
 ---
 
 ## Service Ports
-- API: Dev 7000/7001 → Docker 9000
-- Customer: Dev 7002/7003 → Docker 9001
-- Admin: Dev 7004/7005 → Docker 9002
+- API: Dev 7000/7001 → Docker 9000 ✅ Running
+- Customer: Dev 7002/7003 → Docker 9001 ✅ Running (also on 5003)
+- Admin: Dev 7004/7005 → **Current: 9004** ✅ Running 
 - Staff: Dev 7006/7007 → Docker 9003
 - Database: PostgreSQL/Supabase (cloud/remote)
+
+**Note:** Admin currently running on port 9004 due to port conflicts. Use **http://localhost:9004** to access Admin interface.
 
 ---
 
@@ -385,51 +387,198 @@ environment:
 
 ## Stadium Structure Management
 
+### Overview
+Complete stadium structure management system with JSON import/export capabilities, comprehensive validation, and interactive documentation. The system supports multi-level stadium hierarchies with tribunes, rings, sectors, and automated seat generation.
+
+### Access Points
+- **Admin Panel:** `/admin/stadium-structure` - Main structure management interface
+- **Help Guide:** `/admin/structure-help` - Comprehensive import documentation with samples
+- **Navigation:** Admin → Stadium Management → Structure Management
+
+### Stadium Hierarchy
+```
+STADIUM (Root)
+├── TRIBUNES (N, S, E, W)
+│   └── RINGS (1-5 levels)
+│       └── SECTORS (A-Z codes)
+│           └── SEATS (Auto-generated: rows × seatsPerRow)
+```
+
+**Seat Naming Convention:** `[Tribune][Ring][Sector]-R[Row]S[Seat]`  
+Example: `N1A-R5S12` = North Tribune, Ring 1, Sector A, Row 5, Seat 12
+
 ### JSON Import/Export
-The system supports importing and exporting stadium structures via JSON files:
 
-**Import Process:**
-1. Navigate to Admin → Structure Management
-2. Select JSON file with stadium structure (see `stadium-structure.json` example)
-3. Click Import Structure (replaces existing structure)
-4. System validates and creates tribunes, rings, sectors, and seats
+#### Import Process
+1. **Access:** Navigate to Admin → Structure Management
+2. **Help:** Click "Import Guide & Samples" for detailed instructions
+3. **Upload:** Select JSON file (max 10MB)
+4. **Validate:** System automatically validates structure
+5. **Import:** System creates tribunes, rings, sectors, and seats
+6. **Verify:** Review structure summary and seat counts
 
-**JSON Structure:**
+#### Complete JSON Schema
 ```json
 {
-  "name": "Stadium Name",
-  "description": "Description",
-  "tribunes": [
+  "name": "Stadium Name",           // Required: Display name (3-100 chars)
+  "description": "Description",     // Optional: Stadium description (max 500 chars)
+  "capacity": 50000,                // Optional: Total capacity (auto-calculated)
+  "tribunes": [                     // Required: Array of 1-4 tribunes
     {
-      "code": "N|S|E|W",
-      "name": "Tribune Name", 
-      "description": "Description",
-      "rings": [
+      "code": "N",                  // Required: N, S, E, or W only
+      "name": "North Tribune",      // Required: Display name (3-100 chars)
+      "description": "Main stand",  // Optional: Tribune description
+      "rings": [                     // Required: Array of 1-5 rings
         {
-          "number": 1,
-          "name": "Ring Name",
-          "sectors": [
+          "number": 1,               // Required: Ring level (1-5)
+          "name": "Lower Ring",      // Required: Display name
+          "priceMultiplier": 1.0,   // Optional: Price adjustment (0.5-3.0)
+          "sectors": [               // Required: Array of sectors
             {
-              "code": "SECTOR_CODE",
-              "name": "Sector Name",
-              "rows": 25,
-              "seatsPerRow": 20,
-              "startRow": 1,
-              "startSeat": 1
+              "code": "NA",          // Required: Unique code (2-10 chars)
+              "name": "Sector A",    // Required: Display name
+              "type": "standard",    // Optional: standard/vip/wheelchair
+              "rows": 25,            // Required: Number of rows (1-100)
+              "seatsPerRow": 20,     // Required: Seats per row (1-100)
+              "startRow": 1,         // Optional: First row number (default: 1)
+              "startSeat": 1,        // Optional: First seat number (default: 1)
+              "priceCategory": "A"   // Optional: Pricing category
             }
           ]
         }
       ]
     }
-  ]
+  ],
+  "metadata": {                     // Optional: Additional information
+    "version": "1.0",
+    "createdDate": "2024-01-01",
+    "lastModified": "2024-01-01"
+  }
 }
 ```
 
-**Features:**
-- Automatic seat generation for all sectors
-- Validation of tribune codes (N, S, E, W only)
-- Database transaction safety (rollback on errors)
-- Export existing structure as JSON
+#### Sample Files
+Pre-built template files available in `stadium-samples/`:
+- **`minimal-stadium.json`** - Basic single-tribune structure (200 seats)
+- **`standard-stadium.json`** - Four-tribune professional stadium (20,000 seats)
+- **`complex-stadium.json`** - Multi-ring with VIP sections (80,000 seats)
+
+#### Validation Rules
+**Required Fields:**
+- `name`: Stadium name (3-100 characters)
+- `tribunes[]`: At least one tribune
+- `tribune.code`: Must be N, S, E, or W (unique)
+- `tribune.rings[]`: At least one ring per tribune
+- `ring.number`: Integer 1-5 (sequential recommended)
+- `ring.sectors[]`: At least one sector per ring
+- `sector.code`: Unique across entire stadium (2-10 chars)
+- `sector.rows` & `sector.seatsPerRow`: Both required (1-100 each)
+
+**Constraints:**
+- Maximum 4 tribunes, 5 rings per tribune, unlimited sectors
+- Tribune codes must be unique (can't have two "N" tribunes)
+- Sector codes must be unique across entire stadium
+- File size limit: 10MB
+- Ring numbers should be sequential for best practices
+
+#### Common Import Errors & Solutions
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Stadium name is required" | Missing/empty name | Add `"name": "Your Stadium"` |
+| "Invalid tribune code" | Wrong code format | Use only N, S, E, or W |
+| "Duplicate sector code" | Same code used twice | Make all sector codes unique |
+| "Invalid JSON format" | Syntax errors | Validate JSON with online tools |
+| "File too large" | File > 10MB | Reduce sectors or split import |
+
+### Features
+- **Interactive Help System:** Built-in documentation with visual guides
+- **JSON Validator Tool:** Real-time validation with error reporting
+- **Sample Downloads:** One-click download of template files
+- **Automatic Seat Generation:** Creates all seats based on row/seat specifications
+- **Database Transaction Safety:** Rollback on errors, maintains data integrity
+- **Export Functionality:** Download existing structure as JSON
+- **Clear Structure:** Safe deletion with confirmation dialogs
+- **Real-time Feedback:** Progress indicators and detailed success/error messages
+
+### Technical Implementation
+- **Backend API:** `/api/stadium-structure` endpoints for CRUD operations
+- **Admin Service:** `IAdminApiService` handles all structure operations
+- **Validation:** Server-side validation with detailed error messages
+- **File Processing:** Stream-based JSON processing with 10MB limit
+- **Database:** Entity Framework Core with PostgreSQL/Supabase
+- **UI Components:** Blazor Server with Bootstrap styling
+- **Error Handling:** Global exception handling with user-friendly messages
+
+---
+
+## Stadium Overview (Admin)
+
+### Overview
+Visual stadium management interface providing administrators with real-time stadium visualization, occupancy monitoring, and event management capabilities. Combines SVG-based stadium rendering with administrative controls for comprehensive stadium oversight.
+
+### Access Points
+- **Admin Panel:** `/admin/stadium-overview` - Main visual stadium interface
+- **Navigation:** Admin → Stadium Management → Stadium Overview
+
+### Key Features
+
+#### Visual Stadium Map
+- **SVG Visualization**: Interactive stadium map with clickable sectors
+- **Real-time Rendering**: Dynamic stadium layout based on imported structure
+- **Color-coded Occupancy**: Visual representation of seat availability and sales
+- **Responsive Design**: Scales to different screen sizes and devices
+
+#### Event Management Integration
+- **Event Selection**: Dropdown to select active events for occupancy view
+- **Real-time Data**: Live seat status updates from database
+- **Ticket Sales Simulation**: Admin tool to simulate ticket sales for testing
+- **Occupancy Analytics**: Visual percentage display for each sector
+
+#### Interactive Controls
+- **Seat Search**: Find specific seats using stadium naming convention
+- **Legend Toggle**: Show/hide color coding legend for occupancy status
+- **Sector Tooltips**: Hover information showing seat counts and availability
+- **Detail Modals**: Click sectors to view detailed seat layouts
+
+#### Administrative Functions
+- **Sales Simulation**: Generate test ticket sales data for events
+- **Occupancy Monitoring**: Real-time visualization of seat utilization
+- **Event Analytics**: Visual representation of event performance
+- **Stadium Health Check**: Verify stadium structure integrity
+
+### Color Coding System
+- **🟢 Green (Available)**: 0-49% occupied - plenty of seats available
+- **🟡 Orange (Partial)**: 50-89% occupied - limited availability
+- **🔴 Red (Full)**: 90-100% occupied - nearly or completely sold out
+- **⚫ Gray (No Event)**: No event selected - neutral state
+
+### Integration Points
+- **Stadium Structure**: Uses imported JSON structure for rendering
+- **Event System**: Integrates with event management for occupancy data
+- **Ticketing System**: Displays real ticket sales and reservations
+- **Analytics**: Provides visual data for administrative reporting
+
+### Technical Implementation
+- **SVG Rendering**: Dynamic SVG generation based on stadium coordinates
+- **Real-time Updates**: SignalR integration for live occupancy changes
+- **Canvas Integration**: HTML5 Canvas for detailed seat-level visualization
+- **API Integration**: RESTful endpoints for stadium viewer data
+- **Responsive UI**: Bootstrap-based responsive design
+
+### API Endpoints
+```
+GET  /api/stadium-viewer/overview           # Stadium structure with coordinates
+GET  /api/stadium-viewer/event/{id}/status  # Event-specific seat status
+POST /api/stadium-viewer/search-seat        # Find seat by code
+GET  /api/stadium-viewer/sector/{id}/seats  # Detailed sector seat layout
+```
+
+### Usage Workflow
+1. **Stadium Setup**: Import stadium structure via Structure Management
+2. **Event Creation**: Create events through Event Management
+3. **Visual Monitoring**: Use Stadium Overview to monitor occupancy
+4. **Sales Analysis**: Utilize color coding and tooltips for insights
+5. **Testing**: Use sales simulation for system validation
 
 ---
 

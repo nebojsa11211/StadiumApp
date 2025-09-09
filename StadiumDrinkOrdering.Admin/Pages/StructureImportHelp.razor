@@ -1,0 +1,965 @@
+@page "/admin/structure-help"
+@using System.Text.Json
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Stadium Structure Import Guide</PageTitle>
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="mb-0">📚 Stadium Structure Import Guide</h3>
+        <div class="ms-auto">
+            <a href="/admin/stadium-structure" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Structure Management
+            </a>
+        </div>
+    </div>
+    
+    <!-- Quick Navigation -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>📖 Quick Navigation</h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="#overview" class="btn btn-outline-info btn-sm w-100 mb-2">Overview</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="#structure" class="btn btn-outline-info btn-sm w-100 mb-2">JSON Structure</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="#samples" class="btn btn-outline-info btn-sm w-100 mb-2">Sample Files</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="#validation" class="btn btn-outline-info btn-sm w-100 mb-2">Validation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stadium Structure Overview -->
+    <section id="overview" class="mb-5">
+        <div class="card">
+            <div class="card-header">
+                <h4>🏟️ Stadium Structure Hierarchy</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <pre class="bg-light p-3 rounded"><code>                    STADIUM STRUCTURE HIERARCHY
+    ┌─────────────────────────────────────────────────────┐
+    │                     STADIUM                        │
+    │                  (Root Container)                   │
+    └─────────────────┬───────────────────────────────────┘
+                      │
+          ┌───────────┴───────────┬───────────┬───────────┐
+          ▼                       ▼           ▼           ▼
+    ┌──────────┐           ┌──────────┐ ┌──────────┐ ┌──────────┐
+    │ TRIBUNE N│           │ TRIBUNE S│ │ TRIBUNE E│ │ TRIBUNE W│
+    │  (North) │           │  (South) │ │  (East)  │ │  (West)  │
+    └────┬─────┘           └────┬─────┘ └────┬─────┘ └────┬─────┘
+         │                      │             │             │
+         ▼                      ▼             ▼             ▼
+    ┌─────────┐            [RINGS...]    [RINGS...]   [RINGS...]
+    │  RING 1 │                 
+    │  Ring 2 │            Ring Numbering:
+    │  Ring 3 │            1 = Field level (closest)
+    └────┬────┘            2 = Middle tier
+         │                 3 = Upper tier
+         ▼
+    ┌──────────────────────────────────┐
+    │         SECTORS (A-Z)            │
+    │  ┌────┐ ┌────┐ ┌────┐ ┌────┐   │
+    │  │ NA │ │ NB │ │ NC │ │ ND │   │
+    │  └──┬─┘ └────┘ └────┘ └────┘   │
+    └─────┼────────────────────────────┘
+          ▼
+    ┌──────────────┐
+    │    SEATS     │     Seat Naming: [Tribune][Ring][Sector]-[Row][Seat]
+    │  Row 1: 1-20 │     Example: N1A-R5S12 = North Tribune, Ring 1,
+    │  Row 2: 1-20 │                        Sector A, Row 5, Seat 12
+    │     ...      │
+    └──────────────┘</code></pre>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alert alert-info">
+                            <h6>📝 Key Concepts:</h6>
+                            <ul class="mb-0 small">
+                                <li><strong>Stadium</strong>: Root container with name & description</li>
+                                <li><strong>Tribunes</strong>: 4 directions (N, S, E, W)</li>
+                                <li><strong>Rings</strong>: Vertical levels (1-5)</li>
+                                <li><strong>Sectors</strong>: Seating areas within rings</li>
+                                <li><strong>Seats</strong>: Auto-generated based on rows × seats per row</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JSON Structure Documentation -->
+    <section id="structure" class="mb-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>📋 Complete JSON Structure</h4>
+                <button class="btn btn-sm btn-outline-secondary" @onclick="CopyJsonStructure">
+                    <i class="fas fa-copy me-1"></i>Copy Template
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <pre class="bg-dark text-light p-3 rounded" style="font-size: 0.85em; overflow-x: auto;"><code id="json-template">{
+  "name": "Stadium Name",           // Required: Display name (3-100 chars)
+  "description": "Description",     // Optional: Stadium description (max 500 chars)
+  "capacity": 50000,                // Optional: Total capacity (auto-calculated if omitted)
+  "tribunes": [                     // Required: Array of 1-4 tribunes
+    {
+      "code": "N",                  // Required: N, S, E, or W only
+      "name": "North Tribune",      // Required: Display name (3-100 chars)
+      "description": "Main stand",  // Optional: Tribune description
+      "rings": [                     // Required: Array of 1-5 rings
+        {
+          "number": 1,               // Required: Ring level (1-5)
+          "name": "Lower Ring",      // Required: Display name
+          "priceMultiplier": 1.0,   // Optional: Price adjustment (0.5-3.0)
+          "sectors": [               // Required: Array of sectors
+            {
+              "code": "NA",          // Required: Unique code (2-10 chars)
+              "name": "Sector A",    // Required: Display name
+              "type": "standard",    // Optional: standard/vip/wheelchair
+              "rows": 25,            // Required: Number of rows (1-100)
+              "seatsPerRow": 20,     // Required: Seats per row (1-100)
+              "startRow": 1,         // Optional: First row number (default: 1)
+              "startSeat": 1,        // Optional: First seat number (default: 1)
+              "priceCategory": "A"   // Optional: Pricing category
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {                     // Optional: Additional information
+    "version": "1.0",
+    "createdDate": "2024-01-01",
+    "lastModified": "2024-01-01"
+  }
+}</code></pre>
+                    </div>
+                </div>
+                
+                <!-- Field Descriptions Table -->
+                <div class="mt-4">
+                    <h5>📋 Field Descriptions</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Constraints</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>name</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td>3-100 chars</td>
+                                    <td>Stadium display name</td>
+                                </tr>
+                                <tr>
+                                    <td><code>description</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-secondary">No</span></td>
+                                    <td>max 500 chars</td>
+                                    <td>Stadium description</td>
+                                </tr>
+                                <tr>
+                                    <td><code>tribunes[].code</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td>N, S, E, W only</td>
+                                    <td>Tribune direction code</td>
+                                </tr>
+                                <tr>
+                                    <td><code>rings[].number</code></td>
+                                    <td>int</td>
+                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td>1-5</td>
+                                    <td>Ring level (1=field level)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>sectors[].code</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td>Unique, 2-10 chars</td>
+                                    <td>Sector identifier</td>
+                                </tr>
+                                <tr>
+                                    <td><code>sectors[].rows</code></td>
+                                    <td>int</td>
+                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td>1-100</td>
+                                    <td>Number of rows in sector</td>
+                                </tr>
+                                <tr>
+                                    <td><code>sectors[].seatsPerRow</code></td>
+                                    <td>int</td>
+                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td>1-100</td>
+                                    <td>Seats per row</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sample Files -->
+    <section id="samples" class="mb-5">
+        <div class="card">
+            <div class="card-header">
+                <h4>📁 Sample Import Files</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Minimal Stadium Sample -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">🏟️ Minimal Stadium</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="small">Basic single-tribune structure (200 seats)</p>
+                                <pre class="bg-light p-2 rounded small"><code>{
+  "name": "Basic Stadium",
+  "tribunes": [{
+    "code": "N",
+    "name": "North",
+    "rings": [{
+      "number": 1,
+      "name": "Main",
+      "sectors": [{
+        "code": "N1",
+        "name": "Section 1",
+        "rows": 10,
+        "seatsPerRow": 20
+      }]
+    }]
+  }]
+}</code></pre>
+                                <button class="btn btn-sm btn-outline-success w-100" @onclick="DownloadMinimalSample">
+                                    <i class="fas fa-download me-1"></i>Download Sample
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Standard Stadium Sample -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">🏟️ Standard Stadium</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="small">Four-tribune structure with multiple sectors (20,000 seats)</p>
+                                <pre class="bg-light p-2 rounded small"><code>{
+  "name": "Standard Stadium",
+  "description": "Professional stadium",
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "rings": [{
+        "number": 1,
+        "name": "Lower Ring",
+        "sectors": [
+          {
+            "code": "NA",
+            "name": "North A",
+            "rows": 25,
+            "seatsPerRow": 20
+          },
+          {
+            "code": "NB", 
+            "name": "North B",
+            "rows": 25,
+            "seatsPerRow": 20
+          }
+        ]
+      }]
+    },
+    // ... S, E, W tribunes
+  ]
+}</code></pre>
+                                <button class="btn btn-sm btn-outline-primary w-100" @onclick="DownloadStandardSample">
+                                    <i class="fas fa-download me-1"></i>Download Sample
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complex Stadium Sample -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0">🏟️ Complex Stadium</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="small">Multi-ring stadium with VIP sections (80,000 seats)</p>
+                                <pre class="bg-light p-2 rounded small"><code>{
+  "name": "Premier Stadium",
+  "description": "World-class venue",
+  "tribunes": [{
+    "code": "N",
+    "name": "North Tribune",
+    "rings": [
+      {
+        "number": 1,
+        "name": "Lower Ring",
+        "sectors": [/* standard sectors */]
+      },
+      {
+        "number": 2,
+        "name": "Club Level",
+        "sectors": [{
+          "code": "VIP1",
+          "name": "VIP Box 1",
+          "type": "vip",
+          "rows": 3,
+          "seatsPerRow": 10,
+          "priceCategory": "VIP"
+        }]
+      }
+    ]
+  }]
+}</code></pre>
+                                <button class="btn btn-sm btn-outline-warning w-100" @onclick="DownloadComplexSample">
+                                    <i class="fas fa-download me-1"></i>Download Sample
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Validation Rules -->
+    <section id="validation" class="mb-5">
+        <div class="card">
+            <div class="card-header">
+                <h4>✅ Validation Rules & Error Handling</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-success">✅ Required Fields</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <code>name</code> - Stadium name (3-100 characters)
+                            </li>
+                            <li class="list-group-item">
+                                <code>tribunes[]</code> - At least one tribune
+                            </li>
+                            <li class="list-group-item">
+                                <code>tribune.code</code> - Must be N, S, E, or W
+                            </li>
+                            <li class="list-group-item">
+                                <code>tribune.rings[]</code> - At least one ring per tribune
+                            </li>
+                            <li class="list-group-item">
+                                <code>ring.number</code> - Integer 1-5
+                            </li>
+                            <li class="list-group-item">
+                                <code>ring.sectors[]</code> - At least one sector per ring
+                            </li>
+                            <li class="list-group-item">
+                                <code>sector.rows</code> & <code>sector.seatsPerRow</code> - Both required
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-warning">⚠️ Validation Rules</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                Tribune codes must be unique (can't have two "N" tribunes)
+                            </li>
+                            <li class="list-group-item">
+                                Sector codes must be unique across entire stadium
+                            </li>
+                            <li class="list-group-item">
+                                Ring numbers should be sequential (1, 2, 3, not 1, 3, 5)
+                            </li>
+                            <li class="list-group-item">
+                                Maximum 4 tribunes, 5 rings per tribune
+                            </li>
+                            <li class="list-group-item">
+                                Rows: 1-100, Seats per row: 1-100
+                            </li>
+                            <li class="list-group-item">
+                                File size limit: 10MB
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Common Errors Table -->
+                <div class="mt-4">
+                    <h5 class="text-danger">❌ Common Errors & Solutions</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Error Message</th>
+                                    <th>Cause</th>
+                                    <th>Solution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-danger">
+                                    <td>"Stadium name is required"</td>
+                                    <td>Missing or empty name field</td>
+                                    <td>Add <code>"name": "Your Stadium"</code></td>
+                                </tr>
+                                <tr class="table-danger">
+                                    <td>"Invalid tribune code"</td>
+                                    <td>Using codes other than N,S,E,W</td>
+                                    <td>Change to valid code (N, S, E, or W)</td>
+                                </tr>
+                                <tr class="table-danger">
+                                    <td>"Duplicate sector code"</td>
+                                    <td>Same sector code used twice</td>
+                                    <td>Make all sector codes unique</td>
+                                </tr>
+                                <tr class="table-danger">
+                                    <td>"Invalid JSON format"</td>
+                                    <td>Syntax errors in JSON</td>
+                                    <td>Validate with JSON validator</td>
+                                </tr>
+                                <tr class="table-danger">
+                                    <td>"File too large"</td>
+                                    <td>File > 10MB</td>
+                                    <td>Reduce sectors or split import</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JSON Validator Tool -->
+    <section id="validator" class="mb-5">
+        <div class="card">
+            <div class="card-header">
+                <h4>🔍 JSON Validator Tool</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>📝 Paste Your JSON:</h6>
+                        <textarea class="form-control" rows="12" @bind="jsonInput" placeholder="Paste your stadium structure JSON here..."></textarea>
+                        <div class="mt-2">
+                            <button class="btn btn-primary me-2" @onclick="ValidateJson">
+                                <i class="fas fa-check me-1"></i>Validate JSON
+                            </button>
+                            <button class="btn btn-outline-secondary" @onclick="ClearValidator">
+                                <i class="fas fa-trash me-1"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>📊 Validation Results:</h6>
+                        <div class="border rounded p-3" style="min-height: 300px;">
+                            @if (!string.IsNullOrEmpty(validationResult))
+                            {
+                                <div class="@(isValidJson ? "alert alert-success" : "alert alert-danger")">
+                                    @if (isValidJson)
+                                    {
+                                        <h6 class="alert-heading">✅ Valid JSON Structure!</h6>
+                                    }
+                                    else
+                                    {
+                                        <h6 class="alert-heading">❌ Validation Failed</h6>
+                                    }
+                                    <pre class="mb-0 small">@validationResult</pre>
+                                </div>
+                                
+                                @if (isValidJson && parsedStadium != null)
+                                {
+                                    <div class="mt-3">
+                                        <h6>📊 Structure Preview:</h6>
+                                        <ul class="list-unstyled">
+                                            <li><strong>Stadium:</strong> @parsedStadium.Name</li>
+                                            <li><strong>Tribunes:</strong> @parsedStadium.Tribunes?.Count</li>
+                                            <li><strong>Estimated Seats:</strong> @CalculateTotalSeats(parsedStadium)</li>
+                                        </ul>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-muted text-center" style="padding-top: 100px;">
+                                    <i class="fas fa-clipboard-check fa-3x mb-3"></i>
+                                    <p>Paste JSON and click Validate to see results</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    private string jsonInput = "";
+    private string validationResult = "";
+    private bool isValidJson = false;
+    private StadiumStructureDto? parsedStadium;
+
+    private async Task CopyJsonStructure()
+    {
+        var jsonTemplate = @"{
+  ""name"": ""My Stadium"",
+  ""description"": ""Professional stadium venue"",
+  ""tribunes"": [
+    {
+      ""code"": ""N"",
+      ""name"": ""North Tribune"",
+      ""description"": ""Main stand"",
+      ""rings"": [
+        {
+          ""number"": 1,
+          ""name"": ""Lower Ring"",
+          ""sectors"": [
+            {
+              ""code"": ""NA"",
+              ""name"": ""Sector A"",
+              ""type"": ""standard"",
+              ""rows"": 25,
+              ""seatsPerRow"": 20,
+              ""startRow"": 1,
+              ""startSeat"": 1,
+              ""priceCategory"": ""A""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  ""metadata"": {
+    ""version"": ""1.0"",
+    ""createdDate"": ""2024-01-01""
+  }
+}";
+
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", jsonTemplate);
+        // Could add a toast notification here
+    }
+
+    private void ValidateJson()
+    {
+        if (string.IsNullOrWhiteSpace(jsonInput))
+        {
+            validationResult = "Please enter JSON to validate.";
+            isValidJson = false;
+            return;
+        }
+
+        try
+        {
+            // First, check if it's valid JSON
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
+            
+            parsedStadium = JsonSerializer.Deserialize<StadiumStructureDto>(jsonInput, options);
+            
+            // Validate required fields
+            var errors = new List<string>();
+            
+            if (string.IsNullOrWhiteSpace(parsedStadium?.Name))
+                errors.Add("Stadium name is required");
+            
+            if (parsedStadium?.Tribunes == null || !parsedStadium.Tribunes.Any())
+                errors.Add("At least one tribune is required");
+            else
+            {
+                var tribuneCodes = new HashSet<string>();
+                var sectorCodes = new HashSet<string>();
+                
+                foreach (var tribune in parsedStadium.Tribunes)
+                {
+                    if (string.IsNullOrWhiteSpace(tribune.Code))
+                        errors.Add($"Tribune code is required");
+                    else if (!new[] { "N", "S", "E", "W" }.Contains(tribune.Code.ToUpper()))
+                        errors.Add($"Invalid tribune code '{tribune.Code}'. Must be N, S, E, or W");
+                    else if (!tribuneCodes.Add(tribune.Code.ToUpper()))
+                        errors.Add($"Duplicate tribune code '{tribune.Code}'");
+                    
+                    if (string.IsNullOrWhiteSpace(tribune.Name))
+                        errors.Add($"Tribune '{tribune.Code}' name is required");
+                    
+                    if (tribune.Rings == null || !tribune.Rings.Any())
+                        errors.Add($"Tribune '{tribune.Code}' must have at least one ring");
+                    else
+                    {
+                        foreach (var ring in tribune.Rings)
+                        {
+                            if (ring.Number < 1 || ring.Number > 5)
+                                errors.Add($"Ring number {ring.Number} in tribune '{tribune.Code}' must be between 1-5");
+                            
+                            if (string.IsNullOrWhiteSpace(ring.Name))
+                                errors.Add($"Ring {ring.Number} in tribune '{tribune.Code}' name is required");
+                            
+                            if (ring.Sectors == null || !ring.Sectors.Any())
+                                errors.Add($"Ring {ring.Number} in tribune '{tribune.Code}' must have at least one sector");
+                            else
+                            {
+                                foreach (var sector in ring.Sectors)
+                                {
+                                    if (string.IsNullOrWhiteSpace(sector.Code))
+                                        errors.Add($"Sector code is required");
+                                    else if (!sectorCodes.Add(sector.Code))
+                                        errors.Add($"Duplicate sector code '{sector.Code}'");
+                                    
+                                    if (string.IsNullOrWhiteSpace(sector.Name))
+                                        errors.Add($"Sector '{sector.Code}' name is required");
+                                    
+                                    if (sector.Rows < 1 || sector.Rows > 100)
+                                        errors.Add($"Sector '{sector.Code}' rows must be between 1-100");
+                                    
+                                    if (sector.SeatsPerRow < 1 || sector.SeatsPerRow > 100)
+                                        errors.Add($"Sector '{sector.Code}' seats per row must be between 1-100");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (errors.Any())
+            {
+                isValidJson = false;
+                validationResult = string.Join("\n", errors);
+            }
+            else
+            {
+                isValidJson = true;
+                validationResult = "JSON structure is valid and ready for import!";
+            }
+        }
+        catch (JsonException ex)
+        {
+            isValidJson = false;
+            validationResult = $"Invalid JSON format: {ex.Message}";
+            parsedStadium = null;
+        }
+        catch (Exception ex)
+        {
+            isValidJson = false;
+            validationResult = $"Validation error: {ex.Message}";
+            parsedStadium = null;
+        }
+    }
+
+    private void ClearValidator()
+    {
+        jsonInput = "";
+        validationResult = "";
+        isValidJson = false;
+        parsedStadium = null;
+    }
+
+    private int CalculateTotalSeats(StadiumStructureDto stadium)
+    {
+        var total = 0;
+        if (stadium.Tribunes != null)
+        {
+            foreach (var tribune in stadium.Tribunes)
+            {
+                if (tribune.Rings != null)
+                {
+                    foreach (var ring in tribune.Rings)
+                    {
+                        if (ring.Sectors != null)
+                        {
+                            foreach (var sector in ring.Sectors)
+                            {
+                                total += sector.Rows * sector.SeatsPerRow;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return total;
+    }
+
+    private async Task DownloadSample(string type)
+    {
+        var json = GenerateSampleJson(type);
+        var fileName = $"sample-stadium-{type}.json";
+        
+        var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+        var base64 = Convert.ToBase64String(bytes);
+        var dataUrl = $"data:application/json;base64,{base64}";
+        
+        await JSRuntime.InvokeVoidAsync("eval", $@"
+            const link = document.createElement('a');
+            link.href = '{dataUrl}';
+            link.download = '{fileName}';
+            link.click();
+        ");
+    }
+
+    private async Task DownloadMinimalSample() => await DownloadSample("minimal");
+    private async Task DownloadStandardSample() => await DownloadSample("standard");
+    private async Task DownloadComplexSample() => await DownloadSample("complex");
+
+    private string GenerateSampleJson(string type) => type switch
+    {
+        "minimal" => @"{
+  ""name"": ""Basic Stadium"",
+  ""description"": ""Simple single-tribune stadium"",
+  ""tribunes"": [
+    {
+      ""code"": ""N"",
+      ""name"": ""North Tribune"",
+      ""rings"": [
+        {
+          ""number"": 1,
+          ""name"": ""Main Ring"",
+          ""sectors"": [
+            {
+              ""code"": ""N1"",
+              ""name"": ""Section 1"",
+              ""type"": ""standard"",
+              ""rows"": 10,
+              ""seatsPerRow"": 20
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}",
+
+        "standard" => @"{
+  ""name"": ""Standard Stadium"",
+  ""description"": ""Professional four-tribune stadium"",
+  ""tribunes"": [
+    {
+      ""code"": ""N"",
+      ""name"": ""North Tribune"",
+      ""rings"": [
+        {
+          ""number"": 1,
+          ""name"": ""Lower Ring"",
+          ""sectors"": [
+            {
+              ""code"": ""NA"",
+              ""name"": ""North A"",
+              ""type"": ""standard"",
+              ""rows"": 25,
+              ""seatsPerRow"": 20
+            },
+            {
+              ""code"": ""NB"",
+              ""name"": ""North B"",
+              ""type"": ""standard"",
+              ""rows"": 25,
+              ""seatsPerRow"": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      ""code"": ""S"",
+      ""name"": ""South Tribune"",
+      ""rings"": [
+        {
+          ""number"": 1,
+          ""name"": ""Lower Ring"",
+          ""sectors"": [
+            {
+              ""code"": ""SA"",
+              ""name"": ""South A"",
+              ""type"": ""standard"",
+              ""rows"": 25,
+              ""seatsPerRow"": 20
+            },
+            {
+              ""code"": ""SB"",
+              ""name"": ""South B"",
+              ""type"": ""standard"",
+              ""rows"": 25,
+              ""seatsPerRow"": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      ""code"": ""E"",
+      ""name"": ""East Tribune"",
+      ""rings"": [
+        {
+          ""number"": 1,
+          ""name"": ""Lower Ring"",
+          ""sectors"": [
+            {
+              ""code"": ""EA"",
+              ""name"": ""East A"",
+              ""type"": ""standard"",
+              ""rows"": 25,
+              ""seatsPerRow"": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      ""code"": ""W"",
+      ""name"": ""West Tribune"",
+      ""rings"": [
+        {
+          ""number"": 1,
+          ""name"": ""Lower Ring"",
+          ""sectors"": [
+            {
+              ""code"": ""WA"",
+              ""name"": ""West A"",
+              ""type"": ""standard"",
+              ""rows"": 25,
+              ""seatsPerRow"": 20
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}",
+
+        "complex" => @"{
+  ""name"": ""Premier Stadium"",
+  ""description"": ""World-class stadium with VIP sections"",
+  ""tribunes"": [
+    {
+      ""code"": ""N"",
+      ""name"": ""North Tribune"",
+      ""description"": ""Main stand with premium facilities"",
+      ""rings"": [
+        {
+          ""number"": 1,
+          ""name"": ""Lower Ring"",
+          ""sectors"": [
+            {
+              ""code"": ""NA"",
+              ""name"": ""North A"",
+              ""type"": ""standard"",
+              ""rows"": 30,
+              ""seatsPerRow"": 25,
+              ""priceCategory"": ""A""
+            },
+            {
+              ""code"": ""NB"",
+              ""name"": ""North B"",
+              ""type"": ""standard"",
+              ""rows"": 30,
+              ""seatsPerRow"": 25,
+              ""priceCategory"": ""A""
+            }
+          ]
+        },
+        {
+          ""number"": 2,
+          ""name"": ""Club Level"",
+          ""priceMultiplier"": 2.0,
+          ""sectors"": [
+            {
+              ""code"": ""VIP1"",
+              ""name"": ""VIP Box 1"",
+              ""type"": ""vip"",
+              ""rows"": 3,
+              ""seatsPerRow"": 10,
+              ""priceCategory"": ""VIP""
+            },
+            {
+              ""code"": ""VIP2"",
+              ""name"": ""VIP Box 2"",
+              ""type"": ""vip"",
+              ""rows"": 3,
+              ""seatsPerRow"": 10,
+              ""priceCategory"": ""VIP""
+            }
+          ]
+        },
+        {
+          ""number"": 3,
+          ""name"": ""Upper Ring"",
+          ""sectors"": [
+            {
+              ""code"": ""NU"",
+              ""name"": ""North Upper"",
+              ""type"": ""standard"",
+              ""rows"": 40,
+              ""seatsPerRow"": 30,
+              ""priceCategory"": ""B""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}",
+        _ => ""
+    };
+
+    // DTO class for validation
+    public class StadiumStructureDto
+    {
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+        public int? Capacity { get; set; }
+        public List<TribuneDto> Tribunes { get; set; } = new();
+    }
+
+    public class TribuneDto
+    {
+        public string Code { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+        public List<RingDto> Rings { get; set; } = new();
+    }
+
+    public class RingDto
+    {
+        public int Number { get; set; }
+        public string Name { get; set; } = "";
+        public double? PriceMultiplier { get; set; }
+        public List<SectorDto> Sectors { get; set; } = new();
+    }
+
+    public class SectorDto
+    {
+        public string Code { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string? Type { get; set; }
+        public int Rows { get; set; }
+        public int SeatsPerRow { get; set; }
+        public int StartRow { get; set; } = 1;
+        public int StartSeat { get; set; } = 1;
+        public string? PriceCategory { get; set; }
+    }
+}

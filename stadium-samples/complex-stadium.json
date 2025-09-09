@@ -1,0 +1,161 @@
+{
+  "name": "Premier Stadium",
+  "description": "World-class stadium with VIP sections",
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "description": "Main stand with premium facilities",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "NA",
+              "name": "North A",
+              "type": "standard",
+              "rows": 30,
+              "seatsPerRow": 25,
+              "priceCategory": "A"
+            },
+            {
+              "code": "NB",
+              "name": "North B",
+              "type": "standard",
+              "rows": 30,
+              "seatsPerRow": 25,
+              "priceCategory": "A"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Club Level",
+          "priceMultiplier": 2.0,
+          "sectors": [
+            {
+              "code": "VIP1",
+              "name": "VIP Box 1",
+              "type": "vip",
+              "rows": 3,
+              "seatsPerRow": 10,
+              "priceCategory": "VIP"
+            },
+            {
+              "code": "VIP2",
+              "name": "VIP Box 2",
+              "type": "vip",
+              "rows": 3,
+              "seatsPerRow": 10,
+              "priceCategory": "VIP"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "name": "Upper Ring",
+          "sectors": [
+            {
+              "code": "NU",
+              "name": "North Upper",
+              "type": "standard",
+              "rows": 40,
+              "seatsPerRow": 30,
+              "priceCategory": "B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "South Tribune",
+      "description": "Away fans section",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "SA",
+              "name": "South A",
+              "type": "standard",
+              "rows": 25,
+              "seatsPerRow": 30,
+              "priceCategory": "A"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "name": "Upper Ring",
+          "sectors": [
+            {
+              "code": "SU",
+              "name": "South Upper",
+              "type": "standard",
+              "rows": 35,
+              "seatsPerRow": 35,
+              "priceCategory": "B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "name": "East Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "EA",
+              "name": "East A",
+              "type": "standard",
+              "rows": 20,
+              "seatsPerRow": 25,
+              "priceCategory": "A"
+            },
+            {
+              "code": "EB",
+              "name": "East B",
+              "type": "wheelchair",
+              "rows": 2,
+              "seatsPerRow": 15,
+              "priceCategory": "Accessible"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "name": "West Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "WA",
+              "name": "West A",
+              "type": "standard",
+              "rows": 20,
+              "seatsPerRow": 25,
+              "priceCategory": "A"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "createdDate": "2024-01-01",
+    "lastModified": "2024-01-01",
+    "totalEstimatedSeats": 7570
+  }
+}

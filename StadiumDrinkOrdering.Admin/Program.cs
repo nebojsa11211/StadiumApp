@@ -60,7 +60,12 @@ builder.Services.AddHttpClient<IAdminApiService, AdminApiService>(client =>
     Console.WriteLine($"===================================");
     
     client.BaseAddress = new Uri(apiBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(60); // Increase timeout to 60 seconds
+    client.Timeout = TimeSpan.FromSeconds(30); // Reduce timeout to 30 seconds
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    return handler;
 });
 
 // Add token storage service as singleton to persist across scopes

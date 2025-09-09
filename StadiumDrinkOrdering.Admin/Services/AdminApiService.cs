@@ -1013,17 +1013,43 @@ public class AdminApiService : IAdminApiService
         try
         {
             SetAuthHeader();
-            var response = await _httpClient.GetAsync($"api/{endpoint.TrimStart('/')}");
+            var fullUrl = $"api/{endpoint.TrimStart('/')}";
+            Console.WriteLine($"AdminApiService: Making GET request to {fullUrl}");
+            
+            var response = await _httpClient.GetAsync(fullUrl);
+            Console.WriteLine($"AdminApiService: Response status: {response.StatusCode}");
             
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<T>(json, _jsonOptions);
+                Console.WriteLine($"AdminApiService: JSON response length: {json.Length}");
+                Console.WriteLine($"AdminApiService: JSON preview: {json.Substring(0, Math.Min(200, json.Length))}...");
+                
+                try
+                {
+                    var result = JsonSerializer.Deserialize<T>(json, _jsonOptions);
+                    Console.WriteLine($"AdminApiService: Deserialization successful for type {typeof(T).Name}");
+                    return result;
+                }
+                catch (JsonException jsonEx)
+                {
+                    Console.WriteLine($"AdminApiService: JSON deserialization error: {jsonEx.Message}");
+                    Console.WriteLine($"AdminApiService: JSON content: {json}");
+                    throw;
+                }
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"AdminApiService: Request failed with status {response.StatusCode}: {errorContent}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching from {endpoint}: {ex.Message}");
+            Console.WriteLine($"AdminApiService: Error fetching from {endpoint}: {ex.Message}");
+            Console.WriteLine($"AdminApiService: Exception type: {ex.GetType().Name}");
+            Console.WriteLine($"AdminApiService: Stack trace: {ex.StackTrace}");
+            throw;
         }
         return default(T);
     }

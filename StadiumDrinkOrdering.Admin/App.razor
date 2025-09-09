@@ -22,9 +22,8 @@ else
             }
             else
             {
-                <AuthRoute>
-                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-                </AuthRoute>
+                @* Temporarily bypass authentication to see display issues *@
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             }
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>

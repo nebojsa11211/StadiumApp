@@ -1,0 +1,96 @@
+{
+  "name": "Standard Stadium",
+  "description": "Professional four-tribune stadium",
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "NA",
+              "name": "North A",
+              "type": "standard",
+              "rows": 25,
+              "seatsPerRow": 20
+            },
+            {
+              "code": "NB",
+              "name": "North B",
+              "type": "standard",
+              "rows": 25,
+              "seatsPerRow": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "South Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "SA",
+              "name": "South A",
+              "type": "standard",
+              "rows": 25,
+              "seatsPerRow": 20
+            },
+            {
+              "code": "SB",
+              "name": "South B",
+              "type": "standard",
+              "rows": 25,
+              "seatsPerRow": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "name": "East Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "EA",
+              "name": "East A",
+              "type": "standard",
+              "rows": 25,
+              "seatsPerRow": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "name": "West Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            {
+              "code": "WA",
+              "name": "West A",
+              "type": "standard",
+              "rows": 25,
+              "seatsPerRow": 20
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

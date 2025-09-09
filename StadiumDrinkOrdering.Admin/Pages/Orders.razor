@@ -11,9 +11,14 @@
 <div class="container-fluid" id="admin-orders-container">
         <div class="d-flex justify-content-between align-items-center mb-4" id="admin-orders-header">
             <h1 id="admin-orders-title">📋 Order Management</h1>
-            <button class="btn btn-primary" @onclick="RefreshOrders" id="admin-orders-refresh-btn">
-                <i class="bi bi-arrow-repeat"></i> Refresh
-            </button>
+            <div>
+                <button class="btn btn-warning me-2" @onclick="CreateTestOrder" id="admin-orders-test-btn">
+                    <i class="bi bi-plus-circle"></i> Create Test Order
+                </button>
+                <button class="btn btn-primary" @onclick="RefreshOrders" id="admin-orders-refresh-btn">
+                    <i class="bi bi-arrow-repeat"></i> Refresh
+                </button>
+            </div>
         </div>
 
         <!-- Filter Controls -->
@@ -126,9 +131,10 @@
                                             <td>
                                                 <div class="btn-group btn-group-sm" id="admin-order-actions-@order.Id">
                                                     <button class="btn btn-outline-primary btn-sm" 
-                                                            @onclick="() => ShowOrderDetails(order)"
+                                                            @onclick="@(() => ShowOrderDetails(order))"
                                                             id="admin-order-details-btn-@order.Id"
-                                                            title="View Details">
+                                                            title="View Details"
+                                                            type="button">
                                                         <i class="bi bi-eye"></i>
                                                         <span class="d-none d-md-inline ms-1">View</span>
                                                     </button>
@@ -186,8 +192,9 @@
                                         <div class="card-footer" id="admin-order-card-footer-@order.Id">
                                             <div class="btn-group w-100" id="admin-order-card-actions-@order.Id">
                                                 <button class="btn btn-outline-primary btn-sm" 
-                                                        @onclick="() => ShowOrderDetails(order)"
-                                                        id="admin-order-card-details-btn-@order.Id">
+                                                        @onclick="@(() => ShowOrderDetails(order))"
+                                                        id="admin-order-card-details-btn-@order.Id"
+                                                        type="button">
                                                     Details
                                                 </button>
                                                 @if (CanUpdateStatus(order.Status))
@@ -213,13 +220,13 @@
     <!-- Order Details Modal -->
     @if (selectedOrder != null)
     {
-        <div class="modal-backdrop fade show"></div>
-        <div class="modal fade show d-block" tabindex="-1" style="z-index: 1055;" id="admin-order-modal">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content" id="admin-order-modal-content">
+        <div class="modal-backdrop show" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1040;"></div>
+        <div class="modal show" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1050; display: block; overflow-x: hidden; overflow-y: auto;" id="admin-order-modal">
+            <div class="modal-dialog modal-lg" style="margin: 1.75rem auto;">
+                <div class="modal-content" id="admin-order-modal-content" style="position: relative; display: flex; flex-direction: column; width: 100%; background-color: #fff; background-clip: padding-box; border: 1px solid rgba(0,0,0,.2); border-radius: .3rem; outline: 0;">
                     <div class="modal-header" id="admin-order-modal-header">
                         <h5 class="modal-title" id="admin-order-modal-title">Order #@selectedOrder.Id Details</h5>
-                        <button type="button" class="btn-close" @onclick="() => selectedOrder = null" id="admin-orders-modal-close-btn"></button>
+                        <button type="button" class="btn-close" @onclick="CloseOrderModal" id="admin-orders-modal-close-btn"></button>
                     </div>
                     <div class="modal-body" id="admin-order-modal-body">
                         <div class="row">
@@ -228,7 +235,7 @@
                                 <table class="table table-sm" id="admin-order-info-table">
                                     <tr><td>Order ID:</td><td id="admin-order-info-id">#@selectedOrder.Id</td></tr>
                                     <tr><td>Status:</td><td><span class="badge @GetStatusBadgeClass(selectedOrder.Status)" id="admin-order-info-status">@GetStatusText(selectedOrder.Status)</span></td></tr>
-                                    <tr><td>Ticket:</td><td id="admin-order-info-ticket"><button class="btn btn-link p-0 text-decoration-underline" @onclick="() => ShowTicketDetails(selectedOrder.TicketNumber)" title="Click to view ticket details">@selectedOrder.TicketNumber</button></td></tr>
+                                    <tr><td>Ticket:</td><td id="admin-order-info-ticket"><button class="btn btn-link p-0" style="text-decoration: underline; color: #0d6efd;" @onclick="@(async () => await ShowTicketDetails(selectedOrder.TicketNumber))" type="button" title="Click to view ticket details">@selectedOrder.TicketNumber</button></td></tr>
                                     <tr><td>Seat:</td><td id="admin-order-info-seat">@selectedOrder.SeatNumber</td></tr>
                                     <tr><td>Total:</td><td class="fw-bold" id="admin-order-info-total">$@selectedOrder.TotalAmount.ToString("F2")</td></tr>
                                     <tr><td>Ordered:</td><td id="admin-order-info-ordered">@selectedOrder.CreatedAt.ToString("MMM dd, yyyy HH:mm")</td></tr>
@@ -283,7 +290,7 @@
                                 @GetNextStatusAction(selectedOrder.Status)
                             </button>
                         }
-                        <button type="button" class="btn btn-secondary" @onclick="() => selectedOrder = null" id="admin-orders-modal-cancel-btn">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseOrderModal" id="admin-orders-modal-cancel-btn">
                             Close
                         </button>
                     </div>
@@ -295,13 +302,13 @@
     <!-- Ticket Details Modal -->
     @if (selectedTicket != null)
     {
-        <div class="modal-backdrop fade show"></div>
-        <div class="modal fade show d-block" tabindex="-1" style="z-index: 1056;" id="admin-ticket-modal">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content" id="admin-ticket-modal-content">
+        <div class="modal-backdrop show" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1060;"></div>
+        <div class="modal show" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1070; display: block; overflow-x: hidden; overflow-y: auto;" id="admin-ticket-modal">
+            <div class="modal-dialog modal-lg" style="margin: 1.75rem auto;">
+                <div class="modal-content" id="admin-ticket-modal-content" style="position: relative; display: flex; flex-direction: column; width: 100%; background-color: #fff; background-clip: padding-box; border: 1px solid rgba(0,0,0,.2); border-radius: .3rem; outline: 0;">
                     <div class="modal-header" id="admin-ticket-modal-header">
                         <h5 class="modal-title" id="admin-ticket-modal-title">Ticket Details: @selectedTicket.TicketNumber</h5>
-                        <button type="button" class="btn-close" @onclick="() => selectedTicket = null" id="admin-ticket-modal-close-btn"></button>
+                        <button type="button" class="btn-close" @onclick="CloseTicketModal" id="admin-ticket-modal-close-btn"></button>
                     </div>
                     <div class="modal-body" id="admin-ticket-modal-body">
                         <div class="row">
@@ -353,7 +360,7 @@
                         }
                     </div>
                     <div class="modal-footer" id="admin-ticket-modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="() => selectedTicket = null" id="admin-ticket-modal-close-footer-btn">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseTicketModal" id="admin-ticket-modal-close-footer-btn">
                             Close
                         </button>
                     </div>
@@ -526,15 +533,40 @@
         Console.WriteLine($"FilterOrders: Filtering with status='{selectedStatus}', search='{searchTerm}', sort='{sortBy}'");
     }
 
-    private void ShowOrderDetails(OrderDto order)
+    private async void ShowOrderDetails(OrderDto order)
     {
-        selectedOrder = order;
+        try
+        {
+            Console.WriteLine($"ShowOrderDetails called for order #{order?.Id}");
+            if (order == null)
+            {
+                Console.WriteLine("ERROR: Order is null in ShowOrderDetails");
+                return;
+            }
+            
+            selectedOrder = order;
+            Console.WriteLine($"selectedOrder set to order #{selectedOrder.Id}");
+            
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+                Console.WriteLine("StateHasChanged called via InvokeAsync - modal should be visible now");
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR in ShowOrderDetails: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
     }
 
     private async Task ShowTicketDetails(string ticketNumber)
     {
+        Console.WriteLine($"ShowTicketDetails called for ticket: {ticketNumber}");
+        
         if (string.IsNullOrEmpty(ticketNumber))
         {
+            Console.WriteLine("Ticket number is empty");
             ticketErrorMessage = "Invalid ticket number";
             return;
         }
@@ -542,12 +574,18 @@
         try
         {
             ticketErrorMessage = null;
+            Console.WriteLine($"Fetching ticket details for: {ticketNumber}");
             selectedTicket = await ApiService.GetTicketByNumberAsync(ticketNumber);
             
             if (selectedTicket == null)
             {
-                ticketErrorMessage = $"Ticket '{ticketNumber}' not found or access denied";
+                Console.WriteLine($"Ticket not found: {ticketNumber}");
+                ticketErrorMessage = $"Ticket '{ticketNumber}' not found in the database. This may be a legacy ticket number or the ticket may have been deleted.";
                 selectedTicket = new TicketDto { TicketNumber = ticketNumber };
+            }
+            else
+            {
+                Console.WriteLine($"Ticket found: {ticketNumber}");
             }
         }
         catch (Exception ex)
@@ -557,7 +595,8 @@
             Console.WriteLine($"Error loading ticket details: {ex}");
         }
         
-        StateHasChanged();
+        Console.WriteLine($"selectedTicket set, calling StateHasChanged");
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task AdvanceOrderStatus(OrderDto order)
@@ -658,6 +697,81 @@
     private void ClearAlert()
     {
         alertMessage = "";
+    }
+
+    private void CloseOrderModal()
+    {
+        Console.WriteLine("CloseOrderModal called");
+        selectedOrder = null;
+        StateHasChanged();
+    }
+
+    private void CloseTicketModal()
+    {
+        Console.WriteLine("CloseTicketModal called");
+        selectedTicket = null;
+        ticketErrorMessage = null;
+        StateHasChanged();
+    }
+
+    private async Task CreateTestOrder()
+    {
+        try
+        {
+            Console.WriteLine("Creating test order...");
+            
+            // Create a dummy test order to verify the details button works
+            var testOrder = new OrderDto
+            {
+                Id = 63,
+                TicketNumber = "TK005",
+                SeatNumber = "A-1-5",
+                TotalAmount = 25.50m,
+                Status = OrderStatus.Pending,
+                CreatedAt = DateTime.Now,
+                CustomerNotes = "Test order for debugging",
+                OrderItems = new List<OrderItemDto>
+                {
+                    new OrderItemDto
+                    {
+                        Id = 1,
+                        DrinkName = "Test Beer",
+                        Quantity = 2,
+                        UnitPrice = 12.00m,
+                        TotalPrice = 24.00m,
+                        SpecialInstructions = "Cold please"
+                    },
+                    new OrderItemDto
+                    {
+                        Id = 2,
+                        DrinkName = "Water",
+                        Quantity = 1,
+                        UnitPrice = 1.50m,
+                        TotalPrice = 1.50m
+                    }
+                }
+            };
+            
+            // Add to orders list if it doesn't exist
+            if (orders == null)
+            {
+                orders = new List<OrderDto>();
+            }
+            
+            // Remove any existing order with ID 63
+            orders.RemoveAll(o => o.Id == 63);
+            
+            // Add the test order
+            orders.Add(testOrder);
+            
+            ShowAlert("Test order #63 created successfully. You can now test the details button.", "success");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating test order: {ex.Message}");
+            ShowAlert($"Failed to create test order: {ex.Message}", "danger");
+        }
     }
 
     public void Dispose()

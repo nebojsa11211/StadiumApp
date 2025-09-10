@@ -1,3 +1,5 @@
+@inherits LoadingSpinnerBase
+
 @if (IsVisible)
 {
     <div class="loading-container @(Overlay ? "loading-overlay" : "")">
@@ -15,15 +17,6 @@
     </div>
 }
 
-@code {
-    [Parameter] public bool IsVisible { get; set; } = true;
-    [Parameter] public bool Overlay { get; set; } = false;
-    [Parameter] public string Size { get; set; } = "Medium"; // Small, Medium, Large
-    [Parameter] public string Message { get; set; } = "";
-    [Parameter] public string Color { get; set; } = "primary"; // primary, success, warning, danger
-}
-
-<style>
     .loading-container {
         display: flex;
         align-items: center;
@@ -139,4 +132,3 @@
             padding: 0 1rem;
         }
     }
-</style>

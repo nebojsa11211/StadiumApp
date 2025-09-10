@@ -1,0 +1,159 @@
+{
+  "name": "Demo Stadium",
+  "description": "A demonstration stadium with professional layout and seating arrangement",
+  "capacity": 25000,
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "description": "Main stand with premium seating",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower North",
+          "priceMultiplier": 1.2,
+          "sectors": [
+            {
+              "code": "N1A",
+              "name": "North Sector A",
+              "type": "standard",
+              "rows": 30,
+              "seatsPerRow": 25,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            },
+            {
+              "code": "N1B",
+              "name": "North Sector B",
+              "type": "standard",
+              "rows": 30,
+              "seatsPerRow": 25,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            },
+            {
+              "code": "N1C",
+              "name": "North Sector C",
+              "type": "vip",
+              "rows": 25,
+              "seatsPerRow": 20,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "VIP"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "South Tribune",
+      "description": "Family-friendly seating area",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower South",
+          "priceMultiplier": 1.0,
+          "sectors": [
+            {
+              "code": "S1A",
+              "name": "South Sector A",
+              "type": "standard",
+              "rows": 28,
+              "seatsPerRow": 24,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "B"
+            },
+            {
+              "code": "S1B",
+              "name": "South Sector B",
+              "type": "standard",
+              "rows": 28,
+              "seatsPerRow": 24,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "name": "East Tribune",
+      "description": "Standard seating with good field view",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower East",
+          "priceMultiplier": 0.9,
+          "sectors": [
+            {
+              "code": "E1A",
+              "name": "East Sector A",
+              "type": "standard",
+              "rows": 32,
+              "seatsPerRow": 22,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "C"
+            },
+            {
+              "code": "E1B",
+              "name": "East Sector B",
+              "type": "standard",
+              "rows": 32,
+              "seatsPerRow": 22,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "C"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "name": "West Tribune",
+      "description": "Standard seating with covered area",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower West",
+          "priceMultiplier": 0.9,
+          "sectors": [
+            {
+              "code": "W1A",
+              "name": "West Sector A",
+              "type": "standard",
+              "rows": 32,
+              "seatsPerRow": 22,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "C"
+            },
+            {
+              "code": "W1B",
+              "name": "West Sector B",
+              "type": "wheelchair",
+              "rows": 25,
+              "seatsPerRow": 18,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "C"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "createdDate": "2025-09-10",
+    "lastModified": "2025-09-10",
+    "description": "Sample stadium data for testing stadium visualization system"
+  }
+}

@@ -5,8 +5,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>8e3b5c5e-5d4b-4f7a-9c8e-3f2b4c5d6e7f</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>http://localhost:5002</DockerServiceUrl>
-    <DockerServiceName>customer</DockerServiceName>
+    <DockerServiceUrl>http://localhost:9030</DockerServiceUrl>
+    <DockerServiceName>admin</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">

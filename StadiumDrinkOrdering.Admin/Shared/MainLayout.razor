@@ -1,7 +1,4 @@
-﻿@using StadiumDrinkOrdering.Admin.Components.Shared
-@using StadiumDrinkOrdering.Admin.Services
-@inject IAuthStateService AuthStateService
-@inject NavigationManager NavigationManager
+@using StadiumDrinkOrdering.Admin.Components.Shared
 @inherits LayoutComponentBase
 
 <PageTitle>StadiumDrinkOrdering.Admin</PageTitle>
@@ -41,44 +38,3 @@
         </article>
     </main>
 </div>
-
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        await AuthStateService.InitializeAsync();
-    }
-
-    private void HandleNewOrder(string orderInfo)
-    {
-        // Handle new order notifications
-        // Format: "orderId:customerName:seatNumber"
-        StateHasChanged();
-    }
-
-    private void HandleOrderStatusChanged(string statusUpdate)
-    {
-        // Handle real-time order status updates
-        // Format: "orderId:status"
-        StateHasChanged();
-    }
-
-    private void HandleNotification(string notification)
-    {
-        // Handle real-time notifications
-        // Format: "type:message"
-        StateHasChanged();
-    }
-
-    private void HandleSystemAlert(string alert)
-    {
-        // Handle system alerts
-        // Format: "severity:message"
-        StateHasChanged();
-    }
-
-    private async Task HandleLogout()
-    {
-        await AuthStateService.LogoutAsync();
-        NavigationManager.NavigateTo("/login");
-    }
-}

@@ -43,7 +43,10 @@ public class StadiumStructureService : IStadiumStructureService
             if (!validationResult.IsValid)
                 throw new ArgumentException($"Validation failed: {string.Join(", ", validationResult.Errors)}");
             
-            // 4. Save new structure
+            // 4. Build structure in memory first, then save all at once
+            var allSeats = new List<StadiumSeatNew>();
+            var currentTime = DateTime.UtcNow;
+            
             foreach (var tribuneDto in stadiumData.Tribunes)
             {
                 var tribune = new Tribune 
@@ -51,60 +54,84 @@ public class StadiumStructureService : IStadiumStructureService
                     Code = tribuneDto.Code, 
                     Name = tribuneDto.Name,
                     Description = tribuneDto.Description,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAt = currentTime,
+                    UpdatedAt = currentTime
                 };
                 
                 _context.Tribunes.Add(tribune);
-                await _context.SaveChangesAsync();
                 
                 foreach (var ringDto in tribuneDto.Rings)
                 {
                     var ring = new Ring 
                     { 
-                        TribuneId = tribune.Id, 
+                        Tribune = tribune, // Use navigation property instead of ID
                         Number = ringDto.Number, 
                         Name = ringDto.Name,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
+                        CreatedAt = currentTime,
+                        UpdatedAt = currentTime
                     };
                     
-                    _context.Rings.Add(ring);
-                    await _context.SaveChangesAsync();
+                    tribune.Rings.Add(ring);
                     
                     foreach (var sectorDto in ringDto.Sectors)
                     {
                         var sector = new Sector 
                         { 
-                            RingId = ring.Id,
+                            Ring = ring, // Use navigation property instead of ID
                             Code = sectorDto.Code,
                             Name = sectorDto.Name,
                             TotalRows = sectorDto.Rows,
                             SeatsPerRow = sectorDto.SeatsPerRow,
                             StartRow = sectorDto.StartRow,
                             StartSeat = sectorDto.StartSeat,
-                            CreatedAt = DateTime.UtcNow,
-                            UpdatedAt = DateTime.UtcNow
+                            CreatedAt = currentTime,
+                            UpdatedAt = currentTime
                         };
                         
-                        _context.Sectors.Add(sector);
-                        await _context.SaveChangesAsync();
+                        ring.Sectors.Add(sector);
                         
-                        // Generate seats for sector
-                        await GenerateSeatsForSectorAsync(sector.Id);
+                        // Generate seats for this sector
+                        for (int row = sector.StartRow; row < sector.StartRow + sector.TotalRows; row++)
+                        {
+                            for (int seatNum = sector.StartSeat; seatNum < sector.StartSeat + sector.SeatsPerRow; seatNum++)
+                            {
+                                var uniqueCode = $"{tribune.Code}-{ring.Number}-{sector.Code}-{row}-{seatNum}";
+                                
+                                allSeats.Add(new StadiumSeatNew 
+                                { 
+                                    Sector = sector, // Use navigation property
+                                    RowNumber = row,
+                                    SeatNumber = seatNum,
+                                    UniqueCode = uniqueCode,
+                                    IsAvailable = true,
+                                    CreatedAt = currentTime,
+                                    UpdatedAt = currentTime
+                                });
+                            }
+                        }
+                        
+                        sector.Seats = allSeats.Where(s => s.Sector == sector).ToList();
                     }
                 }
             }
             
+            // 5. Save everything in a single operation
+            if (allSeats.Any())
+            {
+                _context.StadiumSeatsNew.AddRange(allSeats);
+            }
+            
+            await _context.SaveChangesAsync();
             await transaction.CommitAsync();
-            _logger.LogInformation("Stadium structure imported successfully from JSON");
+            
+            _logger.LogInformation($"Stadium structure imported successfully: {stadiumData.Tribunes.Count} tribunes, {allSeats.Count} seats created");
             return true;
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
             _logger.LogError(ex, "Failed to import stadium structure from JSON");
-            return false;
+            throw; // Re-throw to provide better error feedback
         }
     }
 
@@ -126,6 +153,7 @@ public class StadiumStructureService : IStadiumStructureService
         if (sector == null) return false;
         
         var seats = new List<StadiumSeatNew>();
+        var currentTime = DateTime.UtcNow;
         
         for (int row = sector.StartRow; row < sector.StartRow + sector.TotalRows; row++)
         {
@@ -140,14 +168,17 @@ public class StadiumStructureService : IStadiumStructureService
                     SeatNumber = seatNum,
                     UniqueCode = uniqueCode,
                     IsAvailable = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAt = currentTime,
+                    UpdatedAt = currentTime
                 });
             }
         }
         
-        _context.StadiumSeatsNew.AddRange(seats);
-        await _context.SaveChangesAsync();
+        if (seats.Any())
+        {
+            _context.StadiumSeatsNew.AddRange(seats);
+            await _context.SaveChangesAsync();
+        }
         
         return true;
     }

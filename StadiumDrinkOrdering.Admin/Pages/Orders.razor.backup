@@ -1,0 +1,782 @@
+@page "/orders"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService ApiService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<PageTitle>Order Management</PageTitle>
+
+<div class="container-fluid" id="admin-orders-container">
+        <div class="d-flex justify-content-between align-items-center mb-4" id="admin-orders-header">
+            <h1 id="admin-orders-title">📋 Order Management</h1>
+            <div>
+                <button class="btn btn-warning me-2" @onclick="CreateTestOrder" id="admin-orders-test-btn">
+                    <i class="bi bi-plus-circle"></i> Create Test Order
+                </button>
+                <button class="btn btn-primary" @onclick="RefreshOrders" id="admin-orders-refresh-btn">
+                    <i class="bi bi-arrow-repeat"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card mb-4" id="admin-orders-filter-card">
+            <div class="card-header" id="admin-orders-filter-header">
+                <h6 id="admin-orders-filter-title">Filter Orders</h6>
+            </div>
+            <div class="card-body" id="admin-orders-filter-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label" for="admin-status-filter">Status Filter</label>
+                        <select class="form-select" @bind="selectedStatus" @bind:after="FilterOrders" id="admin-status-filter">
+                            <option value="">All Orders</option>
+                            @foreach (var status in Enum.GetValues<OrderStatus>())
+                            {
+                                <option value="@status">@GetStatusText(status)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="admin-search-filter">Search</label>
+                        <input type="text" class="form-control" placeholder="Search by order ID, seat, ticket..." 
+                               @bind="searchTerm" @bind:after="FilterOrders" id="admin-search-filter" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="admin-sort-filter">Sort By</label>
+                        <select class="form-select" @bind="sortBy" @bind:after="FilterOrders" id="admin-sort-filter">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="amount">Amount (High to Low)</option>
+                            <option value="status">Status</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (orders == null)
+        {
+            <div class="text-center" id="admin-orders-loading">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Loading orders...</p>
+            </div>
+        }
+        else if (!filteredOrders.Any())
+        {
+            <div class="text-center py-5" id="admin-orders-empty">
+                <div class="mb-4">
+                    <span style="font-size: 4rem;">📋</span>
+                </div>
+                <h3 id="admin-orders-empty-title">No orders found</h3>
+                <p class="text-muted" id="admin-orders-empty-message">No orders match your current filters.</p>
+            </div>
+        }
+        else
+        {
+            <!-- Orders Table -->
+            <div class="card" id="admin-orders-table-card">
+                <div class="card-header d-flex justify-content-between align-items-center" id="admin-orders-table-header">
+                    <h6 id="admin-orders-count">Orders (@filteredOrders.Count())</h6>
+                    <div class="btn-group btn-group-sm" id="admin-orders-view-toggle">
+                        <button class="btn btn-outline-primary @(viewMode == "table" ? "active" : "")" 
+                                @onclick="@(() => viewMode = "table")" id="admin-orders-table-view-btn">
+                            <i class="bi bi-table"></i> Table
+                        </button>
+                        <button class="btn btn-outline-primary @(viewMode == "cards" ? "active" : "")" 
+                                @onclick="@(() => viewMode = "cards")" id="admin-orders-cards-view-btn">
+                            <i class="bi bi-grid"></i> Cards
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body" id="admin-orders-table-body">
+                    @if (viewMode == "table")
+                    {
+                        <div class="table-responsive" id="admin-orders-table-container">
+                            <table class="table table-hover" id="admin-orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date/Time</th>
+                                        <th>Ticket</th>
+                                        <th>Seat</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in filteredOrders)
+                                    {
+                                        <tr id="admin-order-row-@order.Id">
+                                            <td class="fw-bold" id="admin-order-number-@order.Id">#@order.Id</td>
+                                            <td id="admin-order-date-@order.Id">@order.CreatedAt.ToString("MMM dd, HH:mm")</td>
+                                            <td id="admin-order-ticket-@order.Id">@order.TicketNumber</td>
+                                            <td id="admin-order-seat-@order.Id">@order.SeatNumber</td>
+                                            <td id="admin-order-items-@order.Id">
+                                                <small>
+                                                    @string.Join(", ", order.OrderItems.Select(i => $"{i.Quantity}×{i.DrinkName}"))
+                                                </small>
+                                            </td>
+                                            <td class="fw-bold" id="admin-order-total-@order.Id">$@order.TotalAmount.ToString("F2")</td>
+                                            <td>
+                                                <span class="badge @GetStatusBadgeClass(order.Status)" id="admin-order-status-@order.Id">
+                                                    @GetStatusText(order.Status)
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" id="admin-order-actions-@order.Id">
+                                                    <button class="btn btn-outline-primary btn-sm" 
+                                                            @onclick="@(() => ShowOrderDetails(order))"
+                                                            id="admin-order-details-btn-@order.Id"
+                                                            title="View Details"
+                                                            type="button">
+                                                        <i class="bi bi-eye"></i>
+                                                        <span class="d-none d-md-inline ms-1">View</span>
+                                                    </button>
+                                                    @if (CanUpdateStatus(order.Status))
+                                                    {
+                                                        <button class="btn btn-outline-success btn-sm" 
+                                                                @onclick="() => AdvanceOrderStatus(order)"
+                                                                id="admin-order-advance-btn-@order.Id"
+                                                                title="@GetNextStatusAction(order.Status)">
+                                                            <i class="bi bi-arrow-right"></i>
+                                                            <span class="d-none d-lg-inline ms-1">@GetNextStatusAction(order.Status)</span>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row" id="admin-orders-cards-container">
+                            @foreach (var order in filteredOrders)
+                            {
+                                <div class="col-md-6 col-lg-4 mb-3" id="admin-order-card-@order.Id">
+                                    <div class="card h-100" id="admin-order-card-content-@order.Id">
+                                        <div class="card-header d-flex justify-content-between align-items-center" id="admin-order-card-header-@order.Id">
+                                            <span class="fw-bold" id="admin-order-card-number-@order.Id">Order #@order.Id</span>
+                                            <span class="badge @GetStatusBadgeClass(order.Status)" id="admin-order-card-status-@order.Id">
+                                                @GetStatusText(order.Status)
+                                            </span>
+                                        </div>
+                                        <div class="card-body" id="admin-order-card-body-@order.Id">
+                                            <div class="row g-2 text-sm">
+                                                <div class="col-6"><strong>Ticket:</strong></div>
+                                                <div class="col-6" id="admin-order-card-ticket-@order.Id">@order.TicketNumber</div>
+                                                <div class="col-6"><strong>Seat:</strong></div>
+                                                <div class="col-6" id="admin-order-card-seat-@order.Id">@order.SeatNumber</div>
+                                                <div class="col-6"><strong>Time:</strong></div>
+                                                <div class="col-6" id="admin-order-card-time-@order.Id">@order.CreatedAt.ToString("HH:mm")</div>
+                                                <div class="col-6"><strong>Total:</strong></div>
+                                                <div class="col-6 fw-bold" id="admin-order-card-total-@order.Id">$@order.TotalAmount.ToString("F2")</div>
+                                            </div>
+                                            
+                                            <div class="mt-3">
+                                                <h6 id="admin-order-card-items-title-@order.Id">Items:</h6>
+                                                @foreach (var item in order.OrderItems)
+                                                {
+                                                    <div class="small" id="admin-order-card-item-@item.Id-@order.Id">@item.Quantity × @item.DrinkName</div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="card-footer" id="admin-order-card-footer-@order.Id">
+                                            <div class="btn-group w-100" id="admin-order-card-actions-@order.Id">
+                                                <button class="btn btn-outline-primary btn-sm" 
+                                                        @onclick="@(() => ShowOrderDetails(order))"
+                                                        id="admin-order-card-details-btn-@order.Id"
+                                                        type="button">
+                                                    Details
+                                                </button>
+                                                @if (CanUpdateStatus(order.Status))
+                                                {
+                                                    <button class="btn btn-success btn-sm" 
+                                                            @onclick="() => AdvanceOrderStatus(order)"
+                                                            id="admin-order-card-advance-btn-@order.Id">
+                                                        @GetNextStatusAction(order.Status)
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Order Details Modal -->
+    @if (selectedOrder != null)
+    {
+        <div class="modal-backdrop show" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1040;"></div>
+        <div class="modal show" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1050; display: block; overflow-x: hidden; overflow-y: auto;" id="admin-order-modal">
+            <div class="modal-dialog modal-lg" style="margin: 1.75rem auto;">
+                <div class="modal-content" id="admin-order-modal-content" style="position: relative; display: flex; flex-direction: column; width: 100%; background-color: #fff; background-clip: padding-box; border: 1px solid rgba(0,0,0,.2); border-radius: .3rem; outline: 0;">
+                    <div class="modal-header" id="admin-order-modal-header">
+                        <h5 class="modal-title" id="admin-order-modal-title">Order #@selectedOrder.Id Details</h5>
+                        <button type="button" class="btn-close" @onclick="CloseOrderModal" id="admin-orders-modal-close-btn"></button>
+                    </div>
+                    <div class="modal-body" id="admin-order-modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 id="admin-order-info-title">Order Information</h6>
+                                <table class="table table-sm" id="admin-order-info-table">
+                                    <tr><td>Order ID:</td><td id="admin-order-info-id">#@selectedOrder.Id</td></tr>
+                                    <tr><td>Status:</td><td><span class="badge @GetStatusBadgeClass(selectedOrder.Status)" id="admin-order-info-status">@GetStatusText(selectedOrder.Status)</span></td></tr>
+                                    <tr><td>Ticket:</td><td id="admin-order-info-ticket"><button class="btn btn-link p-0" style="text-decoration: underline; color: #0d6efd;" @onclick="@(async () => await ShowTicketDetails(selectedOrder.TicketNumber))" type="button" title="Click to view ticket details">@selectedOrder.TicketNumber</button></td></tr>
+                                    <tr><td>Seat:</td><td id="admin-order-info-seat">@selectedOrder.SeatNumber</td></tr>
+                                    <tr><td>Total:</td><td class="fw-bold" id="admin-order-info-total">$@selectedOrder.TotalAmount.ToString("F2")</td></tr>
+                                    <tr><td>Ordered:</td><td id="admin-order-info-ordered">@selectedOrder.CreatedAt.ToString("MMM dd, yyyy HH:mm")</td></tr>
+                                </table>
+                                
+                                @if (!string.IsNullOrEmpty(selectedOrder.CustomerNotes))
+                                {
+                                    <h6 id="admin-order-notes-title">Customer Notes</h6>
+                                    <p class="small bg-light p-2 rounded" id="admin-order-notes-content">@selectedOrder.CustomerNotes</p>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <h6 id="admin-order-items-title">Items Ordered</h6>
+                                <div class="table-responsive" id="admin-order-items-container">
+                                    <table class="table table-sm" id="admin-order-items-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Qty</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in selectedOrder.OrderItems)
+                                            {
+                                                <tr id="admin-order-item-row-@item.Id">
+                                                    <td>
+                                                        @item.DrinkName
+                                                        @if (!string.IsNullOrEmpty(item.SpecialInstructions))
+                                                        {
+                                                            <br><small class="text-muted" id="admin-order-item-instructions-@item.Id">@item.SpecialInstructions</small>
+                                                        }
+                                                    </td>
+                                                    <td id="admin-order-item-qty-@item.Id">@item.Quantity</td>
+                                                    <td id="admin-order-item-price-@item.Id">$@item.UnitPrice.ToString("F2")</td>
+                                                    <td id="admin-order-item-total-@item.Id">$@item.TotalPrice.ToString("F2")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="admin-order-modal-footer">
+                        @if (CanUpdateStatus(selectedOrder.Status))
+                        {
+                            <button type="button" class="btn btn-success" 
+                                    @onclick="() => AdvanceOrderStatus(selectedOrder)"
+                                    id="admin-order-modal-advance-btn">
+                                @GetNextStatusAction(selectedOrder.Status)
+                            </button>
+                        }
+                        <button type="button" class="btn btn-secondary" @onclick="CloseOrderModal" id="admin-orders-modal-cancel-btn">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Ticket Details Modal -->
+    @if (selectedTicket != null)
+    {
+        <div class="modal-backdrop show" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1060;"></div>
+        <div class="modal show" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1070; display: block; overflow-x: hidden; overflow-y: auto;" id="admin-ticket-modal">
+            <div class="modal-dialog modal-lg" style="margin: 1.75rem auto;">
+                <div class="modal-content" id="admin-ticket-modal-content" style="position: relative; display: flex; flex-direction: column; width: 100%; background-color: #fff; background-clip: padding-box; border: 1px solid rgba(0,0,0,.2); border-radius: .3rem; outline: 0;">
+                    <div class="modal-header" id="admin-ticket-modal-header">
+                        <h5 class="modal-title" id="admin-ticket-modal-title">Ticket Details: @selectedTicket.TicketNumber</h5>
+                        <button type="button" class="btn-close" @onclick="CloseTicketModal" id="admin-ticket-modal-close-btn"></button>
+                    </div>
+                    <div class="modal-body" id="admin-ticket-modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 id="admin-ticket-info-title">Ticket Information</h6>
+                                <table class="table table-sm" id="admin-ticket-info-table">
+                                    <tr><td>Ticket Number:</td><td class="fw-bold" id="admin-ticket-info-number">@selectedTicket.TicketNumber</td></tr>
+                                    <tr><td>Status:</td><td><span class="badge @(selectedTicket.IsActive ? "bg-success" : "bg-secondary")" id="admin-ticket-info-status">@(selectedTicket.IsActive ? "Active" : "Inactive")</span></td></tr>
+                                    <tr><td>Price:</td><td class="fw-bold" id="admin-ticket-info-price">$@selectedTicket.Price.ToString("F2")</td></tr>
+                                    <tr><td>Purchase Date:</td><td id="admin-ticket-info-purchase-date">@(selectedTicket.PurchaseDate?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 id="admin-ticket-customer-title">Customer Information</h6>
+                                <table class="table table-sm" id="admin-ticket-customer-table">
+                                    <tr><td>Name:</td><td id="admin-ticket-customer-name">@(!string.IsNullOrEmpty(selectedTicket.CustomerName) ? selectedTicket.CustomerName : "N/A")</td></tr>
+                                    <tr><td>Email:</td><td id="admin-ticket-customer-email">@(!string.IsNullOrEmpty(selectedTicket.CustomerEmail) ? selectedTicket.CustomerEmail : "N/A")</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h6 id="admin-ticket-seat-title">Stadium Location</h6>
+                                <table class="table table-sm" id="admin-ticket-seat-table">
+                                    <tr><td>Seat Number:</td><td class="fw-bold" id="admin-ticket-seat-number">@(!string.IsNullOrEmpty(selectedTicket.SeatNumber) ? selectedTicket.SeatNumber : "N/A")</td></tr>
+                                    <tr><td>Section:</td><td id="admin-ticket-seat-section">@(!string.IsNullOrEmpty(selectedTicket.Section) ? selectedTicket.Section : "N/A")</td></tr>
+                                    <tr><td>Row:</td><td id="admin-ticket-seat-row">@(!string.IsNullOrEmpty(selectedTicket.Row) ? selectedTicket.Row : "N/A")</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 id="admin-ticket-event-title">Event Information</h6>
+                                <table class="table table-sm" id="admin-ticket-event-table">
+                                    <tr><td>Event:</td><td id="admin-ticket-event-name">@(!string.IsNullOrEmpty(selectedTicket.EventName) ? selectedTicket.EventName : "N/A")</td></tr>
+                                    <tr><td>Event Date:</td><td id="admin-ticket-event-date">@(selectedTicket.EventDate?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</td></tr>
+                                    @if (selectedTicket.OrderId.HasValue)
+                                    {
+                                        <tr><td>Order ID:</td><td id="admin-ticket-order-id">#@selectedTicket.OrderId</td></tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                        
+                        @if (ticketErrorMessage != null)
+                        {
+                            <div class="alert alert-warning mt-3" id="admin-ticket-error">
+                                <i class="bi bi-exclamation-triangle"></i> @ticketErrorMessage
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer" id="admin-ticket-modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseTicketModal" id="admin-ticket-modal-close-footer-btn">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(alertMessage))
+    {
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-alert-container">
+            <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="admin-alert-message">
+                @alertMessage
+                <button type="button" class="btn-close" @onclick="ClearAlert" id="admin-orders-alert-close-btn"></button>
+            </div>
+    </div>
+}
+
+@code {
+    private List<OrderDto>? orders;
+    private OrderDto? selectedOrder;
+    private TicketDto? selectedTicket;
+    private string? ticketErrorMessage = null;
+    private string selectedStatus = "";
+    private string searchTerm = "";
+    private string sortBy = "newest";
+    private string viewMode = "table";
+    private string alertMessage = "";
+    private string alertType = "";
+    private bool isLoadingOrders = false;
+    private CancellationTokenSource? loadOrdersCts;
+    private static int instanceCounter = 0;
+    private int instanceId;
+
+    public Orders()
+    {
+        instanceId = ++instanceCounter;
+        Console.WriteLine($"Orders Component Constructor - Instance #{instanceId} created at {DateTime.Now:HH:mm:ss.fff}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Orders #{instanceId} - OnInitializedAsync called at {DateTime.Now:HH:mm:ss.fff}");
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        var callId = Guid.NewGuid().ToString()[..8];
+        var stackTrace = Environment.StackTrace;
+        Console.WriteLine($"🔍 LoadOrders ENTRY #{callId} at {DateTime.Now:HH:mm:ss.fff}");
+        Console.WriteLine($"🔍 Call Stack (first 3 lines): {string.Join(" -> ", stackTrace.Split('\n').Take(3).Select(line => line.Trim()))}");
+        
+        // Prevent concurrent API calls
+        if (isLoadingOrders)
+        {
+            Console.WriteLine($"🔍 LoadOrders #{callId}: Already loading, skipping duplicate call");
+            return;
+        }
+
+        // Cancel any pending load operation
+        loadOrdersCts?.Cancel();
+        loadOrdersCts = new CancellationTokenSource();
+        var token = loadOrdersCts.Token;
+
+        try
+        {
+            isLoadingOrders = true;
+            Console.WriteLine($"🔍 LoadOrders #{callId}: Setting isLoadingOrders=true, starting API call");
+            
+            var loadedOrders = await ApiService.GetOrdersAsync();
+            
+            // Check if this operation was cancelled
+            if (token.IsCancellationRequested)
+            {
+                Console.WriteLine($"🔍 LoadOrders #{callId}: Operation was cancelled");
+                return;
+            }
+            
+            orders = loadedOrders;
+            Console.WriteLine($"🔍 LoadOrders #{callId}: Completed successfully, loaded {orders?.Count ?? 0} orders");
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("LoadOrders: Operation cancelled");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Console.WriteLine($"LoadOrders: Authentication error - {ex.Message}");
+            ShowAlert("Please log in to view orders", "warning");
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"LoadOrders: Error - {ex.Message}");
+            ShowAlert($"Failed to load orders: {ex.Message}", "danger");
+        }
+        finally
+        {
+            isLoadingOrders = false;
+            Console.WriteLine($"🔍 LoadOrders #{callId}: Setting isLoadingOrders=false in finally block");
+        }
+    }
+
+    private async Task RefreshOrders()
+    {
+        Console.WriteLine($"🔍 RefreshOrders: User clicked refresh button at {DateTime.Now:HH:mm:ss.fff}");
+        
+        // Don't refresh if already loading
+        if (isLoadingOrders)
+        {
+            Console.WriteLine("🔍 RefreshOrders: Already loading, skipping");
+            return;
+        }
+
+        Console.WriteLine("🔍 RefreshOrders: Calling LoadOrders()");
+        await LoadOrders();
+        Console.WriteLine("🔍 RefreshOrders: LoadOrders() completed");
+        
+        // Only show success if orders were actually loaded
+        if (orders != null && !isLoadingOrders)
+        {
+            ShowAlert("Orders refreshed", "success");
+        }
+    }
+
+    private IEnumerable<OrderDto> filteredOrders
+    {
+        get
+        {
+            if (orders == null) return Enumerable.Empty<OrderDto>();
+
+            var filtered = orders.AsEnumerable();
+
+            // Status filter
+            if (!string.IsNullOrEmpty(selectedStatus) && Enum.TryParse<OrderStatus>(selectedStatus, out var status))
+            {
+                filtered = filtered.Where(o => o.Status == status);
+            }
+
+            // Search filter
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var search = searchTerm.ToLower();
+                filtered = filtered.Where(o => 
+                    o.Id.ToString().Contains(search) ||
+                    o.TicketNumber.ToLower().Contains(search) ||
+                    o.SeatNumber.ToLower().Contains(search) ||
+                    o.OrderItems.Any(i => i.DrinkName.ToLower().Contains(search)));
+            }
+
+            // Sort
+            filtered = sortBy switch
+            {
+                "oldest" => filtered.OrderBy(o => o.CreatedAt),
+                "amount" => filtered.OrderByDescending(o => o.TotalAmount),
+                "status" => filtered.OrderBy(o => o.Status),
+                _ => filtered.OrderByDescending(o => o.CreatedAt)
+            };
+
+            return filtered;
+        }
+    }
+
+    private void FilterOrders()
+    {
+        // No need for async or StateHasChanged
+        // The filteredOrders computed property will automatically update
+        // and Blazor will detect the change and re-render
+        Console.WriteLine($"FilterOrders: Filtering with status='{selectedStatus}', search='{searchTerm}', sort='{sortBy}'");
+    }
+
+    private async void ShowOrderDetails(OrderDto order)
+    {
+        try
+        {
+            Console.WriteLine($"ShowOrderDetails called for order #{order?.Id}");
+            if (order == null)
+            {
+                Console.WriteLine("ERROR: Order is null in ShowOrderDetails");
+                return;
+            }
+            
+            selectedOrder = order;
+            Console.WriteLine($"selectedOrder set to order #{selectedOrder.Id}");
+            
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+                Console.WriteLine("StateHasChanged called via InvokeAsync - modal should be visible now");
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR in ShowOrderDetails: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
+    }
+
+    private async Task ShowTicketDetails(string ticketNumber)
+    {
+        Console.WriteLine($"ShowTicketDetails called for ticket: {ticketNumber}");
+        
+        if (string.IsNullOrEmpty(ticketNumber))
+        {
+            Console.WriteLine("Ticket number is empty");
+            ticketErrorMessage = "Invalid ticket number";
+            return;
+        }
+
+        try
+        {
+            ticketErrorMessage = null;
+            Console.WriteLine($"Fetching ticket details for: {ticketNumber}");
+            selectedTicket = await ApiService.GetTicketByNumberAsync(ticketNumber);
+            
+            if (selectedTicket == null)
+            {
+                Console.WriteLine($"Ticket not found: {ticketNumber}");
+                ticketErrorMessage = $"Ticket '{ticketNumber}' not found in the database. This may be a legacy ticket number or the ticket may have been deleted.";
+                selectedTicket = new TicketDto { TicketNumber = ticketNumber };
+            }
+            else
+            {
+                Console.WriteLine($"Ticket found: {ticketNumber}");
+            }
+        }
+        catch (Exception ex)
+        {
+            ticketErrorMessage = $"Error loading ticket details: {ex.Message}";
+            selectedTicket = new TicketDto { TicketNumber = ticketNumber };
+            Console.WriteLine($"Error loading ticket details: {ex}");
+        }
+        
+        Console.WriteLine($"selectedTicket set, calling StateHasChanged");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task AdvanceOrderStatus(OrderDto order)
+    {
+        var nextStatus = GetNextStatus(order.Status);
+        if (nextStatus.HasValue)
+        {
+            var updateDto = new UpdateOrderStatusDto { Status = nextStatus.Value };
+            var success = await ApiService.UpdateOrderStatusAsync(order.Id, updateDto);
+            
+            if (success)
+            {
+                await LoadOrders();
+                selectedOrder = null;
+                ShowAlert($"Order #{order.Id} updated to {GetStatusText(nextStatus.Value)}", "success");
+            }
+            else
+            {
+                ShowAlert("Failed to update order status", "danger");
+            }
+        }
+    }
+
+    private bool CanUpdateStatus(OrderStatus status)
+    {
+        return status == OrderStatus.Pending || 
+               status == OrderStatus.Accepted || 
+               status == OrderStatus.InPreparation || 
+               status == OrderStatus.Ready;
+    }
+
+    private OrderStatus? GetNextStatus(OrderStatus currentStatus)
+    {
+        return currentStatus switch
+        {
+            OrderStatus.Pending => OrderStatus.Accepted,
+            OrderStatus.Accepted => OrderStatus.InPreparation,
+            OrderStatus.InPreparation => OrderStatus.Ready,
+            OrderStatus.Ready => OrderStatus.Delivered,
+            _ => null
+        };
+    }
+
+    private string GetNextStatusAction(OrderStatus currentStatus)
+    {
+        return currentStatus switch
+        {
+            OrderStatus.Pending => "Accept",
+            OrderStatus.Accepted => "Start Preparing",
+            OrderStatus.InPreparation => "Mark Ready",
+            OrderStatus.Ready => "Mark Delivered",
+            _ => ""
+        };
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning text-dark",
+            OrderStatus.Accepted => "bg-info",
+            OrderStatus.InPreparation => "bg-primary",
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetStatusText(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "Pending",
+            OrderStatus.Accepted => "Accepted",
+            OrderStatus.InPreparation => "Preparing",
+            OrderStatus.Ready => "Ready",
+            OrderStatus.Delivered => "Delivered",
+            OrderStatus.Cancelled => "Cancelled",
+            _ => status.ToString()
+        };
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+        StateHasChanged();
+        
+        // Auto-hide after 3 seconds
+        _ = Task.Delay(3000).ContinueWith(_ => 
+        {
+            alertMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private void ClearAlert()
+    {
+        alertMessage = "";
+    }
+
+    private void CloseOrderModal()
+    {
+        Console.WriteLine("CloseOrderModal called");
+        selectedOrder = null;
+        StateHasChanged();
+    }
+
+    private void CloseTicketModal()
+    {
+        Console.WriteLine("CloseTicketModal called");
+        selectedTicket = null;
+        ticketErrorMessage = null;
+        StateHasChanged();
+    }
+
+    private async Task CreateTestOrder()
+    {
+        try
+        {
+            Console.WriteLine("Creating test order...");
+            
+            // Create a dummy test order to verify the details button works
+            var testOrder = new OrderDto
+            {
+                Id = 63,
+                TicketNumber = "TK005",
+                SeatNumber = "A-1-5",
+                TotalAmount = 25.50m,
+                Status = OrderStatus.Pending,
+                CreatedAt = DateTime.Now,
+                CustomerNotes = "Test order for debugging",
+                OrderItems = new List<OrderItemDto>
+                {
+                    new OrderItemDto
+                    {
+                        Id = 1,
+                        DrinkName = "Test Beer",
+                        Quantity = 2,
+                        UnitPrice = 12.00m,
+                        TotalPrice = 24.00m,
+                        SpecialInstructions = "Cold please"
+                    },
+                    new OrderItemDto
+                    {
+                        Id = 2,
+                        DrinkName = "Water",
+                        Quantity = 1,
+                        UnitPrice = 1.50m,
+                        TotalPrice = 1.50m
+                    }
+                }
+            };
+            
+            // Add to orders list if it doesn't exist
+            if (orders == null)
+            {
+                orders = new List<OrderDto>();
+            }
+            
+            // Remove any existing order with ID 63
+            orders.RemoveAll(o => o.Id == 63);
+            
+            // Add the test order
+            orders.Add(testOrder);
+            
+            ShowAlert("Test order #63 created successfully. You can now test the details button.", "success");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating test order: {ex.Message}");
+            ShowAlert($"Failed to create test order: {ex.Message}", "danger");
+        }
+    }
+
+    public void Dispose()
+    {
+        loadOrdersCts?.Cancel();
+        loadOrdersCts?.Dispose();
+    }
+}

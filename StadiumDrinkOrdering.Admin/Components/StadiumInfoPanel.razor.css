@@ -37,7 +37,8 @@
 /* Main Panel Container */
 .stadium-info-panel {
     position: relative;
-    width: 380px;
+    width: 100%;
+    max-width: 380px;
     height: 100%;
     background: var(--info-surface);
     border-radius: 16px;
@@ -49,6 +50,22 @@
     flex-shrink: 0;
 }
 
+/* Desktop side-by-side: fixed width for consistent layout */
+@media (min-width: 1024px) {
+    .stadium-info-panel {
+        width: 380px;
+        max-height: calc(100vh - 160px);
+    }
+}
+
+/* Extra large screens: slightly wider panel */
+@media (min-width: 1400px) {
+    .stadium-info-panel {
+        width: 420px;
+    }
+}
+
+/* Panel Layout */
 .stadium-info-panel {
     display: flex;
     flex-direction: column;
@@ -56,6 +73,14 @@
 
 .stadium-info-panel.collapsed {
     width: 60px;
+}
+
+/* Desktop collapsed state */
+@media (min-width: 1024px) {
+    .stadium-info-panel.collapsed {
+        width: 60px;
+        max-height: calc(100vh - 160px);
+    }
 }
 
 /* Panel Header */

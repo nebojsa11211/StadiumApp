@@ -1,0 +1,338 @@
+@page "/dashboard"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService ApiService
+
+<PageTitle>Stadium Admin Dashboard</PageTitle>
+
+<div class="container-fluid" id="admin-dashboard-container">
+    <h1 class="mb-4" id="admin-dashboard-title">🏟️ Stadium Admin Dashboard</h1>
+    
+    @if (orders == null)
+    {
+        <div class="text-center" id="admin-dashboard-loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading dashboard...</p>
+        </div>
+    }
+    else
+    {
+        <!-- Summary Cards -->
+        <div class="row mb-4" id="admin-summary-cards">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white" id="admin-pending-orders-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Pending Orders</h6>
+                                <h3>@pendingOrders.Count()</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <span style="font-size: 2rem;">⏳</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-info text-white" id="admin-active-orders-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Active Orders</h6>
+                                <h3>@activeOrders.Count()</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <span style="font-size: 2rem;">🔥</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-success text-white" id="admin-revenue-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Today's Revenue</h6>
+                                <h3>$@todaysRevenue.ToString("F2")</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <span style="font-size: 2rem;">💰</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-warning text-dark" id="admin-total-orders-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Total Orders</h6>
+                                <h3>@orders.Count()</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <span style="font-size: 2rem;">📋</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="row" id="admin-recent-orders-section">
+            <div class="col-md-8">
+                <div class="card" id="admin-recent-orders-card">
+                    <div class="card-header d-flex justify-content-between align-items-center" id="admin-recent-orders-header">
+                        <h5 id="admin-recent-orders-title">Recent Orders</h5>
+                        <a href="/orders" class="btn btn-sm btn-outline-primary" id="admin-view-all-orders-btn">View All</a>
+                    </div>
+                    <div class="card-body" id="admin-recent-orders-body">
+                        @if (!orders.Any())
+                        {
+                            <p class="text-muted text-center" id="admin-no-orders-message">No orders found</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive" id="admin-orders-table-container">
+                                <table class="table table-hover" id="admin-orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Order #</th>
+                                            <th>Seat</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                            <th>Time</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var order in orders.OrderByDescending(o => o.CreatedAt).Take(10))
+                                        {
+                                            <tr id="admin-order-row-@order.Id">
+                                                <td>#@order.Id</td>
+                                                <td>@order.SeatNumber</td>
+                                                <td>$@order.TotalAmount.ToString("F2")</td>
+                                                <td>
+                                                    <span class="badge @GetStatusBadgeClass(order.Status)" id="admin-order-status-@order.Id">
+                                                        @GetStatusText(order.Status)
+                                                    </span>
+                                                </td>
+                                                <td>@order.CreatedAt.ToString("HH:mm")</td>
+                                                <td>
+                                                    @if (order.Status == OrderStatus.Pending)
+                                                    {
+                                                        <button class="btn btn-sm btn-success" 
+                                                                @onclick="() => AcceptOrder(order.Id)"
+                                                                id="admin-accept-order-@order.Id">
+                                                            Accept
+                                                        </button>
+                                                    }
+                                                    else if (order.Status == OrderStatus.Accepted)
+                                                    {
+                                                        <button class="btn btn-sm btn-warning" 
+                                                                @onclick="() => MarkInPreparation(order.Id)"
+                                                                id="admin-prepare-order-@order.Id">
+                                                            Prepare
+                                                        </button>
+                                                    }
+                                                    else if (order.Status == OrderStatus.InPreparation)
+                                                    {
+                                                        <button class="btn btn-sm btn-info" 
+                                                                @onclick="() => MarkReady(order.Id)"
+                                                                id="admin-ready-order-@order.Id">
+                                                            Ready
+                                                        </button>
+                                                    }
+                                                    else if (order.Status == OrderStatus.Ready)
+                                                    {
+                                                        <button class="btn btn-sm btn-primary" 
+                                                                @onclick="() => MarkDelivered(order.Id)"
+                                                                id="admin-deliver-order-@order.Id">
+                                                            Delivered
+                                                        </button>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Status Breakdown -->
+            <div class="col-md-4">
+                <div class="card" id="admin-status-breakdown-card">
+                    <div class="card-header" id="admin-status-breakdown-header">
+                        <h5 id="admin-status-breakdown-title">Order Status Breakdown</h5>
+                    </div>
+                    <div class="card-body" id="admin-status-breakdown-body">
+                        @foreach (var status in Enum.GetValues<OrderStatus>())
+                        {
+                            var count = orders.Count(o => o.Status == status);
+                            var percentage = orders.Any() ? (count * 100.0 / orders.Count()) : 0;
+                            
+                            <div class="mb-3" id="admin-status-@status">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>@GetStatusText(status)</span>
+                                    <span>@count (@percentage.ToString("F1")%)</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar @GetStatusProgressClass(status)" 
+                                         style="width: @percentage%"
+                                         id="admin-progress-@status"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-alert-container">
+        <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="admin-alert-message">
+            @alertMessage
+            <button type="button" class="btn-close" @onclick="ClearAlert" id="admin-dashboard-alert-close-btn"></button>
+        </div>
+    </div>
+}
+
+@code {
+    private List<OrderDto>? orders;
+    private string alertMessage = "";
+    private string alertType = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private IEnumerable<OrderDto> pendingOrders => orders?.Where(o => o.Status == OrderStatus.Pending) ?? Enumerable.Empty<OrderDto>();
+    private IEnumerable<OrderDto> activeOrders => orders?.Where(o => o.Status == OrderStatus.Accepted || o.Status == OrderStatus.InPreparation || o.Status == OrderStatus.Ready) ?? Enumerable.Empty<OrderDto>();
+    private decimal todaysRevenue => orders?.Where(o => o.CreatedAt.Date == DateTime.Today && o.Status == OrderStatus.Delivered).Sum(o => o.TotalAmount) ?? 0;
+
+    private async Task LoadData()
+    {
+        orders = await ApiService.GetOrdersAsync();
+    }
+
+    private async Task AcceptOrder(int orderId)
+    {
+        var updateDto = new UpdateOrderStatusDto { Status = OrderStatus.Accepted };
+        var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
+        if (success)
+        {
+            await LoadData();
+            ShowAlert("Order accepted", "success");
+        }
+    }
+
+    private async Task MarkInPreparation(int orderId)
+    {
+        var updateDto = new UpdateOrderStatusDto { Status = OrderStatus.InPreparation };
+        var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
+        if (success)
+        {
+            await LoadData();
+            ShowAlert("Order marked as in preparation", "success");
+        }
+    }
+
+    private async Task MarkReady(int orderId)
+    {
+        var updateDto = new UpdateOrderStatusDto { Status = OrderStatus.Ready };
+        var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
+        if (success)
+        {
+            await LoadData();
+            ShowAlert("Order marked as ready", "success");
+        }
+    }
+
+    private async Task MarkDelivered(int orderId)
+    {
+        var updateDto = new UpdateOrderStatusDto { Status = OrderStatus.Delivered };
+        var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
+        if (success)
+        {
+            await LoadData();
+            ShowAlert("Order marked as delivered", "success");
+        }
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning text-dark",
+            OrderStatus.Accepted => "bg-info",
+            OrderStatus.InPreparation => "bg-primary",
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetStatusProgressClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning",
+            OrderStatus.Accepted => "bg-info",
+            OrderStatus.InPreparation => "bg-primary",
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetStatusText(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "Pending",
+            OrderStatus.Accepted => "Accepted",
+            OrderStatus.InPreparation => "Preparing",
+            OrderStatus.Ready => "Ready",
+            OrderStatus.Delivered => "Delivered",
+            OrderStatus.Cancelled => "Cancelled",
+            _ => status.ToString()
+        };
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+        StateHasChanged();
+        
+        // Auto-hide after 3 seconds
+        _ = Task.Delay(3000).ContinueWith(_ => 
+        {
+            alertMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private void ClearAlert()
+    {
+        alertMessage = "";
+    }
+}

@@ -1,6 +1,3 @@
-@using StadiumDrinkOrdering.Admin.Services
-@inject IAuthStateService AuthStateService
-
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Stadium Admin</a>
@@ -98,25 +95,3 @@
         </div>
     </nav>
 </div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    protected override void OnInitialized()
-    {
-        AuthStateService.OnAuthenticationStateChanged += StateHasChanged;
-    }
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-
-
-    public void Dispose()
-    {
-        AuthStateService.OnAuthenticationStateChanged -= StateHasChanged;
-    }
-}

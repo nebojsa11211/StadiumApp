@@ -1,7 +1,3 @@
-@using StadiumDrinkOrdering.Admin.Services
-@inject IAuthStateService AuthStateService
-@inject NavigationManager NavigationManager
-
 @if (isChecking)
 {
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
@@ -32,32 +28,4 @@ else
             </div>
         </div>
     </div>
-}
-
-@code {
-    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
-    
-    private bool isChecking = true;
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Simulate a brief authentication check delay
-        await Task.Delay(100);
-        isChecking = false;
-        StateHasChanged();
-
-        // Listen for authentication state changes
-        AuthStateService.OnAuthenticationStateChanged += StateHasChanged;
-    }
-
-    private void RedirectToLogin()
-    {
-        var returnUrl = Uri.EscapeDataString(NavigationManager.Uri);
-        NavigationManager.NavigateTo($"/login?returnUrl={returnUrl}");
-    }
-
-    public void Dispose()
-    {
-        AuthStateService.OnAuthenticationStateChanged -= StateHasChanged;
-    }
 }

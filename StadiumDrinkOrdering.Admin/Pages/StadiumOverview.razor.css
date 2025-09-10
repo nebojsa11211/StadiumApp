@@ -61,7 +61,32 @@
     --transition-slow: 300ms ease;
 }
 
-/* Main Container */
+/* Main Layout Container for Desktop Side-by-Side */
+.stadium-layout-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    min-height: calc(100vh - 120px);
+}
+
+/* Desktop: Side-by-side layout */
+@media (min-width: 1024px) {
+    .stadium-layout-container {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: var(--space-xl);
+        align-items: start;
+    }
+}
+
+/* Extra large screens: More space for info panel */
+@media (min-width: 1400px) {
+    .stadium-layout-container {
+        grid-template-columns: 420px 1fr;
+    }
+}
+
+/* Stadium Viewer Container */
 .stadium-viewer-container {
     display: grid;
     grid-template-rows: auto 1fr;
@@ -71,6 +96,14 @@
     padding: var(--space-lg);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: white;
+    border-radius: var(--radius-lg);
+}
+
+/* On desktop, adjust viewer container */
+@media (min-width: 1024px) {
+    .stadium-viewer-container {
+        min-height: auto;
+    }
 }
 
 /* Admin Header */
@@ -273,32 +306,139 @@
     width: auto;
     height: auto;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    shape-rendering: optimizeSpeed;
+    text-rendering: optimizeSpeed;
 }
 
-/* Admin Sector Interactions */
+/* Optimized SVG Text Styles */
+::deep .stadium-svg .field-text {
+    fill: white;
+    font-size: clamp(16px, 3vw, 24px);
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+}
+
+::deep .stadium-svg .sector-text {
+    fill: currentColor;
+    font-size: clamp(10px, 1.5vw, 16px);
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    transition: all var(--transition);
+}
+
+::deep .stadium-svg .occupancy-text {
+    fill: currentColor;
+    font-size: 11px;
+    font-weight: 500;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+}
+
+::deep .stadium-svg .capacity-text {
+    fill: currentColor;
+    font-size: 9px;
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+/* Optimized Sector Interactions with CSS Classes */
 ::deep .sector-group {
     cursor: pointer;
-    transition: all var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition) cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
-::deep .sector-group:hover polygon {
+/* Sector Polygon States */
+::deep .sector-polygon {
+    stroke-width: 1px;
+    transition: all var(--transition-fast) ease;
+    vector-effect: non-scaling-stroke;
+}
+
+::deep .sector-polygon.sector-main {
+    fill: var(--viewer-surface-alt);
+    stroke: var(--viewer-border);
+}
+
+::deep .sector-polygon.status-available {
+    fill: var(--seat-available);
+    stroke: var(--seat-available-hover);
+    color: var(--seat-available);
+}
+
+::deep .sector-polygon.status-partial {
+    fill: var(--seat-partial);
+    stroke: var(--seat-partial-hover);
+    color: var(--seat-partial);
+}
+
+::deep .sector-polygon.status-full {
+    fill: var(--seat-full);
+    stroke: var(--seat-full-hover);
+    color: var(--seat-full);
+}
+
+::deep .sector-polygon.hovered {
+    stroke-width: 2px;
     filter: brightness(1.1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
     transform: scale(1.02);
     transform-origin: center;
 }
 
+/* Sector Pattern Overlays */
+::deep .sector-pattern {
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+::deep .sector-pattern.occupancy-available {
+    color: var(--seat-available);
+}
+
+::deep .sector-pattern.occupancy-partial {
+    color: var(--seat-partial);
+}
+
+::deep .sector-pattern.occupancy-full {
+    color: var(--seat-full);
+}
+
+/* Focus and Interaction States */
 ::deep .sector-group:focus {
     outline: none;
 }
 
-::deep .sector-group:focus polygon {
+::deep .focus-indicator {
+    fill: none;
     stroke: var(--admin-primary);
     stroke-width: 3;
-    filter: drop-shadow(0 0 8px var(--admin-primary));
+    stroke-dasharray: 5,5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
 }
 
-::deep .sector-group:active polygon {
+::deep .sector-group:focus .focus-indicator,
+::deep .sector-group:focus-visible .focus-indicator {
+    opacity: 1;
+    animation: focus-pulse 1.5s ease-in-out infinite alternate;
+}
+
+::deep .sector-group:active .sector-polygon {
     transform: scale(0.98);
+}
+
+@keyframes focus-pulse {
+    0% {
+        opacity: 0.6;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        opacity: 1;
+        stroke-dashoffset: 10;
+    }
 }
 
 /* Admin Legend Panel */
@@ -666,12 +806,44 @@
     animation: fadeIn var(--transition) ease;
 }
 
+/* Mobile-Specific SVG Optimizations */
+@media (max-width: 768px) {
+    ::deep .stadium-svg {
+        shape-rendering: optimizeSpeed;
+        text-rendering: optimizeSpeed;
+    }
+    
+    ::deep .sector-polygon {
+        stroke-width: 2px;
+    }
+    
+    ::deep .sector-text {
+        font-size: clamp(8px, 3vw, 14px) !important;
+    }
+    
+    ::deep .stadium-svg .field-text {
+        font-size: clamp(12px, 4vw, 20px) !important;
+    }
+    
+    /* Increase touch targets */
+    ::deep .sector-group {
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+}
+
 /* Admin Mobile Optimizations */
 @media (max-width: 768px) {
+    .stadium-layout-container {
+        flex-direction: column;
+        gap: var(--space-md);
+        min-height: calc(100vh - 80px);
+    }
+    
     .stadium-viewer-container {
         padding: var(--space-md);
         gap: var(--space-md);
-        min-height: calc(100vh - 80px);
+        min-height: calc(50vh - 40px);
         background: linear-gradient(135deg, var(--viewer-surface-dark) 0%, #1e293b 100%);
     }
     
@@ -739,6 +911,38 @@
     }
 }
 
+/* Performance Optimizations */
+::deep .stadium-svg * {
+    vector-effect: non-scaling-stroke;
+}
+
+::deep .field-group {
+    will-change: transform;
+}
+
+::deep .sector-polygon {
+    will-change: fill, stroke, filter, transform;
+}
+
+::deep .sector-text {
+    will-change: fill;
+}
+
+/* High DPI Support */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    ::deep .stadium-svg {
+        shape-rendering: geometricPrecision;
+    }
+    
+    ::deep .sector-polygon {
+        stroke-width: 0.5px;
+    }
+    
+    ::deep .sector-polygon.hovered {
+        stroke-width: 1px;
+    }
+}
+
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
     *,
@@ -748,5 +952,13 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+    
+    ::deep .sector-group,
+    ::deep .sector-polygon,
+    ::deep .focus-indicator {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
     }
 }

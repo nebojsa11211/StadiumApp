@@ -39,7 +39,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=
     ports:
-      - "9000:8080"
+      - "9010:8080"
     volumes:
       - api_data:/app/data
     networks:
@@ -59,7 +59,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=8081
       - ASPNETCORE_HTTPS_PORTS=
     ports:
-      - "9001:8081"
+      - "9020:8081"
     depends_on:
       - api
     networks:
@@ -79,7 +79,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=8082
       - ASPNETCORE_HTTPS_PORTS=
     ports:
-      - "9002:8082"
+      - "9030:8082"
     depends_on:
       - api
     networks:
@@ -99,7 +99,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=8083
       - ASPNETCORE_HTTPS_PORTS=
     ports:
-      - "9003:8083"
+      - "9040:8083"
     depends_on:
       - api
     networks:

@@ -1,13 +1,4 @@
 @page "/admin/stadium-overview"
-@using StadiumDrinkOrdering.Shared.Models
-@using StadiumDrinkOrdering.Shared.DTOs
-@using StadiumDrinkOrdering.Admin.Services
-@using StadiumDrinkOrdering.Admin.Components
-@using System.Text.Json
-@using Microsoft.JSInterop
-@inject IAdminApiService ApiService
-@inject IJSRuntime JSRuntime
-@inject ILogger<StadiumOverview> Logger
 
 <PageTitle>Stadium Overview - Admin</PageTitle>
 
@@ -78,136 +69,737 @@
             </div>
         </div>
 
-        @if (isLoading)
+        @* Show dynamic stadium when data is available, otherwise show static HNK Rijeka layout *@
+        @if (stadiumData != null || true)
         {
-            <div class="loading-spinner" id="loading-spinner">
-                <div class="spinner-border text-primary" role="status" id="loading-spinner-element">
-                    <span class="visually-hidden" id="loading-spinner-text">Loading...</span>
-                </div>
-                <p id="loading-message">Loading stadium layout...</p>
-            </div>
-        }
-        else if (stadiumData != null)
-        {
+            <!-- Always show HNK Rijeka Stadium - whether we have data or not -->
             <div class="stadium-main-view" id="stadium-main-view">
                 <div class="svg-container" @ref="svgContainer" id="stadium-svg-container">
-                    <svg viewBox="0 0 @stadiumData.CoordinateSystem.Width @stadiumData.CoordinateSystem.Height" 
+                    <svg viewBox="0 0 1200 900" 
                          preserveAspectRatio="xMidYMid meet"
                          class="stadium-svg" 
-                         id="stadium-svg">
+                         id="stadium-svg"
+                         role="img"
+                         aria-label="HNK Rijeka Stadium seating visualization"
+                         aria-describedby="stadium-description">
                         
-                        <!-- Field -->
-                        <g class="field-group" id="stadium-field-group">
-                            <polygon points="@GetPolygonPoints(stadiumData.Field.Polygon)"
-                                     fill="@stadiumData.Field.FillColor"
-                                     stroke="@stadiumData.Field.StrokeColor"
-                                     stroke-width="2"
-                                     id="stadium-field-polygon" />
-                            <text x="@(stadiumData.CoordinateSystem.Width / 2)" 
-                                  y="@(stadiumData.CoordinateSystem.Height / 2)"
-                                  text-anchor="middle" 
-                                  fill="white" 
-                                  font-size="24"
-                                  id="stadium-field-text">FIELD</text>
+                        <desc id="stadium-description">
+                            BBBBB HNK Rijeka Stadium with 14 sectors including North (I2, I3, I4), West (S3, S4, S5), South (Z2, Z3, Z4, Z5A, Z6A, Z8, Z9, Z10), and East stands. Professional football stadium layout.
+                        </desc>
+                        
+                        <!-- Gradients and patterns -->
+                        <defs>
+                            <linearGradient id="field-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#2d5a2d" />
+                                <stop offset="50%" stop-color="#1e3a1e" />
+                                <stop offset="100%" stop-color="#2d5a2d" />
+                            </linearGradient>
+                            
+                            <filter id="sector-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/>
+                            </filter>
+                        </defs>
+                        
+                        <!-- HNK Rijeka Football Pitch -->
+                        <g class="field-group" id="field" role="img" aria-label="Football pitch">
+                            <!-- Main rectangular pitch -->
+                            <rect x="350" y="250" 
+                                  width="500" 
+                                  height="320"
+                                  fill="url(#field-gradient)"
+                                  stroke="#ffffff"
+                                  stroke-width="3"
+                                  filter="url(#sector-shadow)" />
+                            
+                            <!-- Football pitch markings -->
+                            <g class="field-markings" opacity="0.8" stroke="white" stroke-width="2" fill="none">
+                                <!-- Center line -->
+                                <line x1="600" y1="250" x2="600" y2="570" />
+                                
+                                <!-- Center circle -->
+                                <circle cx="600" cy="410" r="70" />
+                                <circle cx="600" cy="410" r="2" fill="white" />
+                                
+                                <!-- Penalty areas -->
+                                <!-- Left goal area -->
+                                <rect x="350" y="340" width="132" height="140" />
+                                <rect x="350" y="375" width="44" height="70" />
+                                
+                                <!-- Right goal area -->
+                                <rect x="718" y="340" width="132" height="140" />
+                                <rect x="806" y="375" width="44" height="70" />
+                                
+                                <!-- Goals -->
+                                <rect x="330" y="385" width="20" height="50" stroke-width="3" />
+                                <rect x="850" y="385" width="20" height="50" stroke-width="3" />
+                                
+                                <!-- Corner arcs -->
+                                <path d="M 350 250 Q 360 250 360 260" />
+                                <path d="M 850 250 Q 840 250 840 260" />
+                                <path d="M 350 570 Q 360 570 360 560" />
+                                <path d="M 850 570 Q 840 570 840 560" />
+                            </g>
                         </g>
 
-                        <!-- Stands and Sectors -->
-                        @foreach (var stand in stadiumData.Stands)
-                        {
-                            <g class="stand-group" data-stand="@stand.Id" id="stand-group-@stand.Id">
-                                @foreach (var sector in stand.Sectors)
-                                {
-                                    <g class="sector-group" 
-                                       data-sector="@sector.Id"
-                                       @onclick="() => OpenSectorModal(sector)"
-                                       @onmouseover="() => OnSectorHover(sector, true)"
-                                       @onmouseout="() => OnSectorHover(sector, false)"
-                                       id="sector-group-@sector.Id">
-                                        
-                                        <polygon points="@GetPolygonPoints(sector.Polygon)"
-                                                 fill="@(hoveredSector == sector.Id ? sector.HoverColor : GetSectorFillColor(sector))"
-                                                 stroke="#333"
-                                                 stroke-width="1"
-                                                 style="cursor: pointer; transition: fill 0.2s;"
-                                                 id="sector-polygon-@sector.Id" />
-                                        
-                                        <text x="@GetSectorCenterX(sector.Polygon)" 
-                                              y="@GetSectorCenterY(sector.Polygon)"
-                                              text-anchor="middle"
-                                              font-size="14"
-                                              fill="#333"
-                                              style="pointer-events: none;"
-                                              id="sector-text-@sector.Id">
-                                            @sector.Name
-                                        </text>
-                                        
-                                        @if (showOccupancy && eventSeatStatus != null)
-                                        {
-                                            var summary = GetSectorSummary(sector.Id);
-                                            if (summary != null)
-                                            {
-                                                @:<text x="@GetSectorCenterX(sector.Polygon)" y="@(GetSectorCenterY(sector.Polygon) + 15)" text-anchor="middle" font-size="10" fill="#666" style="pointer-events: none;" id="sector-occupancy-text-@sector.Id">@summary.OccupancyPercentage.ToString("0")%</text>
-                                            }
-                                        }
-                                    </g>
-                                }
+                        <!-- HNK Rijeka Stadium Sectors - Exact Layout -->
+                        
+                        <!-- North Stand - I Sectors -->
+                        <g class="stand-group north-stand" data-stand="north" id="stand-north">
+                            <!-- I4 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="I4" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector I4"
+                               id="sector-I4">
+                                <rect x="400" y="120" width="120" height="100" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="460" y="175" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">I4</text>
                             </g>
-                        }
+                            
+                            <!-- I3 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="I3" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector I3"
+                               id="sector-I3">
+                                <rect x="540" y="120" width="120" height="100" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="600" y="175" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">I3</text>
+                            </g>
+                            
+                            <!-- I2 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="I2" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector I2"
+                               id="sector-I2">
+                                <rect x="680" y="120" width="120" height="100" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="740" y="175" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">I2</text>
+                            </g>
+                        </g>
+                        
+                        <!-- West Stand - S Sectors -->
+                        <g class="stand-group west-stand" data-stand="west" id="stand-west">
+                            <!-- S5 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="S5" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector S5"
+                               id="sector-S5">
+                                <rect x="150" y="260" width="120" height="90" 
+                                      fill="#F39C12" 
+                                      stroke="#D68910" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="210" y="305" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">S5</text>
+                            </g>
+                            
+                            <!-- S4 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="S4" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector S4"
+                               id="sector-S4">
+                                <rect x="150" y="365" width="120" height="90" 
+                                      fill="#F39C12" 
+                                      stroke="#D68910" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="210" y="410" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">S4</text>
+                            </g>
+                            
+                            <!-- S3 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="S3" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector S3"
+                               id="sector-S3">
+                                <rect x="150" y="470" width="120" height="90" 
+                                      fill="#F39C12" 
+                                      stroke="#D68910" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="210" y="515" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">S3</text>
+                            </g>
+                        </g>
+                        
+                        <!-- East Stand - Gray Sectors (Unavailable) -->
+                        <g class="stand-group east-stand" data-stand="east" id="stand-east">
+                            <rect x="930" y="280" width="120" height="80" 
+                                  fill="#9E9E9E" 
+                                  stroke="#757575" 
+                                  stroke-width="2" 
+                                  rx="6" 
+                                  opacity="0.6" />
+                            <rect x="930" y="380" width="120" height="80" 
+                                  fill="#9E9E9E" 
+                                  stroke="#757575" 
+                                  stroke-width="2" 
+                                  rx="6" 
+                                  opacity="0.6" />
+                            <rect x="930" y="480" width="120" height="80" 
+                                  fill="#9E9E9E" 
+                                  stroke="#757575" 
+                                  stroke-width="2" 
+                                  rx="6" 
+                                  opacity="0.6" />
+                        </g>
+                        
+                        <!-- South Stand - Z Sectors -->
+                        <g class="stand-group south-stand" data-stand="south" id="stand-south">
+                            <!-- Top Row: Z10, Z8, Z6A, Z4, Z2 -->
+                            <!-- Z10 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z10" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z10"
+                               id="sector-Z10">
+                                <rect x="280" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="327.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z10</text>
+                            </g>
+                            
+                            <!-- Z8 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z8" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z8"
+                               id="sector-Z8">
+                                <rect x="385" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="432.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z8</text>
+                            </g>
+                            
+                            <!-- Z6A -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z6A" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z6A"
+                               id="sector-Z6A">
+                                <rect x="490" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="537.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z6A</text>
+                            </g>
+                            
+                            <!-- Z4 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z4" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z4"
+                               id="sector-Z4">
+                                <rect x="595" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="642.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z4</text>
+                            </g>
+                            
+                            <!-- Z2 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z2" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z2"
+                               id="sector-Z2">
+                                <rect x="700" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="747.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z2</text>
+                            </g>
+                            
+                            <!-- Bottom Row: Z9, Z5A, Z3 -->
+                            <!-- Z9 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z9" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z9"
+                               id="sector-Z9">
+                                <rect x="350" y="700" width="100" height="75" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="400" y="742.5" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z9</text>
+                            </g>
+                            
+                            <!-- Z5A -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z5A" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z5A"
+                               id="sector-Z5A">
+                                <rect x="470" y="700" width="100" height="75" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="520" y="742.5" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z5A</text>
+                            </g>
+                            
+                            <!-- Z3 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z3" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z3"
+                               id="sector-Z3">
+                                <rect x="590" y="700" width="100" height="75" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="640" y="742.5" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z3</text>
+                            </g>
+                        </g>
                     </svg>
                 </div>
 
                 @if (showLegend)
                 {
                     <div class="legend-panel" id="legend-panel">
-                        <h5 id="legend-title">Legend</h5>
+                        <h5 id="legend-title">HNK Rijeka Stadium</h5>
                         <div class="legend-item" id="legend-available">
-                            <span class="legend-color" style="background: #4CAF50;" id="legend-available-color"></span>
-                            <span id="legend-available-text">Available</span>
+                            <span class="legend-color" style="background: #4A90E2;" id="legend-blue-color"></span>
+                            <span id="legend-blue-text">Available Sectors</span>
                         </div>
-                        <div class="legend-item" id="legend-partial">
-                            <span class="legend-color" style="background: #FF9800;" id="legend-partial-color"></span>
-                            <span id="legend-partial-text">Partially Occupied</span>
+                        <div class="legend-item" id="legend-premium">
+                            <span class="legend-color" style="background: #F39C12;" id="legend-orange-color"></span>
+                            <span id="legend-orange-text">Premium Sectors</span>
                         </div>
-                        <div class="legend-item" id="legend-full">
-                            <span class="legend-color" style="background: #F44336;" id="legend-full-color"></span>
-                            <span id="legend-full-text">Fully Occupied</span>
-                        </div>
-                        <div class="legend-item" id="legend-no-event">
-                            <span class="legend-color" style="background: #9E9E9E;" id="legend-no-event-color"></span>
-                            <span id="legend-no-event-text">No Event Selected</span>
+                        <div class="legend-item" id="legend-unavailable">
+                            <span class="legend-color" style="background: #9E9E9E;" id="legend-gray-color"></span>
+                            <span id="legend-gray-text">Unavailable</span>
                         </div>
                     </div>
                 }
             </div>
-
-            @if (hoveredSector != null && GetHoveredSectorData() != null)
-            {
-                var sector = GetHoveredSectorData();
-                var summary = GetSectorSummary(hoveredSector);
-                <div class="sector-tooltip" style="left: @(tooltipX)px; top: @(tooltipY)px;" id="sector-tooltip">
-                    <strong id="sector-tooltip-name">@sector.Name</strong><br />
-                    <span id="sector-tooltip-total">Total Seats: @sector.TotalSeats</span><br />
-                    @if (summary != null)
-                    {
-                        <span id="sector-tooltip-available">Available: @summary.FreeSeats</span><br />
-                        <span id="sector-tooltip-sold">Sold: @summary.SoldSeats</span><br />
-                        <span id="sector-tooltip-reserved">Reserved: @summary.HeldSeats</span>
-                    }
-                </div>
-            }
-        }
-        else if (errorMessage != null)
-        {
-            <div class="alert alert-danger" id="error-message-alert">
-                <i class="bi bi-exclamation-triangle" id="error-message-icon"></i> <span id="error-message-text">@errorMessage</span>
-            </div>
         }
         else
         {
-            <div class="alert alert-warning" id="no-stadium-alert">
-                <h5 id="no-stadium-title"><i class="fas fa-exclamation-triangle me-2" id="no-stadium-icon"></i>No Stadium Structure</h5>
-                <p id="no-stadium-message">No stadium structure found. Please import a stadium structure first.</p>
-                <a href="/admin/stadium-structure" class="btn btn-primary" id="manage-stadium-structure-link">Manage Stadium Structure</a>
+            <!-- HNK Rijeka Stadium - Static Layout (Fallback when no stadium data) -->
+            <div class="stadium-main-view" id="stadium-main-view">
+                <div class="svg-container" @ref="svgContainer" id="stadium-svg-container">
+                    <svg viewBox="0 0 1200 900" 
+                         preserveAspectRatio="xMidYMid meet"
+                         class="stadium-svg" 
+                         id="stadium-svg"
+                         role="img"
+                         aria-label="HNK Rijeka Stadium seating visualization"
+                         aria-describedby="stadium-description">
+                        
+                        <desc id="stadium-description">
+                            HNK Rijeka Stadium with 14 sectors including North (I2, I3, I4), West (S3, S4, S5), South (Z2, Z3, Z4, Z5A, Z6A, Z8, Z9, Z10), and East stands. Professional football stadium layout.
+                        </desc>
+                        
+                        <!-- Gradients and patterns -->
+                        <defs>
+                            <linearGradient id="field-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#2d5a2d" />
+                                <stop offset="50%" stop-color="#1e3a1e" />
+                                <stop offset="100%" stop-color="#2d5a2d" />
+                            </linearGradient>
+                            
+                            <filter id="sector-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/>
+                            </filter>
+                        </defs>
+                        
+                        <!-- HNK Rijeka Football Pitch -->
+                        <g class="field-group" id="field" role="img" aria-label="Football pitch">
+                            <!-- Main rectangular pitch -->
+                            <rect x="350" y="250" 
+                                  width="500" 
+                                  height="320"
+                                  fill="url(#field-gradient)"
+                                  stroke="#ffffff"
+                                  stroke-width="3"
+                                  filter="url(#sector-shadow)" />
+                            
+                            <!-- Football pitch markings -->
+                            <g class="field-markings" opacity="0.8" stroke="white" stroke-width="2" fill="none">
+                                <!-- Center line -->
+                                <line x1="600" y1="250" x2="600" y2="570" />
+                                
+                                <!-- Center circle -->
+                                <circle cx="600" cy="410" r="70" />
+                                <circle cx="600" cy="410" r="2" fill="white" />
+                                
+                                <!-- Penalty areas -->
+                                <!-- Left goal area -->
+                                <rect x="350" y="340" width="132" height="140" />
+                                <rect x="350" y="375" width="44" height="70" />
+                                
+                                <!-- Right goal area -->
+                                <rect x="718" y="340" width="132" height="140" />
+                                <rect x="806" y="375" width="44" height="70" />
+                                
+                                <!-- Goals -->
+                                <rect x="330" y="385" width="20" height="50" stroke-width="3" />
+                                <rect x="850" y="385" width="20" height="50" stroke-width="3" />
+                                
+                                <!-- Corner arcs -->
+                                <path d="M 350 250 Q 360 250 360 260" />
+                                <path d="M 850 250 Q 840 250 840 260" />
+                                <path d="M 350 570 Q 360 570 360 560" />
+                                <path d="M 850 570 Q 840 570 840 560" />
+                            </g>
+                        </g>
+
+                        <!-- HNK Rijeka Stadium Sectors - Exact Layout -->
+                        
+                        <!-- North Stand - I Sectors -->
+                        <g class="stand-group north-stand" data-stand="north" id="stand-north">
+                            <!-- I4 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="I4" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector I4"
+                               id="sector-I4">
+                                <rect x="400" y="120" width="120" height="100" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="460" y="175" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">I4</text>
+                            </g>
+                            
+                            <!-- I3 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="I3" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector I3"
+                               id="sector-I3">
+                                <rect x="540" y="120" width="120" height="100" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="600" y="175" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">I3</text>
+                            </g>
+                            
+                            <!-- I2 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="I2" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector I2"
+                               id="sector-I2">
+                                <rect x="680" y="120" width="120" height="100" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="740" y="175" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">I2</text>
+                            </g>
+                        </g>
+                        
+                        <!-- West Stand - S Sectors -->
+                        <g class="stand-group west-stand" data-stand="west" id="stand-west">
+                            <!-- S5 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="S5" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector S5"
+                               id="sector-S5">
+                                <rect x="150" y="260" width="120" height="90" 
+                                      fill="#F39C12" 
+                                      stroke="#D68910" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="210" y="305" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">S5</text>
+                            </g>
+                            
+                            <!-- S4 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="S4" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector S4"
+                               id="sector-S4">
+                                <rect x="150" y="365" width="120" height="90" 
+                                      fill="#F39C12" 
+                                      stroke="#D68910" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="210" y="410" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">S4</text>
+                            </g>
+                            
+                            <!-- S3 Sector -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="S3" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector S3"
+                               id="sector-S3">
+                                <rect x="150" y="470" width="120" height="90" 
+                                      fill="#F39C12" 
+                                      stroke="#D68910" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="210" y="515" text-anchor="middle" dominant-baseline="central"
+                                      font-size="16" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">S3</text>
+                            </g>
+                        </g>
+                        
+                        <!-- East Stand - Gray Sectors (Unavailable) -->
+                        <g class="stand-group east-stand" data-stand="east" id="stand-east">
+                            <rect x="930" y="280" width="120" height="80" 
+                                  fill="#9E9E9E" 
+                                  stroke="#757575" 
+                                  stroke-width="2" 
+                                  rx="6" 
+                                  opacity="0.6" />
+                            <rect x="930" y="380" width="120" height="80" 
+                                  fill="#9E9E9E" 
+                                  stroke="#757575" 
+                                  stroke-width="2" 
+                                  rx="6" 
+                                  opacity="0.6" />
+                            <rect x="930" y="480" width="120" height="80" 
+                                  fill="#9E9E9E" 
+                                  stroke="#757575" 
+                                  stroke-width="2" 
+                                  rx="6" 
+                                  opacity="0.6" />
+                        </g>
+                        
+                        <!-- South Stand - Z Sectors -->
+                        <g class="stand-group south-stand" data-stand="south" id="stand-south">
+                            <!-- Top Row: Z10, Z8, Z6A, Z4, Z2 -->
+                            <!-- Z10 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z10" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z10"
+                               id="sector-Z10">
+                                <rect x="280" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="327.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z10</text>
+                            </g>
+                            
+                            <!-- Z8 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z8" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z8"
+                               id="sector-Z8">
+                                <rect x="385" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="432.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z8</text>
+                            </g>
+                            
+                            <!-- Z6A -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z6A" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z6A"
+                               id="sector-Z6A">
+                                <rect x="490" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="537.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z6A</text>
+                            </g>
+                            
+                            <!-- Z4 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z4" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z4"
+                               id="sector-Z4">
+                                <rect x="595" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="642.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z4</text>
+                            </g>
+                            
+                            <!-- Z2 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z2" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z2"
+                               id="sector-Z2">
+                                <rect x="700" y="600" width="95" height="80" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="747.5" y="645" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z2</text>
+                            </g>
+                            
+                            <!-- Bottom Row: Z9, Z5A, Z3 -->
+                            <!-- Z9 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z9" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z9"
+                               id="sector-Z9">
+                                <rect x="350" y="700" width="100" height="75" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="400" y="742.5" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z9</text>
+                            </g>
+                            
+                            <!-- Z5A -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z5A" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z5A"
+                               id="sector-Z5A">
+                                <rect x="470" y="700" width="100" height="75" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="520" y="742.5" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z5A</text>
+                            </g>
+                            
+                            <!-- Z3 -->
+                            <g class="sector-group hnk-sector" 
+                               data-sector="Z3" 
+                               tabindex="0" 
+                               role="button" 
+                               aria-label="Sector Z3"
+                               id="sector-Z3">
+                                <rect x="590" y="700" width="100" height="75" 
+                                      fill="#4A90E2" 
+                                      stroke="#2E5C9A" 
+                                      stroke-width="2" 
+                                      rx="6" />
+                                <text x="640" y="742.5" text-anchor="middle" dominant-baseline="central"
+                                      font-size="14" font-weight="600" fill="white"
+                                      style="pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Z3</text>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+
+                @if (showLegend)
+                {
+                    <div class="legend-panel" id="legend-panel">
+                        <h5 id="legend-title">HNK Rijeka Stadium</h5>
+                        <div class="legend-item" id="legend-available">
+                            <span class="legend-color" style="background: #4A90E2;" id="legend-blue-color"></span>
+                            <span id="legend-blue-text">Available Sectors</span>
+                        </div>
+                        <div class="legend-item" id="legend-premium">
+                            <span class="legend-color" style="background: #F39C12;" id="legend-orange-color"></span>
+                            <span id="legend-orange-text">Premium Sectors</span>
+                        </div>
+                        <div class="legend-item" id="legend-unavailable">
+                            <span class="legend-color" style="background: #9E9E9E;" id="legend-gray-color"></span>
+                            <span id="legend-gray-text">Unavailable</span>
+                        </div>
+                    </div>
+                }
             </div>
         }
         </div>
@@ -253,1166 +845,3 @@
     </div>
 }
 
-<style>
-    /* Stadium Layout Container */
-    .stadium-layout-container {
-        display: flex;
-        gap: 1rem;
-        height: calc(100vh - 200px);
-        transition: all 0.3s ease;
-    }
-
-    .stadium-layout-container.info-panel-collapsed .stadium-viewer-container {
-        margin-left: 60px; /* Space for collapsed toggle button */
-    }
-
-    .stadium-layout-container.info-panel-expanded .stadium-viewer-container {
-        margin-left: 0; /* No extra margin when expanded */
-    }
-
-    /* Stadium Information Panel Styles */
-    .stadium-info-panel {
-        position: relative;
-        width: 380px;
-        background: white;
-        border-radius: var(--stadium-radius-lg);
-        box-shadow: var(--stadium-shadow-lg);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 100;
-        overflow: hidden;
-        height: fit-content;
-        max-height: calc(100vh - 200px);
-    }
-
-    .stadium-info-panel.collapsed {
-        width: 60px;
-        box-shadow: var(--stadium-shadow);
-    }
-
-    .stadium-info-panel.expanded {
-        width: 380px;
-    }
-
-    /* Toggle Button */
-    .info-panel-toggle {
-        position: absolute;
-        top: 50%;
-        right: -20px;
-        transform: translateY(-50%);
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
-        border: none;
-        border-radius: 50%;
-        color: white;
-        box-shadow: var(--stadium-shadow-md);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        z-index: 101;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .info-panel-toggle:hover {
-        background: linear-gradient(135deg, var(--admin-primary-dark) 0%, #5b21b6 100%);
-        transform: translateY(-50%) scale(1.1);
-        box-shadow: var(--stadium-shadow-lg);
-    }
-
-    .info-panel-toggle i {
-        font-size: 14px;
-        transition: transform 0.2s ease;
-    }
-
-    /* Panel Content */
-    .info-panel-content {
-        padding: 1.5rem;
-        height: 100%;
-        overflow-y: auto;
-        opacity: 1;
-        transition: opacity 0.3s ease;
-    }
-
-    .stadium-info-panel.collapsed .info-panel-content {
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    /* Information Cards */
-    .info-card {
-        background: white;
-        border: 1px solid var(--stadium-gray-200);
-        border-radius: var(--stadium-radius-lg);
-        margin-bottom: 1rem;
-        transition: all 0.2s ease;
-        overflow: hidden;
-    }
-
-    .info-card:hover {
-        box-shadow: var(--stadium-shadow-md);
-        transform: translateY(-1px);
-    }
-
-    .info-card .card-header {
-        background: linear-gradient(135deg, var(--stadium-gray-50) 0%, var(--stadium-gray-100) 100%);
-        border-bottom: 1px solid var(--stadium-gray-200);
-        padding: 1rem 1.25rem;
-    }
-
-    .info-card .card-title {
-        margin: 0;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--stadium-gray-800);
-        display: flex;
-        align-items: center;
-    }
-
-    .info-card .card-body {
-        padding: 1.25rem;
-    }
-
-    /* Stadium Overview Card Styles */
-    .stadium-overview-card .card-header {
-        background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
-        color: white;
-    }
-
-    .stadium-overview-card .card-title {
-        color: white;
-    }
-
-    .stadium-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--stadium-gray-900);
-        margin-bottom: 1rem;
-        word-wrap: break-word;
-    }
-
-    .capacity-display {
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-
-    .capacity-value {
-        display: block;
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--admin-primary);
-        line-height: 1;
-    }
-
-    .capacity-label {
-        font-size: 0.875rem;
-        color: var(--stadium-gray-600);
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .active-event {
-        padding: 0.75rem;
-        background: var(--stadium-gray-50);
-        border-radius: var(--stadium-radius);
-        border-left: 3px solid var(--stadium-success);
-    }
-
-    .event-name {
-        font-weight: 500;
-        color: var(--stadium-gray-800);
-    }
-
-    .event-date {
-        margin-top: 0.25rem;
-    }
-
-    /* Structure Statistics Styles */
-    .stat-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.75rem;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid var(--stadium-gray-100);
-    }
-
-    .stat-row:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-    }
-
-    .stat-label {
-        font-size: 0.875rem;
-        color: var(--stadium-gray-600);
-        font-weight: 500;
-    }
-
-    .stat-value {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--stadium-gray-800);
-    }
-
-    /* Tribune List */
-    .tribune-list {
-        margin: 1rem 0;
-    }
-
-    .tribune-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.625rem;
-        margin-bottom: 0.5rem;
-        background: var(--stadium-gray-50);
-        border-radius: var(--stadium-radius);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-    }
-
-    .tribune-item:hover {
-        background: var(--stadium-gray-100);
-        border-color: var(--admin-primary);
-        transform: translateX(2px);
-    }
-
-    .tribune-code {
-        width: 24px;
-        height: 24px;
-        background: var(--admin-primary);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        font-weight: 600;
-        flex-shrink: 0;
-    }
-
-    .tribune-name {
-        font-weight: 500;
-        color: var(--stadium-gray-800);
-        flex: 1;
-    }
-
-    .tribune-sectors {
-        font-size: 0.8rem;
-        color: var(--stadium-gray-500);
-    }
-
-    /* Occupancy Card Styles */
-    .occupancy-overview {
-        text-align: center;
-        margin-bottom: 1.5rem;
-    }
-
-    .occupancy-percentage {
-        margin-bottom: 0.75rem;
-    }
-
-    .percentage-value {
-        display: block;
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--stadium-warning);
-        line-height: 1;
-    }
-
-    .percentage-label {
-        font-size: 0.8rem;
-        color: var(--stadium-gray-600);
-        font-weight: 500;
-        text-transform: uppercase;
-    }
-
-    .occupancy-progress .progress {
-        height: 8px;
-        background: var(--stadium-gray-200);
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .occupancy-progress .progress-bar {
-        background: linear-gradient(90deg, var(--stadium-warning) 0%, #ea580c 100%);
-        transition: width 0.6s ease-in-out;
-    }
-
-    /* Occupancy Breakdown */
-    .occupancy-breakdown {
-        margin-bottom: 1.5rem;
-    }
-
-    .breakdown-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.5rem;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid var(--stadium-gray-100);
-    }
-
-    .breakdown-item:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-    }
-
-    .breakdown-color {
-        width: 12px;
-        height: 12px;
-        border-radius: 2px;
-        flex-shrink: 0;
-    }
-
-    .breakdown-item.available .breakdown-color {
-        background: var(--stadium-success);
-    }
-
-    .breakdown-item.sold .breakdown-color {
-        background: var(--stadium-danger);
-    }
-
-    .breakdown-item.reserved .breakdown-color {
-        background: var(--stadium-info);
-    }
-
-    .breakdown-label {
-        flex: 1;
-        font-size: 0.875rem;
-        color: var(--stadium-gray-600);
-    }
-
-    .breakdown-value {
-        font-weight: 600;
-        color: var(--stadium-gray-800);
-        font-size: 0.875rem;
-    }
-
-    /* Tribune Occupancy */
-    .tribune-occupancy {
-        border-top: 1px solid var(--stadium-gray-200);
-        padding-top: 1rem;
-    }
-
-    .section-title {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--stadium-gray-700);
-        margin-bottom: 0.75rem;
-    }
-
-    .tribune-occupancy-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.625rem;
-    }
-
-    .tribune-label {
-        width: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--stadium-gray-700);
-        flex-shrink: 0;
-    }
-
-    .mini-progress {
-        flex: 1;
-        height: 6px;
-        background: var(--stadium-gray-200);
-        border-radius: 3px;
-        overflow: hidden;
-    }
-
-    .mini-progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, var(--stadium-success) 0%, var(--stadium-warning) 50%, var(--stadium-danger) 100%);
-        transition: width 0.4s ease;
-        min-width: 2px;
-    }
-
-    .occupancy-value {
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: var(--stadium-gray-600);
-        min-width: 35px;
-        text-align: right;
-    }
-
-    /* Technical Card */
-    .technical-card .card-header.clickable {
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .technical-card .card-header.clickable:hover {
-        background: linear-gradient(135deg, var(--stadium-gray-100) 0%, var(--stadium-gray-200) 100%);
-    }
-
-    .text-monospace {
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 0.85rem;
-    }
-
-    /* Scrollbar Styling for Panel */
-    .info-panel-content::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .info-panel-content::-webkit-scrollbar-track {
-        background: var(--stadium-gray-100);
-        border-radius: 3px;
-    }
-
-    .info-panel-content::-webkit-scrollbar-thumb {
-        background: var(--stadium-gray-400);
-        border-radius: 3px;
-        transition: background 0.2s ease;
-    }
-
-    .info-panel-content::-webkit-scrollbar-thumb:hover {
-        background: var(--stadium-gray-500);
-    }
-
-    .stadium-viewer-container {
-        flex: 1;
-        padding: 20px;
-        height: calc(100vh - 200px);
-        display: flex;
-        flex-direction: column;
-        transition: margin-left 0.3s ease;
-    }
-
-    .viewer-header {
-        margin-bottom: 20px;
-    }
-
-    .viewer-controls {
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .event-selector select {
-        width: 200px;
-    }
-
-    .search-seat {
-        display: flex;
-        gap: 5px;
-    }
-
-    .search-seat input {
-        width: 150px;
-    }
-
-    .stadium-main-view {
-        flex: 1;
-        position: relative;
-        background: #f5f5f5;
-        border-radius: 8px;
-        padding: 20px;
-        min-height: 400px;
-    }
-
-    .svg-container {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .stadium-svg {
-        max-width: 100%;
-        max-height: 100%;
-        width: auto;
-        height: auto;
-    }
-
-    .legend-panel {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin: 5px 0;
-    }
-
-    .legend-color {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-    }
-
-    .sector-tooltip {
-        position: absolute;
-        background: white;
-        padding: 10px;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        pointer-events: none;
-        z-index: 1000;
-        font-size: 12px;
-    }
-
-    .loading-spinner {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 400px;
-    }
-
-    .seat-canvas-container {
-        width: 100%;
-        height: 500px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        overflow: auto;
-    }
-
-    .seat-info-panel {
-        margin-top: 15px;
-        padding: 10px;
-        background: #f8f9fa;
-        border-radius: 4px;
-    }
-
-    /* Responsive Design for Stadium Info Panel */
-    
-    /* Tablet (768px - 1199px) */
-    @@media (max-width: 1199px) and (min-width: 768px) {
-        .stadium-info-panel {
-            width: 320px;
-        }
-
-        .stadium-info-panel.expanded {
-            width: 320px;
-        }
-
-        .capacity-value {
-            font-size: 2rem;
-        }
-
-        .percentage-value {
-            font-size: 1.75rem;
-        }
-
-        .info-card .card-body {
-            padding: 1rem;
-        }
-    }
-
-    /* Mobile (max-width: 767px) */
-    @@media (max-width: 767px) {
-        .stadium-layout-container {
-            flex-direction: column;
-            height: auto;
-            gap: 0;
-        }
-
-        .stadium-layout-container.info-panel-collapsed .stadium-viewer-container,
-        .stadium-layout-container.info-panel-expanded .stadium-viewer-container {
-            margin-left: 0;
-        }
-
-        .stadium-info-panel {
-            position: relative;
-            width: 100%;
-            height: auto;
-            margin-bottom: 1rem;
-            order: 1;
-        }
-
-        .stadium-info-panel.collapsed {
-            width: 100%;
-            height: 60px;
-            overflow: hidden;
-        }
-
-        .stadium-info-panel.expanded {
-            width: 100%;
-            height: auto;
-        }
-
-        .info-panel-toggle {
-            right: 10px;
-            top: 15px;
-            transform: none;
-            position: absolute;
-        }
-
-        .info-panel-content {
-            padding: 1rem;
-        }
-
-        .stadium-info-panel.collapsed .info-panel-content {
-            display: none;
-        }
-
-        .stadium-viewer-container {
-            height: calc(100vh - 300px);
-            order: 2;
-            padding: 10px;
-        }
-
-        /* Mobile-specific card adjustments */
-        .info-card {
-            margin-bottom: 0.75rem;
-        }
-
-        .info-card .card-body {
-            padding: 0.875rem;
-        }
-
-        .capacity-value {
-            font-size: 1.75rem;
-        }
-
-        .percentage-value {
-            font-size: 1.5rem;
-        }
-
-        .tribune-item {
-            padding: 0.5rem;
-        }
-
-        .tribune-code {
-            width: 20px;
-            height: 20px;
-            font-size: 0.7rem;
-        }
-
-        .tribune-name {
-            font-size: 0.875rem;
-        }
-
-        .tribune-sectors {
-            font-size: 0.75rem;
-        }
-
-        /* Accordion-style for mobile */
-        .info-card:not(.stadium-overview-card) {
-            margin-bottom: 0.5rem;
-        }
-
-        .technical-card .card-header {
-            padding: 0.75rem 1rem;
-        }
-
-        .technical-card .card-body {
-            padding: 0.75rem 1rem;
-        }
-    }
-
-    /* Large Mobile / Small Tablet (max-width: 576px) */
-    @@media (max-width: 576px) {
-        .stadium-layout-container {
-            padding: 0;
-        }
-
-        .container-fluid {
-            padding: 0.5rem;
-        }
-
-        .stadium-info-panel {
-            border-radius: var(--stadium-radius);
-            box-shadow: var(--stadium-shadow);
-        }
-
-        .info-panel-content {
-            padding: 0.75rem;
-        }
-
-        .info-card .card-header {
-            padding: 0.75rem;
-        }
-
-        .info-card .card-body {
-            padding: 0.75rem;
-        }
-
-        .capacity-display {
-            margin-bottom: 0.75rem;
-        }
-
-        .capacity-value {
-            font-size: 1.5rem;
-        }
-
-        .percentage-value {
-            font-size: 1.25rem;
-        }
-
-        .stat-row {
-            margin-bottom: 0.5rem;
-            padding: 0.375rem 0;
-        }
-
-        .tribune-item {
-            padding: 0.375rem;
-            gap: 0.5rem;
-        }
-
-        .tribune-occupancy-item {
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .breakdown-item {
-            gap: 0.5rem;
-            margin-bottom: 0.375rem;
-            padding: 0.375rem 0;
-        }
-    }
-
-    /* High DPI / Retina Display Support */
-    @@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-        .info-panel-toggle {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .tribune-code {
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-    }
-
-    /* Accessibility - Reduced Motion */
-    @@media (prefers-reduced-motion: reduce) {
-        .stadium-info-panel,
-        .info-panel-toggle,
-        .tribune-item,
-        .info-card,
-        .occupancy-progress .progress-bar,
-        .mini-progress-bar {
-            transition: none !important;
-        }
-    }
-
-    /* Dark Mode Support (if needed) */
-    @@media (prefers-color-scheme: dark) {
-        .stadium-info-panel {
-            background: var(--stadium-gray-800);
-            color: var(--stadium-gray-100);
-        }
-
-        .info-card {
-            background: var(--stadium-gray-700);
-            border-color: var(--stadium-gray-600);
-            color: var(--stadium-gray-100);
-        }
-    }
-
-    /* Tribune highlighting styles */
-    .tribune-highlighted {
-        filter: brightness(1.3) saturate(1.2) !important;
-        animation: pulse-glow 2s infinite alternate;
-    }
-
-    @@keyframes pulse-glow {
-        0% {
-            filter: brightness(1.3) saturate(1.2) drop-shadow(0 0 5px rgba(59, 130, 246, 0.6));
-        }
-        100% {
-            filter: brightness(1.5) saturate(1.4) drop-shadow(0 0 15px rgba(59, 130, 246, 0.8));
-        }
-    }
-
-    /* Error handling for disconnected circuits */
-    .blazor-error-boundary {
-        background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTI1IDEwQzMwLjUyMjggMTAgMzUgMTQuNDc3MiAzNSAyMFM0NS41MjI4IDI1IDQwIDI1UzQ1IDI5LjQ3NzIgNDUgMzVTNDAuNTIyOCA0MCAzNSA0MFMzMCA0NC40NzcyIDMwIDUwSDIwQzE0LjQ3NzIgNTAgMTAgNDUuNTIyOCAxMCA0MFM1LjQ3NzE2IDM1IDAgMzVTNSAyOS40NzcyIDUgMjVTOS40NzcxNiAyMCAxNSAyMFMyNSAxNC40NzcyIDI1IDEwWiIgZmlsbD0iIzM3NDE1MSIvPgo8L3N2Zz4K) center/cover;
-        opacity: 0.1;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: -1;
-    }
-</style>
-
-@code {
-    // Stadium viewer properties
-    private StadiumViewerDto? stadiumData;
-    private EventSeatStatusDto? eventSeatStatus;
-    private bool isLoading = true;
-    private string? errorMessage;
-    private bool showLegend = false;
-    private bool showOccupancy = true;
-    private string? hoveredSector;
-    private string searchSeatCode = "";
-    private double tooltipX;
-    private double tooltipY;
-
-    // Modal properties
-    private bool showSectorModal = false;
-    private StadiumSectorDto? selectedSector;
-    private StadiumSectorDto? sectorWithSeats;
-    private List<string> selectedSeats = new();
-    private ElementReference svgContainer;
-    private ElementReference seatCanvas;
-
-    // Existing properties for event management
-    private List<Event>? events;
-    private int selectedEventId = 0;
-    private Dictionary<string, SeatStatusDto>? seatStatusMap;
-    private bool isSimulating = false;
-
-    // Stadium information panel properties
-    private bool isInfoPanelCollapsed = false; // Start expanded for better UX
-    private Event? selectedEvent;
-    private DateTime? lastUpdateTime = DateTime.Now;
-    private string? highlightedTribune;
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Load stadium data first (fast and essential)
-        await LoadStadiumData();
-        
-        // Don't wait for events - they can timeout without affecting stadium display
-        _ = LoadEventsBackground();
-    }
-    
-    private async Task LoadEventsBackground()
-    {
-        try
-        {
-            await Task.Delay(100); // Small delay to ensure stadium renders first
-            events = await ApiService.GetEventsAsync();
-            await InvokeAsync(StateHasChanged);
-        }
-        catch (Exception ex)
-        {
-            // Events loading failed - stadium should still work
-            Logger?.LogError(ex, "Failed to load events in background");
-        }
-    }
-
-    private async Task LoadStadiumData()
-    {
-        try
-        {
-            isLoading = true;
-            StateHasChanged(); // Ensure UI shows loading state
-            
-            Logger.LogInformation("Starting to load stadium data from API...");
-            var response = await ApiService.GetAsync<StadiumViewerDto>("stadium-viewer/overview");
-            
-            if (response != null)
-            {
-                Logger.LogInformation($"Stadium data loaded successfully: {response.Name}");
-                stadiumData = response;
-            }
-            else
-            {
-                Logger.LogWarning("Stadium data response was null");
-                errorMessage = "Failed to load stadium data - API returned null";
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Exception loading stadium data: {Message}", ex.Message);
-            errorMessage = $"Error loading stadium layout: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-            Logger.LogInformation($"LoadStadiumData completed. stadiumData is null: {stadiumData == null}");
-            StateHasChanged(); // Ensure UI updates after loading
-        }
-    }
-
-    private async Task LoadEvents()
-    {
-        try
-        {
-            events = await ApiService.GetEventsAsync();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error loading events");
-        }
-    }
-
-    private async Task OnEventChanged()
-    {
-        if (selectedEventId > 0)
-        {
-            selectedEvent = events?.FirstOrDefault(e => e.Id == selectedEventId);
-            await LoadEventSeatStatus(selectedEventId);
-            await LoadSeatStatusForEvent(); // Keep existing functionality
-        }
-        else
-        {
-            selectedEventId = 0;
-            selectedEvent = null;
-            eventSeatStatus = null;
-            seatStatusMap = null;
-        }
-        StateHasChanged();
-    }
-
-    private async Task LoadEventSeatStatus(int eventId)
-    {
-        try
-        {
-            var response = await ApiService.GetAsync<EventSeatStatusDto>($"stadium-viewer/event/{eventId}/seat-status");
-            eventSeatStatus = response;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error loading event seat status");
-        }
-    }
-
-    private async Task LoadSeatStatusForEvent()
-    {
-        try
-        {
-            var response = await ApiService.GetSeatStatusForEventAsync(selectedEventId);
-            if (response != null)
-            {
-                seatStatusMap = response.SoldSeats;
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error loading seat status");
-            seatStatusMap = null;
-        }
-    }
-
-    private async Task SimulateTicketSales()
-    {
-        if (selectedEventId <= 0) return;
-        
-        isSimulating = true;
-        StateHasChanged();
-
-        try
-        {
-            var success = await ApiService.SimulateTicketSalesAsync(selectedEventId, 25, 75.00m);
-            if (success)
-            {
-                await LoadSeatStatusForEvent();
-                await LoadEventSeatStatus(selectedEventId);
-                StateHasChanged();
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error simulating ticket sales");
-        }
-        finally
-        {
-            isSimulating = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task OpenSectorModal(StadiumSectorDto sector)
-    {
-        selectedSector = sector;
-        selectedSeats.Clear();
-        showSectorModal = true;
-
-        try
-        {
-            var response = await ApiService.GetAsync<StadiumSectorDto>($"stadium-viewer/sector/{sector.Id}/seats");
-            if (response != null)
-            {
-                sectorWithSeats = response;
-                StateHasChanged();
-                await Task.Delay(100);
-                await RenderSeatsOnCanvas();
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error loading sector seats");
-        }
-    }
-
-    private void CloseSectorModal()
-    {
-        showSectorModal = false;
-        selectedSector = null;
-        sectorWithSeats = null;
-        selectedSeats.Clear();
-    }
-
-    private async Task RenderSeatsOnCanvas()
-    {
-        if (sectorWithSeats?.Rows != null)
-        {
-            await JSRuntime.InvokeVoidAsync("renderSeatsOnCanvas", seatCanvas, sectorWithSeats, selectedEventId);
-        }
-    }
-
-    private async Task SearchSeat()
-    {
-        if (string.IsNullOrWhiteSpace(searchSeatCode))
-            return;
-
-        try
-        {
-            var request = new { seatCode = searchSeatCode };
-            var response = await ApiService.PostAsync<SearchSeatResultDto>("stadium-viewer/search-seat", request);
-            
-            if (response != null)
-            {
-                var sector = stadiumData?.Stands
-                    .SelectMany(s => s.Sectors)
-                    .FirstOrDefault(s => s.Id == response.SectorId);
-                    
-                if (sector != null)
-                {
-                    await OpenSectorModal(sector);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error searching for seat");
-        }
-    }
-
-    private void OnSectorHover(StadiumSectorDto sector, bool isHovering)
-    {
-        if (isHovering)
-        {
-            hoveredSector = sector.Id;
-            tooltipX = 500;
-            tooltipY = 300;
-        }
-        else
-        {
-            hoveredSector = null;
-        }
-    }
-
-    private StadiumSectorDto? GetHoveredSectorData()
-    {
-        if (hoveredSector == null || stadiumData == null)
-            return null;
-
-        return stadiumData.Stands
-            .SelectMany(s => s.Sectors)
-            .FirstOrDefault(s => s.Id == hoveredSector);
-    }
-
-    private SeatStatusSummaryDto? GetSectorSummary(string sectorId)
-    {
-        if (eventSeatStatus?.SectorSummaries.TryGetValue(sectorId, out var summary) == true)
-        {
-            return summary;
-        }
-        return null;
-    }
-
-    private string GetSectorFillColor(StadiumSectorDto sector)
-    {
-        if (selectedEventId == 0 || eventSeatStatus == null)
-        {
-            return sector.FillColor; // Use sector's original color when no event selected
-        }
-
-        var summary = GetSectorSummary(sector.Id);
-        if (summary == null)
-            return sector.FillColor;
-
-        if (summary.OccupancyPercentage >= 90)
-            return "#F44336"; // Red - nearly full
-        else if (summary.OccupancyPercentage >= 50)
-            return "#FF9800"; // Orange - partially full
-        else
-            return "#4CAF50"; // Green - mostly available
-    }
-
-    private string GetPolygonPoints(List<PointDto> points)
-    {
-        return string.Join(" ", points.Select(p => $"{p.X},{p.Y}"));
-    }
-
-    private double GetSectorCenterX(List<PointDto> polygon)
-    {
-        return polygon.Average(p => p.X);
-    }
-
-    private double GetSectorCenterY(List<PointDto> polygon)
-    {
-        return polygon.Average(p => p.Y);
-    }
-
-    // Stadium Information Panel Event Handlers
-    private async Task HandleInfoPanelToggle()
-    {
-        isInfoPanelCollapsed = !isInfoPanelCollapsed;
-        StateHasChanged();
-        await Task.Delay(300); // Allow CSS transition to complete
-        // Optionally trigger map resize/redraw
-    }
-
-    private async Task OnTribuneSelected(StadiumStandDto stand)
-    {
-        highlightedTribune = stand.TribuneCode;
-        StateHasChanged();
-        
-        // Optional: Scroll to or highlight tribune on map
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("highlightTribune", stand.TribuneCode);
-        }
-        catch (JSDisconnectedException)
-        {
-            Logger.LogWarning("Could not highlight tribune on map: Blazor circuit disconnected");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWarning(ex, "Could not highlight tribune on map: {TribuneCode}", stand.TribuneCode);
-        }
-    }
-
-    private async Task OnTribuneHovered((StadiumStandDto stand, bool isHovering) tribuneData)
-    {
-        try
-        {
-            if (tribuneData.isHovering)
-            {
-                // Optional: Add hover effects on the map
-                await JSRuntime.InvokeVoidAsync("hoverTribune", tribuneData.stand.TribuneCode);
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("unhoverTribune");
-            }
-        }
-        catch (JSDisconnectedException)
-        {
-            Logger.LogWarning("Could not invoke JavaScript function for tribune hover: Blazor circuit disconnected");
-        }
-        catch (Exception ex)
-        {
-            // Handle circuit disconnection gracefully
-            Logger.LogWarning(ex, "Could not invoke JavaScript function for tribune hover. Circuit may be disconnected.");
-        }
-    }
-
-    private Event? GetSelectedEvent()
-    {
-        return selectedEvent;
-    }
-}

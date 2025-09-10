@@ -1,5 +1,6 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
+@inherits StadiumInfoPanelBase
 
 <div class="stadium-info-panel @(IsCollapsed ? "collapsed" : "expanded")" id="stadium-info-panel">
     <div class="panel-header" id="stadium-info-panel-header">
@@ -27,7 +28,7 @@
                 <div class="info-card stadium-overview" id="stadium-overview-card">
                     <div class="card-header" id="stadium-overview-card-header">
                         <h5 id="stadium-overview-card-title">Stadium Overview</h5>
-                        <span class="badge badge-admin" id="stadium-overview-admin-badge">ADMIN</span>
+                        <span class="badge badge-admin" id="stadium-overview-admin-badge">ADMIN AAAAA</span>
                     </div>
                     <div class="card-content" id="stadium-overview-card-content">
                         <div class="stadium-name" id="stadium-name-display">
@@ -198,64 +199,3 @@
     }
 </div>
 
-@code {
-    [Parameter] public StadiumViewerDto? StadiumData { get; set; }
-    [Parameter] public EventSeatStatusDto? EventSeatStatus { get; set; }
-    [Parameter] public Event? SelectedEvent { get; set; }
-    [Parameter] public bool IsCollapsed { get; set; } = false;
-    [Parameter] public EventCallback OnTogglePanel { get; set; }
-    [Parameter] public EventCallback<StadiumStandDto> OnTribuneSelected { get; set; }
-    [Parameter] public EventCallback<(StadiumStandDto, bool)> OnTribuneHovered { get; set; }
-
-    private bool showTechnical = false;
-
-    // Computed properties
-    private int TotalCapacity => StadiumData?.Stands.Sum(s => s.Sectors.Sum(sec => sec.TotalSeats)) ?? 0;
-    private int TotalSectors => StadiumData?.Stands.Sum(s => s.Sectors.Count) ?? 0;
-    private int AverageSeatsPerSector => TotalSectors > 0 ? TotalCapacity / TotalSectors : 0;
-
-    private int TotalSoldSeats => EventSeatStatus?.SectorSummaries.Values.Sum(s => s.SoldSeats) ?? 0;
-    private int TotalReservedSeats => EventSeatStatus?.SectorSummaries.Values.Sum(s => s.HeldSeats) ?? 0;
-    private int TotalAvailableSeats => EventSeatStatus?.SectorSummaries.Values.Sum(s => s.FreeSeats) ?? 0;
-    private decimal OverallOccupancyPercentage 
-    {
-        get
-        {
-            if (TotalCapacity == 0) return 0;
-            return Math.Round((decimal)(TotalSoldSeats + TotalReservedSeats) / TotalCapacity * 100, 1);
-        }
-    }
-
-    private async Task TogglePanel()
-    {
-        IsCollapsed = !IsCollapsed;
-        if (OnTogglePanel.HasDelegate)
-            await OnTogglePanel.InvokeAsync();
-    }
-
-    private async Task OnTribuneClick(StadiumStandDto stand)
-    {
-        if (OnTribuneSelected.HasDelegate)
-            await OnTribuneSelected.InvokeAsync(stand);
-    }
-
-    private async Task OnTribuneHover(StadiumStandDto stand, bool isHovering)
-    {
-        if (OnTribuneHovered.HasDelegate)
-            await OnTribuneHovered.InvokeAsync((stand, isHovering));
-    }
-
-    private decimal GetTribuneOccupancy(StadiumStandDto stand)
-    {
-        if (EventSeatStatus == null || !stand.Sectors.Any()) return 0;
-
-        var tribuneTotal = stand.Sectors.Sum(s => s.TotalSeats);
-        if (tribuneTotal == 0) return 0;
-
-        var tribuneOccupied = stand.Sectors
-            .Where(s => EventSeatStatus.SectorSummaries.ContainsKey(s.Id))
-            .Sum(s => EventSeatStatus.SectorSummaries[s.Id].SoldSeats + EventSeatStatus.SectorSummaries[s.Id].HeldSeats);
-
-        return Math.Round((decimal)tribuneOccupied / tribuneTotal * 100, 1);
-    }
-}

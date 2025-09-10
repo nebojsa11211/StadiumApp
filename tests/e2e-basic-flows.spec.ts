@@ -4,7 +4,7 @@ test.describe('E2E Basic Application Flows', () => {
   
   test('INT-001-BASIC: Customer app loads and navigation works', async ({ page }) => {
     // Navigate to customer application
-    await page.goto('http://localhost:9001');
+    await page.goto('http://localhost:9020');
     
     // Verify page loads
     await expect(page).toHaveTitle(/Stadium/i);
@@ -17,7 +17,7 @@ test.describe('E2E Basic Application Flows', () => {
 
   test('INT-002-BASIC: Admin app loads and login page works', async ({ page }) => {
     // Navigate to admin application
-    await page.goto('http://localhost:9002');
+    await page.goto('http://localhost:9030');
     
     // Verify page loads  
     await expect(page).toHaveTitle(/Stadium/i);
@@ -33,7 +33,7 @@ test.describe('E2E Basic Application Flows', () => {
 
   test('INT-003-BASIC: Staff app loads and navigation works', async ({ page }) => {
     // Navigate to staff application
-    await page.goto('http://localhost:9003');
+    await page.goto('http://localhost:9040');
     
     // Verify page loads
     await expect(page).toHaveTitle(/Stadium/i);
@@ -46,7 +46,7 @@ test.describe('E2E Basic Application Flows', () => {
 
   test('INT-004-BASIC: API endpoint accessibility', async ({ page }) => {
     // Test API is accessible by making a request to a simple endpoint
-    const response = await page.request.get('http://localhost:9000/api/health', { 
+    const response = await page.request.get('http://localhost:9010/api/health', { 
       ignoreHTTPSErrors: true,
       timeout: 10000
     });
@@ -63,8 +63,8 @@ test.describe('E2E Basic Application Flows', () => {
     const adminPage = await context.newPage();
     
     // Load both applications
-    await customerPage.goto('http://localhost:9001');
-    await adminPage.goto('http://localhost:9002');
+    await customerPage.goto('http://localhost:9020');
+    await adminPage.goto('http://localhost:9030');
     
     // Verify both load successfully
     await expect(customerPage).toHaveTitle(/Stadium/i);
@@ -74,8 +74,8 @@ test.describe('E2E Basic Application Flows', () => {
     const customerURL = customerPage.url();
     const adminURL = adminPage.url();
     
-    expect(customerURL).toContain('9001');
-    expect(adminURL).toContain('9002');
+    expect(customerURL).toContain('9020');
+    expect(adminURL).toContain('9030');
     expect(customerURL).not.toBe(adminURL);
     
     console.log('✅ Cross-application navigation works');
@@ -85,7 +85,7 @@ test.describe('E2E Basic Application Flows', () => {
     // Try to access an endpoint that would require database
     // This is a basic connectivity test
     try {
-      const response = await page.request.get('http://localhost:9000/api/event', {
+      const response = await page.request.get('http://localhost:9010/api/event', {
         ignoreHTTPSErrors: true,
         timeout: 15000
       });
@@ -107,7 +107,7 @@ test.describe('E2E Basic Application Flows', () => {
   test('INT-007-BASIC: SignalR hub endpoint test', async ({ page }) => {
     // Test if SignalR endpoint is accessible
     try {
-      const response = await page.request.get('http://localhost:9000/bartenderHub/negotiate', {
+      const response = await page.request.get('http://localhost:9010/bartenderHub/negotiate', {
         ignoreHTTPSErrors: true,
         timeout: 10000
       });
@@ -125,10 +125,10 @@ test.describe('E2E Basic Application Flows', () => {
 
   test('INT-008-BASIC: Application health check', async ({ page }) => {
     const apps = [
-      { name: 'Customer', url: 'http://localhost:9001' },
-      { name: 'Admin', url: 'http://localhost:9002' }, 
-      { name: 'Staff', url: 'http://localhost:9003' },
-      { name: 'API', url: 'http://localhost:9000' }
+      { name: 'Customer', url: 'http://localhost:9020' },
+      { name: 'Admin', url: 'http://localhost:9030' }, 
+      { name: 'Staff', url: 'http://localhost:9040' },
+      { name: 'API', url: 'http://localhost:9010' }
     ];
     
     for (const app of apps) {

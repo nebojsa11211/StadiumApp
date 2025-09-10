@@ -13,6 +13,25 @@ using System.Text.Json;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
+public class TableInfoDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string EntityName { get; set; } = string.Empty;
+    public string Schema { get; set; } = string.Empty;
+    public int ColumnCount { get; set; }
+    public List<ColumnInfoDto> Columns { get; set; } = new List<ColumnInfoDto>();
+}
+
+public class ColumnInfoDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public bool IsNullable { get; set; }
+    public bool IsPrimaryKey { get; set; }
+    public bool IsForeignKey { get; set; }
+    public int? MaxLength { get; set; }
+}
+
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin")]
@@ -33,15 +52,15 @@ public class DataGridController : ControllerBase
         try
         {
             var tables = _context.Model.GetEntityTypes()
-                .Select(t => new
+                .Select(t => new TableInfoDto
                 {
                     Name = t.GetTableName() ?? t.ShortName(),
                     EntityName = t.ClrType.Name,
                     Schema = t.GetSchema() ?? "dbo",
                     ColumnCount = t.GetProperties().Count(),
-                    Columns = t.GetProperties().Select(p => new
+                    Columns = t.GetProperties().Select(p => new ColumnInfoDto
                     {
-                        Name = p.GetColumnName(),
+                        Name = p.GetColumnName() ?? string.Empty,
                         Type = p.ClrType.Name,
                         IsNullable = p.IsNullable,
                         IsPrimaryKey = p.IsPrimaryKey(),

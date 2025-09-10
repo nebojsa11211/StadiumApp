@@ -1,6 +1,3 @@
-@using StadiumDrinkOrdering.Admin.Services
-@inject IAuthStateService AuthStateService
-
 @if (!isInitialized)
 {
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
@@ -36,23 +33,4 @@ else
             </AuthRoute>
         </NotFound>
     </Router>
-}
-
-@code {
-    private bool isInitialized = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await AuthStateService.InitializeAsync();
-            isInitialized = true;
-            StateHasChanged();
-        }
-    }
-
-    private bool IsLoginPage(Type? pageType)
-    {
-        return pageType?.Name == "Login";
-    }
 }

@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-StadiumDrinkOrdering.Customer-20240101-000001</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

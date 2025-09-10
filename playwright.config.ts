@@ -13,7 +13,7 @@ export default defineConfig({
     timeout: 15000 // 15 seconds for assertions
   },
   use: {
-    baseURL: 'http://localhost:5003',
+    baseURL: 'http://localhost:9020',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

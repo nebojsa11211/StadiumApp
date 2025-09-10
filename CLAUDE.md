@@ -32,10 +32,10 @@
 
 ### Local .NET Development
 - **Build solution:** `dotnet build StadiumDrinkOrdering.sln`
-- **Run API:** `cd StadiumDrinkOrdering.API && dotnet run --urls "https://localhost:7000;http://localhost:7001"`
-- **Run Customer App:** `cd StadiumDrinkOrdering.Customer && dotnet run --urls "https://localhost:7002;http://localhost:7003"`
-- **Run Admin App:** `cd StadiumDrinkOrdering.Admin && dotnet run --urls "https://localhost:7004;http://localhost:7005"`
-- **Run Staff App:** `cd StadiumDrinkOrdering.Staff && dotnet run --urls "https://localhost:7006;http://localhost:7007"`
+- **Run API:** `cd StadiumDrinkOrdering.API && dotnet run --launch-profile https`
+- **Run Customer App:** `cd StadiumDrinkOrdering.Customer && dotnet run --launch-profile https`
+- **Run Admin App:** `cd StadiumDrinkOrdering.Admin && dotnet run --launch-profile https`
+- **Run Staff App:** `cd StadiumDrinkOrdering.Staff && dotnet run --launch-profile https`
 
 ---
 
@@ -350,14 +350,26 @@ environment:
 
 ---
 
-## Service Ports
-- API: Dev 7000/7001 → Docker 9000 ✅ Running
-- Customer: Dev 7002/7003 → Docker 9001 ✅ Running (also on 5003)
-- Admin: Dev 7004/7005 → **Current: 9004** ✅ Running 
-- Staff: Dev 7006/7007 → Docker 9003
-- Database: PostgreSQL/Supabase (cloud/remote)
+## Service Ports - FIXED PORT ASSIGNMENTS ✅
 
-**Note:** Admin currently running on port 9004 due to port conflicts. Use **http://localhost:9004** to access Admin interface.
+### Development Ports (HTTPS/HTTP)
+- **API**: `7010`/`7011` → Docker `9010` ✅ Fixed
+- **Customer**: `7020`/`7021` → Docker `9020` ✅ Fixed  
+- **Admin**: `7030`/`7031` → Docker `9030` ✅ Fixed
+- **Staff**: `7040`/`7041` → Docker `9040` ✅ Fixed
+- **Database**: PostgreSQL/Supabase (cloud/remote)
+
+### Access URLs
+- **API Dev**: https://localhost:7010 | http://localhost:7011
+- **Customer Dev**: https://localhost:7020 | http://localhost:7021
+- **Admin Dev**: https://localhost:7030 | http://localhost:7031
+- **Staff Dev**: https://localhost:7040 | http://localhost:7041
+- **API Docker**: http://localhost:9010
+- **Customer Docker**: http://localhost:9020
+- **Admin Docker**: http://localhost:9030  
+- **Staff Docker**: http://localhost:9040
+
+📋 **Port Reference**: See `docs/ports.md` for complete port configuration details.
 
 ---
 

@@ -1,7 +1,6 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
-@using StadiumDrinkOrdering.Admin.Services
-@inject IAdminApiService ApiService
+@inherits CreateUserModalBase
 
 <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="create-user-modal">
     <div class="modal-dialog modal-lg" id="create-user-modal-dialog">
@@ -90,41 +89,3 @@
     </div>
 </div>
 
-@code {
-    [Parameter] public EventCallback OnUserCreated { get; set; }
-    [Parameter] public EventCallback OnCancel { get; set; }
-
-    private CreateUserDto createUserDto = new CreateUserDto();
-    private bool isSubmitting = false;
-    private string errorMessage = "";
-
-    private async Task HandleValidSubmit()
-    {
-        isSubmitting = true;
-        errorMessage = "";
-        StateHasChanged();
-
-        try
-        {
-            var result = await ApiService.CreateUserAsync(createUserDto);
-            
-            if (result != null)
-            {
-                await OnUserCreated.InvokeAsync();
-            }
-            else
-            {
-                errorMessage = "Failed to create user. User with this email or username may already exist.";
-            }
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Error creating user: {ex.Message}";
-        }
-        finally
-        {
-            isSubmitting = false;
-            StateHasChanged();
-        }
-    }
-}

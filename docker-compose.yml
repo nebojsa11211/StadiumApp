@@ -35,7 +35,7 @@ services:
       - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=StadiumDrinkOrdering
       - JwtSettings__Audience=StadiumDrinkOrdering
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=https://+:8080
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=
     ports:
@@ -54,8 +54,8 @@ services:
     container_name: stadium-customer
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
-      - ASPNETCORE_URLS=http://+:8081
+      - ApiSettings__BaseUrl=https://api:8080/
+      - ASPNETCORE_URLS=https://+:8081
       - ASPNETCORE_HTTP_PORTS=8081
       - ASPNETCORE_HTTPS_PORTS=
     ports:
@@ -74,8 +74,8 @@ services:
     container_name: stadium-admin
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
-      - ASPNETCORE_URLS=http://+:8082
+      - ApiSettings__BaseUrl=https://api:8080/
+      - ASPNETCORE_URLS=https://+:8082
       - ASPNETCORE_HTTP_PORTS=8082
       - ASPNETCORE_HTTPS_PORTS=
     ports:
@@ -94,8 +94,8 @@ services:
     container_name: stadium-staff
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
-      - ASPNETCORE_URLS=http://+:8083
+      - ApiSettings__BaseUrl=https://api:8080/
+      - ASPNETCORE_URLS=https://+:8083
       - ASPNETCORE_HTTP_PORTS=8083
       - ASPNETCORE_HTTPS_PORTS=
     ports:

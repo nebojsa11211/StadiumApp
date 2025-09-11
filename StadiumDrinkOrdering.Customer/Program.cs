@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Disable launch settings in Docker environment
 if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
 {
-    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://+:8081");
+    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8081");
 }
 
 // Add services to the container.
@@ -35,7 +35,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Add HTTP client
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
-    var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "http://api:8080/";
+    var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://api:8080/";
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
@@ -47,7 +47,7 @@ builder.Services.AddSingleton<ICustomerTokenStorageService, CustomerTokenStorage
 builder.Services.AddScoped<ICustomerAuthStateService, CustomerAuthStateService>();
 
 // Add centralized logging client
-var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "http://api:8080";
+var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://api:8080";
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Customer");
 
 var app = builder.Build();

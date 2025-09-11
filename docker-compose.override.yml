@@ -11,7 +11,7 @@ services:
       - JwtSettings__Audience=StadiumDrinkOrdering
       - Logging__LogLevel__Default=Debug
       - Logging__LogLevel__Microsoft.AspNetCore=Information
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=https://+:8080
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=
     ports:
@@ -21,9 +21,9 @@ services:
   customer:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
+      - ApiSettings__BaseUrl=https://api:8080/
       - Logging__LogLevel__Default=Debug
-      - ASPNETCORE_URLS=http://+:8081
+      - ASPNETCORE_URLS=https://+:8081
       - ASPNETCORE_HTTP_PORTS=8081
       - ASPNETCORE_HTTPS_PORTS=
     ports:
@@ -33,9 +33,9 @@ services:
   admin:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
+      - ApiSettings__BaseUrl=https://api:8080/
       - Logging__LogLevel__Default=Debug
-      - ASPNETCORE_URLS=http://+:8082
+      - ASPNETCORE_URLS=https://+:8082
       - ASPNETCORE_HTTP_PORTS=8082
       - ASPNETCORE_HTTPS_PORTS=
     ports:
@@ -45,9 +45,9 @@ services:
   staff:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
+      - ApiSettings__BaseUrl=https://api:8080/
       - Logging__LogLevel__Default=Debug
-      - ASPNETCORE_URLS=http://+:8083
+      - ASPNETCORE_URLS=https://+:8083
       - ASPNETCORE_HTTP_PORTS=8083
       - ASPNETCORE_HTTPS_PORTS=
     ports:

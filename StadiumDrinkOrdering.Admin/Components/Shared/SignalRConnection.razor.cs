@@ -16,7 +16,7 @@ public partial class SignalRConnectionBase : ComponentBase, IAsyncDisposable
     [Parameter] public EventCallback<string> OnOrderStatusChanged { get; set; }
     [Parameter] public EventCallback<string> OnNotificationReceived { get; set; }
     [Parameter] public EventCallback<string> OnSystemAlert { get; set; }
-    [Parameter] public string ApiBaseUrl { get; set; } = "http://localhost:9000";
+    [Parameter] public string ApiBaseUrl { get; set; } = "https://localhost:7010";
 
     protected override async Task OnInitializedAsync()
     {

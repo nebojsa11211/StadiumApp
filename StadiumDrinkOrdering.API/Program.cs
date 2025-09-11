@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.API.Middleware;
+using StadiumDrinkOrdering.Shared.Services;
 using System.Text;
 using Npgsql;
 
@@ -44,7 +45,7 @@ builder.Logging.AddDatabaseLogger(config =>
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.WriteIndented = true;
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
@@ -201,6 +202,13 @@ builder.Services.AddScoped<ITicketAuthService, TicketAuthService>();
 builder.Services.AddScoped<ICustomerAnalyticsService, CustomerAnalyticsService>();
 builder.Services.AddScoped<TicketingDataImportService>();
 
+// Memory cache for stadium layout caching
+builder.Services.AddMemoryCache();
+
+// Stadium SVG Layout Services
+builder.Services.AddScoped<IStadiumLayoutGenerator, HNKRijekaLayoutGenerator>();
+builder.Services.AddScoped<IStadiumLayoutService, StadiumLayoutService>();
+
 // Add background services
 builder.Services.AddHostedService<LogRetentionBackgroundService>();
 
@@ -215,7 +223,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.WithOrigins("http://localhost:8080", "http://localhost:8081", "http://localhost:8082", "http://admin:8082", "http://customer:8081")
+        builder.WithOrigins("https://localhost:7010", "https://localhost:7020", "https://localhost:7030", "https://localhost:7040", "https://admin:9030", "https://customer:9020")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();

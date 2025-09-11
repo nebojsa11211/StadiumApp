@@ -818,7 +818,7 @@
     }
     
     ::deep .sector-text {
-        font-size: clamp(8px, 3vw, 14px) !important;
+        font-size: clamp(16px, 5vw, 30px) !important;
     }
     
     ::deep .stadium-svg .field-text {

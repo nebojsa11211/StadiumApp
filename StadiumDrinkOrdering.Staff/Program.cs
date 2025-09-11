@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Disable launch settings in Docker environment
 if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
 {
-    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://+:8083");
+    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8083");
 }
 
 // Add services to the container.
@@ -30,7 +30,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 // Configure HttpClient for API communication
-var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "http://api:8080/";
+var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://api:8080/";
 builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);

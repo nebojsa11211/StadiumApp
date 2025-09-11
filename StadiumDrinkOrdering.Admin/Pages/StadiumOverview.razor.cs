@@ -14,10 +14,13 @@ public partial class StadiumOverview : ComponentBase
     [Inject] public IAdminApiService ApiService { get; set; } = default!;
     [Inject] public IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] public ILogger<StadiumOverview> Logger { get; set; } = default!;
+    [Inject] public IStadiumSvgService StadiumSvgService { get; set; } = default!;
 
     // Stadium viewer properties
     private StadiumViewerDto? stadiumData;
     private EventSeatStatusDto? eventSeatStatus;
+    private StadiumSvgLayoutDto? stadiumLayout;
+    private Dictionary<string, SvgEventSeatStatusDto> svgEventSeatStatus = new();
     private bool isLoading = true;
     private string? errorMessage;
     private bool showLegend = false;
@@ -49,13 +52,51 @@ public partial class StadiumOverview : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        // Load stadium data first (fast and essential)
+        // Load dynamic stadium layout first (fast and essential)
+        await LoadStadiumLayout();
+        
+        // Load stadium data for the info panel
         await LoadStadiumData();
         
         // Don't wait for events - they can timeout without affecting stadium display
         _ = LoadEventsBackground();
     }
     
+    private async Task LoadStadiumLayout()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+            
+            Logger.LogInformation("Loading dynamic stadium layout using HNK Rijeka coordinates...");
+            
+            // Load the stadium layout using our dynamic service
+            stadiumLayout = await StadiumSvgService.GetStadiumLayoutAsync();
+            
+            if (stadiumLayout != null)
+            {
+                Logger.LogInformation($"Dynamic stadium layout loaded successfully: {stadiumLayout.Name}");
+            }
+            else
+            {
+                Logger.LogWarning("Stadium layout service returned null");
+                errorMessage = "Failed to generate dynamic stadium layout";
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Exception loading dynamic stadium layout: {Message}", ex.Message);
+            errorMessage = $"Error loading dynamic stadium layout: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            Logger.LogInformation($"LoadStadiumLayout completed. stadiumLayout is null: {stadiumLayout == null}");
+            StateHasChanged();
+        }
+    }
+
     private async Task LoadEventsBackground()
     {
         try
@@ -638,8 +679,8 @@ public partial class StadiumOverview : ComponentBase
         var height = maxY - minY;
         var area = width * height;
         
-        // Scale font size based on area, with reasonable min/max bounds
-        var fontSize = Math.Max(10, Math.Min(18, area * 0.001));
+        // Scale font size based on area, with reasonable min/max bounds - increased 30% more for better visibility
+        var fontSize = Math.Max(21, Math.Min(36, area * 0.0026));
         return fontSize.ToString("F0");
     }
 
@@ -702,5 +743,23 @@ public partial class StadiumOverview : ComponentBase
     private Event? GetSelectedEvent()
     {
         return selectedEvent;
+    }
+
+    /// <summary>
+    /// Handler for sector clicks from dynamic SVG component
+    /// </summary>
+    private async Task OnSectorClicked(SectorSvgDto sector)
+    {
+        Logger.LogInformation($"Sector clicked: {sector.Code} - {sector.Name}");
+        
+        // Convert to existing StadiumSectorDto format for compatibility
+        var stadiumSector = new StadiumSectorDto
+        {
+            Id = sector.Code,
+            Name = sector.Name,
+            TotalSeats = sector.TotalSeats
+        };
+        
+        await OpenSectorModal(stadiumSector);
     }
 }

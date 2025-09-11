@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Disable launch settings in Docker environment
 if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
 {
-    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://+:8082");
+    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8082");
 }
 
 // Add services to the container.
@@ -44,12 +44,12 @@ builder.Services.AddHttpClient<IAdminApiService, AdminApiService>(client =>
     if (containerEnv == "true")
     {
         // Running in Docker container - use Docker networking
-        apiBaseUrl = "http://api:8080/";
+        apiBaseUrl = "https://api:8080/";
     }
     else
     {
         // Running locally - use localhost
-        apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "http://localhost:7000/";
+        apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
     }
     
     Console.WriteLine($"=== ADMIN CONFIGURATION DEBUG ===");
@@ -82,11 +82,11 @@ var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAIN
 string apiBaseUrl;
 if (containerEnv == "true")
 {
-    apiBaseUrl = "http://api:8080";
+    apiBaseUrl = "https://api:8080";
 }
 else
 {
-    apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "http://localhost:7000";
+    apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
 }
 
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Admin");
@@ -94,6 +94,33 @@ builder.Services.AddCentralizedLogging(apiBaseUrl, "Admin");
 // Add console logging services
 builder.Services.AddScoped<IConsoleLoggingService, ConsoleLoggingService>();
 builder.Services.AddScoped<IConsoleLoggingToggleService, ConsoleLoggingToggleService>();
+
+// Add stadium SVG services for dynamic stadium rendering
+builder.Services.AddMemoryCache(); // Required for layout generator caching
+
+// Configure StadiumSvgService with the same API base URL as AdminApiService
+builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
+{
+    var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+    string apiBaseUrl;
+    if (containerEnv == "true")
+    {
+        apiBaseUrl = "https://api:8080/";
+    }
+    else
+    {
+        apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
+    }
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    return handler;
+});
+
+// builder.Services.AddScoped<IStadiumLayoutGenerator, HNKRijekaLayoutGenerator>(); // Commented out - missing using statement
 
 var app = builder.Build();
 

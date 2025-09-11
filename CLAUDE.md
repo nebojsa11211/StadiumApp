@@ -11,6 +11,7 @@
 ### Key Features
 - PostgreSQL/Supabase database for all environments
 - JWT authentication with role-based access (Admin, Staff, Customer)
+- **🔒 MANDATORY ADMIN AUTHENTICATION** - All admin pages require login
 - SignalR (BartenderHub) for real-time updates
 - Dockerized services with docker-compose orchestration
 - Entity Framework Core with migrations support
@@ -89,10 +90,40 @@ Example: Admin creates a product → Customer purchases it → Validate order.
 
 ---
 
+## Authentication & Security
+
+### 🔒 Admin Authentication Requirements
+**CRITICAL RULE**: The Admin application requires mandatory authentication for ALL pages except login.
+
+#### Authentication Flow
+1. **Unauthenticated Access**: All admin routes are protected by `AuthRoute` component
+2. **Login Required**: Users see "🔐 Authentication Required" message when accessing protected pages
+3. **Login Page**: `/login` is the only accessible page without authentication
+4. **Post-Login**: After successful login, users can access all admin functionality
+5. **Session Persistence**: Authentication state persists via localStorage and JWT tokens
+
+#### Default Admin Credentials
+- **Email**: `admin@stadium.com`
+- **Password**: `admin123`
+
+#### Implementation Components
+- **`AuthRoute.razor`**: Wraps all protected routes and enforces authentication
+- **`AuthStateService`**: Manages authentication state and token storage
+- **`TokenStorageService`**: Singleton service for JWT token persistence
+- **`App.razor`**: Router configuration with authentication routing logic
+
+#### Security Features
+- **Route Protection**: All admin pages except `/login` require authentication
+- **Token Validation**: JWT tokens validated on each request
+- **Automatic Logout**: Invalid tokens trigger automatic logout
+- **Return URL Support**: Users redirected to intended page after login
+
+---
+
 ## Architecture
 - **StadiumDrinkOrdering.API** → ASP.NET Core Web API with JWT, EF Core, SignalR
 - **StadiumDrinkOrdering.Customer** → Blazor Server app for customers
-- **StadiumDrinkOrdering.Admin** → Blazor Server app for admins
+- **StadiumDrinkOrdering.Admin** → Blazor Server app for admins (🔒 **AUTHENTICATION REQUIRED**)
 - **StadiumDrinkOrdering.Staff** → Blazor Server app for staff
 - **StadiumDrinkOrdering.Shared** → Shared models/DTOs
 
@@ -194,7 +225,7 @@ DELETE /api/logs/clear-old     # Manual cleanup (Admin only)
 Add to each application's `Program.cs`:
 ```csharp
 // Register centralized logging
-var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "http://api:8080";
+var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://api:8080";
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Customer"); // Source: Customer/Admin/Staff
 ```
 
@@ -270,7 +301,7 @@ public class OrderController : ControllerBase
 ```json
 {
   "ApiSettings": {
-    "BaseUrl": "http://api:8080"
+    "BaseUrl": "https://api:8080"
   },
   "LogRetention": {
     "RetentionDays": 30,
@@ -352,22 +383,22 @@ environment:
 
 ## Service Ports - FIXED PORT ASSIGNMENTS ✅
 
-### Development Ports (HTTPS/HTTP)
-- **API**: `7010`/`7011` → Docker `9010` ✅ Fixed
-- **Customer**: `7020`/`7021` → Docker `9020` ✅ Fixed  
-- **Admin**: `7030`/`7031` → Docker `9030` ✅ Fixed
-- **Staff**: `7040`/`7041` → Docker `9040` ✅ Fixed
+### Development Ports (HTTPS)
+- **API**: `7010` → Docker `9010` ✅ Fixed
+- **Customer**: `7020` → Docker `9020` ✅ Fixed  
+- **Admin**: `7030` → Docker `9030` ✅ Fixed
+- **Staff**: `7040` → Docker `9040` ✅ Fixed
 - **Database**: PostgreSQL/Supabase (cloud/remote)
 
 ### Access URLs
-- **API Dev**: https://localhost:7010 | http://localhost:7011
-- **Customer Dev**: https://localhost:7020 | http://localhost:7021
-- **Admin Dev**: https://localhost:7030 | http://localhost:7031
-- **Staff Dev**: https://localhost:7040 | http://localhost:7041
-- **API Docker**: http://localhost:9010
-- **Customer Docker**: http://localhost:9020
-- **Admin Docker**: http://localhost:9030  
-- **Staff Docker**: http://localhost:9040
+- **API Dev**: https://localhost:7010
+- **Customer Dev**: https://localhost:7020
+- **Admin Dev**: https://localhost:7030
+- **Staff Dev**: https://localhost:7040
+- **API Docker**: https://localhost:9010
+- **Customer Docker**: https://localhost:9020
+- **Admin Docker**: https://localhost:9030  
+- **Staff Docker**: https://localhost:9040
 
 📋 **Port Reference**: See `docs/ports.md` for complete port configuration details.
 
@@ -993,4 +1024,4 @@ This project integrates **Claude Code MCP servers** for docs and automation:
   `use context7 → How do I secure a Blazor Server app with JWT?`
 
 - **Browser Automation (Playwright):**  
-  `use playwright → Open http://localhost:7003, log in as a customer, and place an order.`
+  `use playwright → Open https://localhost:7020, log in as a customer, and place an order.`

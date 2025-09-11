@@ -1,0 +1,75 @@
+@using StadiumDrinkOrdering.Shared.DTOs
+@namespace StadiumDrinkOrdering.Admin.Components.Stadium
+
+@* Dynamic SVG Stadium Renderer - Generates exact static SVG replica *@
+<svg viewBox="0 0 @Layout.ViewBox.Width @Layout.ViewBox.Height" 
+     preserveAspectRatio="xMidYMid meet"
+     class="stadium-svg" 
+     id="stadium-svg"
+     role="img"
+     aria-label="@(Layout?.Name ?? "Stadium") seating visualization"
+     aria-describedby="stadium-description">
+    
+    <desc id="stadium-description">
+        @(Layout?.Description ?? "") Total seats: @GetTotalSeats().
+    </desc>
+    
+    <!-- EXACT same gradients and filters as static SVG -->
+    <defs>
+        <linearGradient id="field-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#2d5a2d" />
+            <stop offset="50%" stop-color="#1e3a1e" />
+            <stop offset="100%" stop-color="#2d5a2d" />
+        </linearGradient>
+        
+        <filter id="sector-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/>
+        </filter>
+    </defs>
+    
+    <!-- EXACT same field rendering as static SVG -->
+    <FieldRenderer Field="@(Layout?.Field ?? new FieldSvgDto())" />
+    
+    <!-- Dynamic stands rendering -->
+    @foreach (var stand in (Layout?.Stands ?? new List<StandSvgDto>()).Where(s => s.Sectors.Any()))
+    {
+        <g class="stand-group @(stand?.CssClass ?? "")" data-stand="@(stand?.DataAttribute ?? "")" id="stand-@(stand?.Code?.ToLower() ?? "")">
+            @foreach (var sector in stand?.Sectors ?? new List<SectorSvgDto>())
+            {
+                <SectorRenderer Sector="@sector" 
+                              EventSeatStatus="@GetSectorStatus(sector?.Code ?? "")"
+                              ShowSeatCount="@ShowSeatCount"
+                              OnClick="@(() => OnSectorClick.InvokeAsync(sector))" />
+            }
+        </g>
+    }
+    
+    <!-- EXACT same East Stand unavailable areas if needed -->
+    @if ((Layout?.Stands ?? new List<StandSvgDto>()).Any(s => s?.Code == "E" && !s.Sectors.Any()))
+    {
+        <EastStandRenderer />
+    }
+</svg>
+
+@code {
+    [Parameter] public StadiumSvgLayoutDto Layout { get; set; } = new();
+    [Parameter] public Dictionary<string, SvgEventSeatStatusDto> EventSeatStatus { get; set; } = new();
+    [Parameter] public EventCallback<SectorSvgDto> OnSectorClick { get; set; }
+    [Parameter] public bool ShowSeatCount { get; set; } = true;
+
+    /// <summary>
+    /// Get seat status for a specific sector
+    /// </summary>
+    private SvgEventSeatStatusDto? GetSectorStatus(string sectorCode)
+    {
+        return EventSeatStatus.TryGetValue(sectorCode, out var status) ? status : null;
+    }
+
+    /// <summary>
+    /// Calculate total seats across all sectors
+    /// </summary>
+    private int GetTotalSeats()
+    {
+        return (Layout?.Stands ?? new List<StandSvgDto>()).Sum(s => s?.TotalSeats ?? 0);
+    }
+}

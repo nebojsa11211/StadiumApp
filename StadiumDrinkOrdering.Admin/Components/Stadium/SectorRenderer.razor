@@ -1,0 +1,145 @@
+@using StadiumDrinkOrdering.Shared.DTOs
+@namespace StadiumDrinkOrdering.Admin.Components.Stadium
+
+@* Dynamic sector renderer with exact static SVG appearance *@
+<g class="sector-group hnk-sector" 
+   data-sector="@(Sector?.Code ?? "")" 
+   tabindex="0" 
+   role="button" 
+   aria-label="@(Sector?.AriaLabel ?? "")"
+   id="@(Sector?.ElementId ?? "")"
+   @onclick="HandleClick">
+    
+    <!-- EXACT same rectangle as static SVG -->
+    <rect x="@(Sector?.Bounds?.X ?? 0)" y="@(Sector?.Bounds?.Y ?? 0)" 
+          width="@(Sector?.Bounds?.Width ?? 0)" height="@(Sector?.Bounds?.Height ?? 0)" 
+          fill="@GetDynamicFillColor()" 
+          stroke="@GetDynamicStrokeColor()" 
+          stroke-width="@(Sector?.Style?.StrokeWidth ?? 2)" 
+          rx="@(Sector?.Style?.BorderRadius ?? 6)" />
+    
+    <!-- Enhanced text with optional seat count -->
+    <text x="@(Sector?.TextCenter?.X ?? 0)" y="@GetTextY()" 
+          text-anchor="middle" dominant-baseline="central"
+          font-size="@GetFontSize()" 
+          font-weight="@(Sector?.Style?.FontWeight ?? "600")" 
+          fill="@(Sector?.Style?.TextColor ?? "white")"
+          style="pointer-events: none; text-shadow: @(Sector?.Style?.TextShadow ?? "1px 1px 2px rgba(0,0,0,0.3)");">
+        @(Sector?.Code ?? "")
+        @if (ShowSeatCount)
+        {
+            <tspan x="@(Sector?.TextCenter?.X ?? 0)" dy="15" font-size="@GetSeatsTextSize()">@FormatSeatCount()</tspan>
+        }
+    </text>
+</g>
+
+@code {
+    [Parameter] public SectorSvgDto Sector { get; set; } = new();
+    [Parameter] public SvgEventSeatStatusDto? EventSeatStatus { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public bool ShowSeatCount { get; set; } = true;
+
+    /// <summary>
+    /// Handle sector click event
+    /// </summary>
+    private async Task HandleClick()
+    {
+        await OnClick.InvokeAsync();
+    }
+
+    /// <summary>
+    /// Get dynamic fill color based on occupancy or default
+    /// </summary>
+    private string GetDynamicFillColor()
+    {
+        if (EventSeatStatus != null && EventSeatStatus.TotalSeats > 0)
+        {
+            var occupancyRate = EventSeatStatus.OccupancyPercentage;
+            if (occupancyRate < 0.5)
+                return "#16a34a"; // Green - Available (0-49%)
+            else if (occupancyRate < 0.9)
+                return "#ca8a04"; // Orange - Partial (50-89%)
+            else
+                return "#dc2626"; // Red - Full (90-100%)
+        }
+        
+        // Default to original static SVG colors - ensure non-null return
+        return Sector?.Style?.FillColor ?? "#4A90E2";
+    }
+
+    /// <summary>
+    /// Get dynamic stroke color (darker version of fill)
+    /// </summary>
+    private string GetDynamicStrokeColor()
+    {
+        if (EventSeatStatus != null && EventSeatStatus.TotalSeats > 0)
+        {
+            var occupancyRate = EventSeatStatus.OccupancyPercentage;
+            if (occupancyRate < 0.5)
+                return "#15803d"; // Dark green
+            else if (occupancyRate < 0.9)
+                return "#a16207"; // Dark orange
+            else
+                return "#b91c1c"; // Dark red
+        }
+        
+        // Default to original static SVG colors - ensure non-null return
+        return Sector?.Style?.StrokeColor ?? "#2E5C9A";
+    }
+
+    /// <summary>
+    /// Calculate text Y position (centered or adjusted for seat count)
+    /// </summary>
+    private int GetTextY()
+    {
+        var centerY = Sector?.TextCenter?.Y ?? 0;
+        if (ShowSeatCount)
+        {
+            // Move sector code up a bit to make room for seat count
+            return centerY - 8;
+        }
+        return centerY;
+    }
+
+    /// <summary>
+    /// Get font size based on sector size
+    /// </summary>
+    private string GetFontSize()
+    {
+        // Scale font size based on sector width for better readability
+        var width = Sector?.Bounds?.Width ?? 100;
+        var height = Sector?.Bounds?.Height ?? 50;
+        var baseSize = Math.Min(width, height) * 0.26; // Increased from 0.2 to 0.26 (30% bigger)
+        var fontSize = Math.Max(18, Math.Min(31, baseSize)); // Increased min from 14 to 18, max from 24 to 31 (30% bigger)
+        return $"{fontSize}px";
+    }
+
+    /// <summary>
+    /// Get smaller font size for seat count text
+    /// </summary>
+    private string GetSeatsTextSize()
+    {
+        var baseSize = GetFontSize().Replace("px", "");
+        if (int.TryParse(baseSize, out var size))
+        {
+            return $"{Math.Max(14, size - 2)}px"; // Increased min from 11 to 14 (30% bigger)
+        }
+        return "16px"; // Increased from 12px to 16px (30% bigger)
+    }
+
+    /// <summary>
+    /// Format seat count display text
+    /// </summary>
+    private string FormatSeatCount()
+    {
+        if (EventSeatStatus != null && EventSeatStatus.TotalSeats > 0)
+        {
+            var available = EventSeatStatus.AvailableSeats;
+            return $"{available}/{EventSeatStatus.TotalSeats}";
+        }
+        
+        // Show total seats from sector data
+        var totalSeats = Sector?.TotalSeats ?? 0;
+        return $"{totalSeats} seats";
+    }
+}

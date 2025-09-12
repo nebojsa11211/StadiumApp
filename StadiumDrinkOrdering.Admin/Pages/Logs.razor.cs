@@ -20,6 +20,15 @@ public partial class Logs : ComponentBase
     private bool isSuccess = false;
     private bool isConsoleToSystemLoggingEnabled = false;
     private HashSet<int> expandedMessages = new HashSet<int>();
+    
+    // Date filtering properties
+    private string selectedDateRange = "last24hours";
+    private DateTime? fromDate;
+    private DateTime? toDate;
+    private bool showCustomDateRange = false;
+    private DateTime customFromDate = DateTime.UtcNow.AddDays(-7);
+    private DateTime customToDate = DateTime.UtcNow;
+    private string currentFilterDescription = "Last 24 Hours";
 
     protected override async Task OnInitializedAsync()
     {
@@ -33,8 +42,12 @@ public partial class Logs : ComponentBase
             Console.WriteLine($"[Logs] Failed to get console-to-system logging state: {ex.Message}");
             isConsoleToSystemLoggingEnabled = false;
         }
-
-        await LoadData();
+        
+        // Load filter preferences from localStorage if available
+        await LoadFilterPreferences();
+        
+        // Set default to last 24 hours
+        await SetDateRange("last24hours");
         await ApiService.LogUserActionAsync("ViewLogsPage", "UserAction", "Admin viewed System Logs page");
     }
 
@@ -46,7 +59,9 @@ public partial class Logs : ComponentBase
         { 
             Page = 1, 
             PageSize = 100,
-            Level = selectedLevel
+            Level = selectedLevel,
+            FromDate = fromDate,
+            ToDate = toDate
         };
 
         try 
@@ -279,5 +294,127 @@ public partial class Logs : ComponentBase
             expandedMessages.Add(logId);
         }
         StateHasChanged();
+    }
+    
+    private async Task SetDateRange(string range)
+    {
+        selectedDateRange = range;
+        showCustomDateRange = false;
+        
+        var now = DateTime.UtcNow;
+        
+        switch (range)
+        {
+            case "last24hours":
+                fromDate = now.AddDays(-1);
+                toDate = now;
+                currentFilterDescription = "Last 24 Hours";
+                break;
+            case "today":
+                fromDate = now.Date;
+                toDate = now.Date.AddDays(1).AddSeconds(-1);
+                currentFilterDescription = "Today";
+                break;
+            case "last7days":
+                fromDate = now.AddDays(-7);
+                toDate = now;
+                currentFilterDescription = "Last 7 Days";
+                break;
+            case "last30days":
+                fromDate = now.AddDays(-30);
+                toDate = now;
+                currentFilterDescription = "Last 30 Days";
+                break;
+            case "all":
+                fromDate = null;
+                toDate = null;
+                currentFilterDescription = "All Time";
+                break;
+            case "custom":
+                // Don't change dates, just show the custom range UI
+                selectedDateRange = "custom";
+                currentFilterDescription = "Custom Range";
+                return;
+        }
+        
+        await SaveFilterPreferences();
+        await LoadData();
+        await ApiService.LogUserActionAsync("FilterLogsByDate", "UserAction", $"Filtered logs by: {currentFilterDescription}");
+    }
+    
+    private void ToggleCustomDateRange()
+    {
+        showCustomDateRange = !showCustomDateRange;
+        if (showCustomDateRange)
+        {
+            selectedDateRange = "custom";
+        }
+    }
+    
+    private async Task ApplyCustomDateRange()
+    {
+        // Convert to UTC if not already
+        fromDate = customFromDate.Kind == DateTimeKind.Utc ? customFromDate : customFromDate.ToUniversalTime();
+        toDate = customToDate.Kind == DateTimeKind.Utc ? customToDate : customToDate.ToUniversalTime();
+        selectedDateRange = "custom";
+        
+        // Display in local time for user readability
+        var fromStr = fromDate?.ToLocalTime().ToString("MMM dd, yyyy HH:mm") ?? "Beginning";
+        var toStr = toDate?.ToLocalTime().ToString("MMM dd, yyyy HH:mm") ?? "Now";
+        currentFilterDescription = $"Custom: {fromStr} to {toStr}";
+        
+        showCustomDateRange = false;
+        
+        await SaveFilterPreferences();
+        await LoadData();
+        await ApiService.LogUserActionAsync("FilterLogsByCustomDate", "UserAction", currentFilterDescription);
+    }
+    
+    private async Task LoadFilterPreferences()
+    {
+        try
+        {
+            // Try to load saved filter preferences from localStorage
+            var savedRange = await JS.InvokeAsync<string?>("localStorage.getItem", "logsFilterDateRange");
+            if (!string.IsNullOrEmpty(savedRange))
+            {
+                selectedDateRange = savedRange;
+            }
+            
+            var savedFromDate = await JS.InvokeAsync<string?>("localStorage.getItem", "logsFilterFromDate");
+            if (!string.IsNullOrEmpty(savedFromDate) && DateTime.TryParse(savedFromDate, out var parsedFrom))
+            {
+                customFromDate = parsedFrom;
+            }
+            
+            var savedToDate = await JS.InvokeAsync<string?>("localStorage.getItem", "logsFilterToDate");
+            if (!string.IsNullOrEmpty(savedToDate) && DateTime.TryParse(savedToDate, out var parsedTo))
+            {
+                customToDate = parsedTo;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading filter preferences: {ex.Message}");
+        }
+    }
+    
+    private async Task SaveFilterPreferences()
+    {
+        try
+        {
+            // Save current filter preferences to localStorage
+            await JS.InvokeVoidAsync("localStorage.setItem", "logsFilterDateRange", selectedDateRange);
+            
+            if (selectedDateRange == "custom" && fromDate.HasValue && toDate.HasValue)
+            {
+                await JS.InvokeVoidAsync("localStorage.setItem", "logsFilterFromDate", fromDate.Value.ToString("yyyy-MM-ddTHH:mm"));
+                await JS.InvokeVoidAsync("localStorage.setItem", "logsFilterToDate", toDate.Value.ToString("yyyy-MM-ddTHH:mm"));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving filter preferences: {ex.Message}");
+        }
     }
 }

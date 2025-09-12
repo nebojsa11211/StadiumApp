@@ -21,8 +21,12 @@ RUN dotnet publish StadiumDrinkOrdering.Staff/StadiumDrinkOrdering.Staff.csproj 
 # Use the ASP.NET Core runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
-# Install necessary tools for troubleshooting (optional, can be removed in production)
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Install necessary tools for troubleshooting and timezone data
+RUN apt-get update && apt-get install -y curl tzdata && rm -rf /var/lib/apt/lists/*
+
+# Set timezone
+ENV TZ=Europe/Zagreb
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Set working directory
 WORKDIR /app

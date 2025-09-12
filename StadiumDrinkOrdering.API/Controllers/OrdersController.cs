@@ -14,11 +14,13 @@ public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
     private readonly ILoggingService _loggingService;
+    private readonly ILogger<OrdersController> _logger;
 
-    public OrdersController(IOrderService orderService, ILoggingService loggingService)
+    public OrdersController(IOrderService orderService, ILoggingService loggingService, ILogger<OrdersController> logger)
     {
         _orderService = orderService;
         _loggingService = loggingService;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -318,6 +320,28 @@ public class OrdersController : ControllerBase
         }
 
         return HttpContext.Connection.RemoteIpAddress?.ToString();
+    }
+
+    [HttpGet("statistics")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> GetOrderStatistics()
+    {
+        try
+        {
+            var allOrders = await _orderService.GetOrdersAsync();
+            var statistics = new
+            {
+                Active = allOrders?.Count(o => o.Status != OrderStatus.Delivered && o.Status != OrderStatus.Cancelled) ?? 0,
+                Pending = allOrders?.Count(o => o.Status == OrderStatus.Pending) ?? 0,
+                InPreparation = allOrders?.Count(o => o.Status == OrderStatus.InPreparation) ?? 0
+            };
+            return Ok(statistics);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting order statistics");
+            return StatusCode(500, new { message = "An error occurred while getting order statistics" });
+        }
     }
 }
 

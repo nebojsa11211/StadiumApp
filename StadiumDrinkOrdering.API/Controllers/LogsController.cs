@@ -335,6 +335,132 @@ namespace StadiumDrinkOrdering.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Get recent activity for dashboard
+        /// </summary>
+        [HttpGet("recent-activity")]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<ActionResult> GetRecentActivity([FromQuery] int limit = 10)
+        {
+            try
+            {
+                // Log this action
+                await _loggingService.LogUserActionAsync(
+                    action: "ViewRecentActivity",
+                    category: "UserAction",
+                    userId: User.GetUserIdFromClaims(),
+                    userEmail: User.GetUserEmailFromClaims(),
+                    userRole: User.GetUserRoleFromClaims(),
+                    details: $"Limit: {limit}",
+                    requestPath: Request.Path,
+                    httpMethod: Request.Method,
+                    ipAddress: GetClientIpAddress(),
+                    userAgent: Request.Headers.UserAgent.ToString(),
+                    source: "API"
+                );
+
+                var filter = new LogFilterDto 
+                { 
+                    Page = 1, 
+                    PageSize = limit
+                };
+                
+                var logs = await _loggingService.GetLogsAsync(filter);
+                
+                // Convert to activity format expected by dashboard
+                List<object> activities;
+                if (logs?.Logs != null)
+                {
+                    activities = logs.Logs.Select(log => (object)new
+                    {
+                        Type = GetActivityTypeFromCategory(log.Category),
+                        Title = log.Action,
+                        Description = log.Details ?? log.Message ?? "",
+                        Timestamp = log.Timestamp
+                    }).Take(limit).ToList();
+                }
+                else
+                {
+                    activities = new List<object>();
+                }
+
+                return Ok(activities);
+            }
+            catch (Exception ex)
+            {
+                await _loggingService.LogErrorAsync(
+                    exception: ex,
+                    action: "ViewRecentActivity",
+                    category: "SystemError",
+                    userId: User.GetUserIdFromClaims(),
+                    userEmail: User.GetUserEmailFromClaims(),
+                    userRole: User.GetUserRoleFromClaims(),
+                    details: "Failed to retrieve recent activity",
+                    requestPath: Request.Path,
+                    httpMethod: Request.Method,
+                    ipAddress: GetClientIpAddress(),
+                    userAgent: Request.Headers.UserAgent.ToString(),
+                    source: "API"
+                );
+
+                return StatusCode(500, new { message = "Failed to retrieve recent activity", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get recent errors count for dashboard
+        /// </summary>
+        [HttpGet("recent-errors-count")]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<ActionResult<int>> GetRecentErrorsCount()
+        {
+            try
+            {
+                var filter = new LogFilterDto 
+                { 
+                    Page = 1, 
+                    PageSize = 100,
+                    Level = "Error",
+                    FromDate = DateTime.UtcNow.AddHours(-24), // Last 24 hours
+                    ToDate = DateTime.UtcNow
+                };
+                
+                var logs = await _loggingService.GetLogsAsync(filter);
+                return Ok(logs?.TotalCount ?? 0);
+            }
+            catch (Exception ex)
+            {
+                await _loggingService.LogErrorAsync(
+                    exception: ex,
+                    action: "ViewRecentErrorsCount",
+                    category: "SystemError",
+                    userId: User.GetUserIdFromClaims(),
+                    userEmail: User.GetUserEmailFromClaims(),
+                    userRole: User.GetUserRoleFromClaims(),
+                    details: "Failed to retrieve recent errors count",
+                    requestPath: Request.Path,
+                    httpMethod: Request.Method,
+                    ipAddress: GetClientIpAddress(),
+                    userAgent: Request.Headers.UserAgent.ToString(),
+                    source: "API"
+                );
+
+                return StatusCode(500, new { message = "Failed to retrieve recent errors count", error = ex.Message });
+            }
+        }
+
+        private string GetActivityTypeFromCategory(string category)
+        {
+            return category.ToLower() switch
+            {
+                "orderprocessing" => "order",
+                "useraction" => "user", 
+                "systemerror" => "system",
+                "security" => "system",
+                _ => "system"
+            };
+        }
+
         private string? GetClientIpAddress()
         {
             // Try to get the real IP address

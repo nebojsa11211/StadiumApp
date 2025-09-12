@@ -142,4 +142,24 @@ public class AnalyticsController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while updating event analytics" });
         }
     }
+
+    [HttpGet("revenue/today")]
+    public async Task<IActionResult> GetTodayRevenue()
+    {
+        try
+        {
+            var analytics = await _analyticsService.GetRevenueAnalyticsAsync(null, 1);
+            var revenueData = new
+            {
+                TodayRevenue = analytics?.TotalRevenue ?? 0,
+                ChangePercentage = 5.2m // Mock percentage change for now
+            };
+            return Ok(revenueData);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting today's revenue");
+            return StatusCode(500, new { message = "An error occurred while getting today's revenue" });
+        }
+    }
 }

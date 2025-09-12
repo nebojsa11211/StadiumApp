@@ -88,10 +88,78 @@
             </div>
         </div>
 
-        <!-- Simple Filters -->
+        <!-- Filters -->
         <div class="card mb-4">
             <div class="card-body">
-                <h6 class="card-title">Quick Filters</h6>
+                <h6 class="card-title mb-3">Filters</h6>
+                
+                <!-- Date Range Filters -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="btn-group" role="group">
+                            <button class="btn @(selectedDateRange == "last24hours" ? "btn-primary" : "btn-outline-primary")" 
+                                    @onclick="@(() => SetDateRange("last24hours"))" id="admin-logs-filter-24h-btn">
+                                <i class="fas fa-clock"></i> Last 24 Hours
+                            </button>
+                            <button class="btn @(selectedDateRange == "today" ? "btn-primary" : "btn-outline-primary")" 
+                                    @onclick="@(() => SetDateRange("today"))" id="admin-logs-filter-today-btn">
+                                <i class="fas fa-calendar-day"></i> Today
+                            </button>
+                            <button class="btn @(selectedDateRange == "last7days" ? "btn-primary" : "btn-outline-primary")" 
+                                    @onclick="@(() => SetDateRange("last7days"))" id="admin-logs-filter-7days-btn">
+                                <i class="fas fa-calendar-week"></i> Last 7 Days
+                            </button>
+                            <button class="btn @(selectedDateRange == "last30days" ? "btn-primary" : "btn-outline-primary")" 
+                                    @onclick="@(() => SetDateRange("last30days"))" id="admin-logs-filter-30days-btn">
+                                <i class="fas fa-calendar-alt"></i> Last 30 Days
+                            </button>
+                            <button class="btn @(selectedDateRange == "all" ? "btn-primary" : "btn-outline-primary")" 
+                                    @onclick="@(() => SetDateRange("all"))" id="admin-logs-filter-alltime-btn">
+                                <i class="fas fa-infinity"></i> All Time
+                            </button>
+                            <button class="btn @(selectedDateRange == "custom" ? "btn-primary" : "btn-outline-primary")" 
+                                    @onclick="@(() => ToggleCustomDateRange())" id="admin-logs-filter-custom-btn">
+                                <i class="fas fa-calendar"></i> Custom Range
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Custom Date Range -->
+                @if (showCustomDateRange)
+                {
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">From Date:</label>
+                            <input type="datetime-local" class="form-control" @bind="customFromDate" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">To Date:</label>
+                            <input type="datetime-local" class="form-control" @bind="customToDate" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-primary d-block" @onclick="ApplyCustomDateRange">
+                                <i class="fas fa-check"></i> Apply
+                            </button>
+                        </div>
+                    </div>
+                }
+                
+                <!-- Current Filter Info -->
+                @if (!string.IsNullOrEmpty(currentFilterDescription))
+                {
+                    <div class="alert alert-info py-2 mb-3">
+                        <i class="fas fa-filter"></i> <strong>Current Filter:</strong> @currentFilterDescription
+                        @if (logs != null)
+                        {
+                            <span class="ms-2">(@logs.TotalCount logs found)</span>
+                        }
+                    </div>
+                }
+                
+                <!-- Level Filters -->
+                <h6 class="card-subtitle mb-2 text-muted">Filter by Level</h6>
                 <div class="row">
                     <div class="col-md-3">
                         <button class="btn @(selectedLevel == "Error" ? "btn-danger" : "btn-outline-danger") me-2" @onclick="@(() => FilterByLevel("Error"))" id="admin-logs-filter-error-btn">
@@ -110,7 +178,7 @@
                     </div>
                     <div class="col-md-3">
                         <button class="btn @(selectedLevel == "" ? "btn-secondary" : "btn-outline-secondary")" @onclick="@(() => FilterByLevel(""))" id="admin-logs-filter-all-btn">
-                            All Logs
+                            All Levels
                         </button>
                     </div>
                 </div>

@@ -30,6 +30,7 @@ services:
       dockerfile: StadiumDrinkOrdering.API/Dockerfile
     container_name: stadium-api
     environment:
+      - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=300;Keepalive=30;Connection Idle Lifetime=300;Maximum Pool Size=50;Minimum Pool Size=5;Pooling=true;No Reset On Close=true;Include Error Detail=true
       - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
@@ -54,6 +55,7 @@ services:
       dockerfile: StadiumDrinkOrdering.Customer/Dockerfile
     container_name: stadium-customer
     environment:
+      - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
       - ApiSettings__BaseUrl=http://api:8080/
       - ASPNETCORE_URLS=http://+:8081
@@ -75,6 +77,7 @@ services:
       dockerfile: StadiumDrinkOrdering.Admin/Dockerfile
     container_name: stadium-admin
     environment:
+      - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
       - ApiSettings__BaseUrl=http://api:8080/
       - ASPNETCORE_URLS=http://+:8082
@@ -96,6 +99,7 @@ services:
       dockerfile: StadiumDrinkOrdering.Staff/Dockerfile
     container_name: stadium-staff
     environment:
+      - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
       - ApiSettings__BaseUrl=http://api:8080/
       - ASPNETCORE_URLS=http://+:8083

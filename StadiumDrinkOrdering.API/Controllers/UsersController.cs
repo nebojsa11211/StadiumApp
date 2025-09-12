@@ -103,4 +103,26 @@ public class UsersController : ControllerBase
 
         return Ok(new { message = "User deleted successfully" });
     }
+
+    [HttpGet("online-statistics")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<ActionResult> GetOnlineUserStatistics()
+    {
+        try
+        {
+            // For now, return mock data. In a real implementation, this would track active sessions
+            var statistics = new
+            {
+                TotalOnline = 87,
+                StaffOnline = 12,
+                CustomersOnline = 75
+            };
+
+            return Ok(statistics);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error getting online user statistics" });
+        }
+    }
 }

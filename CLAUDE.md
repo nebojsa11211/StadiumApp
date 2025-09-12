@@ -26,10 +26,13 @@
 ## Development Commands
 
 ### Docker Development (Recommended)
-- **Start services:** `./scripts/start-dev.sh` (Linux/macOS) or `docker-compose up --build -d`
+- **Start services:** `docker-compose up --build -d`
 - **Stop services:** `docker-compose down`
 - **View logs:** `docker-compose logs -f [service-name]`
 - **Restart service:** `docker-compose restart [service-name]`
+- **Rebuild after code changes:** `docker-compose up --build -d [service-name]`
+
+⚠️ **Important**: Docker containers use HTTP internally for service-to-service communication (e.g., admin→api). External access via mapped ports (9010-9040) supports HTTPS.
 
 ### Local .NET Development
 - **Build solution:** `dotnet build StadiumDrinkOrdering.sln`
@@ -57,6 +60,7 @@
 2. Connection strings configured in appsettings.json
 3. Npgsql Entity Framework provider installed
 4. Database migrations ready for PostgreSQL
+5. **Docker Networking**: Fixed SSL communication between containers (HTTP internally, HTTPS externally)
 
 **Required Steps:**
 1. **Supabase Project**: Active Supabase project configured
@@ -117,6 +121,25 @@ Example: Admin creates a product → Customer purchases it → Validate order.
 - **Token Validation**: JWT tokens validated on each request
 - **Automatic Logout**: Invalid tokens trigger automatic logout
 - **Return URL Support**: Users redirected to intended page after login
+
+---
+
+## Docker Timezone Configuration
+
+### Overview
+All Docker containers are configured to use **Europe/Zagreb** timezone (Croatia) for consistent time handling across the system.
+
+### Implementation
+- **docker-compose.yml**: Added `TZ=Europe/Zagreb` environment variable to all services (api, customer, admin, staff)
+- **Dockerfiles**: Installed `tzdata` package and configured timezone with:
+  - `ENV TZ=Europe/Zagreb`
+  - `RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone`
+
+### Impact
+- Container system time displays Zagreb/Croatia time
+- Log timestamps use Croatia timezone
+- Application DateTime operations respect the configured timezone
+- PostgreSQL UTC handling remains compatible (UTC stored, Zagreb displayed)
 
 ---
 
@@ -416,6 +439,7 @@ environment:
   - `ConnectionStrings__DefaultConnection` (PostgreSQL connection string)
   - `JwtSettings__SecretKey` (min 32 chars)
   - `ASPNETCORE_ENVIRONMENT`
+  - `TZ=Europe/Zagreb` (Croatia timezone for all containers)
 
 ### Frontend Configuration
 - Apps connect to API via `ApiSettings__BaseUrl`
@@ -954,6 +978,20 @@ options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 - Modified MainLayout.razor and NavMenu.razor in Customer project
 
 ## Known Issues & Fixes
+
+### PostgreSQL DateTime UTC Issue (FIXED ✅)
+**Issue:** Admin logs page failed with error: "Cannot write DateTime with Kind=Local to PostgreSQL type 'timestamp with time zone', only UTC is supported."
+**Root Cause:** PostgreSQL requires UTC DateTime values for timestamp with time zone columns, but the code was using `DateTime.Now` (local time).
+**Solution:** Changed all date filtering code to use `DateTime.UtcNow` instead of `DateTime.Now`. The dates are stored as UTC in the database and converted to local time for display.
+
+### Docker Container SSL Communication (FIXED ✅)
+**Issue:** Admin, Customer, and Staff containers failed to connect to API with SSL errors: "The SSL connection could not be established" and "Cannot determine the frame size or a corrupted frame was received."
+**Root Cause:** Protocol mismatch - applications had hardcoded `https://api:8080/` URLs in Program.cs when detecting Docker environment, but API was configured for HTTP-only (`ASPNETCORE_URLS=http://+:8080`).
+**Solution:** Changed all hardcoded HTTPS references to HTTP in container environment detection logic:
+- Updated Admin, Customer, and Staff Program.cs files
+- Fixed SignalRService.cs fallback URLs
+- Container-to-container communication now uses HTTP (internal)
+- External access via Docker ports (9010, 9020, 9030, 9040) works correctly
 
 ### Authentication Token Persistence
 **Issue:** Admin API service token was always null after page navigation.

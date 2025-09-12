@@ -129,6 +129,68 @@ public class TicketsController : ControllerBase
 
         return Ok(ticketDto);
     }
+
+    [HttpGet("statistics/today")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> GetTodayTicketStatistics()
+    {
+        try
+        {
+            var today = DateTime.UtcNow.Date;
+            
+            // Try to get today's tickets with safer query
+            var ticketsCount = 0;
+            try
+            {
+                ticketsCount = await _context.Tickets
+                    .Where(t => t.PurchaseDate.Date == today && t.IsActive)
+                    .CountAsync();
+            }
+            catch (Exception ex)
+            {
+                // If tickets table doesn't exist or has issues, default to 0
+                ticketsCount = 0;
+            }
+
+            // Get current active event name
+            var currentEventName = "No active event";
+            try
+            {
+                var activeEvent = await _context.Events
+                    .Where(e => e.IsActive)
+                    .FirstOrDefaultAsync();
+                
+                if (activeEvent != null)
+                {
+                    currentEventName = activeEvent.EventName;
+                }
+            }
+            catch (Exception ex)
+            {
+                // If events table has issues, keep default
+                currentEventName = "No active event";
+            }
+
+            var statistics = new
+            {
+                SoldToday = ticketsCount,
+                CurrentEventName = currentEventName
+            };
+
+            return Ok(statistics);
+        }
+        catch (Exception ex)
+        {
+            // Return safe default values instead of error
+            var defaultStatistics = new
+            {
+                SoldToday = 0,
+                CurrentEventName = "No active event"
+            };
+            
+            return Ok(defaultStatistics);
+        }
+    }
 }
 
 

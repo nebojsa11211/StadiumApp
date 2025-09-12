@@ -18,18 +18,26 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginDto loginDto)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return BadRequest(ModelState);
-        }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        var result = await _authService.LoginAsync(loginDto);
-        if (result == null)
+            var result = await _authService.LoginAsync(loginDto);
+            if (result == null)
+            {
+                return Unauthorized("Invalid email or password");
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
         {
-            return Unauthorized("Invalid email or password");
+            // Bypass centralized logging to prevent infinite loops
+            return StatusCode(500, new { error = "Authentication service error", message = ex.Message });
         }
-
-        return Ok(result);
     }
 
     [HttpPost("register")]

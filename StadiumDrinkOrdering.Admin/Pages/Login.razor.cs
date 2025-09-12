@@ -44,19 +44,22 @@ public partial class Login
             if (!string.IsNullOrEmpty(result?.Token))
             {
                 await AuthStateService.LoginAsync(result.Token, email);
-                await ApiService.LogUserActionAsync("AdminLogin", "Authentication", $"Admin user {email} logged in successfully");
+                // TEMPORARILY COMMENTED OUT - Database logging causing middleware deadlock
+                // await ApiService.LogUserActionAsync("AdminLogin", "Authentication", $"Admin user {email} logged in successfully");
                 NavigateToReturnUrl();
             }
             else
             {
                 errorMessage = "Invalid credentials. Please try again.";
-                await ApiService.LogUserActionAsync("AdminLoginFailed", "Authentication", $"Failed login attempt for {email}");
+                // TEMPORARILY COMMENTED OUT - Database logging causing middleware deadlock
+                // await ApiService.LogUserActionAsync("AdminLoginFailed", "Authentication", $"Failed login attempt for {email}");
             }
         }
         catch (Exception ex)
         {
             errorMessage = $"Login failed: {ex.Message}";
-            await ApiService.LogUserActionAsync("AdminLoginError", "Authentication", $"Login error for {email}: {ex.Message}");
+            // TEMPORARILY COMMENTED OUT - Database logging causing middleware deadlock
+            // await ApiService.LogUserActionAsync("AdminLoginError", "Authentication", $"Login error for {email}: {ex.Message}");
         }
         finally
         {

@@ -18,28 +18,29 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
+// TEMPORARILY COMMENTED OUT - Database logging causing middleware deadlock
 // Configure database logging from appsettings
-var databaseLoggingConfig = builder.Configuration.GetSection("Logging:Database");
-builder.Logging.AddDatabaseLogger(config =>
-{
-    config.IsEnabled = databaseLoggingConfig.GetValue<bool>("Enabled", true);
-    config.MinimumLevel = Enum.Parse<LogLevel>(databaseLoggingConfig.GetValue<string>("MinLevel") ?? "Information");
-    config.BatchingEnabled = databaseLoggingConfig.GetValue<bool>("BatchingEnabled", true);
-    
-    // Load excluded categories
-    var excludeCategories = databaseLoggingConfig.GetSection("ExcludeCategories").Get<List<string>>();
-    if (excludeCategories != null)
-    {
-        config.ExcludeCategories = new HashSet<string>(excludeCategories);
-    }
-    
-    // Load critical categories
-    var criticalCategories = databaseLoggingConfig.GetSection("CriticalCategories").Get<List<string>>();
-    if (criticalCategories != null)
-    {
-        config.CriticalCategories = new HashSet<string>(criticalCategories);
-    }
-});
+// var databaseLoggingConfig = builder.Configuration.GetSection("Logging:Database");
+// builder.Logging.AddDatabaseLogger(config =>
+// {
+//     config.IsEnabled = databaseLoggingConfig.GetValue<bool>("Enabled", true);
+//     config.MinimumLevel = Enum.Parse<LogLevel>(databaseLoggingConfig.GetValue<string>("MinLevel") ?? "Information");
+//     config.BatchingEnabled = databaseLoggingConfig.GetValue<bool>("BatchingEnabled", true);
+//     
+//     // Load excluded categories
+//     var excludeCategories = databaseLoggingConfig.GetSection("ExcludeCategories").Get<List<string>>();
+//     if (excludeCategories != null)
+//     {
+//         config.ExcludeCategories = new HashSet<string>(excludeCategories);
+//     }
+//     
+//     // Load critical categories
+//     var criticalCategories = databaseLoggingConfig.GetSection("CriticalCategories").Get<List<string>>();
+//     if (criticalCategories != null)
+//     {
+//         config.CriticalCategories = new HashSet<string>(criticalCategories);
+//     }
+// });
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -270,6 +271,7 @@ using (var scope = app.Services.CreateScope())
     await InitializeDatabaseAsync(context, logger);
 }
 
+
 // Database initialization method - FIXED VERSION
 static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger logger)
 {
@@ -363,11 +365,13 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                 var userCount = await context.Users.CountAsync(cancellationToken);
                 logger.LogInformation("Database verification successful - found {UserCount} users", userCount);
                 
-                // If no users exist, ensure admin user is created
-                if (userCount == 0)
+                // Check if admin user exists or needs to be created/updated
+                var adminUser = await context.Users.FirstOrDefaultAsync(u => u.Email == "admin@stadium.com", cancellationToken);
+                
+                if (adminUser == null)
                 {
-                    logger.LogInformation("No users found, creating default admin user...");
-                    var adminUser = new StadiumDrinkOrdering.Shared.Models.User
+                    logger.LogInformation("No admin user found, creating default admin user...");
+                    adminUser = new StadiumDrinkOrdering.Shared.Models.User
                     {
                         Username = "admin",
                         Email = "admin@stadium.com",
@@ -377,7 +381,56 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                     };
                     context.Users.Add(adminUser);
                     await context.SaveChangesAsync(cancellationToken);
-                    logger.LogInformation("Default admin user created successfully");
+                    logger.LogInformation("Default admin user created successfully: admin@stadium.com / admin123");
+                }
+                else
+                {
+                    // Admin user exists - only update if necessary (don't regenerate password hash every time)
+                    logger.LogInformation("Admin user found, checking if updates are needed...");
+                    
+                    var needsUpdate = false;
+                    
+                    // Only update username if it's different
+                    if (adminUser.Username != "admin")
+                    {
+                        logger.LogInformation("Updating admin username from '{OldUsername}' to 'admin'", adminUser.Username);
+                        adminUser.Username = "admin";
+                        context.Entry(adminUser).Property(u => u.Username).IsModified = true;
+                        needsUpdate = true;
+                    }
+                    
+                    // Only update role if it's different
+                    if (adminUser.Role != StadiumDrinkOrdering.Shared.Models.UserRole.Admin)
+                    {
+                        logger.LogInformation("Updating admin role from '{OldRole}' to 'Admin'", adminUser.Role);
+                        adminUser.Role = StadiumDrinkOrdering.Shared.Models.UserRole.Admin;
+                        needsUpdate = true;
+                    }
+                    
+                    // Only update password if it's empty or invalid format
+                    if (string.IsNullOrEmpty(adminUser.PasswordHash) || 
+                        (!adminUser.PasswordHash.StartsWith("$2a$") && 
+                         !adminUser.PasswordHash.StartsWith("$2b$") && 
+                         !adminUser.PasswordHash.StartsWith("$2y$")))
+                    {
+                        logger.LogInformation("Admin password hash is invalid or empty, regenerating...");
+                        adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
+                        needsUpdate = true;
+                    }
+                    else
+                    {
+                        logger.LogInformation("Admin password hash is valid, preserving existing hash");
+                    }
+                    
+                    if (needsUpdate)
+                    {
+                        await context.SaveChangesAsync(cancellationToken);
+                        logger.LogInformation("Admin user updated successfully: admin@stadium.com / admin123");
+                    }
+                    else
+                    {
+                        logger.LogInformation("Admin user is already correctly configured, no updates needed");
+                    }
                 }
             }
             catch (Exception tableEx)

@@ -6,12 +6,25 @@ using StadiumDrinkOrdering.Admin.Services;
 using StadiumDrinkOrdering.Shared.Services;
 using System.Globalization;
 
+Console.WriteLine("=== ADMIN PROGRAM START ===");
+Console.WriteLine($"DOTNET_RUNNING_IN_CONTAINER: {Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER")}");
+Console.WriteLine($"ASPNETCORE_URLS: {Environment.GetEnvironmentVariable("ASPNETCORE_URLS")}");
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Disable launch settings in Docker environment
-if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+// Docker configuration - force HTTP when running in container
+var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+Console.WriteLine($"Container environment check: '{containerEnv}' == 'true' = {containerEnv == "true"}");
+
+if (containerEnv == "true")
 {
-    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8082");
+    var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://+:8082";
+    Console.WriteLine($"🐳 Docker container detected - forcing URLs: {urls}");
+    builder.WebHost.UseUrls(urls);
+}
+else
+{
+    Console.WriteLine("💻 Local development mode - using default configuration");
 }
 
 // Add services to the container.
@@ -60,11 +73,17 @@ builder.Services.AddHttpClient<IAdminApiService, AdminApiService>(client =>
     Console.WriteLine($"===================================");
     
     client.BaseAddress = new Uri(apiBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(30); // Reduce timeout to 30 seconds
+    client.Timeout = TimeSpan.FromSeconds(10); // Shorter timeout to fail fast
+    // Force HTTP/1.1 to avoid HTTP/2 issues
+    client.DefaultRequestVersion = new Version(1, 1);
+    client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    
+    // Simplified HTTPS configuration for development
+    handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+    
     return handler;
 });
 
@@ -78,7 +97,6 @@ builder.Services.AddScoped<ISignalRService, SignalRService>();
 builder.Services.AddScoped<IAuthStateService, AuthStateService>();
 
 // Add centralized logging client
-var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
 string apiBaseUrl;
 if (containerEnv == "true")
 {
@@ -101,7 +119,6 @@ builder.Services.AddMemoryCache(); // Required for layout generator caching
 // Configure StadiumSvgService with the same API base URL as AdminApiService
 builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
 {
-    var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
     string apiBaseUrl;
     if (containerEnv == "true")
     {

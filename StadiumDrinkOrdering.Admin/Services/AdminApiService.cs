@@ -3,6 +3,7 @@ using StadiumDrinkOrdering.Shared.Models;
 using System.Text.Json;
 using System.Text;
 using Microsoft.AspNetCore.Components.Forms;
+using System.Net.Http;
 
 namespace StadiumDrinkOrdering.Admin.Services;
 
@@ -121,28 +122,65 @@ public class AdminApiService : IAdminApiService
     {
         try
         {
+            Console.WriteLine($"Attempting login for: {loginDto.Email}");
+            Console.WriteLine($"API Base Address: {_httpClient.BaseAddress}");
+            
             var json = JsonSerializer.Serialize(loginDto, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
+            Console.WriteLine($"Sending login request to: {_httpClient.BaseAddress}api/auth/login");
+            
             var response = await _httpClient.PostAsync("api/auth/login", content);
+            
+            Console.WriteLine($"Login response status: {response.StatusCode}");
+            
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Login response received, parsing token...");
+                
                 var loginResponse = JsonSerializer.Deserialize<LoginResponseDto>(responseJson, _jsonOptions);
                 
-                if (loginResponse != null)
+                if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
                 {
                     Token = loginResponse.Token;
                     _httpClient.DefaultRequestHeaders.Authorization = 
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+                    Console.WriteLine($"Login successful, token stored");
                 }
                 
                 return loginResponse;
             }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Login failed with status {response.StatusCode}: {errorContent}");
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            Console.WriteLine($"HTTP Request error during login: {httpEx.Message}");
+            if (httpEx.InnerException != null)
+            {
+                Console.WriteLine($"Inner exception: {httpEx.InnerException.Message}");
+                if (httpEx.InnerException.InnerException != null)
+                {
+                    Console.WriteLine($"Inner inner exception: {httpEx.InnerException.InnerException.Message}");
+                }
+            }
+        }
+        catch (TaskCanceledException tcEx)
+        {
+            Console.WriteLine($"Login request timed out: {tcEx.Message}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error logging in: {ex.Message}");
+            Console.WriteLine($"Unexpected error during login: {ex.GetType().Name}: {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"Inner exception: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
+            }
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
         }
         return null;
     }

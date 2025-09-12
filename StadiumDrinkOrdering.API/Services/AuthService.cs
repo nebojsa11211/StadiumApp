@@ -36,17 +36,34 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponseDto?> LoginAsync(LoginDto loginDto)
     {
+        // Use AsNoTracking for read-only operations to improve performance
         var user = await _context.Users
+            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
 
-        if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+        if (user == null)
         {
             return null;
         }
 
-        // Update last login
-        user.LastLoginAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
+        // Verify password - this is working correctly
+        var isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+        if (!isPasswordValid)
+        {
+            return null;
+        }
+
+        // Update last login with optimized approach - use ExecuteUpdateAsync for better performance
+        try
+        {
+            await _context.Users
+                .Where(u => u.Id == user.Id)
+                .ExecuteUpdateAsync(u => u.SetProperty(p => p.LastLoginAt, DateTime.UtcNow));
+        }
+        catch
+        {
+            // Don't fail login if last login update fails
+        }
 
         var token = GenerateJwtToken(user);
         var userDto = MapToUserDto(user);

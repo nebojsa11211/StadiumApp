@@ -43,7 +43,10 @@ public partial class MainLayout : LayoutComponentBase
 
     private async Task HandleLogout()
     {
+        Console.WriteLine("HandleLogout called");
         await AuthStateService.LogoutAsync();
-        NavigationManager.NavigateTo("/login");
+        Console.WriteLine("LogoutAsync completed");
+        NavigationManager.NavigateTo("/login", forceLoad: true);
+        Console.WriteLine("Navigation triggered");
     }
 }

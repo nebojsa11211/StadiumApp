@@ -48,7 +48,7 @@ public class SignalRService : ISignalRService
             throw new InvalidOperationException("Cannot start SignalR connection: No authentication token available");
         }
 
-        var apiBaseUrl = _configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://api:8080/";
+        var apiBaseUrl = _configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "http://api:8080/";
         var hubUrl = $"{apiBaseUrl.TrimEnd('/')}/bartenderHub";
 
         _hubConnection = new HubConnectionBuilder()

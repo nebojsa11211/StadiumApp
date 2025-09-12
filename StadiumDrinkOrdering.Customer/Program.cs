@@ -35,7 +35,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Add HTTP client
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
-    var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://api:8080/";
+    var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "http://api:8080/";
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
@@ -47,7 +47,7 @@ builder.Services.AddSingleton<ICustomerTokenStorageService, CustomerTokenStorage
 builder.Services.AddScoped<ICustomerAuthStateService, CustomerAuthStateService>();
 
 // Add centralized logging client
-var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://api:8080";
+var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "http://api:8080";
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Customer");
 
 var app = builder.Build();

@@ -30,7 +30,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 // Configure HttpClient for API communication
-var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://api:8080/";
+var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "http://api:8080/";
 builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);

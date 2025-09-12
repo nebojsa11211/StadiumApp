@@ -56,8 +56,8 @@ builder.Services.AddHttpClient<IAdminApiService, AdminApiService>(client =>
     string apiBaseUrl;
     if (containerEnv == "true")
     {
-        // Running in Docker container - use Docker networking
-        apiBaseUrl = "https://api:8080/";
+        // Running in Docker container - use Docker networking (HTTP only in Docker)
+        apiBaseUrl = "http://api:8080/";
     }
     else
     {
@@ -100,7 +100,7 @@ builder.Services.AddScoped<IAuthStateService, AuthStateService>();
 string apiBaseUrl;
 if (containerEnv == "true")
 {
-    apiBaseUrl = "https://api:8080";
+    apiBaseUrl = "http://api:8080";
 }
 else
 {
@@ -122,7 +122,7 @@ builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
     string apiBaseUrl;
     if (containerEnv == "true")
     {
-        apiBaseUrl = "https://api:8080/";
+        apiBaseUrl = "http://api:8080/";
     }
     else
     {

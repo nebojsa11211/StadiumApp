@@ -1,0 +1,7 @@
+﻿ASP.NET Core Development Certificate
+Generated: 09/13/2025 00:10:22
+Location: D:\AiApps\StadiumApp\StadiumApp\certificates\aspnetcore.pfx
+Password: StadiumDev123!
+
+This certificate is used for HTTPS in Docker containers.
+The certificate is trusted on this machine.

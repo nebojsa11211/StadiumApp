@@ -148,11 +148,32 @@ public class AnalyticsController : ControllerBase
     {
         try
         {
-            var analytics = await _analyticsService.GetRevenueAnalyticsAsync(null, 1);
+            // Get today's revenue - use UTC dates
+            var todayUtc = DateTime.UtcNow.Date;
+            var yesterdayUtc = todayUtc.AddDays(-1);
+            
+            var todayAnalytics = await _analyticsService.GetRevenueAnalyticsAsync(null, 1);
+            
+            // Get yesterday's revenue for comparison
+            var yesterdayAnalytics = await _analyticsService.GetRevenueAnalyticsAsync(null, 2);
+            var yesterdayRevenue = yesterdayAnalytics?.DailyRevenue?
+                .Where(dr => dr.Date == yesterdayUtc)
+                .FirstOrDefault()?.Revenue ?? 0;
+            
+            var todayRevenue = todayAnalytics?.DailyRevenue?
+                .Where(dr => dr.Date == todayUtc)
+                .FirstOrDefault()?.Revenue ?? 0;
+            
+            decimal changePercentage = 0;
+            if (yesterdayRevenue > 0)
+            {
+                changePercentage = ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100;
+            }
+            
             var revenueData = new
             {
-                TodayRevenue = analytics?.TotalRevenue ?? 0,
-                ChangePercentage = 5.2m // Mock percentage change for now
+                TodayRevenue = todayRevenue,
+                ChangePercentage = changePercentage
             };
             return Ok(revenueData);
         }

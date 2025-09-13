@@ -8,10 +8,10 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Disable launch settings in Docker environment
+// Configure URLs for Docker environment
 if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
 {
-    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8081");
+    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8444;http://+:8081");
 }
 
 // Add services to the container.
@@ -35,8 +35,22 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Add HTTP client
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
-    var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "http://api:8080/";
+    var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+    string apiBaseUrl;
+    if (containerEnv == "true")
+    {
+        apiBaseUrl = "https://api:8443/";
+    }
+    else
+    {
+        apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
+    }
     client.BaseAddress = new Uri(apiBaseUrl);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    return handler;
 });
 
 // Add custom services
@@ -47,7 +61,10 @@ builder.Services.AddSingleton<ICustomerTokenStorageService, CustomerTokenStorage
 builder.Services.AddScoped<ICustomerAuthStateService, CustomerAuthStateService>();
 
 // Add centralized logging client
-var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "http://api:8080";
+var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+var apiBaseUrl = containerEnv == "true" 
+    ? "https://api:8443" 
+    : builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Customer");
 
 var app = builder.Build();
@@ -60,11 +77,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Only use HTTPS redirection when not in Docker
-if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != "true")
-{
-    app.UseHttpsRedirection();
-}
+// Use HTTPS redirection in all environments
+app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 

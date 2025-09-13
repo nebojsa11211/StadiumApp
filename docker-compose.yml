@@ -36,14 +36,18 @@ services:
       - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=StadiumDrinkOrdering
       - JwtSettings__Audience=StadiumDrinkOrdering
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=https://+:8443;http://+:8080
       - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=
+      - ASPNETCORE_HTTPS_PORTS=8443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
     ports:
-      - "9010:8080"
+      - "9010:8443"
+      - "9011:8080"
     volumes:
       - api_data:/app/data
+      - ./certificates:/https:ro
     networks:
       - stadium-network
     restart: unless-stopped
@@ -57,13 +61,18 @@ services:
     environment:
       - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
-      - ASPNETCORE_URLS=http://+:8081
+      - ApiSettings__BaseUrl=https://api:8443/
+      - ASPNETCORE_URLS=https://+:8444;http://+:8081
       - ASPNETCORE_HTTP_PORTS=8081
-      - ASPNETCORE_HTTPS_PORTS=
+      - ASPNETCORE_HTTPS_PORTS=8444
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
     ports:
-      - "9020:8081"
+      - "9020:8444"
+      - "9021:8081"
+    volumes:
+      - ./certificates:/https:ro
     depends_on:
       - api
     networks:
@@ -79,13 +88,18 @@ services:
     environment:
       - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
-      - ASPNETCORE_URLS=http://+:8082
+      - ApiSettings__BaseUrl=https://api:8443/
+      - ASPNETCORE_URLS=https://+:8445;http://+:8082
       - ASPNETCORE_HTTP_PORTS=8082
-      - ASPNETCORE_HTTPS_PORTS=
+      - ASPNETCORE_HTTPS_PORTS=8445
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
     ports:
-      - "9030:8082"
+      - "9030:8445"
+      - "9031:8082"
+    volumes:
+      - ./certificates:/https:ro
     depends_on:
       - api
     networks:
@@ -101,13 +115,18 @@ services:
     environment:
       - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=http://api:8080/
-      - ASPNETCORE_URLS=http://+:8083
+      - ApiSettings__BaseUrl=https://api:8443/
+      - ASPNETCORE_URLS=https://+:8446;http://+:8083
       - ASPNETCORE_HTTP_PORTS=8083
-      - ASPNETCORE_HTTPS_PORTS=
+      - ASPNETCORE_HTTPS_PORTS=8446
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
     ports:
-      - "9040:8083"
+      - "9040:8446"
+      - "9041:8083"
+    volumes:
+      - ./certificates:/https:ro
     depends_on:
       - api
     networks:

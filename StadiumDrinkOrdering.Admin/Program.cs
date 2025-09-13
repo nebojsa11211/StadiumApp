@@ -12,14 +12,14 @@ Console.WriteLine($"ASPNETCORE_URLS: {Environment.GetEnvironmentVariable("ASPNET
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Docker configuration - force HTTP when running in container
+// Docker configuration - support both HTTP and HTTPS when running in container
 var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
 Console.WriteLine($"Container environment check: '{containerEnv}' == 'true' = {containerEnv == "true"}");
 
 if (containerEnv == "true")
 {
-    var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://+:8082";
-    Console.WriteLine($"🐳 Docker container detected - forcing URLs: {urls}");
+    var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8445;http://+:8082";
+    Console.WriteLine($"🐳 Docker container detected - using URLs: {urls}");
     builder.WebHost.UseUrls(urls);
 }
 else
@@ -56,8 +56,8 @@ builder.Services.AddHttpClient<IAdminApiService, AdminApiService>(client =>
     string apiBaseUrl;
     if (containerEnv == "true")
     {
-        // Running in Docker container - use Docker networking (HTTP only in Docker)
-        apiBaseUrl = "http://api:8080/";
+        // Running in Docker container - use Docker networking (HTTPS in Docker)
+        apiBaseUrl = "https://api:8443/";
     }
     else
     {
@@ -100,7 +100,7 @@ builder.Services.AddScoped<IAuthStateService, AuthStateService>();
 string apiBaseUrl;
 if (containerEnv == "true")
 {
-    apiBaseUrl = "http://api:8080";
+    apiBaseUrl = "https://api:8443";
 }
 else
 {
@@ -122,7 +122,7 @@ builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
     string apiBaseUrl;
     if (containerEnv == "true")
     {
-        apiBaseUrl = "http://api:8080/";
+        apiBaseUrl = "https://api:8443/";
     }
     else
     {
@@ -149,11 +149,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Only use HTTPS redirection when not in Docker
-if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != "true")
-{
-    app.UseHttpsRedirection();
-}
+// Use HTTPS redirection in all environments
+app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 

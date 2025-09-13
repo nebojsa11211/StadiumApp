@@ -2,6 +2,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8082
+EXPOSE 8445
 
 # Install curl for health checks and timezone data
 RUN apt-get update && apt-get install -y curl tzdata && rm -rf /var/lib/apt/lists/*
@@ -60,7 +61,8 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8082 || exit 1
+    CMD curl -k -f https://localhost:8445 || curl -f http://localhost:8082 || exit 1
 
 EXPOSE 8082
+EXPOSE 8445
 ENTRYPOINT ["dotnet", "StadiumDrinkOrdering.Admin.dll"]

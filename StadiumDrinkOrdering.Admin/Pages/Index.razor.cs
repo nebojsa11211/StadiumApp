@@ -30,6 +30,7 @@ public partial class Index : IDisposable
     private List<ActivityItem> recentActivities = new();
     
     private System.Threading.Timer? refreshTimer;
+    private bool isFirstLoad = true;
     
     protected override async Task OnInitializedAsync()
     {
@@ -53,55 +54,85 @@ public partial class Index : IDisposable
         try
         {
             // Load today's revenue
-            var revenueData = await ApiService.GetAsync<RevenueData>("analytics/revenue/today");
-            if (revenueData != null)
+            try
             {
-                todayRevenue = revenueData.TodayRevenue;
-                revenueChange = revenueData.ChangePercentage;
+                var revenueData = await ApiService.GetAsync<RevenueData>("analytics/revenue/today");
+                if (revenueData != null)
+                {
+                    todayRevenue = revenueData.TodayRevenue;
+                    revenueChange = revenueData.ChangePercentage;
+                }
             }
+            catch { /* Keep existing value on error */ }
             
             // Load order statistics
-            var orderStats = await ApiService.GetAsync<OrderStatistics>("orders/statistics");
-            if (orderStats != null)
+            try
             {
-                activeOrders = orderStats.Active;
-                pendingOrders = orderStats.Pending;
-                inPreparationOrders = orderStats.InPreparation;
+                var orderStats = await ApiService.GetAsync<OrderStatistics>("orders/statistics");
+                if (orderStats != null)
+                {
+                    activeOrders = orderStats.Active;
+                    pendingOrders = orderStats.Pending;
+                    inPreparationOrders = orderStats.InPreparation;
+                }
             }
+            catch { /* Keep existing value on error */ }
             
             // Load ticket statistics
-            var ticketStats = await ApiService.GetAsync<TicketStatistics>("tickets/statistics/today");
-            if (ticketStats != null)
+            try
             {
-                ticketsSoldToday = ticketStats.SoldToday;
-                currentEventName = ticketStats.CurrentEventName ?? "No active event";
+                var ticketStats = await ApiService.GetAsync<TicketStatistics>("tickets/statistics/today");
+                if (ticketStats != null)
+                {
+                    ticketsSoldToday = ticketStats.SoldToday;
+                    currentEventName = ticketStats.CurrentEventName ?? "No active event";
+                }
             }
+            catch { /* Keep existing value on error */ }
             
             // Load user statistics
-            var userStats = await ApiService.GetAsync<UserStatistics>("users/online-statistics");
-            if (userStats != null)
+            try
             {
-                onlineUsers = userStats.TotalOnline;
-                staffOnline = userStats.StaffOnline;
-                customersOnline = userStats.CustomersOnline;
+                var userStats = await ApiService.GetAsync<UserStatistics>("users/online-statistics");
+                if (userStats != null)
+                {
+                    onlineUsers = userStats.TotalOnline;
+                    staffOnline = userStats.StaffOnline;
+                    customersOnline = userStats.CustomersOnline;
+                }
             }
+            catch { /* Keep existing value on error */ }
             
             // Load recent activity
-            var activities = await ApiService.GetAsync<List<ActivityItem>>("logs/recent-activity?limit=10");
-            if (activities != null)
+            try
             {
-                recentActivities = activities;
+                var activities = await ApiService.GetAsync<List<ActivityItem>>("logs/recent-activity?limit=10");
+                if (activities != null)
+                {
+                    recentActivities = activities;
+                }
             }
+            catch { /* Keep existing value on error */ }
             
             // Load recent errors count
-            var errorCount = await ApiService.GetAsync<int>("logs/recent-errors-count");
-            recentErrors = errorCount;
+            try
+            {
+                var errorCount = await ApiService.GetAsync<int>("logs/recent-errors-count");
+                recentErrors = errorCount;
+            }
+            catch { /* Keep existing value on error */ }
         }
         catch (Exception)
         {
-            // If API calls fail, use mock data for demonstration
-            LoadMockData();
+            // Only load mock data on initial load if all calls fail
+            if (isFirstLoad && todayRevenue == 0 && activeOrders == 0 && ticketsSoldToday == 0)
+            {
+                LoadMockData();
+            }
         }
+        
+        // Mark that first load is complete
+        isFirstLoad = false;
     }
     
     private void LoadMockData()

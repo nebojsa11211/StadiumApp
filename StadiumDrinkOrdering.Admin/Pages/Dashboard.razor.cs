@@ -8,7 +8,7 @@ namespace StadiumDrinkOrdering.Admin.Pages;
 public partial class Dashboard : ComponentBase
 {
     [Inject] private IAdminApiService ApiService { get; set; } = default!;
-    private List<OrderDto>? orders;
+    private List<OrderDto>? orders = new List<OrderDto>(); // Initialize to empty list
     private string alertMessage = "";
     private string alertType = "";
 
@@ -19,11 +19,43 @@ public partial class Dashboard : ComponentBase
 
     private IEnumerable<OrderDto> pendingOrders => orders?.Where(o => o.Status == OrderStatus.Pending) ?? Enumerable.Empty<OrderDto>();
     private IEnumerable<OrderDto> activeOrders => orders?.Where(o => o.Status == OrderStatus.Accepted || o.Status == OrderStatus.InPreparation || o.Status == OrderStatus.Ready) ?? Enumerable.Empty<OrderDto>();
-    private decimal todaysRevenue => orders?.Where(o => o.CreatedAt.Date == DateTime.Today && o.Status == OrderStatus.Delivered).Sum(o => o.TotalAmount) ?? 0;
+    private decimal todaysRevenue 
+    {
+        get
+        {
+            try
+            {
+                var todayUtc = DateTime.UtcNow.Date;
+                return orders?.Where(o => o.CreatedAt.Date == todayUtc && o.Status == OrderStatus.Delivered).Sum(o => o.TotalAmount) ?? 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+    }
 
     private async Task LoadData()
     {
-        orders = await ApiService.GetOrdersAsync();
+        try
+        {
+            orders = await ApiService.GetOrdersAsync();
+            // If null is returned somehow, initialize to empty list
+            orders ??= new List<OrderDto>();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // User is not authorized, keep orders as null or empty
+            orders ??= new List<OrderDto>();
+            ShowAlert("Please log in to view orders", "warning");
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't crash - show empty orders
+            Console.WriteLine($"Error loading orders: {ex.Message}");
+            orders ??= new List<OrderDto>();
+            ShowAlert("Unable to load orders", "danger");
+        }
     }
 
     private async Task AcceptOrder(int orderId)

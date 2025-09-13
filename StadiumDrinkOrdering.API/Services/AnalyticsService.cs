@@ -75,14 +75,14 @@ public class AnalyticsService : IAnalyticsService
     {
         try
         {
-            var today = DateTime.Today;
-            var thisWeek = today.AddDays(-(int)today.DayOfWeek);
-            var thisMonth = new DateTime(today.Year, today.Month, 1);
+            var todayUtc = DateTime.UtcNow.Date;
+            var thisWeek = todayUtc.AddDays(-(int)todayUtc.DayOfWeek);
+            var thisMonth = new DateTime(todayUtc.Year, todayUtc.Month, 1);
 
             var summary = new DashboardSummary
             {
-                TodayOrders = await _context.Orders.CountAsync(o => o.CreatedAt.Date == today),
-                TodayRevenue = await _context.Orders.Where(o => o.CreatedAt.Date == today).SumAsync(o => o.TotalAmount),
+                TodayOrders = await _context.Orders.CountAsync(o => o.CreatedAt.Date == todayUtc),
+                TodayRevenue = await _context.Orders.Where(o => o.CreatedAt.Date == todayUtc).SumAsync(o => o.TotalAmount),
                 
                 WeeklyOrders = await _context.Orders.CountAsync(o => o.CreatedAt >= thisWeek),
                 WeeklyRevenue = await _context.Orders.Where(o => o.CreatedAt >= thisWeek).SumAsync(o => o.TotalAmount),
@@ -104,7 +104,7 @@ public class AnalyticsService : IAnalyticsService
                 
                 AverageOrderValue = await _context.Orders.AverageAsync(o => (decimal?)o.TotalAmount) ?? 0,
                 
-                TopDrinkToday = await GetTopDrinkAsync(today, today.AddDays(1))
+                TopDrinkToday = await GetTopDrinkAsync(todayUtc, todayUtc.AddDays(1))
             };
 
             return summary;
@@ -244,8 +244,8 @@ public class AnalyticsService : IAnalyticsService
                 AverageOrderValue = orders.Any() ? orders.Average(o => o.TotalAmount) : 0,
                 TotalOrders = orders.Count,
                 DailyRevenue = dailyRevenue,
-                PeakDay = dailyRevenue.OrderByDescending(dr => dr.Revenue).FirstOrDefault()?.Date ?? DateTime.Today,
-                LowestDay = dailyRevenue.OrderBy(dr => dr.Revenue).FirstOrDefault()?.Date ?? DateTime.Today
+                PeakDay = dailyRevenue.OrderByDescending(dr => dr.Revenue).FirstOrDefault()?.Date ?? DateTime.UtcNow.Date,
+                LowestDay = dailyRevenue.OrderBy(dr => dr.Revenue).FirstOrDefault()?.Date ?? DateTime.UtcNow.Date
             };
 
             return analytics;
@@ -356,7 +356,7 @@ public class AnalyticsService : IAnalyticsService
             analytics.PeakOrderTime = orders.Any() ? 
                 orders.GroupBy(o => o.CreatedAt.Hour)
                      .OrderByDescending(g => g.Count())
-                     .Select(g => DateTime.Today.AddHours(g.Key))
+                     .Select(g => DateTime.UtcNow.Date.AddHours(g.Key))
                      .FirstOrDefault() : null;
             analytics.MostPopularDrink = orders.SelectMany(o => o.OrderItems)
                 .GroupBy(oi => oi.Drink.Name)

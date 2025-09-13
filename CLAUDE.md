@@ -143,6 +143,43 @@ All Docker containers are configured to use **Europe/Zagreb** timezone (Croatia)
 
 ---
 
+## Docker HTTPS Configuration ✅
+
+### Overview
+All Docker containers now support **secure HTTPS access** with proper SSL certificates, providing production-grade security for web applications and APIs.
+
+### Implementation
+- **🔐 SSL Certificates**: ASP.NET Core development certificates auto-generated and trusted on host machine
+- **📦 Certificate Management**: Certificates stored in `./certificates/` directory and mounted read-only in containers
+- **🔄 Dual Protocol Support**: Both HTTPS and HTTP endpoints available for maximum compatibility
+- **🛡️ Security**: Certificate validation properly configured for development environment
+
+### Key Features
+- **External HTTPS Access**: All services accessible via https://localhost:903X ports
+- **Internal HTTPS Communication**: Services communicate via HTTPS within Docker network
+- **Certificate Automation**: One-command certificate generation with `generate-dev-certs.ps1`
+- **Health Checks**: Container health checks support both HTTPS and HTTP endpoints
+- **Development Friendly**: Self-signed certificates with proper trust configuration
+
+### Port Configuration
+| Service | HTTPS Port | HTTP Port | Status |
+|---------|------------|-----------|---------|
+| API | 9010 | 9011 | ✅ Active |
+| Customer | 9020 | 9021 | ✅ Active |
+| Admin | 9030 | 9031 | ✅ Active |
+| Staff | 9040 | 9041 | ✅ Active |
+
+### Verification
+Test HTTPS endpoints:
+```bash
+curl -k -I https://localhost:9030  # Admin (200 OK)
+curl -k -I https://localhost:9020  # Customer (200 OK)  
+curl -k -I https://localhost:9040  # Staff (200 OK)
+curl -k -I https://localhost:9010/api/drinks  # API (405 Method Not Allowed - Expected)
+```
+
+---
+
 ## Architecture
 - **StadiumDrinkOrdering.API** → ASP.NET Core Web API with JWT, EF Core, SignalR
 - **StadiumDrinkOrdering.Customer** → Blazor Server app for customers
@@ -404,26 +441,47 @@ environment:
 
 ---
 
-## Service Ports - FIXED PORT ASSIGNMENTS ✅
+## Service Ports - HTTPS ENABLED ✅
 
-### Development Ports (HTTPS)
-- **API**: `7010` → Docker `9010` ✅ Fixed
-- **Customer**: `7020` → Docker `9020` ✅ Fixed  
-- **Admin**: `7030` → Docker `9030` ✅ Fixed
-- **Staff**: `7040` → Docker `9040` ✅ Fixed
+### Development Ports (Local)
+- **API**: `7010` (HTTPS) → Docker `9010` (HTTPS) ✅ 
+- **Customer**: `7020` (HTTPS) → Docker `9020` (HTTPS) ✅  
+- **Admin**: `7030` (HTTPS) → Docker `9030` (HTTPS) ✅
+- **Staff**: `7040` (HTTPS) → Docker `9040` (HTTPS) ✅
 - **Database**: PostgreSQL/Supabase (cloud/remote)
 
+### Docker HTTPS Configuration ✅
+- **🔐 SSL Certificates**: Development certificates auto-generated and trusted
+- **📁 Certificate Location**: `./certificates/aspnetcore.pfx`
+- **🐳 Container Mount**: `/https/aspnetcore.pfx` (read-only)
+- **🔑 Certificate Password**: `StadiumDev123!`
+- **⚡ Dual Protocol**: Both HTTPS and HTTP supported for compatibility
+
 ### Access URLs
+**Local Development (HTTPS)**
 - **API Dev**: https://localhost:7010
 - **Customer Dev**: https://localhost:7020
 - **Admin Dev**: https://localhost:7030
 - **Staff Dev**: https://localhost:7040
-- **API Docker**: https://localhost:9010
-- **Customer Docker**: https://localhost:9020
-- **Admin Docker**: https://localhost:9030  
-- **Staff Docker**: https://localhost:9040
 
-📋 **Port Reference**: See `docs/ports.md` for complete port configuration details.
+**Docker Production (HTTPS)**
+- **API Docker**: https://localhost:9010 ✅
+- **Customer Docker**: https://localhost:9020 ✅
+- **Admin Docker**: https://localhost:9030 ✅  
+- **Staff Docker**: https://localhost:9040 ✅
+
+**Docker Development (HTTPS)**
+- **API Dev Docker**: https://localhost:5001
+- **Customer Dev Docker**: https://localhost:5002
+- **Admin Dev Docker**: https://localhost:5003
+- **Staff Dev Docker**: https://localhost:5004
+
+### HTTPS Setup Instructions
+1. **Generate Certificates**: Run `.\generate-dev-certs.ps1`
+2. **Start Services**: `docker-compose up --build -d`  
+3. **Verify HTTPS**: Access https://localhost:9030 (Admin)
+
+📋 **Complete Guide**: See `docs/docker-https-setup.md` for detailed HTTPS configuration.
 
 ---
 

@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // Test configuration
-const ADMIN_BASE_URL = process.env.ADMIN_BASE_URL || 'http://localhost:9002';
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:9000';
+const ADMIN_BASE_URL = process.env.ADMIN_BASE_URL || 'https://localhost:9030';
+const API_BASE_URL = process.env.API_BASE_URL || 'https://localhost:9010';
 
 test.describe('Admin Stadium Overview - Core Panel Tests', () => {
   

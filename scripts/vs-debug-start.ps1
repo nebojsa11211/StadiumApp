@@ -127,6 +127,6 @@ foreach ($port in @(5001, 5002, 5003)) {
 }
 
 Write-Host "🎯 Debug session ready!" -ForegroundColor Green
-Write-Host "   API: http://localhost:5001" -ForegroundColor Cyan
-Write-Host "   Customer: http://localhost:5002" -ForegroundColor Cyan
-Write-Host "   Admin: http://localhost:5003" -ForegroundColor Cyan
+Write-Host "   API: https://localhost:7010" -ForegroundColor Cyan
+Write-Host "   Customer: https://localhost:7020" -ForegroundColor Cyan
+Write-Host "   Admin: https://localhost:7030" -ForegroundColor Cyan

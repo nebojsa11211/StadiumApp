@@ -10,7 +10,7 @@ test.describe('Admin Stadium Overview with Authentication', () => {
     await page.setViewportSize({ width: 1920, height: 1080 });
     
     // First navigate to admin login page
-    await page.goto('http://localhost:9002/admin');
+    await page.goto('https://localhost:9030/admin');
     
     // Wait for page to load and check if we need to login
     await page.waitForLoadState('domcontentloaded');
@@ -56,7 +56,7 @@ test.describe('Admin Stadium Overview with Authentication', () => {
     }
     
     // Now navigate to stadium overview
-    await page.goto('http://localhost:9002/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     
     // Wait for page to load
     await page.waitForLoadState('domcontentloaded');
@@ -125,7 +125,7 @@ test.describe('Admin Stadium Overview with Authentication', () => {
     });
     
     // Navigate to stadium overview
-    await page.goto('http://localhost:9002/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForLoadState('networkidle', { timeout: 30000 });
     
     // Print collected logs

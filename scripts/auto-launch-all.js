@@ -6,9 +6,9 @@ const http = require('http');
 
 // URLs to open
 const urls = [
-    'http://localhost:5002',   // Customer App
-    'http://localhost:5003',   // Admin App
-    'http://localhost:5001/swagger'  // API Swagger
+    'https://localhost:7020',   // Customer App
+    'https://localhost:7030',   // Admin App
+    'https://localhost:7010/swagger'  // API Swagger
 ];
 
 // Wait for services to be ready
@@ -45,9 +45,9 @@ async function openAllTabs() {
         // Wait for all services to be ready
         console.log('⏳ Waiting for services to start...');
         await Promise.all([
-            waitForService('http://localhost:5002'),
-            waitForService('http://localhost:5003'),
-            waitForService('http://localhost:5001/swagger')
+            waitForService('https://localhost:7020'),
+            waitForService('https://localhost:7030'),
+            waitForService('https://localhost:7010/swagger')
         ]);
         
         console.log('🌐 Opening browser tabs...');

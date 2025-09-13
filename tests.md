@@ -533,14 +533,14 @@ import { test, expect } from '@playwright/test';
 test.describe('Admin Event Management', () => {
   test.beforeEach(async ({ page }) => {
     // Login as admin
-    await page.goto('http://localhost:7005/login');
+    await page.goto('https://localhost:7030/login');
     await page.fill('[data-testid="email"]', 'admin@stadium.com');
     await page.fill('[data-testid="password"]', 'admin123');
     await page.click('[data-testid="login-button"]');
   });
 
   test('ADMIN-EVENT-015: Demo data generation shows toast when no events', async ({ page }) => {
-    await page.goto('http://localhost:7005/events');
+    await page.goto('https://localhost:7030/events');
     await page.click('#admin-events-demo-data-btn');
     await expect(page.locator('.toast.error')).toContainText('No events available for demo data generation');
   });
@@ -550,21 +550,21 @@ test.describe('Admin Event Management', () => {
 test.describe('Admin Centralized Logging', () => {
   test.beforeEach(async ({ page }) => {
     // Login as admin
-    await page.goto('http://localhost:7005/login');
+    await page.goto('https://localhost:7030/login');
     await page.fill('[data-testid="email"]', 'admin@stadium.com');
     await page.fill('[data-testid="password"]', 'admin123');
     await page.click('[data-testid="login-button"]');
   });
 
   test('ADMIN-LOGGING-001: Logs page displays correctly', async ({ page }) => {
-    await page.goto('http://localhost:7005/logs');
+    await page.goto('https://localhost:7030/logs');
     await expect(page.locator('h1')).toContainText('System Logs');
     await expect(page.locator('[data-testid="log-search-form"]')).toBeVisible();
     await expect(page.locator('[data-testid="logs-table"]')).toBeVisible();
   });
 
   test('ADMIN-LOGGING-003: Log level filtering works', async ({ page }) => {
-    await page.goto('http://localhost:7005/logs');
+    await page.goto('https://localhost:7030/logs');
     
     // Select Error level filter
     await page.selectOption('[data-testid="log-level-filter"]', 'Error');
@@ -581,7 +581,7 @@ test.describe('Admin Centralized Logging', () => {
   });
 
   test('ADMIN-LOGGING-007: Full-text search functionality', async ({ page }) => {
-    await page.goto('http://localhost:7005/logs');
+    await page.goto('https://localhost:7030/logs');
     
     // Search for specific text
     await page.fill('[data-testid="log-search-text"]', 'Login');
@@ -599,7 +599,7 @@ test.describe('Admin Centralized Logging', () => {
   });
 
   test('ADMIN-LOGGING-009: Log details modal opens', async ({ page }) => {
-    await page.goto('http://localhost:7005/logs');
+    await page.goto('https://localhost:7030/logs');
     
     // Click on first log entry
     const firstLogRow = page.locator('[data-testid="log-row"]').first();
@@ -614,7 +614,7 @@ test.describe('Admin Centralized Logging', () => {
   });
 
   test('ADMIN-LOGGING-013: Clear old logs with confirmation', async ({ page }) => {
-    await page.goto('http://localhost:7505/logs');
+    await page.goto('https://localhost:7030/logs');
     
     // Click clear old logs button
     await page.click('[data-testid="clear-old-logs-btn"]');
@@ -643,16 +643,16 @@ test.describe('Centralized Logging Integration', () => {
     const customerPage = await customerContext.newPage();
     
     // Login as admin
-    await adminPage.goto('http://localhost:7005/login');
+    await adminPage.goto('https://localhost:7030/login');
     await adminPage.fill('[data-testid="email"]', 'admin@stadium.com');
     await adminPage.fill('[data-testid="password"]', 'admin123');
     await adminPage.click('[data-testid="login-button"]');
     
     // Perform customer action (generates log)
-    await customerPage.goto('http://localhost:7003/events');
+    await customerPage.goto('https://localhost:7020/events');
     
     // Check admin logs for customer action
-    await adminPage.goto('http://localhost:7505/logs');
+    await adminPage.goto('https://localhost:7030/logs');
     await adminPage.selectOption('[data-testid="source-filter"]', 'Customer');
     await adminPage.click('[data-testid="search-logs-btn"]');
     
@@ -669,14 +669,14 @@ test.describe('Centralized Logging Integration', () => {
 ### API Test Implementation
 ```bash
 # Example API test using curl
-curl -X POST http://localhost:7000/api/auth/login \
+curl -X POST https://localhost:7010/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@stadium.com","password":"admin123"}' \
   | jq '.token'
 
 # Centralized Logging API Tests
 # Test single log entry
-curl -X POST http://localhost:7001/api/logs/log-action \
+curl -X POST https://localhost:7010/api/logs/log-action \
   -H "Content-Type: application/json" \
   -d '{
     "action": "TestAction",
@@ -687,7 +687,7 @@ curl -X POST http://localhost:7001/api/logs/log-action \
   }'
 
 # Test batch logging
-curl -X POST http://localhost:7001/api/logs/log-batch \
+curl -X POST https://localhost:7010/api/logs/log-batch \
   -H "Content-Type: application/json" \
   -d '[
     {
@@ -703,11 +703,11 @@ curl -X POST http://localhost:7001/api/logs/log-batch \
   ]'
 
 # Test log search with admin token
-ADMIN_TOKEN=$(curl -X POST http://localhost:7001/api/auth/login \
+ADMIN_TOKEN=$(curl -X POST https://localhost:7010/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@stadium.com","password":"admin123"}' | jq -r '.token')
 
-curl -X POST http://localhost:7001/api/logs/search \
+curl -X POST https://localhost:7010/api/logs/search \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -720,7 +720,7 @@ curl -X POST http://localhost:7001/api/logs/search \
   }'
 
 # Test log statistics
-curl -X GET http://localhost:7001/api/logs/summary \
+curl -X GET https://localhost:7010/api/logs/summary \
   -H "Authorization: Bearer $ADMIN_TOKEN"
 ```
 

@@ -16,7 +16,7 @@ This setup ensures that containers are **always recreated fresh** when starting 
 2. **Select the correct profile**: Choose **"Docker Compose (Fresh Start)"** from the debug dropdown
 3. **Start debugging**: Press F5 or click the Start button
 4. **Wait for completion**: The script will automatically:
-   - Kill any processes using ports 5001, 5002, 5003, 9000, 9001, 9002
+   - Kill any processes using ports 7010, 7020, 7030, 7040, 9010, 9020, 9030, 9040
    - Remove any existing containers
    - Build fresh container images
    - Start new containers
@@ -55,9 +55,14 @@ This setup ensures that containers are **always recreated fresh** when starting 
 
 ## Port Configuration
 The following ports are used and automatically managed:
-- **5001**: API service (http://localhost:5001)
-- **5002**: Customer frontend (http://localhost:5002)
-- **5003**: Admin frontend (http://localhost:5003)
+- **7010**: API service (https://localhost:7010)
+- **7020**: Customer frontend (https://localhost:7020)
+- **7030**: Admin frontend (https://localhost:7030)
+- **7040**: Staff frontend (https://localhost:7040)
+- **9010**: Docker API service (https://localhost:9010)
+- **9020**: Docker Customer frontend (https://localhost:9020)
+- **9030**: Docker Admin frontend (https://localhost:9030)
+- **9040**: Docker Staff frontend (https://localhost:9040)
 - **1433**: SQL Server (internal only)
 
 ## Troubleshooting

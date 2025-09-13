@@ -12,7 +12,7 @@ import { test, expect } from '@playwright/test';
  */
 
 test.describe('HNK Rijeka Stadium Layout Tests', () => {
-  const adminUrl = 'http://localhost:7031';
+  const adminUrl = 'https://localhost:7030';
   const stadiumOverviewUrl = `${adminUrl}/admin/stadium-overview`;
 
   // Expected HNK Rijeka sectors by stand

@@ -12,7 +12,7 @@ test.describe('E2E Cross-Application Workflows', () => {
     const page = await context.newPage();
     
     // Navigate to customer application
-    await page.goto('http://localhost:9001');
+    await page.goto('https://localhost:9020');
     
     // Step 1: Browse events
     await page.click('a[href*="/events"]');
@@ -87,7 +87,7 @@ test.describe('E2E Cross-Application Workflows', () => {
     const customerPage = await context.newPage();
     
     // ADMIN FLOW - Create Event
-    await adminPage.goto('http://localhost:9002/login');
+    await adminPage.goto('https://localhost:9030/login');
     
     // Login as admin
     await adminPage.fill('[data-testid="email"]', 'admin@stadium.com');
@@ -95,7 +95,7 @@ test.describe('E2E Cross-Application Workflows', () => {
     await adminPage.click('[data-testid="login-button"]');
     
     // Navigate to events management
-    await adminPage.goto('http://localhost:9002/events');
+    await adminPage.goto('https://localhost:9030/events');
     
     // Create new event
     await adminPage.click('button:has-text("Create New Event")');
@@ -123,7 +123,7 @@ test.describe('E2E Cross-Application Workflows', () => {
     await eventCard.locator('button:has-text("Activate")').click();
     
     // CUSTOMER FLOW - Purchase ticket for new event
-    await customerPage.goto('http://localhost:9001/events');
+    await customerPage.goto('https://localhost:9020/events');
     
     // Find and select the newly created event
     const customerEventCard = customerPage.locator('.event-card:has-text("E2E Test Event")');
@@ -168,7 +168,7 @@ test.describe('E2E Cross-Application Workflows', () => {
     const staffPage = await context.newPage();
     
     // CUSTOMER FLOW - Place an order
-    await customerPage.goto('http://localhost:9001');
+    await customerPage.goto('https://localhost:9020');
     
     // Navigate to events and select one
     await customerPage.click('a[href*="/events"]');
@@ -205,7 +205,7 @@ test.describe('E2E Cross-Application Workflows', () => {
     await expect(customerPage).toHaveURL(/.*confirmation/);
     
     // STAFF FLOW - Process the order
-    await staffPage.goto('http://localhost:9003/login');
+    await staffPage.goto('https://localhost:9040/login');
     
     // Login as staff
     await staffPage.fill('input[name="email"]', 'staff@stadium.com');
@@ -213,7 +213,7 @@ test.describe('E2E Cross-Application Workflows', () => {
     await staffPage.click('button:has-text("Login")');
     
     // Check orders queue
-    await staffPage.goto('http://localhost:9003/orders');
+    await staffPage.goto('https://localhost:9040/orders');
     
     // Find the new order
     const orderRow = staffPage.locator('.order-row:has-text("Order Test Customer")');
@@ -242,7 +242,7 @@ test.describe('E2E Cross-Application Workflows', () => {
     const staffPage = await context.newPage();
     
     // Setup customer page to monitor updates
-    await customerPage.goto('http://localhost:9001');
+    await customerPage.goto('https://localhost:9020');
     
     // Place an order first
     await customerPage.click('a[href*="/events"]');
@@ -274,15 +274,15 @@ test.describe('E2E Cross-Application Workflows', () => {
     await customerPage.click('button:has-text("Complete Purchase")');
     
     // Navigate to order tracking page
-    await customerPage.goto('http://localhost:9001/my-orders');
+    await customerPage.goto('https://localhost:9020/my-orders');
     
     // Staff updates order status
-    await staffPage.goto('http://localhost:9003/login');
+    await staffPage.goto('https://localhost:9040/login');
     await staffPage.fill('input[name="email"]', 'staff@stadium.com');
     await staffPage.fill('input[name="password"]', 'staff123');
     await staffPage.click('button:has-text("Login")');
     
-    await staffPage.goto('http://localhost:9003/orders');
+    await staffPage.goto('https://localhost:9040/orders');
     
     const orderRow = staffPage.locator('.order-row:has-text("SignalR Test Customer")');
     await expect(orderRow).toBeVisible();
@@ -308,24 +308,24 @@ test.describe('E2E Cross-Application Workflows', () => {
     const page = await context.newPage();
     
     // Test customer app SignalR connection
-    await page.goto('http://localhost:9001');
+    await page.goto('https://localhost:9020');
     
     // Check for SignalR connection indicator
     const connectionStatus = page.locator('.signalr-status');
     await expect(connectionStatus).toContainText('Connected', { timeout: 10000 });
     
     // Test admin app SignalR connection
-    await page.goto('http://localhost:9002/login');
+    await page.goto('https://localhost:9030/login');
     await page.fill('[data-testid="email"]', 'admin@stadium.com');
     await page.fill('[data-testid="password"]', 'admin123');
     await page.click('[data-testid="login-button"]');
     
-    await page.goto('http://localhost:9002/dashboard');
+    await page.goto('https://localhost:9030/dashboard');
     const adminConnectionStatus = page.locator('.signalr-status');
     await expect(adminConnectionStatus).toContainText('Connected', { timeout: 10000 });
     
     // Test staff app SignalR connection
-    await page.goto('http://localhost:9003/login');
+    await page.goto('https://localhost:9040/login');
     await page.fill('input[name="email"]', 'staff@stadium.com');
     await page.fill('input[name="password"]', 'staff123');
     await page.click('button:has-text("Login")');
@@ -342,8 +342,8 @@ test.describe('E2E Cross-Application Workflows', () => {
     
     // Both users try to select the same seat simultaneously
     await Promise.all([
-      page1.goto('http://localhost:9001/events'),
-      page2.goto('http://localhost:9001/events')
+      page1.goto('https://localhost:9020/events'),
+      page2.goto('https://localhost:9020/events')
     ]);
     
     // Both select the same event
@@ -405,8 +405,8 @@ test.describe('E2E Cross-Application Workflows', () => {
     
     // Check that only one cart shows the item
     await Promise.all([
-      page1.goto('http://localhost:9001/cart'),
-      page2.goto('http://localhost:9001/cart')
+      page1.goto('https://localhost:9020/cart'),
+      page2.goto('https://localhost:9020/cart')
     ]);
     
     // One should have the item, the other should be empty or show error

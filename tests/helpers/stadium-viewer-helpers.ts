@@ -149,7 +149,7 @@ export class StadiumViewerHelper {
   /**
    * Navigate to stadium viewer page and wait for it to load
    */
-  async navigateAndWaitForLoad(baseUrl: string = 'http://localhost:9001') {
+  async navigateAndWaitForLoad(baseUrl: string = 'https://localhost:9020') {
     await this.page.goto(`${baseUrl}/stadium-viewer`);
     await this.page.waitForSelector('.stadium-viewer-container', { timeout: 30000 });
     await this.page.waitForSelector('.stadium-svg', { timeout: 15000 });
@@ -158,7 +158,7 @@ export class StadiumViewerHelper {
   /**
    * Setup mock API responses for testing
    */
-  async setupMockResponses(apiBaseUrl: string = 'http://localhost:9000') {
+  async setupMockResponses(apiBaseUrl: string = 'https://localhost:9010') {
     // Mock stadium overview API
     await this.page.route(`${apiBaseUrl}/api/stadium-viewer/overview`, async route => {
       await route.fulfill({
@@ -351,7 +351,7 @@ export class StadiumViewerHelper {
   /**
    * Test error handling with network failures
    */
-  async simulateNetworkError(apiBaseUrl: string = 'http://localhost:9000') {
+  async simulateNetworkError(apiBaseUrl: string = 'https://localhost:9010') {
     await this.page.route(`${apiBaseUrl}/api/stadium-viewer/**`, async route => {
       await route.abort('failed');
     });
@@ -445,7 +445,7 @@ export class StadiumViewerApiHelper {
   /**
    * Test stadium overview API endpoint
    */
-  async testOverviewEndpoint(apiBaseUrl: string = 'http://localhost:9000') {
+  async testOverviewEndpoint(apiBaseUrl: string = 'https://localhost:9010') {
     const response = await this.page.request.get(`${apiBaseUrl}/api/stadium-viewer/overview`);
     
     if (!response.ok()) {
@@ -468,7 +468,7 @@ export class StadiumViewerApiHelper {
   /**
    * Test sector details API endpoint
    */
-  async testSectorDetailsEndpoint(sectorId: string, apiBaseUrl: string = 'http://localhost:9000') {
+  async testSectorDetailsEndpoint(sectorId: string, apiBaseUrl: string = 'https://localhost:9010') {
     const response = await this.page.request.get(`${apiBaseUrl}/api/stadium-viewer/sector/${sectorId}/details`);
     
     if (!response.ok()) {
@@ -491,7 +491,7 @@ export class StadiumViewerApiHelper {
   /**
    * Test seat status API endpoint
    */
-  async testSeatStatusEndpoint(eventId: number, apiBaseUrl: string = 'http://localhost:9000') {
+  async testSeatStatusEndpoint(eventId: number, apiBaseUrl: string = 'https://localhost:9010') {
     const response = await this.page.request.get(`${apiBaseUrl}/api/stadium-viewer/event/${eventId}/seat-status`);
     
     if (!response.ok()) {

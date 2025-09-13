@@ -11,7 +11,7 @@ test.describe('Visual Documentation Test', () => {
     
     // Navigate to admin application
     try {
-      await page.goto('http://localhost:8082', { 
+      await page.goto('https://localhost:9030', { 
         waitUntil: 'networkidle',
         timeout: 30000 
       });
@@ -25,7 +25,7 @@ test.describe('Visual Documentation Test', () => {
       });
       
       // Navigate to stadium overview (even if login required, we can see the page structure)
-      await page.goto('http://localhost:8082/stadium-overview', { 
+      await page.goto('https://localhost:9030/stadium-overview', { 
         waitUntil: 'networkidle',
         timeout: 30000 
       });
@@ -72,7 +72,7 @@ test.describe('Visual Documentation Test', () => {
   test('should verify CSS font improvements are loaded', async ({ page }) => {
     console.log('Verifying CSS font improvements...');
     
-    await page.goto('http://localhost:8082/stadium-overview', { 
+    await page.goto('https://localhost:9030/stadium-overview', { 
       waitUntil: 'networkidle',
       timeout: 30000 
     });

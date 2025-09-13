@@ -48,7 +48,7 @@
 #### 1. API Endpoint Accessibility ✅
 - **Result**: PASS
 - **Details**: API is accessible and responding correctly
-- **URL**: `http://localhost:9000`
+- **URL**: `https://localhost:9010`
 
 #### 2. Database Connectivity ✅
 - **Result**: PASS  
@@ -58,7 +58,7 @@
 #### 3. SignalR Hub Endpoint ✅
 - **Result**: PASS
 - **Details**: SignalR negotiation endpoint accessible
-- **Endpoint**: `http://localhost:9000/bartenderHub/negotiate`
+- **Endpoint**: `https://localhost:9010/bartenderHub/negotiate`
 
 #### 4. Application Health Check ✅
 - **Result**: PASS
@@ -86,18 +86,18 @@
 ### 🐳 Docker Container Status
 All containers running successfully:
 ```
-✅ stadium-customer  (Port 9001) - HEALTHY
-✅ stadium-admin     (Port 9002) - HEALTHY  
-✅ stadium-staff     (Port 9003) - HEALTHY
-✅ stadium-api       (Port 9000) - HEALTHY
+✅ stadium-customer  (Port 9020) - HEALTHY
+✅ stadium-admin     (Port 9030) - HEALTHY
+✅ stadium-staff     (Port 9040) - HEALTHY
+✅ stadium-api       (Port 9010) - HEALTHY
 ✅ stadium-sqlserver (Port 14330) - HEALTHY
 ```
 
 ### 🌐 Network Connectivity
-- **Customer App**: `http://localhost:9001` ✅
-- **Admin App**: `http://localhost:9002` ✅  
-- **Staff App**: `http://localhost:9003` ✅
-- **API Backend**: `http://localhost:9000` ✅
+- **Customer App**: `https://localhost:9020` ✅
+- **Admin App**: `https://localhost:9030` ✅
+- **Staff App**: `https://localhost:9040` ✅
+- **API Backend**: `https://localhost:9010` ✅
 - **Database**: SQLite + SQL Server connectivity ✅
 
 ### 📡 SignalR Real-time Communication

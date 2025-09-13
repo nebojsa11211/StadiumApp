@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Admin Dashboard', () => {
   test('should display dynamic dashboard with statistics and recent activity', async ({ page }) => {
     // Navigate to admin login
-    await page.goto('http://localhost:9002/login');
+    await page.goto('https://localhost:9030/login');
     
     // Login as admin
     await page.fill('input[name="email"]', 'admin@stadium.com');
@@ -11,7 +11,7 @@ test.describe('Admin Dashboard', () => {
     await page.click('button[type="submit"]');
     
     // Wait for navigation to dashboard
-    await page.waitForURL('http://localhost:9002/', { timeout: 10000 });
+    await page.waitForURL('https://localhost:9030/', { timeout: 10000 });
     
     // Check for key statistics cards
     await expect(page.locator('text=Today\'s Revenue')).toBeVisible();
@@ -39,24 +39,24 @@ test.describe('Admin Dashboard', () => {
   
   test('should navigate to different sections from quick actions', async ({ page }) => {
     // Navigate to admin dashboard
-    await page.goto('http://localhost:9002/login');
+    await page.goto('https://localhost:9030/login');
     await page.fill('input[name="email"]', 'admin@stadium.com');
     await page.fill('input[name="password"]', 'Admin123!');
     await page.click('button[type="submit"]');
-    await page.waitForURL('http://localhost:9002/');
+    await page.waitForURL('https://localhost:9030/');
     
     // Test Process New Orders button
     await page.click('text=Process New Orders');
-    await expect(page).toHaveURL('http://localhost:9002/orders');
+    await expect(page).toHaveURL('https://localhost:9030/orders');
     await page.goBack();
     
     // Test View Analytics button
     await page.click('text=View Analytics');
-    await expect(page).toHaveURL('http://localhost:9002/analytics');
+    await expect(page).toHaveURL('https://localhost:9030/analytics');
     await page.goBack();
     
     // Test System Logs button
     await page.click('text=System Logs');
-    await expect(page).toHaveURL('http://localhost:9002/logs');
+    await expect(page).toHaveURL('https://localhost:9030/logs');
   });
 });

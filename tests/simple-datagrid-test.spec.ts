@@ -4,7 +4,7 @@ test.describe('Simple DataGrid Error Message Test', () => {
   test('SIMPLE-TEST: Verify specific error messages in DataGrid', async ({ page }) => {
     console.log('🔐 Starting simple DataGrid error message test...');
     
-    const adminUrl = 'http://localhost:7005';
+    const adminUrl = 'https://localhost:7030';
     const credentials = { email: 'admin@stadium.com', password: 'password123' };
     
     // Navigate to admin login

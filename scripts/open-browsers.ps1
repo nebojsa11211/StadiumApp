@@ -14,10 +14,10 @@ Start-Sleep -Seconds $Delay
 
 # URLs for different services
 $urls = @{
-    "customer" = "http://localhost:5002"
-    "admin" = "http://localhost:5003"
-    "api" = "http://localhost:5001/swagger"
-    "all" = @("http://localhost:5002", "http://localhost:5003", "http://localhost:5001/swagger")
+    "customer" = "https://localhost:7020"
+    "admin" = "https://localhost:7030"
+    "api" = "https://localhost:7010/swagger"
+    "all" = @("https://localhost:7020", "https://localhost:7030", "https://localhost:7010/swagger")
 }
 
 try {

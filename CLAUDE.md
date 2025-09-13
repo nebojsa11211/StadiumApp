@@ -1,19 +1,26 @@
 # CLAUDE.md
 
+## 🔐 **MANDATORY HTTPS-ONLY PROJECT** 🔐
+
+⚠️ **CRITICAL SECURITY REQUIREMENT**: This entire project operates on **HTTPS EXCLUSIVELY**. **NO HTTP PROTOCOLS ARE PERMITTED** anywhere in the codebase, configuration, or deployment. All services, applications, APIs, and communications must use HTTPS with proper SSL certificates.
+
+---
+
 ## Project Overview
 **Stadium Drink Ordering System** – A microservices-based **.NET 8.0** application for ordering beverages in a stadium environment. It consists of:
 
-- **API Backend** (ASP.NET Core Web API)
-- **Customer Blazor Server App**
-- **Admin Blazor Server App**
-- **Staff Blazor Server App**
+- **API Backend** (ASP.NET Core Web API) - **HTTPS ONLY**
+- **Customer Blazor Server App** - **HTTPS ONLY**
+- **Admin Blazor Server App** - **HTTPS ONLY**
+- **Staff Blazor Server App** - **HTTPS ONLY**
 
 ### Key Features
+- **🔒 HTTPS-ONLY COMMUNICATION** - All services and endpoints use HTTPS exclusively
 - PostgreSQL/Supabase database for all environments
 - JWT authentication with role-based access (Admin, Staff, Customer)
 - **🔒 MANDATORY ADMIN AUTHENTICATION** - All admin pages require login
-- SignalR (BartenderHub) for real-time updates
-- Dockerized services with docker-compose orchestration
+- SignalR (BartenderHub) for real-time updates - **HTTPS ONLY**
+- Dockerized services with docker-compose orchestration - **HTTPS ONLY**
 - Entity Framework Core with migrations support
 - Stadium structure management with JSON import/export
 - Interactive stadium seating map visualization
@@ -32,7 +39,7 @@
 - **Restart service:** `docker-compose restart [service-name]`
 - **Rebuild after code changes:** `docker-compose up --build -d [service-name]`
 
-⚠️ **Important**: Docker containers use HTTP internally for service-to-service communication (e.g., admin→api). External access via mapped ports (9010-9040) supports HTTPS.
+🔒 **HTTPS-ONLY**: All Docker containers use HTTPS exclusively for both internal and external communication. All mapped ports (9010-9040) use HTTPS with SSL certificates.
 
 ### Local .NET Development
 - **Build solution:** `dotnet build StadiumDrinkOrdering.sln`
@@ -441,21 +448,23 @@ environment:
 
 ---
 
-## Service Ports - HTTPS ENABLED ✅
+## Service Ports - 🔒 **HTTPS-ONLY MANDATORY** 🔒
 
-### Development Ports (Local)
-- **API**: `7010` (HTTPS) → Docker `9010` (HTTPS) ✅ 
-- **Customer**: `7020` (HTTPS) → Docker `9020` (HTTPS) ✅  
-- **Admin**: `7030` (HTTPS) → Docker `9030` (HTTPS) ✅
-- **Staff**: `7040` (HTTPS) → Docker `9040` (HTTPS) ✅
+🚨 **NO HTTP ALLOWED**: All services run exclusively on HTTPS with SSL certificates. HTTP protocols have been completely removed from the project.
+
+### Development Ports (Local) - **HTTPS ONLY**
+- **API**: `7010` (HTTPS) → Docker `9010` (HTTPS) 🔒
+- **Customer**: `7020` (HTTPS) → Docker `9020` (HTTPS) 🔒
+- **Admin**: `7030` (HTTPS) → Docker `9030` (HTTPS) 🔒
+- **Staff**: `7040` (HTTPS) → Docker `9040` (HTTPS) 🔒
 - **Database**: PostgreSQL/Supabase (cloud/remote)
 
-### Docker HTTPS Configuration ✅
+### Docker HTTPS Configuration 🔒
 - **🔐 SSL Certificates**: Development certificates auto-generated and trusted
 - **📁 Certificate Location**: `./certificates/aspnetcore.pfx`
 - **🐳 Container Mount**: `/https/aspnetcore.pfx` (read-only)
 - **🔑 Certificate Password**: `StadiumDev123!`
-- **⚡ Dual Protocol**: Both HTTPS and HTTP supported for compatibility
+- **🔒 HTTPS-ONLY**: NO HTTP protocols - HTTPS exclusively for security
 
 ### Access URLs
 **Local Development (HTTPS)**

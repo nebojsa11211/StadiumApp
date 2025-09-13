@@ -81,7 +81,7 @@ test.describe('Admin Logs Clear All Functionality - Null Reference Exception Inv
     
     // Step 1: Navigate directly to admin login page
     console.log('Step 1: Navigating to admin login page...');
-    await adminPage.goto('http://localhost:9002/login');
+    await adminPage.goto('https://localhost:9030/login');
     await waitForPageInteractive(adminPage);
     
     // Step 2: Login as admin
@@ -91,12 +91,12 @@ test.describe('Admin Logs Clear All Functionality - Null Reference Exception Inv
     await adminPage.click('#admin-login-submit-btn');
     
     // Wait for login to complete
-    await adminPage.waitForURL('http://localhost:9002/', { timeout: 30000 });
+    await adminPage.waitForURL('https://localhost:9030/', { timeout: 30000 });
     console.log('Admin login completed');
     
     // Step 3: Navigate to logs page
     console.log('Step 3: Navigating to logs page...');
-    await adminPage.goto('http://localhost:9002/logs');
+    await adminPage.goto('https://localhost:9030/logs');
     await waitForPageInteractive(adminPage);
     console.log('Logs page loaded');
     
@@ -293,7 +293,7 @@ test.describe('Admin Logs Clear All Functionality - Null Reference Exception Inv
     networkRequests = [];
     
     // Navigate back to logs page
-    await adminPage.goto('http://localhost:9002/logs');
+    await adminPage.goto('https://localhost:9030/logs');
     await waitForPageInteractive(adminPage);
     
     // Test 1: Multiple rapid clicks on clear button

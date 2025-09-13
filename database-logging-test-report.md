@@ -24,7 +24,7 @@ The database logging system implementation has been **successfully verified** th
 ### ✅ **API Logging Endpoints Tests** (5/5 PASSED)
 
 **Test Configuration:**
-- API Running on: `http://localhost:7777`
+- API Running on: `https://localhost:7010`
 - Database: PostgreSQL/Supabase (verified working)
 
 #### 1. All Log Levels Test
@@ -84,9 +84,9 @@ The database logging system implementation has been **successfully verified** th
 
 #### Issue Analysis
 **Root Cause:** Admin application configuration mismatch
-- Admin app configured for API on `localhost:7001` 
-- Test API running on `localhost:7777`
-- Admin app itself on `localhost:9004` but not properly responding
+- Admin app configured for API on `localhost:7010`
+- Test API running on `localhost:7010`
+- Admin app itself on `localhost:7030` HTTPS configuration
 
 **Impact on Core Functionality:** None - this is a configuration issue, not a logging system issue
 

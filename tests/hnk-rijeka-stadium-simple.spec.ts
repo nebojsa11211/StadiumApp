@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
  */
 
 test.describe('HNK Rijeka Stadium - Basic Rendering', () => {
-  const adminUrl = 'http://localhost:7031';
+  const adminUrl = 'https://localhost:7030';
   const stadiumOverviewUrl = `${adminUrl}/admin/stadium-overview`;
 
   test('should render HNK Rijeka stadium SVG after fix', async ({ page }) => {

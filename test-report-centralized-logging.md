@@ -154,11 +154,11 @@ The log search returned comprehensive log entries showing:
 ## Playwright Testing Status
 
 **Current Status**: Configuration updated for correct ports
-- Test configuration updated to use correct local development ports:
-  - API: `http://localhost:7001`
-  - Admin: `http://localhost:7005` 
-  - Customer: `http://localhost:7003`
-  - Staff: `http://localhost:7007`
+- Test configuration updated to use correct local development HTTPS ports:
+  - API: `https://localhost:7010`
+  - Admin: `https://localhost:7030`
+  - Customer: `https://localhost:7020`
+  - Staff: `https://localhost:7040`
 
 **Next Steps for Playwright**:
 1. Ensure all applications are running simultaneously

@@ -7,7 +7,7 @@ test.describe('Console-to-System Logging - Direct Testing', () => {
     test.setTimeout(60000);
     
     // Navigate directly to admin app
-    await page.goto('http://localhost:9002');
+    await page.goto('https://localhost:9030');
     await page.waitForLoadState('networkidle');
   });
 
@@ -48,7 +48,7 @@ test.describe('Console-to-System Logging - Direct Testing', () => {
     
     // Try to access logs page directly if possible
     try {
-      await page.goto('http://localhost:9002/logs');
+      await page.goto('https://localhost:9030/logs');
       await page.waitForTimeout(3000);
       
       // Check for toggle switch and clear button elements

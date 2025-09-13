@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure URLs for Docker environment
 if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
 {
-    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8444;http://+:8081");
+    builder.WebHost.UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8444");
 }
 
 // Add services to the container.

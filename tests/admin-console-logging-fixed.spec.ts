@@ -5,7 +5,7 @@ import { waitForPageInteractive, waitForBlazorLoad } from './helpers/blazor-help
 
 test.describe('Admin Console-to-System Logging Functionality', () => {
   let page: Page;
-  const adminAppUrl = 'http://localhost:9002';  // Use the specified Docker admin app port
+  const adminAppUrl = 'https://localhost:9030';  // Use the correct Docker admin HTTPS port
 
   test.beforeEach(async ({ browser }) => {
     page = await browser.newPage();

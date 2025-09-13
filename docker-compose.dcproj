@@ -5,17 +5,11 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>8e3b5c5e-5d4b-4f7a-9c8e-3f2b4c5d6e7f</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>http://localhost:9030</DockerServiceUrl>
+    <DockerServiceUrl>https://localhost:9030</DockerServiceUrl>
     <DockerServiceName>admin</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
-    <None Include="docker-compose.vs.debug.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
-    <None Include="docker-compose.vs.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
     <None Include="docker-compose.yml" />

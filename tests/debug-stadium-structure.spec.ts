@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
  */
 
 test('Debug stadium page structure', async ({ page }) => {
-  await page.goto('http://localhost:7031/admin/stadium-overview');
+  await page.goto('https://localhost:7030/admin/stadium-overview');
   
   // Wait for page to load
   await page.waitForTimeout(5000);

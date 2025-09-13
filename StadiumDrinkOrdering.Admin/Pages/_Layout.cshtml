@@ -38,5 +38,99 @@
     <script src="~/js/datagrid.js"></script>
     <script src="~/js/culture.js"></script>
     <script src="~/js/console-interceptor.js"></script>
+    <script src="~/js/modals.js"></script>
+
+    <!-- Inline Modal Functions as Fallback -->
+    <script>
+        // Ensure modal functions are available
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 DOM loaded, checking modal functions...');
+
+            // Fallback modal function if modals.js fails to load
+            if (typeof window.showBootstrapModal === 'undefined') {
+                console.log('⚠️ showBootstrapModal not found, creating fallback...');
+
+                window.showBootstrapModal = function(modalId) {
+                    console.log('🔍 Fallback showBootstrapModal called with:', modalId);
+
+                    const modalElement = document.getElementById(modalId);
+                    if (!modalElement) {
+                        console.error('❌ Modal element not found:', modalId);
+                        alert('Modal element not found: ' + modalId);
+                        return;
+                    }
+
+                    if (typeof bootstrap === 'undefined') {
+                        console.error('❌ Bootstrap is not loaded');
+                        alert('Bootstrap is not loaded');
+                        return;
+                    }
+
+                    try {
+                        console.log('🔍 Creating Bootstrap modal...');
+                        const modal = new bootstrap.Modal(modalElement, {
+                            backdrop: true,
+                            keyboard: true,
+                            focus: true
+                        });
+                        console.log('✅ Modal created, showing...');
+                        modal.show();
+
+                        setTimeout(() => {
+                            console.log('🔍 Modal visibility check:', modalElement.classList.contains('show'));
+                        }, 500);
+                    } catch (error) {
+                        console.error('❌ Error showing modal:', error);
+                        alert('Error showing modal: ' + error.message);
+                    }
+                };
+
+                window.forceShowModal = function(modalId) {
+                    console.log('🔍 forceShowModal called:', modalId);
+
+                    const modalElement = document.getElementById(modalId);
+                    if (!modalElement) {
+                        console.error('❌ Modal not found');
+                        return false;
+                    }
+
+                    // Try Bootstrap method
+                    if (typeof bootstrap !== 'undefined') {
+                        try {
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                            modal.show();
+                            return true;
+                        } catch (e) {
+                            console.error('❌ Bootstrap method failed:', e);
+                        }
+                    }
+
+                    // Try manual method
+                    try {
+                        modalElement.style.display = 'block';
+                        modalElement.classList.add('show');
+                        modalElement.setAttribute('aria-hidden', 'false');
+                        document.body.classList.add('modal-open');
+
+                        // Add backdrop
+                        let backdrop = document.querySelector('.modal-backdrop');
+                        if (!backdrop) {
+                            backdrop = document.createElement('div');
+                            backdrop.className = 'modal-backdrop fade show';
+                            document.body.appendChild(backdrop);
+                        }
+                        return true;
+                    } catch (e) {
+                        console.error('❌ Manual method failed:', e);
+                        return false;
+                    }
+                };
+            } else {
+                console.log('✅ showBootstrapModal already loaded from modals.js');
+            }
+
+            console.log('✅ Modal functions ready');
+        });
+    </script>
 </body>
 </html>

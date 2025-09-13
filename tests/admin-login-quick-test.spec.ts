@@ -3,7 +3,7 @@ import { waitForPageInteractive } from './helpers/blazor-helpers';
 
 test('quick admin login test', async ({ page }) => {
   // Navigate to admin login
-  await page.goto('http://localhost:7005/login');
+  await page.goto('https://localhost:7030/login');
   await waitForPageInteractive(page);
   
   // Fill login form

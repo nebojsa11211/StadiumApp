@@ -6,9 +6,9 @@ const http = require('http');
 
 // Configuration
 const urls = [
-    'http://localhost:5002',   // Customer App
-    'http://localhost:5003',   // Admin App
-    'http://localhost:5001/swagger'  // API Swagger
+    'https://localhost:7020',   // Customer App
+    'https://localhost:7030',   // Admin App
+    'https://localhost:7010/swagger'  // API Swagger
 ];
 
 const maxWaitTime = 30000; // 30 seconds

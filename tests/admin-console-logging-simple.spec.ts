@@ -3,7 +3,7 @@ import { waitForPageInteractive, waitForBlazorLoad } from './helpers/blazor-help
 
 test.describe('Admin Console Logging - Simple Test', () => {
   let page: Page;
-  const adminAppUrl = 'http://localhost:9002';
+  const adminAppUrl = 'https://localhost:9030';
 
   test.beforeEach(async ({ browser }) => {
     page = await browser.newPage();

@@ -1,7 +1,7 @@
 import { test, expect, chromium, BrowserContext, Page } from '@playwright/test';
 
 // Configuration
-const ADMIN_BASE_URL = 'http://localhost:9005';
+const ADMIN_BASE_URL = 'https://localhost:9030';
 const ADMIN_CREDENTIALS = {
   email: 'admin@stadium.com', 
   password: 'admin123'

@@ -14,16 +14,16 @@ import { testConfig } from './config';
 // Port configurations to test
 const PORT_CONFIG = {
   docker: {
-    api: 'http://localhost:9010',
-    customer: 'http://localhost:9020', 
-    admin: 'http://localhost:9030',
-    staff: 'http://localhost:9040'
+    api: 'https://localhost:9010',
+    customer: 'https://localhost:9020', 
+    admin: 'https://localhost:9030',
+    staff: 'https://localhost:9040'
   },
   development: {
-    api: 'http://localhost:7011',
-    customer: 'http://localhost:7021',
-    admin: 'http://localhost:7031',
-    staff: 'http://localhost:7041'
+    api: 'https://localhost:7010',
+    customer: 'https://localhost:7020',
+    admin: 'https://localhost:7030',
+    staff: 'https://localhost:7040'
   }
 };
 
@@ -248,18 +248,18 @@ test.describe('Fixed Ports Validation', () => {
     
     test('Playwright config should use correct Docker port', async () => {
       // Verify playwright.config.ts uses the correct Docker port for Customer app
-      const expectedBaseUrl = 'http://localhost:9020';
+      const expectedBaseUrl = 'https://localhost:9020';
       
       // This test validates that our test configuration is consistent
-      expect(process.env.BASE_URL || 'http://localhost:9020').toBe(expectedBaseUrl);
+      expect(process.env.BASE_URL || 'https://localhost:9020').toBe(expectedBaseUrl);
       console.log(`✅ Playwright config uses correct Customer Docker port: ${expectedBaseUrl}`);
     });
     
     test('Test config should have correct development ports', async () => {
       // Verify tests/config.ts has the correct development ports
-      expect(testConfig.customerApp).toBe('http://localhost:7021');
-      expect(testConfig.adminApp).toBe('http://localhost:7031'); 
-      expect(testConfig.staffApp).toBe('http://localhost:7041');
+      expect(testConfig.customerApp).toBe('https://localhost:7020');
+      expect(testConfig.adminApp).toBe('https://localhost:7030'); 
+      expect(testConfig.staffApp).toBe('https://localhost:7040');
       
       console.log('✅ Test config has correct development ports:');
       console.log(`   Customer: ${testConfig.customerApp}`);
@@ -286,7 +286,7 @@ test.describe('Fixed Ports Validation', () => {
       
       for (const { port, service } of allPorts) {
         try {
-          const response = await request.get(`http://localhost:${port}/`, {
+          const response = await request.get(`https://localhost:${port}/`, {
             timeout: 5000
           });
           

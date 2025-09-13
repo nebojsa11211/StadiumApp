@@ -62,9 +62,10 @@ This configuration ensures that Docker containers are **recreated fresh** on eac
 2. Press F5 or click Start Debugging
 3. Wait for the PowerShell script to complete (shows progress)
 4. All services will be available at:
-   - API: http://localhost:5001
-   - Customer: http://localhost:5002
-   - Admin: http://localhost:5003
+   - API: https://localhost:7010
+   - Customer: https://localhost:7020
+   - Admin: https://localhost:7030
+   - Staff: https://localhost:7040
 
 ### Stopping Debug Session
 1. Press Shift+F5 or click Stop Debugging

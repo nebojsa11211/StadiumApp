@@ -14,7 +14,7 @@
     <!-- Key Metrics Row -->
     <div class="row mb-4">
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-primary h-100">
+            <div class="card border-primary h-100" style="cursor: pointer;" @onclick="ShowRevenueDetails">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -33,7 +33,7 @@
         </div>
         
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-success h-100">
+            <div class="card border-success h-100" style="cursor: pointer;" @onclick="ShowActiveOrders">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -50,7 +50,7 @@
         </div>
         
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-warning h-100">
+            <div class="card border-warning h-100" style="cursor: pointer;" @onclick="ShowTicketDetails">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -67,7 +67,7 @@
         </div>
         
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-info h-100">
+            <div class="card border-info h-100" style="cursor: pointer;" @onclick="ShowOnlineUsers" @onclick:preventDefault="true">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -79,11 +79,30 @@
                             <i class="bi bi-people" style="font-size: 2.5rem;"></i>
                         </div>
                     </div>
+                    <!-- Debug button -->
+                    <div class="mt-2 text-center">
+                        <small class="text-muted">Click anywhere on card to view details</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <!-- DEBUG SECTION - Remove after testing -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">🔧 Modal Debug Panel</h6>
+                    <button class="btn btn-primary btn-sm me-2" @onclick="ShowOnlineUsers">Test Blazor Click</button>
+                    <button class="btn btn-secondary btn-sm me-2" onclick="showBootstrapModal('onlineUsersModal')">Test JS Direct</button>
+                    <button class="btn btn-info btn-sm me-2" onclick="console.log('Bootstrap available:', typeof bootstrap !== 'undefined'); console.log('Modal element:', document.getElementById('onlineUsersModal')); alert('Check console');">Test Bootstrap</button>
+                    <button class="btn btn-warning btn-sm" onclick="$('#onlineUsersModal').modal('show');">Test jQuery</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Recent Activity & Quick Actions Row -->
     <div class="row mb-4">
         <!-- Recent Activity Feed -->
@@ -268,6 +287,319 @@
                         @Localizer["SetupStep4"]
                     </li>
                 </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Online Users Modal -->
+<div class="modal fade" id="onlineUsersModal" tabindex="-1" aria-labelledby="onlineUsersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="onlineUsersModalLabel">
+                    <i class="bi bi-people me-2"></i>Online Users
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (loadingModalData)
+                {
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }
+                else if (onlineUsersList.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Last Activity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in onlineUsersList)
+                                {
+                                    <tr>
+                                        <td>@user.Name</td>
+                                        <td>@user.Email</td>
+                                        <td>
+                                            <span class="badge @(user.Role == "Staff" ? "bg-primary" : "bg-secondary")">
+                                                @user.Role
+                                            </span>
+                                        </td>
+                                        <td>@user.LastActivity.ToString("HH:mm:ss")</td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-circle-fill"></i> Online
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center text-muted">No users currently online</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" @onclick="RefreshOnlineUsers">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Orders Modal -->
+<div class="modal fade" id="activeOrdersModal" tabindex="-1" aria-labelledby="activeOrdersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="activeOrdersModalLabel">
+                    <i class="bi bi-cart-check me-2"></i>Active Orders
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (loadingModalData)
+                {
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }
+                else if (activeOrdersList.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in activeOrdersList)
+                                {
+                                    <tr>
+                                        <td><strong>#@order.Id</strong></td>
+                                        <td>@order.CustomerName</td>
+                                        <td>@order.ItemCount items</td>
+                                        <td>@order.Total.ToString("C")</td>
+                                        <td>
+                                            <span class="badge @GetOrderStatusBadgeClass(order.Status)">
+                                                @order.Status
+                                            </span>
+                                        </td>
+                                        <td>@GetTimeAgo(order.CreatedAt)</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" @onclick="() => ViewOrderDetails(order.Id)">
+                                                View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center text-muted">No active orders at the moment</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/orders"))">
+                    View All Orders
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue Details Modal -->
+<div class="modal fade" id="revenueModal" tabindex="-1" aria-labelledby="revenueModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="revenueModalLabel">
+                    <i class="bi bi-cash-stack me-2"></i>Revenue Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (loadingModalData)
+                {
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }
+                else if (revenueDetails != null)
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Today's Breakdown</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <strong>Drink Orders:</strong> @revenueDetails.DrinkRevenue.ToString("C")
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Ticket Sales:</strong> @revenueDetails.TicketRevenue.ToString("C")
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Service Fees:</strong> @revenueDetails.ServiceFees.ToString("C")
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Comparison</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <strong>Yesterday:</strong> @revenueDetails.YesterdayTotal.ToString("C")
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Last Week:</strong> @revenueDetails.LastWeekTotal.ToString("C")
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Last Month:</strong> @revenueDetails.LastMonthTotal.ToString("C")
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-muted">Top Selling Items Today</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>Revenue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in revenueDetails.TopItems)
+                                        {
+                                            <tr>
+                                                <td>@item.Name</td>
+                                                <td>@item.Quantity</td>
+                                                <td>@item.Revenue.ToString("C")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center text-muted">No revenue data available</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/analytics"))">
+                    View Full Analytics
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ticket Details Modal -->
+<div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="ticketModalLabel">
+                    <i class="bi bi-ticket-perforated me-2"></i>Ticket Sales Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (loadingModalData)
+                {
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }
+                else if (ticketDetails != null)
+                {
+                    <div class="mb-3">
+                        <h6>Event: <strong>@ticketDetails.EventName</strong></h6>
+                        <p class="text-muted">@ticketDetails.EventDate.ToString("MMMM dd, yyyy HH:mm")</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Sales Summary</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <strong>Total Capacity:</strong> @ticketDetails.TotalCapacity
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Sold Today:</strong> @ticketDetails.SoldToday
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Total Sold:</strong> @ticketDetails.TotalSold
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Available:</strong> @ticketDetails.Available
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Sales by Section</h6>
+                            <ul class="list-unstyled">
+                                @foreach (var sectionSale in ticketDetails.SectionSales)
+                                {
+                                    <li class="mb-2">
+                                        <strong>@sectionSale.Name:</strong> @sectionSale.Sold / @sectionSale.Capacity
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar bg-warning" role="progressbar"
+                                                 style="width: @((sectionSale.Sold * 100 / sectionSale.Capacity))%"></div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center text-muted">No ticket data available</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo("/events"))">
+                    Manage Events
+                </button>
             </div>
         </div>
     </div>

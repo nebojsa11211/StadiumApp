@@ -9,7 +9,7 @@ test.describe('Admin Events Demo Data Button', () => {
     const adminPage = await adminContext.newPage();
     
     // Login as admin
-    await adminPage.goto('http://localhost:9002/login');
+    await adminPage.goto('https://localhost:9030/login');
     await adminPage.fill('input[placeholder="Enter username"]', 'admin');
     await adminPage.fill('input[placeholder="Enter password"]', 'admin123');
     await adminPage.click('button[type="submit"]');
@@ -18,7 +18,7 @@ test.describe('Admin Events Demo Data Button', () => {
     await adminPage.waitForURL('**/dashboard', { timeout: 10000 });
     
     // Navigate to events page
-    await adminPage.goto('http://localhost:9002/events');
+    await adminPage.goto('https://localhost:9030/events');
     await adminPage.waitForLoadState('networkidle');
   });
   

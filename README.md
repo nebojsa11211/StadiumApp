@@ -97,11 +97,11 @@ chmod +x scripts/*.sh
 ```
 
 **Access URLs:**
-- 🎯 **Customer App**: http://localhost:9001
-- 🛠️ **Admin App**: http://localhost:9002
-- 👨‍💼 **Staff App**: http://localhost:9003
-- 🔧 **API**: http://localhost:9000
-- 📚 **API Documentation**: http://localhost:9000/swagger
+- 🎯 **Customer App**: https://localhost:9020
+- 🛠️ **Admin App**: https://localhost:9030
+- 👨‍💼 **Staff App**: https://localhost:9040
+- 🔧 **API**: https://localhost:9010
+- 📚 **API Documentation**: https://localhost:9010/swagger
 
 ### 🏭 Production Deployment
 
@@ -117,10 +117,10 @@ nano .env
 ```
 
 **Production URLs:**
-- Customer App: http://localhost:8081
-- Admin App: http://localhost:8082
-- Staff App: http://localhost:8083
-- API: http://localhost:8080
+- Customer App: https://localhost:9020
+- Admin App: https://localhost:9030
+- Staff App: https://localhost:9040
+- API: https://localhost:9010
 
 ### 💻 Local Development Setup
 
@@ -136,19 +136,19 @@ nano .env
 
 # Start API
 cd StadiumDrinkOrdering.API
-dotnet run --urls "https://localhost:7000;http://localhost:7001"
+dotnet run --urls "https://localhost:7010"
 
 # Start Customer App (new terminal)
 cd StadiumDrinkOrdering.Customer
-dotnet run --urls "https://localhost:7002;http://localhost:7003"
+dotnet run --urls "https://localhost:7020"
 
 # Start Admin App (new terminal)
 cd StadiumDrinkOrdering.Admin
-dotnet run --urls "https://localhost:7004;http://localhost:7005"
+dotnet run --urls "https://localhost:7030"
 
 # Start Staff App (new terminal)
 cd StadiumDrinkOrdering.Staff
-dotnet run --urls "https://localhost:7006;http://localhost:7007"
+dotnet run --urls "https://localhost:7040"
 ```
 
 ## 🔐 Default Credentials
@@ -437,10 +437,10 @@ docker-compose build --no-cache
 
 ### Health Checks
 All services include health checks:
-- **API**: http://localhost:9000/health
-- **Customer**: http://localhost:9001/health
-- **Admin**: http://localhost:9002/health
-- **Staff**: http://localhost:9003/health
+- **API**: https://localhost:9010/health
+- **Customer**: https://localhost:9020/health
+- **Admin**: https://localhost:9030/health
+- **Staff**: https://localhost:9040/health
 
 ## 🔧 Recent Bug Fixes & Improvements
 

@@ -10,8 +10,8 @@ import { test, expect, Page, BrowserContext } from '@playwright/test';
  * 4. Overall user experience and error handling
  * 
  * Services:
- * - API: http://localhost:8080
- * - Admin: http://localhost:9004 (updated from 9002/9003 due to port conflicts)
+ * - API: https://localhost:9010
+ * - Admin: https://localhost:9030 (updated from 9002/9003 due to port conflicts)
  */
 
 test.describe('Admin Orders Page - Comprehensive Tests', () => {
@@ -37,7 +37,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
 
   test('API connectivity test - Direct API call', async () => {
     // Test direct API connectivity before testing the admin interface
-    const apiResponse = await page.request.get('http://localhost:8080/api/orders');
+    const apiResponse = await page.request.get('https://localhost:9010/api/orders');
     
     console.log(`API Status: ${apiResponse.status()}`);
     
@@ -53,7 +53,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
 
   test('Admin login functionality', async () => {
     await test.step('Navigate to admin login page', async () => {
-      await page.goto('http://localhost:9004/login');
+      await page.goto('https://localhost:9030/login');
       await page.waitForLoadState('networkidle');
     });
 
@@ -76,9 +76,9 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
     await test.step('Navigate to orders page', async () => {
       // Try multiple possible paths to orders page
       const possibleUrls = [
-        'http://localhost:9004/orders',
-        'http://localhost:9004/Orders',
-        'http://localhost:9004/admin/orders'
+        'https://localhost:9030/orders',
+        'https://localhost:9030/Orders',
+        'https://localhost:9030/admin/orders'
       ];
       
       let ordersPageFound = false;
@@ -105,7 +105,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
       
       if (!ordersPageFound) {
         // Try to find navigation link to orders
-        await page.goto('http://localhost:9004');
+        await page.goto('https://localhost:9030');
         await page.waitForLoadState('networkidle');
         
         const ordersLink = page.locator('a:has-text("Orders"), a:has-text("orders"), nav >> text=Orders');
@@ -197,7 +197,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
   });
 
   test('Test order list functionality', async () => {
-    await page.goto('http://localhost:9004/orders');
+    await page.goto('https://localhost:9030/orders');
     await page.waitForLoadState('networkidle');
 
     await test.step('Check for orders table or list', async () => {
@@ -239,7 +239,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
   });
 
   test('Test order details modal functionality', async () => {
-    await page.goto('http://localhost:9004/orders');
+    await page.goto('https://localhost:9030/orders');
     await page.waitForLoadState('networkidle');
 
     await test.step('Look for order detail buttons', async () => {
@@ -285,7 +285,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
   });
 
   test('Test order action buttons styling and responsiveness', async () => {
-    await page.goto('http://localhost:9004/orders');
+    await page.goto('https://localhost:9030/orders');
     await page.waitForLoadState('networkidle');
 
     await test.step('Test desktop view styling', async () => {
@@ -358,7 +358,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
       // Block API requests to simulate connectivity issues
       await page.route('**/api/orders', route => route.abort());
       
-      await page.goto('http://localhost:9004/orders');
+      await page.goto('https://localhost:9030/orders');
       await page.waitForTimeout(3000);
       
       // Check for error messages
@@ -402,7 +402,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
   });
 
   test('Test overall user experience', async () => {
-    await page.goto('http://localhost:9004/orders');
+    await page.goto('https://localhost:9030/orders');
     await page.waitForLoadState('networkidle');
 
     await test.step('Measure page load performance', async () => {
@@ -451,7 +451,7 @@ test.describe('Admin Orders Page - Comprehensive Tests', () => {
   });
 
   test('Test data consistency and accuracy', async () => {
-    await page.goto('http://localhost:9004/orders');
+    await page.goto('https://localhost:9030/orders');
     await page.waitForLoadState('networkidle');
 
     await test.step('Verify displayed data format', async () => {

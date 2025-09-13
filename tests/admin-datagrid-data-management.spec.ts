@@ -3,7 +3,7 @@ import { loginAsAdmin } from './helpers/auth-helpers';
 import { waitForPageInteractive, waitForElementStable, retryAction } from './helpers/blazor-helpers';
 
 // Test configuration - using port 7005 for Admin app
-const ADMIN_URL = 'http://localhost:7005';
+const ADMIN_URL = 'https://localhost:7030';
 const ADMIN_CREDENTIALS = {
   email: 'admin@stadium.com',
   password: 'password123'

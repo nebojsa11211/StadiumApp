@@ -10,16 +10,16 @@ timeout /t 15 /nobreak >nul
 
 :: URLs to open in separate tabs
 echo 🌐 Opening all Stadium services in browser tabs...
-echo 📍 Opening: Customer App (http://localhost:5002)
-start http://localhost:5002
+echo 📍 Opening: Customer App (https://localhost:7020)
+start https://localhost:7020
 
 timeout /t 1 /nobreak >nul
-echo 📍 Opening: Admin App (http://localhost:5003)
-start http://localhost:5003
+echo 📍 Opening: Admin App (https://localhost:7030)
+start https://localhost:7030
 
 timeout /t 1 /nobreak >nul
-echo 📍 Opening: API Swagger (http://localhost:5001/swagger)
-start http://localhost:5001/swagger
+echo 📍 Opening: API Swagger (https://localhost:7010/swagger)
+start https://localhost:7010/swagger
 
 echo.
 echo ✅ All three browser tabs opened successfully!

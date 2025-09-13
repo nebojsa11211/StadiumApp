@@ -7,7 +7,7 @@ test.describe('Multilingual Support', () => {
     });
 
     test('Language switcher changes UI text on Customer app', async ({ page }) => {
-        await page.goto('http://localhost:7003');
+        await page.goto('https://localhost:7020');
         
         // Wait for page to load
         await page.waitForLoadState('networkidle');
@@ -28,7 +28,7 @@ test.describe('Multilingual Support', () => {
     });
     
     test('Language preference persists across sessions', async ({ page }) => {
-        await page.goto('http://localhost:7003');
+        await page.goto('https://localhost:7020');
         
         // Switch to English
         await page.selectOption('.language-switcher select', 'en');
@@ -50,7 +50,7 @@ test.describe('Multilingual Support', () => {
     });
     
     test('All feature cards are translated correctly', async ({ page }) => {
-        await page.goto('http://localhost:7003');
+        await page.goto('https://localhost:7020');
         
         // Check Croatian feature cards
         await expect(page.locator('text=Širok Izbor')).toBeVisible();
@@ -68,7 +68,7 @@ test.describe('Multilingual Support', () => {
     });
     
     test('How it works section is translated', async ({ page }) => {
-        await page.goto('http://localhost:7003');
+        await page.goto('https://localhost:7020');
         
         // Check Croatian steps
         await expect(page.locator('text=Kako funkcionira')).toBeVisible();
@@ -84,7 +84,7 @@ test.describe('Multilingual Support', () => {
     });
     
     test('Language switcher works on Admin app', async ({ page }) => {
-        await page.goto('http://localhost:7005');
+        await page.goto('https://localhost:7030');
         
         // Check that language switcher is present
         await expect(page.locator('.language-switcher select')).toBeVisible();
@@ -95,7 +95,7 @@ test.describe('Multilingual Support', () => {
     });
     
     test('Language switcher works on Staff app', async ({ page }) => {
-        await page.goto('http://localhost:7007');
+        await page.goto('https://localhost:7040');
         
         // Check that language switcher is present
         await expect(page.locator('.language-switcher select')).toBeVisible();
@@ -106,7 +106,7 @@ test.describe('Multilingual Support', () => {
     });
     
     test('Cookie is set correctly when changing language', async ({ page }) => {
-        await page.goto('http://localhost:7003');
+        await page.goto('https://localhost:7020');
         
         // Switch to English
         await page.selectOption('.language-switcher select', 'en');
@@ -132,11 +132,11 @@ test.describe('Parallel Language Testing', () => {
         const page2 = await context2.newPage();
         
         // User 1 uses Croatian
-        await page1.goto('http://localhost:7003');
+        await page1.goto('https://localhost:7020');
         await expect(page1.locator('h1')).toContainText('Dobrodošli u Stadionska Pića');
         
         // User 2 switches to English
-        await page2.goto('http://localhost:7003');
+        await page2.goto('https://localhost:7020');
         await page2.selectOption('.language-switcher select', 'en');
         await page2.waitForLoadState('networkidle');
         await expect(page2.locator('h1')).toContainText('Welcome to Stadium Drinks');

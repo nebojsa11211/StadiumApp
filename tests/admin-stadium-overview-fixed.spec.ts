@@ -10,7 +10,7 @@ test.describe('Admin Stadium Overview - Fixed Implementation Tests', () => {
     await page.setViewportSize({ width: 1920, height: 1080 });
     
     // Navigate to admin stadium overview page
-    await page.goto('http://localhost:9002/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
   });
 
   test.afterEach(async () => {
@@ -146,7 +146,7 @@ test.describe('Admin Stadium Overview - Fixed Implementation Tests', () => {
     });
     
     // Navigate and wait for network activity to complete
-    await page.goto('http://localhost:9002/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForLoadState('networkidle', { timeout: 30000 });
     
     // Check if the stadium viewer API was called
@@ -238,7 +238,7 @@ test.describe('Admin Stadium Overview - Fixed Implementation Tests', () => {
     const startTime = Date.now();
     
     // Navigate to page
-    await page.goto('http://localhost:9002/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     
     // Wait for basic page structure to load
     await expect(page.locator('#stadium-layout-container')).toBeVisible({ timeout: 10000 });
@@ -262,7 +262,7 @@ test.describe('Admin Stadium Overview - Fixed Implementation Tests', () => {
 
   test('Comprehensive final state verification', async () => {
     // Navigate and wait for page to stabilize
-    await page.goto('http://localhost:9002/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForLoadState('domcontentloaded');
     
     // Take a screenshot for manual verification

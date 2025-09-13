@@ -2,8 +2,8 @@ import { test, expect, Page } from '@playwright/test';
 import { StadiumViewerHelper, StadiumViewerApiHelper, PerformanceHelper } from './helpers/stadium-viewer-helpers';
 
 // Test configuration
-const CUSTOMER_BASE_URL = process.env.CUSTOMER_BASE_URL || 'http://localhost:9001';
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:9000';
+const CUSTOMER_BASE_URL = process.env.CUSTOMER_BASE_URL || 'https://localhost:9020';
+const API_BASE_URL = process.env.API_BASE_URL || 'https://localhost:9010';
 
 test.describe('Stadium Viewer E2E Tests', () => {
   let helper: StadiumViewerHelper;

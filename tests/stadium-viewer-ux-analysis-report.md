@@ -2,8 +2,8 @@
 
 **Date:** September 9, 2025  
 **Test Suite:** Enhanced Stadium Viewer Components  
-**Applications:** Customer (http://localhost:5003), Admin (http://localhost:9004)  
-**API:** http://localhost:9005
+**Applications:** Customer (https://localhost:7020), Admin (https://localhost:9030)  
+**API:** https://localhost:9010
 
 ## Executive Summary
 

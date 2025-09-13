@@ -14,9 +14,9 @@ import { StadiumViewerHelper } from './helpers/stadium-viewer-helpers';
  */
 
 // Test configuration
-const CUSTOMER_BASE_URL = process.env.CUSTOMER_BASE_URL || 'http://localhost:5003';
-const ADMIN_BASE_URL = process.env.ADMIN_BASE_URL || 'http://localhost:9004';
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:9005';
+const CUSTOMER_BASE_URL = process.env.CUSTOMER_BASE_URL || 'https://localhost:7020';
+const ADMIN_BASE_URL = process.env.ADMIN_BASE_URL || 'https://localhost:9030';
+const API_BASE_URL = process.env.API_BASE_URL || 'https://localhost:9010';
 
 test.describe('Enhanced Stadium Viewer - Accessibility (WCAG 2.1 AA)', () => {
   let helper: StadiumViewerHelper;

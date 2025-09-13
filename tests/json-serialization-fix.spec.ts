@@ -12,7 +12,7 @@
 
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:7070';
+const BASE_URL = 'https://localhost:7010';
 const API_BASE_URL = `${BASE_URL}/api`;
 
 // Test configuration

@@ -11,7 +11,7 @@ import { test, expect, Page, BrowserContext } from '@playwright/test';
  */
 
 // Test configuration constants - check both HTTP and HTTPS ports
-const ADMIN_HTTP_URL = 'http://localhost:8082';
+const ADMIN_HTTP_URL = 'https://localhost:9030';
 const ADMIN_HTTPS_URL = 'https://localhost:7030';
 const ADMIN_LOGIN_PATH = '/login';
 const STADIUM_OVERVIEW_PATH = '/stadium-overview';

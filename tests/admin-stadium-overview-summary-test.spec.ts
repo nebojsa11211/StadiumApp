@@ -6,7 +6,7 @@ test.describe('Admin Stadium Overview - Final Verification', () => {
   test.beforeEach(async ({ browser }) => {
     page = await browser.newPage();
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await page.goto('http://localhost:9002/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
   });
 
   test.afterEach(async () => {

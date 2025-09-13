@@ -3,10 +3,10 @@ export const testConfig = {
   // API endpoint
   api: process.env.API_URL || 'https://localhost:7010',
   
-  // Application URLs - using local development ports (HTTP)
-  adminApp: process.env.ADMIN_URL || 'http://localhost:7031',
-  customerApp: process.env.CUSTOMER_URL || 'http://localhost:7021',
-  staffApp: process.env.STAFF_URL || 'http://localhost:7041',
+  // Application URLs - using local development ports (HTTPS)
+  adminApp: process.env.ADMIN_URL || 'https://localhost:7030',
+  customerApp: process.env.CUSTOMER_URL || 'https://localhost:7020',
+  staffApp: process.env.STAFF_URL || 'https://localhost:7040',
   
   // Test credentials - using admin account for all tests since other accounts may not exist
   credentials: {

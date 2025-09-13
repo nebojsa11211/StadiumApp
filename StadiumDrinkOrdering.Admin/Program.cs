@@ -18,7 +18,7 @@ Console.WriteLine($"Container environment check: '{containerEnv}' == 'true' = {c
 
 if (containerEnv == "true")
 {
-    var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8445;http://+:8082";
+    var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "https://+:8445";
     Console.WriteLine($"🐳 Docker container detected - using URLs: {urls}");
     builder.WebHost.UseUrls(urls);
 }

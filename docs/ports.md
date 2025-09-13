@@ -11,9 +11,9 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 - **HTTP**: `7011` 
 - **Docker**: `9010` → Internal: `8080`
 - **URLs**:
-  - Development: https://localhost:7010 | http://localhost:7011
-  - Docker: http://localhost:9010
-  - Swagger: https://localhost:7010/swagger | http://localhost:9010/swagger (Docker)
+  - Development: https://localhost:7010
+  - Docker: https://localhost:9010
+  - Swagger: https://localhost:7010/swagger | https://localhost:9010/swagger (Docker)
 
 ### StadiumDrinkOrdering.Customer  
 **Description**: Blazor Server Customer Frontend Application
@@ -21,8 +21,8 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 - **HTTP**: `7021`
 - **Docker**: `9020` → Internal: `8081`
 - **URLs**:
-  - Development: https://localhost:7020 | http://localhost:7021
-  - Docker: http://localhost:9020
+  - Development: https://localhost:7020
+  - Docker: https://localhost:9020
 
 ### StadiumDrinkOrdering.Admin
 **Description**: Blazor Server Admin Management Application  
@@ -30,8 +30,8 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 - **HTTP**: `7031`
 - **Docker**: `9030` → Internal: `8082`
 - **URLs**:
-  - Development: https://localhost:7030 | http://localhost:7031
-  - Docker: http://localhost:9030
+  - Development: https://localhost:7030
+  - Docker: https://localhost:9030
 
 ### StadiumDrinkOrdering.Staff
 **Description**: Blazor Server Staff Operations Application
@@ -39,8 +39,8 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 - **HTTP**: `7041`
 - **Docker**: `9040` → Internal: `8083`
 - **URLs**:
-  - Development: https://localhost:7040 | http://localhost:7041
-  - Docker: http://localhost:9040
+  - Development: https://localhost:7040
+  - Docker: https://localhost:9040
 
 ## Port Assignment Strategy
 
@@ -90,22 +90,22 @@ ports:
 # API Backend
 cd StadiumDrinkOrdering.API
 dotnet run --launch-profile https
-# → https://localhost:7010 | http://localhost:7011
+# → https://localhost:7010
 
 # Customer App  
 cd StladiumDrinkOrdering.Customer
 dotnet run --launch-profile https
-# → https://localhost:7020 | http://localhost:7021
+# → https://localhost:7020
 
 # Admin App
 cd StadiumDrinkOrdering.Admin  
 dotnet run --launch-profile https
-# → https://localhost:7030 | http://localhost:7031
+# → https://localhost:7030
 
 # Staff App
 cd StadiumDrinkOrdering.Staff
 dotnet run --launch-profile https  
-# → https://localhost:7040 | http://localhost:7041
+# → https://localhost:7040
 ```
 
 ### Visual Studio / IIS Express
@@ -116,10 +116,10 @@ Projects use the same fixed ports as dotnet run. No more random port assignments
 docker-compose up --build -d
 
 # Access applications:
-# API: http://localhost:9010
-# Customer: http://localhost:9020  
-# Admin: http://localhost:9030
-# Staff: http://localhost:9040
+# API: https://localhost:9010
+# Customer: https://localhost:9020
+# Admin: https://localhost:9030
+# Staff: https://localhost:9040
 ```
 
 ## Network Communication
@@ -127,25 +127,25 @@ docker-compose up --build -d
 ### Inter-Service Communication (Docker)
 Services communicate using internal Docker network:
 ```
-Customer → API: http://api:8080
-Admin → API: http://api:8080  
-Staff → API: http://api:8080
+Customer → API: https://api:8443
+Admin → API: https://api:8443
+Staff → API: https://api:8443
 ```
 
 ### External Access
 Host machine accesses via external ports:
 ```
-Host → API: http://localhost:9010
-Host → Customer: http://localhost:9020
-Host → Admin: http://localhost:9030  
-Host → Staff: http://localhost:9040
+Host → API: https://localhost:9010
+Host → Customer: https://localhost:9020
+Host → Admin: https://localhost:9030
+Host → Staff: https://localhost:9040
 ```
 
 ## Testing & Validation
 
 ### Health Check Endpoints
-- **API Health**: https://localhost:7010/health | http://localhost:9010/health
-- **API Swagger**: https://localhost:7010/swagger | http://localhost:9010/swagger
+- **API Health**: https://localhost:7010/health | https://localhost:9010/health
+- **API Swagger**: https://localhost:7010/swagger | https://localhost:9010/swagger
 
 ### Port Availability Testing
 ```bash
@@ -159,10 +159,10 @@ netstat -an | findstr :7040
 ### Playwright Test Configuration
 Update test configurations to use fixed ports:
 ```typescript
-const API_BASE_URL = 'http://localhost:9010';
-const CUSTOMER_BASE_URL = 'http://localhost:9020';
-const ADMIN_BASE_URL = 'http://localhost:9030';  
-const STAFF_BASE_URL = 'http://localhost:9040';
+const API_BASE_URL = 'https://localhost:9010';
+const CUSTOMER_BASE_URL = 'https://localhost:9020';
+const ADMIN_BASE_URL = 'https://localhost:9030';
+const STAFF_BASE_URL = 'https://localhost:9040';
 ```
 
 ## Troubleshooting

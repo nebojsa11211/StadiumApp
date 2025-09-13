@@ -56,11 +56,11 @@ if (string.IsNullOrEmpty(_apiService.Token))
 ```csharp
 // Updated CORS policy
 builder.WithOrigins(
-    "http://localhost:8080", 
-    "http://localhost:8081", 
-    "http://localhost:8082", 
-    "http://admin:8082", 
-    "http://customer:8081")
+    "https://localhost:9010",
+    "https://localhost:9020",
+    "https://localhost:9030",
+    "https://admin:8445",
+    "https://customer:8444")
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials();

@@ -18,7 +18,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   
   test.beforeEach(async ({ page }) => {
     // Navigate to admin login
-    await page.goto('http://localhost:9030/admin/login');
+    await page.goto('https://localhost:9030/admin/login');
     
     // Login as admin
     await page.fill('input[type="email"]', testConfig.credentials.admin.email);
@@ -32,7 +32,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
 
   test('Stadium Overview loads with dynamic SVG stadium layout', async ({ page }) => {
     // Navigate to Stadium Overview
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     
     // Wait for page to load
     await page.waitForSelector('#stadium-overview-title', { timeout: 10000 });
@@ -46,7 +46,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   });
 
   test('Verify HNK Rijeka stadium structure and coordinates', async ({ page }) => {
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForSelector('#stadium-svg', { timeout: 15000 });
     
     // Check that the SVG has the correct viewBox (1200x900)
@@ -73,7 +73,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   });
 
   test('Verify dynamic sector color coding and seat counts', async ({ page }) => {
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForSelector('#stadium-svg', { timeout: 15000 });
     
     // Enable occupancy display
@@ -97,7 +97,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   });
 
   test('Test sector interaction and modal functionality', async ({ page }) => {
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForSelector('#stadium-svg', { timeout: 15000 });
     
     // Find the first clickable sector
@@ -124,7 +124,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   });
 
   test('Compare legend display between static and dynamic modes', async ({ page }) => {
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForSelector('#stadium-svg', { timeout: 15000 });
     
     // Toggle legend display
@@ -145,7 +145,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   });
 
   test('Test event selection and occupancy color changes', async ({ page }) => {
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForSelector('#stadium-svg', { timeout: 15000 });
     
     // Check if events are available
@@ -180,7 +180,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   });
 
   test('Verify responsive layout and SVG scaling', async ({ page }) => {
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForSelector('#stadium-svg', { timeout: 15000 });
     
     // Test different viewport sizes
@@ -206,7 +206,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   });
 
   test('Visual regression - take stadium layout screenshot', async ({ page }) => {
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     await page.waitForSelector('#stadium-svg', { timeout: 15000 });
     
     // Wait for full rendering
@@ -235,7 +235,7 @@ test.describe('Dynamic SVG Visual Consistency', () => {
   test('Performance - measure dynamic SVG rendering time', async ({ page }) => {
     const startTime = Date.now();
     
-    await page.goto('http://localhost:9030/admin/stadium-overview');
+    await page.goto('https://localhost:9030/admin/stadium-overview');
     
     // Wait for SVG to be fully rendered
     await page.waitForSelector('#stadium-svg', { timeout: 15000 });

@@ -1,8 +1,8 @@
 import { test, expect, chromium, BrowserContext, Page } from '@playwright/test';
 
 // Configuration for the current running instances
-const API_BASE_URL = 'http://localhost:7777';
-const ADMIN_BASE_URL = 'http://localhost:9004';
+const API_BASE_URL = 'https://localhost:7010';
+const ADMIN_BASE_URL = 'https://localhost:9030';
 
 // Valid admin credentials (update these if needed)
 const ADMIN_CREDENTIALS = {

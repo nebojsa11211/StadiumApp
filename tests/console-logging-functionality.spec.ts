@@ -4,14 +4,14 @@ test.describe('Console-to-System Logging - Full Functionality Test', () => {
   
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
-    await page.goto('http://localhost:9002');
+    await page.goto('https://localhost:9030');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000); // Allow Blazor to initialize
   });
 
   test('should test complete toggle and clear logs workflow', async ({ page }) => {
     // Navigate directly to logs page
-    await page.goto('http://localhost:9002/logs');
+    await page.goto('https://localhost:9030/logs');
     await page.waitForTimeout(5000);
     
     // Verify page elements exist
@@ -83,7 +83,7 @@ test.describe('Console-to-System Logging - Full Functionality Test', () => {
 
   test('should verify console interception with toggle states', async ({ page }) => {
     // Test console interception functionality
-    await page.goto('http://localhost:9002/logs');
+    await page.goto('https://localhost:9030/logs');
     await page.waitForTimeout(3000);
     
     const testResults = await page.evaluate(async () => {
@@ -159,7 +159,7 @@ test.describe('Console-to-System Logging - Full Functionality Test', () => {
 
   test('should test persistence across page reloads', async ({ page }) => {
     // Navigate to logs page
-    await page.goto('http://localhost:9002/logs');
+    await page.goto('https://localhost:9030/logs');
     await page.waitForTimeout(3000);
     
     const toggleExists = await page.locator('#consoleToSystemToggle').isVisible().catch(() => false);
@@ -193,7 +193,7 @@ test.describe('Console-to-System Logging - Full Functionality Test', () => {
 
   test('should verify no regression in existing log functionality', async ({ page }) => {
     // Navigate to logs page
-    await page.goto('http://localhost:9002/logs');
+    await page.goto('https://localhost:9030/logs');
     await page.waitForTimeout(5000);
     
     // Check existing log filtering buttons still work

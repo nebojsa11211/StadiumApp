@@ -36,7 +36,7 @@ services:
       - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=StadiumDrinkOrdering
       - JwtSettings__Audience=StadiumDrinkOrdering
-      - ASPNETCORE_URLS=https://+:8443;http://+:8080
+      - ASPNETCORE_URLS=https://+:8443
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8443
       - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
@@ -62,7 +62,7 @@ services:
       - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
       - ApiSettings__BaseUrl=https://api:8443/
-      - ASPNETCORE_URLS=https://+:8444;http://+:8081
+      - ASPNETCORE_URLS=https://+:8444
       - ASPNETCORE_HTTP_PORTS=8081
       - ASPNETCORE_HTTPS_PORTS=8444
       - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
@@ -89,7 +89,7 @@ services:
       - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
       - ApiSettings__BaseUrl=https://api:8443/
-      - ASPNETCORE_URLS=https://+:8445;http://+:8082
+      - ASPNETCORE_URLS=https://+:8445
       - ASPNETCORE_HTTP_PORTS=8082
       - ASPNETCORE_HTTPS_PORTS=8445
       - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
@@ -116,7 +116,7 @@ services:
       - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
       - ApiSettings__BaseUrl=https://api:8443/
-      - ASPNETCORE_URLS=https://+:8446;http://+:8083
+      - ASPNETCORE_URLS=https://+:8446
       - ASPNETCORE_HTTP_PORTS=8083
       - ASPNETCORE_HTTPS_PORTS=8446
       - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!

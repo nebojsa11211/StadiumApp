@@ -31,7 +31,7 @@ test.describe('Admin Orders - API Connectivity Fix Verification', () => {
 
   test('Verify admin app loads and shows authentication instead of API errors', async () => {
     await test.step('Navigate to admin orders page', async () => {
-      await page.goto('http://localhost:9004/orders');
+      await page.goto('https://localhost:9030/orders');
       await page.waitForLoadState('networkidle');
       
       console.log(`Current URL: ${page.url()}`);
@@ -107,7 +107,7 @@ test.describe('Admin Orders - API Connectivity Fix Verification', () => {
     });
 
     await test.step('Attempt to trigger API calls', async () => {
-      await page.goto('http://localhost:9004/orders');
+      await page.goto('https://localhost:9030/orders');
       await page.waitForLoadState('networkidle');
       
       // Try to click through to a page that would make API calls
@@ -142,7 +142,7 @@ test.describe('Admin Orders - API Connectivity Fix Verification', () => {
 
   test('Test login flow and orders page access', async () => {
     await test.step('Navigate to login page', async () => {
-      await page.goto('http://localhost:9004/login');
+      await page.goto('https://localhost:9030/login');
       await page.waitForLoadState('networkidle');
       
       console.log('Login page URL:', page.url());
@@ -197,7 +197,7 @@ test.describe('Admin Orders - API Connectivity Fix Verification', () => {
   test('Verify orders page behavior after authentication', async () => {
     // Skip login and test direct access to see behavior
     await test.step('Test direct orders page access', async () => {
-      await page.goto('http://localhost:9004/orders');
+      await page.goto('https://localhost:9030/orders');
       await page.waitForLoadState('networkidle');
       
       const pageContent = await page.textContent('body');
@@ -246,7 +246,7 @@ test.describe('Admin Orders - API Connectivity Fix Verification', () => {
   test('Performance and responsiveness check', async () => {
     await test.step('Test page load performance', async () => {
       const startTime = Date.now();
-      await page.goto('http://localhost:9004/orders');
+      await page.goto('https://localhost:9030/orders');
       await page.waitForLoadState('networkidle');
       const loadTime = Date.now() - startTime;
       

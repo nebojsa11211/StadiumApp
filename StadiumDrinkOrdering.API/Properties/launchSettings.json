@@ -4,22 +4,11 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:7011",
+      "applicationUrl": "https://localhost:7010",
       "sslPort": 7010
     }
   },
   "profiles": {
-    "http": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:7011",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ConnectionStrings__DefaultConnection": "Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Ssl Mode=Require;Trust Server Certificate=true;Command Timeout=300;Connection Lifetime=0;Connection Idle Lifetime=300;Include Error Detail=true"
-      }
-    },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,

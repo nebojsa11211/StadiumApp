@@ -21,8 +21,8 @@ The database should be automatically created when the API starts, with the admin
 
 ### 2. Check API Accessibility
 The Admin app is configured to use:
-- Base URL: http://api:8080/ (from appsettings.json)
-- Login endpoint: POST http://api:8080/api/auth/login
+- Base URL: https://api:8443/ (from appsettings.json)
+- Login endpoint: POST https://api:8443/api/auth/login
 
 ### 3. Common Issues and Solutions
 
@@ -40,7 +40,7 @@ The Admin app is configured to use:
 ### Manual API Test
 You can test the login API directly:
 ```bash
-curl -X POST http://localhost:8080/api/auth/login \
+curl -k -X POST https://localhost:9010/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@stadium.com","password":"admin123"}'
 ```
@@ -69,18 +69,18 @@ curl -X POST http://localhost:8080/api/auth/login \
 ## Environment-Specific Configuration
 
 ### For Docker Environment
-- API URL: http://api:8080/
-- Admin app URL: http://localhost:8082
+- API URL: https://api:8443/
+- Admin app URL: https://localhost:9030
 
 ### For Local Development
-- API URL: http://localhost:8080/
-- Admin app URL: http://localhost:8082
+- API URL: https://localhost:7010/
+- Admin app URL: https://localhost:7030
 
 ## Debug Commands
 
 ### Check if API is running
 ```bash
-curl http://localhost:8080/health
+curl -k https://localhost:9010/health
 ```
 
 ### Check if database has admin user
@@ -91,5 +91,5 @@ curl http://localhost:8080/health
 ## Next Steps
 1. Start the complete application using docker-compose
 2. Wait for all services to be ready
-3. Navigate to http://localhost:8082/login
+3. Navigate to https://localhost:9030/login
 4. Use admin@stadium.com/admin123 to login

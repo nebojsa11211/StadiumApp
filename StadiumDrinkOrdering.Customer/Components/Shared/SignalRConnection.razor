@@ -24,7 +24,7 @@
     
     [Parameter] public EventCallback<string> OnOrderStatusChanged { get; set; }
     [Parameter] public EventCallback<string> OnNotificationReceived { get; set; }
-    [Parameter] public string ApiBaseUrl { get; set; } = "http://localhost:7000";
+    [Parameter] public string ApiBaseUrl { get; set; } = "https://localhost:9010";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

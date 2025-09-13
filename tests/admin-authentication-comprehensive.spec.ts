@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Admin Authentication System Comprehensive Tests', () => {
-  const ADMIN_URL = 'http://localhost:8082';
+  const ADMIN_URL = 'https://localhost:9030';
   const ADMIN_CREDENTIALS = {
     email: 'admin@stadium.com',
     password: 'admin123'

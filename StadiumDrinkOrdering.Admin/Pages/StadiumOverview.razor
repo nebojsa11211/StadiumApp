@@ -1,4 +1,5 @@
 @page "/admin/stadium-overview"
+@using StadiumDrinkOrdering.Admin.Components.Stadium
 
 <PageTitle>Stadium Overview - Admin</PageTitle>
 
@@ -8,10 +9,11 @@
     <!-- Stadium Information and Map Layout -->
     <div class="stadium-layout-container @(isInfoPanelCollapsed ? "info-panel-collapsed" : "info-panel-expanded")" id="stadium-layout-container">
         <!-- Stadium Information Panel -->
-        @* StadiumInfoPanel removed - component not available *@
-        <div class="stadium-info-placeholder">
-            <p>Stadium Information Panel (Component Unavailable)</p>
-        </div>
+        <StadiumInfoPanel
+            Summary="@stadiumSummary"
+            IsLoading="@isLoading"
+            IsCollapsed="@isInfoPanelCollapsed"
+            IsCollapsedChanged="@((bool collapsed) => isInfoPanelCollapsed = collapsed)" />
 
         <!-- Stadium Map Section -->
         <div class="stadium-viewer-container" id="stadium-viewer-container">
@@ -71,9 +73,9 @@
             <!-- Dynamic HNK Rijeka Stadium - Looks identical to static version -->
             <div class="stadium-main-view" id="stadium-main-view">
                 <div class="svg-container" @ref="svgContainer" id="stadium-svg-container">
-                    <StadiumDrinkOrdering.Admin.Components.Stadium.StadiumSvgRenderer 
-                        Layout="@stadiumLayout" 
-                        EventSeatStatus="@svgEventSeatStatus" 
+                    <StadiumSvgRenderer
+                        Layout="@stadiumLayout"
+                        EventSeatStatus="@svgEventSeatStatus"
                         ShowSeatCount="@showOccupancy"
                         OnSectorClick="@OnSectorClicked" />
                 </div>

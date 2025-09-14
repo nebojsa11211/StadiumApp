@@ -1104,6 +1104,261 @@ options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 
 ---
 
+## UI Element Identification System
+
+### Overview
+All buttons, main divs, and interactive elements across the Customer and Admin applications have standardized ID attributes for easy automation, testing, and debugging. This comprehensive ID system ensures consistent element identification across all pages and components throughout the entire Stadium Drink Ordering system.
+
+### ID Naming Convention
+All IDs follow the pattern: `{application}-{page/component}-{element-type}-{specific-identifier}`
+
+**Formats:**
+- **Customer App**: `customer-{context}-{element}-{suffix}`
+- **Admin App**: `admin-{context}-{element}-{suffix}`
+- **Staff App**: `staff-{context}-{element}-{suffix}`
+
+**Parameters:**
+- **Application**: `customer`, `admin`, or `staff` (identifies the specific app)
+- **Context**: Page name, component name, or section identifier
+- **Element**: Button (`btn`), container (`container`), form (`form`), input (`input`), etc.
+- **Suffix**: Specific descriptor or action
+
+### Main Layout & Navigation IDs
+
+#### MainLayout.razor
+- `customer-layout-page` - Main page container div
+- `customer-layout-sidebar` - Sidebar navigation container
+- `customer-layout-main` - Main content area
+- `customer-layout-top-row` - Top navigation row
+- `customer-layout-content` - Article content area
+- `customer-layout-about-link` - Help link
+- `customer-layout-sign-in-btn` - Sign In button (unauthenticated)
+- `customer-layout-sign-up-btn` - Sign Up button (unauthenticated)
+- `customer-layout-user-dropdown` - User dropdown container (authenticated)
+- `customer-layout-profile-link` - My Profile dropdown link
+- `customer-layout-orders-link` - My Orders dropdown link
+- `customer-layout-logout-btn` - Sign Out button
+
+#### NavMenu.razor
+- `customer-nav-top-row` - Top navigation bar
+- `customer-nav-container` - Navigation container
+- `customer-nav-brand` - Brand/logo link
+- `customer-nav-menu-toggle-btn` - Mobile menu toggle button
+- `customer-nav-menu` - Navigation menu container
+- `customer-nav-items` - Navigation items list
+- `customer-nav-home` - Home navigation item
+- `customer-nav-home-link` - Home navigation link
+- `customer-nav-events` - Events navigation item
+- `customer-nav-events-link` - Events navigation link
+- `customer-nav-menu-item` - Menu navigation item
+- `customer-nav-menu-link` - Menu navigation link
+- `customer-nav-orders` - Orders navigation item (authenticated)
+- `customer-nav-orders-link` - Orders navigation link (authenticated)
+- `customer-nav-logs` - Activity navigation item (authenticated)
+- `customer-nav-logs-link` - Activity navigation link (authenticated)
+
+### Page-Specific IDs
+
+#### Index Page (Homepage)
+- `customer-index-hero` - Hero section container
+- `customer-index-hero-container` - Hero content container
+- `customer-index-welcome-title` - Main welcome title
+- `customer-index-welcome-subtitle` - Welcome subtitle
+- `customer-index-order-drinks-btn` - Order Drinks CTA button
+- `customer-index-my-orders-btn` - My Orders CTA button
+- `customer-index-features-container` - Features section container
+- `customer-index-features-row` - Features row
+- `customer-index-feature-1` - First feature card (Wide Selection)
+- `customer-index-feature-2` - Second feature card (Fast Delivery)
+- `customer-index-feature-3` - Third feature card (Easy Ordering)
+- `customer-index-how-it-works-row` - How It Works section row
+- `customer-index-how-it-works` - How It Works container
+- `customer-index-how-it-works-title` - How It Works title
+- `customer-index-steps-list` - Steps list container
+
+#### Login Page
+- `customer-login-container` - Main login container
+- `customer-login-row` - Bootstrap row wrapper
+- `customer-login-col` - Bootstrap column wrapper
+- `customer-login-card` - Login form card
+- `customer-login-header` - Card header
+- `customer-login-title` - Login title
+- `customer-login-body` - Card body
+- `customer-login-error` - Error message alert
+- `customer-login-form` - Login form
+- `customer-login-email-group` - Email form group
+- `customer-login-email-input` - Email input field
+- `customer-login-password-group` - Password form group
+- `customer-login-password-input` - Password input field
+- `customer-login-remember-group` - Remember me checkbox group
+- `customer-login-remember-input` - Remember me checkbox
+- `customer-login-button-group` - Submit button container
+- `customer-login-submit-btn` - Login submit button
+- `customer-login-spinner` - Loading spinner
+- `customer-login-loading-text` - Loading text span
+- `customer-login-button-text` - Button text span
+- `customer-login-register-section` - Register link section
+- `customer-login-register-link` - Register link button
+- `customer-login-demo-info` - Demo credentials section
+- `customer-login-demo-text` - Demo credentials text
+
+#### Register Page
+- `customer-register-container` - Main register container
+- `customer-register-row` - Bootstrap row wrapper
+- `customer-register-col` - Bootstrap column wrapper
+- `customer-register-card` - Register form card
+- `customer-register-header` - Card header
+- `customer-register-title` - Register title
+- `customer-register-body` - Card body
+- `customer-register-error` - Error message alert
+- `customer-register-success` - Success message alert
+- `customer-register-form` - Register form
+- `customer-register-username-group` - Username form group
+- `customer-register-username-input` - Username input field
+- `customer-register-email-group` - Email form group
+- `customer-register-email-input` - Email input field
+- `customer-register-password-group` - Password form group
+- `customer-register-password-input` - Password input field
+- `customer-register-confirm-password-group` - Confirm password form group
+- `customer-register-confirm-password-input` - Confirm password input field
+- `customer-register-terms-group` - Terms checkbox group
+- `customer-register-terms-input` - Terms checkbox
+- `customer-register-button-group` - Submit button container
+- `customer-register-submit-btn` - Register submit button
+- `customer-register-spinner` - Loading spinner
+- `customer-register-loading-text` - Loading text span
+- `customer-register-button-text` - Button text span
+- `customer-register-login-section` - Login link section
+- `customer-register-login-link` - Login link button
+
+#### Events Page
+- `customer-events-main-container` - Main events container
+- `customer-events-title` - Events page title
+- `customer-events-filters-card` - Filters card container
+- `customer-events-filters-title` - Filters card title
+- `customer-events-type-filter` - Event type filter dropdown
+- `customer-events-date-from` - From date filter input
+- `customer-events-date-to` - To date filter input
+- `customer-events-min-price` - Minimum price filter input
+- `customer-events-max-price` - Maximum price filter input
+- `customer-events-apply-filters-btn` - Apply filters button
+- `customer-events-clear-filters-btn` - Clear filters button
+- `customer-events-loading` - Loading state container
+- `customer-events-no-results` - No results alert
+- `customer-events-list` - Events list container
+- `customer-event-card-{id}` - Individual event card (where {id} is the event ID)
+- `customer-events-buy-tickets-btn-{id}` - Buy tickets button for specific event
+- `customer-events-sold-out-btn-{id}` - Sold out button for specific event
+
+#### Admin Events Page
+- `admin-events-main-container` - Main events container
+- `admin-events-header` - Page header with title and create button
+- `admin-events-title` - Events page title
+- `admin-events-create-btn` - Create new event button
+- `admin-events-loading` - Loading state container
+- `admin-events-error` - Error state container
+- `admin-events-retry-btn` - Retry loading button
+- `admin-events-empty` - No events found container
+- `admin-events-first-event-btn` - Create first event button
+- `admin-events-list` - Events list container
+- `admin-event-col-{id}` - Individual event column (where {id} is the event ID)
+- `admin-event-card-{id}` - Individual event card
+- `admin-event-header-{id}` - Event card header
+- `admin-event-header-content-{id}` - Event card header content
+- `admin-event-name-{id}` - Event name title
+- `admin-event-active-badge-{id}` - Active status badge
+- `admin-event-inactive-badge-{id}` - Inactive status badge
+- `admin-event-body-{id}` - Event card body
+- `admin-event-footer-{id}` - Event card footer
+- `admin-event-buttons-{id}` - Event action buttons group
+- `admin-event-edit-btn-{id}` - Edit event button
+- `admin-event-activate-btn-{id}` - Activate event button
+- `admin-event-deactivate-btn-{id}` - Deactivate event button
+- `admin-event-delete-btn-{id}` - Delete event button
+
+#### Admin Event Modal (Create/Edit)
+- `admin-event-modal` - Modal container
+- `admin-event-modal-dialog` - Modal dialog
+- `admin-event-modal-content` - Modal content
+- `admin-event-modal-header` - Modal header
+- `admin-event-modal-title` - Modal title
+- `admin-event-modal-close` - Modal close button
+- `admin-event-modal-body` - Modal body
+- `admin-event-form-name` - Event name input
+- `admin-event-form-location` - Event location input
+- `admin-event-form-description` - Event description textarea
+- `admin-event-form-date` - Event date input
+- `admin-event-form-capacity` - Event capacity input
+- `admin-event-form-price` - Event base price input
+- `admin-event-form-active` - Event active status checkbox
+- `admin-event-modal-footer` - Modal footer
+- `admin-event-modal-cancel-btn` - Modal cancel button
+- `admin-event-modal-save-btn` - Modal save button
+
+#### Admin Event Alerts
+- `admin-event-alert-container` - Alert notification container
+- `admin-event-alert` - Alert message
+- `admin-event-alert-close` - Alert close button
+
+### Authentication & Form IDs
+All authentication forms (Login, Register, Profile) follow consistent patterns:
+- Container: `{page}-container`
+- Card: `{page}-card`
+- Form: `{page}-form`
+- Inputs: `{page}-{field}-input`
+- Buttons: `{page}-{action}-btn`
+- Messages: `{page}-{type}` (error, success, loading)
+
+### Dynamic IDs
+Some elements use dynamic IDs with placeholders:
+- Event cards: `customer-event-card-{eventId}`
+- Event actions: `customer-events-{action}-btn-{eventId}`
+- Order items: `customer-order-item-{orderId}`
+- Ticket displays: `customer-ticket-{ticketId}`
+
+### Testing & Automation Usage
+
+#### Playwright Example
+```javascript
+// Navigate to events and apply filters
+await page.goto('/events');
+await page.click('#customer-events-type-filter');
+await page.selectOption('#customer-events-type-filter', 'Football');
+await page.click('#customer-events-apply-filters-btn');
+
+// Buy tickets for first available event
+await page.click('#customer-events-buy-tickets-btn-1');
+```
+
+#### CSS Selector Examples
+```css
+/* All customer app buttons */
+[id^="customer-"][id$="-btn"] { }
+
+/* All form inputs */
+[id^="customer-"][id*="-input"] { }
+
+/* All main page containers */
+[id^="customer-"][id*="-container"] { }
+```
+
+### Best Practices
+1. **Consistent Naming**: Always follow the `customer-{context}-{element}-{suffix}` pattern
+2. **Descriptive Suffixes**: Use clear, action-oriented suffixes (`-btn`, `-input`, `-container`)
+3. **Unique IDs**: Ensure all IDs are unique across the entire application
+4. **Dynamic IDs**: Include entity IDs for dynamic content (`-{eventId}`, `-{orderId}`)
+5. **Semantic Structure**: Group related elements with consistent prefixes
+
+### Maintenance
+When adding new UI elements:
+1. Follow the established naming convention
+2. Add IDs to all interactive elements (buttons, inputs, links)
+3. Add IDs to main structural divs and containers
+4. Update this documentation with new ID patterns
+5. Test automation scenarios with new IDs
+
+---
+
 ## Claude MCP Setup
 This project integrates **Claude Code MCP servers** for docs and automation:
 

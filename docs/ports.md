@@ -9,7 +9,8 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 **Description**: ASP.NET Core Web API Backend with Swagger documentation
 - **HTTPS**: `7010`
 - **HTTP**: `7011` 
-- **Docker**: `9010` → Internal: `8080`
+- **Docker HTTPS**: `9010` → Internal: `8443`
+- **Docker HTTP**: `9011` → Internal: `8080`
 - **URLs**:
   - Development: https://localhost:7010
   - Docker: https://localhost:9010
@@ -19,7 +20,8 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 **Description**: Blazor Server Customer Frontend Application
 - **HTTPS**: `7020`
 - **HTTP**: `7021`
-- **Docker**: `9020` → Internal: `8081`
+- **Docker HTTPS**: `9020` → Internal: `8444`
+- **Docker HTTP**: `9021` → Internal: `8081`
 - **URLs**:
   - Development: https://localhost:7020
   - Docker: https://localhost:9020
@@ -28,7 +30,8 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 **Description**: Blazor Server Admin Management Application  
 - **HTTPS**: `7030`
 - **HTTP**: `7031`
-- **Docker**: `9030` → Internal: `8082`
+- **Docker HTTPS**: `9030` → Internal: `8445`
+- **Docker HTTP**: `9031` → Internal: `8082`
 - **URLs**:
   - Development: https://localhost:7030
   - Docker: https://localhost:9030
@@ -37,7 +40,8 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 **Description**: Blazor Server Staff Operations Application
 - **HTTPS**: `7040` 
 - **HTTP**: `7041`
-- **Docker**: `9040` → Internal: `8083`
+- **Docker HTTPS**: `9040` → Internal: `8446`
+- **Docker HTTP**: `9041` → Internal: `8083`
 - **URLs**:
   - Development: https://localhost:7040
   - Docker: https://localhost:9040
@@ -59,10 +63,10 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 - **9050-9099**: Reserved for future services
 
 ### Internal Container Ports
-- **8080**: API internal port
-- **8081**: Customer internal port  
-- **8082**: Admin internal port
-- **8083**: Staff internal port
+- **8443/8080**: API internal HTTPS/HTTP ports
+- **8444/8081**: Customer internal HTTPS/HTTP ports
+- **8445/8082**: Admin internal HTTPS/HTTP ports
+- **8446/8083**: Staff internal HTTPS/HTTP ports
 
 ## Configuration Files Updated
 
@@ -77,10 +81,14 @@ All projects have standardized launch profiles:
 Updated `docker-compose.yml` with fixed external port mappings:
 ```yaml
 ports:
-  - "9010:8080"  # API
-  - "9020:8081"  # Customer  
-  - "9030:8082"  # Admin
-  - "9040:8083"  # Staff
+  - "9010:8443"  # API HTTPS
+  - "9011:8080"  # API HTTP
+  - "9020:8444"  # Customer HTTPS
+  - "9021:8081"  # Customer HTTP
+  - "9030:8445"  # Admin HTTPS
+  - "9031:8082"  # Admin HTTP
+  - "9040:8446"  # Staff HTTPS
+  - "9041:8083"  # Staff HTTP
 ```
 
 ## Running the Applications
@@ -92,8 +100,8 @@ cd StadiumDrinkOrdering.API
 dotnet run --launch-profile https
 # → https://localhost:7010
 
-# Customer App  
-cd StladiumDrinkOrdering.Customer
+# Customer App
+cd StadiumDrinkOrdering.Customer
 dotnet run --launch-profile https
 # → https://localhost:7020
 
@@ -115,11 +123,17 @@ Projects use the same fixed ports as dotnet run. No more random port assignments
 ```bash
 docker-compose up --build -d
 
-# Access applications:
+# Access applications (HTTPS):
 # API: https://localhost:9010
 # Customer: https://localhost:9020
 # Admin: https://localhost:9030
 # Staff: https://localhost:9040
+
+# Alternative HTTP access:
+# API: http://localhost:9011
+# Customer: http://localhost:9021
+# Admin: http://localhost:9031
+# Staff: http://localhost:9041
 ```
 
 ## Network Communication
@@ -198,7 +212,7 @@ Ensure Docker services use internal hostnames:
 
 ## Maintenance
 
-**Last Updated**: 2025-09-10  
+**Last Updated**: 2025-09-15  
 **Next Review**: When adding new services or major infrastructure changes
 
 **Validation Status**: ✅ All projects tested and verified with fixed ports

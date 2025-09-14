@@ -15,7 +15,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Drinks
         public async Task<IEnumerable<DrinkDto>?> GetDrinksAsync()
         {
             var result = await GetWithErrorHandlingAsync<IEnumerable<DrinkDto>>("drinks");
-            return result.IsSuccess ? result.Data : Array.Empty<DrinkDto>();
+            return result.IsSuccess ? result.Data : null;
         }
 
         public async Task<DrinkDto?> GetDrinkAsync(int id)

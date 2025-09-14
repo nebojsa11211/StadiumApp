@@ -1,0 +1,61 @@
+{
+  "name": "Standard Stadium",
+  "description": "Four-tribune professional stadium",
+  "capacity": 20000,
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            { "code": "NA", "name": "North A", "rows": 25, "seatsPerRow": 20 },
+            { "code": "NB", "name": "North B", "rows": 25, "seatsPerRow": 20 }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "South Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            { "code": "SA", "name": "South A", "rows": 25, "seatsPerRow": 20 },
+            { "code": "SB", "name": "South B", "rows": 25, "seatsPerRow": 20 }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "name": "East Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            { "code": "EA", "name": "East A", "rows": 20, "seatsPerRow": 25 }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "name": "West Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "sectors": [
+            { "code": "WA", "name": "West A", "rows": 20, "seatsPerRow": 25 }
+          ]
+        }
+      ]
+    }
+  ]
+}

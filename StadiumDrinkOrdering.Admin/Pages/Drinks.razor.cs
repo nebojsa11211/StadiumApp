@@ -20,6 +20,8 @@ public partial class Drinks : ComponentBase
     private string searchTerm = "";
     private string alertMessage = "";
     private string alertType = "";
+    private bool loadingFailed = false;
+    private string loadingError = "";
 
     private DrinkFormModel drinkForm = new();
 
@@ -30,8 +32,30 @@ public partial class Drinks : ComponentBase
 
     private async Task LoadDrinks()
     {
-        var aaa = await ApiService.GetDrinksAsync();
-        drinks = (aaa)?.ToList();
+        try
+        {
+            loadingFailed = false;
+            loadingError = "";
+            var result = await ApiService.GetDrinksAsync();
+
+            if (result == null)
+            {
+                // API returned an error (Bad Request, etc.)
+                loadingFailed = true;
+                loadingError = "Failed to load drinks. The server returned an error.";
+                drinks = new List<DrinkDto>(); // Set empty list to show error state
+            }
+            else
+            {
+                drinks = result.ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            loadingFailed = true;
+            loadingError = $"An error occurred while loading drinks: {ex.Message}";
+            drinks = new List<DrinkDto>();
+        }
     }
 
     private IEnumerable<DrinkDto> FilteredDrinks
@@ -93,11 +117,21 @@ public partial class Drinks : ComponentBase
         showDrinkModal = true;
     }
 
-    private void HideDrinkModal()
+    private async Task HideDrinkModal()
     {
         showDrinkModal = false;
         editingDrink = null;
         drinkForm = new();
+
+        // Clean up any orphaned modal backdrops
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            setTimeout(() => {
+                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }, 100);
+        ");
     }
 
     private async Task SaveDrink()
@@ -129,7 +163,7 @@ public partial class Drinks : ComponentBase
                 if (created != null)
                 {
                     await LoadDrinks();
-                    HideDrinkModal();
+                    await HideDrinkModal();
                     ShowAlert($"Drink '{created.Name}' created successfully", "success");
                 }
                 else
@@ -155,7 +189,7 @@ public partial class Drinks : ComponentBase
                 if (result != null)
                 {
                     await LoadDrinks();
-                    HideDrinkModal();
+                    await HideDrinkModal();
                     ShowAlert($"Drink '{drinkForm.Name}' updated successfully", "success");
                 }
                 else

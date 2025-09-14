@@ -4,22 +4,22 @@
 
 <PageTitle>@Localizer["PageTitle"]</PageTitle>
 
-<div class="hero-section text-center py-5 mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-    <div class="container">
-        <h1 class="display-4 mb-3">🏟️ @Localizer["WelcomeTitle"]</h1>
-        <p class="lead mb-4">@Localizer["WelcomeSubtitle"]</p>
-        <a href="/menu" class="btn btn-light btn-lg me-3">
+<div class="hero-section text-center py-5 mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;" id="customer-index-hero">
+    <div class="container" id="customer-index-hero-container">
+        <h1 class="display-4 mb-3" id="customer-index-welcome-title">🏟️ @Localizer["WelcomeTitle"]</h1>
+        <p class="lead mb-4" id="customer-index-welcome-subtitle">@Localizer["WelcomeSubtitle"]</p>
+        <a href="/menu" class="btn btn-light btn-lg me-3" id="customer-index-order-drinks-btn">
             <i class="bi bi-cup-straw"></i> @Localizer["OrderDrinksButton"]
         </a>
-        <a href="/orders" class="btn btn-outline-light btn-lg">
+        <a href="/orders" class="btn btn-outline-light btn-lg" id="customer-index-my-orders-btn">
             <i class="bi bi-receipt"></i> @Localizer["MyOrdersButton"]
         </a>
     </div>
 </div>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-4 mb-4">
+<div class="container" id="customer-index-features-container">
+    <div class="row" id="customer-index-features-row">
+        <div class="col-md-4 mb-4" id="customer-index-feature-1">
             <div class="card text-center h-100">
                 <div class="card-body">
                     <div class="mb-3">
@@ -31,7 +31,7 @@
             </div>
         </div>
         
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4" id="customer-index-feature-2">
             <div class="card text-center h-100">
                 <div class="card-body">
                     <div class="mb-3">
@@ -43,7 +43,7 @@
             </div>
         </div>
         
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4" id="customer-index-feature-3">
             <div class="card text-center h-100">
                 <div class="card-body">
                     <div class="mb-3">
@@ -56,10 +56,10 @@
         </div>
     </div>
 
-    <div class="row mt-5">
-        <div class="col-md-6 offset-md-3 text-center">
-            <h3>@Localizer["HowItWorksTitle"]</h3>
-            <ol class="list-unstyled">
+    <div class="row mt-5" id="customer-index-how-it-works-row">
+        <div class="col-md-6 offset-md-3 text-center" id="customer-index-how-it-works">
+            <h3 id="customer-index-how-it-works-title">@Localizer["HowItWorksTitle"]</h3>
+            <ol class="list-unstyled" id="customer-index-steps-list">
                 <li class="mb-3">
                     <span class="badge bg-primary rounded-circle me-3">1</span>
                     @Localizer["Step1"]

@@ -49,15 +49,19 @@ public partial class StadiumOverview : ComponentBase
     private Event? selectedEvent;
     private DateTime? lastUpdateTime = DateTime.Now;
     private string? highlightedTribune;
+    private StadiumSummaryDto? stadiumSummary;
 
     protected override async Task OnInitializedAsync()
     {
         // Load dynamic stadium layout first (fast and essential)
         await LoadStadiumLayout();
-        
+
         // Load stadium data for the info panel
         await LoadStadiumData();
-        
+
+        // Load stadium summary for info panel
+        await LoadStadiumSummary();
+
         // Don't wait for events - they can timeout without affecting stadium display
         _ = LoadEventsBackground();
     }
@@ -129,9 +133,9 @@ public partial class StadiumOverview : ComponentBase
         {
             isLoading = true;
             StateHasChanged(); // Ensure UI shows loading state
-            
+
             Logger.LogInformation("Starting to load stadium data from API...");
-            
+
             // Try the new stadium viewer endpoint first, then fallback to Stadium/layout
             try
             {
@@ -171,6 +175,32 @@ public partial class StadiumOverview : ComponentBase
             isLoading = false;
             Logger.LogInformation($"LoadStadiumData completed. stadiumData is null: {stadiumData == null}");
             StateHasChanged(); // Ensure UI updates after loading
+        }
+    }
+
+    private async Task LoadStadiumSummary()
+    {
+        try
+        {
+            Logger.LogInformation("Loading stadium summary...");
+            stadiumSummary = await ApiService.GetStadiumSummaryAsync();
+
+            if (stadiumSummary != null)
+            {
+                Logger.LogInformation($"Stadium summary loaded: {stadiumSummary.TotalSeats} total seats, {stadiumSummary.TotalTribunes} tribunes");
+            }
+            else
+            {
+                Logger.LogWarning("Stadium summary returned null");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading stadium summary: {Message}", ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
         }
     }
 

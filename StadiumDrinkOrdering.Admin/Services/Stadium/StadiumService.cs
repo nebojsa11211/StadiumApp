@@ -15,7 +15,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
-                var response = await HttpClient.GetAsync("api/stadium-structure/layout");
+                var response = await HttpClient.GetAsync("StadiumStructure/full-structure");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -33,7 +33,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
-                var response = await HttpClient.GetAsync("api/stadium-structure/summary");
+                var response = await HttpClient.GetAsync("StadiumStructure/summary");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -53,7 +53,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
             {
                 var content = new MultipartFormDataContent();
                 content.Add(new StreamContent(fileStream), "file", "stadium.json");
-                var response = await HttpClient.PostAsync("api/stadium-structure/import", content);
+                var response = await HttpClient.PostAsync("StadiumStructure/import/json", content);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
             try
             {
                 var content = CreateJsonContent(jsonContent);
-                var response = await HttpClient.PostAsync("api/stadium-structure/import", content);
+                var response = await HttpClient.PostAsync("StadiumStructure/import/json", content);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -83,7 +83,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
-                var response = await HttpClient.GetAsync("api/stadium-structure/export");
+                var response = await HttpClient.GetAsync("StadiumStructure/export/json");
                 if (response.IsSuccessStatusCode)
                 {
                     return await response.Content.ReadAsStringAsync();
@@ -100,7 +100,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
-                var response = await HttpClient.DeleteAsync("api/stadium-structure/clear");
+                var response = await HttpClient.DeleteAsync("StadiumStructure/clear");
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

@@ -136,6 +136,29 @@ namespace StadiumDrinkOrdering.Shared.DTOs
         public const string Analytics = "Analytics";
     }
 
+    public class LogSearchRequestDto
+    {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string? Level { get; set; }
+        public string? Category { get; set; }
+        public string? UserId { get; set; }
+        public string? UserEmail { get; set; }
+        public string? Source { get; set; }
+        public string? SearchText { get; set; }
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 50;
+    }
+
+    public class LogSearchResultDto
+    {
+        public List<LogEntryDto> Logs { get; set; } = new();
+        public int TotalCount { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+    }
+
     public static class BusinessEventActions
     {
         // Event Management

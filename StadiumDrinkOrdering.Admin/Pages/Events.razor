@@ -1,0 +1,206 @@
+@page "/events"
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+
+<PageTitle>Event Management</PageTitle>
+
+<div class="container-fluid" id="admin-events-main-container">
+    <div class="d-flex justify-content-between align-items-center mb-4" id="admin-events-header">
+        <h1 id="admin-events-title">🎫 Event Management</h1>
+        <button class="btn btn-primary" @onclick="ShowCreateEventModal" id="admin-events-create-btn">
+            <i class="bi bi-plus-circle"></i> Create New Event
+        </button>
+    </div>
+
+    @if (events == null)
+    {
+        <div class="text-center" id="admin-events-loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading events...</p>
+        </div>
+    }
+    else if (loadingFailed)
+    {
+        <div class="alert alert-danger" role="alert" id="admin-events-error">
+            <h4 class="alert-heading">⚠️ Error Loading Events</h4>
+            <p>@loadingError</p>
+            <hr>
+            <p class="mb-0">
+                <button class="btn btn-primary" @onclick="async () => await LoadEvents()" id="admin-events-retry-btn">
+                    <i class="bi bi-arrow-clockwise"></i> Retry
+                </button>
+            </p>
+        </div>
+    }
+    else if (!events.Any())
+    {
+        <div class="text-center py-5" id="admin-events-empty">
+            <div class="mb-4">
+                <span style="font-size: 4rem;">📅</span>
+            </div>
+            <h3>No events found</h3>
+            <p class="text-muted">Start by creating your first event.</p>
+            <button class="btn btn-primary btn-lg" @onclick="ShowCreateEventModal" id="admin-events-first-event-btn">
+                Create First Event
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="row" id="admin-events-list">
+            @foreach (var evt in events.OrderBy(e => e.Date ?? DateTime.MaxValue))
+            {
+                <div class="col-md-6 col-lg-4 mb-4" id="admin-event-col-@evt.Id">
+                    <div class="card h-100 @(evt.IsActive ? "border-success" : "")" id="admin-event-card-@evt.Id">
+                        <div class="card-header @(evt.IsActive ? "bg-success text-white" : "bg-light")" id="admin-event-header-@evt.Id">
+                            <div class="d-flex justify-content-between align-items-center" id="admin-event-header-content-@evt.Id">
+                                <h5 class="mb-0" id="admin-event-name-@evt.Id">@evt.Name</h5>
+                                @if (evt.IsActive)
+                                {
+                                    <span class="badge bg-white text-success" id="admin-event-active-badge-@evt.Id">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary" id="admin-event-inactive-badge-@evt.Id">Inactive</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body" id="admin-event-body-@evt.Id">
+                            <p class="card-text">
+                                <strong>📅 Date:</strong> @evt.Date?.ToString("MMM dd, yyyy HH:mm")<br>
+                                <strong>📍 Location:</strong> @evt.Location<br>
+                                <strong>💺 Capacity:</strong> @evt.Capacity.ToString("N0") seats<br>
+                                <strong>💵 Base Price:</strong> $@evt.BasePrice.ToString("F2")
+                            </p>
+                            @if (!string.IsNullOrEmpty(evt.Description))
+                            {
+                                <p class="card-text text-muted small">@evt.Description</p>
+                            }
+                        </div>
+                        <div class="card-footer" id="admin-event-footer-@evt.Id">
+                            <div class="btn-group w-100" role="group" id="admin-event-buttons-@evt.Id">
+                                <button class="btn btn-sm btn-outline-primary" @onclick="() => ShowEditEventModal(evt)" id="admin-event-edit-btn-@evt.Id">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </button>
+                                @if (evt.IsActive)
+                                {
+                                    <button class="btn btn-sm btn-outline-warning" @onclick="() => DeactivateEvent(evt.Id)" id="admin-event-deactivate-btn-@evt.Id">
+                                        <i class="bi bi-pause"></i> Deactivate
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-outline-success" @onclick="() => ActivateEvent(evt.Id)" id="admin-event-activate-btn-@evt.Id">
+                                        <i class="bi bi-play"></i> Activate
+                                    </button>
+                                }
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteEvent(evt.Id)" id="admin-event-delete-btn-@evt.Id">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Create/Edit Event Modal -->
+@if (showEventModal)
+{
+    <div id="admin-event-modal">
+        <div class="modal-dialog" id="admin-event-modal-dialog">
+            <div class="modal-content" id="admin-event-modal-content">
+                <div class="modal-header" id="admin-event-modal-header">
+                    <h5 class="modal-title" id="admin-event-modal-title">@(editingEvent == null ? "Create New Event" : "Edit Event")</h5>
+                    <button type="button" class="btn-close" @onclick="HideEventModal" id="admin-event-modal-close"></button>
+                </div>
+                <div class="modal-body" id="admin-event-modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Event Name *</label>
+                                <input type="text" class="form-control" @bind="eventForm.Name" required id="admin-event-form-name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Location *</label>
+                                <input type="text" class="form-control" @bind="eventForm.Location" required id="admin-event-form-location">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" rows="3" @bind="eventForm.Description" id="admin-event-form-description"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Event Date & Time *</label>
+                                <input type="datetime-local" class="form-control" @bind="eventForm.Date" required id="admin-event-form-date">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Capacity *</label>
+                                <input type="number" class="form-control" @bind="eventForm.Capacity" min="1" required id="admin-event-form-capacity">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Base Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" @bind="eventForm.BasePrice"
+                                           step="0.01" min="0" required id="admin-event-form-price">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @bind="eventForm.IsActive" id="admin-event-form-active">
+                                    <label class="form-check-label">
+                                        Active (Available for ticket sales)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="admin-event-modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideEventModal" id="admin-event-modal-cancel-btn">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveEvent" disabled="@isSaving" id="admin-event-modal-save-btn">
+                        @if (isSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        @(editingEvent == null ? "Create Event" : "Save Changes")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-event-alert-container">
+        <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="admin-event-alert">
+            @alertMessage
+            <button type="button" class="btn-close" @onclick="ClearAlert" id="admin-event-alert-close"></button>
+        </div>
+    </div>
+}

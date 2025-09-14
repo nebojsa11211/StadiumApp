@@ -61,12 +61,117 @@
         window.addEventListener('DOMContentLoaded', function() {
             console.log('🔍 DOM loaded, checking modal functions...');
 
-            // Fallback modal function if modals.js fails to load
+            // CRITICAL FIX: Inject modal positioning CSS to override caching issues
+            function injectModalFix() {
+                const styleElement = document.createElement('style');
+                styleElement.id = 'modal-fix-override';
+                styleElement.innerHTML = `
+                    /* Events Modal Fix */
+                    #admin-event-modal {
+                        position: fixed !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        bottom: 0 !important;
+                        z-index: 9999 !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        background-color: rgba(0, 0, 0, 0.5) !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+
+                    #admin-event-modal .modal-dialog {
+                        position: relative !important;
+                        margin: auto !important;
+                        max-width: 90vw !important;
+                        max-height: 90vh !important;
+                    }
+
+                    #admin-event-modal .modal-content {
+                        max-height: 90vh !important;
+                        overflow-y: auto !important;
+                    }
+
+                    /* Dashboard Modals Fix - Allow Bootstrap to manage display, only override positioning */
+                    #onlineUsersModal, #activeOrdersModal, #revenueModal, #ticketModal, #admin-drink-modal {
+                        position: fixed !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        bottom: 0 !important;
+                        z-index: 9999 !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+
+                    /* Only when shown, add flex layout for centering */
+                    #onlineUsersModal.show, #activeOrdersModal.show, #revenueModal.show, #ticketModal.show {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        background-color: rgba(0, 0, 0, 0.5) !important;
+                    }
+
+                    /* Special handling for Blazor drinks modal */
+                    #admin-drink-modal.d-block {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        background-color: rgba(0, 0, 0, 0.5) !important;
+                    }
+
+                    #onlineUsersModal .modal-dialog, #activeOrdersModal .modal-dialog, #revenueModal .modal-dialog, #ticketModal .modal-dialog, #admin-drink-modal .modal-dialog {
+                        position: relative !important;
+                        margin: auto !important;
+                        max-width: 90vw !important;
+                        max-height: 90vh !important;
+                        z-index: 10000 !important;
+                    }
+
+                    #onlineUsersModal .modal-content, #activeOrdersModal .modal-content, #revenueModal .modal-content, #ticketModal .modal-content, #admin-drink-modal .modal-content {
+                        max-height: 90vh !important;
+                        overflow-y: auto !important;
+                        background: white !important;
+                        border-radius: 8px !important;
+                        box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+                    }
+                `;
+
+                // Remove any existing override
+                const existing = document.getElementById('modal-fix-override');
+                if (existing) existing.remove();
+
+                // Add the new style to head
+                document.head.appendChild(styleElement);
+                console.log('✅ Modal positioning CSS injected for all modals');
+            }
+
+            // Inject the fix immediately
+            injectModalFix();
+
+            // Also inject whenever modals might be shown
+            document.addEventListener('click', function(e) {
+                if (e.target.id && (
+                    e.target.id.includes('admin-event-edit-btn') ||
+                    e.target.id.includes('admin-online-users-card') ||
+                    e.target.id.includes('admin-active-orders-card') ||
+                    e.target.id.includes('admin-revenue-card') ||
+                    e.target.id.includes('admin-tickets-card') ||
+                    e.target.id.includes('admin-edit-drink-') ||
+                    e.target.id.includes('admin-add-drink-btn')
+                )) {
+                    setTimeout(injectModalFix, 10);
+                }
+            });
+
+            // Enhanced modal functions with proper close support
             if (typeof window.showBootstrapModal === 'undefined') {
-                console.log('⚠️ showBootstrapModal not found, creating fallback...');
+                console.log('⚠️ showBootstrapModal not found, creating enhanced fallback...');
 
                 window.showBootstrapModal = function(modalId) {
-                    console.log('🔍 Fallback showBootstrapModal called with:', modalId);
+                    console.log('🔍 Enhanced showBootstrapModal called with:', modalId);
 
                     const modalElement = document.getElementById(modalId);
                     if (!modalElement) {
@@ -82,12 +187,48 @@
                     }
 
                     try {
-                        console.log('🔍 Creating Bootstrap modal...');
+                        console.log('🔍 Creating Bootstrap modal with enhanced options...');
                         const modal = new bootstrap.Modal(modalElement, {
                             backdrop: true,
                             keyboard: true,
                             focus: true
                         });
+
+                        // Store modal instance for later use
+                        modalElement._bootstrapModal = modal;
+
+                        // Add enhanced event listeners for proper close functionality
+                        modalElement.addEventListener('hide.bs.modal', function() {
+                            console.log('🔍 Modal hide event fired for:', modalId);
+                            // Force remove show class to help with our CSS overrides
+                            modalElement.classList.remove('show');
+                        });
+
+                        modalElement.addEventListener('hidden.bs.modal', function() {
+                            console.log('🔍 Modal hidden event fired for:', modalId);
+
+                            // CRITICAL: Remove ALL modal backdrops (Bootstrap bug leaves orphaned ones)
+                            setTimeout(() => {
+                                const backdrops = document.querySelectorAll('.modal-backdrop');
+                                console.log('🔍 Found', backdrops.length, 'backdrops to remove');
+                                backdrops.forEach((backdrop, index) => {
+                                    console.log('🔍 Removing backdrop', index + 1);
+                                    backdrop.remove();
+                                });
+
+                                // Force body cleanup
+                                document.body.classList.remove('modal-open');
+                                document.body.style.overflow = '';
+                                document.body.style.paddingRight = '';
+
+                                // Reset modal styles
+                                modalElement.style.display = '';
+                                modalElement.classList.remove('show');
+
+                                console.log('✅ Complete modal and backdrop cleanup finished');
+                            }, 50);
+                        });
+
                         console.log('✅ Modal created, showing...');
                         modal.show();
 
@@ -97,6 +238,58 @@
                     } catch (error) {
                         console.error('❌ Error showing modal:', error);
                         alert('Error showing modal: ' + error.message);
+                    }
+                };
+
+                // Enhanced close modal function
+                window.closeBootstrapModal = function(modalId) {
+                    console.log('🔍 closeBootstrapModal called with:', modalId);
+
+                    const modalElement = document.getElementById(modalId);
+                    if (!modalElement) {
+                        console.error('❌ Modal element not found:', modalId);
+                        return;
+                    }
+
+                    try {
+                        // Try to use stored modal instance first
+                        if (modalElement._bootstrapModal) {
+                            modalElement._bootstrapModal.hide();
+                            console.log('✅ Modal closed using stored instance');
+                            return;
+                        }
+
+                        // Try to get existing instance
+                        if (typeof bootstrap !== 'undefined') {
+                            const modal = bootstrap.Modal.getInstance(modalElement);
+                            if (modal) {
+                                modal.hide();
+                                console.log('✅ Modal closed using getInstance');
+                                return;
+                            }
+                        }
+
+                        // Manual close as fallback with ENHANCED backdrop cleanup
+                        modalElement.style.display = 'none';
+                        modalElement.classList.remove('show');
+                        modalElement.setAttribute('aria-hidden', 'true');
+
+                        // CRITICAL: Remove ALL backdrops, not just first one
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        console.log('🔍 Manual close removing', backdrops.length, 'backdrops');
+                        backdrops.forEach((backdrop, index) => {
+                            console.log('🔍 Removing backdrop', index + 1);
+                            backdrop.remove();
+                        });
+
+                        // Complete body cleanup
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+
+                        console.log('✅ Modal closed using manual method with complete cleanup');
+                    } catch (error) {
+                        console.error('❌ Error closing modal:', error);
                     }
                 };
 
@@ -144,7 +337,136 @@
                 console.log('✅ showBootstrapModal already loaded from modals.js');
             }
 
-            console.log('✅ Modal functions ready');
+            // SIMPLE AND DIRECT: Force remove ALL backdrops and clean body
+            window.forceCleanAllModals = function() {
+                console.log('🔍 FORCE CLEAN: Starting complete modal cleanup');
+
+                // Remove ALL backdrops regardless of state
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                console.log('🔍 FORCE CLEAN: Found', backdrops.length, 'backdrops to remove');
+                backdrops.forEach((backdrop, index) => {
+                    console.log('🔍 FORCE CLEAN: Removing backdrop', index + 1, backdrop);
+                    backdrop.remove();
+                });
+
+                // Remove ALL modal show classes
+                const modals = document.querySelectorAll('.modal.show');
+                console.log('🔍 FORCE CLEAN: Found', modals.length, 'open modals to close');
+                modals.forEach((modal, index) => {
+                    console.log('🔍 FORCE CLEAN: Closing modal', index + 1, modal.id);
+                    modal.classList.remove('show');
+                    modal.style.display = 'none';
+                    modal.setAttribute('aria-hidden', 'true');
+                });
+
+                // Clean body completely
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                document.body.style.marginRight = '';
+
+                console.log('✅ FORCE CLEAN: Complete modal cleanup finished');
+                return true;
+            };
+
+            // Run FORCE CLEAN every 2 seconds
+            setInterval(() => {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                const openModals = document.querySelectorAll('.modal.show');
+                if (openModals.length === 0 && backdrops.length > 0) {
+                    console.log('🔍 Auto cleanup: Found orphaned backdrops, force cleaning');
+                    window.forceCleanAllModals();
+                }
+            }, 2000);
+
+            // NUCLEAR OPTION: Override Bootstrap Modal hide method to ensure cleanup
+            document.addEventListener('DOMContentLoaded', function() {
+                // Wait for Bootstrap to load
+                setTimeout(() => {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        const originalHide = bootstrap.Modal.prototype.hide;
+                        bootstrap.Modal.prototype.hide = function() {
+                            console.log('🔍 Overriding Bootstrap Modal.hide() to ensure cleanup');
+
+                            // Call original hide
+                            const result = originalHide.call(this);
+
+                            // Force cleanup after hide
+                            setTimeout(() => {
+                                window.forceCleanAllModals();
+                                console.log('✅ Forced cleanup after Bootstrap hide');
+                            }, 100);
+
+                            return result;
+                        };
+                        console.log('✅ Bootstrap Modal.hide() method overridden with cleanup');
+                    }
+                }, 1000);
+            });
+
+            // Universal event listener to handle ALL modal close buttons
+            document.addEventListener('click', function(e) {
+                // Handle close buttons with data-bs-dismiss="modal"
+                if (e.target.getAttribute('data-bs-dismiss') === 'modal' ||
+                    e.target.closest('[data-bs-dismiss="modal"]')) {
+                    console.log('🔍 Close button clicked, forcing modal close');
+
+                    // Find the modal element
+                    const modalElement = e.target.closest('.modal');
+                    if (modalElement) {
+                        console.log('🔍 Found modal element:', modalElement.id);
+
+                        // Force remove show class immediately
+                        modalElement.classList.remove('show');
+
+                        // Try Bootstrap method first
+                        if (typeof bootstrap !== 'undefined') {
+                            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                            if (modalInstance) {
+                                console.log('🔍 Using Bootstrap instance to hide modal');
+                                modalInstance.hide();
+                            } else {
+                                console.log('🔍 Creating new Bootstrap instance to hide modal');
+                                const newModal = new bootstrap.Modal(modalElement);
+                                newModal.hide();
+                            }
+                        }
+
+                        // SIMPLE: Use force clean function
+                        setTimeout(() => {
+                            window.forceCleanAllModals();
+                        }, 100);
+
+                        // And again as backup
+                        setTimeout(() => {
+                            window.forceCleanAllModals();
+                        }, 300);
+                    }
+                }
+            });
+
+            // ULTRA AGGRESSIVE: Mutation observer to watch for backdrops
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1 && node.classList && node.classList.contains('modal-backdrop')) {
+                            console.log('🔍 New backdrop detected, setting up cleanup watcher');
+
+                            // Set up multiple cleanup attempts for this backdrop
+                            setTimeout(() => window.forceCleanAllModals(), 100);
+                            setTimeout(() => window.forceCleanAllModals(), 500);
+                            setTimeout(() => window.forceCleanAllModals(), 1000);
+                        }
+                    });
+                });
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            console.log('✅ Modal functions ready with ULTRA AGGRESSIVE cleanup');
         });
     </script>
 </body>

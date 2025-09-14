@@ -134,12 +134,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     
     options.UseNpgsql(connectionString, npgsqlOptions =>
     {
-        // Enhanced retry logic with exponential backoff
-        npgsqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 3,
-            maxRetryDelay: TimeSpan.FromSeconds(15),
-            errorCodesToAdd: new[] { "57P01", "53300", "53400" } // Common Supabase connection errors
-        );
+        // TEMPORARILY DISABLED: Enhanced retry logic with exponential backoff
+        // npgsqlOptions.EnableRetryOnFailure(
+        //     maxRetryCount: 3,
+        //     maxRetryDelay: TimeSpan.FromSeconds(15),
+        //     errorCodesToAdd: new[] { "57P01", "53300", "53400" } // Common Supabase connection errors
+        // );
         
         // Longer command timeout for complex operations
         npgsqlOptions.CommandTimeout(300);

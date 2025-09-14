@@ -19,8 +19,6 @@ public class StadiumStructureService : IStadiumStructureService
 
     public async Task<bool> ImportFromJsonAsync(IFormFile jsonFile)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-        
         try
         {
             // 1. Clear existing structure
@@ -122,14 +120,12 @@ public class StadiumStructureService : IStadiumStructureService
             }
             
             await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-            
+
             _logger.LogInformation($"Stadium structure imported successfully: {stadiumData.Tribunes.Count} tribunes, {allSeats.Count} seats created");
             return true;
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
             _logger.LogError(ex, "Failed to import stadium structure from JSON");
             throw; // Re-throw to provide better error feedback
         }
@@ -187,12 +183,21 @@ public class StadiumStructureService : IStadiumStructureService
     {
         try
         {
-            // Delete in order due to foreign key constraints
-            await _context.StadiumSeatsNew.ExecuteDeleteAsync();
-            await _context.Sectors.ExecuteDeleteAsync();
-            await _context.Rings.ExecuteDeleteAsync();
-            await _context.Tribunes.ExecuteDeleteAsync();
-            
+            // Delete in order due to foreign key constraints using regular LINQ operations
+            var seats = await _context.StadiumSeatsNew.ToListAsync();
+            _context.StadiumSeatsNew.RemoveRange(seats);
+
+            var sectors = await _context.Sectors.ToListAsync();
+            _context.Sectors.RemoveRange(sectors);
+
+            var rings = await _context.Rings.ToListAsync();
+            _context.Rings.RemoveRange(rings);
+
+            var tribunes = await _context.Tribunes.ToListAsync();
+            _context.Tribunes.RemoveRange(tribunes);
+
+            await _context.SaveChangesAsync();
+
             _logger.LogInformation("Existing stadium structure cleared");
             return true;
         }

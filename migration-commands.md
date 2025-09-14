@@ -1,4 +1,4 @@
-# Entity Framework Migration Commands for Supabase
+# Entity Framework Migration Commands for PostgreSQL/Supabase
 
 ## Prerequisites
 1. Install PostgreSQL Entity Framework provider:
@@ -16,7 +16,7 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 rm -rf StadiumDrinkOrdering.API/Migrations/
 
 # Or on Windows
-rmdir /s StladiumDrinkOrdering.API\Migrations
+rmdir /s StadiumDrinkOrdering.API\Migrations
 ```
 
 ### 2. Create Initial PostgreSQL Migration
@@ -24,36 +24,49 @@ rmdir /s StladiumDrinkOrdering.API\Migrations
 cd StadiumDrinkOrdering.API
 
 # Create initial migration for PostgreSQL
-dotnet ef migrations add InitialPostgreSQLMigration --project StadiumDrinkOrdering.API
+dotnet ef migrations add InitialPostgreSQLMigration
 
-# Verify migration was created
+# Verify migration was created (Linux/macOS)
 ls Migrations/
+
+# Verify migration was created (Windows)
+dir Migrations
 ```
 
 ### 3. Update Database
 ```bash
 # Apply migrations to Supabase database
-dotnet ef database update --project StadiumDrinkOrdering.API
+dotnet ef database update
 
 # Or specify connection string explicitly
-dotnet ef database update --project StadiumDrinkOrdering.API --connection "Host=YOUR_SUPABASE_HOST.supabase.co;Database=postgres;Username=postgres;Password=YOUR_PASSWORD;Port=5432;SSL Mode=Require;"
+dotnet ef database update --connection "Host=YOUR_SUPABASE_HOST.supabase.co;Database=postgres;Username=postgres;Password=YOUR_PASSWORD;Port=5432;SSL Mode=Require;"
+
+# Or use environment variable
+$env:ConnectionStrings__DefaultConnection="Host=..."
+dotnet ef database update
 ```
 
 ### 4. Generate SQL Script (Alternative)
 ```bash
 # Generate SQL script instead of direct update
-dotnet ef migrations script --project StadiumDrinkOrdering.API --output supabase-migration.sql
+dotnet ef migrations script --output supabase-migration.sql
 
-# Then run the script in Supabase SQL Editor
+# Generate script from specific migration
+dotnet ef migrations script InitialPostgreSQLMigration --output initial-migration.sql
+
+# Then run the script in Supabase SQL Editor or via psql
 ```
 
 ### 5. Verify Migration
 ```bash
 # Check applied migrations
-dotnet ef migrations list --project StadiumDrinkOrdering.API
+dotnet ef migrations list
 
 # Test connection
-dotnet ef dbcontext info --project StadiumDrinkOrdering.API
+dotnet ef dbcontext info
+
+# Check database schema
+dotnet ef dbcontext scaffold "Host=..." Npgsql.EntityFrameworkCore.PostgreSQL -o Models/Scaffolded
 ```
 
 ## Troubleshooting

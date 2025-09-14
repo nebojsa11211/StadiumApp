@@ -15,25 +15,29 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
         {
             try
             {
-                var response = await HttpClient.GetAsync("api/users");
+                // Use POST /users/search with empty filter to get all users
+                var filter = new UserFilterDto();
+                var content = CreateJsonContent(filter);
+                var response = await HttpClient.PostAsync("users/search", content);
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return DeserializeResponse<IEnumerable<UserDto>>(json);
+                    var result = DeserializeResponse<UserListDto>(json);
+                    return result?.Users ?? new List<UserDto>();
                 }
             }
             catch (Exception ex)
             {
                 await LogErrorAsync(ex, "GetUsers", "Failed to retrieve users list");
             }
-            return Array.Empty<UserDto>();
+            return new List<UserDto>();
         }
 
         public async Task<UserDto?> GetUserAsync(int id)
         {
             try
             {
-                var response = await HttpClient.GetAsync($"api/users/{id}");
+                var response = await HttpClient.GetAsync($"users/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -52,7 +56,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
             try
             {
                 var content = CreateJsonContent(createUserDto);
-                var response = await HttpClient.PostAsync("api/users", content);
+                var response = await HttpClient.PostAsync("users", content);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseJson = await response.Content.ReadAsStringAsync();
@@ -71,7 +75,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
             try
             {
                 var content = CreateJsonContent(updateUserDto);
-                var response = await HttpClient.PutAsync($"api/users/{id}", content);
+                var response = await HttpClient.PutAsync($"users/{id}", content);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseJson = await response.Content.ReadAsStringAsync();
@@ -89,7 +93,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
         {
             try
             {
-                var response = await HttpClient.DeleteAsync($"api/users/{id}");
+                var response = await HttpClient.DeleteAsync($"users/{id}");
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

@@ -20,6 +20,19 @@
             <p>Loading drinks...</p>
         </div>
     }
+    else if (loadingFailed)
+    {
+        <div class="alert alert-danger" role="alert" id="admin-drinks-error">
+            <h4 class="alert-heading">⚠️ Error Loading Drinks</h4>
+            <p>@loadingError</p>
+            <hr>
+            <p class="mb-0">
+                <button class="btn btn-primary" @onclick="async () => await LoadDrinks()">
+                    <i class="bi bi-arrow-clockwise"></i> Retry
+                </button>
+            </p>
+        </div>
+    }
     else if (!drinks.Any())
     {
         <div class="text-center py-5" id="admin-drinks-empty">
@@ -149,9 +162,9 @@
 <!-- Create/Edit Drink Modal -->
 @if (showDrinkModal)
 {
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="admin-drink-modal">
-        <div class="modal-dialog">
-            <div class="modal-content" id="admin-drink-modal-content">
+    <div class="modal fade show d-block" tabindex="-1" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important; z-index: 9999 !important;" id="admin-drink-modal">
+        <div class="modal-dialog" style="position: relative; margin: auto; max-width: 90vw; max-height: 90vh; z-index: 10000;">
+            <div class="modal-content" id="admin-drink-modal-content" style="max-height: 90vh; overflow-y: auto; background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
                 <div class="modal-header" id="admin-drink-modal-header">
                     <h5 class="modal-title" id="admin-drink-modal-title">@(editingDrink == null ? "Add New Drink" : "Edit Drink")</h5>
                     <button type="button" class="btn-close" @onclick="HideDrinkModal" id="admin-drink-modal-close-btn"></button>

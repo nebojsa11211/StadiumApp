@@ -12,19 +12,19 @@
     </div>
     
     <!-- Key Metrics Row -->
-    <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-primary h-100" style="cursor: pointer;" @onclick="ShowRevenueDetails">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Today's Revenue</h6>
-                            <h3 class="mb-0 text-primary">@(todayRevenue.ToString("C", CultureInfo.CurrentCulture))</h3>
-                            <small class="@(revenueChange >= 0 ? "text-success" : "text-danger")">
+    <div class="row mb-4" id="admin-metrics-row">
+        <div class="col-lg-3 col-md-6 mb-3" id="admin-revenue-card-col">
+            <div class="card border-primary h-100" style="cursor: pointer;" @onclick="ShowRevenueDetails" id="admin-revenue-card">
+                <div class="card-body" id="admin-revenue-card-body">
+                    <div class="d-flex justify-content-between align-items-center" id="admin-revenue-content">
+                        <div id="admin-revenue-text">
+                            <h6 class="text-muted mb-2" id="admin-revenue-title">Today's Revenue</h6>
+                            <h3 class="mb-0 text-primary" id="admin-revenue-amount">@(todayRevenue.ToString("C", CultureInfo.CurrentCulture))</h3>
+                            <small class="@(revenueChange >= 0 ? "text-success" : "text-danger")" id="admin-revenue-change">
                                 <i class="bi @(revenueChange >= 0 ? "bi-arrow-up" : "bi-arrow-down")"></i> @revenueChange.ToString("F1")% from yesterday
                             </small>
                         </div>
-                        <div class="text-primary opacity-50">
+                        <div class="text-primary opacity-50" id="admin-revenue-icon">
                             <i class="bi bi-cash-stack" style="font-size: 2.5rem;"></i>
                         </div>
                     </div>
@@ -32,16 +32,16 @@
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-success h-100" style="cursor: pointer;" @onclick="ShowActiveOrders">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Active Orders</h6>
-                            <h3 class="mb-0 text-success">@activeOrders</h3>
-                            <small class="text-muted">@pendingOrders pending, @inPreparationOrders preparing</small>
+        <div class="col-lg-3 col-md-6 mb-3" id="admin-active-orders-card-col">
+            <div class="card border-success h-100" style="cursor: pointer;" @onclick="ShowActiveOrders" id="admin-active-orders-card">
+                <div class="card-body" id="admin-active-orders-card-body">
+                    <div class="d-flex justify-content-between align-items-center" id="admin-active-orders-content">
+                        <div id="admin-active-orders-text">
+                            <h6 class="text-muted mb-2" id="admin-active-orders-title">Active Orders</h6>
+                            <h3 class="mb-0 text-success" id="admin-active-orders-count">@activeOrders</h3>
+                            <small class="text-muted" id="admin-active-orders-details">@pendingOrders pending, @inPreparationOrders preparing</small>
                         </div>
-                        <div class="text-success opacity-50">
+                        <div class="text-success opacity-50" id="admin-active-orders-icon">
                             <i class="bi bi-cart-check" style="font-size: 2.5rem;"></i>
                         </div>
                     </div>
@@ -49,16 +49,16 @@
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-warning h-100" style="cursor: pointer;" @onclick="ShowTicketDetails">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Tickets Sold Today</h6>
-                            <h3 class="mb-0 text-warning">@ticketsSoldToday</h3>
-                            <small class="text-muted">@currentEventName</small>
+        <div class="col-lg-3 col-md-6 mb-3" id="admin-tickets-card-col">
+            <div class="card border-warning h-100" style="cursor: pointer;" @onclick="ShowTicketDetails" id="admin-tickets-card">
+                <div class="card-body" id="admin-tickets-card-body">
+                    <div class="d-flex justify-content-between align-items-center" id="admin-tickets-content">
+                        <div id="admin-tickets-text">
+                            <h6 class="text-muted mb-2" id="admin-tickets-title">Tickets Sold Today</h6>
+                            <h3 class="mb-0 text-warning" id="admin-tickets-count">@ticketsSoldToday</h3>
+                            <small class="text-muted" id="admin-tickets-event">@currentEventName</small>
                         </div>
-                        <div class="text-warning opacity-50">
+                        <div class="text-warning opacity-50" id="admin-tickets-icon">
                             <i class="bi bi-ticket-perforated" style="font-size: 2.5rem;"></i>
                         </div>
                     </div>
@@ -66,21 +66,21 @@
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-info h-100" style="cursor: pointer;" @onclick="ShowOnlineUsers" @onclick:preventDefault="true">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Online Users</h6>
-                            <h3 class="mb-0 text-info">@onlineUsers</h3>
-                            <small class="text-muted">@staffOnline staff, @customersOnline customers</small>
+        <div class="col-lg-3 col-md-6 mb-3" id="admin-online-users-card-col">
+            <div class="card border-info h-100" style="cursor: pointer;" @onclick="ShowOnlineUsers" @onclick:preventDefault="true" id="admin-online-users-card">
+                <div class="card-body" id="admin-online-users-card-body">
+                    <div class="d-flex justify-content-between align-items-center" id="admin-online-users-content">
+                        <div id="admin-online-users-text">
+                            <h6 class="text-muted mb-2" id="admin-online-users-title">Online Users</h6>
+                            <h3 class="mb-0 text-info" id="admin-online-users-count">@onlineUsers</h3>
+                            <small class="text-muted" id="admin-online-users-details">@staffOnline staff, @customersOnline customers</small>
                         </div>
-                        <div class="text-info opacity-50">
+                        <div class="text-info opacity-50" id="admin-online-users-icon">
                             <i class="bi bi-people" style="font-size: 2.5rem;"></i>
                         </div>
                     </div>
                     <!-- Debug button -->
-                    <div class="mt-2 text-center">
+                    <div class="mt-2 text-center" id="admin-online-users-hint">
                         <small class="text-muted">Click anywhere on card to view details</small>
                     </div>
                 </div>
@@ -88,20 +88,6 @@
         </div>
     </div>
 
-    <!-- DEBUG SECTION - Remove after testing -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <h6 class="card-title">🔧 Modal Debug Panel</h6>
-                    <button class="btn btn-primary btn-sm me-2" @onclick="ShowOnlineUsers">Test Blazor Click</button>
-                    <button class="btn btn-secondary btn-sm me-2" onclick="showBootstrapModal('onlineUsersModal')">Test JS Direct</button>
-                    <button class="btn btn-info btn-sm me-2" onclick="console.log('Bootstrap available:', typeof bootstrap !== 'undefined'); console.log('Modal element:', document.getElementById('onlineUsersModal')); alert('Check console');">Test Bootstrap</button>
-                    <button class="btn btn-warning btn-sm" onclick="$('#onlineUsersModal').modal('show');">Test jQuery</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Recent Activity & Quick Actions Row -->
     <div class="row mb-4">
@@ -294,8 +280,8 @@
 
 <!-- Online Users Modal -->
 <div class="modal fade" id="onlineUsersModal" tabindex="-1" aria-labelledby="onlineUsersModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog modal-lg" id="admin-online-users-modal-dialog">
+        <div class="modal-content" id="admin-online-users-modal-content">
             <div class="modal-header bg-info text-white">
                 <h5 class="modal-title" id="onlineUsersModalLabel">
                     <i class="bi bi-people me-2"></i>Online Users
@@ -364,8 +350,8 @@
 
 <!-- Active Orders Modal -->
 <div class="modal fade" id="activeOrdersModal" tabindex="-1" aria-labelledby="activeOrdersModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
+    <div class="modal-dialog modal-xl" id="admin-active-orders-modal-dialog">
+        <div class="modal-content" id="admin-active-orders-modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title" id="activeOrdersModalLabel">
                     <i class="bi bi-cart-check me-2"></i>Active Orders
@@ -428,6 +414,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" @onclick="RefreshActiveOrders">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                </button>
                 <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/orders"))">
                     View All Orders
                 </button>
@@ -438,8 +427,8 @@
 
 <!-- Revenue Details Modal -->
 <div class="modal fade" id="revenueModal" tabindex="-1" aria-labelledby="revenueModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog modal-lg" id="admin-revenue-modal-dialog">
+        <div class="modal-content" id="admin-revenue-modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="revenueModalLabel">
                     <i class="bi bi-cash-stack me-2"></i>Revenue Details
@@ -522,6 +511,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" @onclick="RefreshRevenueDetails">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                </button>
                 <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/analytics"))">
                     View Full Analytics
                 </button>
@@ -532,8 +524,8 @@
 
 <!-- Ticket Details Modal -->
 <div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog modal-lg" id="admin-ticket-modal-dialog">
+        <div class="modal-content" id="admin-ticket-modal-content">
             <div class="modal-header bg-warning text-dark">
                 <h5 class="modal-title" id="ticketModalLabel">
                     <i class="bi bi-ticket-perforated me-2"></i>Ticket Sales Details
@@ -597,6 +589,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" @onclick="RefreshTicketDetails">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                </button>
                 <button type="button" class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo("/events"))">
                     Manage Events
                 </button>
@@ -604,4 +599,43 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Enhanced modal cleanup using Bootstrap's modal events
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔧 Setting up enhanced modal cleanup...');
+
+        // Get all modals on the page
+        const modals = document.querySelectorAll('.modal');
+
+        modals.forEach(modal => {
+            console.log(`📋 Setting up cleanup for modal: ${modal.id}`);
+
+            // Listen for the 'hidden.bs.modal' event which fires after the modal is completely hidden
+            modal.addEventListener('hidden.bs.modal', function (event) {
+                console.log(`🧹 Modal ${modal.id} hidden, performing cleanup...`);
+
+                // Use setTimeout to ensure Bootstrap is completely done
+                setTimeout(() => {
+                    // Remove any leftover backdrops
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    console.log(`🗑️ Found ${backdrops.length} backdrops to remove`);
+                    backdrops.forEach(backdrop => {
+                        console.log('Removing backdrop:', backdrop.className);
+                        backdrop.remove();
+                    });
+
+                    // Reset body classes and styles
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+
+                    console.log('✅ Modal cleanup completed');
+                }, 50); // Small delay to ensure Bootstrap is done
+            });
+        });
+
+        console.log('✅ Enhanced modal cleanup initialized for all modals');
+    });
+</script>
 

@@ -23,24 +23,24 @@
                     <SignalRConnection OnOrderStatusChanged="HandleOrderStatusChanged" OnNotificationReceived="HandleNotification" />
                     @if (AuthStateService.IsAuthenticated)
                     {
-                        <div class="dropdown">
+                        <div class="dropdown" id="customer-layout-user-dropdown">
                             <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="customerDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 👤 @(AuthStateService.CurrentUser?.Username ?? "User")
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="customerDropdown">
                                 <li><h6 class="dropdown-header">@AuthStateService.UserEmail</h6></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/profile">My Profile</a></li>
-                                <li><a class="dropdown-item" href="/orders">My Orders</a></li>
+                                <li><a class="dropdown-item" href="/profile" id="customer-layout-profile-link">My Profile</a></li>
+                                <li><a class="dropdown-item" href="/orders" id="customer-layout-orders-link">My Orders</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><button class="dropdown-item" @onclick="HandleLogout">Sign Out</button></li>
+                                <li><button class="dropdown-item" @onclick="HandleLogout" id="customer-layout-logout-btn">Sign Out</button></li>
                             </ul>
                         </div>
                     }
                     else
                     {
-                        <a href="/login" class="btn btn-outline-primary btn-sm">Sign In</a>
-                        <a href="/register" class="btn btn-primary btn-sm">Sign Up</a>
+                        <a href="/login" class="btn btn-outline-primary btn-sm" id="customer-layout-sign-in-btn">Sign In</a>
+                        <a href="/register" class="btn btn-primary btn-sm" id="customer-layout-sign-up-btn">Sign Up</a>
                     }
                     <a href="https://docs.microsoft.com/aspnet/" target="_blank" id="customer-layout-about-link" class="btn-link">Help</a>
                 </div>

@@ -7,21 +7,21 @@
 <PageTitle>Browse Events</PageTitle>
 
 <CustomerAuthRoute>
-<div class="container-fluid py-4">
+<div class="container-fluid py-4" id="customer-events-main-container">
     <div class="row">
         <div class="col-12">
-            <h2 class="mb-4">🎫 Available Events</h2>
+            <h2 class="mb-4" id="customer-events-title">🎫 Available Events</h2>
 
             <!-- Filters -->
-            <div class="card mb-4">
+            <div class="card mb-4" id="customer-events-filters-card">
                 <div class="card-header">
-                    <h5 class="mb-0">Filter Events</h5>
+                    <h5 class="mb-0" id="customer-events-filters-title">Filter Events</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Event Type</label>
-                            <select class="form-select" @bind="filterEventType">
+                            <select class="form-select" @bind="filterEventType" id="customer-events-type-filter">
                                 <option value="">All Types</option>
                                 <option value="Football">Football</option>
                                 <option value="Concert">Concert</option>
@@ -31,18 +31,18 @@
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">From Date</label>
-                            <input type="date" class="form-control" @bind="filterDateFrom" />
+                            <input type="date" class="form-control" @bind="filterDateFrom" id="customer-events-date-from" />
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">To Date</label>
-                            <input type="date" class="form-control" @bind="filterDateTo" />
+                            <input type="date" class="form-control" @bind="filterDateTo" id="customer-events-date-to" />
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Price Range</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" placeholder="Min" @bind="filterMinPrice" step="10" />
+                                <input type="number" class="form-control" placeholder="Min" @bind="filterMinPrice" step="10" id="customer-events-min-price" />
                                 <span class="input-group-text">-</span>
-                                <input type="number" class="form-control" placeholder="Max" @bind="filterMaxPrice" step="10" />
+                                <input type="number" class="form-control" placeholder="Max" @bind="filterMaxPrice" step="10" id="customer-events-max-price" />
                             </div>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
             <!-- Events List -->
             @if (isLoading && events == null)
             {
-                <div class="text-center py-5">
+                <div class="text-center py-5" id="customer-events-loading">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading events...</span>
                     </div>
@@ -73,18 +73,18 @@
             }
             else if (events == null || !events.Any())
             {
-                <div class="alert alert-info">
+                <div class="alert alert-info" id="customer-events-no-results">
                     <h5><i class="fas fa-info-circle me-2"></i>No Events Found</h5>
                     <p>There are currently no events matching your criteria. Please check back later or adjust your filters.</p>
                 </div>
             }
             else
             {
-                <div class="row">
+                <div class="row" id="customer-events-list">
                     @foreach (var evt in events)
                     {
                         <div class="col-lg-6 col-xl-4 mb-4">
-                            <div class="card h-100 event-card">
+                            <div class="card h-100 event-card" id="customer-event-card-@evt.Id">
                                 <div class="card-header bg-primary text-white">
                                     <h5 class="card-title mb-0">@evt.EventName</h5>
                                     <small class="opacity-75">@evt.EventType</small>

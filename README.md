@@ -274,26 +274,28 @@ graph TD
 
 ### Environment Variables (.env file)
 ```bash
-# Database Configuration
-SQL_SA_PASSWORD=YourStrongPassword123!
+# Database Configuration (PostgreSQL/Supabase)
+ConnectionStrings__DefaultConnection="Host=your-supabase-host;Database=postgres;Username=postgres;Password=your-password"
 
 # JWT Configuration
-JWT_SECRET_KEY=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
+JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
 
 # Environment
 ASPNETCORE_ENVIRONMENT=Production
 
-# Resource Limits
-DB_MEMORY_LIMIT=2G
-API_MEMORY_LIMIT=512M
-FRONTEND_MEMORY_LIMIT=256M
+# Timezone Configuration
+TZ=Europe/Zagreb
+
+# HTTPS Configuration
+ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
+ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
 ```
 
 ### API Configuration (appsettings.json)
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=sqlserver,1433;Database=StadiumDrinkOrdering;..."
+    "DefaultConnection": "Host=your-supabase-host;Database=postgres;Username=postgres;Password=your-password"
   },
   "JwtSettings": {
     "SecretKey": "YourSuperSecretKey...",
@@ -418,12 +420,15 @@ kill -9 <PID>
 
 #### Database Connection Issues
 ```bash
-# Check SQL Server container
-docker logs stadium-sqlserver
+# Check API container for database connectivity
+docker logs stadium-api
 
-# Reset database
-docker-compose down -v
-docker-compose up --build
+# Test PostgreSQL/Supabase connection
+docker exec stadium-api dotnet ef database update
+
+# Reset and rebuild containers
+docker-compose down
+docker-compose up --build -d
 ```
 
 #### Docker Issues
@@ -443,6 +448,14 @@ All services include health checks:
 - **Staff**: https://localhost:9040/health
 
 ## 🔧 Recent Bug Fixes & Improvements
+
+### PostgreSQL DateTime UTC Issue (Fixed) ✅
+**Issue**: Admin logs page failed with "Cannot write DateTime with Kind=Local to PostgreSQL".
+**Solution**: Changed all date filtering to use `DateTime.UtcNow` for PostgreSQL compatibility.
+
+### Docker Container SSL Communication (Fixed) ✅
+**Issue**: Containers failed to connect to API with SSL errors.
+**Solution**: Fixed protocol mismatch - containers now use HTTP internally and HTTPS externally.
 
 ### Authentication Token Persistence (Fixed) ✅
 **Issue**: Admin authentication tokens were lost after page navigation, requiring re-login.

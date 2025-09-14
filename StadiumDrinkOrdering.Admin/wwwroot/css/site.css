@@ -1167,3 +1167,32 @@ a:hover {
         z-index: -1;
     }
 }
+
+/* ==== MODAL POSITIONING FIX - PERMANENT ==== */
+/* This must be in site.css because it loads AFTER admin-components.css */
+#admin-event-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#admin-event-modal .modal-dialog {
+    position: relative !important;
+    margin: auto !important;
+    max-width: 90vw !important;
+    max-height: 90vh !important;
+}
+
+#admin-event-modal .modal-content {
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+}

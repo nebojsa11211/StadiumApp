@@ -1,0 +1,142 @@
+@using StadiumDrinkOrdering.Shared.DTOs
+
+<div class="stadium-svg-renderer">
+    @if (Layout != null)
+    {
+        <svg width="100%" height="100%" viewBox="@Layout.ViewBox.ViewBoxString"
+             xmlns="http://www.w3.org/2000/svg"
+             class="stadium-svg"
+             id="stadium-svg-main">
+
+            <!-- Define gradients and filters -->
+            <defs>
+                <linearGradient id="field-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#2d5a2d;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#1a4a1a;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#0d2f0d;stop-opacity:1" />
+                </linearGradient>
+                <filter id="sector-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+                </filter>
+            </defs>
+
+            <!-- Stadium Field -->
+            @if (Layout.Field != null)
+            {
+                <rect x="@Layout.Field.Bounds.X" y="@Layout.Field.Bounds.Y"
+                      width="@Layout.Field.Bounds.Width" height="@Layout.Field.Bounds.Height"
+                      fill="url(#field-gradient)"
+                      stroke="@Layout.Field.StrokeColor"
+                      stroke-width="@Layout.Field.StrokeWidth"
+                      rx="40" ry="25"
+                      filter="url(#sector-shadow)"
+                      class="stadium-field" />
+            }
+
+            <!-- Stadium Stands and Sectors -->
+            @if (Layout.Stands != null)
+            {
+                @foreach (var stand in Layout.Stands)
+                {
+                    <g class="stadium-stand @stand.CssClass" data-stand="@stand.DataAttribute">
+                        @foreach (var sector in stand.Sectors)
+                        {
+                            <!-- Sector Rectangle -->
+                            <rect x="@sector.Bounds.X" y="@sector.Bounds.Y"
+                                  width="@sector.Bounds.Width" height="@sector.Bounds.Height"
+                                  fill="@GetSectorFillColor(sector)"
+                                  stroke="@sector.Style.StrokeColor"
+                                  stroke-width="@sector.Style.StrokeWidth"
+                                  rx="@sector.Style.BorderRadius"
+                                  filter="url(#sector-shadow)"
+                                  class="stadium-sector @GetSectorStatusClass(sector)"
+                                  id="@sector.ElementId"
+                                  aria-label="@sector.AriaLabel"
+                                  @onclick="() => HandleSectorClick(ConvertToSectorSvgDto(sector))"
+                                  @onmouseenter="() => HandleSectorHover(ConvertToSectorSvgDto(sector), true)"
+                                  @onmouseleave="() => HandleSectorHover(ConvertToSectorSvgDto(sector), false)"
+                                  role="button"
+                                  tabindex="0" />
+
+                            <!-- Sector Label -->
+                            <g class="sector-text-group">
+                                <text x="@sector.TextCenter.X" y="@sector.TextCenter.Y" text-anchor="middle" dominant-baseline="middle" font-size="@sector.Style.FontSize" font-weight="@sector.Style.FontWeight" fill="@sector.Style.TextColor" style="text-shadow: @sector.Style.TextShadow; pointer-events: none;" class="sector-label">@GetSectorDisplayText(sector)</text>
+                            </g>
+                        }
+                    </g>
+                }
+            }
+        </svg>
+    }
+    else
+    {
+        <div class="stadium-loading text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading stadium layout...</span>
+            </div>
+            <p class="mt-2">Loading dynamic stadium layout...</p>
+        </div>
+    }
+</div>
+
+<style>
+    .stadium-svg-renderer {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+    }
+
+    .stadium-svg {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .stadium-sector {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stadium-sector:hover {
+        stroke-width: 3;
+        filter: brightness(1.1);
+    }
+
+    .stadium-sector:focus {
+        outline: 2px solid #0066cc;
+        outline-offset: 2px;
+    }
+
+    .sector-label {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        user-select: none;
+    }
+
+    .stadium-field {
+        opacity: 0.9;
+    }
+
+    .stadium-loading {
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Occupancy status classes */
+    .status-available {
+        fill: #4CAF50 !important;
+    }
+
+    .status-partial {
+        fill: #FF9800 !important;
+    }
+
+    .status-full {
+        fill: #F44336 !important;
+    }
+</style>

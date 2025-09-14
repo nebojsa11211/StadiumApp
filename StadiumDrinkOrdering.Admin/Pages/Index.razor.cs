@@ -350,6 +350,21 @@ public partial class Index : IDisposable
         await ShowOnlineUsers();
     }
 
+    private async Task RefreshActiveOrders()
+    {
+        await ShowActiveOrders();
+    }
+
+    private async Task RefreshRevenueDetails()
+    {
+        await ShowRevenueDetails();
+    }
+
+    private async Task RefreshTicketDetails()
+    {
+        await ShowTicketDetails();
+    }
+
     private async Task ShowActiveOrders()
     {
         loadingModalData = true;

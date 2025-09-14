@@ -21,7 +21,6 @@ public class DrinksController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<DrinkDto>>> GetDrinks()
     {
-        return BadRequest();
         var drinks = await _context.Drinks
             .Where(d => d.IsAvailable)
             .OrderBy(d => d.Category)

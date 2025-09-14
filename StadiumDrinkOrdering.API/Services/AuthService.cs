@@ -220,7 +220,10 @@ public class AuthService : IAuthService
 
         user.Username = updateUserDto.Username;
         user.Email = updateUserDto.Email;
-        user.Role = updateUserDto.Role;
+        if (updateUserDto.Role.HasValue)
+        {
+            user.Role = updateUserDto.Role.Value;
+        }
 
         await _context.SaveChangesAsync();
         return MapToUserDto(user);

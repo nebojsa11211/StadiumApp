@@ -1,0 +1,633 @@
+/*
+ * Stadium Admin Chart & Data Visualization Styles
+ * Styles for charts, graphs, and data visualization components
+ * Version: 1.0.0
+ * Last Updated: 2025-01-13
+ */
+
+/* =============================================================================
+   CHART CONTAINER STYLES
+   ============================================================================= */
+
+.admin-chart-container {
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border-primary);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-sm);
+  padding: var(--admin-space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--admin-space-6);
+  padding-bottom: var(--admin-space-4);
+  border-bottom: 1px solid var(--admin-border-primary);
+}
+
+.admin-chart-title {
+  font-size: var(--admin-font-size-lg);
+  font-weight: var(--admin-font-weight-semibold);
+  color: var(--admin-text-primary);
+  margin: 0;
+}
+
+.admin-chart-subtitle {
+  font-size: var(--admin-font-size-sm);
+  color: var(--admin-text-secondary);
+  margin: var(--admin-space-1) 0 0 0;
+}
+
+.admin-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--admin-space-2);
+}
+
+.admin-chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  min-height: 200px;
+}
+
+.admin-chart-tall {
+  height: 400px;
+}
+
+.admin-chart-short {
+  height: 200px;
+}
+
+.admin-chart-extra-tall {
+  height: 500px;
+}
+
+.admin-chart-responsive {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+/* Chart loading state */
+.admin-chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--admin-bg-tertiary);
+  border-radius: var(--admin-radius-base);
+  color: var(--admin-text-tertiary);
+  font-size: var(--admin-font-size-sm);
+}
+
+.admin-chart-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--admin-border-primary);
+  border-top: 2px solid var(--admin-color-accent-600);
+  border-radius: 50%;
+  animation: admin-chart-spin 1s linear infinite;
+  margin-right: var(--admin-space-3);
+}
+
+@keyframes admin-chart-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Chart error state */
+.admin-chart-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--admin-color-error-50);
+  border: 1px solid var(--admin-color-error-200);
+  border-radius: var(--admin-radius-base);
+  color: var(--admin-color-error-600);
+  text-align: center;
+  padding: var(--admin-space-4);
+}
+
+[data-theme="dark"] .admin-chart-error {
+  background: var(--admin-color-error-900);
+  border-color: var(--admin-color-error-700);
+  color: var(--admin-color-error-200);
+}
+
+.admin-chart-error-icon {
+  font-size: var(--admin-font-size-2xl);
+  margin-bottom: var(--admin-space-2);
+}
+
+.admin-chart-error-message {
+  font-size: var(--admin-font-size-sm);
+  font-weight: var(--admin-font-weight-medium);
+}
+
+/* =============================================================================
+   DATA VISUALIZATION COLOR SCHEMES
+   ============================================================================= */
+
+:root {
+  /* Primary color scheme for charts */
+  --admin-chart-color-1: var(--admin-color-accent-500);
+  --admin-chart-color-2: var(--admin-color-success-500);
+  --admin-chart-color-3: var(--admin-color-warning-500);
+  --admin-chart-color-4: var(--admin-color-error-500);
+  --admin-chart-color-5: #8b5cf6;  /* Purple */
+  --admin-chart-color-6: #f97316;  /* Orange */
+  --admin-chart-color-7: #06b6d4;  /* Cyan */
+  --admin-chart-color-8: #84cc16;  /* Lime */
+
+  /* Subtle variants for backgrounds and areas */
+  --admin-chart-color-1-subtle: var(--admin-color-accent-100);
+  --admin-chart-color-2-subtle: var(--admin-color-success-100);
+  --admin-chart-color-3-subtle: var(--admin-color-warning-100);
+  --admin-chart-color-4-subtle: var(--admin-color-error-100);
+  --admin-chart-color-5-subtle: #ede9fe;
+  --admin-chart-color-6-subtle: #fed7aa;
+  --admin-chart-color-7-subtle: #cffafe;
+  --admin-chart-color-8-subtle: #ecfccb;
+
+  /* Grid and axis colors */
+  --admin-chart-grid-color: var(--admin-border-primary);
+  --admin-chart-axis-color: var(--admin-text-tertiary);
+  --admin-chart-text-color: var(--admin-text-secondary);
+}
+
+[data-theme="dark"] {
+  /* Adjusted colors for dark theme */
+  --admin-chart-color-1-subtle: var(--admin-color-accent-900);
+  --admin-chart-color-2-subtle: var(--admin-color-success-900);
+  --admin-chart-color-3-subtle: var(--admin-color-warning-900);
+  --admin-chart-color-4-subtle: var(--admin-color-error-900);
+  --admin-chart-color-5-subtle: #4c1d95;
+  --admin-chart-color-6-subtle: #9a3412;
+  --admin-chart-color-7-subtle: #164e63;
+  --admin-chart-color-8-subtle: #365314;
+}
+
+/* Chart color utility classes */
+.admin-chart-color-primary { color: var(--admin-chart-color-1); fill: var(--admin-chart-color-1); }
+.admin-chart-color-success { color: var(--admin-chart-color-2); fill: var(--admin-chart-color-2); }
+.admin-chart-color-warning { color: var(--admin-chart-color-3); fill: var(--admin-chart-color-3); }
+.admin-chart-color-error { color: var(--admin-chart-color-4); fill: var(--admin-chart-color-4); }
+.admin-chart-color-purple { color: var(--admin-chart-color-5); fill: var(--admin-chart-color-5); }
+.admin-chart-color-orange { color: var(--admin-chart-color-6); fill: var(--admin-chart-color-6); }
+.admin-chart-color-cyan { color: var(--admin-chart-color-7); fill: var(--admin-chart-color-7); }
+.admin-chart-color-lime { color: var(--admin-chart-color-8); fill: var(--admin-chart-color-8); }
+
+/* =============================================================================
+   CHART LEGENDS
+   ============================================================================= */
+
+.admin-chart-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--admin-space-4);
+  margin-top: var(--admin-space-4);
+  padding-top: var(--admin-space-4);
+  border-top: 1px solid var(--admin-border-primary);
+}
+
+.admin-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--admin-space-2);
+  font-size: var(--admin-font-size-sm);
+  color: var(--admin-text-secondary);
+}
+
+.admin-chart-legend-marker {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: var(--admin-radius-sm);
+  flex-shrink: 0;
+}
+
+.admin-chart-legend-marker.circle {
+  border-radius: 50%;
+}
+
+.admin-chart-legend-marker.line {
+  height: 2px;
+  border-radius: 0;
+}
+
+/* Legend positioning */
+.admin-chart-legend-top {
+  order: -1;
+  margin-top: 0;
+  margin-bottom: var(--admin-space-4);
+  padding-top: 0;
+  padding-bottom: var(--admin-space-4);
+  border-top: none;
+  border-bottom: 1px solid var(--admin-border-primary);
+}
+
+.admin-chart-legend-right {
+  position: absolute;
+  right: var(--admin-space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: var(--admin-bg-elevated);
+  padding: var(--admin-space-3);
+  border-radius: var(--admin-radius-base);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.admin-chart-legend-left {
+  position: absolute;
+  left: var(--admin-space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: var(--admin-bg-elevated);
+  padding: var(--admin-space-3);
+  border-radius: var(--admin-radius-base);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+/* =============================================================================
+   DASHBOARD METRIC CARDS WITH CHARTS
+   ============================================================================= */
+
+.admin-metric-card-with-chart {
+  background: linear-gradient(135deg, var(--admin-bg-elevated) 0%, var(--admin-bg-tertiary) 100%);
+  border: 1px solid var(--admin-border-primary);
+  border-radius: var(--admin-radius-lg);
+  padding: var(--admin-space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-metric-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--admin-space-4);
+}
+
+.admin-metric-info {
+  flex: 1;
+}
+
+.admin-metric-title {
+  font-size: var(--admin-font-size-sm);
+  font-weight: var(--admin-font-weight-medium);
+  color: var(--admin-text-secondary);
+  margin: 0 0 var(--admin-space-2) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.admin-metric-value {
+  font-size: var(--admin-font-size-3xl);
+  font-weight: var(--admin-font-weight-bold);
+  color: var(--admin-text-primary);
+  line-height: var(--admin-line-height-tight);
+  margin: 0;
+}
+
+.admin-metric-change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--admin-space-1);
+  font-size: var(--admin-font-size-xs);
+  font-weight: var(--admin-font-weight-medium);
+  margin-top: var(--admin-space-2);
+  padding: var(--admin-space-1) var(--admin-space-2);
+  border-radius: var(--admin-radius-full);
+}
+
+.admin-metric-change.positive {
+  background: var(--admin-color-success-100);
+  color: var(--admin-color-success-700);
+}
+
+.admin-metric-change.negative {
+  background: var(--admin-color-error-100);
+  color: var(--admin-color-error-700);
+}
+
+.admin-metric-change.neutral {
+  background: var(--admin-bg-tertiary);
+  color: var(--admin-text-secondary);
+}
+
+[data-theme="dark"] .admin-metric-change.positive {
+  background: var(--admin-color-success-900);
+  color: var(--admin-color-success-200);
+}
+
+[data-theme="dark"] .admin-metric-change.negative {
+  background: var(--admin-color-error-900);
+  color: var(--admin-color-error-200);
+}
+
+.admin-metric-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: var(--admin-space-2);
+  border-radius: var(--admin-radius-base);
+  background: var(--admin-color-accent-100);
+  color: var(--admin-color-accent-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .admin-metric-icon {
+  background: var(--admin-color-accent-900);
+  color: var(--admin-color-accent-200);
+}
+
+.admin-metric-chart {
+  height: 60px;
+  margin-top: var(--admin-space-4);
+  border-radius: var(--admin-radius-sm);
+  overflow: hidden;
+}
+
+/* =============================================================================
+   SPECIFIC CHART TYPE STYLES
+   ============================================================================= */
+
+/* Bar Chart Styles */
+.admin-bar-chart {
+  background: transparent;
+}
+
+.admin-bar-chart .bar {
+  transition: all var(--admin-transition-fast);
+  cursor: pointer;
+}
+
+.admin-bar-chart .bar:hover {
+  opacity: 0.8;
+  filter: brightness(1.1);
+}
+
+/* Line Chart Styles */
+.admin-line-chart {
+  background: transparent;
+}
+
+.admin-line-chart .line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.admin-line-chart .area {
+  fill-opacity: 0.1;
+}
+
+.admin-line-chart .dot {
+  fill: var(--admin-bg-elevated);
+  stroke-width: 2;
+  r: 3;
+  transition: all var(--admin-transition-fast);
+}
+
+.admin-line-chart .dot:hover {
+  r: 5;
+  stroke-width: 3;
+}
+
+/* Pie/Donut Chart Styles */
+.admin-pie-chart {
+  background: transparent;
+}
+
+.admin-pie-chart .slice {
+  transition: all var(--admin-transition-fast);
+  cursor: pointer;
+}
+
+.admin-pie-chart .slice:hover {
+  opacity: 0.8;
+  transform: scale(1.02);
+  transform-origin: center;
+}
+
+.admin-donut-chart-center {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.admin-donut-chart-value {
+  font-size: var(--admin-font-size-2xl);
+  font-weight: var(--admin-font-weight-bold);
+  color: var(--admin-text-primary);
+  line-height: 1;
+}
+
+.admin-donut-chart-label {
+  font-size: var(--admin-font-size-xs);
+  color: var(--admin-text-secondary);
+  margin-top: var(--admin-space-1);
+}
+
+/* =============================================================================
+   CHART TOOLTIPS
+   ============================================================================= */
+
+.admin-chart-tooltip {
+  position: absolute;
+  z-index: var(--admin-z-tooltip);
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border-primary);
+  border-radius: var(--admin-radius-base);
+  padding: var(--admin-space-3);
+  box-shadow: var(--admin-shadow-lg);
+  font-size: var(--admin-font-size-sm);
+  max-width: 200px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all var(--admin-transition-fast);
+}
+
+.admin-chart-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.admin-chart-tooltip-title {
+  font-weight: var(--admin-font-weight-semibold);
+  color: var(--admin-text-primary);
+  margin-bottom: var(--admin-space-1);
+}
+
+.admin-chart-tooltip-content {
+  color: var(--admin-text-secondary);
+}
+
+.admin-chart-tooltip-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--admin-space-2);
+  margin-bottom: var(--admin-space-1);
+}
+
+.admin-chart-tooltip-item:last-child {
+  margin-bottom: 0;
+}
+
+.admin-chart-tooltip-label {
+  display: flex;
+  align-items: center;
+  gap: var(--admin-space-2);
+}
+
+.admin-chart-tooltip-color {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.admin-chart-tooltip-value {
+  font-weight: var(--admin-font-weight-semibold);
+  color: var(--admin-text-primary);
+}
+
+/* =============================================================================
+   RESPONSIVE CHART BEHAVIOR
+   ============================================================================= */
+
+@media (max-width: 1024px) {
+  .admin-chart-wrapper {
+    height: 250px;
+  }
+
+  .admin-chart-tall {
+    height: 300px;
+  }
+
+  .admin-chart-extra-tall {
+    height: 350px;
+  }
+
+  .admin-chart-legend {
+    gap: var(--admin-space-3);
+  }
+
+  .admin-chart-legend-right,
+  .admin-chart-legend-left {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: var(--admin-space-4);
+    padding: var(--admin-space-3);
+    border-top: 1px solid var(--admin-border-primary);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .admin-metric-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--admin-space-3);
+  }
+
+  .admin-metric-icon {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-chart-container {
+    padding: var(--admin-space-4);
+  }
+
+  .admin-chart-wrapper {
+    height: 200px;
+  }
+
+  .admin-chart-tall {
+    height: 250px;
+  }
+
+  .admin-chart-short {
+    height: 150px;
+  }
+
+  .admin-chart-extra-tall {
+    height: 300px;
+  }
+
+  .admin-chart-legend {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--admin-space-2);
+  }
+
+  .admin-chart-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--admin-space-2);
+    width: 100%;
+  }
+
+  .admin-metric-value {
+    font-size: var(--admin-font-size-2xl);
+  }
+
+  .admin-metric-chart {
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-chart-container {
+    padding: var(--admin-space-3);
+  }
+
+  .admin-chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--admin-space-3);
+  }
+
+  .admin-chart-title {
+    font-size: var(--admin-font-size-base);
+  }
+
+  .admin-chart-wrapper {
+    height: 180px;
+  }
+
+  .admin-chart-legend-item {
+    font-size: var(--admin-font-size-xs);
+  }
+
+  .admin-metric-card-with-chart {
+    padding: var(--admin-space-4);
+  }
+}

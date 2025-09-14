@@ -1,0 +1,96 @@
+@{
+    string containerClass = Type switch
+    {
+        SkeletonType.Card => "skeleton-card-container",
+        SkeletonType.Table => "skeleton-table-container",
+        SkeletonType.Button => "skeleton-button-container",
+        SkeletonType.List => "skeleton-list-container",
+        _ => "skeleton-container"
+    };
+}
+
+<div class="@containerClass">
+    @if (Type == SkeletonType.Card)
+    {
+        <div class="skeleton-card @AdditionalClass">
+            <div class="skeleton-header">
+                <div class="skeleton-text skeleton-title"></div>
+                <div class="skeleton-text skeleton-subtitle"></div>
+            </div>
+            <div class="skeleton-icon"></div>
+        </div>
+    }
+    else if (Type == SkeletonType.Table)
+    {
+        <div class="skeleton-table @AdditionalClass">
+            <div class="skeleton-table-header">
+                @for (int i = 0; i < Columns; i++)
+                {
+                    <div class="skeleton-text skeleton-header-cell"></div>
+                }
+            </div>
+            @for (int row = 0; row < Rows; row++)
+            {
+                <div class="skeleton-table-row">
+                    @for (int col = 0; col < Columns; col++)
+                    {
+                        <div class="skeleton-text skeleton-cell"></div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else if (Type == SkeletonType.Button)
+    {
+        @for (int i = 0; i < Count; i++)
+        {
+            <div class="skeleton-button @AdditionalClass mb-2"></div>
+        }
+    }
+    else if (Type == SkeletonType.List)
+    {
+        @for (int i = 0; i < Count; i++)
+        {
+            <div class="skeleton-list-item @AdditionalClass mb-3">
+                <div class="skeleton-text skeleton-primary"></div>
+                <div class="skeleton-text skeleton-secondary"></div>
+            </div>
+        }
+    }
+    else if (Type == SkeletonType.Text)
+    {
+        @for (int i = 0; i < Count; i++)
+        {
+            <div class="skeleton-text @AdditionalClass mb-2" style="width: @(Width ?? "100%");"></div>
+        }
+    }
+    else if (Type == SkeletonType.Circle)
+    {
+        <div class="skeleton-circle @AdditionalClass" style="width: @(Width ?? "40px"); height: @(Width ?? "40px");"></div>
+    }
+    else
+    {
+        <div class="skeleton-placeholder @AdditionalClass" style="height: @(Height ?? "20px"); width: @(Width ?? "100%");"></div>
+    }
+</div>
+
+@code {
+    [Parameter] public SkeletonType Type { get; set; } = SkeletonType.Text;
+    [Parameter] public int Count { get; set; } = 1;
+    [Parameter] public int Rows { get; set; } = 3;
+    [Parameter] public int Columns { get; set; } = 4;
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Height { get; set; }
+    [Parameter] public string AdditionalClass { get; set; } = "";
+
+    public enum SkeletonType
+    {
+        Card,
+        Table,
+        Button,
+        List,
+        Text,
+        Circle,
+        Custom
+    }
+}

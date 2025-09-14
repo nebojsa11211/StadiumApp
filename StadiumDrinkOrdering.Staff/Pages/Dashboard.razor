@@ -1,8 +1,12 @@
 @page "/"
-@inject IStaffApiService ApiService
+@using StadiumDrinkOrdering.Staff.Components.Dashboard
+@using StadiumDrinkOrdering.Staff.Services
+@using StadiumDrinkOrdering.Staff.Models
+@inject IDashboardService DashboardService
 @inject IAuthStateService AuthService
 @inject ISignalRService SignalRService
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 <PageTitle>Staff Dashboard</PageTitle>
@@ -11,7 +15,7 @@
 {
     <div class="container mt-5">
         <div class="alert alert-warning" role="alert">
-            <h4 class="alert-heading">Authentication Required</h4>
+            <h4 class="alert-heading">🔐 Authentication Required</h4>
             <p>You must be logged in to access the staff dashboard.</p>
             <hr>
             <p class="mb-0">
@@ -22,188 +26,114 @@
 }
 else
 {
-    <div class="container-fluid">
-        <div class="row mb-4">
-            <div class="col">
-                <h1>Staff Dashboard</h1>
-                <p class="text-muted">Real-time order management and fulfillment</p>
+    <div class="container-fluid dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>Staff Dashboard</h1>
+                    <p class="text-muted mb-0">Real-time order management and fulfillment</p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    @if (dashboardData.LastUpdated != default)
+                    {
+                        <small class="text-muted">
+                            Last updated: @dashboardData.LastUpdated.ToString("HH:mm:ss")
+                        </small>
+                    }
+                    <button class="btn btn-outline-secondary btn-sm" @onclick="RefreshData" disabled="@isRefreshing">
+                        @if (isRefreshing)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                        }
+                        else
+                        {
+                            <span class="oi oi-reload me-1"></span>
+                        }
+                        Refresh
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <!-- Quick Stats -->
-            <div class="col-md-3 mb-4">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h4>@pendingOrders.Count</h4>
-                                <small>Pending Orders</small>
-                            </div>
-                            <div>
-                                <span class="oi oi-clock" style="font-size: 2rem;"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-4">
-                <div class="card bg-info text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h4>@acceptedOrders.Count</h4>
-                                <small>Accepted Orders</small>
-                            </div>
-                            <div>
-                                <span class="oi oi-check" style="font-size: 2rem;"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-4">
-                <div class="card bg-warning text-dark">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h4>@inPreparationOrders.Count</h4>
-                                <small>In Preparation</small>
-                            </div>
-                            <div>
-                                <span class="oi oi-wrench" style="font-size: 2rem;"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-4">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h4>@readyOrders.Count</h4>
-                                <small>Ready for Delivery</small>
-                            </div>
-                            <div>
-                                <span class="oi oi-box" style="font-size: 2rem;"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Dashboard Metrics -->
+        <div class="row dashboard-metrics">
+            @if (dashboardData.IsLoading)
+            {
+                @for (int i = 0; i < 4; i++)
+                {
+                    <DashboardCard IsLoading="true" />
+                }
+            }
+            else
+            {
+                @foreach (var cardData in dashboardData.GetDashboardCards())
+                {
+                    <DashboardCard
+                        Title="@cardData.Title"
+                        Value="@cardData.Value"
+                        IconClass="@cardData.IconClass"
+                        BackgroundClass="@cardData.BackgroundClass"
+                        TextColorClass="@cardData.TextColorClass"
+                        Subtitle="@cardData.Subtitle"
+                        Clickable="@cardData.Clickable"
+                        OnClick="@(() => HandleCardClick(cardData))" />
+                }
+            }
         </div>
 
         <div class="row">
             <!-- Recent Orders -->
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Recent Orders</h5>
-                    </div>
-                    <div class="card-body">
-                        @if (recentOrders.Any())
-                        {
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Order #</th>
-                                            <th>Customer</th>
-                                            <th>Seat</th>
-                                            <th>Items</th>
-                                            <th>Status</th>
-                                            <th>Time</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var order in recentOrders.Take(10))
-                                        {
-                                            <tr>
-                                                <td>#@order.Id</td>
-                                                <td>@order.CustomerName</td>
-                                                <td>@order.SeatNumber</td>
-                                                <td>@order.OrderItems.Count item(s)</td>
-                                                <td>
-                                                    <span class="badge @GetStatusBadgeClass(order.Status)">
-                                                        @order.Status
-                                                    </span>
-                                                </td>
-                                                <td>@order.OrderDate.ToString("HH:mm")</td>
-                                                <td>
-                                                    <a href="/order-queue" class="btn btn-sm btn-outline-primary">View</a>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="text-center text-muted py-4">
-                                <span class="oi oi-inbox" style="font-size: 3rem;"></span>
-                                <p class="mt-2">No orders available</p>
-                            </div>
-                        }
-                    </div>
-                </div>
+            <div class="col-lg-8 mb-4">
+                <RecentOrdersList
+                    Title="Recent Orders"
+                    Orders="@dashboardData.RecentOrders"
+                    IsLoading="@dashboardData.IsLoading"
+                    ShowActions="true"
+                    MaxDisplayCount="10"
+                    ViewAllUrl="/order-queue"
+                    OnOrderClick="@HandleOrderClick" />
             </div>
 
-            <!-- Quick Actions -->
+            <!-- Side Panel -->
             <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Quick Actions</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="/order-queue" class="btn btn-primary">
-                                <span class="oi oi-list me-2"></span>View Order Queue
-                            </a>
-                            <a href="/my-orders" class="btn btn-info">
-                                <span class="oi oi-clipboard me-2"></span>My Assigned Orders
-                            </a>
-                            <a href="/stadium-map" class="btn btn-success">
-                                <span class="oi oi-map me-2"></span>Stadium Map
-                            </a>
-                        </div>
-                    </div>
+                <!-- Quick Actions -->
+                <div class="mb-4">
+                    <QuickActionsPanel
+                        Title="Quick Actions"
+                        Actions="@dashboardData.QuickActions"
+                        IsLoading="@dashboardData.IsLoading" />
                 </div>
 
                 <!-- Connection Status -->
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <h6>Connection Status</h6>
-                        <div class="d-flex align-items-center">
-                            <span class="badge @(SignalRService.IsConnected ? "bg-success" : "bg-danger") me-2">
-                                @(SignalRService.IsConnected ? "Connected" : "Disconnected")
-                            </span>
-                            @if (!SignalRService.IsConnected)
-                            {
-                                <button class="btn btn-sm btn-outline-primary" @onclick="ReconnectSignalR" id="staff-dashboard-reconnect-btn">
-                                    Reconnect
-                                </button>
-                            }
-                        </div>
-                    </div>
-                </div>
+                <ConnectionStatusCard
+                    Title="Connection Status"
+                    IsConnected="@SignalRService.IsConnected"
+                    IsLoading="@dashboardData.IsLoading"
+                    IsReconnecting="@isReconnecting"
+                    LastConnectedTime="@lastConnectedTime"
+                    OnReconnectClick="@HandleReconnectClick"
+                    StatusMessage="@connectionStatusMessage" />
             </div>
         </div>
+
+        @if (!string.IsNullOrEmpty(dashboardData.ErrorMessage))
+        {
+            <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                <strong>Warning:</strong> @dashboardData.ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
     </div>
 }
 
 @code {
-    private List<OrderDto> allOrders = new();
-    private List<OrderDto> pendingOrders = new();
-    private List<OrderDto> acceptedOrders = new();
-    private List<OrderDto> inPreparationOrders = new();
-    private List<OrderDto> readyOrders = new();
-    private List<OrderDto> recentOrders = new();
+    private DashboardViewModel dashboardData = new() { IsLoading = true };
+    private bool isRefreshing = false;
+    private bool isReconnecting = false;
+    private DateTime? lastConnectedTime = null;
+    private string? connectionStatusMessage = null;
+    private System.Threading.Timer? refreshTimer;
 
     protected override async Task OnInitializedAsync()
     {
@@ -212,42 +142,123 @@ else
             return;
         }
 
+        // Setup authentication change handler
         AuthService.OnAuthenticationStateChanged += OnAuthenticationStateChanged;
-        
+
+        // Initialize SignalR
         try
         {
             await SignalRService.StartAsync();
             await SignalRService.JoinStaffHub();
-            
+
             SignalRService.NewOrder += OnNewOrder;
             SignalRService.OrderUpdated += OnOrderUpdated;
+
+            lastConnectedTime = DateTime.Now;
+            connectionStatusMessage = "SignalR connection established";
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to start SignalR: {ex.Message}");
+            connectionStatusMessage = $"SignalR connection failed: {ex.Message}";
         }
 
-        await LoadOrders();
+        // Load initial dashboard data
+        await LoadDashboardData();
+
+        // Setup auto-refresh timer (every 30 seconds)
+        refreshTimer = new System.Threading.Timer(async _ =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadDashboardData();
+            });
+        }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
     }
 
-    private async Task LoadOrders()
+    private async Task LoadDashboardData()
     {
         try
         {
-            var orders = await ApiService.GetActiveOrdersAsync() ?? new List<OrderDto>();
-            allOrders = orders;
-            recentOrders = orders.OrderByDescending(o => o.OrderDate).ToList();
-
-            pendingOrders = orders.Where(o => o.Status == OrderStatus.Pending).ToList();
-            acceptedOrders = orders.Where(o => o.Status == OrderStatus.Accepted).ToList();
-            inPreparationOrders = orders.Where(o => o.Status == OrderStatus.InPreparation).ToList();
-            readyOrders = orders.Where(o => o.Status == OrderStatus.Ready).ToList();
-
-            StateHasChanged();
+            dashboardData = await DashboardService.GetDashboardDataAsync();
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to load orders: {ex.Message}");
+            Console.WriteLine($"Failed to load dashboard data: {ex.Message}");
+            dashboardData.ErrorMessage = "Failed to load dashboard data. Please try refreshing.";
+            dashboardData.IsLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        if (isRefreshing) return;
+
+        isRefreshing = true;
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", "Refreshing dashboard data...", "info");
+            await DashboardService.RefreshDataAsync();
+            await LoadDashboardData();
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", "Dashboard refreshed successfully", "success");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to refresh data: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", "Failed to refresh dashboard", "danger");
+        }
+        finally
+        {
+            isRefreshing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleCardClick(DashboardCardData cardData)
+    {
+        if (!string.IsNullOrEmpty(cardData.ClickUrl))
+        {
+            Navigation.NavigateTo(cardData.ClickUrl);
+        }
+    }
+
+    private async Task HandleOrderClick(OrderDto order)
+    {
+        Navigation.NavigateTo($"/order-queue");
+    }
+
+    private async Task HandleReconnectClick()
+    {
+        if (isReconnecting) return;
+
+        isReconnecting = true;
+        connectionStatusMessage = "Attempting to reconnect...";
+
+        try
+        {
+            await SignalRService.StopAsync();
+            await Task.Delay(1000); // Brief delay before reconnecting
+
+            await SignalRService.StartAsync();
+            await SignalRService.JoinStaffHub();
+
+            lastConnectedTime = DateTime.Now;
+            connectionStatusMessage = "Reconnected successfully";
+
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", "SignalR reconnected successfully", "success");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to reconnect SignalR: {ex.Message}");
+            connectionStatusMessage = $"Reconnection failed: {ex.Message}";
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", "Failed to reconnect SignalR", "danger");
+        }
+        finally
+        {
+            isReconnecting = false;
+            StateHasChanged();
         }
     }
 
@@ -257,14 +268,17 @@ else
         {
             Navigation.NavigateTo("/login");
         }
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private async void OnNewOrder(OrderDto order)
     {
         await InvokeAsync(async () =>
         {
-            await LoadOrders();
+            DashboardService.InvalidateCache();
+            await LoadDashboardData();
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", $"New order #{order.Id} received", "info");
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", $"New order received from {order.CustomerName}");
         });
     }
 
@@ -272,43 +286,20 @@ else
     {
         await InvokeAsync(async () =>
         {
-            await LoadOrders();
+            DashboardService.InvalidateCache();
+            await LoadDashboardData();
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", $"Order #{order.Id} status updated to {order.Status}");
         });
-    }
-
-    private async Task ReconnectSignalR()
-    {
-        try
-        {
-            await SignalRService.StopAsync();
-            await SignalRService.StartAsync();
-            await SignalRService.JoinStaffHub();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Failed to reconnect SignalR: {ex.Message}");
-        }
-    }
-
-    private string GetStatusBadgeClass(OrderStatus status)
-    {
-        return status switch
-        {
-            OrderStatus.Pending => "bg-secondary",
-            OrderStatus.Accepted => "bg-primary",
-            OrderStatus.InPreparation => "bg-warning",
-            OrderStatus.Ready => "bg-success",
-            OrderStatus.OutForDelivery => "bg-info",
-            OrderStatus.Delivered => "bg-success",
-            OrderStatus.Cancelled => "bg-danger",
-            _ => "bg-secondary"
-        };
     }
 
     public void Dispose()
     {
+        // Cleanup timer
+        refreshTimer?.Dispose();
+
+        // Cleanup event handlers
         AuthService.OnAuthenticationStateChanged -= OnAuthenticationStateChanged;
-        
+
         if (SignalRService != null)
         {
             SignalRService.NewOrder -= OnNewOrder;

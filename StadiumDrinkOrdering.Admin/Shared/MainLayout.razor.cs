@@ -1,16 +1,30 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Admin.Services;
 
 namespace StadiumDrinkOrdering.Admin.Shared;
 
-public partial class MainLayout : LayoutComponentBase
+public partial class MainLayout : LayoutComponentBase, IAsyncDisposable
 {
     [Inject] private IAuthStateService AuthStateService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+
+    private string currentTime = DateTime.Now.ToString("HH:mm:ss dd/MM/yy");
+    private IJSObjectReference? jsModule;
 
     protected override async Task OnInitializedAsync()
     {
         await AuthStateService.InitializeAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/server-time.js");
+            await jsModule.InvokeVoidAsync("startServerTime", "server-time-value");
+        }
     }
 
     private void HandleNewOrder(string orderInfo)
@@ -48,5 +62,13 @@ public partial class MainLayout : LayoutComponentBase
         Console.WriteLine("LogoutAsync completed");
         NavigationManager.NavigateTo("/login", forceLoad: true);
         Console.WriteLine("Navigation triggered");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (jsModule is not null)
+        {
+            await jsModule.DisposeAsync();
+        }
     }
 }

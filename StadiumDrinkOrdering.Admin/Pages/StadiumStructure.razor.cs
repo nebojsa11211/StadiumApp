@@ -65,7 +65,7 @@ public partial class StadiumStructure : ComponentBase
         try
         {
             using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB limit
-            var success = await ApiService.ImportStadiumStructureAsync(stream, selectedFile.Name);
+            var success = await ApiService.ImportStadiumStructureAsync(stream);
 
             if (success)
             {
@@ -133,7 +133,9 @@ public partial class StadiumStructure : ComponentBase
             {
                 var fileName = $"stadium-structure-{DateTime.Now:yyyyMMdd-HHmmss}.json";
 
-                using var streamRef = new DotNetStreamReference(stream);
+                var bytes = System.Text.Encoding.UTF8.GetBytes(stream);
+                using var memoryStream = new MemoryStream(bytes);
+                using var streamRef = new DotNetStreamReference(memoryStream);
                 await JSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
 
                 importSuccess = true;

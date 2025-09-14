@@ -1,0 +1,115 @@
+@using StadiumDrinkOrdering.Shared.Models
+
+<div class="card recent-orders-card">
+    <div class="card-header">
+        <h5 class="mb-0">@Title</h5>
+    </div>
+    <div class="card-body">
+        @if (IsLoading)
+        {
+            <div class="orders-skeleton">
+                @for (int i = 0; i < 5; i++)
+                {
+                    <div class="skeleton-row mb-3">
+                        <div class="skeleton-text skeleton-order-id"></div>
+                        <div class="skeleton-text skeleton-customer"></div>
+                        <div class="skeleton-text skeleton-status"></div>
+                    </div>
+                }
+            </div>
+        }
+        else if (Orders != null && Orders.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-sm orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Seat</th>
+                            <th>Items</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                            @if (ShowActions)
+                            {
+                                <th>Actions</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Orders.Take(MaxDisplayCount))
+                        {
+                            <tr class="order-row" @key="order.Id">
+                                <td class="order-id">#@order.Id</td>
+                                <td class="customer-name">@order.CustomerName</td>
+                                <td class="seat-number">@order.SeatNumber</td>
+                                <td class="items-count">@order.OrderItems.Count item(s)</td>
+                                <td class="order-status">
+                                    <span class="badge @GetStatusBadgeClass(order.Status)">
+                                        @order.Status
+                                    </span>
+                                </td>
+                                <td class="order-time">@order.OrderDate.ToString("HH:mm")</td>
+                                @if (ShowActions)
+                                {
+                                    <td class="order-actions">
+                                        <button class="btn btn-sm btn-outline-primary"
+                                                @onclick="(() => OnOrderClick.InvokeAsync(order))">
+                                            View
+                                        </button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Orders.Count() > MaxDisplayCount)
+            {
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Showing @MaxDisplayCount of @Orders.Count() orders
+                        @if (ViewAllUrl != null)
+                        {
+                            <a href="@ViewAllUrl" class="ms-2">View All</a>
+                        }
+                    </small>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state text-center text-muted py-4">
+                <span class="@EmptyStateIcon" style="font-size: 3rem;"></span>
+                <p class="mt-2 mb-0">@EmptyStateMessage</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Recent Orders";
+    [Parameter] public IEnumerable<OrderDto>? Orders { get; set; }
+    [Parameter] public bool ShowActions { get; set; } = true;
+    [Parameter] public int MaxDisplayCount { get; set; } = 10;
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public string EmptyStateMessage { get; set; } = "No orders available";
+    [Parameter] public string EmptyStateIcon { get; set; } = "oi oi-inbox";
+    [Parameter] public string? ViewAllUrl { get; set; }
+    [Parameter] public EventCallback<OrderDto> OnOrderClick { get; set; }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-secondary",
+            OrderStatus.Accepted => "bg-primary",
+            OrderStatus.InPreparation => "bg-warning",
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.OutForDelivery => "bg-info",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

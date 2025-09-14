@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using StadiumDrinkOrdering.Admin.Components;
+// using StadiumDrinkOrdering.Admin.Components; - Components removed
 using StadiumDrinkOrdering.Admin.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 
@@ -12,7 +12,7 @@ public partial class CustomerAnalytics : ComponentBase
     [Inject] private IAdminApiService ApiService { get; set; } = default!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
-    private CustomerDetailModal detailModal = default!;
+    // private CustomerDetailModal detailModal = default!; - Component removed
     private List<CustomerAnalyticsDto>? customers;
     private CustomerAnalyticsSummaryDto? summary;
     private PagedCustomerAnalyticsDto? pagedResult;
@@ -122,7 +122,7 @@ public partial class CustomerAnalytics : ComponentBase
 
     private async Task ViewCustomerDetails(string customerEmail)
     {
-        await detailModal.ShowCustomerDetails(customerEmail);
+        // await detailModal.ShowCustomerDetails(customerEmail); - Component removed
     }
 
     private async Task ExportData()

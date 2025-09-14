@@ -1,76 +1,113 @@
 import { defineConfig, devices } from '@playwright/test';
 
+/**
+ * Playwright configuration for Stadium Admin modernization testing
+ * Supports both Docker (https://localhost:9030) and Local (https://localhost:7030) environments
+ */
 export default defineConfig({
   testDir: './tests',
+  /* Run tests in files in parallel */
   fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 1 : 3, // Reduce workers for stability
-  reporter: 'html',
-  // Global timeout settings for Blazor Server apps
-  timeout: 90000, // 90 seconds for entire test
-  expect: {
-    timeout: 15000 // 15 seconds for assertions
-  },
+  /* Retry on CI only */
+  retries: process.env.CI ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
+  workers: process.env.CI ? 1 : undefined,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: [
+    ['html', { outputFolder: 'playwright-report' }],
+    ['junit', { outputFile: 'test-results/junit.xml' }],
+    ['list']
+  ],
+  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: 'https://localhost:9020',
+    /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL: process.env.ADMIN_BASE_URL || 'https://localhost:9030',
+
+    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Take screenshot on failure */
     screenshot: 'only-on-failure',
+
+    /* Record video on failure */
     video: 'retain-on-failure',
-    // Ignore SSL certificate errors for local development testing
+
+    /* Ignore HTTPS errors for self-signed certificates */
     ignoreHTTPSErrors: true,
-    // Extended timeouts for Blazor Server
-    actionTimeout: 30000, // 30 seconds for actions like click, fill
-    navigationTimeout: 45000, // 45 seconds for navigation
-    // Wait for network idle after navigation
-    waitForLoadState: 'networkidle',
+
+    /* Global timeout for each action */
+    actionTimeout: 30000,
+
+    /* Global timeout for each test */
+    timeout: 120000,
+
+    /* Context options */
+    contextOptions: {
+      // Accept self-signed certificates
+      ignoreHTTPSErrors: true,
+    }
   },
+
+  /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { 
-        ...devices['Desktop Chrome'],
-        // Browser-specific settings for Blazor
-        launchOptions: {
-          args: [
-            '--disable-web-security',
-            '--disable-features=VizDisplayCompositor',
-            '--no-sandbox'
-          ]
-        },
-        // Increase viewport timeout
-        viewport: { width: 1280, height: 720 },
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
-    // Stadium Viewer specific test configuration
+
     {
-      name: 'stadium-viewer-desktop',
-      testMatch: '**/stadium-viewer.spec.ts',
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-        // Stadium viewer specific environment variables
-        extraHTTPHeaders: {
-          'Accept': 'application/json, text/html',
-        },
-      },
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+
+    /* Test against mobile viewports. */
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
     },
     {
-      name: 'stadium-viewer-tablet',
-      testMatch: '**/stadium-viewer.spec.ts',
-      use: {
-        ...devices['iPad Pro'],
-        viewport: { width: 1024, height: 768 },
-      },
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 12'] },
+    },
+
+    /* Test against branded browsers. */
+    {
+      name: 'Microsoft Edge',
+      use: { ...devices['Desktop Edge'], channel: 'msedge' },
     },
     {
-      name: 'stadium-viewer-mobile',
-      testMatch: '**/stadium-viewer.spec.ts',
-      use: {
-        ...devices['iPhone 12'],
-        viewport: { width: 390, height: 844 },
-      },
+      name: 'Google Chrome',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
   ],
-  // Remove webServer since containers are already running
+
+  /* Run your local dev server before starting the tests */
+  webServer: [
+    {
+      command: 'docker-compose up -d --wait',
+      port: 9030,
+      reuseExistingServer: !process.env.CI,
+      ignoreHTTPSErrors: true,
+      timeout: 180000, // 3 minutes for Docker containers to start
+    }
+  ],
+
+  /* Test output directory */
+  outputDir: 'test-results/',
+
+  /* Global setup and teardown - commented out for initial testing */
+  // globalSetup: require.resolve('./tests/global-setup.ts'),
+  // globalTeardown: require.resolve('./tests/global-teardown.ts'),
+
+  /* Expect timeout */
+  expect: {
+    timeout: 10000
+  },
 });

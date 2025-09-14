@@ -8,14 +8,10 @@
     <!-- Stadium Information and Map Layout -->
     <div class="stadium-layout-container @(isInfoPanelCollapsed ? "info-panel-collapsed" : "info-panel-expanded")" id="stadium-layout-container">
         <!-- Stadium Information Panel -->
-        <StadiumInfoPanel 
-            StadiumData="stadiumData" 
-            SelectedEvent="GetSelectedEvent()" 
-            EventSeatStatus="eventSeatStatus" 
-            IsCollapsed="isInfoPanelCollapsed" 
-            OnTogglePanel="HandleInfoPanelToggle"
-            OnTribuneSelected="OnTribuneSelected"
-            OnTribuneHovered="OnTribuneHovered" />
+        @* StadiumInfoPanel removed - component not available *@
+        <div class="stadium-info-placeholder">
+            <p>Stadium Information Panel (Component Unavailable)</p>
+        </div>
 
         <!-- Stadium Map Section -->
         <div class="stadium-viewer-container" id="stadium-viewer-container">

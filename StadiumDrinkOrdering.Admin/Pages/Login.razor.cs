@@ -41,9 +41,9 @@ public partial class Login
             var loginDto = new LoginDto { Email = email, Password = password };
             var result = await ApiService.LoginAsync(loginDto);
             
-            if (!string.IsNullOrEmpty(result?.Token))
+            if (!string.IsNullOrEmpty(result))
             {
-                await AuthStateService.LoginAsync(result.Token, email);
+                await AuthStateService.LoginAsync(result, email);
                 // TEMPORARILY COMMENTED OUT - Database logging causing middleware deadlock
                 // await ApiService.LogUserActionAsync("AdminLogin", "Authentication", $"Admin user {email} logged in successfully");
                 NavigateToReturnUrl();

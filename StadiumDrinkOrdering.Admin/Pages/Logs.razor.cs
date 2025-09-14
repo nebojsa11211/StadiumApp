@@ -48,7 +48,7 @@ public partial class Logs : ComponentBase
         
         // Set default to last 24 hours
         await SetDateRange("last24hours");
-        await ApiService.LogUserActionAsync("ViewLogsPage", "UserAction", "Admin viewed System Logs page");
+        await ApiService.LogUserActionAsync("ViewLogsPage", "UserAction", details: "Admin viewed System Logs page");
     }
 
     private async Task LoadData()
@@ -66,7 +66,15 @@ public partial class Logs : ComponentBase
 
         try 
         {
-            logs = await ApiService.GetLogsAsync(filter);
+            var logsResult = await ApiService.GetLogsAsync(filter);
+        if (logsResult != null)
+        {
+            logs = new PagedLogsDto
+            {
+                Logs = logsResult.ToList(),
+                TotalCount = logsResult.Count()
+            };
+        }
             logSummary = await ApiService.GetLogSummaryAsync();
             
             // Ensure we have valid objects even if API returns null
@@ -137,7 +145,7 @@ public partial class Logs : ComponentBase
     private async Task RefreshLogs()
     {
         await LoadData();
-        await ApiService.LogUserActionAsync("RefreshLogs", "UserAction", "Admin refreshed system logs");
+        await ApiService.LogUserActionAsync("RefreshLogs", "UserAction", details: "Admin refreshed system logs");
         
         statusMessage = "Logs refreshed successfully!";
         isSuccess = true;
@@ -152,7 +160,7 @@ public partial class Logs : ComponentBase
     {
         selectedLevel = level;
         await LoadData();
-        await ApiService.LogUserActionAsync("FilterLogs", "UserAction", $"Filtered logs by level: {level}");
+        await ApiService.LogUserActionAsync("FilterLogs", "UserAction", details: $"Filtered logs by level: {level}");
     }
 
     private string GetRowClass(string level)
@@ -215,7 +223,7 @@ public partial class Logs : ComponentBase
                 
                 // Refresh the data
                 await LoadData();
-                await ApiService.LogUserActionAsync("ClearAllLogs", "UserAction", "Admin cleared all logs");
+                await ApiService.LogUserActionAsync("ClearAllLogs", "UserAction", details: "Admin cleared all logs");
             }
             else
             {
@@ -261,9 +269,9 @@ public partial class Logs : ComponentBase
             
             // Log this action
             await ApiService.LogUserActionAsync(
-                "ToggleConsoleToSystemLogging", 
-                "UserAction", 
-                $"Console-to-System logging: {(isConsoleToSystemLoggingEnabled ? "Enabled" : "Disabled")}"
+                "ToggleConsoleToSystemLogging",
+                "UserAction",
+                details: $"Console-to-System logging: {(isConsoleToSystemLoggingEnabled ? "Enabled" : "Disabled")}"
             );
 
             statusMessage = $"Console-to-System logging {(isConsoleToSystemLoggingEnabled ? "enabled" : "disabled")} and saved";
@@ -339,7 +347,7 @@ public partial class Logs : ComponentBase
         
         await SaveFilterPreferences();
         await LoadData();
-        await ApiService.LogUserActionAsync("FilterLogsByDate", "UserAction", $"Filtered logs by: {currentFilterDescription}");
+        await ApiService.LogUserActionAsync("FilterLogsByDate", "UserAction", details: $"Filtered logs by: {currentFilterDescription}");
     }
     
     private void ToggleCustomDateRange()
@@ -367,7 +375,7 @@ public partial class Logs : ComponentBase
         
         await SaveFilterPreferences();
         await LoadData();
-        await ApiService.LogUserActionAsync("FilterLogsByCustomDate", "UserAction", currentFilterDescription);
+        await ApiService.LogUserActionAsync("FilterLogsByCustomDate", "UserAction", details: currentFilterDescription);
     }
     
     private async Task LoadFilterPreferences()

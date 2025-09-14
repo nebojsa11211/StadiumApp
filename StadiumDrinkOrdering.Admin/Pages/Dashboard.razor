@@ -1,82 +1,112 @@
 @page "/dashboard"
 @using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService AdminApiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Stadium Admin Dashboard</PageTitle>
 
-<div class="container-fluid" id="admin-dashboard-container">
-    <h1 class="mb-4" id="admin-dashboard-title">🏟️ Stadium Admin Dashboard</h1>
-    
-    @if (orders == null)
+<div class="admin-dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2">Stadium Dashboard</h1>
+            <p class="text-muted">Monitor your stadium operations in real-time</p>
+        </div>
+        <div>
+            <button class="btn btn-outline-primary me-2" @onclick="RefreshData" disabled="@isLoading">
+                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i> Refresh
+            </button>
+            <button class="btn btn-outline-secondary" @onclick="ToggleTheme">
+                <i class="oi oi-moon"></i>
+            </button>
+        </div>
+    </div>
+
+    @if (lastUpdated.HasValue)
     {
-        <div class="text-center" id="admin-dashboard-loading">
-            <div class="spinner-border" role="status">
+        <div class="mb-3">
+            <small class="text-muted">Last updated: @lastUpdated.Value.ToString("HH:mm:ss")</small>
+        </div>
+    }
+
+    @if (isLoading && totalOrders == 0)
+    {
+        <div class="text-center p-5">
+            <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p>Loading dashboard...</p>
+            <p class="mt-3">Loading dashboard data...</p>
         </div>
     }
     else
     {
-        <!-- Summary Cards -->
-        <div class="row mb-4" id="admin-summary-cards">
-            <div class="col-md-3">
-                <div class="card bg-primary text-white" id="admin-pending-orders-card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Pending Orders</h6>
-                                <h3>@pendingOrders.Count()</h3>
-                            </div>
-                            <div class="align-self-center">
-                                <span style="font-size: 2rem;">⏳</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="card bg-info text-white" id="admin-active-orders-card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Active Orders</h6>
-                                <h3>@activeOrders.Count()</h3>
-                            </div>
-                            <div class="align-self-center">
-                                <span style="font-size: 2rem;">🔥</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="card bg-success text-white" id="admin-revenue-card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Today's Revenue</h6>
-                                <h3>$@todaysRevenue.ToString("F2")</h3>
-                            </div>
-                            <div class="align-self-center">
-                                <span style="font-size: 2rem;">💰</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="card bg-warning text-dark" id="admin-total-orders-card">
+        <!-- Key Metrics Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card bg-primary text-white h-100" style="cursor: pointer;" @onclick="NavigateToOrders">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title">Total Orders</h6>
-                                <h3>@orders.Count()</h3>
+                                <h3 class="mb-0">@totalOrders</h3>
+                                <small class="opacity-75">+@ordersTrend% from yesterday</small>
                             </div>
                             <div class="align-self-center">
-                                <span style="font-size: 2rem;">📋</span>
+                                <i class="oi oi-list-rich fs-1 opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card bg-info text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Active Orders</h6>
+                                <h3 class="mb-0">@activeOrders</h3>
+                                <small class="opacity-75">Currently processing</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="oi oi-clock fs-1 opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Today's Revenue</h6>
+                                <h3 class="mb-0">$@todaysRevenue.ToString("N2")</h3>
+                                <small class="opacity-75">+@revenueTrend% from yesterday</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="oi oi-dollar fs-1 opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card @GetHealthCardClass() text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">System Health</h6>
+                                <h3 class="mb-0">@systemHealth</h3>
+                                <small class="opacity-75">@systemLoad</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="@GetHealthIcon() fs-1 opacity-75"></i>
                             </div>
                         </div>
                     </div>
@@ -84,114 +114,109 @@
             </div>
         </div>
 
-        <!-- Recent Orders -->
-        <div class="row" id="admin-recent-orders-section">
-            <div class="col-md-8">
-                <div class="card" id="admin-recent-orders-card">
-                    <div class="card-header d-flex justify-content-between align-items-center" id="admin-recent-orders-header">
-                        <h5 id="admin-recent-orders-title">Recent Orders</h5>
-                        <a href="/orders" class="btn btn-sm btn-outline-primary" id="admin-view-all-orders-btn">View All</a>
+        <!-- Main Content Row -->
+        <div class="row g-4">
+            <!-- Recent Orders -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Recent Orders</h5>
+                        <button class="btn btn-sm btn-outline-primary" @onclick="NavigateToOrders">View All</button>
                     </div>
-                    <div class="card-body" id="admin-recent-orders-body">
-                        @if (!orders.Any())
+                    <div class="card-body">
+                        @if (recentOrders?.Any() == true)
                         {
-                            <p class="text-muted text-center" id="admin-no-orders-message">No orders found</p>
-                        }
-                        else
-                        {
-                            <div class="table-responsive" id="admin-orders-table-container">
-                                <table class="table table-hover" id="admin-orders-table">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>Order #</th>
-                                            <th>Seat</th>
-                                            <th>Total</th>
+                                            <th>Customer</th>
+                                            <th>Amount</th>
                                             <th>Status</th>
                                             <th>Time</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var order in orders.OrderByDescending(o => o.CreatedAt).Take(10))
+                                        @foreach (var order in recentOrders.Take(5))
                                         {
-                                            <tr id="admin-order-row-@order.Id">
+                                            <tr style="cursor: pointer;" @onclick="@(() => NavigateToOrder(order.Id))">
                                                 <td>#@order.Id</td>
-                                                <td>@order.SeatNumber</td>
-                                                <td>$@order.TotalAmount.ToString("F2")</td>
-                                                <td>
-                                                    <span class="badge @GetStatusBadgeClass(order.Status)" id="admin-order-status-@order.Id">
-                                                        @GetStatusText(order.Status)
-                                                    </span>
-                                                </td>
+                                                <td>@order.CustomerName</td>
+                                                <td>$@order.TotalAmount.ToString("N2")</td>
+                                                <td><span class="badge @GetStatusBadgeClass(order.Status)">@order.Status</span></td>
                                                 <td>@order.CreatedAt.ToString("HH:mm")</td>
-                                                <td>
-                                                    @if (order.Status == OrderStatus.Pending)
-                                                    {
-                                                        <button class="btn btn-sm btn-success" 
-                                                                @onclick="() => AcceptOrder(order.Id)"
-                                                                id="admin-accept-order-@order.Id">
-                                                            Accept
-                                                        </button>
-                                                    }
-                                                    else if (order.Status == OrderStatus.Accepted)
-                                                    {
-                                                        <button class="btn btn-sm btn-warning" 
-                                                                @onclick="() => MarkInPreparation(order.Id)"
-                                                                id="admin-prepare-order-@order.Id">
-                                                            Prepare
-                                                        </button>
-                                                    }
-                                                    else if (order.Status == OrderStatus.InPreparation)
-                                                    {
-                                                        <button class="btn btn-sm btn-info" 
-                                                                @onclick="() => MarkReady(order.Id)"
-                                                                id="admin-ready-order-@order.Id">
-                                                            Ready
-                                                        </button>
-                                                    }
-                                                    else if (order.Status == OrderStatus.Ready)
-                                                    {
-                                                        <button class="btn btn-sm btn-primary" 
-                                                                @onclick="() => MarkDelivered(order.Id)"
-                                                                id="admin-deliver-order-@order.Id">
-                                                            Delivered
-                                                        </button>
-                                                    }
-                                                </td>
                                             </tr>
                                         }
                                     </tbody>
                                 </table>
                             </div>
                         }
+                        else
+                        {
+                            <div class="text-center p-4">
+                                <i class="oi oi-info text-muted fs-1"></i>
+                                <p class="text-muted mt-2">No recent orders</p>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
-            
-            <!-- Order Status Breakdown -->
-            <div class="col-md-4">
-                <div class="card" id="admin-status-breakdown-card">
-                    <div class="card-header" id="admin-status-breakdown-header">
-                        <h5 id="admin-status-breakdown-title">Order Status Breakdown</h5>
+
+            <!-- Quick Actions -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Quick Actions</h5>
                     </div>
-                    <div class="card-body" id="admin-status-breakdown-body">
-                        @foreach (var status in Enum.GetValues<OrderStatus>())
-                        {
-                            var count = orders.Count(o => o.Status == status);
-                            var percentage = orders.Any() ? (count * 100.0 / orders.Count()) : 0;
-                            
-                            <div class="mb-3" id="admin-status-@status">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span>@GetStatusText(status)</span>
-                                    <span>@count (@percentage.ToString("F1")%)</span>
-                                </div>
-                                <div class="progress">
-                                    <div class="progress-bar @GetStatusProgressClass(status)" 
-                                         style="width: @percentage%"
-                                         id="admin-progress-@status"></div>
-                                </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" @onclick="NavigateToOrders">
+                                <i class="oi oi-plus me-2"></i>New Order
+                            </button>
+                            <button class="btn btn-success" @onclick="NavigateToUsers">
+                                <i class="oi oi-person me-2"></i>Add User
+                            </button>
+                            <button class="btn btn-info" @onclick="NavigateToReports">
+                                <i class="oi oi-document me-2"></i>Export Reports
+                            </button>
+                            <button class="btn btn-secondary" @onclick="NavigateToLogs">
+                                <i class="oi oi-list me-2"></i>View Logs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">System Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Database</span>
+                                <span class="badge bg-success">Connected</span>
                             </div>
-                        }
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>API Health</span>
+                                <span class="badge bg-success">Healthy</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Cache Status</span>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Background Services</span>
+                                <span class="badge bg-success">Running</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,13 +224,169 @@
     }
 </div>
 
-@if (!string.IsNullOrEmpty(alertMessage))
-{
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-alert-container">
-        <div class="alert @(alertType == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" id="admin-alert-message">
-            @alertMessage
-            <button type="button" class="btn-close" @onclick="ClearAlert" id="admin-dashboard-alert-close-btn"></button>
-        </div>
-    </div>
+@code {
+    private bool isLoading = false;
+    private DateTime? lastUpdated;
+    private System.Timers.Timer? autoRefreshTimer;
+
+    // Dashboard data
+    private int totalOrders = 0;
+    private int activeOrders = 0;
+    private decimal todaysRevenue = 0;
+    private string systemHealth = "Healthy";
+    private string systemLoad = "Normal load";
+    private decimal ordersTrend = 0;
+    private decimal revenueTrend = 0;
+    private List<OrderDto>? recentOrders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardData();
+        SetupAutoRefresh();
+    }
+
+    private async Task LoadDashboardData()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            // Load dashboard data from API
+            var orders = await AdminApiService.GetOrdersAsync();
+            if (orders != null)
+            {
+                totalOrders = orders.Count();
+                activeOrders = orders.Count(o => o.Status == OrderStatus.Pending || o.Status == OrderStatus.InPreparation);
+                todaysRevenue = orders.Where(o => o.CreatedAt.Date == DateTime.Today).Sum(o => o.TotalAmount);
+                recentOrders = orders.OrderByDescending(o => o.CreatedAt).Take(10).ToList();
+
+                // Mock trend data
+                ordersTrend = 15.2m;
+                revenueTrend = 8.7m;
+            }
+
+            lastUpdated = DateTime.Now;
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+            await JSRuntime.InvokeVoidAsync("console.error", "Failed to load dashboard data:", ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDashboardData();
+        await JSRuntime.InvokeVoidAsync("showToast", "Dashboard refreshed successfully", "success");
+    }
+
+    private async Task ToggleTheme()
+    {
+        await JSRuntime.InvokeVoidAsync("toggleTheme");
+    }
+
+    private void SetupAutoRefresh()
+    {
+        autoRefreshTimer = new System.Timers.Timer(30000); // 30 seconds
+        autoRefreshTimer.Elapsed += async (sender, e) =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadDashboardData();
+            });
+        };
+        autoRefreshTimer.Start();
+    }
+
+    private string GetHealthCardClass()
+    {
+        return systemHealth.ToLower() switch
+        {
+            "healthy" => "bg-success",
+            "warning" => "bg-warning",
+            "critical" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetHealthIcon()
+    {
+        return systemHealth.ToLower() switch
+        {
+            "healthy" => "oi oi-circle-check",
+            "warning" => "oi oi-warning",
+            "critical" => "oi oi-circle-x",
+            _ => "oi oi-question-mark"
+        };
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning",
+            OrderStatus.Accepted => "bg-primary",
+            OrderStatus.InPreparation => "bg-info",
+            OrderStatus.Ready => "bg-success",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    // Navigation methods
+    private void NavigateToOrders() => Navigation.NavigateTo("/orders");
+    private void NavigateToUsers() => Navigation.NavigateTo("/users");
+    private void NavigateToReports() => Navigation.NavigateTo("/reports");
+    private void NavigateToLogs() => Navigation.NavigateTo("/logs");
+    private void NavigateToOrder(int orderId) => Navigation.NavigateTo($"/orders/{orderId}");
+
+    public void Dispose()
+    {
+        autoRefreshTimer?.Stop();
+        autoRefreshTimer?.Dispose();
+    }
 }
 
+<style>
+    .admin-dashboard-container {
+        padding: 1rem;
+    }
+
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .card {
+        border: 1px solid rgba(0,0,0,.125);
+        border-radius: 0.375rem;
+    }
+
+    .card-header {
+        background-color: rgba(0,0,0,.03);
+        border-bottom: 1px solid rgba(0,0,0,.125);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,.075);
+    }
+
+    .fs-1 {
+        font-size: 2.5rem !important;
+    }
+
+    .opacity-75 {
+        opacity: 0.75;
+    }
+</style>

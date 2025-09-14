@@ -1,17 +1,24 @@
 {
-  "name": "stadiontest",
+  "name": "stadium-drink-ordering-tests",
   "version": "1.0.0",
-  "description": "A complete, production-ready drink ordering system for stadium events, built with modern .NET technologies, Docker containers, and cloud-native architecture.",
-  "main": "index.js",
+  "description": "Playwright tests for Stadium Drink Ordering Admin modernization",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:admin": "playwright test tests/admin/",
+    "test:auth": "playwright test tests/admin/auth.spec.ts",
+    "test:dashboard": "playwright test tests/admin/dashboard.spec.ts",
+    "test:orders": "playwright test tests/admin/orders.spec.ts",
+    "test:users": "playwright test tests/admin/users.spec.ts",
+    "test:performance": "playwright test tests/admin/performance.spec.ts",
+    "test:responsive": "playwright test tests/admin/responsive.spec.ts",
+    "install": "playwright install",
+    "report": "playwright show-report"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
-    "@types/node": "^24.3.0"
-  }
+    "@playwright/test": "^1.47.0"
+  },
+  "keywords": ["playwright", "testing", "admin", "blazor", "modernization"],
+  "author": "Stadium App Team"
 }

@@ -84,14 +84,10 @@ public partial class DataGrid : ComponentBase
             isLoading = true;
             errorMessage = "";
             
-            var response = await ApiService.GetAsync("datagrid/tables");
-            if (response.IsSuccessStatusCode)
+            var tables_result = await ApiService.GetAsync<List<TableInfo>>("datagrid/tables");
+            if (tables_result != null)
             {
-                var json = await response.Content.ReadAsStringAsync();
-                tables = JsonSerializer.Deserialize<List<TableInfo>>(json, new JsonSerializerOptions 
-                { 
-                    PropertyNameCaseInsensitive = true 
-                }) ?? new List<TableInfo>();
+                tables = tables_result;
             }
             else
             {
@@ -196,12 +192,20 @@ public partial class DataGrid : ComponentBase
                     
                     if (result.ContainsKey("totalCount"))
                     {
-                        totalCount = JsonSerializer.Deserialize<int>(result["totalCount"].ToString());
+                        var totalCountStr = result["totalCount"]?.ToString();
+                        if (!string.IsNullOrEmpty(totalCountStr) && int.TryParse(totalCountStr, out var parsedTotalCount))
+                        {
+                            totalCount = parsedTotalCount;
+                        }
                     }
-                    
+
                     if (result.ContainsKey("totalPages"))
                     {
-                        totalPages = JsonSerializer.Deserialize<int>(result["totalPages"].ToString());
+                        var totalPagesStr = result["totalPages"]?.ToString();
+                        if (!string.IsNullOrEmpty(totalPagesStr) && int.TryParse(totalPagesStr, out var parsedTotalPages))
+                        {
+                            totalPages = parsedTotalPages;
+                        }
                     }
                 }
             }

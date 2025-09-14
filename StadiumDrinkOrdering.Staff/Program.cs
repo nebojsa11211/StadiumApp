@@ -50,6 +50,10 @@ builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
 builder.Services.AddScoped<IStaffApiService, StaffApiService>();
 builder.Services.AddScoped<IAuthStateService, AuthStateService>();
 builder.Services.AddScoped<ISignalRService, SignalRService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+// Add memory cache for dashboard service
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

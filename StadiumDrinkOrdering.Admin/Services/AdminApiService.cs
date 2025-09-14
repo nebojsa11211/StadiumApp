@@ -1,1338 +1,775 @@
+using System.Text;
+using System.Text.Json;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
-using System.Text.Json;
-using System.Text;
-using Microsoft.AspNetCore.Components.Forms;
-using System.Net.Http;
 
-namespace StadiumDrinkOrdering.Admin.Services;
-
-// DTOs for Ticket Sales
-public class SeatStatusDto
+namespace StadiumDrinkOrdering.Admin.Services
 {
-    public int StadiumSeatId { get; set; }
-    public int SectorId { get; set; }
-    public int RowNumber { get; set; }
-    public int SeatNumber { get; set; }
-    public string Status { get; set; } = "Available";
-    public string UniqueCode { get; set; } = string.Empty;
-}
-
-public class SeatStatusResponseDto
-{
-    public int EventId { get; set; }
-    public Dictionary<string, SeatStatusDto> SoldSeats { get; set; } = new();
-}
-
-public interface IAdminApiService
-{
-    Task<List<DrinkDto>?> GetDrinksAsync();
-    Task<DrinkDto?> CreateDrinkAsync(CreateDrinkDto createDrinkDto);
-    Task<bool> UpdateDrinkAsync(int id, UpdateDrinkDto updateDrinkDto);
-    Task<bool> DeleteDrinkAsync(int id);
-    Task<List<OrderDto>?> GetOrdersAsync(OrderStatus? status = null);
-    Task<OrderDto?> GetOrderAsync(int id);
-    Task<bool> UpdateOrderStatusAsync(int id, UpdateOrderStatusDto updateDto);
-    Task<StadiumLayoutDto?> GetStadiumLayoutAsync();
-    Task<List<StadiumSeatDto>?> GetSectionSeatsAsync(string sectionName);
-    Task<StadiumSeatDto?> GetSeatOrderAsync(int seatId);
-    Task<List<Event>?> GetEventsAsync();
-    Task<Event?> CreateEventAsync(Event eventObj);
-    Task<Event?> UpdateEventAsync(int id, Event eventObj);
-    Task<bool> ActivateEventAsync(int id);
-    Task<bool> DeactivateEventAsync(int id);
-    Task<bool> GenerateDemoDataAsync(int eventId);
-    Task<LoginResponseDto?> LoginAsync(LoginDto loginDto);
-    
-    // Stadium Structure methods
-    Task<StadiumSummaryDto?> GetStadiumSummaryAsync();
-    Task<List<Tribune>?> GetStadiumStructureAsync();
-    Task<bool> ImportStadiumStructureAsync(Stream fileStream, string fileName);
-    Task<bool> ClearStadiumStructureAsync();
-    Task<Stream?> ExportStadiumStructureAsync();
-    
-    // Logging methods
-    Task<PagedLogsDto?> GetLogsAsync(LogFilterDto filter);
-    Task<LogSummaryDto?> GetLogSummaryAsync();
-    Task<bool> ClearOldLogsAsync(int daysToKeep = 30);
-    Task<bool> ClearAllLogsAsync();
-    Task<bool> LogUserActionAsync(string action, string category, string? details = null);
-    
-    // User management methods
-    Task<UserListDto?> GetUsersAsync(UserFilterDto filter);
-    Task<UserDto?> GetUserAsync(int id);
-    Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto);
-    Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto updateUserDto);
-    Task<bool> ChangeUserPasswordAsync(int id, ChangePasswordDto changePasswordDto);
-    Task<bool> DeleteUserAsync(int id);
-    
-    // Ticket Sales methods
-    Task<SeatStatusResponseDto?> GetSeatStatusForEventAsync(int eventId);
-    Task<bool> SimulateTicketSalesAsync(int eventId, int numberOfTickets = 10, decimal basePrice = 50.00m);
-    
-    // Ticket methods
-    Task<List<TicketDto>?> GetTicketsAsync(int? eventId = null, bool? isActive = null);
-    Task<TicketDto?> GetTicketByNumberAsync(string ticketNumber);
-    Task<TicketValidationResultDto?> ValidateTicketAsync(ValidateTicketDto validateDto);
-    
-    // Customer Analytics methods
-    Task<PagedCustomerAnalyticsDto?> GetCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter);
-    Task<CustomerSpendingDetailDto?> GetCustomerSpendingDetailsAsync(string customerEmail);
-    Task<CustomerAnalyticsSummaryDto?> GetCustomerAnalyticsSummaryAsync();
-    Task<List<CustomerAnalyticsDto>?> GetTopSpendingCustomersAsync(int limit = 10);
-    Task<Dictionary<string, decimal>?> GetCustomerSpendingTrendsAsync(int days = 30);
-    Task<HttpResponseMessage> ExportCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter);
-    
-    // Generic HTTP methods
-    Task<HttpResponseMessage> GetAsync(string endpoint);
-    Task<T?> GetAsync<T>(string endpoint);
-    Task<T?> PostAsync<T>(string endpoint, object data);
-    Task<HttpResponseMessage> PostAsync(string endpoint, object data);
-    Task<(bool success, string? errorMessage)> DeleteAsync(string endpoint);
-    
-    string? Token { get; set; }
-}
-
-public class AdminApiService : IAdminApiService
-{
-    private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions _jsonOptions;
-    private readonly ITokenStorageService _tokenStorage;
-
-    public string? Token 
-    { 
-        get => _tokenStorage.Token; 
-        set => _tokenStorage.Token = value; 
-    }
-
-    public AdminApiService(HttpClient httpClient, ITokenStorageService tokenStorage)
+    public class AdminApiService : IAdminApiService
     {
-        _httpClient = httpClient;
-        _tokenStorage = tokenStorage;
-        _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
-            WriteIndented = false,
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-        };
-    }
+        private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonOptions;
 
-    public async Task<LoginResponseDto?> LoginAsync(LoginDto loginDto)
-    {
-        try
+        public string? Token { get; set; }
+
+        public AdminApiService(HttpClient httpClient)
         {
-            Console.WriteLine($"Attempting login for: {loginDto.Email}");
-            Console.WriteLine($"API Base Address: {_httpClient.BaseAddress}");
-            
-            var json = JsonSerializer.Serialize(loginDto, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            Console.WriteLine($"Sending login request to: {_httpClient.BaseAddress}api/auth/login");
-            
-            var response = await _httpClient.PostAsync("api/auth/login", content);
-            
-            Console.WriteLine($"Login response status: {response.StatusCode}");
-            
-            if (response.IsSuccessStatusCode)
+            _httpClient = httpClient;
+            _jsonOptions = new JsonSerializerOptions
             {
-                var responseJson = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Login response received, parsing token...");
-                
-                var loginResponse = JsonSerializer.Deserialize<LoginResponseDto>(responseJson, _jsonOptions);
-                
-                if (loginResponse != null && !string.IsNullOrEmpty(loginResponse.Token))
-                {
-                    Token = loginResponse.Token;
-                    _httpClient.DefaultRequestHeaders.Authorization = 
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-                    Console.WriteLine($"Login successful, token stored");
-                }
-                
-                return loginResponse;
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Login failed with status {response.StatusCode}: {errorContent}");
-            }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
         }
-        catch (HttpRequestException httpEx)
-        {
-            Console.WriteLine($"HTTP Request error during login: {httpEx.Message}");
-            if (httpEx.InnerException != null)
-            {
-                Console.WriteLine($"Inner exception: {httpEx.InnerException.Message}");
-                if (httpEx.InnerException.InnerException != null)
-                {
-                    Console.WriteLine($"Inner inner exception: {httpEx.InnerException.InnerException.Message}");
-                }
-            }
-        }
-        catch (TaskCanceledException tcEx)
-        {
-            Console.WriteLine($"Login request timed out: {tcEx.Message}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Unexpected error during login: {ex.GetType().Name}: {ex.Message}");
-            if (ex.InnerException != null)
-            {
-                Console.WriteLine($"Inner exception: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
-            }
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
-        }
-        return null;
-    }
 
-    public async Task<List<DrinkDto>?> GetDrinksAsync()
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync("api/drinks");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<DrinkDto>>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting drinks: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<DrinkDto?> CreateDrinkAsync(CreateDrinkDto createDrinkDto)
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(createDrinkDto, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PostAsync("api/drinks", content);
-            if (response.IsSuccessStatusCode)
-            {
-                var responseJson = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<DrinkDto>(responseJson, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error creating drink: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<bool> UpdateDrinkAsync(int id, UpdateDrinkDto updateDrinkDto)
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(updateDrinkDto, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PutAsync($"api/drinks/{id}", content);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating drink: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> DeleteDrinkAsync(int id)
-    {
-        try
-        {
-            var response = await _httpClient.DeleteAsync($"api/drinks/{id}");
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting drink: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<List<OrderDto>?> GetOrdersAsync(OrderStatus? status = null)
-    {
-        const int maxRetries = 3;
-        
-        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        // Orders
+        public async Task<IEnumerable<OrderDto>?> GetOrdersAsync()
         {
             try
             {
-                SetAuthHeader();
-                var url = "api/orders";
-                if (status.HasValue)
-                {
-                    url += $"?status={status}";
-                }
-                
-                Console.WriteLine($"=== GetOrdersAsync DEBUG (Attempt {attempt}/{maxRetries}) ===");
-                Console.WriteLine($"URL: {url}");
-                Console.WriteLine($"Full URL: {_httpClient.BaseAddress}{url}");
-                Console.WriteLine($"HasToken: {!string.IsNullOrEmpty(Token)}");
-                Console.WriteLine($"Token Value: {(string.IsNullOrEmpty(Token) ? "NULL/EMPTY" : $"Bearer {Token[..Math.Min(20, Token.Length)]}...")}");
-                Console.WriteLine($"HttpClient Headers: {string.Join(", ", _httpClient.DefaultRequestHeaders.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
-                
-                // Use progressively longer timeouts for retries
-                var timeoutSeconds = 10 + (attempt * 10);
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
-                
-                var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseContentRead, cts.Token);
-                
-                Console.WriteLine($"Response Status: {response.StatusCode} ({(int)response.StatusCode})");
-                Console.WriteLine($"Response Headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
-                Console.WriteLine($"Content Headers: {string.Join(", ", response.Content.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
-                
-                var responseContent = await response.Content.ReadAsStringAsync(cts.Token);
-                Console.WriteLine($"Response Content Length: {responseContent?.Length ?? 0}");
-                Console.WriteLine($"Response Content (first 200 chars): {(responseContent?.Length > 200 ? responseContent[..200] + "..." : responseContent ?? "NULL")}");
-                
+                var response = await _httpClient.GetAsync("api/orders");
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"✅ SUCCESS PATH: Attempting to deserialize JSON");
-                    Console.WriteLine($"JSON to deserialize: {(responseContent?.Length > 500 ? responseContent[..500] + "..." : responseContent ?? "NULL")}");
-                    
-                    try
-                    {
-                        var result = JsonSerializer.Deserialize<List<OrderDto>>(responseContent, _jsonOptions);
-                        Console.WriteLine($"✅ SUCCESS: Deserialized Orders Count: {result?.Count ?? 0}");
-                        return result;
-                    }
-                    catch (JsonException jsonEx)
-                    {
-                        Console.WriteLine($"🚨 JSON DESERIALIZATION ERROR: {jsonEx.Message}");
-                        Console.WriteLine($"🚨 Raw response causing error: {responseContent}");
-                        throw; // Re-throw to trigger retry
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"❌ ERROR PATH: HTTP Error {response.StatusCode}: {responseContent}");
-                    
-                    // Don't retry on authorization errors
-                    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized || 
-                        response.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                    {
-                        Console.WriteLine($"⚠️ Authorization error - throwing exception immediately");
-                        throw new UnauthorizedAccessException("Authentication required. Please log in to access this resource.");
-                    }
-                    
-                    Console.WriteLine($"⚠️ Non-auth error - will retry if attempts remain");
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<IEnumerable<OrderDto>>(json, _jsonOptions);
                 }
             }
-            catch (HttpRequestException ex) when (ex.Message.Contains("ResponseEnded"))
+            catch
             {
-                Console.WriteLine($"⚠️ ResponseEnded error (attempt {attempt}/{maxRetries}): {ex.Message}");
-                if (attempt == maxRetries)
-                {
-                    Console.WriteLine($"❌ FINAL FAILURE: All retry attempts exhausted");
-                    Console.WriteLine($"This suggests network connectivity issues or server overload");
-                    Console.WriteLine($"Solution: Restart the API service or check for port conflicts");
-                }
-                else
-                {
-                    Console.WriteLine($"🔄 Waiting 2 seconds before retry {attempt + 1}...");
-                    await Task.Delay(2000);
-                    continue;
-                }
+                // Log error in real implementation
             }
-            catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
-            {
-                Console.WriteLine($"⏱️ Timeout on attempt {attempt}/{maxRetries}: {ex.Message}");
-                if (attempt < maxRetries)
-                {
-                    await Task.Delay(1000);
-                    continue;
-                }
-            }
-            catch (TaskCanceledException ex)
-            {
-                Console.WriteLine($"🚫 Request cancelled on attempt {attempt}/{maxRetries}: {ex.Message}");
-                if (attempt < maxRetries)
-                {
-                    await Task.Delay(1000);
-                    continue;
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // Re-throw authentication errors immediately - don't retry
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"💥 Unexpected error on attempt {attempt}/{maxRetries}: {ex.Message}");
-                if (attempt < maxRetries)
-                {
-                    await Task.Delay(1000);
-                    continue;
-                }
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
-            }
-            
-            // If we get here and it's not the last attempt, continue to retry
-            if (attempt < maxRetries)
-            {
-                Console.WriteLine($"🔄 Retrying in 1 second...");
-                await Task.Delay(1000);
-            }
+            return Array.Empty<OrderDto>();
         }
-        
-        Console.WriteLine($"❌ GetOrdersAsync failed after {maxRetries} attempts");
-        return new List<OrderDto>(); // Return empty list instead of null to prevent UI crashes
-    }
 
-    public async Task<OrderDto?> GetOrderAsync(int id)
-    {
-        try
+        public async Task<OrderDto?> GetOrderAsync(int id)
         {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync($"api/orders/{id}");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<OrderDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting order: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<bool> UpdateOrderStatusAsync(int id, UpdateOrderStatusDto updateDto)
-    {
-        try
-        {
-            SetAuthHeader();
-            var json = JsonSerializer.Serialize(updateDto, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PutAsync($"api/orders/{id}/status", content);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating order status: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<StadiumLayoutDto?> GetStadiumLayoutAsync()
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync("api/stadium/layout");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<StadiumLayoutDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting stadium layout: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<List<StadiumSeatDto>?> GetSectionSeatsAsync(string sectionName)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync($"api/stadium/section/{sectionName}/seats");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<StadiumSeatDto>>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting section seats: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<StadiumSeatDto?> GetSeatOrderAsync(int seatId)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync($"api/stadium/seat/{seatId}/order");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<StadiumSeatDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting seat order: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<List<Event>?> GetEventsAsync()
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync("api/events");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<Event>>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting events: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<Event?> CreateEventAsync(Event eventObj)
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(eventObj, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PostAsync("api/event", content);
-            if (response.IsSuccessStatusCode)
-            {
-                var responseJson = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<Event>(responseJson, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error creating event: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<Event?> UpdateEventAsync(int id, Event eventObj)
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(eventObj, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PutAsync($"api/event/{id}", content);
-            if (response.IsSuccessStatusCode)
-            {
-                var responseJson = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<Event>(responseJson, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating event: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<bool> ActivateEventAsync(int id)
-    {
-        try
-        {
-            var response = await _httpClient.PostAsync($"api/event/{id}/activate", null);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error activating event: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> DeactivateEventAsync(int id)
-    {
-        try
-        {
-            var response = await _httpClient.PostAsync($"api/event/{id}/deactivate", null);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deactivating event: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> GenerateDemoDataAsync(int eventId)
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.PostAsync($"api/demo-data/generate/{eventId}", null);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error generating demo data: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<StadiumSummaryDto?> GetStadiumSummaryAsync()
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync("api/stadiumstructure/summary");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<StadiumSummaryDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting stadium summary: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<List<Tribune>?> GetStadiumStructureAsync()
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync("api/stadiumstructure/full-structure");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<Tribune>>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting stadium structure: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<bool> ImportStadiumStructureAsync(Stream fileStream, string fileName)
-    {
-        try
-        {
-            SetAuthHeader();
-            
-            // Reset stream position to beginning
-            if (fileStream.CanSeek)
-            {
-                fileStream.Position = 0;
-            }
-            
-            using var content = new MultipartFormDataContent();
-            var streamContent = new StreamContent(fileStream);
-            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-            content.Add(streamContent, "file", fileName);
-
-            var response = await _httpClient.PostAsync("api/stadiumstructure/import/json", content);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error importing stadium structure: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> ClearStadiumStructureAsync()
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.DeleteAsync("api/stadiumstructure/clear");
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error clearing stadium structure: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<Stream?> ExportStadiumStructureAsync()
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync("api/stadiumstructure/export/json");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadAsStreamAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error exporting stadium structure: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<PagedLogsDto?> GetLogsAsync(LogFilterDto filter)
-    {
-        try
-        {
-            SetAuthHeader();
-            var json = JsonSerializer.Serialize(filter, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PostAsync("api/logs/search", content);
-            if (response.IsSuccessStatusCode)
-            {
-                var responseJson = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<PagedLogsDto>(responseJson, _jsonOptions);
-            }
-            else
-            {
-                var errorMessage = $"API Error: {response.StatusCode} - {response.ReasonPhrase}";
-                var errorContent = await response.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(errorContent))
-                {
-                    errorMessage += $" Details: {errorContent}";
-                }
-                Console.WriteLine($"Error getting logs: {errorMessage}");
-                throw new HttpRequestException(errorMessage);
-            }
-        }
-        catch (Exception ex) when (!(ex is HttpRequestException))
-        {
-            Console.WriteLine($"Error getting logs: {ex.Message}");
-            throw new Exception($"Failed to get logs: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<LogSummaryDto?> GetLogSummaryAsync()
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync("api/logs/summary");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<LogSummaryDto>(json, _jsonOptions);
-            }
-            else
-            {
-                var errorMessage = $"API Error: {response.StatusCode} - {response.ReasonPhrase}";
-                var errorContent = await response.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(errorContent))
-                {
-                    errorMessage += $" Details: {errorContent}";
-                }
-                Console.WriteLine($"Error getting log summary: {errorMessage}");
-                throw new HttpRequestException(errorMessage);
-            }
-        }
-        catch (Exception ex) when (!(ex is HttpRequestException))
-        {
-            Console.WriteLine($"Error getting log summary: {ex.Message}");
-            throw new Exception($"Failed to get log summary: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<bool> ClearOldLogsAsync(int daysToKeep = 30)
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.DeleteAsync($"api/logs/clear-old?daysToKeep={daysToKeep}");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine($"Successfully cleared logs older than {daysToKeep} days");
-                return true;
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Failed to clear logs. Status: {response.StatusCode}, Response: {errorContent}");
-                return false;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error clearing old logs: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> ClearAllLogsAsync()
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.DeleteAsync("api/logs/clear-all");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Successfully cleared all logs");
-                return true;
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Failed to clear all logs. Status: {response.StatusCode}, Response: {errorContent}");
-                return false;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error clearing all logs: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> LogUserActionAsync(string action, string category, string? details = null)
-    {
-        try
-        {
-            var request = new
-            {
-                Action = action,
-                Category = category,
-                Details = details,
-                Source = "Admin",
-                RequestPath = "/admin",
-                HttpMethod = "POST"
-            };
-
-            var json = JsonSerializer.Serialize(request, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PostAsync("api/logs/log-action", content);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error logging user action: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<UserListDto?> GetUsersAsync(UserFilterDto filter)
-    {
-        try
-        {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(filter, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/users/search", content);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<UserListDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching users: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<UserDto?> GetUserAsync(int id)
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync($"api/users/{id}");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<UserDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching user {id}: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto)
-    {
-        try
-        {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(createUserDto, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/users", content);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<UserDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error creating user: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto updateUserDto)
-    {
-        try
-        {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(updateUserDto, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"api/users/{id}", content);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<UserDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating user {id}: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<bool> ChangeUserPasswordAsync(int id, ChangePasswordDto changePasswordDto)
-    {
-        try
-        {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(changePasswordDto, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"api/users/{id}/password", content);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error changing user password {id}: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> DeleteUserAsync(int id)
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.DeleteAsync($"api/users/{id}");
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting user {id}: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<SeatStatusResponseDto?> GetSeatStatusForEventAsync(int eventId)
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync($"api/ticketsales/event/{eventId}/seat-status");
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<SeatStatusResponseDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting seat status for event {eventId}: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<bool> SimulateTicketSalesAsync(int eventId, int numberOfTickets = 10, decimal basePrice = 50.00m)
-    {
-        try
-        {
-            SetAuthHeader();
-            var request = new
-            {
-                NumberOfTickets = numberOfTickets,
-                BasePrice = basePrice
-            };
-            
-            var json = JsonSerializer.Serialize(request, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PostAsync($"api/ticketsales/event/{eventId}/simulate-sales", content);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error simulating ticket sales for event {eventId}: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<List<TicketDto>?> GetTicketsAsync(int? eventId = null, bool? isActive = null)
-    {
-        try
-        {
-            SetAuthHeader();
-            var queryParams = new List<string>();
-            if (eventId.HasValue) queryParams.Add($"eventId={eventId}");
-            if (isActive.HasValue) queryParams.Add($"isActive={isActive}");
-            
-            var query = queryParams.Any() ? "?" + string.Join("&", queryParams) : "";
-            var response = await _httpClient.GetAsync($"api/tickets{query}");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<TicketDto>>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching tickets: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<TicketDto?> GetTicketByNumberAsync(string ticketNumber)
-    {
-        try
-        {
-            SetAuthHeader();
-            var encodedTicketNumber = Uri.EscapeDataString(ticketNumber);
-            var response = await _httpClient.GetAsync($"api/tickets/{encodedTicketNumber}");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<TicketDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting ticket by number: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<TicketValidationResultDto?> ValidateTicketAsync(ValidateTicketDto validateDto)
-    {
-        try
-        {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(validateDto, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/tickets/validate", content);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<TicketValidationResultDto>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error validating ticket: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<T?> GetAsync<T>(string endpoint)
-    {
-        try
-        {
-            SetAuthHeader();
-            var fullUrl = $"api/{endpoint.TrimStart('/')}";
-            Console.WriteLine($"AdminApiService: Making GET request to {fullUrl}");
-            
-            var response = await _httpClient.GetAsync(fullUrl);
-            Console.WriteLine($"AdminApiService: Response status: {response.StatusCode}");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"AdminApiService: JSON response length: {json.Length}");
-                Console.WriteLine($"AdminApiService: JSON preview: {json.Substring(0, Math.Min(200, json.Length))}...");
-                
-                try
-                {
-                    var result = JsonSerializer.Deserialize<T>(json, _jsonOptions);
-                    Console.WriteLine($"AdminApiService: Deserialization successful for type {typeof(T).Name}");
-                    return result;
-                }
-                catch (JsonException jsonEx)
-                {
-                    Console.WriteLine($"AdminApiService: JSON deserialization error: {jsonEx.Message}");
-                    Console.WriteLine($"AdminApiService: JSON content: {json}");
-                    throw;
-                }
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"AdminApiService: Request failed with status {response.StatusCode}: {errorContent}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"AdminApiService: Error fetching from {endpoint}: {ex.Message}");
-            Console.WriteLine($"AdminApiService: Exception type: {ex.GetType().Name}");
-            Console.WriteLine($"AdminApiService: Stack trace: {ex.StackTrace}");
-            throw;
-        }
-        return default(T);
-    }
-
-    public async Task<T?> PostAsync<T>(string endpoint, object data)
-    {
-        try
-        {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(data, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"api/{endpoint.TrimStart('/')}", content);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<T>(json, _jsonOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error posting to {endpoint}: {ex.Message}");
-        }
-        return default(T);
-    }
-
-    public async Task<HttpResponseMessage> PostAsync(string endpoint, object data)
-    {
-        try
-        {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(data, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"api/{endpoint.TrimStart('/')}", content);
-            return response;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error posting to {endpoint}: {ex.Message}");
-            throw;
-        }
-    }
-
-    public async Task<(bool success, string? errorMessage)> DeleteAsync(string endpoint)
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.DeleteAsync($"api/{endpoint.TrimStart('/')}");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                return (true, null);
-            }
-            
-            // Try to get error message from response
-            string? errorMessage = null;
             try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                if (!string.IsNullOrWhiteSpace(content))
+                var response = await _httpClient.GetAsync($"api/orders/{id}");
+                if (response.IsSuccessStatusCode)
                 {
-                    // Try to parse as JSON to get the message
-                    using var doc = JsonDocument.Parse(content);
-                    if (doc.RootElement.TryGetProperty("message", out var messageProp))
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<OrderDto>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<OrderDto?> UpdateOrderAsync(int id, OrderDto order)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(order, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync($"api/orders/{id}", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<OrderDto>(responseJson, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<bool> DeleteOrderAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"api/orders/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        // Users
+        public async Task<IEnumerable<UserDto>?> GetUsersAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/users");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<IEnumerable<UserDto>>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return Array.Empty<UserDto>();
+        }
+
+        public async Task<UserDto?> GetUserAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/users/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<UserDto>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(createUserDto, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("api/users", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<UserDto>(responseJson, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto updateUserDto)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(updateUserDto, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync($"api/users/{id}", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<UserDto>(responseJson, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"api/users/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        // Drinks
+        public async Task<IEnumerable<DrinkDto>?> GetDrinksAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/drinks");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<IEnumerable<DrinkDto>>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return Array.Empty<DrinkDto>();
+        }
+
+        public async Task<DrinkDto?> GetDrinkAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/drinks/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<DrinkDto>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<DrinkDto?> CreateDrinkAsync(CreateDrinkDto createDrinkDto)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(createDrinkDto, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("api/drinks", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<DrinkDto>(responseJson, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<DrinkDto?> UpdateDrinkAsync(int id, UpdateDrinkDto updateDrinkDto)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(updateDrinkDto, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync($"api/drinks/{id}", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<DrinkDto>(responseJson, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<bool> DeleteDrinkAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"api/drinks/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        // Tickets
+        public async Task<IEnumerable<TicketDto>?> GetTicketsAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/tickets");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<IEnumerable<TicketDto>>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return Array.Empty<TicketDto>();
+        }
+
+        public async Task<bool> ValidateTicketAsync(string ticketCode)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync($"api/tickets/validate/{ticketCode}", null);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        // Auth
+        public async Task<string?> LoginAsync(LoginDto loginDto)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(loginDto, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("api/auth/login", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<LoginResponseDto>(responseJson, _jsonOptions);
+                    return result?.Token;
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<bool> LogoutAsync()
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync("api/auth/logout", null);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        public async Task<UserDto?> GetCurrentUserAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/auth/current");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<UserDto>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        // Logs
+        public async Task<IEnumerable<LogEntryDto>?> GetLogsAsync(LogFilterDto? filterDto = null)
+        {
+            try
+            {
+                var url = "api/logs";
+                if (filterDto != null)
+                {
+                    var json = JsonSerializer.Serialize(filterDto, _jsonOptions);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await _httpClient.PostAsync($"{url}/search", content);
+                    if (response.IsSuccessStatusCode)
                     {
-                        errorMessage = messageProp.GetString();
+                        var responseJson = await response.Content.ReadAsStringAsync();
+                        return JsonSerializer.Deserialize<IEnumerable<LogEntryDto>>(responseJson, _jsonOptions);
                     }
-                    else if (doc.RootElement.TryGetProperty("Message", out var messageCapProp))
+                }
+                else
+                {
+                    var response = await _httpClient.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
                     {
-                        errorMessage = messageCapProp.GetString();
-                    }
-                    else
-                    {
-                        errorMessage = content;
+                        var responseJson = await response.Content.ReadAsStringAsync();
+                        return JsonSerializer.Deserialize<IEnumerable<LogEntryDto>>(responseJson, _jsonOptions);
                     }
                 }
             }
             catch
             {
-                errorMessage = await response.Content.ReadAsStringAsync();
+                // Log error in real implementation
             }
-            
-            return (false, errorMessage ?? $"Failed with status {response.StatusCode}");
+            return Array.Empty<LogEntryDto>();
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting from {endpoint}: {ex.Message}");
-            return (false, ex.Message);
-        }
-    }
 
-    public async Task<HttpResponseMessage> GetAsync(string endpoint)
-    {
-        SetAuthHeader();
-        var temp = $"api/{endpoint.TrimStart('/')}";
-        var fullUrl = $"{_httpClient.BaseAddress}{temp}";
-        
-        Console.WriteLine($"=== API CALL DEBUG ===");
-        Console.WriteLine($"Endpoint: {endpoint}");
-        Console.WriteLine($"Full URL: {fullUrl}");
-        Console.WriteLine($"Base Address: {_httpClient.BaseAddress}");
-        
-        try 
+        public async Task<LogSummaryDto?> GetLogSummaryAsync()
         {
-            var response = await _httpClient.GetAsync(temp);
-            Console.WriteLine($"Response Status: {response.StatusCode}");
-            Console.WriteLine($"======================");
-            return response;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Exception: {ex.Message}");
-            Console.WriteLine($"======================");
-            throw;
-        }
-    }
-
-    public async Task<PagedCustomerAnalyticsDto?> GetCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter)
-    {
-        try
-        {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(filter, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/customeranalytics/search", content);
-            
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<PagedCustomerAnalyticsDto>(json, _jsonOptions);
+                var response = await _httpClient.GetAsync("api/logs/summary");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<LogSummaryDto>(json, _jsonOptions);
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting customer analytics: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<CustomerSpendingDetailDto?> GetCustomerSpendingDetailsAsync(string customerEmail)
-    {
-        try
-        {
-            SetAuthHeader();
-            var encodedEmail = Uri.EscapeDataString(customerEmail);
-            var response = await _httpClient.GetAsync($"api/customeranalytics/customer/{encodedEmail}/details");
-            
-            if (response.IsSuccessStatusCode)
+            catch
             {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<CustomerSpendingDetailDto>(json, _jsonOptions);
+                // Log error in real implementation
             }
+            return null;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting customer spending details: {ex.Message}");
-        }
-        return null;
-    }
 
-    public async Task<CustomerAnalyticsSummaryDto?> GetCustomerAnalyticsSummaryAsync()
-    {
-        try
+        // Additional Log Methods
+        public async Task<bool> ClearAllLogsAsync()
         {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync("api/customeranalytics/summary");
-            
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<CustomerAnalyticsSummaryDto>(json, _jsonOptions);
+                var response = await _httpClient.DeleteAsync("api/logs/clear-old");
+                return response.IsSuccessStatusCode;
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting customer analytics summary: {ex.Message}");
-        }
-        return null;
-    }
-
-    public async Task<List<CustomerAnalyticsDto>?> GetTopSpendingCustomersAsync(int limit = 10)
-    {
-        try
-        {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync($"api/customeranalytics/top-customers?limit={limit}");
-            
-            if (response.IsSuccessStatusCode)
+            catch
             {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<CustomerAnalyticsDto>>(json, _jsonOptions);
+                // Log error in real implementation
             }
+            return false;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting top spending customers: {ex.Message}");
-        }
-        return null;
-    }
 
-    public async Task<Dictionary<string, decimal>?> GetCustomerSpendingTrendsAsync(int days = 30)
-    {
-        try
+        public async Task LogUserActionAsync(string action, string category, int? userId = null, string? userEmail = null, string? details = null)
         {
-            SetAuthHeader();
-            var response = await _httpClient.GetAsync($"api/customeranalytics/spending-trends?days={days}");
-            
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<Dictionary<string, decimal>>(json, _jsonOptions);
+                var logEntry = new
+                {
+                    Action = action,
+                    Category = category,
+                    UserId = userId,
+                    UserEmail = userEmail,
+                    Details = details
+                };
+                var json = JsonSerializer.Serialize(logEntry, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                await _httpClient.PostAsync("api/logs/log-action", content);
+            }
+            catch
+            {
+                // Log error in real implementation
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting customer spending trends: {ex.Message}");
-        }
-        return null;
-    }
 
-    public async Task<HttpResponseMessage> ExportCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter)
-    {
-        try
+        // Customer Analytics Methods
+        public async Task<PagedCustomerAnalyticsDto?> GetCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter)
         {
-            SetAuthHeader();
-            var content = new StringContent(JsonSerializer.Serialize(filter, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/customeranalytics/export", content);
-            return response;
+            try
+            {
+                var json = JsonSerializer.Serialize(filter, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("api/analytics/customers", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<PagedCustomerAnalyticsDto>(responseJson, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error exporting customer analytics: {ex.Message}");
-            throw;
-        }
-    }
 
-    private void SetAuthHeader()
-    {
-        if (!string.IsNullOrEmpty(Token))
+        public async Task<CustomerAnalyticsSummaryDto?> GetCustomerAnalyticsSummaryAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization = 
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            Console.WriteLine($"Token set: {Token[..10]}... (length: {Token.Length})");
+            try
+            {
+                var response = await _httpClient.GetAsync("api/analytics/customers/summary");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<CustomerAnalyticsSummaryDto>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
         }
-        else
+
+        public async Task<HttpResponseMessage?> ExportCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter)
         {
-            Console.WriteLine("⚠️ NO TOKEN FOUND - This will cause 401 Unauthorized");
+            try
+            {
+                var json = JsonSerializer.Serialize(filter, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                return await _httpClient.PostAsync("api/analytics/customers/export", content);
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        // Generic HTTP Methods
+        public async Task<T?> GetAsync<T>(string endpoint)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(endpoint);
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<T>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return default(T);
+        }
+
+        public async Task<T?> PostAsync<T>(string endpoint, object? data = null)
+        {
+            try
+            {
+                StringContent? content = null;
+                if (data != null)
+                {
+                    var json = JsonSerializer.Serialize(data, _jsonOptions);
+                    content = new StringContent(json, Encoding.UTF8, "application/json");
+                }
+
+                var response = await _httpClient.PostAsync(endpoint, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<T>(responseJson, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return default(T);
+        }
+
+        // Stadium Layout
+        public async Task<StadiumLayoutDto?> GetStadiumLayoutAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/stadium-structure/layout");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<StadiumLayoutDto>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        // Additional Methods
+        public async Task<bool> UpdateOrderStatusAsync(int orderId, OrderStatus status)
+        {
+            try
+            {
+                var updateData = new { Status = status };
+                var json = JsonSerializer.Serialize(updateData, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync($"api/orders/{orderId}/status", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        public async Task<StadiumSummaryDto?> GetStadiumSummaryAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/stadium-structure/summary");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<StadiumSummaryDto>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<EventDto>?> GetEventsAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/events");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<IEnumerable<EventDto>>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return Array.Empty<EventDto>();
+        }
+
+        public async Task<object?> GetSeatStatusForEventAsync(int eventId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/events/{eventId}/seat-status");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<object>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<bool> SimulateTicketSalesAsync(int eventId, int ticketCount)
+        {
+            try
+            {
+                var simulationData = new { EventId = eventId, TicketCount = ticketCount };
+                var json = JsonSerializer.Serialize(simulationData, _jsonOptions);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"api/events/{eventId}/simulate-sales", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        public async Task<bool> ImportStadiumStructureAsync(string jsonContent)
+        {
+            try
+            {
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("api/stadium-structure/import", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        public async Task<bool> ClearStadiumStructureAsync()
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync("api/stadium-structure/clear");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return false;
+        }
+
+        public async Task<string?> ExportStadiumStructureAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/stadium-structure/export");
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStringAsync();
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<(bool success, string errorMessage)> DeleteAsync(string endpoint)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync(endpoint);
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, string.Empty);
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    return (false, errorContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        // Non-generic HTTP methods for DataGrid compatibility
+        public async Task<HttpResponseMessage> GetAsync(string endpoint)
+        {
+            return await _httpClient.GetAsync(endpoint);
+        }
+
+        public async Task<HttpResponseMessage> PostAsync(string endpoint, object? data = null)
+        {
+            var json = JsonSerializer.Serialize(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            return await _httpClient.PostAsync(endpoint, content);
+        }
+
+        // Missing method implementations
+        public async Task<IEnumerable<TicketDto>?> GetTicketsAsync(int? eventId)
+        {
+            try
+            {
+                var url = eventId.HasValue ? $"api/tickets?eventId={eventId.Value}" : "api/tickets";
+                var response = await _httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<IEnumerable<TicketDto>>(json, _jsonOptions);
+                }
+            }
+            catch
+            {
+                // Log error in real implementation
+            }
+            return null;
+        }
+
+        public async Task<bool> ImportStadiumStructureAsync(Stream fileStream)
+        {
+            try
+            {
+                var content = new MultipartFormDataContent();
+                content.Add(new StreamContent(fileStream), "file", "stadium.json");
+                var response = await _httpClient.PostAsync("api/stadium-structure/import", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

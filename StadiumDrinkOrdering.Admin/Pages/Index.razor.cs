@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Models;
 using System.Globalization;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
@@ -38,110 +39,127 @@ public partial class Index : IDisposable
     
     private System.Threading.Timer? refreshTimer;
     private bool isFirstLoad = true;
-    
+
+    private CancellationTokenSource cts = new();
+
     protected override async Task OnInitializedAsync()
     {
         await LoadDashboardData();
-        
-        // Set up auto-refresh every 30 seconds
+        StartAutoRefresh();
+    }
+
+    private void StartAutoRefresh()
+    {
         refreshTimer = new System.Threading.Timer(
-            async _ => await InvokeAsync(async () =>
+            async _ =>
             {
-                await LoadDashboardData();
-                StateHasChanged();
-            }),
+                if (!cts.IsCancellationRequested)
+                {
+                    await InvokeAsync(async () =>
+                    {
+                        await LoadDashboardData();
+                        StateHasChanged();
+                    });
+                }
+            },
             null,
             TimeSpan.FromSeconds(30),
             TimeSpan.FromSeconds(30)
         );
     }
-    
+
+    public void Dispose()
+    {
+        // Signal to the timer to stop
+        cts.Cancel();
+        // Dispose the timer itself
+        refreshTimer?.Dispose();
+        // Dispose the cancellation token source
+        cts.Dispose();
+    }
     private async Task LoadDashboardData()
     {
-        try
+        // Use Task.WhenAll to execute all API calls concurrently
+        var revenueTask = ApiService.GetAsync<RevenueData>("analytics/revenue/today");
+        var orderTask = ApiService.GetAsync<OrderStatistics>("orders/statistics");
+        var ticketTask = ApiService.GetAsync<TicketStatistics>("tickets/statistics/today");
+        var userTask = ApiService.GetAsync<UserStatistics>("users/online-statistics");
+        var activitiesTask = ApiService.GetAsync<List<ActivityItem>>("logs/recent-activity?limit=10");
+        var errorsTask = ApiService.GetAsync<int>("logs/recent-errors-count");
+
+        // Await all tasks at once to collect the results
+        await Task.WhenAll(
+            revenueTask,
+            orderTask,
+            ticketTask,
+            userTask,
+            activitiesTask,
+            errorsTask);
+
+        // Process the results and update UI properties
+        UpdateIfSuccessful(revenueTask, data =>
         {
-            // Load today's revenue
-            try
-            {
-                var revenueData = await ApiService.GetAsync<RevenueData>("analytics/revenue/today");
-                if (revenueData != null)
-                {
-                    todayRevenue = revenueData.TodayRevenue;
-                    revenueChange = revenueData.ChangePercentage;
-                }
-            }
-            catch { /* Keep existing value on error */ }
-            
-            // Load order statistics
-            try
-            {
-                var orderStats = await ApiService.GetAsync<OrderStatistics>("orders/statistics");
-                if (orderStats != null)
-                {
-                    activeOrders = orderStats.Active;
-                    pendingOrders = orderStats.Pending;
-                    inPreparationOrders = orderStats.InPreparation;
-                }
-            }
-            catch { /* Keep existing value on error */ }
-            
-            // Load ticket statistics
-            try
-            {
-                var ticketStats = await ApiService.GetAsync<TicketStatistics>("tickets/statistics/today");
-                if (ticketStats != null)
-                {
-                    ticketsSoldToday = ticketStats.SoldToday;
-                    currentEventName = ticketStats.CurrentEventName ?? "No active event";
-                }
-            }
-            catch { /* Keep existing value on error */ }
-            
-            // Load user statistics
-            try
-            {
-                var userStats = await ApiService.GetAsync<UserStatistics>("users/online-statistics");
-                if (userStats != null)
-                {
-                    onlineUsers = userStats.TotalOnline;
-                    staffOnline = userStats.StaffOnline;
-                    customersOnline = userStats.CustomersOnline;
-                }
-            }
-            catch { /* Keep existing value on error */ }
-            
-            // Load recent activity
-            try
-            {
-                var activities = await ApiService.GetAsync<List<ActivityItem>>("logs/recent-activity?limit=10");
-                if (activities != null)
-                {
-                    recentActivities = activities;
-                }
-            }
-            catch { /* Keep existing value on error */ }
-            
-            // Load recent errors count
-            try
-            {
-                var errorCount = await ApiService.GetAsync<int>("logs/recent-errors-count");
-                recentErrors = errorCount;
-            }
-            catch { /* Keep existing value on error */ }
-        }
-        catch (Exception)
+            todayRevenue = data.TodayRevenue;
+            revenueChange = data.ChangePercentage;
+        });
+
+        UpdateIfSuccessful(orderTask, data =>
         {
-            // Only load mock data on initial load if all calls fail
-            if (isFirstLoad && todayRevenue == 0 && activeOrders == 0 && ticketsSoldToday == 0)
-            {
-                LoadMockData();
-            }
+            activeOrders = data.Active;
+            pendingOrders = data.Pending;
+            inPreparationOrders = data.InPreparation;
+        });
+
+        UpdateIfSuccessful(ticketTask, data =>
+        {
+            ticketsSoldToday = data.SoldToday;
+            currentEventName = data.CurrentEventName ?? "No active event";
+        });
+
+        UpdateIfSuccessful(userTask, data =>
+        {
+            onlineUsers = data.TotalOnline;
+            staffOnline = data.StaffOnline;
+            customersOnline = data.CustomersOnline;
+        });
+
+        UpdateIfSuccessful(activitiesTask, data =>
+        {
+            recentActivities = data;
+        });
+
+        UpdateIfSuccessful(errorsTask, data =>
+        {
+            recentErrors = data;
+        });
+
+        // If this is the first load and all core tasks failed, load mock data
+        if (isFirstLoad && revenueTask.IsFaulted && orderTask.IsFaulted && ticketTask.IsFaulted)
+        {
+            LoadMockData();
         }
-        
-        // Mark that first load is complete
+
         isFirstLoad = false;
     }
-    
+
+    /// <summary>
+    /// A helper method to safely update a property if the task completed successfully.
+    /// </summary>
+    /// <param name="task">The task to check.</param>
+    /// <param name="updateAction">The action to perform with the result.</param>
+    private void UpdateIfSuccessful<T>(Task<T> task, Action<T> updateAction)
+    {
+        if (task.Status == TaskStatus.RanToCompletion)
+        {
+            var result = task.Result;
+            if (result != null)
+            {
+                updateAction(result);
+            }
+        }
+        // No action needed for faulted or canceled tasks, as the existing values are preserved.
+    }
+
     private void LoadMockData()
     {
         // Mock data for demonstration
@@ -206,32 +224,56 @@ public partial class Index : IDisposable
     {
         try
         {
-            Console.WriteLine("🔍 ShowOnlineUsers method called");
+            Console.WriteLine("🔍 ShowOnlineUsers method called - SIMPLIFIED VERSION");
 
             loadingModalData = true;
             StateHasChanged();
 
+            // Always use mock data for now to ensure modal works
+            Console.WriteLine("🔍 Using mock data to ensure modal works");
+            onlineUsersList = new List<OnlineUser>
+            {
+                new() { Name = "John Smith", Email = "john@stadium.com", Role = "Staff", LastActivity = DateTime.Now.AddMinutes(-2) },
+                new() { Name = "Sarah Johnson", Email = "sarah@stadium.com", Role = "Staff", LastActivity = DateTime.Now.AddMinutes(-5) },
+                new() { Name = "Mike Wilson", Email = "mike@example.com", Role = "Customer", LastActivity = DateTime.Now.AddMinutes(-1) },
+                new() { Name = "Emma Davis", Email = "emma@example.com", Role = "Customer", LastActivity = DateTime.Now.AddMinutes(-3) }
+            };
+
+            loadingModalData = false;
+            StateHasChanged();
+
+            // Show modal immediately with mock data
+            Console.WriteLine("🔍 Showing modal immediately with mock data");
             try
             {
-                Console.WriteLine("🔍 Loading online users from API...");
-                // Load detailed online users list
+                await JSRuntime.InvokeVoidAsync("showBootstrapModal", "onlineUsersModal");
+                Console.WriteLine("✅ Modal shown successfully");
+            }
+            catch (Exception jsEx)
+            {
+                Console.WriteLine($"❌ JavaScript call failed: {jsEx.Message}");
+                // Try direct bootstrap call
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("eval", "new bootstrap.Modal(document.getElementById('onlineUsersModal')).show()");
+                    Console.WriteLine("✅ Direct bootstrap call succeeded");
+                }
+                catch (Exception ex2)
+                {
+                    Console.WriteLine($"❌ Direct bootstrap call failed: {ex2.Message}");
+                }
+            }
+
+            // Try API call in background but don't let it block the modal
+            try
+            {
+                Console.WriteLine("🔍 Attempting API call in background...");
                 var users = await ApiService.GetAsync<List<OnlineUser>>("users/online-detailed");
-                if (users != null)
+                if (users != null && users.Count > 0)
                 {
                     onlineUsersList = users;
                     Console.WriteLine($"✅ Loaded {users.Count} users from API");
-                }
-                else
-                {
-                    Console.WriteLine("⚠️ API returned null, using mock data");
-                    // Mock data for demonstration
-                    onlineUsersList = new List<OnlineUser>
-                    {
-                        new() { Name = "John Smith", Email = "john@stadium.com", Role = "Staff", LastActivity = DateTime.Now.AddMinutes(-2) },
-                        new() { Name = "Sarah Johnson", Email = "sarah@stadium.com", Role = "Staff", LastActivity = DateTime.Now.AddMinutes(-5) },
-                        new() { Name = "Mike Wilson", Email = "mike@example.com", Role = "Customer", LastActivity = DateTime.Now.AddMinutes(-1) },
-                        new() { Name = "Emma Davis", Email = "emma@example.com", Role = "Customer", LastActivity = DateTime.Now.AddMinutes(-3) }
-                    };
+                    StateHasChanged(); // Update the modal content
                 }
             }
             catch (Exception apiEx)
@@ -477,97 +519,5 @@ public partial class Index : IDisposable
         Navigation.NavigateTo($"/orders/{orderId}");
     }
     
-    public void Dispose()
-    {
-        refreshTimer?.Dispose();
-    }
     
-    // Data models
-    private class ActivityItem
-    {
-        public string Type { get; set; } = "";
-        public string Title { get; set; } = "";
-        public string Description { get; set; } = "";
-        public DateTime Timestamp { get; set; }
-    }
-    
-    private class RevenueData
-    {
-        public decimal TodayRevenue { get; set; }
-        public decimal ChangePercentage { get; set; }
-    }
-    
-    private class OrderStatistics
-    {
-        public int Active { get; set; }
-        public int Pending { get; set; }
-        public int InPreparation { get; set; }
-    }
-    
-    private class TicketStatistics
-    {
-        public int SoldToday { get; set; }
-        public string? CurrentEventName { get; set; }
-    }
-    
-    private class UserStatistics
-    {
-        public int TotalOnline { get; set; }
-        public int StaffOnline { get; set; }
-        public int CustomersOnline { get; set; }
-    }
-
-    private class OnlineUser
-    {
-        public string Name { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Role { get; set; } = "";
-        public DateTime LastActivity { get; set; }
-    }
-
-    private class ActiveOrder
-    {
-        public int Id { get; set; }
-        public string CustomerName { get; set; } = "";
-        public int ItemCount { get; set; }
-        public decimal Total { get; set; }
-        public string Status { get; set; } = "";
-        public DateTime CreatedAt { get; set; }
-    }
-
-    private class RevenueDetails
-    {
-        public decimal DrinkRevenue { get; set; }
-        public decimal TicketRevenue { get; set; }
-        public decimal ServiceFees { get; set; }
-        public decimal YesterdayTotal { get; set; }
-        public decimal LastWeekTotal { get; set; }
-        public decimal LastMonthTotal { get; set; }
-        public List<TopItem> TopItems { get; set; } = new();
-    }
-
-    private class TopItem
-    {
-        public string Name { get; set; } = "";
-        public int Quantity { get; set; }
-        public decimal Revenue { get; set; }
-    }
-
-    private class TicketDetails
-    {
-        public string EventName { get; set; } = "";
-        public DateTime EventDate { get; set; }
-        public int TotalCapacity { get; set; }
-        public int SoldToday { get; set; }
-        public int TotalSold { get; set; }
-        public int Available { get; set; }
-        public List<SectionSale> SectionSales { get; set; } = new();
-    }
-
-    private class SectionSale
-    {
-        public string Name { get; set; } = "";
-        public int Capacity { get; set; }
-        public int Sold { get; set; }
-    }
 }

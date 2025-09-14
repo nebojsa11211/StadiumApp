@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stadium Admin Design System Guide</title>
+
+    <!-- Admin Design System CSS -->
+    <link href="css/admin-design-system.css" rel="stylesheet" />
+    <link href="css/admin-layout.css" rel="stylesheet" />
+    <link href="css/admin-components.css" rel="stylesheet" />
+    <link href="css/admin-utilities.css" rel="stylesheet" />
+    <link href="css/admin-charts.css" rel="stylesheet" />
+    <link href="css/admin-animations.css" rel="stylesheet" />
+    <link href="css/admin-theme-dark.css" rel="stylesheet" />
+
+    <style>
+        /* Documentation specific styles */
+        .docs-section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--admin-border-primary);
+        }
+
+        .docs-section:last-child {
+            border-bottom: none;
+        }
+
+        .docs-example {
+            background: var(--admin-bg-elevated);
+            border: 1px solid var(--admin-border-primary);
+            border-radius: var(--admin-radius-lg);
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+
+        .docs-code {
+            background: var(--admin-bg-tertiary);
+            border: 1px solid var(--admin-border-primary);
+            border-radius: var(--admin-radius-base);
+            padding: 1rem;
+            font-family: var(--admin-font-family-mono);
+            font-size: var(--admin-font-size-sm);
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .docs-color-swatch {
+            width: 4rem;
+            height: 4rem;
+            border-radius: var(--admin-radius-base);
+            border: 1px solid var(--admin-border-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .docs-color-item {
+            text-align: center;
+        }
+
+        .docs-spacing-example {
+            background: var(--admin-color-accent-100);
+            border: 1px dashed var(--admin-color-accent-300);
+        }
+
+        [data-theme="dark"] .docs-spacing-example {
+            background: var(--admin-color-accent-900);
+            border-color: var(--admin-color-accent-700);
+        }
+
+        .docs-nav {
+            position: sticky;
+            top: 2rem;
+            background: var(--admin-bg-elevated);
+            border: 1px solid var(--admin-border-primary);
+            border-radius: var(--admin-radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .docs-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .docs-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-nav a {
+            color: var(--admin-text-secondary);
+            text-decoration: none;
+            font-size: var(--admin-font-size-sm);
+            transition: color var(--admin-transition-fast);
+        }
+
+        .docs-nav a:hover {
+            color: var(--admin-color-accent-600);
+        }
+
+        .docs-theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-app">
+        <!-- Header -->
+        <header class="admin-app-header">
+            <div class="admin-header">
+                <div class="admin-header-brand">
+                    <div class="admin-header-brand-text">Stadium Admin Design System</div>
+                </div>
+                <div class="admin-header-actions">
+                    <button class="admin-btn admin-btn-ghost" data-theme-cycle title="Toggle Theme (Ctrl+Shift+T)">
+                        <span data-theme-icon="light">☀️</span>
+                        <span data-theme-icon="dark">🌙</span>
+                        <span data-theme-icon="auto">💻</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-app-body">
+            <!-- Sidebar Navigation -->
+            <nav class="admin-page-sidebar-content">
+                <div class="docs-nav">
+                    <h3 class="admin-text-lg admin-font-semibold admin-mb-4">Contents</h3>
+                    <ul>
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#colors">Color System</a></li>
+                        <li><a href="#typography">Typography</a></li>
+                        <li><a href="#spacing">Spacing System</a></li>
+                        <li><a href="#components">Components</a></li>
+                        <li><a href="#layout">Layout System</a></li>
+                        <li><a href="#charts">Charts & Data Viz</a></li>
+                        <li><a href="#utilities">Utility Classes</a></li>
+                        <li><a href="#animations">Animations</a></li>
+                        <li><a href="#themes">Theme System</a></li>
+                        <li><a href="#accessibility">Accessibility</a></li>
+                        <li><a href="#performance">Performance</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="admin-app-main">
+                <div class="admin-page-two-column">
+                    <div class="admin-page-main-content">
+                        <!-- Overview Section -->
+                        <section id="overview" class="docs-section">
+                            <h1 class="admin-text-4xl admin-font-bold admin-mb-6">Stadium Admin Design System</h1>
+                            <p class="admin-text-lg admin-text-secondary admin-mb-6">
+                                A comprehensive design system for the Stadium Admin application featuring modern styling,
+                                accessibility support, and theme management.
+                            </p>
+
+                            <div class="admin-grid admin-grid-cols-3 admin-gap-6">
+                                <div class="admin-card admin-metric-card">
+                                    <div class="admin-metric-value">7</div>
+                                    <div class="admin-metric-label">CSS Files</div>
+                                </div>
+                                <div class="admin-card admin-metric-card">
+                                    <div class="admin-metric-value">2</div>
+                                    <div class="admin-metric-label">Themes</div>
+                                </div>
+                                <div class="admin-card admin-metric-card">
+                                    <div class="admin-metric-value">200+</div>
+                                    <div class="admin-metric-label">Utility Classes</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Color System Section -->
+                        <section id="colors" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Color System</h2>
+
+                            <h3 class="admin-text-2xl admin-font-semibold admin-mb-4">Primary Colors</h3>
+                            <div class="docs-color-grid">
+                                <div class="docs-color-item">
+                                    <div class="docs-color-swatch" style="background: var(--admin-color-primary-800);"></div>
+                                    <div class="admin-text-sm admin-font-medium">Primary 800</div>
+                                    <div class="admin-text-xs admin-text-secondary">#1e293b</div>
+                                </div>
+                                <div class="docs-color-item">
+                                    <div class="docs-color-swatch" style="background: var(--admin-color-accent-600);"></div>
+                                    <div class="admin-text-sm admin-font-medium">Accent 600</div>
+                                    <div class="admin-text-xs admin-text-secondary">#2563eb</div>
+                                </div>
+                                <div class="docs-color-item">
+                                    <div class="docs-color-swatch" style="background: var(--admin-color-success-600);"></div>
+                                    <div class="admin-text-sm admin-font-medium">Success 600</div>
+                                    <div class="admin-text-xs admin-text-secondary">#059669</div>
+                                </div>
+                                <div class="docs-color-item">
+                                    <div class="docs-color-swatch" style="background: var(--admin-color-warning-600);"></div>
+                                    <div class="admin-text-sm admin-font-medium">Warning 600</div>
+                                    <div class="admin-text-xs admin-text-secondary">#d97706</div>
+                                </div>
+                                <div class="docs-color-item">
+                                    <div class="docs-color-swatch" style="background: var(--admin-color-error-600);"></div>
+                                    <div class="admin-text-sm admin-font-medium">Error 600</div>
+                                    <div class="admin-text-xs admin-text-secondary">#dc2626</div>
+                                </div>
+                            </div>
+
+                            <div class="docs-code">
+/* CSS Custom Properties */
+--admin-color-primary-800: #1e293b;
+--admin-color-accent-600: #2563eb;
+--admin-color-success-600: #059669;
+--admin-color-warning-600: #d97706;
+--admin-color-error-600: #dc2626;
+                            </div>
+                        </section>
+
+                        <!-- Typography Section -->
+                        <section id="typography" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Typography</h2>
+
+                            <div class="docs-example">
+                                <h1 class="admin-text-5xl admin-font-bold">Heading 1 - 48px Bold</h1>
+                                <h2 class="admin-text-4xl admin-font-bold">Heading 2 - 36px Bold</h2>
+                                <h3 class="admin-text-3xl admin-font-semibold">Heading 3 - 30px Semibold</h3>
+                                <h4 class="admin-text-2xl admin-font-semibold">Heading 4 - 24px Semibold</h4>
+                                <h5 class="admin-text-xl admin-font-medium">Heading 5 - 20px Medium</h5>
+                                <h6 class="admin-text-lg admin-font-medium">Heading 6 - 18px Medium</h6>
+
+                                <p class="admin-text-base admin-mt-4">
+                                    Body text - 16px Regular. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                    Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                </p>
+
+                                <p class="admin-text-sm admin-text-secondary">
+                                    Secondary text - 14px Regular. Ut enim ad minim veniam, quis nostrud exercitation.
+                                </p>
+
+                                <p class="admin-text-xs admin-text-tertiary">
+                                    Tertiary text - 12px Regular. Used for captions and metadata.
+                                </p>
+                            </div>
+
+                            <div class="docs-code">
+<!-- Typography Classes -->
+&lt;h1 class="admin-text-5xl admin-font-bold"&gt;Main Heading&lt;/h1&gt;
+&lt;p class="admin-text-base"&gt;Body text&lt;/p&gt;
+&lt;span class="admin-text-sm admin-text-secondary"&gt;Secondary text&lt;/span&gt;
+                            </div>
+                        </section>
+
+                        <!-- Spacing Section -->
+                        <section id="spacing" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Spacing System</h2>
+                            <p class="admin-text-secondary admin-mb-6">Based on a 4px grid system for consistent spacing throughout the interface.</p>
+
+                            <div class="docs-example">
+                                <div class="admin-grid admin-grid-cols-4 admin-gap-4">
+                                    <div>
+                                        <div class="docs-spacing-example admin-p-1 admin-text-center admin-text-xs">4px</div>
+                                        <div class="admin-text-center admin-text-xs admin-mt-1">admin-space-1</div>
+                                    </div>
+                                    <div>
+                                        <div class="docs-spacing-example admin-p-2 admin-text-center admin-text-xs">8px</div>
+                                        <div class="admin-text-center admin-text-xs admin-mt-1">admin-space-2</div>
+                                    </div>
+                                    <div>
+                                        <div class="docs-spacing-example admin-p-4 admin-text-center admin-text-xs">16px</div>
+                                        <div class="admin-text-center admin-text-xs admin-mt-1">admin-space-4</div>
+                                    </div>
+                                    <div>
+                                        <div class="docs-spacing-example admin-p-6 admin-text-center admin-text-xs">24px</div>
+                                        <div class="admin-text-center admin-text-xs admin-mt-1">admin-space-6</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Components Section -->
+                        <section id="components" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Components</h2>
+
+                            <h3 class="admin-text-2xl admin-font-semibold admin-mb-4">Buttons</h3>
+                            <div class="docs-example">
+                                <div class="admin-flex admin-gap-3 admin-items-center admin-flex-wrap">
+                                    <button class="admin-btn admin-btn-primary">Primary Button</button>
+                                    <button class="admin-btn admin-btn-secondary">Secondary Button</button>
+                                    <button class="admin-btn admin-btn-success">Success Button</button>
+                                    <button class="admin-btn admin-btn-warning">Warning Button</button>
+                                    <button class="admin-btn admin-btn-error">Error Button</button>
+                                    <button class="admin-btn admin-btn-ghost">Ghost Button</button>
+                                </div>
+                            </div>
+
+                            <h3 class="admin-text-2xl admin-font-semibold admin-mb-4 admin-mt-8">Cards</h3>
+                            <div class="docs-example">
+                                <div class="admin-grid admin-grid-cols-2 admin-gap-6">
+                                    <div class="admin-card">
+                                        <div class="admin-card-header">
+                                            <h3 class="admin-card-title">Standard Card</h3>
+                                        </div>
+                                        <div class="admin-card-body">
+                                            <p class="admin-text-secondary">This is a standard card with header and body content.</p>
+                                        </div>
+                                    </div>
+                                    <div class="admin-card admin-card-elevated">
+                                        <div class="admin-card-header">
+                                            <h3 class="admin-card-title">Elevated Card</h3>
+                                        </div>
+                                        <div class="admin-card-body">
+                                            <p class="admin-text-secondary">This is an elevated card with enhanced shadow.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="admin-text-2xl admin-font-semibold admin-mb-4 admin-mt-8">Form Controls</h3>
+                            <div class="docs-example">
+                                <div class="admin-grid admin-grid-cols-2 admin-gap-6">
+                                    <div class="admin-form-group">
+                                        <label class="admin-label required">Email Address</label>
+                                        <input type="email" class="admin-input" placeholder="Enter your email">
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label class="admin-label">Select Option</label>
+                                        <select class="admin-input admin-select">
+                                            <option>Choose an option...</option>
+                                            <option>Option 1</option>
+                                            <option>Option 2</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="admin-text-2xl admin-font-semibold admin-mb-4 admin-mt-8">Badges</h3>
+                            <div class="docs-example">
+                                <div class="admin-flex admin-gap-3 admin-items-center admin-flex-wrap">
+                                    <span class="admin-badge admin-badge-primary">Primary</span>
+                                    <span class="admin-badge admin-badge-success">Success</span>
+                                    <span class="admin-badge admin-badge-warning">Warning</span>
+                                    <span class="admin-badge admin-badge-error">Error</span>
+                                    <span class="admin-badge admin-badge-neutral">Neutral</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Layout Section -->
+                        <section id="layout" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Layout System</h2>
+
+                            <h3 class="admin-text-2xl admin-font-semibold admin-mb-4">Grid System</h3>
+                            <div class="docs-example">
+                                <div class="admin-grid admin-grid-cols-12 admin-gap-2">
+                                    <div class="admin-col-span-12 docs-spacing-example admin-p-2 admin-text-center admin-text-xs">12 columns</div>
+                                </div>
+                                <div class="admin-grid admin-grid-cols-12 admin-gap-2 admin-mt-2">
+                                    <div class="admin-col-span-6 docs-spacing-example admin-p-2 admin-text-center admin-text-xs">6 columns</div>
+                                    <div class="admin-col-span-6 docs-spacing-example admin-p-2 admin-text-center admin-text-xs">6 columns</div>
+                                </div>
+                                <div class="admin-grid admin-grid-cols-12 admin-gap-2 admin-mt-2">
+                                    <div class="admin-col-span-4 docs-spacing-example admin-p-2 admin-text-center admin-text-xs">4 columns</div>
+                                    <div class="admin-col-span-4 docs-spacing-example admin-p-2 admin-text-center admin-text-xs">4 columns</div>
+                                    <div class="admin-col-span-4 docs-spacing-example admin-p-2 admin-text-center admin-text-xs">4 columns</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Charts Section -->
+                        <section id="charts" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Charts & Data Visualization</h2>
+
+                            <div class="docs-example">
+                                <div class="admin-chart-container admin-chart-responsive">
+                                    <div class="admin-chart-header">
+                                        <div>
+                                            <h3 class="admin-chart-title">Sample Chart Container</h3>
+                                            <p class="admin-chart-subtitle">Chart subtitle and description</p>
+                                        </div>
+                                        <div class="admin-chart-controls">
+                                            <select class="admin-input admin-input-sm">
+                                                <option>Last 7 days</option>
+                                                <option>Last 30 days</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-chart-wrapper">
+                                        <div class="admin-chart-loading">
+                                            <div class="admin-chart-loading-spinner"></div>
+                                            Loading chart data...
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-chart-legend">
+                                        <div class="admin-chart-legend-item">
+                                            <div class="admin-chart-legend-marker" style="background: var(--admin-chart-color-1);"></div>
+                                            Series 1
+                                        </div>
+                                        <div class="admin-chart-legend-item">
+                                            <div class="admin-chart-legend-marker" style="background: var(--admin-chart-color-2);"></div>
+                                            Series 2
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Utilities Section -->
+                        <section id="utilities" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Utility Classes</h2>
+
+                            <h3 class="admin-text-2xl admin-font-semibold admin-mb-4">Spacing Utilities</h3>
+                            <div class="docs-code">
+/* Margin utilities */
+.admin-m-0    /* margin: 0 */
+.admin-m-1    /* margin: 0.25rem (4px) */
+.admin-m-4    /* margin: 1rem (16px) */
+.admin-mt-4   /* margin-top: 1rem */
+.admin-mx-4   /* margin-left & margin-right: 1rem */
+
+/* Padding utilities */
+.admin-p-0    /* padding: 0 */
+.admin-p-1    /* padding: 0.25rem (4px) */
+.admin-p-4    /* padding: 1rem (16px) */
+.admin-pt-4   /* padding-top: 1rem */
+.admin-px-4   /* padding-left & padding-right: 1rem */
+                            </div>
+
+                            <h3 class="admin-text-2xl admin-font-semibold admin-mb-4 admin-mt-6">Display Utilities</h3>
+                            <div class="docs-code">
+.admin-hidden         /* display: none */
+.admin-block          /* display: block */
+.admin-flex           /* display: flex */
+.admin-grid           /* display: grid */
+.admin-items-center   /* align-items: center */
+.admin-justify-center /* justify-content: center */
+                            </div>
+                        </section>
+
+                        <!-- Animations Section -->
+                        <section id="animations" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Animations</h2>
+
+                            <div class="docs-example">
+                                <div class="admin-flex admin-gap-4 admin-items-center admin-flex-wrap">
+                                    <button class="admin-btn admin-btn-primary admin-animate-pulse">Pulsing Button</button>
+                                    <div class="admin-animate-spin" style="width: 24px; height: 24px; border: 2px solid #ccc; border-top-color: #333; border-radius: 50%;"></div>
+                                    <div class="admin-animate-float admin-p-4 admin-bg-accent" style="border-radius: 8px; color: white;">Floating Element</div>
+                                </div>
+                            </div>
+
+                            <div class="docs-code">
+/* Animation classes */
+.admin-animate-fade-in      /* Fade in animation */
+.admin-animate-pulse        /* Pulse animation */
+.admin-animate-spin         /* Spin animation */
+.admin-animate-float        /* Float animation */
+.admin-animate-skeleton     /* Skeleton loading animation */
+                            </div>
+                        </section>
+
+                        <!-- Theme System Section -->
+                        <section id="themes" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Theme System</h2>
+
+                            <div class="docs-example">
+                                <div class="admin-flex admin-gap-3 admin-items-center">
+                                    <button class="admin-btn admin-btn-secondary" data-theme-toggle="light">
+                                        ☀️ Light Theme
+                                    </button>
+                                    <button class="admin-btn admin-btn-secondary" data-theme-toggle="dark">
+                                        🌙 Dark Theme
+                                    </button>
+                                    <button class="admin-btn admin-btn-secondary" data-theme-toggle="auto">
+                                        💻 Auto Theme
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="docs-code">
+/* JavaScript API */
+// Set theme
+AdminTheme.setTheme('dark');
+
+// Get current theme
+const theme = AdminTheme.getCurrentTheme();
+
+// Cycle through themes
+AdminTheme.cycleTheme();
+
+// Listen for theme changes
+document.addEventListener('admin-theme-changed', (e) => {
+    console.log('Theme changed to:', e.detail.theme);
+});
+                            </div>
+                        </section>
+
+                        <!-- Accessibility Section -->
+                        <section id="accessibility" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Accessibility</h2>
+
+                            <ul class="admin-text-secondary">
+                                <li class="admin-mb-2">✅ WCAG AA compliant color contrast ratios</li>
+                                <li class="admin-mb-2">✅ Focus management and keyboard navigation</li>
+                                <li class="admin-mb-2">✅ Screen reader friendly elements</li>
+                                <li class="admin-mb-2">✅ High contrast mode support</li>
+                                <li class="admin-mb-2">✅ Reduced motion preferences respected</li>
+                                <li class="admin-mb-2">✅ Semantic HTML structure</li>
+                            </ul>
+
+                            <div class="docs-code">
+/* Screen reader utilities */
+.admin-sr-only           /* Screen reader only */
+.admin-focus-visible     /* Focus visible styling */
+
+/* High contrast support */
+@@media (prefers-contrast: high) {
+    /* Enhanced contrast styles */
+}
+
+/* Reduced motion support */
+@@media (prefers-reduced-motion: reduce) {
+    /* Reduced animation styles */
+}
+                            </div>
+                        </section>
+
+                        <!-- Performance Section -->
+                        <section id="performance" class="docs-section">
+                            <h2 class="admin-text-3xl admin-font-bold admin-mb-6">Performance</h2>
+
+                            <div class="admin-grid admin-grid-cols-1 admin-gap-4">
+                                <div class="admin-card">
+                                    <h3 class="admin-text-lg admin-font-semibold admin-mb-2">CSS Optimization</h3>
+                                    <ul class="admin-text-sm admin-text-secondary">
+                                        <li>• Efficient selectors with minimal nesting</li>
+                                        <li>• CSS custom properties for theme switching</li>
+                                        <li>• Critical CSS inlining strategy</li>
+                                        <li>• GPU-accelerated animations</li>
+                                    </ul>
+                                </div>
+                                <div class="admin-card">
+                                    <h3 class="admin-text-lg admin-font-semibold admin-mb-2">JavaScript Performance</h3>
+                                    <ul class="admin-text-sm admin-text-secondary">
+                                        <li>• Efficient event delegation</li>
+                                        <li>• LocalStorage for theme persistence</li>
+                                        <li>• Debounced theme switching</li>
+                                        <li>• Memory leak prevention</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <div class="docs-theme-toggle">
+        <button class="admin-btn admin-btn-primary admin-btn-icon-only" data-theme-cycle title="Toggle Theme (Ctrl+Shift+T)">
+            <span data-theme-icon="light">☀️</span>
+            <span data-theme-icon="dark">🌙</span>
+            <span data-theme-icon="auto">💻</span>
+        </button>
+    </div>
+
+    <!-- Theme System JavaScript -->
+    <script src="js/admin-theme.js"></script>
+
+    <script>
+        // Initialize theme system
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling for navigation links
+            document.querySelectorAll('.docs-nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add active state to navigation based on scroll position
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        document.querySelectorAll('.docs-nav a').forEach(link => {
+                            link.classList.remove('admin-text-accent');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('admin-text-accent');
+                            }
+                        });
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '-100px 0px -50% 0px'
+            });
+
+            document.querySelectorAll('.docs-section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+@if (IsLoading)
+{
+    <div class="col-md-3 mb-4">
+        <div class="dashboard-card skeleton-card">
+            <div class="skeleton-content">
+                <div class="skeleton-text skeleton-title"></div>
+                <div class="skeleton-text skeleton-subtitle"></div>
+            </div>
+            <div class="skeleton-icon"></div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-md-3 mb-4">
+        <div class="dashboard-card @BackgroundClass @(Clickable ? "clickable" : "")" @onclick="HandleClick">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div class="metric-content">
+                        <h4 class="metric-value @TextColorClass">@Value</h4>
+                        <small class="metric-title @TextColorClass">@Title</small>
+                    </div>
+                    <div class="metric-icon">
+                        <span class="@IconClass @TextColorClass" style="font-size: 2rem;"></span>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Subtitle))
+                {
+                    <div class="mt-2">
+                        <small class="@TextColorClass opacity-75">@Subtitle</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Value { get; set; } = "0";
+    [Parameter] public string IconClass { get; set; } = "oi oi-info";
+    [Parameter] public string BackgroundClass { get; set; } = "bg-primary";
+    [Parameter] public string TextColorClass { get; set; } = "text-white";
+    [Parameter] public string Subtitle { get; set; } = string.Empty;
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public bool Clickable { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private async Task HandleClick()
+    {
+        if (Clickable && OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync();
+        }
+    }
+}

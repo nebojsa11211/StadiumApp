@@ -2,7 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using StadiumDrinkOrdering.Admin.Components;
+// using StadiumDrinkOrdering.Admin.Components; - Components removed
 using StadiumDrinkOrdering.Admin.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
@@ -41,7 +41,7 @@ public partial class StadiumOverview : ComponentBase
     // Existing properties for event management
     private List<Event>? events;
     private int selectedEventId = 0;
-    private Dictionary<string, SeatStatusDto>? seatStatusMap;
+    private Dictionary<string, ViewerSeatStatusDto>? seatStatusMap;
     private bool isSimulating = false;
 
     // Stadium information panel properties
@@ -102,7 +102,18 @@ public partial class StadiumOverview : ComponentBase
         try
         {
             await Task.Delay(100); // Small delay to ensure stadium renders first
-            events = await ApiService.GetEventsAsync();
+            var eventDtos = await ApiService.GetEventsAsync();
+            events = eventDtos?.Select(e => new Event
+            {
+                Id = e.Id,
+                EventName = e.Name,
+                EventDate = e.Date ?? DateTime.Now,
+                Description = e.Description,
+                TotalSeats = e.Capacity,
+                BaseTicketPrice = (decimal)e.BasePrice,
+                IsActive = e.IsActive,
+                CreatedAt = e.CreatedAt
+            }).ToList() ?? new List<Event>();
             await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
@@ -360,7 +371,18 @@ public partial class StadiumOverview : ComponentBase
     {
         try
         {
-            events = await ApiService.GetEventsAsync();
+            var eventDtos = await ApiService.GetEventsAsync();
+            events = eventDtos?.Select(e => new Event
+            {
+                Id = e.Id,
+                EventName = e.Name,
+                EventDate = e.Date ?? DateTime.Now,
+                Description = e.Description,
+                TotalSeats = e.Capacity,
+                BaseTicketPrice = (decimal)e.BasePrice,
+                IsActive = e.IsActive,
+                CreatedAt = e.CreatedAt
+            }).ToList() ?? new List<Event>();
         }
         catch (Exception ex)
         {
@@ -406,7 +428,8 @@ public partial class StadiumOverview : ComponentBase
             var response = await ApiService.GetSeatStatusForEventAsync(selectedEventId);
             if (response != null)
             {
-                seatStatusMap = response.SoldSeats;
+                var responseJson = response as dynamic;
+                seatStatusMap = responseJson?.SoldSeats ?? new Dictionary<string, bool>();
             }
         }
         catch (Exception ex)
@@ -425,7 +448,7 @@ public partial class StadiumOverview : ComponentBase
 
         try
         {
-            var success = await ApiService.SimulateTicketSalesAsync(selectedEventId, 25, 75.00m);
+            var success = await ApiService.SimulateTicketSalesAsync(selectedEventId, 25);
             if (success)
             {
                 await LoadSeatStatusForEvent();

@@ -1,0 +1,103 @@
+<div class="card connection-status-card">
+    <div class="card-body">
+        <h6 class="card-title">@Title</h6>
+
+        @if (IsLoading)
+        {
+            <div class="d-flex align-items-center">
+                <div class="skeleton-badge me-2"></div>
+                <div class="skeleton-button"></div>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex align-items-center">
+                <span class="badge @GetStatusBadgeClass() me-2">
+                    <span class="@GetStatusIconClass() me-1"></span>
+                    @GetStatusText()
+                </span>
+
+                @if (!IsConnected && ShowReconnectButton)
+                {
+                    <button class="btn btn-sm btn-outline-primary"
+                            @onclick="HandleReconnectClick"
+                            disabled="@IsReconnecting">
+                        @if (IsReconnecting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            @:Reconnecting...
+                        }
+                        else
+                        {
+                            <span class="oi oi-reload me-1"></span>
+                            @:Reconnect
+                        }
+                    </button>
+                }
+
+                @if (ShowLastConnectedTime && LastConnectedTime.HasValue)
+                {
+                    <small class="text-muted ms-2">
+                        Last: @LastConnectedTime.Value.ToString("HH:mm:ss")
+                    </small>
+                }
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(StatusMessage))
+        {
+            <div class="mt-2">
+                <small class="text-muted">@StatusMessage</small>
+            </div>
+        }
+
+        @if (ShowConnectionDetails && ConnectionDetails.Any())
+        {
+            <div class="mt-3">
+                <small class="text-muted">
+                    @foreach (var detail in ConnectionDetails)
+                    {
+                        <div>@detail.Key: <strong>@detail.Value</strong></div>
+                    }
+                </small>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Connection Status";
+    [Parameter] public bool IsConnected { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public bool IsReconnecting { get; set; }
+    [Parameter] public bool ShowReconnectButton { get; set; } = true;
+    [Parameter] public bool ShowLastConnectedTime { get; set; } = true;
+    [Parameter] public bool ShowConnectionDetails { get; set; } = false;
+    [Parameter] public DateTime? LastConnectedTime { get; set; }
+    [Parameter] public string? StatusMessage { get; set; }
+    [Parameter] public Dictionary<string, string> ConnectionDetails { get; set; } = new();
+    [Parameter] public EventCallback OnReconnectClick { get; set; }
+
+    private string GetStatusBadgeClass()
+    {
+        return IsConnected ? "bg-success" : "bg-danger";
+    }
+
+    private string GetStatusIconClass()
+    {
+        return IsConnected ? "oi oi-circle-check" : "oi oi-circle-x";
+    }
+
+    private string GetStatusText()
+    {
+        return IsConnected ? "Connected" : "Disconnected";
+    }
+
+    private async Task HandleReconnectClick()
+    {
+        if (OnReconnectClick.HasDelegate)
+        {
+            await OnReconnectClick.InvokeAsync();
+        }
+    }
+}

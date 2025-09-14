@@ -30,7 +30,7 @@ public partial class Drinks : ComponentBase
 
     private async Task LoadDrinks()
     {
-        drinks = await ApiService.GetDrinksAsync();
+        drinks = (await ApiService.GetDrinksAsync())?.ToList();
     }
 
     private IEnumerable<DrinkDto> FilteredDrinks
@@ -150,8 +150,8 @@ public partial class Drinks : ComponentBase
                     IsAvailable = drinkForm.IsAvailable
                 };
 
-                var success = await ApiService.UpdateDrinkAsync(editingDrink.Id, updateDto);
-                if (success)
+                var result = await ApiService.UpdateDrinkAsync(editingDrink.Id, updateDto);
+                if (result != null)
                 {
                     await LoadDrinks();
                     HideDrinkModal();
@@ -172,9 +172,9 @@ public partial class Drinks : ComponentBase
     private async Task ToggleAvailability(DrinkDto drink)
     {
         var updateDto = new UpdateDrinkDto { IsAvailable = !drink.IsAvailable };
-        var success = await ApiService.UpdateDrinkAsync(drink.Id, updateDto);
-        
-        if (success)
+        var result = await ApiService.UpdateDrinkAsync(drink.Id, updateDto);
+
+        if (result != null)
         {
             await LoadDrinks();
             ShowAlert($"Drink '{drink.Name}' {(drink.IsAvailable ? "disabled" : "enabled")}", "success");

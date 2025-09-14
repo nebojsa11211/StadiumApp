@@ -1,0 +1,74 @@
+@using StadiumDrinkOrdering.Staff.Models
+
+<div class="card quick-actions-card">
+    <div class="card-header">
+        <h5 class="mb-0">@Title</h5>
+    </div>
+    <div class="card-body">
+        @if (IsLoading)
+        {
+            <div class="d-grid gap-2">
+                @for (int i = 0; i < 3; i++)
+                {
+                    <div class="skeleton-button"></div>
+                }
+            </div>
+        }
+        else if (Actions != null && Actions.Any())
+        {
+            <div class="d-grid gap-2">
+                @foreach (var action in Actions)
+                {
+                    @if (!string.IsNullOrEmpty(action.Url))
+                    {
+                        <a href="@action.Url" class="btn @action.ButtonClass @(action.IsDisabled ? "disabled" : "")">
+                            @if (!string.IsNullOrEmpty(action.IconClass))
+                            {
+                                <span class="@action.IconClass me-2"></span>
+                            }
+                            @action.Title
+                            @if (action.BadgeCount > 0)
+                            {
+                                <span class="badge bg-light text-dark ms-2">@action.BadgeCount</span>
+                            }
+                        </a>
+                    }
+                    else if (action.OnClick.HasDelegate)
+                    {
+                        <button class="btn @action.ButtonClass @(action.IsDisabled ? "disabled" : "")"
+                                @onclick="action.OnClick"
+                                disabled="@action.IsDisabled">
+                            @if (!string.IsNullOrEmpty(action.IconClass))
+                            {
+                                <span class="@action.IconClass me-2"></span>
+                            }
+                            @action.Title
+                            @if (action.BadgeCount > 0)
+                            {
+                                <span class="badge bg-light text-dark ms-2">@action.BadgeCount</span>
+                            }
+                        </button>
+                    }
+
+                    @if (!string.IsNullOrEmpty(action.Description))
+                    {
+                        <small class="text-muted mt-1 d-block">@action.Description</small>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state text-center text-muted py-3">
+                <span class="oi oi-warning" style="font-size: 2rem;"></span>
+                <p class="mt-2 mb-0">No actions available</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Quick Actions";
+    [Parameter] public IEnumerable<QuickAction>? Actions { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+}

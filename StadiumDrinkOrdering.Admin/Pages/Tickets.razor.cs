@@ -45,7 +45,7 @@ public partial class Tickets : ComponentBase
             var ticketsResponse = await ApiService.GetTicketsAsync(selectedEventId);
             if (ticketsResponse != null)
             {
-                allTickets = ticketsResponse;
+                allTickets = ticketsResponse.ToList();
                 ApplyFilters();
             }
 
@@ -56,13 +56,13 @@ public partial class Tickets : ComponentBase
                 events = eventsResponse.Select(e => new EventDto
                 {
                     Id = e.Id,
-                    Name = e.EventName,
-                    Date = e.EventDate,
+                    Name = e.Name,
+                    Date = e.Date,
                     Description = e.Description,
                     Location = "Stadium", // Default location since Event model doesn't have Location
-                    Capacity = e.TotalSeats,
-                    AvailableSeats = e.TotalSeats - (e.Tickets?.Count ?? 0),
-                    BasePrice = e.BaseTicketPrice ?? 0,
+                    Capacity = e.Capacity,
+                    AvailableSeats = e.AvailableSeats,
+                    BasePrice = e.BasePrice,
                     IsActive = e.IsActive,
                     CreatedAt = e.CreatedAt
                 }).ToList();
@@ -167,19 +167,15 @@ public partial class Tickets : ComponentBase
     {
         try
         {
-            var validateDto = new ValidateTicketDto { TicketNumber = ticketNumber };
-            var result = await ApiService.ValidateTicketAsync(validateDto);
-            
-            if (result != null)
+            var isValid = await ApiService.ValidateTicketAsync(ticketNumber);
+
+            if (isValid)
             {
-                if (result.IsValid)
-                {
-                    await JSRuntime.InvokeVoidAsync("alert", $"Ticket is VALID!\n\nEvent: {result.Ticket?.EventName}\nSeat: {result.Ticket?.Section} Row {result.Ticket?.Row} Seat {result.Ticket?.SeatNumber}");
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("alert", $"Ticket is INVALID!\n\n{result.ErrorMessage}");
-                }
+                await JSRuntime.InvokeVoidAsync("alert", $"Ticket '{ticketNumber}' is VALID!");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Ticket '{ticketNumber}' is INVALID!");
             }
         }
         catch (Exception ex)

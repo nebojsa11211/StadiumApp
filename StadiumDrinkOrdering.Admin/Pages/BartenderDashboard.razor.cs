@@ -133,8 +133,7 @@ public partial class BartenderDashboard : ComponentBase, IDisposable
 
     private async Task UpdateOrderStatus(int orderId, OrderStatus newStatus)
     {
-        var updateDto = new UpdateOrderStatusDto { Status = newStatus };
-        var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
+        var success = await ApiService.UpdateOrderStatusAsync(orderId, newStatus);
         if (success)
         {
             if (selectedOrder != null && selectedOrder.Id == orderId)

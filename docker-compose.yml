@@ -1,28 +1,6 @@
 version: '3.8'
 
 services:
-  # SQL Server Database
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: stadium-sqlserver
-    environment:
-      ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: YourPassword123!
-      MSSQL_PID: Express
-    ports:
-      - "14330:1433"
-    volumes:
-      - sqlserver_data:/var/opt/mssql
-    networks:
-      - stadium-network
-    healthcheck:
-      test: ["CMD-SHELL", "echo 'health check'"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-    restart: unless-stopped
-
   # API Backend
   api:
     build:
@@ -32,7 +10,7 @@ services:
     environment:
       - TZ=Europe/Zagreb
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=300;Keepalive=30;Connection Idle Lifetime=300;Maximum Pool Size=50;Minimum Pool Size=5;Pooling=true;No Reset On Close=true;Include Error Detail=true
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/stadium_test.db
       - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=StadiumDrinkOrdering
       - JwtSettings__Audience=StadiumDrinkOrdering
@@ -141,9 +119,6 @@ networks:
 
 # Volumes
 volumes:
-  sqlserver_data:
-    driver: local
-    name: stadium-sqlserver-data
   api_data:
     driver: local
     name: stadium-api-data

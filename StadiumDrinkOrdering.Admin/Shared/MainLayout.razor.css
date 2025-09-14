@@ -48,6 +48,169 @@ main {
     }
 }
 
+/* Premium Server Time Display */
+.server-time-container {
+    position: relative;
+    margin-left: 2rem;
+}
+
+.server-time-display {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.server-time-display:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.35);
+}
+
+.server-time-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+}
+
+.time-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+}
+
+.time-icon i {
+    color: #ffffff;
+    font-size: 14px;
+    animation: clockTick 1s infinite;
+}
+
+@keyframes clockTick {
+    0%, 50%, 100% { transform: scale(1); }
+    25% { transform: scale(1.1); }
+}
+
+.time-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.time-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+.time-value {
+    font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    line-height: 1;
+    letter-spacing: 0.5px;
+}
+
+.time-status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.time-status-indicator.online {
+    background-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.1); }
+    100% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3); }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .server-time-container {
+        margin-left: 1rem;
+    }
+
+    .server-time-display {
+        padding: 0.6rem 1rem;
+        gap: 0.6rem;
+    }
+
+    .time-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .time-value {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .time-content {
+        display: none;
+    }
+
+    .server-time-display {
+        padding: 0.6rem;
+        gap: 0;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        justify-content: center;
+    }
+
+    .time-status-indicator {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .server-time-container {
+        display: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .server-time-display {
+        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+}
+
 @media (min-width: 641px) {
     .page {
         flex-direction: row;

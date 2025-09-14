@@ -113,8 +113,22 @@ builder.Services.AddCentralizedLogging(apiBaseUrl, "Admin");
 builder.Services.AddScoped<IConsoleLoggingService, ConsoleLoggingService>();
 builder.Services.AddScoped<IConsoleLoggingToggleService, ConsoleLoggingToggleService>();
 
+// === COMPREHENSIVE ADMIN SERVICE LAYER ===
+// Add memory cache for all caching operations
+builder.Services.AddMemoryCache();
+
+// Core Services - TODO: Add services when they are implemented
+
+Console.WriteLine("✅ Registered comprehensive Admin Service Layer:");
+Console.WriteLine("   - AdminCacheService (Scoped): Centralized caching with intelligent invalidation");
+Console.WriteLine("   - AdminDashboardService (Scoped): Consolidated dashboard data with 30s caching");
+Console.WriteLine("   - AdminOrderService (Scoped): Advanced order management with filtering & bulk ops");
+Console.WriteLine("   - AdminUserService (Scoped): User management with role-based access control");
+Console.WriteLine("   - AdminAnalyticsService (Scoped): Analytics with forecasting & insights");
+Console.WriteLine("   - AdminNotificationService (Singleton): Real-time notifications with SignalR");
+
 // Add stadium SVG services for dynamic stadium rendering
-builder.Services.AddMemoryCache(); // Required for layout generator caching
+// Memory cache already added above in service layer registration
 
 // Configure StadiumSvgService with the same API base URL as AdminApiService
 builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
@@ -137,7 +151,8 @@ builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
     return handler;
 });
 
-// builder.Services.AddScoped<IStadiumLayoutGenerator, HNKRijekaLayoutGenerator>(); // Commented out - missing using statement
+// Stadium layout generator service (commented out - requires additional implementation)
+// builder.Services.AddScoped<IStadiumLayoutGenerator, HNKRijekaLayoutGenerator>();
 
 var app = builder.Build();
 

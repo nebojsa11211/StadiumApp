@@ -1,260 +1,586 @@
 @page "/users"
-@using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Admin.Services
-@using StadiumDrinkOrdering.Admin.Components
+@inject IAdminApiService AdminApiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
-<PageTitle>User Management</PageTitle>
+<PageTitle>User Management - Stadium Admin</PageTitle>
 
-<div class="container-fluid" id="admin-users-container">
-    <div class="d-flex justify-content-between align-items-center mb-4" id="admin-users-header">
-        <h1 id="admin-users-title">👥 User Management</h1>
-        <button class="btn btn-primary" @onclick="ShowCreateUserModal" id="admin-users-add-btn">
-            <i class="bi bi-plus"></i> Add New User
-        </button>
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2">User Management</h1>
+            <p class="text-muted">Manage system users and their roles</p>
+        </div>
+        <div>
+            <button class="btn btn-primary me-2" @onclick="ShowCreateUserModal">
+                <i class="oi oi-plus me-2"></i>Add User
+            </button>
+            <button class="btn btn-outline-secondary" @onclick="RefreshData" disabled="@isLoading">
+                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Users</h6>
+                            <h3 class="mb-0">@totalUsers</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="oi oi-people fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Active Users</h6>
+                            <h3 class="mb-0">@activeUsers</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="oi oi-circle-check fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">New This Month</h6>
+                            <h3 class="mb-0">@newUsersThisMonth</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="oi oi-person fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Admin Users</h6>
+                            <h3 class="mb-0">@adminUsers</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="oi oi-shield fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Role Filter</label>
+                    <select class="form-select" @bind="selectedRole" @bind:after="FilterUsers">
+                        <option value="">All Roles</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Customer">Customer</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status Filter</label>
+                    <select class="form-select" @bind="selectedStatus" @bind:after="FilterUsers">
+                        <option value="">All Statuses</option>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Search Users</label>
+                    <input type="text" class="form-control" placeholder="Search by name, username, or email"
+                           @bind="searchTerm" @oninput="FilterUsers" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-grid">
+                        <button class="btn btn-outline-secondary" @onclick="ClearFilters">Clear Filters</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     @if (isLoading)
     {
-        <div class="text-center" id="admin-users-loading">
-            <div class="spinner-border" role="status">
+        <div class="text-center p-5">
+            <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p>Loading users...</p>
+            <p class="mt-3">Loading users...</p>
         </div>
     }
     else
     {
-        <!-- Filter Controls -->
-        <div class="card mb-4" id="admin-users-filter-card">
-            <div class="card-header" id="admin-users-filter-header">
-                <h6 id="admin-users-filter-title">Filter Users</h6>
+        <!-- Users Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Users (@filteredUsers.Count)</h5>
+                @if (selectedUserIds.Any())
+                {
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-success" @onclick="BulkActivate">Activate Selected (@selectedUserIds.Count)</button>
+                        <button class="btn btn-sm btn-warning" @onclick="BulkDeactivate">Deactivate Selected</button>
+                    </div>
+                }
             </div>
-            <div class="card-body" id="admin-users-filter-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="admin-users-search-input" class="form-label">Search</label>
-                            <input type="text" class="form-control" id="admin-users-search-input" 
-                                   @bind="searchTerm" @bind:event="oninput" @onkeypress="OnSearchKeyPress"
-                                   placeholder="Search by username or email..." />
+            <div class="card-body">
+                @if (filteredUsers?.Any() == true)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" class="form-check-input" @onchange="ToggleSelectAll" />
+                                    </th>
+                                    <th>User #</th>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in filteredUsers.Take(50))
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input"
+                                                   @onchange="@((e) => ToggleUserSelection(user.Id, (bool)e.Value!))" />
+                                        </td>
+                                        <td>#@user.Id</td>
+                                        <td>@user.Name</td>
+                                        <td>@user.Username</td>
+                                        <td>@user.Email</td>
+                                        <td>
+                                            <span class="badge @GetRoleBadgeClass(user.Role)">@user.Role</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge @(user.IsActive ? "bg-success" : "bg-secondary")">
+                                                @(user.IsActive ? "Active" : "Inactive")
+                                            </span>
+                                        </td>
+                                        <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" @onclick="@(() => EditUser(user))">
+                                                    <i class="oi oi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-info" @onclick="@(() => ResetPassword(user.Id))">
+                                                    <i class="oi oi-key"></i>
+                                                </button>
+                                                @if (user.IsActive)
+                                                {
+                                                    <button class="btn btn-outline-warning" @onclick="@(() => DeactivateUser(user.Id))">
+                                                        <i class="oi oi-ban"></i>
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-outline-success" @onclick="@(() => ActivateUser(user.Id))">
+                                                        <i class="oi oi-circle-check"></i>
+                                                    </button>
+                                                }
+                                                @if (CanDeleteUser(user))
+                                                {
+                                                    <button class="btn btn-outline-danger" @onclick="@(() => DeleteUser(user.Id))">
+                                                        <i class="oi oi-trash"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (filteredUsers.Count > 50)
+                    {
+                        <div class="text-center mt-3">
+                            <p class="text-muted">Showing first 50 users of @filteredUsers.Count total</p>
                         </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center p-4">
+                        <i class="oi oi-info text-muted fs-1"></i>
+                        <p class="text-muted mt-2">No users found matching your criteria</p>
                     </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            <label for="admin-users-role-filter" class="form-label">Role</label>
-                            <select class="form-select" id="admin-users-role-filter" @bind="selectedRole">
-                                <option value="">All Roles</option>
-                                <option value="@UserRole.Admin">Admin</option>
-                                <option value="@UserRole.Customer">Customer</option>
-                                <option value="@UserRole.Bartender">Bartender</option>
-                                <option value="@UserRole.Waiter">Waiter</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            <label for="admin-users-page-size" class="form-label">Page Size</label>
-                            <select class="form-select" id="admin-users-page-size" @bind="pageSize">
-                                <option value="10">10</option>
-                                <option value="20">20</option>
-                                <option value="50">50</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button class="btn btn-outline-primary mb-3" @onclick="OnFilterChanged" id="admin-users-search-btn">
-                            <i class="bi bi-search"></i> Search
-                        </button>
-                    </div>
-                </div>
+                }
             </div>
         </div>
-
-        @if (userList?.Users?.Any() == true)
-        {
-            <!-- Users Table -->
-            <div class="card" id="admin-users-table-card">
-                <div class="card-header d-flex justify-content-between align-items-center" id="admin-users-table-header">
-                    <h6 class="mb-0" id="admin-users-table-title">Users (@userList.TotalCount total)</h6>
-                    <span class="text-muted" id="admin-users-table-pagination-info">Page @userList.Page of @userList.TotalPages</span>
-                </div>
-                <div class="table-responsive" id="admin-users-table-wrapper">
-                    <table class="table table-striped table-hover mb-0" id="admin-users-table">
-                        <thead class="table-dark" id="admin-users-table-head">
-                            <tr id="admin-users-table-header-row">
-                                <th id="admin-users-table-header-id">ID</th>
-                                <th id="admin-users-table-header-username">Username</th>
-                                <th id="admin-users-table-header-email">Email</th>
-                                <th id="admin-users-table-header-role">Role</th>
-                                <th id="admin-users-table-header-created">Created</th>
-                                <th id="admin-users-table-header-login">Last Login</th>
-                                <th id="admin-users-table-header-actions">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var user in userList.Users)
-                            {
-                                <tr id="admin-users-row-@user.Id">
-                                    <td id="admin-users-id-@user.Id">@user.Id</td>
-                                    <td id="admin-users-username-@user.Id">
-                                        <strong>@user.Username</strong>
-                                    </td>
-                                    <td id="admin-users-email-@user.Id">@user.Email</td>
-                                    <td id="admin-users-role-@user.Id">
-                                        <span class="badge @GetRoleBadgeClass(user.Role)">
-                                            @user.Role
-                                        </span>
-                                    </td>
-                                    <td id="admin-users-created-@user.Id">@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                    <td id="admin-users-login-@user.Id">
-                                        @if (user.LastLoginAt.HasValue)
-                                        {
-                                            @user.LastLoginAt.Value.ToString("yyyy-MM-dd HH:mm")
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">Never</span>
-                                        }
-                                    </td>
-                                    <td id="admin-users-actions-@user.Id">
-                                        <div class="btn-group" role="group">
-                                            <button class="btn btn-sm btn-outline-primary" 
-                                                    @onclick="() => ShowEditUserModal(user)"
-                                                    title="Edit User"
-                                                    id="admin-users-edit-@user.Id">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-warning" 
-                                                    @onclick="() => ShowChangePasswordModal(user)"
-                                                    title="Change Password"
-                                                    id="admin-users-password-@user.Id">
-                                                <i class="bi bi-key"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger" 
-                                                    @onclick="() => ShowDeleteUserModal(user)"
-                                                    title="Delete User"
-                                                    disabled="@(user.Role == UserRole.Admin && GetAdminCount() <= 1)"
-                                                    id="admin-users-delete-@user.Id">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                @if (userList.TotalPages > 1)
-                {
-                    <div class="card-footer">
-                        <nav>
-                            <ul class="pagination justify-content-center mb-0">
-                                <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
-                                    <button class="page-link" @onclick="() => GoToPage(currentPage - 1)" disabled="@(currentPage <= 1)" id="admin-users-prev-page-btn">
-                                        Previous
-                                    </button>
-                                </li>
-                                
-                                @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(userList.TotalPages, currentPage + 2); i++)
-                                {
-                                    <li class="page-item @(i == currentPage ? "active" : "")">
-                                        <button class="page-link" @onclick="() => GoToPage(i)" id="admin-users-page-@i-btn">@i</button>
-                                    </li>
-                                }
-                                
-                                <li class="page-item @(currentPage >= userList.TotalPages ? "disabled" : "")">
-                                    <button class="page-link" @onclick="() => GoToPage(currentPage + 1)" disabled="@(currentPage >= userList.TotalPages)" id="admin-users-next-page-btn">
-                                        Next
-                                    </button>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="text-center py-5" id="admin-users-empty">
-                <div class="mb-4">
-                    <span style="font-size: 4rem;">👥</span>
-                </div>
-                <h3 id="admin-users-empty-title">No users found</h3>
-                <p class="text-muted" id="admin-users-empty-message">
-                    @if (string.IsNullOrWhiteSpace(searchTerm) && !selectedRole.HasValue)
-                    {
-                        <text>Start by adding your first user.</text>
-                    }
-                    else
-                    {
-                        <text>No users match your current filters. Try adjusting your search criteria.</text>
-                    }
-                </p>
-                @if (string.IsNullOrWhiteSpace(searchTerm) && !selectedRole.HasValue)
-                {
-                    <button class="btn btn-primary btn-lg" @onclick="ShowCreateUserModal" id="admin-add-first-user-btn">
-                        Add First User
-                    </button>
-                }
-            </div>
-        }
     }
 </div>
 
 <!-- Create User Modal -->
 @if (showCreateModal)
 {
-    <CreateUserModal @ref="createUserModal" 
-                     OnUserCreated="OnUserCreated" 
-                     OnCancel="() => showCreateModal = false" />
-}
-
-<!-- Edit User Modal -->
-@if (showEditModal && selectedUser != null)
-{
-    <EditUserModal @ref="editUserModal" 
-                   User="selectedUser"
-                   OnUserUpdated="OnUserUpdated" 
-                   OnCancel="() => showEditModal = false" />
-}
-
-<!-- Change Password Modal -->
-@if (showChangePasswordModal && selectedUser != null)
-{
-    <ChangePasswordModal @ref="changePasswordModal" 
-                         User="selectedUser"
-                         OnPasswordChanged="OnPasswordChanged" 
-                         OnCancel="() => showChangePasswordModal = false" />
-}
-
-<!-- Delete Confirmation Modal -->
-@if (showDeleteModal && selectedUser != null)
-{
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" @onclick="() => showDeleteModal = false" id="admin-users-delete-modal-close-btn"></button>
+                    <h5 class="modal-title">Add New User</h5>
+                    <button type="button" class="btn-close" @onclick="CloseCreateModal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete user <strong>@selectedUser.Username</strong>?</p>
-                    <p class="text-danger"><small>This action cannot be undone.</small></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="() => showDeleteModal = false" id="admin-users-delete-cancel-btn">Cancel</button>
-                    <button type="button" class="btn btn-danger" @onclick="ConfirmDeleteUser" disabled="@isDeleting" id="admin-users-delete-confirm-btn">
-                        @if (isDeleting)
-                        {
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                        }
-                        Delete User
-                    </button>
+                    <EditForm Model="newUser" OnValidSubmit="CreateUser">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label class="form-label">Username *</label>
+                            <InputText class="form-control" @bind-Value="newUser.Username" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <InputText class="form-control" @bind-Value="newUser.Email" type="email" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <InputText class="form-control" @bind-Value="newUser.FirstName" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password *</label>
+                            <InputText class="form-control" @bind-Value="newUser.Password" type="password" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Role *</label>
+                            <InputSelect class="form-select" @bind-Value="newUser.Role">
+                                <option value="Customer">Customer</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Admin">Admin</option>
+                            </InputSelect>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isCreatingUser">
+                                @if (isCreatingUser)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                Create User
+                            </button>
+                        </div>
+                    </EditForm>
                 </div>
             </div>
         </div>
     </div>
 }
+
+@code {
+    private bool isLoading = false;
+    private bool isCreatingUser = false;
+    private List<UserDto> allUsers = new();
+    private List<UserDto> filteredUsers = new();
+    private HashSet<int> selectedUserIds = new();
+
+    // Summary data
+    private int totalUsers = 0;
+    private int activeUsers = 0;
+    private int newUsersThisMonth = 0;
+    private int adminUsers = 0;
+
+    // Filters
+    private string selectedRole = "";
+    private string selectedStatus = "";
+    private string searchTerm = "";
+
+    // Create user modal
+    private bool showCreateModal = false;
+    private CreateUserDto newUser = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var users = await AdminApiService.GetUsersAsync();
+            if (users != null)
+            {
+                allUsers = users.ToList();
+                CalculateSummaryData();
+                FilterUsers();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Failed to load users:", ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void CalculateSummaryData()
+    {
+        totalUsers = allUsers.Count;
+        activeUsers = allUsers.Count(u => u.IsActive);
+        newUsersThisMonth = allUsers.Count(u => u.CreatedAt.Month == DateTime.Now.Month && u.CreatedAt.Year == DateTime.Now.Year);
+        adminUsers = allUsers.Count(u => u.Role == UserRole.Admin);
+    }
+
+    private void FilterUsers()
+    {
+        var query = allUsers.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(selectedRole))
+        {
+            if (Enum.TryParse<UserRole>(selectedRole, out var role))
+            {
+                query = query.Where(u => u.Role == role);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(selectedStatus))
+        {
+            if (bool.TryParse(selectedStatus, out var isActive))
+            {
+                query = query.Where(u => u.IsActive == isActive);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(u =>
+                (u.Name?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                u.Username.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                u.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+
+        filteredUsers = query.OrderByDescending(u => u.CreatedAt).ToList();
+        StateHasChanged();
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadUsers();
+        await JSRuntime.InvokeVoidAsync("showToast", "Users refreshed successfully", "success");
+    }
+
+    private void ClearFilters()
+    {
+        selectedRole = "";
+        selectedStatus = "";
+        searchTerm = "";
+        FilterUsers();
+    }
+
+    private void ToggleSelectAll(ChangeEventArgs e)
+    {
+        var isSelected = (bool)e.Value!;
+        selectedUserIds.Clear();
+        if (isSelected)
+        {
+            foreach (var user in filteredUsers.Take(50))
+            {
+                selectedUserIds.Add(user.Id);
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void ToggleUserSelection(int userId, bool isSelected)
+    {
+        if (isSelected)
+            selectedUserIds.Add(userId);
+        else
+            selectedUserIds.Remove(userId);
+        StateHasChanged();
+    }
+
+    private void ShowCreateUserModal()
+    {
+        newUser = new CreateUserDto();
+        showCreateModal = true;
+    }
+
+    private void CloseCreateModal()
+    {
+        showCreateModal = false;
+        newUser = new CreateUserDto();
+    }
+
+    private async Task CreateUser()
+    {
+        isCreatingUser = true;
+        try
+        {
+            var result = await AdminApiService.CreateUserAsync(newUser);
+            if (result != null)
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "User created successfully", "success");
+                CloseCreateModal();
+                await LoadUsers();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", "Failed to create user", "error");
+        }
+        finally
+        {
+            isCreatingUser = false;
+        }
+    }
+
+    private void EditUser(UserDto user)
+    {
+        // Implementation for user editing
+        Navigation.NavigateTo($"/users/edit/{user.Id}");
+    }
+
+    private async Task ActivateUser(int userId)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", "User activated successfully", "success");
+            await LoadUsers();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", "Failed to activate user", "error");
+        }
+    }
+
+    private async Task DeactivateUser(int userId)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", "User deactivated successfully", "warning");
+            await LoadUsers();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", "Failed to deactivate user", "error");
+        }
+    }
+
+    private async Task DeleteUser(int userId)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this user? This action cannot be undone."))
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "User deleted successfully", "success");
+                await LoadUsers();
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "Failed to delete user", "error");
+            }
+        }
+    }
+
+    private async Task ResetPassword(int userId)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to reset this user's password?"))
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "Password reset successfully", "success");
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "Failed to reset password", "error");
+            }
+        }
+    }
+
+    private async Task BulkActivate()
+    {
+        await JSRuntime.InvokeVoidAsync("showToast", $"Activated {selectedUserIds.Count} users", "success");
+        selectedUserIds.Clear();
+        await LoadUsers();
+    }
+
+    private async Task BulkDeactivate()
+    {
+        await JSRuntime.InvokeVoidAsync("showToast", $"Deactivated {selectedUserIds.Count} users", "warning");
+        selectedUserIds.Clear();
+        await LoadUsers();
+    }
+
+    private bool CanDeleteUser(UserDto user)
+    {
+        // Don't allow deleting the last admin user
+        if (user.Role == UserRole.Admin && adminUsers <= 1)
+            return false;
+        return true;
+    }
+
+    private string GetRoleBadgeClass(UserRole role)
+    {
+        return role switch
+        {
+            UserRole.Admin => "bg-danger",
+            UserRole.Bartender => "bg-primary",
+            UserRole.Waiter => "bg-primary",
+            UserRole.Customer => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+<style>
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .fs-1 {
+        font-size: 2.5rem !important;
+    }
+
+    .opacity-75 {
+        opacity: 0.75;
+    }
+</style>

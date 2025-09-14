@@ -1,4 +1,4 @@
-@using StadiumDrinkOrdering.Admin.Components.Shared
+@* @using StadiumDrinkOrdering.Admin.Components.Shared - Components removed *@
 @inherits LayoutComponentBase
 
 <PageTitle>StadiumDrinkOrdering.Admin</PageTitle>
@@ -13,10 +13,22 @@
             <div class="d-flex align-center justify-between w-full">
                 <div class="d-flex align-center gap-4">
                     <h6 class="mb-0 text-primary">Admin Dashboard</h6>
+                    <div class="server-time-container">
+                        <div class="server-time-display">
+                            <div class="time-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="time-content">
+                                <div class="time-label">Server Time</div>
+                                <div class="time-value" id="server-time-value">@currentTime</div>
+                            </div>
+                            <div class="time-status-indicator online"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="d-flex align-center gap-4">
                     <LanguageSwitcher />
-                    <SignalRConnection ApiBaseUrl="https://localhost:9010" OnNewOrder="HandleNewOrder" OnOrderStatusChanged="HandleOrderStatusChanged" OnNotificationReceived="HandleNotification" OnSystemAlert="HandleSystemAlert" />
+                    @* SignalRConnection removed - component not available *@
                     @if (AuthStateService.IsAuthenticated)
                     {
                         <div class="d-flex align-items-center gap-3">

@@ -1,0 +1,707 @@
+/*
+ * Stadium Admin Animations & Transitions
+ * Smooth animations, transitions, and micro-interactions
+ * Version: 1.0.0
+ * Last Updated: 2025-01-13
+ */
+
+/* =============================================================================
+   KEYFRAME ANIMATIONS
+   ============================================================================= */
+
+/* Fade in animation */
+@keyframes admin-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fade in up animation */
+@keyframes admin-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in down animation */
+@keyframes admin-fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide in right animation */
+@keyframes admin-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide in left animation */
+@keyframes admin-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale in animation */
+@keyframes admin-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Bounce in animation */
+@keyframes admin-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Pulse animation */
+@keyframes admin-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Shake animation */
+@keyframes admin-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Spin animation */
+@keyframes admin-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Ping animation */
+@keyframes admin-ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Progress bar animation */
+@keyframes admin-progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Skeleton shimmer animation */
+@keyframes admin-shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+/* Float animation */
+@keyframes admin-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Wobble animation */
+@keyframes admin-wobble {
+  0% { transform: translateX(0%); }
+  15% { transform: translateX(-25px) rotate(-5deg); }
+  30% { transform: translateX(20px) rotate(3deg); }
+  45% { transform: translateX(-15px) rotate(-3deg); }
+  60% { transform: translateX(10px) rotate(2deg); }
+  75% { transform: translateX(-5px) rotate(-1deg); }
+  100% { transform: translateX(0%); }
+}
+
+/* Glow pulse animation */
+@keyframes admin-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--admin-color-accent-500);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--admin-color-accent-500), 0 0 30px var(--admin-color-accent-500);
+  }
+}
+
+/* Typewriter animation */
+@keyframes admin-typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Blink cursor animation */
+@keyframes admin-blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: var(--admin-text-primary); }
+}
+
+/* =============================================================================
+   ANIMATION UTILITY CLASSES
+   ============================================================================= */
+
+/* Basic animations */
+.admin-animate-fade-in {
+  animation: admin-fade-in 0.3s ease-out;
+}
+
+.admin-animate-fade-in-up {
+  animation: admin-fade-in-up 0.4s ease-out;
+}
+
+.admin-animate-fade-in-down {
+  animation: admin-fade-in-down 0.4s ease-out;
+}
+
+.admin-animate-slide-in-right {
+  animation: admin-slide-in-right 0.3s ease-out;
+}
+
+.admin-animate-slide-in-left {
+  animation: admin-slide-in-left 0.3s ease-out;
+}
+
+.admin-animate-scale-in {
+  animation: admin-scale-in 0.3s ease-out;
+}
+
+.admin-animate-bounce-in {
+  animation: admin-bounce-in 0.6s ease-out;
+}
+
+/* Continuous animations */
+.admin-animate-pulse {
+  animation: admin-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.admin-animate-spin {
+  animation: admin-spin 1s linear infinite;
+}
+
+.admin-animate-ping {
+  animation: admin-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.admin-animate-float {
+  animation: admin-float 3s ease-in-out infinite;
+}
+
+.admin-animate-glow-pulse {
+  animation: admin-glow-pulse 2s ease-in-out infinite;
+}
+
+/* Interactive animations */
+.admin-animate-shake {
+  animation: admin-shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.admin-animate-wobble {
+  animation: admin-wobble 1s ease-in-out;
+}
+
+/* Loading animations */
+.admin-animate-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--admin-bg-tertiary) 0%,
+    var(--admin-bg-overlay) 50%,
+    var(--admin-bg-tertiary) 100%
+  );
+  background-size: 200px 100%;
+  animation: admin-shimmer 1.2s ease-in-out infinite;
+}
+
+.admin-animate-progress {
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-animate-progress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: admin-progress 1.5s ease-in-out infinite;
+}
+
+/* Typewriter effect */
+.admin-animate-typewriter {
+  overflow: hidden;
+  border-right: 2px solid var(--admin-text-primary);
+  white-space: nowrap;
+  margin: 0 auto;
+  animation:
+    admin-typewriter 3.5s steps(40, end),
+    admin-blink-caret 0.75s step-end infinite;
+}
+
+/* =============================================================================
+   MICRO-INTERACTIONS
+   ============================================================================= */
+
+/* Button hover animations */
+.admin-btn-hover-lift {
+  transition: all var(--admin-transition-base);
+}
+
+.admin-btn-hover-lift:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+.admin-btn-hover-lift:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+/* Card hover animations */
+.admin-card-hover-scale {
+  transition: all var(--admin-transition-base);
+}
+
+.admin-card-hover-scale:hover {
+  transform: scale(1.02);
+  box-shadow: var(--admin-shadow-xl);
+}
+
+/* Icon spin on hover */
+.admin-icon-spin-hover {
+  transition: transform var(--admin-transition-base);
+}
+
+.admin-icon-spin-hover:hover {
+  transform: rotate(360deg);
+}
+
+/* Icon bounce on hover */
+.admin-icon-bounce-hover {
+  transition: transform var(--admin-transition-base);
+}
+
+.admin-icon-bounce-hover:hover {
+  animation: admin-bounce-in 0.6s ease-out;
+}
+
+/* Text glow on hover */
+.admin-text-glow-hover {
+  transition: all var(--admin-transition-base);
+}
+
+.admin-text-glow-hover:hover {
+  text-shadow: 0 0 10px var(--admin-color-accent-500);
+  color: var(--admin-color-accent-600);
+}
+
+/* Border grow animation */
+.admin-border-grow {
+  position: relative;
+  transition: color var(--admin-transition-base);
+}
+
+.admin-border-grow::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--admin-color-accent-500);
+  transition: width var(--admin-transition-base);
+}
+
+.admin-border-grow:hover::before {
+  width: 100%;
+}
+
+/* Ripple effect */
+.admin-ripple {
+  position: relative;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+.admin-ripple:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.admin-ripple:active:before {
+  width: 200px;
+  height: 200px;
+}
+
+/* =============================================================================
+   STAGGER ANIMATIONS FOR LISTS
+   ============================================================================= */
+
+/* Staggered fade in for list items */
+.admin-stagger-fade-in > * {
+  opacity: 0;
+  animation: admin-fade-in-up 0.4s ease-out forwards;
+}
+
+.admin-stagger-fade-in > *:nth-child(1) { animation-delay: 0.1s; }
+.admin-stagger-fade-in > *:nth-child(2) { animation-delay: 0.2s; }
+.admin-stagger-fade-in > *:nth-child(3) { animation-delay: 0.3s; }
+.admin-stagger-fade-in > *:nth-child(4) { animation-delay: 0.4s; }
+.admin-stagger-fade-in > *:nth-child(5) { animation-delay: 0.5s; }
+.admin-stagger-fade-in > *:nth-child(6) { animation-delay: 0.6s; }
+.admin-stagger-fade-in > *:nth-child(7) { animation-delay: 0.7s; }
+.admin-stagger-fade-in > *:nth-child(8) { animation-delay: 0.8s; }
+
+/* Staggered slide in for grid items */
+.admin-stagger-slide-in > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: admin-fade-in-up 0.3s ease-out forwards;
+}
+
+.admin-stagger-slide-in > *:nth-child(odd) { animation-delay: 0.1s; }
+.admin-stagger-slide-in > *:nth-child(even) { animation-delay: 0.2s; }
+
+/* =============================================================================
+   LOADING STATES AND SKELETONS
+   ============================================================================= */
+
+/* Pulsing loader */
+.admin-loader-pulse {
+  width: 40px;
+  height: 40px;
+  background: var(--admin-color-accent-500);
+  border-radius: 50%;
+  animation: admin-pulse 1.5s ease-in-out infinite;
+}
+
+/* Spinning loader */
+.admin-loader-spin {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--admin-bg-tertiary);
+  border-top: 4px solid var(--admin-color-accent-500);
+  border-radius: 50%;
+  animation: admin-spin 1s linear infinite;
+}
+
+/* Dots loader */
+.admin-loader-dots {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.admin-loader-dots div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--admin-color-accent-500);
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+
+.admin-loader-dots div:nth-child(1) {
+  left: 8px;
+  animation: admin-dots1 0.6s infinite;
+}
+
+.admin-loader-dots div:nth-child(2) {
+  left: 8px;
+  animation: admin-dots2 0.6s infinite;
+}
+
+.admin-loader-dots div:nth-child(3) {
+  left: 32px;
+  animation: admin-dots2 0.6s infinite;
+}
+
+.admin-loader-dots div:nth-child(4) {
+  left: 56px;
+  animation: admin-dots3 0.6s infinite;
+}
+
+@keyframes admin-dots1 {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+@keyframes admin-dots3 {
+  0% { transform: scale(1); }
+  100% { transform: scale(0); }
+}
+
+@keyframes admin-dots2 {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(24px, 0); }
+}
+
+/* Progress bar with animation */
+.admin-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--admin-bg-tertiary);
+  border-radius: var(--admin-radius-full);
+  overflow: hidden;
+}
+
+.admin-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--admin-color-accent-500),
+    var(--admin-color-accent-600)
+  );
+  border-radius: var(--admin-radius-full);
+  transition: width 0.3s ease;
+}
+
+.admin-progress-bar-indeterminate {
+  width: 100%;
+  height: 4px;
+  background: var(--admin-bg-tertiary);
+  border-radius: var(--admin-radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.admin-progress-bar-indeterminate::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--admin-color-accent-500),
+    var(--admin-color-accent-600)
+  );
+  border-radius: var(--admin-radius-full);
+  animation: admin-progress 1.5s ease-in-out infinite;
+}
+
+/* =============================================================================
+   PAGE TRANSITION ANIMATIONS
+   ============================================================================= */
+
+/* Page fade transition */
+.admin-page-transition {
+  animation: admin-fade-in-up 0.4s ease-out;
+}
+
+/* Modal entrance animation */
+.admin-modal-enter {
+  animation: admin-scale-in 0.3s ease-out;
+}
+
+.admin-modal-backdrop-enter {
+  animation: admin-fade-in 0.3s ease-out;
+}
+
+/* Toast notification animations */
+.admin-toast-enter {
+  animation: admin-slide-in-right 0.3s ease-out;
+}
+
+.admin-toast-exit {
+  animation: admin-slide-in-left 0.3s ease-in reverse;
+}
+
+/* Sidebar slide animations */
+.admin-sidebar-enter {
+  animation: admin-slide-in-left 0.3s ease-out;
+}
+
+.admin-sidebar-exit {
+  animation: admin-slide-in-left 0.3s ease-in reverse;
+}
+
+/* =============================================================================
+   ACCESSIBILITY AND REDUCED MOTION
+   ============================================================================= */
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .admin-animate-fade-in,
+  .admin-animate-fade-in-up,
+  .admin-animate-fade-in-down,
+  .admin-animate-slide-in-right,
+  .admin-animate-slide-in-left,
+  .admin-animate-scale-in,
+  .admin-animate-bounce-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .admin-animate-pulse,
+  .admin-animate-spin,
+  .admin-animate-ping,
+  .admin-animate-float,
+  .admin-animate-glow-pulse {
+    animation: none;
+  }
+
+  .admin-animate-skeleton {
+    animation: none;
+    background: var(--admin-bg-tertiary);
+  }
+
+  .admin-stagger-fade-in > *,
+  .admin-stagger-slide-in > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .admin-card-hover-scale:hover {
+    transform: none;
+  }
+
+  .admin-btn-hover-lift:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .admin-progress-bar-indeterminate::before {
+    animation: none;
+    width: 100%;
+  }
+
+  .admin-loader-spin {
+    animation: none;
+  }
+
+  .admin-loader-dots div {
+    animation: none;
+  }
+
+  /* Still allow opacity changes for important UI feedback */
+  .admin-btn,
+  .admin-card,
+  .admin-modal {
+    transition: opacity var(--admin-transition-fast);
+  }
+}
+
+/* Safe animations that can run even with reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .admin-safe-fade {
+    transition: opacity var(--admin-transition-base);
+  }
+
+  .admin-safe-scale {
+    transition: transform var(--admin-transition-fast);
+  }
+
+  .admin-safe-scale:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* Enhanced animations for users who prefer motion */
+@media (prefers-reduced-motion: no-preference) {
+  .admin-enhanced-hover:hover {
+    animation: admin-float 0.6s ease-in-out;
+  }
+
+  .admin-enhanced-focus:focus-visible {
+    animation: admin-pulse 0.3s ease-out;
+  }
+
+  .admin-enhanced-click:active {
+    animation: admin-bounce-in 0.4s ease-out;
+  }
+}
+
+/* =============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================= */
+
+/* Use transform and opacity for better performance */
+.admin-animate-optimized {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* GPU acceleration for heavy animations */
+.admin-animate-gpu {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* Clean up will-change after animation */
+.admin-animate-cleanup {
+  will-change: auto;
+}
+
+/* Contain layout and paint for better performance */
+.admin-animate-contain {
+  contain: layout style paint;
+}

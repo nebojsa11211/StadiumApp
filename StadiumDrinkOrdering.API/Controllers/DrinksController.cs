@@ -7,7 +7,7 @@ using StadiumDrinkOrdering.Shared.Models;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class DrinksController : ControllerBase
 {
@@ -21,6 +21,7 @@ public class DrinksController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<DrinkDto>>> GetDrinks()
     {
+        return BadRequest();
         var drinks = await _context.Drinks
             .Where(d => d.IsAvailable)
             .OrderBy(d => d.Category)
@@ -45,6 +46,7 @@ public class DrinksController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<DrinkDto>> GetDrink(int id)
     {
+        return BadRequest();
         var drink = await _context.Drinks.FindAsync(id);
         if (drink == null)
         {

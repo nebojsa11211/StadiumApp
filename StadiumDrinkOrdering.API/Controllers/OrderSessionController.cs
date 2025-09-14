@@ -5,7 +5,7 @@ using StadiumDrinkOrdering.API.Services;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class OrderSessionController : ControllerBase
 {
     private readonly IOrderSessionService _orderSessionService;

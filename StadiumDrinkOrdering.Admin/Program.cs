@@ -3,6 +3,17 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Localization;
 using StadiumDrinkOrdering.Admin.Data;
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Services.Orders;
+using StadiumDrinkOrdering.Admin.Services.Users;
+using StadiumDrinkOrdering.Admin.Services.Drinks;
+using StadiumDrinkOrdering.Admin.Services.Tickets;
+using StadiumDrinkOrdering.Admin.Services.Auth;
+using StadiumDrinkOrdering.Admin.Services.Logs;
+using StadiumDrinkOrdering.Admin.Services.Analytics;
+using StadiumDrinkOrdering.Admin.Services.Stadium;
+using StadiumDrinkOrdering.Admin.Services.Events;
+using StadiumDrinkOrdering.Admin.Services.Http;
+using StadiumDrinkOrdering.Admin.Services.ErrorHandling;
 using StadiumDrinkOrdering.Shared.Services;
 using System.Globalization;
 
@@ -45,47 +56,112 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 });
 
-// Add HTTP client
-builder.Services.AddHttpClient<IAdminApiService, AdminApiService>(client =>
+// Helper function to configure HttpClient for API services
+static void ConfigureApiHttpClient(IServiceCollection services, string clientName)
 {
-    var environment = builder.Environment.EnvironmentName;
     var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-    var aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
-    
-    // Determine API base URL based on environment
-    string apiBaseUrl;
-    if (containerEnv == "true")
+
+    services.AddHttpClient(clientName, client =>
     {
-        // Running in Docker container - use Docker networking (HTTPS in Docker)
-        apiBaseUrl = "https://api:8443/";
-    }
-    else
+        string apiBaseUrl;
+        if (containerEnv == "true")
+        {
+            // Running in Docker container - use Docker networking (HTTPS in Docker)
+            apiBaseUrl = "https://api:8443/";
+        }
+        else
+        {
+            // Running locally - use localhost
+            apiBaseUrl = "https://localhost:7010/";
+        }
+
+        client.BaseAddress = new Uri(apiBaseUrl);
+        client.Timeout = TimeSpan.FromSeconds(10);
+        client.DefaultRequestVersion = new Version(1, 1);
+        client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
+    }).ConfigurePrimaryHttpMessageHandler(() =>
     {
-        // Running locally - use localhost
-        apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
-    }
-    
-    Console.WriteLine($"=== ADMIN CONFIGURATION DEBUG ===");
-    Console.WriteLine($"Environment: {environment}");
-    Console.WriteLine($"Container Env: {containerEnv}");
-    Console.WriteLine($"ASPNETCORE_URLS: {aspnetUrls}");
-    Console.WriteLine($"Final API BaseUrl: {apiBaseUrl}");
-    Console.WriteLine($"===================================");
-    
-    client.BaseAddress = new Uri(apiBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(10); // Shorter timeout to fail fast
-    // Force HTTP/1.1 to avoid HTTP/2 issues
-    client.DefaultRequestVersion = new Version(1, 1);
-    client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
-}).ConfigurePrimaryHttpMessageHandler(() =>
-{
-    var handler = new HttpClientHandler();
-    
-    // Simplified HTTPS configuration for development
-    handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-    
-    return handler;
-});
+        var handler = new HttpClientHandler();
+        handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+        return handler;
+    });
+}
+
+// Register HTTP clients for each service
+ConfigureApiHttpClient(builder.Services, "OrderService");
+ConfigureApiHttpClient(builder.Services, "UserService");
+ConfigureApiHttpClient(builder.Services, "DrinkService");
+ConfigureApiHttpClient(builder.Services, "TicketService");
+ConfigureApiHttpClient(builder.Services, "AuthService");
+ConfigureApiHttpClient(builder.Services, "LogService");
+ConfigureApiHttpClient(builder.Services, "AnalyticsService");
+ConfigureApiHttpClient(builder.Services, "StadiumService");
+ConfigureApiHttpClient(builder.Services, "EventService");
+ConfigureApiHttpClient(builder.Services, "HttpService");
+
+// Register error notification service
+builder.Services.AddScoped<IErrorNotificationService, ErrorNotificationService>();
+
+// Register specialized services
+builder.Services.AddScoped<IOrderService>(provider =>
+    new OrderService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("OrderService"),
+                     provider.GetRequiredService<ICentralizedLoggingClient>(),
+                     provider.GetRequiredService<IErrorNotificationService>()));
+
+builder.Services.AddScoped<IUserService>(provider =>
+    new UserService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("UserService"),
+                    provider.GetRequiredService<ICentralizedLoggingClient>()));
+
+builder.Services.AddScoped<IDrinkService>(provider =>
+    new DrinkService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("DrinkService"),
+                     provider.GetRequiredService<ICentralizedLoggingClient>(),
+                     provider.GetRequiredService<IErrorNotificationService>()));
+
+builder.Services.AddScoped<ITicketService>(provider =>
+    new TicketService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("TicketService"),
+                      provider.GetRequiredService<ICentralizedLoggingClient>()));
+
+builder.Services.AddScoped<IAuthService>(provider =>
+    new AuthService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthService"),
+                    provider.GetRequiredService<ICentralizedLoggingClient>()));
+
+builder.Services.AddScoped<ILogService>(provider =>
+    new LogService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("LogService"),
+                   provider.GetRequiredService<ICentralizedLoggingClient>()));
+
+builder.Services.AddScoped<IAnalyticsService>(provider =>
+    new AnalyticsService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AnalyticsService"),
+                         provider.GetRequiredService<ICentralizedLoggingClient>()));
+
+builder.Services.AddScoped<IStadiumService>(provider =>
+    new StadiumService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("StadiumService"),
+                       provider.GetRequiredService<ICentralizedLoggingClient>()));
+
+builder.Services.AddScoped<IEventService>(provider =>
+    new EventService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("EventService"),
+                     provider.GetRequiredService<ICentralizedLoggingClient>()));
+
+builder.Services.AddScoped<IHttpService>(provider =>
+    new HttpService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("HttpService"),
+                    provider.GetRequiredService<ICentralizedLoggingClient>(),
+                    provider.GetRequiredService<IErrorNotificationService>(),
+                    provider.GetRequiredService<ITokenStorageService>()));
+
+// Register composite AdminApiService
+builder.Services.AddScoped<IAdminApiService, AdminApiService>();
+
+Console.WriteLine("✅ Registered specialized Admin API services:");
+Console.WriteLine("   - OrderService: Order management operations");
+Console.WriteLine("   - UserService: User management operations");
+Console.WriteLine("   - DrinkService: Drink catalog operations");
+Console.WriteLine("   - TicketService: Ticket validation operations");
+Console.WriteLine("   - AuthService: Authentication operations");
+Console.WriteLine("   - LogService: Logging and audit operations");
+Console.WriteLine("   - AnalyticsService: Customer analytics operations");
+Console.WriteLine("   - StadiumService: Stadium structure operations");
+Console.WriteLine("   - EventService: Event management operations");
+Console.WriteLine("   - HttpService: Generic HTTP operations");
+Console.WriteLine("   - AdminApiService: Composite service (backward compatibility)");
 
 // Add token storage service as singleton to persist across scopes
 builder.Services.AddSingleton<ITokenStorageService, TokenStorageService>();

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class TicketAuthController : ControllerBase
 {
     private readonly ITicketAuthService _ticketAuthService;

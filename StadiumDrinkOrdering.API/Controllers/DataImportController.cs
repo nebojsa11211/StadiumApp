@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace StadiumDrinkOrdering.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class DataImportController : ControllerBase
     {
         private readonly TicketingDataImportService _importService;

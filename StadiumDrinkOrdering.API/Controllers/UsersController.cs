@@ -5,7 +5,7 @@ using StadiumDrinkOrdering.Shared.DTOs;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 [Authorize(Roles = "Admin")]
 public class UsersController : ControllerBase

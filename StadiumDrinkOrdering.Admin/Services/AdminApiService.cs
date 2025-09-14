@@ -1,775 +1,127 @@
-using System.Text;
-using System.Text.Json;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.Admin.Services.Orders;
+using StadiumDrinkOrdering.Admin.Services.Users;
+using StadiumDrinkOrdering.Admin.Services.Drinks;
+using StadiumDrinkOrdering.Admin.Services.Tickets;
+using StadiumDrinkOrdering.Admin.Services.Auth;
+using StadiumDrinkOrdering.Admin.Services.Logs;
+using StadiumDrinkOrdering.Admin.Services.Analytics;
+using StadiumDrinkOrdering.Admin.Services.Stadium;
+using StadiumDrinkOrdering.Admin.Services.Events;
+using StadiumDrinkOrdering.Admin.Services.Http;
 
 namespace StadiumDrinkOrdering.Admin.Services
 {
+    /// <summary>
+    /// Composite service that delegates to specialized services and maintains backward compatibility
+    /// </summary>
     public class AdminApiService : IAdminApiService
     {
-        private readonly HttpClient _httpClient;
-        private readonly JsonSerializerOptions _jsonOptions;
+        // Specialized service properties
+        public IOrderService Orders { get; }
+        public IUserService Users { get; }
+        public IDrinkService Drinks { get; }
+        public ITicketService Tickets { get; }
+        public IAuthService Auth { get; }
+        public ILogService Logs { get; }
+        public IAnalyticsService Analytics { get; }
+        public IStadiumService Stadium { get; }
+        public IEventService Events { get; }
+        public IHttpService Http { get; }
 
-        public string? Token { get; set; }
-
-        public AdminApiService(HttpClient httpClient)
+        // Token property delegated to Auth service
+        public string? Token
         {
-            _httpClient = httpClient;
-            _jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true
-            };
+            get => Auth.Token;
+            set => Auth.Token = value;
         }
 
-        // Orders
-        public async Task<IEnumerable<OrderDto>?> GetOrdersAsync()
+        public AdminApiService(
+            IOrderService orderService,
+            IUserService userService,
+            IDrinkService drinkService,
+            ITicketService ticketService,
+            IAuthService authService,
+            ILogService logService,
+            IAnalyticsService analyticsService,
+            IStadiumService stadiumService,
+            IEventService eventService,
+            IHttpService httpService)
         {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/orders");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<IEnumerable<OrderDto>>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return Array.Empty<OrderDto>();
+            Orders = orderService;
+            Users = userService;
+            Drinks = drinkService;
+            Tickets = ticketService;
+            Auth = authService;
+            Logs = logService;
+            Analytics = analyticsService;
+            Stadium = stadiumService;
+            Events = eventService;
+            Http = httpService;
         }
 
-        public async Task<OrderDto?> GetOrderAsync(int id)
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/orders/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<OrderDto>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
+        // Legacy methods - Order operations (delegated to OrderService)
+        public Task<IEnumerable<OrderDto>?> GetOrdersAsync() => Orders.GetOrdersAsync();
+        public Task<OrderDto?> GetOrderAsync(int id) => Orders.GetOrderAsync(id);
+        public Task<OrderDto?> UpdateOrderAsync(int id, OrderDto order) => Orders.UpdateOrderAsync(id, order);
+        public Task<bool> DeleteOrderAsync(int id) => Orders.DeleteOrderAsync(id);
+        public Task<bool> UpdateOrderStatusAsync(int orderId, OrderStatus status) => Orders.UpdateOrderStatusAsync(orderId, status);
 
-        public async Task<OrderDto?> UpdateOrderAsync(int id, OrderDto order)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(order, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"api/orders/{id}", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseJson = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<OrderDto>(responseJson, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
+        // Legacy methods - User operations (delegated to UserService)
+        public Task<IEnumerable<UserDto>?> GetUsersAsync() => Users.GetUsersAsync();
+        public Task<UserDto?> GetUserAsync(int id) => Users.GetUserAsync(id);
+        public Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto) => Users.CreateUserAsync(createUserDto);
+        public Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto updateUserDto) => Users.UpdateUserAsync(id, updateUserDto);
+        public Task<bool> DeleteUserAsync(int id) => Users.DeleteUserAsync(id);
 
-        public async Task<bool> DeleteOrderAsync(int id)
-        {
-            try
-            {
-                var response = await _httpClient.DeleteAsync($"api/orders/{id}");
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
+        // Legacy methods - Drink operations (delegated to DrinkService)
+        public Task<IEnumerable<DrinkDto>?> GetDrinksAsync() => Drinks.GetDrinksAsync();
+        public Task<DrinkDto?> GetDrinkAsync(int id) => Drinks.GetDrinkAsync(id);
+        public Task<DrinkDto?> CreateDrinkAsync(CreateDrinkDto createDrinkDto) => Drinks.CreateDrinkAsync(createDrinkDto);
+        public Task<DrinkDto?> UpdateDrinkAsync(int id, UpdateDrinkDto updateDrinkDto) => Drinks.UpdateDrinkAsync(id, updateDrinkDto);
+        public Task<bool> DeleteDrinkAsync(int id) => Drinks.DeleteDrinkAsync(id);
 
-        // Users
-        public async Task<IEnumerable<UserDto>?> GetUsersAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/users");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<IEnumerable<UserDto>>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return Array.Empty<UserDto>();
-        }
+        // Legacy methods - Ticket operations (delegated to TicketService)
+        public Task<IEnumerable<TicketDto>?> GetTicketsAsync() => Tickets.GetTicketsAsync();
+        public Task<IEnumerable<TicketDto>?> GetTicketsAsync(int? eventId) => Tickets.GetTicketsAsync(eventId);
+        public Task<bool> ValidateTicketAsync(string ticketCode) => Tickets.ValidateTicketAsync(ticketCode);
 
-        public async Task<UserDto?> GetUserAsync(int id)
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/users/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<UserDto>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
+        // Legacy methods - Auth operations (delegated to AuthService)
+        public Task<string?> LoginAsync(LoginDto loginDto) => Auth.LoginAsync(loginDto);
+        public Task<bool> LogoutAsync() => Auth.LogoutAsync();
+        public Task<UserDto?> GetCurrentUserAsync() => Auth.GetCurrentUserAsync();
 
-        public async Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(createUserDto, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("api/users", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseJson = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<UserDto>(responseJson, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
+        // Legacy methods - Log operations (delegated to LogService)
+        public Task<IEnumerable<LogEntryDto>?> GetLogsAsync(LogFilterDto? filterDto = null) => Logs.GetLogsAsync(filterDto);
+        public Task<LogSummaryDto?> GetLogSummaryAsync() => Logs.GetLogSummaryAsync();
+        public Task<bool> ClearAllLogsAsync() => Logs.ClearAllLogsAsync();
+        public Task LogUserActionAsync(string action, string category, int? userId = null, string? userEmail = null, string? details = null) =>
+            Logs.LogUserActionAsync(action, category, userId, userEmail, details);
 
-        public async Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto updateUserDto)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(updateUserDto, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"api/users/{id}", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseJson = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<UserDto>(responseJson, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
+        // Legacy methods - Analytics operations (delegated to AnalyticsService)
+        public Task<PagedCustomerAnalyticsDto?> GetCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter) => Analytics.GetCustomerAnalyticsAsync(filter);
+        public Task<CustomerAnalyticsSummaryDto?> GetCustomerAnalyticsSummaryAsync() => Analytics.GetCustomerAnalyticsSummaryAsync();
+        public Task<HttpResponseMessage?> ExportCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter) => Analytics.ExportCustomerAnalyticsAsync(filter);
 
-        public async Task<bool> DeleteUserAsync(int id)
-        {
-            try
-            {
-                var response = await _httpClient.DeleteAsync($"api/users/{id}");
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
+        // Legacy methods - Stadium operations (delegated to StadiumService)
+        public Task<StadiumLayoutDto?> GetStadiumLayoutAsync() => Stadium.GetStadiumLayoutAsync();
+        public Task<StadiumSummaryDto?> GetStadiumSummaryAsync() => Stadium.GetStadiumSummaryAsync();
+        public Task<bool> ImportStadiumStructureAsync(Stream fileStream) => Stadium.ImportStadiumStructureAsync(fileStream);
+        public Task<bool> ImportStadiumStructureAsync(string jsonContent) => Stadium.ImportStadiumStructureAsync(jsonContent);
+        public Task<string?> ExportStadiumStructureAsync() => Stadium.ExportStadiumStructureAsync();
+        public Task<bool> ClearStadiumStructureAsync() => Stadium.ClearStadiumStructureAsync();
 
-        // Drinks
-        public async Task<IEnumerable<DrinkDto>?> GetDrinksAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/drinks");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<IEnumerable<DrinkDto>>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return Array.Empty<DrinkDto>();
-        }
+        // Legacy methods - Event operations (delegated to EventService)
+        public Task<IEnumerable<EventDto>?> GetEventsAsync() => Events.GetEventsAsync();
+        public Task<object?> GetSeatStatusForEventAsync(int eventId) => Events.GetSeatStatusForEventAsync(eventId);
+        public Task<bool> SimulateTicketSalesAsync(int eventId, int ticketCount) => Events.SimulateTicketSalesAsync(eventId, ticketCount);
 
-        public async Task<DrinkDto?> GetDrinkAsync(int id)
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/drinks/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<DrinkDto>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<DrinkDto?> CreateDrinkAsync(CreateDrinkDto createDrinkDto)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(createDrinkDto, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("api/drinks", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseJson = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<DrinkDto>(responseJson, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<DrinkDto?> UpdateDrinkAsync(int id, UpdateDrinkDto updateDrinkDto)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(updateDrinkDto, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"api/drinks/{id}", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseJson = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<DrinkDto>(responseJson, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<bool> DeleteDrinkAsync(int id)
-        {
-            try
-            {
-                var response = await _httpClient.DeleteAsync($"api/drinks/{id}");
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
-
-        // Tickets
-        public async Task<IEnumerable<TicketDto>?> GetTicketsAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/tickets");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<IEnumerable<TicketDto>>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return Array.Empty<TicketDto>();
-        }
-
-        public async Task<bool> ValidateTicketAsync(string ticketCode)
-        {
-            try
-            {
-                var response = await _httpClient.PostAsync($"api/tickets/validate/{ticketCode}", null);
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
-
-        // Auth
-        public async Task<string?> LoginAsync(LoginDto loginDto)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(loginDto, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("api/auth/login", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseJson = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<LoginResponseDto>(responseJson, _jsonOptions);
-                    return result?.Token;
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<bool> LogoutAsync()
-        {
-            try
-            {
-                var response = await _httpClient.PostAsync("api/auth/logout", null);
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
-
-        public async Task<UserDto?> GetCurrentUserAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/auth/current");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<UserDto>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        // Logs
-        public async Task<IEnumerable<LogEntryDto>?> GetLogsAsync(LogFilterDto? filterDto = null)
-        {
-            try
-            {
-                var url = "api/logs";
-                if (filterDto != null)
-                {
-                    var json = JsonSerializer.Serialize(filterDto, _jsonOptions);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var response = await _httpClient.PostAsync($"{url}/search", content);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseJson = await response.Content.ReadAsStringAsync();
-                        return JsonSerializer.Deserialize<IEnumerable<LogEntryDto>>(responseJson, _jsonOptions);
-                    }
-                }
-                else
-                {
-                    var response = await _httpClient.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseJson = await response.Content.ReadAsStringAsync();
-                        return JsonSerializer.Deserialize<IEnumerable<LogEntryDto>>(responseJson, _jsonOptions);
-                    }
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return Array.Empty<LogEntryDto>();
-        }
-
-        public async Task<LogSummaryDto?> GetLogSummaryAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/logs/summary");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<LogSummaryDto>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        // Additional Log Methods
-        public async Task<bool> ClearAllLogsAsync()
-        {
-            try
-            {
-                var response = await _httpClient.DeleteAsync("api/logs/clear-old");
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
-
-        public async Task LogUserActionAsync(string action, string category, int? userId = null, string? userEmail = null, string? details = null)
-        {
-            try
-            {
-                var logEntry = new
-                {
-                    Action = action,
-                    Category = category,
-                    UserId = userId,
-                    UserEmail = userEmail,
-                    Details = details
-                };
-                var json = JsonSerializer.Serialize(logEntry, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                await _httpClient.PostAsync("api/logs/log-action", content);
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-        }
-
-        // Customer Analytics Methods
-        public async Task<PagedCustomerAnalyticsDto?> GetCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(filter, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("api/analytics/customers", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseJson = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<PagedCustomerAnalyticsDto>(responseJson, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<CustomerAnalyticsSummaryDto?> GetCustomerAnalyticsSummaryAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/analytics/customers/summary");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<CustomerAnalyticsSummaryDto>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<HttpResponseMessage?> ExportCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(filter, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                return await _httpClient.PostAsync("api/analytics/customers/export", content);
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        // Generic HTTP Methods
-        public async Task<T?> GetAsync<T>(string endpoint)
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync(endpoint);
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<T>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return default(T);
-        }
-
-        public async Task<T?> PostAsync<T>(string endpoint, object? data = null)
-        {
-            try
-            {
-                StringContent? content = null;
-                if (data != null)
-                {
-                    var json = JsonSerializer.Serialize(data, _jsonOptions);
-                    content = new StringContent(json, Encoding.UTF8, "application/json");
-                }
-
-                var response = await _httpClient.PostAsync(endpoint, content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseJson = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<T>(responseJson, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return default(T);
-        }
-
-        // Stadium Layout
-        public async Task<StadiumLayoutDto?> GetStadiumLayoutAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/stadium-structure/layout");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<StadiumLayoutDto>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        // Additional Methods
-        public async Task<bool> UpdateOrderStatusAsync(int orderId, OrderStatus status)
-        {
-            try
-            {
-                var updateData = new { Status = status };
-                var json = JsonSerializer.Serialize(updateData, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"api/orders/{orderId}/status", content);
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
-
-        public async Task<StadiumSummaryDto?> GetStadiumSummaryAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/stadium-structure/summary");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<StadiumSummaryDto>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<IEnumerable<EventDto>?> GetEventsAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/events");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<IEnumerable<EventDto>>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return Array.Empty<EventDto>();
-        }
-
-        public async Task<object?> GetSeatStatusForEventAsync(int eventId)
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/events/{eventId}/seat-status");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<object>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<bool> SimulateTicketSalesAsync(int eventId, int ticketCount)
-        {
-            try
-            {
-                var simulationData = new { EventId = eventId, TicketCount = ticketCount };
-                var json = JsonSerializer.Serialize(simulationData, _jsonOptions);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"api/events/{eventId}/simulate-sales", content);
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
-
-        public async Task<bool> ImportStadiumStructureAsync(string jsonContent)
-        {
-            try
-            {
-                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("api/stadium-structure/import", content);
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
-
-        public async Task<bool> ClearStadiumStructureAsync()
-        {
-            try
-            {
-                var response = await _httpClient.DeleteAsync("api/stadium-structure/clear");
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return false;
-        }
-
-        public async Task<string?> ExportStadiumStructureAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/stadium-structure/export");
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsStringAsync();
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<(bool success, string errorMessage)> DeleteAsync(string endpoint)
-        {
-            try
-            {
-                var response = await _httpClient.DeleteAsync(endpoint);
-                if (response.IsSuccessStatusCode)
-                {
-                    return (true, string.Empty);
-                }
-                else
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    return (false, errorContent);
-                }
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.Message);
-            }
-        }
-
-        // Non-generic HTTP methods for DataGrid compatibility
-        public async Task<HttpResponseMessage> GetAsync(string endpoint)
-        {
-            return await _httpClient.GetAsync(endpoint);
-        }
-
-        public async Task<HttpResponseMessage> PostAsync(string endpoint, object? data = null)
-        {
-            var json = JsonSerializer.Serialize(data);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            return await _httpClient.PostAsync(endpoint, content);
-        }
-
-        // Missing method implementations
-        public async Task<IEnumerable<TicketDto>?> GetTicketsAsync(int? eventId)
-        {
-            try
-            {
-                var url = eventId.HasValue ? $"api/tickets?eventId={eventId.Value}" : "api/tickets";
-                var response = await _httpClient.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<IEnumerable<TicketDto>>(json, _jsonOptions);
-                }
-            }
-            catch
-            {
-                // Log error in real implementation
-            }
-            return null;
-        }
-
-        public async Task<bool> ImportStadiumStructureAsync(Stream fileStream)
-        {
-            try
-            {
-                var content = new MultipartFormDataContent();
-                content.Add(new StreamContent(fileStream), "file", "stadium.json");
-                var response = await _httpClient.PostAsync("api/stadium-structure/import", content);
-                return response.IsSuccessStatusCode;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        // Legacy methods - HTTP operations (delegated to HttpService)
+        public Task<T?> GetAsync<T>(string endpoint) => Http.GetAsync<T>(endpoint);
+        public Task<T?> PostAsync<T>(string endpoint, object? data = null) => Http.PostAsync<T>(endpoint, data);
+        public Task<HttpResponseMessage> GetAsync(string endpoint) => Http.GetAsync(endpoint);
+        public Task<HttpResponseMessage> PostAsync(string endpoint, object? data = null) => Http.PostAsync(endpoint, data);
+        public Task<(bool success, string errorMessage)> DeleteAsync(string endpoint) => Http.DeleteAsync(endpoint);
     }
 }

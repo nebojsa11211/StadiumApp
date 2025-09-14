@@ -30,7 +30,8 @@ public partial class Drinks : ComponentBase
 
     private async Task LoadDrinks()
     {
-        drinks = (await ApiService.GetDrinksAsync())?.ToList();
+        var aaa = await ApiService.GetDrinksAsync();
+        drinks = (aaa)?.ToList();
     }
 
     private IEnumerable<DrinkDto> FilteredDrinks

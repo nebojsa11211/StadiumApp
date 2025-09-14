@@ -5,7 +5,7 @@ using StadiumDrinkOrdering.Shared.Models;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class TestController : ControllerBase
 {
     private readonly ILogger<TestController> _logger;

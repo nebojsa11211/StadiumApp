@@ -6,7 +6,7 @@ using StadiumDrinkOrdering.API.Data;
 namespace StadiumDrinkOrdering.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class QuickOrderController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

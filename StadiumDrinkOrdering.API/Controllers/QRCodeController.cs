@@ -6,7 +6,7 @@ using StadiumDrinkOrdering.Shared.DTOs;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class QRCodeController : ControllerBase
 {
     private readonly IQRCodeService _qrCodeService;

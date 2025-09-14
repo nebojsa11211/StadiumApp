@@ -7,7 +7,7 @@ using StadiumDrinkOrdering.Shared.Models;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class TicketsController : ControllerBase
 {

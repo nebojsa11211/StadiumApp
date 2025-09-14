@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class CustomerAnalyticsController : ControllerBase
 {
     private readonly ICustomerAnalyticsService _customerAnalyticsService;

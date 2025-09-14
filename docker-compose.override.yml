@@ -17,9 +17,6 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
-    ports:
-      - "6001:8443"
-      - "6011:8080"
     volumes:
       - ./certificates:/https:ro
 
@@ -35,9 +32,6 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
-    ports:
-      - "6002:8444"
-      - "6012:8081"
     volumes:
       - ./certificates:/https:ro
 
@@ -53,9 +47,6 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
-    ports:
-      - "6003:8445"
-      - "6013:8082"
     volumes:
       - ./certificates:/https:ro
 
@@ -71,8 +62,5 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
-    ports:
-      - "6004:8446"
-      - "6014:8083"
     volumes:
       - ./certificates:/https:ro

@@ -8,7 +8,7 @@ using StadiumDrinkOrdering.Shared.Models;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [Authorize(Roles = "Admin,Staff")]
 public class TicketSalesController : ControllerBase
 {

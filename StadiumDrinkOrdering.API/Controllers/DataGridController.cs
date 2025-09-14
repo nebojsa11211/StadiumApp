@@ -33,7 +33,7 @@ public class ColumnInfoDto
 }
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [Authorize(Roles = "Admin")]
 public class DataGridController : ControllerBase
 {

@@ -5,7 +5,7 @@ using StadiumDrinkOrdering.API.Services;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [Route("api/demo-data")] // Support both routes for compatibility
 // [Authorize(Roles = "Admin")] // Temporarily disabled for testing
 public class DemoDataController : ControllerBase

@@ -79,6 +79,8 @@ public partial class Index : IDisposable
     }
     private async Task LoadDashboardData()
     {
+
+        var aaa = await ApiService.GetAsync<UserStatistics>("users/online-statistics");
         // Use Task.WhenAll to execute all API calls concurrently
         var revenueTask = ApiService.GetAsync<RevenueData>("analytics/revenue/today");
         var orderTask = ApiService.GetAsync<OrderStatistics>("orders/statistics");

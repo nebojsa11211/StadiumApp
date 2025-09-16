@@ -15,6 +15,8 @@ using StadiumDrinkOrdering.Admin.Services.Events;
 using StadiumDrinkOrdering.Admin.Services.Http;
 using StadiumDrinkOrdering.Admin.Services.ErrorHandling;
 using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Extensions;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using System.Globalization;
 
 Console.WriteLine("=== ADMIN PROGRAM START ===");
@@ -99,7 +101,10 @@ ConfigureApiHttpClient(builder.Services, "StadiumService");
 ConfigureApiHttpClient(builder.Services, "EventService");
 ConfigureApiHttpClient(builder.Services, "HttpService");
 
-// Register error notification service
+// Register throttling service as singleton for persistent state
+builder.Services.AddSingleton<IThrottlingService, ThrottlingService>();
+
+// Register error notification service as scoped (depends on IJSRuntime which is scoped)
 builder.Services.AddScoped<IErrorNotificationService, ErrorNotificationService>();
 
 // Register specialized services
@@ -110,7 +115,9 @@ builder.Services.AddScoped<IOrderService>(provider =>
 
 builder.Services.AddScoped<IUserService>(provider =>
     new UserService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("UserService"),
-                    provider.GetRequiredService<ICentralizedLoggingClient>()));
+                    provider.GetRequiredService<ICentralizedLoggingClient>(),
+                    provider.GetRequiredService<IErrorNotificationService>(),
+                    provider.GetRequiredService<ITokenStorageService>()));
 
 builder.Services.AddScoped<IDrinkService>(provider =>
     new DrinkService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("DrinkService"),
@@ -163,16 +170,7 @@ Console.WriteLine("   - EventService: Event management operations");
 Console.WriteLine("   - HttpService: Generic HTTP operations");
 Console.WriteLine("   - AdminApiService: Composite service (backward compatibility)");
 
-// Add token storage service as singleton to persist across scopes
-builder.Services.AddSingleton<ITokenStorageService, TokenStorageService>();
-
-// Add SignalR service
-builder.Services.AddScoped<ISignalRService, SignalRService>();
-
-// Add authentication state service
-builder.Services.AddScoped<IAuthStateService, AuthStateService>();
-
-// Add centralized logging client
+// Determine API base URL for authentication services
 string apiBaseUrl;
 if (containerEnv == "true")
 {
@@ -183,6 +181,46 @@ else
     apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
 }
 
+// ✅ Add standardized shared authentication services with refresh token support
+// Note: SecureApiService is registered manually below due to custom constructor requirements
+builder.Services.AddScoped<AuthStateService>();
+builder.Services.AddScoped<IAuthStateService>(provider => provider.GetRequiredService<AuthStateService>());
+builder.Services.AddScoped<IAuthenticationStateService>(provider => provider.GetRequiredService<AuthStateService>());
+builder.Services.AddScoped<ITokenStorageService, TokenStorageService>();
+builder.Services.AddClientAuthentication(apiBaseUrl, "Admin", enableBackgroundRefresh: true);
+
+// Note: Enhanced refresh token services will be implemented in future iterations
+
+// Register SecureApiService with its dependencies
+builder.Services.AddScoped<SecureApiService>(provider =>
+{
+    var adminApiService = provider.GetRequiredService<IAdminApiService>();
+    var tokenStorage = provider.GetRequiredService<ITokenStorageService>();
+    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient("AdminSecureApi");
+
+    return new SecureApiService(adminApiService, tokenStorage, httpClient, apiBaseUrl);
+});
+
+// Configure HTTP client for SecureApiService
+builder.Services.AddHttpClient("AdminSecureApi", client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+    return handler;
+});
+
+// Legacy interface registration is now handled by the shared authentication services
+// The AuthStateService class implements both IAuthenticationStateService and IAuthStateService
+
+// Add SignalR service
+builder.Services.AddScoped<ISignalRService, SignalRService>();
+
+// Add centralized logging client
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Admin");
 
 // Add console logging services

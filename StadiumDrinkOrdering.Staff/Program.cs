@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Localization;
 using StadiumDrinkOrdering.Staff.Services;
+using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Extensions;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,20 +27,21 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.DefaultRequestCulture = new RequestCulture("hr");
     options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
     options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
-    
+
     // Add cookie request culture provider
     options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 });
 
-// Configure HttpClient for API communication
+// Determine API base URL
 var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-var apiBaseUrl = containerEnv == "true" 
-    ? "https://api:8443/" 
-    : builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
-    
+var apiBaseUrl = containerEnv == "true"
+    ? "https://api:8443"
+    : builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+
+// Configure HttpClient for legacy StaffApiService
 builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
 {
-    client.BaseAddress = new Uri(apiBaseUrl);
+    client.BaseAddress = new Uri(apiBaseUrl + "/");
     client.Timeout = TimeSpan.FromSeconds(30);
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
@@ -46,11 +50,47 @@ builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
     return handler;
 });
 
-// Add custom services
+// ✅ Add standardized shared authentication services with refresh token support
+builder.Services.AddSharedAuthentication<AuthStateService, StaffTokenStorageService, StaffSecureApiService>(
+    "Staff",
+    apiBaseUrl);
+
+// Note: Enhanced refresh token services will be implemented in future iterations
+
+// Register StaffSecureApiService with its dependencies
+builder.Services.AddScoped<StaffSecureApiService>(provider =>
+{
+    var staffApiService = provider.GetRequiredService<IStaffApiService>();
+    var tokenStorage = provider.GetRequiredService<ITokenStorageService>();
+    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient("StaffSecureApi");
+
+    return new StaffSecureApiService(staffApiService, tokenStorage, httpClient, apiBaseUrl);
+});
+
+// Configure HTTP client for StaffSecureApiService
+builder.Services.AddHttpClient("StaffSecureApi", client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    return handler;
+});
+
+// Add legacy services
 builder.Services.AddScoped<IStaffApiService, StaffApiService>();
-builder.Services.AddScoped<IAuthStateService, AuthStateService>();
 builder.Services.AddScoped<ISignalRService, SignalRService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+// Register legacy interfaces for backward compatibility
+builder.Services.AddScoped<IAuthStateService>(provider =>
+    (IAuthStateService)provider.GetRequiredService<IAuthenticationStateService>());
+
+// Add centralized logging client
+builder.Services.AddCentralizedLogging(apiBaseUrl, "Staff");
 
 // Add memory cache for dashboard service
 builder.Services.AddMemoryCache();

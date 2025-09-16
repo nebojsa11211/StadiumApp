@@ -9,6 +9,7 @@ namespace StadiumDrinkOrdering.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
+[Authorize] // SECURITY: Default to authorized access, individual endpoints can override
 public class TicketsController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
@@ -19,7 +20,7 @@ public class TicketsController : ControllerBase
     }
 
     [HttpGet]
-    // [Authorize(Roles = "Admin")] // Temporarily disabled for testing
+    [Authorize(Roles = "Admin,Staff")] // SECURITY: Admin and Staff can view all tickets
     public async Task<ActionResult<IEnumerable<TicketDto>>> GetAllTickets([FromQuery] int? eventId = null, [FromQuery] bool? isActive = null)
     {
         var query = _context.Tickets.AsQueryable();
@@ -89,6 +90,7 @@ public class TicketsController : ControllerBase
     }
 
     [HttpPost("validate")]
+    [Authorize(Roles = "Admin,Staff")] // SECURITY: Only staff can validate tickets
     public async Task<ActionResult<TicketValidationResultDto>> ValidateTicket([FromBody] ValidateTicketDto validateDto)
     {
         if (!ModelState.IsValid)
@@ -128,6 +130,7 @@ public class TicketsController : ControllerBase
     }
 
     [HttpGet("{ticketNumber}")]
+    [Authorize(Roles = "Admin,Staff")] // SECURITY: Staff need to look up specific tickets
     public async Task<ActionResult<TicketDto>> GetTicketByNumber(string ticketNumber)
     {
         var ticket = await _context.Tickets

@@ -1,6 +1,7 @@
 using StadiumDrinkOrdering.Admin.Services.Base;
 using StadiumDrinkOrdering.Admin.Services.ErrorHandling;
 using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 
 namespace StadiumDrinkOrdering.Admin.Services.Http
 {
@@ -38,12 +39,28 @@ namespace StadiumDrinkOrdering.Admin.Services.Http
                     var json = await response.Content.ReadAsStringAsync();
                     return DeserializeResponse<T>(json);
                 }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await ErrorNotificationService.ShowAuthenticationErrorAsync();
+                    throw new UnauthorizedAccessException("Authentication required. Please log in again.");
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    await ErrorNotificationService.ShowErrorAsync($"Request failed: {response.StatusCode}", "API Error");
+                    throw new HttpRequestException($"HTTP {response.StatusCode}: {errorContent}");
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw; // Re-throw unauthorized exceptions
             }
             catch (Exception ex)
             {
                 await LogErrorAsync(ex, "GetAsync", $"Failed to GET from {endpoint}");
+                await ErrorNotificationService.ShowErrorAsync($"Network error: {ex.Message}", "Connection Error");
+                throw;
             }
-            return default(T);
         }
 
         public async Task<T?> PostAsync<T>(string endpoint, object? data = null)
@@ -58,12 +75,28 @@ namespace StadiumDrinkOrdering.Admin.Services.Http
                     var responseJson = await response.Content.ReadAsStringAsync();
                     return DeserializeResponse<T>(responseJson);
                 }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await ErrorNotificationService.ShowAuthenticationErrorAsync();
+                    throw new UnauthorizedAccessException("Authentication required. Please log in again.");
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    await ErrorNotificationService.ShowErrorAsync($"Request failed: {response.StatusCode}", "API Error");
+                    throw new HttpRequestException($"HTTP {response.StatusCode}: {errorContent}");
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw; // Re-throw unauthorized exceptions
             }
             catch (Exception ex)
             {
                 await LogErrorAsync(ex, "PostAsync", $"Failed to POST to {endpoint}");
+                await ErrorNotificationService.ShowErrorAsync($"Network error: {ex.Message}", "Connection Error");
+                throw;
             }
-            return default(T);
         }
 
         public async Task<HttpResponseMessage> GetAsync(string endpoint)

@@ -3,11 +3,17 @@ using Microsoft.AspNetCore.SignalR;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 using StadiumDrinkOrdering.API.Data;
+using StadiumDrinkOrdering.API.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace StadiumDrinkOrdering.API.Hubs;
 
+/// <summary>
+/// SignalR hub for real-time communication with bartenders and staff.
+/// Requires authentication and role-based authorization.
+/// </summary>
+[Authorize(Policy = AuthorizationPolicies.CanAccessBartenderHub)]
 public class BartenderHub : Hub
 {
     private readonly ApplicationDbContext _context;
@@ -47,47 +53,59 @@ public class BartenderHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"staff-{role.ToLower()}");
     }
 
+    /// <summary>
+    /// Sends order update notifications to staff. Requires Staff or Admin role.
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
     public async Task SendOrderUpdate(OrderDto order)
     {
         var section = ExtractSectionFromSeat(order.SeatNumber);
-        
+
         // Send to specific event if available
         if (order.EventId.HasValue)
         {
             await Clients.Group($"event-{order.EventId}").SendAsync("OrderUpdated", order);
         }
-        
+
         // Send to section staff
         await Clients.Group($"section-{section}").SendAsync("OrderUpdated", order);
-        
+
         // Send to all staff
         await Clients.Group("staff-all").SendAsync("OrderUpdated", order);
     }
 
+    /// <summary>
+    /// Sends new order notifications to staff. Requires Staff or Admin role.
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.CanReadOrders)]
     public async Task SendNewOrder(OrderDto order)
     {
         var section = ExtractSectionFromSeat(order.SeatNumber);
-        
+
         // Send to specific event if available
         if (order.EventId.HasValue)
         {
             await Clients.Group($"event-{order.EventId}").SendAsync("NewOrder", order);
         }
-        
+
         // Send to section staff
         await Clients.Group($"section-{section}").SendAsync("NewOrder", order);
-        
+
         // Send to waiters for delivery
         await Clients.Group("staff-waiter").SendAsync("NewOrder", order);
-        
+
         // Send to admins
         await Clients.Group("staff-admin").SendAsync("NewOrder", order);
     }
 
+    /// <summary>
+    /// Sends order status change notifications to staff. Requires Staff or Admin role.
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
     public async Task SendOrderStatusChanged(int orderId, OrderStatus newStatus, string seatNumber, int? eventId = null)
     {
         var section = ExtractSectionFromSeat(seatNumber);
-        
+
         var statusUpdate = new
         {
             OrderId = orderId,
@@ -96,20 +114,24 @@ public class BartenderHub : Hub
             Timestamp = DateTime.UtcNow,
             EventId = eventId
         };
-        
+
         // Send to specific event if available
         if (eventId.HasValue)
         {
             await Clients.Group($"event-{eventId}").SendAsync("OrderStatusChanged", statusUpdate);
         }
-        
+
         // Send to section staff
         await Clients.Group($"section-{section}").SendAsync("OrderStatusChanged", statusUpdate);
-        
+
         // Send to all staff
         await Clients.Group("staff-all").SendAsync("OrderStatusChanged", statusUpdate);
     }
 
+    /// <summary>
+    /// Sends staff assignment updates. Requires Admin role only.
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
     public async Task SendStaffAssignmentUpdate(int orderId, int staffId, string staffName, string role)
     {
         var assignment = new
@@ -120,11 +142,15 @@ public class BartenderHub : Hub
             Role = role,
             AssignedAt = DateTime.UtcNow
         };
-        
+
         await Clients.Group("staff-all").SendAsync("StaffAssigned", assignment);
         await Clients.User(staffId.ToString()).SendAsync("OrderAssigned", assignment);
     }
 
+    /// <summary>
+    /// Updates delivery time estimates. Requires Staff or Admin role.
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
     public async Task SendDeliveryEstimateUpdate(int orderId, DateTime estimatedDeliveryTime)
     {
         var estimate = new
@@ -133,10 +159,14 @@ public class BartenderHub : Hub
             EstimatedDeliveryTime = estimatedDeliveryTime,
             UpdatedAt = DateTime.UtcNow
         };
-        
+
         await Clients.Group("staff-all").SendAsync("DeliveryEstimateUpdated", estimate);
     }
 
+    /// <summary>
+    /// Sends notifications to staff. Requires Staff or Admin role.
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.RequireStaffRole)]
     public async Task SendNotification(int? userId, string type, string title, string message, object? data = null)
     {
         var notification = new
@@ -147,7 +177,7 @@ public class BartenderHub : Hub
             Data = data,
             Timestamp = DateTime.UtcNow
         };
-        
+
         if (userId.HasValue)
         {
             // Send to specific user
@@ -160,6 +190,10 @@ public class BartenderHub : Hub
         }
     }
 
+    /// <summary>
+    /// Highlights seat on stadium map. Requires Staff or Admin role.
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.RequireStaffRole)]
     public async Task SendSeatHighlight(string seatNumber, bool highlight)
     {
         var section = ExtractSectionFromSeat(seatNumber);

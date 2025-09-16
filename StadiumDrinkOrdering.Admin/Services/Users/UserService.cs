@@ -1,13 +1,15 @@
 using StadiumDrinkOrdering.Admin.Services.Base;
+using StadiumDrinkOrdering.Admin.Services.ErrorHandling;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 
 namespace StadiumDrinkOrdering.Admin.Services.Users
 {
     public class UserService : BaseApiService, IUserService
     {
-        public UserService(HttpClient httpClient, ICentralizedLoggingClient loggingClient)
-            : base(httpClient, loggingClient)
+        public UserService(HttpClient httpClient, ICentralizedLoggingClient loggingClient, IErrorNotificationService errorNotificationService, ITokenStorageService tokenStorage)
+            : base(httpClient, loggingClient, errorNotificationService, tokenStorage)
         {
         }
 
@@ -15,6 +17,9 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
         {
             try
             {
+                // Set authorization header before making the request
+                SetAuthorizationHeader();
+
                 // Use POST /users/search with empty filter to get all users
                 var filter = new UserFilterDto();
                 var content = CreateJsonContent(filter);
@@ -24,6 +29,11 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
                     var json = await response.Content.ReadAsStringAsync();
                     var result = DeserializeResponse<UserListDto>(json);
                     return result?.Users ?? new List<UserDto>();
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await ErrorNotificationService.ShowAuthenticationErrorAsync();
+                    throw new UnauthorizedAccessException("Authentication required. Please log in again.");
                 }
             }
             catch (Exception ex)
@@ -37,6 +47,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.GetAsync($"users/{id}");
                 if (response.IsSuccessStatusCode)
                 {
@@ -55,6 +66,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
         {
             try
             {
+                SetAuthorizationHeader();
                 var content = CreateJsonContent(createUserDto);
                 var response = await HttpClient.PostAsync("users", content);
                 if (response.IsSuccessStatusCode)
@@ -74,6 +86,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
         {
             try
             {
+                SetAuthorizationHeader();
                 var content = CreateJsonContent(updateUserDto);
                 var response = await HttpClient.PutAsync($"users/{id}", content);
                 if (response.IsSuccessStatusCode)
@@ -93,6 +106,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.DeleteAsync($"users/{id}");
                 return response.IsSuccessStatusCode;
             }

@@ -17,19 +17,19 @@
                         <div class="col-md-6">
                             <h4>Manual Error Tests</h4>
                             <div class="d-grid gap-2">
-                                <button class="btn btn-danger" @onclick="TestErrorNotification">
+                                <button class="btn btn-danger" @onclick="TestErrorNotification" id="admin-test-error-btn">
                                     🔴 Test Error Message
                                 </button>
-                                <button class="btn btn-warning" @onclick="TestWarningNotification">
+                                <button class="btn btn-warning" @onclick="TestWarningNotification" id="admin-test-warning-btn">
                                     🟡 Test Warning Message
                                 </button>
-                                <button class="btn btn-success" @onclick="TestSuccessNotification">
+                                <button class="btn btn-success" @onclick="TestSuccessNotification" id="admin-test-success-btn">
                                     🟢 Test Success Message
                                 </button>
-                                <button class="btn btn-info" @onclick="TestInfoNotification">
+                                <button class="btn btn-info" @onclick="TestInfoNotification" id="admin-test-info-btn">
                                     🔵 Test Info Message
                                 </button>
-                                <button class="btn btn-secondary" @onclick="TestAuthError">
+                                <button class="btn btn-secondary" @onclick="TestAuthError" id="admin-test-auth-error-btn">
                                     🔐 Test Authentication Error
                                 </button>
                             </div>
@@ -37,13 +37,13 @@
                         <div class="col-md-6">
                             <h4>API Error Tests</h4>
                             <div class="d-grid gap-2">
-                                <button class="btn btn-outline-danger" @onclick="TestApiConnection">
+                                <button class="btn btn-outline-danger" @onclick="TestApiConnection" id="admin-test-api-connection-btn">
                                     🌐 Test API Connection (Will likely fail if API not running)
                                 </button>
-                                <button class="btn btn-outline-warning" @onclick="TestDrinksFetch">
+                                <button class="btn btn-outline-warning" @onclick="TestDrinksFetch" id="admin-test-drinks-fetch-btn">
                                     🥤 Test Drinks Fetch (Uses new error handling)
                                 </button>
-                                <button class="btn btn-outline-info" @onclick="TestOrdersFetch">
+                                <button class="btn btn-outline-info" @onclick="TestOrdersFetch" id="admin-test-orders-fetch-btn">
                                     📦 Test Orders Fetch (Uses new error handling)
                                 </button>
                             </div>

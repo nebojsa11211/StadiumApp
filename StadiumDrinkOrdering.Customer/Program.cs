@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Localization;
 using StadiumDrinkOrdering.Customer.Data;
 using StadiumDrinkOrdering.Customer.Services;
 using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Extensions;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,20 +34,16 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 });
 
-// Add HTTP client
+// Determine API base URL
+var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+var apiBaseUrl = containerEnv == "true"
+    ? "https://api:8443"
+    : builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+
+// Add HTTP client for legacy ApiService
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
-    var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-    string apiBaseUrl;
-    if (containerEnv == "true")
-    {
-        apiBaseUrl = "https://api:8443/";
-    }
-    else
-    {
-        apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
-    }
-    client.BaseAddress = new Uri(apiBaseUrl);
+    client.BaseAddress = new Uri(apiBaseUrl + "/");
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
@@ -56,15 +54,40 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 // Add custom services
 builder.Services.AddScoped<ICartService, CartService>();
 
-// Add authentication services
-builder.Services.AddSingleton<ICustomerTokenStorageService, CustomerTokenStorageService>();
-builder.Services.AddScoped<ICustomerAuthStateService, CustomerAuthStateService>();
+// ✅ Add standardized shared authentication services with refresh token support
+builder.Services.AddSharedAuthentication<CustomerAuthStateService, CustomerTokenStorageService, CustomerSecureApiService>(
+    "Customer",
+    apiBaseUrl);
+
+// Note: Enhanced refresh token services will be implemented in future iterations
+
+// Register CustomerSecureApiService with its dependencies
+builder.Services.AddScoped<CustomerSecureApiService>(provider =>
+{
+    var apiService = provider.GetRequiredService<IApiService>();
+    var tokenStorage = provider.GetRequiredService<ITokenStorageService>();
+    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient("CustomerSecureApi");
+
+    return new CustomerSecureApiService(apiService, tokenStorage, httpClient, apiBaseUrl);
+});
+
+// Configure HTTP client for CustomerSecureApiService
+builder.Services.AddHttpClient("CustomerSecureApi", client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    return handler;
+});
+
+// Legacy interface registration is now handled by the shared authentication services
+// The CustomerAuthStateService and CustomerTokenStorageService classes implement both interfaces
 
 // Add centralized logging client
-var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-var apiBaseUrl = containerEnv == "true" 
-    ? "https://api:8443" 
-    : builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Customer");
 
 var app = builder.Build();

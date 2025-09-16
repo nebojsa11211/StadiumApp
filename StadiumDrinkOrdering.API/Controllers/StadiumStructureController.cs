@@ -7,7 +7,7 @@ namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-//[Authorize(Roles = "Admin")] // Temporarily disabled for development
+[Authorize(Roles = "Admin")] // SECURITY: Admin-only access to stadium structure management
 public class StadiumStructureController : ControllerBase
 {
     private readonly IStadiumStructureService _stadiumStructureService;
@@ -86,6 +86,7 @@ public class StadiumStructureController : ControllerBase
     }
 
     [HttpGet("summary")]
+    [Authorize(Roles = "Admin,Staff")] // Allow staff to view stadium summary
     public async Task<ActionResult<StadiumSummaryDto>> GetSummary()
     {
         try
@@ -101,6 +102,7 @@ public class StadiumStructureController : ControllerBase
     }
 
     [HttpGet("full-structure")]
+    [Authorize(Roles = "Admin,Staff")] // Allow staff to view stadium structure
     public async Task<IActionResult> GetFullStructure()
     {
         try
@@ -116,6 +118,7 @@ public class StadiumStructureController : ControllerBase
     }
 
     [HttpGet("total-seats")]
+    [Authorize(Roles = "Admin,Staff")] // Allow staff to view seat count
     public async Task<ActionResult<int>> GetTotalSeats()
     {
         try

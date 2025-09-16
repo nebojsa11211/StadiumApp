@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StadiumDrinkOrdering.API.Services;
+using StadiumDrinkOrdering.API.Authorization;
 using StadiumDrinkOrdering.Shared.DTOs;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Policy = AuthorizationPolicies.CanManageUsers)]
 public class UsersController : ControllerBase
 {
     private readonly IAuthService _authService;

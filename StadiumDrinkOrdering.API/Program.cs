@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -7,11 +8,36 @@ using Microsoft.IdentityModel.Tokens;
 using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.API.Middleware;
+using StadiumDrinkOrdering.API.Models;
+using StadiumDrinkOrdering.API.Authorization;
+using StadiumDrinkOrdering.API.Authorization.Handlers;
+using StadiumDrinkOrdering.API.Authorization.Services;
 using StadiumDrinkOrdering.Shared.Services;
+using AspNetCoreRateLimit;
+using Microsoft.Extensions.Options;
 using System.Text;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ================================================================================================
+// ENVIRONMENT VARIABLE CONFIGURATION
+// ================================================================================================
+// This application uses environment variables for secure configuration management.
+// See ENVIRONMENT_VARIABLES.md for complete documentation.
+//
+// Required Environment Variables:
+// - JWT_SECRET_KEY: JWT signing secret (minimum 32 characters)
+// - Database: Either ConnectionStrings__DefaultConnection OR individual DB_* variables
+// - STRIPE_SECRET_KEY: Stripe payment secret key
+// - SUPABASE_API_KEY: Supabase project API key
+//
+// Optional Environment Variables:
+// - CORS_ALLOWED_ORIGINS: Comma-separated list of allowed origins
+// - JWT_ISSUER, JWT_AUDIENCE: JWT token issuer and audience
+//
+// For development, copy .env.example to .env and configure values.
+// ================================================================================================
 
 // Configure logging to include database logging
 builder.Logging.ClearProviders();
@@ -67,8 +93,39 @@ foreach (var provider in builder.Configuration.Sources)
     Console.WriteLine($"Provider: {provider.GetType().Name}");
 }
 
-// Check specific configuration values
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Build connection string from environment variables if available
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    // Try to build from individual environment variables
+    var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+    var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "6543";
+    var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "postgres";
+    var dbUsername = Environment.GetEnvironmentVariable("DB_USERNAME");
+    var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+    if (!string.IsNullOrEmpty(dbHost) && !string.IsNullOrEmpty(dbUsername) && !string.IsNullOrEmpty(dbPassword))
+    {
+        connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUsername};Password={dbPassword};Ssl Mode=Require;Trust Server Certificate=true;Connection Timeout=120;Command Timeout=600;Keepalive=60;Connection Idle Lifetime=600;Maximum Pool Size=20;Minimum Pool Size=2;Pooling=true;No Reset On Close=true;Include Error Detail=true;Read Buffer Size=8192;Write Buffer Size=8192;Socket Receive Buffer Size=8192;Socket Send Buffer Size=8192";
+    }
+    else
+    {
+        // Fall back to configuration file (with placeholders substituted)
+        connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+        // Replace placeholders with environment variables if they exist
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            connectionString = connectionString
+                .Replace("{DB_HOST}", Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost")
+                .Replace("{DB_PORT}", Environment.GetEnvironmentVariable("DB_PORT") ?? "5432")
+                .Replace("{DB_NAME}", Environment.GetEnvironmentVariable("DB_NAME") ?? "postgres")
+                .Replace("{DB_USERNAME}", Environment.GetEnvironmentVariable("DB_USERNAME") ?? "postgres")
+                .Replace("{DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password");
+        }
+    }
+}
 Console.WriteLine($"\n=== Final Connection String ===");
 Console.WriteLine($"Connection String: {connectionString}");
 
@@ -163,26 +220,118 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 });
 
-// Authentication
+// Authentication - Use environment variables first, then configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"] ?? "YourSuperSecretKeyThatIsAtLeast32CharactersLong!";
+
+// Get JWT secret from environment variable first, then configuration
+var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY")
+                ?? jwtSettings["SecretKey"];
+
+if (string.IsNullOrEmpty(secretKey))
+{
+    throw new InvalidOperationException(
+        "JWT Secret Key is not configured. Set the JWT_SECRET_KEY environment variable or JwtSettings:SecretKey in configuration.");
+}
+
+if (secretKey.Length < 32)
+{
+    throw new InvalidOperationException(
+        "JWT Secret Key must be at least 32 characters long for security.");
+}
+
+var issuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
+             ?? jwtSettings["Issuer"]
+             ?? "StadiumDrinkOrdering";
+
+var audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+               ?? jwtSettings["Audience"]
+               ?? "StadiumDrinkOrdering";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            // Basic validation
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"] ?? "StadiumDrinkOrdering",
-            ValidAudience = jwtSettings["Audience"] ?? "StadiumDrinkOrdering",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+
+            // Issuer and audience settings
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+
+            // Security enhancements
+            ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 }, // Restrict to HMAC SHA-256 only
+            RequireExpirationTime = true,
+            RequireSignedTokens = true,
+            RequireAudience = true,
+
+            // Clock skew tolerance (reduced for better security)
+            ClockSkew = TimeSpan.FromMinutes(1), // Allow only 1 minute clock skew
+
+            // Additional security settings
+            ValidateActor = false, // We don't use actor tokens
+            ValidateTokenReplay = false, // Enable if replay protection is needed
+
+            // Lifetime validation settings
+            LifetimeValidator = (notBefore, expires, token, parameters) =>
+            {
+                // Custom lifetime validation
+                var now = DateTime.UtcNow;
+
+                // Check if token is not yet valid
+                if (notBefore.HasValue && now < notBefore.Value.AddMinutes(-1))
+                    return false;
+
+                // Check if token is expired (with minimal tolerance)
+                if (expires.HasValue && now > expires.Value.AddMinutes(1))
+                    return false;
+
+                return true;
+            }
+        };
+
+        // SECURITY: Configure JWT authentication for SignalR
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                // Allow SignalR to receive JWT tokens from query string or headers
+                var accessToken = context.Request.Query["access_token"];
+
+                // If the request is for SignalR hubs
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/bartenderHub") || path.StartsWithSegments("/customerHub")))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 
-builder.Services.AddAuthorization();
+// ================================================================================================
+// COMPREHENSIVE AUTHORIZATION CONFIGURATION
+// ================================================================================================
+// Policy-based authorization with custom requirements and handlers for enterprise-grade security
+
+builder.Services.AddAuthorization(options =>
+{
+    // Configure all authorization policies using centralized policy definitions
+    AuthorizationPolicies.ConfigurePolicies(options);
+});
+
+// Register custom authorization handlers
+builder.Services.AddScoped<IAuthorizationHandler, OrderOwnershipHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, UserOwnershipHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, TicketOwnershipHandler>();
+
+// Register authorization service for helper methods
+builder.Services.AddScoped<IStadiumAuthorizationService, StadiumAuthorizationService>();
 
 // Services
 builder.Services.AddScoped<DatabaseHealthCheck>();
@@ -210,8 +359,34 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IStadiumLayoutGenerator, HNKRijekaLayoutGenerator>();
 builder.Services.AddScoped<IStadiumLayoutService, StadiumLayoutService>();
 
+// Add centralized logging client (required by AuthController and other services)
+builder.Services.AddCentralizedLogging("http://localhost", "API");
+
+// Rate Limiting Configuration
+builder.Services.Configure<RateLimitingConfig>(builder.Configuration.GetSection("RateLimiting"));
+builder.Services.AddScoped<IBruteForceProtectionService>(serviceProvider =>
+{
+    var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+    var config = serviceProvider.GetRequiredService<IOptions<RateLimitingConfig>>();
+    var logger = serviceProvider.GetRequiredService<ILogger<BruteForceProtectionService>>();
+    // Try to get the logging client, but use null implementation if not available (for migrations)
+    var loggingClient = serviceProvider.GetService<ICentralizedLoggingClient>();
+    return new BruteForceProtectionService(context, config, loggingClient, logger);
+});
+
+// Rate limiting middleware configuration
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+// Security Headers Configuration
+builder.Services.Configure<SecurityHeadersOptions>(builder.Configuration.GetSection("SecurityHeaders"));
+
 // Add background services
 builder.Services.AddHostedService<LogRetentionBackgroundService>();
+builder.Services.AddHostedService<RateLimitCleanupService>();
 
 // Background Services
 builder.Services.AddHostedService<TicketSessionCleanupService>();
@@ -219,19 +394,38 @@ builder.Services.AddHostedService<TicketSessionCleanupService>();
 // Stripe Configuration
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
 
-// CORS
+// CORS - Use environment variables for allowed origins
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowAll", corsBuilder =>
     {
-        builder.WithOrigins("https://localhost:7010", "https://localhost:7020", "https://localhost:7030", "https://localhost:7040", "https://admin:9030", "https://customer:9020")
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
+        // Get allowed origins from environment variable first, then use defaults
+        var allowedOrigins = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS");
+
+        if (!string.IsNullOrEmpty(allowedOrigins))
+        {
+            // Parse comma-separated origins from environment variable
+            var origins = allowedOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                      .Select(o => o.Trim())
+                                      .ToArray();
+            corsBuilder.WithOrigins(origins);
+        }
+        else
+        {
+            // Default origins for development (should be overridden in production)
+            corsBuilder.WithOrigins(
+                "https://localhost:7010", "https://localhost:7020", "https://localhost:7030", "https://localhost:7040",
+                "https://admin:9030", "https://customer:9020", "https://staff:9040"
+            );
+        }
+
+        corsBuilder.AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .AllowCredentials();
     });
 });
 
-// SignalR
+// SignalR with JWT authentication support
 builder.Services.AddSignalR();
 
 var app = builder.Build();
@@ -249,6 +443,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+
+// Add comprehensive security headers middleware
+app.UseSecurityHeaders();
+
+// Add rate limiting middleware
+app.UseIpRateLimiting();
 
 // Add global exception handling middleware
 app.UseMiddleware<GlobalExceptionMiddleware>();

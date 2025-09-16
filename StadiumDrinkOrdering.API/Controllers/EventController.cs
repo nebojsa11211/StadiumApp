@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StadiumDrinkOrdering.API.Services;
+using StadiumDrinkOrdering.API.Authorization;
 using StadiumDrinkOrdering.Shared.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -141,6 +142,7 @@ public class EventController : ControllerBase
     /// Create new event
     /// </summary>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<Event>> CreateEvent([FromBody] CreateEventRequest request)
     {
@@ -177,6 +179,7 @@ public class EventController : ControllerBase
     /// Update existing event
     /// </summary>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<Event>> UpdateEvent(int id, [FromBody] UpdateEventRequest request)
     {
@@ -218,6 +221,7 @@ public class EventController : ControllerBase
     /// Delete event
     /// </summary>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteEvent(int id)
     {
@@ -242,6 +246,7 @@ public class EventController : ControllerBase
     /// Activate event
     /// </summary>
     [HttpPost("{id}/activate")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> ActivateEvent(int id)
     {
@@ -266,6 +271,7 @@ public class EventController : ControllerBase
     /// Deactivate event
     /// </summary>
     [HttpPost("{id}/deactivate")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeactivateEvent(int id)
     {

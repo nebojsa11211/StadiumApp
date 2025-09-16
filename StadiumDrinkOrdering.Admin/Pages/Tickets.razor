@@ -69,7 +69,7 @@
                        @bind="searchTerm" @bind:event="oninput" @onkeyup="@(async () => await SearchTickets())" />
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <button class="btn btn-secondary w-100" @onclick="ResetFilters">
+                <button id="admin-tickets-reset-filters-btn" class="btn btn-secondary w-100" @onclick="ResetFilters">
                     <i class="bi bi-arrow-clockwise"></i> Reset
                 </button>
             </div>
@@ -169,30 +169,34 @@
                                     }
                                 </td>
                                 <td>
-                                    <div class="btn-group btn-group-sm" role="group">
+                                    <div class="btn-group" role="group">
                                         @if (ticket.OrderId.HasValue)
                                         {
-                                            <button class="btn btn-outline-primary" @onclick="() => ViewOrder(ticket.OrderId.Value)"
+                                            <button id="admin-tickets-view-order-btn-@ticket.Id" class="btn btn-outline-primary btn-sm" @onclick="() => ViewOrder(ticket.OrderId.Value)"
                                                     title="View Order">
-                                                <i class="bi bi-receipt"></i>
+                                                <i class="bi bi-receipt me-1"></i>
+                                                <span>Order</span>
                                             </button>
                                         }
-                                        <button class="btn btn-outline-info" @onclick="() => ValidateTicket(ticket.TicketNumber)"
-                                                title="Validate">
-                                            <i class="bi bi-check-circle"></i>
+                                        <button id="admin-tickets-validate-btn-@ticket.Id" class="btn btn-outline-info btn-sm" @onclick="() => ValidateTicket(ticket.TicketNumber)"
+                                                title="Validate Ticket">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            <span>Validate</span>
                                         </button>
                                         @if (ticket.IsActive)
                                         {
-                                            <button class="btn btn-outline-warning" @onclick="() => DeactivateTicket(ticket.Id)"
-                                                    title="Deactivate">
-                                                <i class="bi bi-x-circle"></i>
+                                            <button id="admin-tickets-deactivate-btn-@ticket.Id" class="btn btn-outline-warning btn-sm" @onclick="() => DeactivateTicket(ticket.Id)"
+                                                    title="Deactivate Ticket">
+                                                <i class="bi bi-x-circle me-1"></i>
+                                                <span>Deactivate</span>
                                             </button>
                                         }
                                         else
                                         {
-                                            <button class="btn btn-outline-success" @onclick="() => ActivateTicket(ticket.Id)"
-                                                    title="Activate">
-                                                <i class="bi bi-check-circle"></i>
+                                            <button id="admin-tickets-activate-btn-@ticket.Id" class="btn btn-outline-success btn-sm" @onclick="() => ActivateTicket(ticket.Id)"
+                                                    title="Activate Ticket">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                <span>Activate</span>
                                             </button>
                                         }
                                     </div>

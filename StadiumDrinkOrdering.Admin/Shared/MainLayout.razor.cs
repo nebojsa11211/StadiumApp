@@ -16,6 +16,14 @@ public partial class MainLayout : LayoutComponentBase, IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         await AuthStateService.InitializeAsync();
+
+        // Subscribe to authentication state changes
+        AuthStateService.OnAuthenticationStateChanged += OnAuthStateChanged;
+    }
+
+    private void OnAuthStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -66,6 +74,9 @@ public partial class MainLayout : LayoutComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        // Unsubscribe from authentication state changes
+        AuthStateService.OnAuthenticationStateChanged -= OnAuthStateChanged;
+
         if (jsModule is not null)
         {
             await jsModule.DisposeAsync();

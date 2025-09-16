@@ -32,20 +32,6 @@ services:
           memory: 256M
           cpus: '0.25'
 
-  # Customer - Production settings
-  customer:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - Logging__LogLevel__Default=Warning
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: '0.3'
-        reservations:
-          memory: 128M
-          cpus: '0.1'
-
   # Admin - Production settings
   admin:
     environment:

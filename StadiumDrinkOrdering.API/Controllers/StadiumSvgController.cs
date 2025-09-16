@@ -10,7 +10,7 @@ namespace StadiumDrinkOrdering.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/stadium-svg")]
-//[Authorize(Roles = "Admin,Staff")] // Temporarily commented out for testing dynamic stadium layout
+[Authorize] // SECURITY: Default to authorized access, individual endpoints can override with [AllowAnonymous]
 public class StadiumSvgController : ControllerBase
 {
     private readonly IStadiumLayoutService _stadiumLayoutService;

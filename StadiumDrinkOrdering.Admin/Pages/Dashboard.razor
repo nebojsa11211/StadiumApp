@@ -16,10 +16,10 @@
             <p class="text-muted">Monitor your stadium operations in real-time</p>
         </div>
         <div>
-            <button class="btn btn-outline-primary me-2" @onclick="RefreshData" disabled="@isLoading">
+            <button class="btn btn-outline-primary me-2" @onclick="RefreshData" disabled="@isLoading" id="admin-dashboard-refresh-btn">
                 <i class="oi oi-reload @(isLoading ? "spin" : "")"></i> Refresh
             </button>
-            <button class="btn btn-outline-secondary" @onclick="ToggleTheme">
+            <button class="btn btn-outline-secondary" @onclick="ToggleTheme" id="admin-dashboard-toggle-theme-btn">
                 <i class="oi oi-moon"></i>
             </button>
         </div>
@@ -121,7 +121,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Recent Orders</h5>
-                        <button class="btn btn-sm btn-outline-primary" @onclick="NavigateToOrders">View All</button>
+                        <button class="btn btn-sm btn-outline-primary" @onclick="NavigateToOrders" id="admin-dashboard-orders-view-all-btn">View All</button>
                     </div>
                     <div class="card-body">
                         @if (recentOrders?.Any() == true)
@@ -171,16 +171,16 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <button class="btn btn-primary" @onclick="NavigateToOrders">
+                            <button class="btn btn-primary" @onclick="NavigateToOrders" id="admin-dashboard-orders-manage-btn">
                                 <i class="oi oi-plus me-2"></i>New Order
                             </button>
-                            <button class="btn btn-success" @onclick="NavigateToUsers">
+                            <button class="btn btn-success" @onclick="NavigateToUsers" id="admin-dashboard-users-manage-btn">
                                 <i class="oi oi-person me-2"></i>Add User
                             </button>
-                            <button class="btn btn-info" @onclick="NavigateToReports">
+                            <button class="btn btn-info" @onclick="NavigateToReports" id="admin-dashboard-reports-view-btn">
                                 <i class="oi oi-document me-2"></i>Export Reports
                             </button>
-                            <button class="btn btn-secondary" @onclick="NavigateToLogs">
+                            <button class="btn btn-secondary" @onclick="NavigateToLogs" id="admin-dashboard-logs-view-btn">
                                 <i class="oi oi-list me-2"></i>View Logs
                             </button>
                         </div>

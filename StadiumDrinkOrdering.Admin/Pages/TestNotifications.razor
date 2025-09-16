@@ -14,19 +14,19 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <button class="btn btn-danger" @onclick="TestErrorNotification">
+                    <button class="btn btn-danger" @onclick="TestErrorNotification" id="admin-test-notifications-error-btn">
                         🚨 Test Error Notification
                     </button>
 
-                    <button class="btn btn-warning" @onclick="TestTimeoutNotification">
+                    <button class="btn btn-warning" @onclick="TestTimeoutNotification" id="admin-test-notifications-timeout-btn">
                         ⏱️ Test Timeout Notification
                     </button>
 
-                    <button class="btn btn-info" @onclick="TestApiErrorNotification">
+                    <button class="btn btn-info" @onclick="TestApiErrorNotification" id="admin-test-notifications-api-error-btn">
                         🌐 Test API Error (400 Bad Request)
                     </button>
 
-                    <button class="btn btn-secondary" @onclick="TestJavaScriptDirect">
+                    <button class="btn btn-secondary" @onclick="TestJavaScriptDirect" id="admin-test-notifications-js-direct-btn">
                         📱 Test JavaScript Direct
                     </button>
                 </div>

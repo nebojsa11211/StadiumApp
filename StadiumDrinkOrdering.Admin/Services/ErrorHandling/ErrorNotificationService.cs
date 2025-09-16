@@ -12,19 +12,20 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
         private readonly NavigationManager _navigation;
         private readonly IAuthService _authService;
         private readonly ICentralizedLoggingClient _loggingClient;
-        private readonly Dictionary<string, DateTime> _lastErrorTime = new();
-        private readonly TimeSpan _errorThrottleInterval = TimeSpan.FromSeconds(3);
+        private readonly IThrottlingService _throttlingService;
 
         public ErrorNotificationService(
             IJSRuntime jsRuntime,
             NavigationManager navigation,
             IAuthService authService,
-            ICentralizedLoggingClient loggingClient)
+            ICentralizedLoggingClient loggingClient,
+            IThrottlingService throttlingService)
         {
             _jsRuntime = jsRuntime;
             _navigation = navigation;
             _authService = authService;
             _loggingClient = loggingClient;
+            _throttlingService = throttlingService;
         }
 
         public async Task ShowErrorAsync(string message, string? title = "Error", int durationMs = 8000)
@@ -49,9 +50,32 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
 
         public async Task ShowApiErrorAsync(HttpStatusCode statusCode, string? details = null, string? endpoint = null)
         {
-            // Throttle error messages for the same endpoint
-            if (IsThrottled(endpoint ?? statusCode.ToString()))
+            // Handle special cases first with their own throttling
+            switch (statusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    // Use special throttling for authentication errors
+                    if (_throttlingService.IsThrottled("auth_error"))
+                        return;
+                    _throttlingService.SetThrottled("auth_error");
+                    await ShowAuthenticationErrorAsync();
+                    return;
+
+                case HttpStatusCode.Forbidden:
+                    // Throttle permission errors per endpoint
+                    var forbiddenKey = $"forbidden_{endpoint ?? "unknown"}";
+                    if (_throttlingService.IsThrottled(forbiddenKey))
+                        return;
+                    _throttlingService.SetThrottled(forbiddenKey);
+                    await ShowPermissionDeniedAsync(endpoint);
+                    return;
+            }
+
+            // Throttle other error messages for the same endpoint
+            var errorKey = endpoint ?? statusCode.ToString();
+            if (_throttlingService.IsThrottled(errorKey))
                 return;
+            _throttlingService.SetThrottled(errorKey);
 
             // Log the API error for debugging
             await _loggingClient.LogErrorAsync(
@@ -61,18 +85,6 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
                 details: $"Endpoint: {endpoint}, Details: {details}",
                 source: "Admin"
             );
-
-            // Handle special cases
-            switch (statusCode)
-            {
-                case HttpStatusCode.Unauthorized:
-                    await ShowAuthenticationErrorAsync();
-                    return;
-
-                case HttpStatusCode.Forbidden:
-                    await ShowPermissionDeniedAsync(endpoint);
-                    return;
-            }
 
             // Show appropriate user message
             var errorInfo = ErrorMessageMappings.GetErrorInfo(statusCode, endpoint);
@@ -93,14 +105,7 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
         {
             await _authService.LogoutAsync(); // Clear invalid tokens
 
-            await ShowErrorAsync(
-                "🔐 Your session has expired. Redirecting to login page...",
-                "Authentication Required",
-                durationMs: 3000
-            );
-
-            // Redirect after showing message
-            await Task.Delay(1000);
+            // No JavaScript alert - just redirect immediately to login
             var loginUrl = "/login";
             if (!string.IsNullOrEmpty(returnUrl))
             {
@@ -184,18 +189,5 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
             }
         }
 
-        private bool IsThrottled(string key)
-        {
-            if (_lastErrorTime.TryGetValue(key, out var lastTime))
-            {
-                if (DateTime.UtcNow - lastTime < _errorThrottleInterval)
-                {
-                    return true;
-                }
-            }
-
-            _lastErrorTime[key] = DateTime.UtcNow;
-            return false;
-        }
     }
 }

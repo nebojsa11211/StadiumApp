@@ -16,10 +16,10 @@
             <p class="text-muted">Manage system users and their roles</p>
         </div>
         <div>
-            <button class="btn btn-primary me-2" @onclick="ShowCreateUserModal">
+            <button class="btn btn-primary me-2" @onclick="ShowCreateUserModal" id="admin-users-create-btn">
                 <i class="oi oi-plus me-2"></i>Add User
             </button>
-            <button class="btn btn-outline-secondary" @onclick="RefreshData" disabled="@isLoading">
+            <button class="btn btn-outline-secondary" @onclick="RefreshData" disabled="@isLoading" id="admin-users-refresh-btn">
                 <i class="oi oi-reload @(isLoading ? "spin" : "")"></i> Refresh
             </button>
         </div>
@@ -118,7 +118,7 @@
                 <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
                     <div class="d-grid">
-                        <button class="btn btn-outline-secondary" @onclick="ClearFilters">Clear Filters</button>
+                        <button class="btn btn-outline-secondary" @onclick="ClearFilters" id="admin-users-clear-filters-btn">Clear Filters</button>
                     </div>
                 </div>
             </div>
@@ -143,8 +143,8 @@
                 @if (selectedUserIds.Any())
                 {
                     <div class="btn-group">
-                        <button class="btn btn-sm btn-success" @onclick="BulkActivate">Activate Selected (@selectedUserIds.Count)</button>
-                        <button class="btn btn-sm btn-warning" @onclick="BulkDeactivate">Deactivate Selected</button>
+                        <button class="btn btn-sm btn-success" @onclick="BulkActivate" id="admin-users-bulk-activate-btn">Activate Selected (@selectedUserIds.Count)</button>
+                        <button class="btn btn-sm btn-warning" @onclick="BulkDeactivate" id="admin-users-bulk-deactivate-btn">Deactivate Selected</button>
                     </div>
                 }
             </div>
@@ -191,27 +191,27 @@
                                         <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-outline-primary" @onclick="@(() => EditUser(user))">
+                                                <button class="btn btn-outline-primary" @onclick="@(() => EditUser(user))" id="admin-users-edit-btn-@user.Id">
                                                     <i class="oi oi-pencil"></i>
                                                 </button>
-                                                <button class="btn btn-outline-info" @onclick="@(() => ResetPassword(user.Id))">
+                                                <button class="btn btn-outline-info" @onclick="@(() => ResetPassword(user.Id))" id="admin-users-reset-password-btn-@user.Id">
                                                     <i class="oi oi-key"></i>
                                                 </button>
                                                 @if (user.IsActive)
                                                 {
-                                                    <button class="btn btn-outline-warning" @onclick="@(() => DeactivateUser(user.Id))">
+                                                    <button class="btn btn-outline-warning" @onclick="@(() => DeactivateUser(user.Id))" id="admin-users-deactivate-btn-@user.Id">
                                                         <i class="oi oi-ban"></i>
                                                     </button>
                                                 }
                                                 else
                                                 {
-                                                    <button class="btn btn-outline-success" @onclick="@(() => ActivateUser(user.Id))">
+                                                    <button class="btn btn-outline-success" @onclick="@(() => ActivateUser(user.Id))" id="admin-users-activate-btn-@user.Id">
                                                         <i class="oi oi-circle-check"></i>
                                                     </button>
                                                 }
                                                 @if (CanDeleteUser(user))
                                                 {
-                                                    <button class="btn btn-outline-danger" @onclick="@(() => DeleteUser(user.Id))">
+                                                    <button class="btn btn-outline-danger" @onclick="@(() => DeleteUser(user.Id))" id="admin-users-delete-btn-@user.Id">
                                                         <i class="oi oi-trash"></i>
                                                     </button>
                                                 }
@@ -250,7 +250,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New User</h5>
-                    <button type="button" class="btn-close" @onclick="CloseCreateModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseCreateModal" id="admin-users-modal-close-btn"></button>
                 </div>
                 <div class="modal-body">
                     <EditForm Model="newUser" OnValidSubmit="CreateUser">
@@ -287,8 +287,8 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" disabled="@isCreatingUser">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal" id="admin-users-modal-cancel-btn">Cancel</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isCreatingUser" id="admin-users-modal-submit-btn">
                                 @if (isCreatingUser)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>

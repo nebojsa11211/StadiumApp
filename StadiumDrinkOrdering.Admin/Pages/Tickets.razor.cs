@@ -186,13 +186,43 @@ public partial class Tickets : ComponentBase
 
     private async Task DeactivateTicket(int ticketId)
     {
-        // This would require adding an endpoint to update ticket status
-        await JSRuntime.InvokeVoidAsync("alert", "Deactivate ticket functionality not yet implemented in API");
+        try
+        {
+            var success = await ApiService.UpdateTicketStatusAsync(ticketId, false);
+            if (success)
+            {
+                await LoadData();
+                await JSRuntime.InvokeVoidAsync("alert", "Ticket deactivated successfully!");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Failed to deactivate ticket.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error deactivating ticket: {ex.Message}");
+        }
     }
 
     private async Task ActivateTicket(int ticketId)
     {
-        // This would require adding an endpoint to update ticket status
-        await JSRuntime.InvokeVoidAsync("alert", "Activate ticket functionality not yet implemented in API");
+        try
+        {
+            var success = await ApiService.UpdateTicketStatusAsync(ticketId, true);
+            if (success)
+            {
+                await LoadData();
+                await JSRuntime.InvokeVoidAsync("alert", "Ticket activated successfully!");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Failed to activate ticket.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error activating ticket: {ex.Message}");
+        }
     }
 }

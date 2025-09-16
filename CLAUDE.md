@@ -101,33 +101,409 @@ Example: Admin creates a product → Customer purchases it → Validate order.
 
 ---
 
-## Authentication & Security
+## Authentication & Security ✅ ENTERPRISE-GRADE SYSTEM
 
-### 🔒 Admin Authentication Requirements
-**CRITICAL RULE**: The Admin application requires mandatory authentication for ALL pages except login.
+### 🔐 Comprehensive Authentication Architecture
+**ENTERPRISE-GRADE**: Complete JWT-based authentication system with refresh tokens, automatic token injection, policy-based authorization, and comprehensive security middleware.
 
-#### Authentication Flow
-1. **Unauthenticated Access**: All admin routes are protected by `AuthRoute` component
-2. **Login Required**: Users see "🔐 Authentication Required" message when accessing protected pages
-3. **Login Page**: `/login` is the only accessible page without authentication
-4. **Post-Login**: After successful login, users can access all admin functionality
-5. **Session Persistence**: Authentication state persists via localStorage and JWT tokens
+#### Core Authentication Features
+- **🔑 JWT Refresh Tokens**: 15-minute access tokens + 7-day refresh tokens
+- **🔄 Automatic Token Injection**: HTTP client middleware handles token management
+- **🛡️ Policy-Based Authorization**: Fine-grained access control with custom requirements
+- **⚡ Background Token Refresh**: Automatic token renewal before expiration
+- **🔒 Brute Force Protection**: Rate limiting and progressive delays
+- **📊 Security Headers**: Comprehensive security headers on all API responses
+- **🎯 Role-Based Access**: Admin, Staff, Customer roles with appropriate permissions
 
-#### Default Admin Credentials
+#### Shared Authentication Library (`StladiumDrinkOrdering.Shared/Authentication/`)
+**Unified Authentication Framework** across all applications:
+
+```csharp
+// Automatic service registration
+builder.Services.AddClientAuthentication(apiBaseUrl, "Admin", enableBackgroundRefresh: true);
+
+// Usage in components
+@inject IAuthenticationStateService AuthState
+@inject ITokenStorageService TokenStorage
+```
+
+**Key Interfaces:**
+- **`IAuthenticationStateService`**: Unified auth state management
+- **`ITokenStorageService`**: Secure token storage with expiration handling
+- **`ITokenRefreshService`**: Automatic JWT refresh token management
+- **`ISecureApiService`**: Authenticated API calls with retry logic
+
+#### HTTP Client Middleware (`AuthenticationHandler`)
+**Automatic Token Injection** with intelligent retry logic:
+```csharp
+// Automatically handles:
+// 1. Token injection on all API calls
+// 2. 401 detection and refresh token attempt
+// 3. Retry original request with new token
+// 4. Fallback to login redirect on refresh failure
+```
+
+#### JWT Security Implementation
+**Enhanced Security Features:**
+- **Algorithm Restrictions**: Only HS256 allowed, prevents algorithm confusion attacks
+- **Token Validation**: Comprehensive validation with audience, issuer, expiration checks
+- **Refresh Token Rotation**: New refresh token issued on each use
+- **Secure Storage**: Browser localStorage with encryption considerations
+- **Background Monitoring**: Automatic expiration detection and renewal
+
+#### Policy-Based Authorization (`API/Authorization/`)
+**Fine-Grained Access Control:**
+```csharp
+[Authorize(Policy = "AdminOnly")]
+[Authorize(Policy = "StaffOrAdmin")]
+[Authorize(Policy = "CustomerAccess")]
+
+// Custom requirements:
+// - AdminRequirement: Admin role verification
+// - StaffRequirement: Staff role verification
+// - UserRequirement: Authenticated user verification
+```
+
+#### Security Middleware Stack
+**Comprehensive Protection:**
+1. **Security Headers Middleware**: HSTS, CSP, NOSNIFF, Frame protection
+2. **Rate Limiting Middleware**: IP-based and endpoint-specific limits
+3. **Brute Force Protection**: Progressive delays and account lockouts
+4. **Global Exception Handling**: Secure error responses without information leakage
+5. **CORS Configuration**: Proper cross-origin resource sharing
+
+#### Admin Authentication Requirements
+**CRITICAL RULE**: All admin pages require authentication except `/login`
+
+**Authentication Flow:**
+1. **Route Protection**: `AuthRoute` component wraps all protected routes
+2. **Silent Redirect**: Invalid tokens redirect to login without JavaScript alerts
+3. **Session Persistence**: Tokens stored securely with automatic renewal
+4. **Return URL Support**: Users redirected to intended page after login
+
+**Default Admin Credentials:**
 - **Email**: `admin@stadium.com`
 - **Password**: `admin123`
 
-#### Implementation Components
-- **`AuthRoute.razor`**: Wraps all protected routes and enforces authentication
-- **`AuthStateService`**: Manages authentication state and token storage
-- **`TokenStorageService`**: Singleton service for JWT token persistence
-- **`App.razor`**: Router configuration with authentication routing logic
+#### Rate Limiting & Brute Force Protection
+**API Protection Configuration:**
+```json
+{
+  "RateLimiting": {
+    "Authentication": {
+      "LoginAttemptsPerMinute": 5,
+      "RegisterAttemptsPerHour": 3
+    },
+    "BruteForce": {
+      "MaxFailedAttempts": 5,
+      "LockoutDurationMinutes": 15,
+      "ProgressiveDelay": {
+        "Enabled": true,
+        "BaseDelayMs": 1000,
+        "MaxDelayMs": 30000,
+        "Multiplier": 2.0
+      }
+    }
+  }
+}
+```
 
-#### Security Features
-- **Route Protection**: All admin pages except `/login` require authentication
-- **Token Validation**: JWT tokens validated on each request
-- **Automatic Logout**: Invalid tokens trigger automatic logout
-- **Return URL Support**: Users redirected to intended page after login
+#### Security Headers Configuration
+**Comprehensive Protection:**
+- **X-Frame-Options**: DENY (prevent clickjacking)
+- **X-Content-Type-Options**: nosniff (prevent MIME confusion)
+- **X-XSS-Protection**: 1; mode=block (XSS protection)
+- **Strict-Transport-Security**: HSTS with includeSubDomains
+- **Content-Security-Policy**: Restrictive CSP configuration
+- **Referrer-Policy**: strict-origin-when-cross-origin
+- **Permissions-Policy**: Disabled dangerous features
+
+#### Implementation Files
+**Key Components:**
+- **`AuthenticationHandler.cs`**: HTTP client middleware for token injection
+- **`TokenRefreshService.cs`**: Background token renewal service
+- **`SecurityHeadersMiddleware.cs`**: Comprehensive security headers
+- **`BruteForceProtectionService.cs`**: Rate limiting and protection
+- **`AuthStateService.cs`**: Unified authentication state management
+- **`TokenStorageService.cs`**: Secure token storage per application
+- **`AuthorizationPolicies.cs`**: Policy-based authorization configuration
+
+#### Testing & Verification
+**Authentication System Status:**
+- ✅ All applications start without dependency injection errors
+- ✅ JWT refresh tokens implemented and tested
+- ✅ HTTP client middleware working correctly
+- ✅ Policy-based authorization active
+- ✅ Security headers applied to all responses
+- ✅ Rate limiting and brute force protection enabled
+- ✅ Background token refresh service operational
+
+---
+
+## Authentication Troubleshooting Guide 🔧
+
+### Common Authentication Issues & Solutions
+
+#### 1. Dependency Injection Errors
+**Issue**: `InvalidOperationException: Cannot provide a value for property 'AuthStateService'`
+```
+Error: There is no registered service of type 'IAuthStateService'
+```
+
+**Solution**: Ensure proper service registration in `Program.cs`:
+```csharp
+// Register authentication services
+builder.Services.AddScoped<AuthStateService>();
+builder.Services.AddScoped<IAuthStateService>(provider => provider.GetRequiredService<AuthStateService>());
+builder.Services.AddScoped<IAuthenticationStateService>(provider => provider.GetRequiredService<AuthStateService>());
+builder.Services.AddScoped<ITokenStorageService, TokenStorageService>();
+
+// Add client authentication
+builder.Services.AddClientAuthentication(apiBaseUrl, "Admin", enableBackgroundRefresh: true);
+```
+
+**Root Cause**: Missing interface registration for `IAuthStateService` in DI container.
+
+#### 2. Repeated Authentication Alerts
+**Issue**: JavaScript alerts appearing repeatedly after clicking "OK"
+```
+Alert: "Unauthorized access!" appears continuously
+```
+
+**Solution**: Remove JavaScript alerts, implement silent redirect:
+```csharp
+// In AuthRoute.razor - REMOVE this:
+// await JSRuntime.InvokeVoidAsync("alert", "Unauthorized access!");
+
+// REPLACE with silent redirect:
+NavigationManager.NavigateTo("/login", forceLoad: true);
+```
+
+**Root Cause**: JavaScript alert created infinite loop when user clicked OK.
+
+#### 3. Token Storage Issues
+**Issue**: Authentication state not persisting across page reloads
+```
+Error: Token is null after page refresh
+```
+
+**Solution**: Verify `TokenStorageService` implementation:
+```csharp
+// Check localStorage operations in TokenStorageService
+public async Task<string?> GetTokenAsync()
+{
+    try
+    {
+        var token = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem",
+            AuthenticationConstants.StorageKeys.Admin.Token);
+        return token;
+    }
+    catch (Exception)
+    {
+        return null; // Handle prerendering gracefully
+    }
+}
+```
+
+**Root Cause**: JSRuntime errors during prerendering or localStorage access issues.
+
+#### 4. HTTP Client Authentication Failures
+**Issue**: API calls return 401 Unauthorized despite having valid tokens
+```
+Error: 401 Unauthorized on API requests
+```
+
+**Solution**: Verify `AuthenticationHandler` registration:
+```csharp
+// In Program.cs
+builder.Services.AddClientAuthentication(apiBaseUrl, "Admin", enableBackgroundRefresh: true);
+
+// Check HttpClient configuration
+builder.Services.AddHttpClient("AuthenticatedClient")
+    .AddHttpMessageHandler<AuthenticationHandler>();
+```
+
+**Root Cause**: Missing authentication handler on HTTP client or incorrect service registration.
+
+#### 5. Refresh Token Failures
+**Issue**: Background token refresh not working
+```
+Error: Refresh token expired or invalid
+```
+
+**Solution**: Check `BackgroundTokenRefreshService` logs:
+```csharp
+// Enable debugging in appsettings.json
+"Logging": {
+  "LogLevel": {
+    "StadiumDrinkOrdering.Shared.Authentication": "Debug"
+  }
+}
+```
+
+**Root Cause**: Refresh token expired, invalid, or refresh service not registered properly.
+
+#### 6. CORS Issues with Authentication
+**Issue**: CORS errors when making authenticated API calls
+```
+Error: CORS policy blocked request with authentication headers
+```
+
+**Solution**: Configure CORS in API `Program.cs`:
+```csharp
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("https://localhost:9030", "https://localhost:9020")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+```
+
+**Root Cause**: CORS policy doesn't allow authentication headers or credentials.
+
+#### 7. Docker Container Authentication Issues
+**Issue**: Authentication works locally but fails in Docker
+```
+Error: Cannot connect to API from container
+```
+
+**Solution**: Check Docker networking configuration:
+```yaml
+# In docker-compose.yml
+services:
+  admin:
+    environment:
+      - ApiSettings__BaseUrl=https://api:8443
+  api:
+    environment:
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY}
+```
+
+**Root Cause**: Incorrect API base URL or missing environment variables in containers.
+
+### Debugging Tools & Commands
+
+#### Check Container Logs
+```bash
+# View authentication-related logs
+docker logs stadium-admin | grep -i "auth\|token\|login"
+docker logs stadium-api | grep -i "auth\|token\|401\|403"
+```
+
+#### Test API Authentication
+```bash
+# Test API accessibility
+curl -k -I https://localhost:9010/api/drinks
+
+# Test with authentication
+TOKEN="your-jwt-token"
+curl -k -H "Authorization: Bearer $TOKEN" https://localhost:9010/api/orders
+```
+
+#### Verify Service Registration
+Add debugging to `Program.cs`:
+```csharp
+Console.WriteLine("✅ Registered authentication services:");
+Console.WriteLine($"   - AuthStateService: {services.Any(s => s.ServiceType == typeof(AuthStateService))}");
+Console.WriteLine($"   - IAuthStateService: {services.Any(s => s.ServiceType == typeof(IAuthStateService))}");
+Console.WriteLine($"   - ITokenStorageService: {services.Any(s => s.ServiceType == typeof(ITokenStorageService))}");
+```
+
+### Performance Monitoring
+
+#### Monitor Token Refresh
+```csharp
+// Add logging to BackgroundTokenRefreshService
+private readonly ILogger<BackgroundTokenRefreshService> _logger;
+
+protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+{
+    _logger.LogInformation("Background token refresh service started");
+    // ... implementation
+}
+```
+
+#### Check Memory Usage
+```bash
+# Monitor container memory usage
+docker stats stadium-admin stadium-api --no-stream
+```
+
+### Security Verification
+
+#### Verify JWT Configuration
+```csharp
+// Check JWT settings in API startup
+var jwtKey = configuration["JwtSettings:SecretKey"];
+if (string.IsNullOrEmpty(jwtKey) || jwtKey.Length < 32)
+{
+    throw new InvalidOperationException("JWT secret key must be at least 32 characters");
+}
+```
+
+#### Test Security Headers
+```bash
+# Verify security headers are applied
+curl -k -I https://localhost:9010/api/auth/login | grep -E "(X-Frame-Options|X-Content-Type-Options|Strict-Transport-Security)"
+```
+
+### Known Issues & Workarounds
+
+#### Issue: SQLite vs PostgreSQL Configuration
+**Problem**: EF migrations fail with "Tenant or user not found"
+**Workaround**: Update `appsettings.Development.json` connection string:
+```json
+{
+  "UseSqliteFallback": false,
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=your-db-host;Port=5432;Database=postgres;Username=user;Password=pass;Ssl Mode=Require"
+  }
+}
+```
+
+#### Issue: Container SSL Certificate Problems
+**Problem**: SSL connection errors between containers
+**Workaround**: Use HTTP for internal container communication:
+```csharp
+if (containerEnv == "true")
+{
+    apiBaseUrl = "http://api:8080"; // Internal HTTP
+}
+else
+{
+    apiBaseUrl = "https://localhost:7010"; // External HTTPS
+}
+```
+
+#### Issue: localStorage Access During Prerendering
+**Problem**: JSRuntime errors during server-side prerendering
+**Workaround**: Add try-catch blocks in TokenStorageService:
+```csharp
+try
+{
+    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+}
+catch (Exception)
+{
+    // Handle prerendering gracefully - localStorage not available
+}
+```
+
+### Support & Documentation
+
+#### Internal Documentation
+- **CLAUDE.md**: Complete project documentation with authentication details
+- **API Controllers**: Check `AuthController.cs` for authentication endpoints
+- **Service Interfaces**: Review `IAuthenticationStateService` for contract details
+
+#### External Resources
+- **JWT.io**: Token inspection and debugging
+- **ASP.NET Core Authentication**: Microsoft official documentation
+- **Blazor Authentication**: Component-based authentication patterns
 
 ---
 

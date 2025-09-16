@@ -1,66 +1,16 @@
-version: '3.8'
-
 services:
-  # API - Development overrides (using PostgreSQL/Supabase for development)
+  # API - Development overrides for enhanced debugging
   api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=300;Keepalive=30;Connection Idle Lifetime=300;Maximum Pool Size=50;Minimum Pool Size=5;Pooling=true;No Reset On Close=true;Include Error Detail=true
-      - JwtSettings__SecretKey=DevSuperSecretKeyThatIsAtLeast32CharactersLong!
-      - JwtSettings__Issuer=StadiumDrinkOrdering
-      - JwtSettings__Audience=StadiumDrinkOrdering
-      - Logging__LogLevel__Default=Debug
-      - Logging__LogLevel__Microsoft.AspNetCore=Information
-      - ASPNETCORE_URLS=https://+:8443
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8443
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
-      - DOTNET_RUNNING_IN_CONTAINER=true
-    volumes:
-      - ./certificates:/https:ro
+      # Enhanced logging for development
+      - Logging__LogLevel__Default=${LOG_LEVEL_DEFAULT:-Debug}
+      - Logging__LogLevel__Microsoft.AspNetCore=${LOG_LEVEL_ASPNETCORE:-Information}
+      - Logging__LogLevel__Microsoft.EntityFrameworkCore.Database.Command=Information
+      - Logging__LogLevel__Microsoft.EntityFrameworkCore.Database.Connection=Information
 
-  # Customer - Development overrides
-  customer:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=https://api:8443/
-      - Logging__LogLevel__Default=Debug
-      - ASPNETCORE_URLS=https://+:8444
-      - ASPNETCORE_HTTP_PORTS=8081
-      - ASPNETCORE_HTTPS_PORTS=8444
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
-      - DOTNET_RUNNING_IN_CONTAINER=true
-    volumes:
-      - ./certificates:/https:ro
-
-  # Admin - Development overrides
+  # Admin - Development overrides for enhanced debugging
   admin:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=https://api:8443/
-      - Logging__LogLevel__Default=Debug
-      - ASPNETCORE_URLS=https://+:8445
-      - ASPNETCORE_HTTP_PORTS=8082
-      - ASPNETCORE_HTTPS_PORTS=8445
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
-      - DOTNET_RUNNING_IN_CONTAINER=true
-    volumes:
-      - ./certificates:/https:ro
-
-  # Staff - Development overrides
-  staff:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=https://api:8443/
-      - Logging__LogLevel__Default=Debug
-      - ASPNETCORE_URLS=https://+:8446
-      - ASPNETCORE_HTTP_PORTS=8083
-      - ASPNETCORE_HTTPS_PORTS=8446
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
-      - DOTNET_RUNNING_IN_CONTAINER=true
-    volumes:
-      - ./certificates:/https:ro
+      # Enhanced logging for development
+      - Logging__LogLevel__Default=${LOG_LEVEL_DEFAULT:-Debug}
+      - Logging__LogLevel__Microsoft.AspNetCore=${LOG_LEVEL_ASPNETCORE:-Information}

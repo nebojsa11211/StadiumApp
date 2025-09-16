@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # API Backend
   api:
@@ -8,51 +6,25 @@ services:
       dockerfile: StadiumDrinkOrdering.API/Dockerfile
     container_name: stadium-api
     environment:
-      - TZ=Europe/Zagreb
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Data Source=/app/data/stadium_test.db
-      - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
-      - JwtSettings__Issuer=StadiumDrinkOrdering
-      - JwtSettings__Audience=StadiumDrinkOrdering
+      - TZ=${TZ:-Europe/Zagreb}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY}
+      - JwtSettings__Issuer=${JWT_ISSUER:-StadiumDrinkOrdering}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-StadiumDrinkOrdering}
       - ASPNETCORE_URLS=https://+:8443
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8443
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_CERT_PASSWORD}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
+      - Logging__LogLevel__Default=${LOG_LEVEL_DEFAULT:-Information}
+      - Logging__LogLevel__Microsoft.AspNetCore=${LOG_LEVEL_ASPNETCORE:-Information}
     ports:
       - "9010:8443"
       - "9011:8080"
     volumes:
-      - api_data:/app/data
       - ./certificates:/https:ro
-    networks:
-      - stadium-network
-    restart: unless-stopped
-
-  # Customer Frontend
-  customer:
-    build:
-      context: .
-      dockerfile: StadiumDrinkOrdering.Customer/Dockerfile
-    container_name: stadium-customer
-    environment:
-      - TZ=Europe/Zagreb
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=https://api:8443/
-      - ASPNETCORE_URLS=https://+:8444
-      - ASPNETCORE_HTTP_PORTS=8081
-      - ASPNETCORE_HTTPS_PORTS=8444
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
-      - DOTNET_RUNNING_IN_CONTAINER=true
-    ports:
-      - "9020:8444"
-      - "9021:8081"
-    volumes:
-      - ./certificates:/https:ro
-    depends_on:
-      - api
     networks:
       - stadium-network
     restart: unless-stopped
@@ -64,45 +36,20 @@ services:
       dockerfile: StadiumDrinkOrdering.Admin/Dockerfile
     container_name: stadium-admin
     environment:
-      - TZ=Europe/Zagreb
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=https://api:8443/
+      - TZ=${TZ:-Europe/Zagreb}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ApiSettings__BaseUrl=${API_BASE_URL:-https://api:8443/}
       - ASPNETCORE_URLS=https://+:8445
       - ASPNETCORE_HTTP_PORTS=8082
       - ASPNETCORE_HTTPS_PORTS=8445
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_CERT_PASSWORD}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
+      - Logging__LogLevel__Default=${LOG_LEVEL_DEFAULT:-Information}
+      - Logging__LogLevel__Microsoft.AspNetCore=${LOG_LEVEL_ASPNETCORE:-Information}
     ports:
       - "9030:8445"
       - "9031:8082"
-    volumes:
-      - ./certificates:/https:ro
-    depends_on:
-      - api
-    networks:
-      - stadium-network
-    restart: unless-stopped
-
-  # Staff Frontend
-  staff:
-    build:
-      context: .
-      dockerfile: StadiumDrinkOrdering.Staff/Dockerfile
-    container_name: stadium-staff
-    environment:
-      - TZ=Europe/Zagreb
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ApiSettings__BaseUrl=https://api:8443/
-      - ASPNETCORE_URLS=https://+:8446
-      - ASPNETCORE_HTTP_PORTS=8083
-      - ASPNETCORE_HTTPS_PORTS=8446
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=StadiumDev123!
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
-      - DOTNET_RUNNING_IN_CONTAINER=true
-    ports:
-      - "9040:8446"
-      - "9041:8083"
     volumes:
       - ./certificates:/https:ro
     depends_on:
@@ -117,8 +64,4 @@ networks:
     driver: bridge
     name: stadium-network
 
-# Volumes
-volumes:
-  api_data:
-    driver: local
-    name: stadium-api-data
+# No volumes needed - using PostgreSQL/Supabase (cloud database)

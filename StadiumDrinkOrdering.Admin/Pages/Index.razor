@@ -96,7 +96,7 @@
             <div class="card h-100">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">📊 Recent Activity</h5>
-                    <button class="btn btn-sm btn-outline-primary" @onclick="RefreshActivity">
+                    <button class="btn btn-sm btn-outline-primary" @onclick="RefreshActivity" id="admin-index-refresh-activity-btn">
                         <i class="bi bi-arrow-clockwise"></i> Refresh
                     </button>
                 </div>
@@ -139,27 +139,27 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary text-start" @onclick="@(() => Navigation.NavigateTo("/orders"))">
+                        <button class="btn btn-outline-primary text-start" @onclick="@(() => Navigation.NavigateTo("/orders"))" id="admin-index-orders-quick-btn">
                             <i class="bi bi-cart-plus me-2"></i> Process New Orders
                             @if (pendingOrders > 0)
                             {
                                 <span class="badge bg-danger float-end">@pendingOrders</span>
                             }
                         </button>
-                        <button class="btn btn-outline-success text-start" @onclick="@(() => Navigation.NavigateTo("/events"))">
+                        <button class="btn btn-outline-success text-start" @onclick="@(() => Navigation.NavigateTo("/events"))" id="admin-index-events-quick-btn">
                             <i class="bi bi-calendar-event me-2"></i> Manage Events
                         </button>
-                        <button class="btn btn-outline-warning text-start" @onclick="@(() => Navigation.NavigateTo("/analytics"))">
+                        <button class="btn btn-outline-warning text-start" @onclick="@(() => Navigation.NavigateTo("/analytics"))" id="admin-index-analytics-quick-btn">
                             <i class="bi bi-graph-up me-2"></i> View Analytics
                         </button>
-                        <button class="btn btn-outline-info text-start" @onclick="@(() => Navigation.NavigateTo("/logs"))">
+                        <button class="btn btn-outline-info text-start" @onclick="@(() => Navigation.NavigateTo("/logs"))" id="admin-index-logs-quick-btn">
                             <i class="bi bi-file-text me-2"></i> System Logs
                             @if (recentErrors > 0)
                             {
                                 <span class="badge bg-danger float-end">@recentErrors</span>
                             }
                         </button>
-                        <button class="btn btn-outline-secondary text-start" @onclick="@(() => Navigation.NavigateTo("/users"))">
+                        <button class="btn btn-outline-secondary text-start" @onclick="@(() => Navigation.NavigateTo("/users"))" id="admin-index-users-quick-btn">
                             <i class="bi bi-person-plus me-2"></i> Add Staff Member
                         </button>
                     </div>
@@ -286,7 +286,7 @@
                 <h5 class="modal-title" id="onlineUsersModalLabel">
                     <i class="bi bi-people me-2"></i>Online Users
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="admin-index-online-users-modal-close-btn"></button>
             </div>
             <div class="modal-body">
                 @if (loadingModalData)
@@ -339,8 +339,8 @@
                 }
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-info" @onclick="RefreshOnlineUsers">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="admin-index-online-users-close-btn">Close</button>
+                <button type="button" class="btn btn-info" @onclick="RefreshOnlineUsers" id="admin-index-online-users-refresh-btn">
                     <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                 </button>
             </div>
@@ -397,7 +397,7 @@
                                         </td>
                                         <td>@GetTimeAgo(order.CreatedAt)</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary" @onclick="() => ViewOrderDetails(order.Id)">
+                                            <button class="btn btn-sm btn-outline-primary" @onclick="() => ViewOrderDetails(order.Id)" id="admin-index-order-details-btn-@order.Id">
                                                 View
                                             </button>
                                         </td>
@@ -413,11 +413,11 @@
                 }
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-info" @onclick="RefreshActiveOrders">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="admin-index-active-orders-close-btn">Close</button>
+                <button type="button" class="btn btn-info" @onclick="RefreshActiveOrders" id="admin-index-active-orders-refresh-btn">
                     <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                 </button>
-                <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/orders"))">
+                <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/orders"))" id="admin-index-active-orders-manage-btn">
                     View All Orders
                 </button>
             </div>
@@ -433,7 +433,7 @@
                 <h5 class="modal-title" id="revenueModalLabel">
                     <i class="bi bi-cash-stack me-2"></i>Revenue Details
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="admin-index-revenue-modal-close-btn"></button>
             </div>
             <div class="modal-body">
                 @if (loadingModalData)
@@ -510,11 +510,11 @@
                 }
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-info" @onclick="RefreshRevenueDetails">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="admin-index-revenue-close-btn">Close</button>
+                <button type="button" class="btn btn-info" @onclick="RefreshRevenueDetails" id="admin-index-revenue-refresh-btn">
                     <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                 </button>
-                <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/analytics"))">
+                <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/analytics"))" id="admin-index-revenue-analytics-btn">
                     View Full Analytics
                 </button>
             </div>
@@ -530,7 +530,7 @@
                 <h5 class="modal-title" id="ticketModalLabel">
                     <i class="bi bi-ticket-perforated me-2"></i>Ticket Sales Details
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="admin-index-ticket-modal-close-btn"></button>
             </div>
             <div class="modal-body">
                 @if (loadingModalData)
@@ -588,11 +588,11 @@
                 }
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-info" @onclick="RefreshTicketDetails">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="admin-index-ticket-close-btn">Close</button>
+                <button type="button" class="btn btn-info" @onclick="RefreshTicketDetails" id="admin-index-ticket-refresh-btn">
                     <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                 </button>
-                <button type="button" class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo("/events"))">
+                <button type="button" class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo("/events"))" id="admin-index-ticket-events-btn">
                     Manage Events
                 </button>
             </div>

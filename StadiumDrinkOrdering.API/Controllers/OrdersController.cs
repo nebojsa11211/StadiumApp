@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StadiumDrinkOrdering.API.Services;
+using StadiumDrinkOrdering.API.Authorization;
+using StadiumDrinkOrdering.API.Authorization.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 using System.Security.Claims;
@@ -9,21 +11,28 @@ namespace StadiumDrinkOrdering.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-[Authorize]
+[Authorize(Policy = AuthorizationPolicies.RequireAuthenticatedUser)]
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
     private readonly ILoggingService _loggingService;
+    private readonly IStadiumAuthorizationService _authorizationService;
     private readonly ILogger<OrdersController> _logger;
 
-    public OrdersController(IOrderService orderService, ILoggingService loggingService, ILogger<OrdersController> logger)
+    public OrdersController(
+        IOrderService orderService,
+        ILoggingService loggingService,
+        IStadiumAuthorizationService authorizationService,
+        ILogger<OrdersController> logger)
     {
         _orderService = orderService;
         _loggingService = loggingService;
+        _authorizationService = authorizationService;
         _logger = logger;
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.CanCreateOrders)]
     public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] CreateOrderDto createOrderDto)
     {
         if (!ModelState.IsValid)
@@ -93,28 +102,27 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.CanAccessOwnOrders)]
     public async Task<ActionResult<OrderDto>> GetOrder(int id)
     {
+        // Check if user can access this specific order
+        var canAccess = await _authorizationService.CanAccessOrderAsync(User, id);
+        if (!canAccess)
+        {
+            return Forbid("You do not have permission to access this order.");
+        }
+
         var order = await _orderService.GetOrderByIdAsync(id);
         if (order == null)
         {
             return NotFound();
         }
 
-        var userId = GetCurrentUserId();
-        var userRole = GetCurrentUserRole();
-
-        // Customers can only see their own orders
-        if (userRole == "Customer" && order.CustomerId != userId)
-        {
-            return Forbid();
-        }
-
         return Ok(order);
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin,Bartender,Waiter")]
+    [Authorize(Policy = AuthorizationPolicies.RequireStaffRole)]
     public async Task<ActionResult<List<OrderDto>>> GetOrders([FromQuery] OrderStatus? status = null)
     {
         var orders = await _orderService.GetOrdersAsync(status);
@@ -122,6 +130,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("my-orders")]
+    [Authorize(Policy = AuthorizationPolicies.CanReadOrders)]
     public async Task<ActionResult<List<OrderDto>>> GetMyOrders()
     {
         var userId = GetCurrentUserId();
@@ -130,7 +139,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPut("{id}/status")]
-    [Authorize(Roles = "Admin,Bartender,Waiter")]
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
     public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] UpdateOrderStatusDto updateDto)
     {
         if (!ModelState.IsValid)
@@ -211,36 +220,34 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost("{id}/cancel")]
+    [Authorize(Policy = AuthorizationPolicies.CanDeleteOrders)]
     public async Task<IActionResult> CancelOrder(int id)
     {
-        var userId = GetCurrentUserId();
-        var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-        var userRole = GetCurrentUserRole();
+        var userId = _authorizationService.GetCurrentUserId(User);
+        var userEmail = _authorizationService.GetCurrentUserEmail(User);
+        var userRole = _authorizationService.GetCurrentUserRole(User)?.ToString();
 
         try
         {
-            // Check if user has permission to cancel
-            if (userRole == "Customer")
+            // Check if user has permission to cancel this specific order
+            var canModify = await _authorizationService.CanModifyOrderAsync(User, id);
+            if (!canModify)
             {
-                var order = await _orderService.GetOrderByIdAsync(id);
-                if (order == null || order.CustomerId != userId)
-                {
-                    await _loggingService.LogWarningAsync("Unauthorized order cancellation attempt",
-                        BusinessEventActions.OrderCancelled, BusinessEventCategories.OrderProcessing,
-                        userId.ToString(), userEmail, userRole,
-                        details: $"Customer attempted to cancel order #{id} that doesn't belong to them",
-                        requestPath: Request.Path, httpMethod: Request.Method,
-                        ipAddress: GetClientIpAddress(), userAgent: Request.Headers.UserAgent.ToString());
-                    
-                    return Forbid();
-                }
+                await _loggingService.LogWarningAsync("Unauthorized order cancellation attempt",
+                    BusinessEventActions.OrderCancelled, BusinessEventCategories.OrderProcessing,
+                    userId.ToString(), userEmail, userRole,
+                    details: $"User attempted to cancel order #{id} without permission",
+                    requestPath: Request.Path, httpMethod: Request.Method,
+                    ipAddress: GetClientIpAddress(), userAgent: Request.Headers.UserAgent.ToString());
+
+                return Forbid("You do not have permission to cancel this order.");
             }
 
             // Get current order details for logging
             var currentOrder = await _orderService.GetOrderByIdAsync(id);
             var totalAmount = currentOrder?.OrderItems?.Sum(i => i.Quantity * i.UnitPrice) ?? 0;
 
-            var success = await _orderService.CancelOrderAsync(id, userId);
+            var success = await _orderService.CancelOrderAsync(id, userId!.Value);
             if (!success)
             {
                 await _loggingService.LogWarningAsync("Order cancellation failed",
@@ -294,14 +301,12 @@ public class OrdersController : ControllerBase
 
     private int GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        return int.Parse(userIdClaim?.Value ?? "0");
+        return _authorizationService.GetCurrentUserId(User) ?? 0;
     }
 
     private string GetCurrentUserRole()
     {
-        var roleClaim = User.FindFirst(ClaimTypes.Role);
-        return roleClaim?.Value ?? "";
+        return _authorizationService.GetCurrentUserRole(User)?.ToString() ?? "";
     }
 
     private string? GetClientIpAddress()
@@ -323,7 +328,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("statistics")]
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Policy = AuthorizationPolicies.CanViewAnalytics)]
     public async Task<IActionResult> GetOrderStatistics()
     {
         try

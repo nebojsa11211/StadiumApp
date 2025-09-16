@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.API.Models;
 
 namespace StadiumDrinkOrdering.API.Data;
 
@@ -42,6 +43,14 @@ public class ApplicationDbContext : DbContext
     
     // Ticket Authentication entities
     public DbSet<TicketSession> TicketSessions { get; set; }
+
+    // Rate Limiting and Security entities
+    public DbSet<FailedAttempt> FailedAttempts { get; set; }
+    public DbSet<AccountLockout> AccountLockouts { get; set; }
+    public DbSet<IPBan> IPBans { get; set; }
+
+    // JWT Refresh Token entities
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -463,6 +472,66 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.SeatId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Rate Limiting and Security entity configurations
+        modelBuilder.Entity<FailedAttempt>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.IPAddress);
+            entity.HasIndex(e => e.Email);
+            entity.HasIndex(e => e.AttemptTime);
+            entity.HasIndex(e => new { e.IPAddress, e.AttemptTime });
+            entity.HasIndex(e => new { e.Email, e.AttemptTime });
+            entity.HasIndex(e => new { e.AttemptType, e.AttemptTime });
+            entity.Property(e => e.IPAddress).HasMaxLength(45).IsRequired();
+            entity.Property(e => e.Email).HasMaxLength(255);
+            entity.Property(e => e.AttemptType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.UserAgent).HasMaxLength(500);
+            entity.Property(e => e.Context).HasMaxLength(1000);
+        });
+
+        modelBuilder.Entity<AccountLockout>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Email);
+            entity.HasIndex(e => new { e.Email, e.IsActive });
+            entity.HasIndex(e => e.LockoutEnd);
+            entity.Property(e => e.Email).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Reason).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<IPBan>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.IPAddress);
+            entity.HasIndex(e => new { e.IPAddress, e.IsActive });
+            entity.HasIndex(e => e.BanEnd);
+            entity.Property(e => e.IPAddress).HasMaxLength(45).IsRequired();
+            entity.Property(e => e.Reason).HasMaxLength(500);
+        });
+
+        // RefreshToken configuration
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Token).IsUnique();
+            entity.HasIndex(e => e.JwtId);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.ExpiresAt);
+            entity.HasIndex(e => new { e.UserId, e.IsUsed, e.IsRevoked });
+            entity.HasIndex(e => new { e.Token, e.IsUsed, e.IsRevoked });
+            entity.Property(e => e.Token).HasMaxLength(512).IsRequired();
+            entity.Property(e => e.JwtId).HasMaxLength(256).IsRequired();
+            entity.Property(e => e.InvalidationReason).HasMaxLength(200);
+            entity.Property(e => e.DeviceInfo).HasMaxLength(500);
+            entity.Property(e => e.IpAddress).HasMaxLength(45);
+            entity.Property(e => e.UserAgent).HasMaxLength(1000);
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Seed data

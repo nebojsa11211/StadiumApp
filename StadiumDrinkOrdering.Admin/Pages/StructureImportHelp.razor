@@ -100,7 +100,7 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4>📋 Complete JSON Structure</h4>
-                <button class="btn btn-sm btn-outline-secondary" @onclick="CopyJsonStructure">
+                <button class="btn btn-sm btn-outline-secondary" @onclick="CopyJsonStructure" id="admin-structure-help-copy-json-btn">
                     <i class="fas fa-copy me-1"></i>Copy Template
                 </button>
             </div>
@@ -251,7 +251,7 @@
     }]
   }]
 }</code></pre>
-                                <button class="btn btn-sm btn-outline-success w-100" @onclick="@(() => DownloadSample("minimal"))">
+                                <button class="btn btn-sm btn-outline-success w-100" @onclick="@(() => DownloadSample("minimal"))" id="admin-structure-help-download-minimal-btn">
                                     <i class="fas fa-download me-1"></i>Download Sample
                                 </button>
                             </div>
@@ -295,7 +295,7 @@
     // ... S, E, W tribunes
   ]
 }</code></pre>
-                                <button class="btn btn-sm btn-outline-primary w-100" @onclick="@(() => DownloadSample("standard"))">
+                                <button class="btn btn-sm btn-outline-primary w-100" @onclick="@(() => DownloadSample("standard"))" id="admin-structure-help-download-standard-btn">
                                     <i class="fas fa-download me-1"></i>Download Sample
                                 </button>
                             </div>
@@ -337,7 +337,7 @@
     ]
   }]
 }</code></pre>
-                                <button class="btn btn-sm btn-outline-warning w-100" @onclick="@(() => DownloadSample("complex"))">
+                                <button class="btn btn-sm btn-outline-warning w-100" @onclick="@(() => DownloadSample("complex"))" id="admin-structure-help-download-complex-btn">
                                     <i class="fas fa-download me-1"></i>Download Sample
                                 </button>
                             </div>
@@ -465,10 +465,10 @@
                         <h6>📝 Paste Your JSON:</h6>
                         <textarea class="form-control" rows="12" @bind="jsonInput" placeholder="Paste your stadium structure JSON here..."></textarea>
                         <div class="mt-2">
-                            <button class="btn btn-primary me-2" @onclick="ValidateJson">
+                            <button class="btn btn-primary me-2" @onclick="ValidateJson" id="admin-structure-help-validate-btn">
                                 <i class="fas fa-check me-1"></i>Validate JSON
                             </button>
-                            <button class="btn btn-outline-secondary" @onclick="ClearValidator">
+                            <button class="btn btn-outline-secondary" @onclick="ClearValidator" id="admin-structure-help-clear-validator-btn">
                                 <i class="fas fa-trash me-1"></i>Clear
                             </button>
                         </div>

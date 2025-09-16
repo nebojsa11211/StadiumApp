@@ -1,5 +1,5 @@
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
+<div id="admin-nav-top-row" class="top-row ps-3 navbar navbar-dark">
+    <div id="admin-nav-container" class="container-fluid">
         <a class="navbar-brand" href="">Stadium Admin</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu" id="admin-nav-toggle-btn">
             <span class="navbar-toggler-icon"></span>
@@ -7,88 +7,88 @@
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
+<div id="admin-nav-menu" class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav id="admin-nav-items" class="flex-column">
+        <div id="admin-nav-dashboard" class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Dashboard
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-orders" class="nav-item px-3">
             <NavLink class="nav-link" href="orders">
                 <span class="oi oi-list" aria-hidden="true"></span> Orders
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-drinks" class="nav-item px-3">
             <NavLink class="nav-link" href="drinks">
                 <span class="oi oi-fork" aria-hidden="true"></span> Drinks
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-analytics" class="nav-item px-3">
             <NavLink class="nav-link" href="analytics">
                 <span class="oi oi-bar-chart" aria-hidden="true"></span> Analytics
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-customer-analytics" class="nav-item px-3">
             <NavLink class="nav-link" href="customer-analytics">
                 <span class="oi oi-people" aria-hidden="true"></span> Customer Analytics
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-events" class="nav-item px-3">
             <NavLink class="nav-link" href="events">
                 <span class="oi oi-calendar" aria-hidden="true"></span> Events
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-tickets" class="nav-item px-3">
             <NavLink class="nav-link" href="tickets">
                 <span class="oi oi-tag" aria-hidden="true"></span> Tickets
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-bartender" class="nav-item px-3">
             <NavLink class="nav-link" href="bartender">
                 <span class="oi oi-monitor" aria-hidden="true"></span> Bartender Dashboard
             </NavLink>
         </div>
         
         <!-- Stadium Management Section -->
-        <div class="nav-item px-3 mt-2">
-            <div class="nav-section-header">
+        <div id="admin-nav-stadium-section" class="nav-item px-3 mt-2">
+            <div id="admin-nav-stadium-header" class="nav-section-header">
                 <span class="text-muted small">STADIUM MANAGEMENT</span>
             </div>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-stadium-structure" class="nav-item px-3">
             <NavLink class="nav-link" href="admin/stadium-structure">
                 <span class="oi oi-map-marker" aria-hidden="true"></span> Structure Management
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-stadium-overview" class="nav-item px-3">
             <NavLink class="nav-link" href="admin/stadium-overview">
                 <span class="oi oi-eye" aria-hidden="true"></span> Stadium Overview
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-structure-help" class="nav-item px-3">
             <NavLink class="nav-link" href="admin/structure-help">
                 <span class="oi oi-question" aria-hidden="true"></span> Import Guide
             </NavLink>
         </div>
         
         <!-- System Management Section -->
-        <div class="nav-item px-3 mt-2">
-            <div class="nav-section-header">
+        <div id="admin-nav-system-section" class="nav-item px-3 mt-2">
+            <div id="admin-nav-system-header" class="nav-section-header">
                 <span class="text-muted small">SYSTEM MANAGEMENT</span>
             </div>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-users" class="nav-item px-3">
             <NavLink class="nav-link" href="users">
                 <span class="oi oi-people" aria-hidden="true"></span> User Management
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-logs" class="nav-item px-3">
             <NavLink class="nav-link" href="logs">
                 <span class="oi oi-document" aria-hidden="true"></span> System Logs
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div id="admin-nav-datagrid" class="nav-item px-3">
             <NavLink class="nav-link" href="datagrid">
                 <span class="oi oi-grid-three-up" aria-hidden="true"></span> Database Explorer
             </NavLink>

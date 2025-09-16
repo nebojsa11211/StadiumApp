@@ -1,0 +1,268 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using StadiumDrinkOrdering.Shared.Services
+@using StadiumDrinkOrdering.Shared.Models
+@inject IAuthorizationHelperService AuthHelper
+
+@*
+    Enhanced authorization view component for role-based UI controls.
+    Provides comprehensive authorization checks with support for ownership validation.
+
+    Usage Examples:
+
+    1. Simple role check:
+    <AuthorizeView RequireAdmin="true">
+        <Authorized>Admin only content</Authorized>
+        <NotAuthorized>Access denied</NotAuthorized>
+    </AuthorizeView>
+
+    2. Multiple role options:
+    <AuthorizeView RequireStaff="true">
+        <Authorized>Staff content</Authorized>
+    </AuthorizeView>
+
+    3. Permission-based:
+    <AuthorizeView RequireCanManageOrders="true">
+        <Authorized>Order management UI</Authorized>
+    </AuthorizeView>
+
+    4. Ownership validation:
+    <AuthorizeView RequireCanAccessOrder="true" ResourceOwnerId="@order.CustomerId">
+        <Authorized>Order details</Authorized>
+        <NotAuthorized>You can only view your own orders</NotAuthorized>
+    </AuthorizeView>
+*@
+
+@if (IsAuthorized())
+{
+    @if (Authorized != null)
+    {
+        @Authorized
+    }
+    else
+    {
+        @ChildContent
+    }
+}
+else
+{
+    @if (NotAuthorized != null)
+    {
+        @NotAuthorized
+    }
+    else if (ShowDefaultDeniedMessage)
+    {
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            @GetDefaultDeniedMessage()
+        </div>
+    }
+}
+
+@code {
+    /// <summary>
+    /// Content to render when user is authorized
+    /// </summary>
+    [Parameter] public RenderFragment? Authorized { get; set; }
+
+    /// <summary>
+    /// Content to render when user is not authorized
+    /// </summary>
+    [Parameter] public RenderFragment? NotAuthorized { get; set; }
+
+    /// <summary>
+    /// Default content when no specific authorized/not authorized content is provided
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Show default access denied message when not authorized
+    /// </summary>
+    [Parameter] public bool ShowDefaultDeniedMessage { get; set; } = false;
+
+    // ====================================================================================
+    // ROLE-BASED AUTHORIZATION PARAMETERS
+    // ====================================================================================
+
+    /// <summary>
+    /// Require admin role
+    /// </summary>
+    [Parameter] public bool RequireAdmin { get; set; } = false;
+
+    /// <summary>
+    /// Require staff role (Admin, Bartender, or Waiter)
+    /// </summary>
+    [Parameter] public bool RequireStaff { get; set; } = false;
+
+    /// <summary>
+    /// Require customer role
+    /// </summary>
+    [Parameter] public bool RequireCustomer { get; set; } = false;
+
+    /// <summary>
+    /// Require bartender role
+    /// </summary>
+    [Parameter] public bool RequireBartender { get; set; } = false;
+
+    /// <summary>
+    /// Require waiter role
+    /// </summary>
+    [Parameter] public bool RequireWaiter { get; set; } = false;
+
+    /// <summary>
+    /// Require authentication (any role)
+    /// </summary>
+    [Parameter] public bool RequireAuthenticated { get; set; } = false;
+
+    // ====================================================================================
+    // PERMISSION-BASED AUTHORIZATION PARAMETERS
+    // ====================================================================================
+
+    /// <summary>
+    /// Require ability to read orders
+    /// </summary>
+    [Parameter] public bool RequireCanReadOrders { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to create orders
+    /// </summary>
+    [Parameter] public bool RequireCanCreateOrders { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to update orders
+    /// </summary>
+    [Parameter] public bool RequireCanUpdateOrders { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to delete/cancel orders
+    /// </summary>
+    [Parameter] public bool RequireCanDeleteOrders { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to manage users
+    /// </summary>
+    [Parameter] public bool RequireCanManageUsers { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to manage drinks
+    /// </summary>
+    [Parameter] public bool RequireCanManageDrinks { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to manage events
+    /// </summary>
+    [Parameter] public bool RequireCanManageEvents { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to view analytics
+    /// </summary>
+    [Parameter] public bool RequireCanViewAnalytics { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to manage system settings
+    /// </summary>
+    [Parameter] public bool RequireCanManageSystem { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to access logs
+    /// </summary>
+    [Parameter] public bool RequireCanAccessLogs { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to process payments
+    /// </summary>
+    [Parameter] public bool RequireCanProcessPayments { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to manage QR codes
+    /// </summary>
+    [Parameter] public bool RequireCanManageQRCodes { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to manage stadium structure
+    /// </summary>
+    [Parameter] public bool RequireCanManageStadiumStructure { get; set; } = false;
+
+    // ====================================================================================
+    // OWNERSHIP-BASED AUTHORIZATION PARAMETERS
+    // ====================================================================================
+
+    /// <summary>
+    /// Require ability to access specific order (ownership-based)
+    /// </summary>
+    [Parameter] public bool RequireCanAccessOrder { get; set; } = false;
+
+    /// <summary>
+    /// Require ability to access specific user profile (ownership-based)
+    /// </summary>
+    [Parameter] public bool RequireCanAccessUserProfile { get; set; } = false;
+
+    /// <summary>
+    /// Resource owner ID for ownership validation
+    /// </summary>
+    [Parameter] public int? ResourceOwnerId { get; set; }
+
+    /// <summary>
+    /// Checks if the current user meets all authorization requirements
+    /// </summary>
+    private bool IsAuthorized()
+    {
+        try
+        {
+            // Role-based checks
+            if (RequireAdmin && !AuthHelper.IsAdmin()) return false;
+            if (RequireStaff && !AuthHelper.IsStaff()) return false;
+            if (RequireCustomer && !AuthHelper.IsCustomer()) return false;
+            if (RequireBartender && !AuthHelper.IsBartender()) return false;
+            if (RequireWaiter && !AuthHelper.IsWaiter()) return false;
+            if (RequireAuthenticated && !AuthHelper.IsAuthenticated()) return false;
+
+            // Permission-based checks
+            if (RequireCanReadOrders && !AuthHelper.CanReadOrders()) return false;
+            if (RequireCanCreateOrders && !AuthHelper.CanCreateOrders()) return false;
+            if (RequireCanUpdateOrders && !AuthHelper.CanUpdateOrders()) return false;
+            if (RequireCanDeleteOrders && !AuthHelper.CanDeleteOrders()) return false;
+            if (RequireCanManageUsers && !AuthHelper.CanManageUsers()) return false;
+            if (RequireCanManageDrinks && !AuthHelper.CanManageDrinks()) return false;
+            if (RequireCanManageEvents && !AuthHelper.CanManageEvents()) return false;
+            if (RequireCanViewAnalytics && !AuthHelper.CanViewAnalytics()) return false;
+            if (RequireCanManageSystem && !AuthHelper.CanManageSystem()) return false;
+            if (RequireCanAccessLogs && !AuthHelper.CanAccessLogs()) return false;
+            if (RequireCanProcessPayments && !AuthHelper.CanProcessPayments()) return false;
+            if (RequireCanManageQRCodes && !AuthHelper.CanManageQRCodes()) return false;
+            if (RequireCanManageStadiumStructure && !AuthHelper.CanManageStadiumStructure()) return false;
+
+            // Ownership-based checks
+            if (RequireCanAccessOrder && !AuthHelper.CanAccessOrder(ResourceOwnerId)) return false;
+            if (RequireCanAccessUserProfile && !AuthHelper.CanAccessUserProfile(ResourceOwnerId)) return false;
+
+            return true;
+        }
+        catch
+        {
+            // If any error occurs during authorization check, deny access
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets appropriate access denied message based on requirements
+    /// </summary>
+    private string GetDefaultDeniedMessage()
+    {
+        if (RequireAdmin) return "Administrator access required.";
+        if (RequireStaff) return "Staff access required.";
+        if (RequireCustomer) return "Customer access required.";
+        if (RequireBartender) return "Bartender access required.";
+        if (RequireWaiter) return "Waiter access required.";
+        if (RequireAuthenticated) return "Authentication required.";
+
+        if (RequireCanAccessOrder) return "You can only access your own orders.";
+        if (RequireCanAccessUserProfile) return "You can only access your own profile.";
+
+        if (RequireCanManageUsers) return "User management permissions required.";
+        if (RequireCanManageSystem) return "System management permissions required.";
+        if (RequireCanAccessLogs) return "Log access permissions required.";
+
+        return "Insufficient permissions.";
+    }
+}

@@ -139,7 +139,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">&nbsp;</label>
-                            <button class="btn btn-primary d-block" @onclick="ApplyCustomDateRange">
+                            <button class="btn btn-primary d-block" @onclick="ApplyCustomDateRange" id="admin-logs-custom-date-apply-btn">
                                 <i class="fas fa-check"></i> Apply
                             </button>
                         </div>
@@ -230,7 +230,7 @@
                                                     <div class="message-cell">
                                                         <div class="message-preview" @onclick="@(() => ToggleMessage(log.Id))">
                                                             <small>@log.Message.Substring(0, 100)...</small>
-                                                            <button class="btn btn-sm btn-outline-secondary ms-1" style="font-size: 0.7rem; padding: 0.1rem 0.3rem;">
+                                                            <button class="btn btn-sm btn-outline-secondary ms-1" style="font-size: 0.7rem; padding: 0.1rem 0.3rem;" id="admin-logs-expand-message-btn-@log.Id">
                                                                 <i class="fas fa-expand-alt"></i>
                                                             </button>
                                                         </div>
@@ -238,7 +238,7 @@
                                                         {
                                                             <div class="message-full mt-2 p-2 border rounded" style="background-color: rgba(0,0,0,0.05); word-break: break-word; white-space: pre-wrap;">
                                                                 <small>@log.Message</small>
-                                                                <button class="btn btn-sm btn-outline-secondary float-end" @onclick="@(() => ToggleMessage(log.Id))" style="font-size: 0.7rem; padding: 0.1rem 0.3rem;">
+                                                                <button class="btn btn-sm btn-outline-secondary float-end" @onclick="@(() => ToggleMessage(log.Id))" style="font-size: 0.7rem; padding: 0.1rem 0.3rem;" id="admin-logs-collapse-message-btn-@log.Id">
                                                                     <i class="fas fa-compress-alt"></i>
                                                                 </button>
                                                             </div>

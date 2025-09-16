@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Net;
 using StadiumDrinkOrdering.Shared.Services;
 using StadiumDrinkOrdering.Admin.Services.ErrorHandling;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 
 namespace StadiumDrinkOrdering.Admin.Services.Base
 {
@@ -11,18 +12,33 @@ namespace StadiumDrinkOrdering.Admin.Services.Base
         protected readonly HttpClient HttpClient;
         protected readonly ICentralizedLoggingClient LoggingClient;
         protected readonly IErrorNotificationService ErrorNotificationService;
+        protected readonly ITokenStorageService? TokenStorage;
         protected readonly JsonSerializerOptions JsonOptions;
 
-        protected BaseApiService(HttpClient httpClient, ICentralizedLoggingClient loggingClient, IErrorNotificationService? errorNotificationService = null)
+        protected BaseApiService(HttpClient httpClient, ICentralizedLoggingClient loggingClient, IErrorNotificationService? errorNotificationService = null, ITokenStorageService? tokenStorage = null)
         {
             HttpClient = httpClient;
             LoggingClient = loggingClient;
             ErrorNotificationService = errorNotificationService ?? new NullErrorNotificationService();
+            TokenStorage = tokenStorage;
             JsonOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true
             };
+        }
+
+        protected void SetAuthorizationHeader()
+        {
+            if (TokenStorage != null && !string.IsNullOrEmpty(TokenStorage.Token))
+            {
+                HttpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+            }
+            else
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = null;
+            }
         }
 
         protected StringContent CreateJsonContent(object data)

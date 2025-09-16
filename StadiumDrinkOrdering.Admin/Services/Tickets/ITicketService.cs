@@ -7,5 +7,6 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
         Task<IEnumerable<TicketDto>?> GetTicketsAsync();
         Task<IEnumerable<TicketDto>?> GetTicketsAsync(int? eventId);
         Task<bool> ValidateTicketAsync(string ticketCode);
+        Task<bool> UpdateTicketStatusAsync(int ticketId, bool isActive);
     }
 }

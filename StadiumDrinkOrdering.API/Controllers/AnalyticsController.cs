@@ -6,7 +6,7 @@ namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-//[Authorize(Roles = "Admin,Staff")]
+[Authorize(Roles = "Admin,Staff")] // SECURITY: Admin and Staff access to analytics data
 public class AnalyticsController : ControllerBase
 {
     private readonly IAnalyticsService _analyticsService;

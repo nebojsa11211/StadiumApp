@@ -86,6 +86,7 @@ namespace StadiumDrinkOrdering.Admin.Services
         public Task<IEnumerable<TicketDto>?> GetTicketsAsync() => Tickets.GetTicketsAsync();
         public Task<IEnumerable<TicketDto>?> GetTicketsAsync(int? eventId) => Tickets.GetTicketsAsync(eventId);
         public Task<bool> ValidateTicketAsync(string ticketCode) => Tickets.ValidateTicketAsync(ticketCode);
+        public Task<bool> UpdateTicketStatusAsync(int ticketId, bool isActive) => Tickets.UpdateTicketStatusAsync(ticketId, isActive);
 
         // Legacy methods - Auth operations (delegated to AuthService)
         public Task<string?> LoginAsync(LoginDto loginDto) => Auth.LoginAsync(loginDto);

@@ -24,7 +24,7 @@
                 <i class="oi oi-warning me-2"></i>
                 <div>
                     <strong>Connection Error:</strong> @errorMessage
-                    <button class="btn btn-sm btn-outline-danger ms-3" @onclick="RetryConnection">
+                    <button class="btn btn-sm btn-outline-danger ms-3" @onclick="RetryConnection" id="admin-datagrid-retry-btn">
                         <i class="oi oi-reload"></i> Retry
                     </button>
                 </div>
@@ -53,20 +53,20 @@
                     {
                         <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
                             <div class="btn-group">
-                                <button class="btn btn-outline-secondary" @onclick="RefreshData" title="Refresh Data">
+                                <button class="btn btn-outline-secondary" @onclick="RefreshData" title="Refresh Data" id="admin-datagrid-refresh-btn">
                                     <i class="oi oi-reload"></i> Refresh
                                 </button>
-                                <button class="btn btn-success" @onclick="ExportToCsv" title="Export to CSV">
+                                <button class="btn btn-success" @onclick="ExportToCsv" title="Export to CSV" id="admin-datagrid-export-btn">
                                     <i class="oi oi-data-transfer-download"></i> Export CSV
                                 </button>
-                                <button class="btn btn-info" @onclick="ShowTableInfo" title="Table Information">
+                                <button class="btn btn-info" @onclick="ShowTableInfo" title="Table Information" id="admin-datagrid-table-info-btn">
                                     <i class="oi oi-info"></i> Info
                                 </button>
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-warning" @onclick="ShowGenerateModal" title="Generate Data">
+                                    <button class="btn btn-warning" @onclick="ShowGenerateModal" title="Generate Data" id="admin-datagrid-generate-btn">
                                         <i class="oi oi-plus"></i> Generate
                                     </button>
-                                    <button class="btn btn-danger" @onclick="ShowDeleteModal" title="Delete All Data">
+                                    <button class="btn btn-danger" @onclick="ShowDeleteModal" title="Delete All Data" id="admin-datagrid-delete-btn">
                                         <i class="oi oi-trash"></i> Clear Table
                                     </button>
                                 </div>
@@ -86,7 +86,7 @@
                     <div class="table-info-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5><i class="oi oi-spreadsheet me-2"></i>Table Structure</h5>
-                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => showTableInfo = false">
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => showTableInfo = false" id="admin-datagrid-close-table-info-btn">
                                 <i class="oi oi-x"></i>
                             </button>
                         </div>
@@ -125,7 +125,7 @@
                                     @if (filters.Any())
                                     {
                                         <span>@filters.Count filter(s) applied</span>
-                                        <button class="btn btn-sm btn-outline-warning ms-2" @onclick="ClearFilters">
+                                        <button class="btn btn-sm btn-outline-warning ms-2" @onclick="ClearFilters" id="admin-datagrid-clear-filters-btn">
                                             Clear All
                                         </button>
                                     }
@@ -197,7 +197,7 @@
                                                 <p class="mt-2 text-muted">No records found</p>
                                                 @if (filters.Any())
                                                 {
-                                                    <button class="btn btn-sm btn-outline-primary" @onclick="ClearFilters">
+                                                    <button class="btn btn-sm btn-outline-primary" @onclick="ClearFilters" id="admin-datagrid-clear-filters-empty-btn">
                                                         Clear Filters
                                                     </button>
                                                 }
@@ -274,12 +274,12 @@
                             <nav aria-label="Page navigation">
                                 <ul class="pagination mb-0">
                                     <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                        <button class="page-link" @onclick="() => GoToPage(1)" disabled="@(currentPage == 1)">
+                                        <button class="page-link" @onclick="() => GoToPage(1)" disabled="@(currentPage == 1)" id="admin-datagrid-first-page-btn">
                                             <i class="oi oi-media-skip-backward"></i> First
                                         </button>
                                     </li>
                                     <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                                        <button class="page-link" @onclick="() => GoToPage(currentPage - 1)" disabled="@(currentPage == 1)">
+                                        <button class="page-link" @onclick="() => GoToPage(currentPage - 1)" disabled="@(currentPage == 1)" id="admin-datagrid-prev-page-btn">
                                             <i class="oi oi-chevron-left"></i>
                                         </button>
                                     </li>
@@ -288,19 +288,19 @@
                                     {
                                         var pageNum = i;
                                         <li class="page-item @(currentPage == pageNum ? "active" : "")">
-                                            <button class="page-link" @onclick="() => GoToPage(pageNum)">
+                                            <button class="page-link" @onclick="() => GoToPage(pageNum)" id="admin-datagrid-page-@pageNum-btn">
                                                 @pageNum
                                             </button>
                                         </li>
                                     }
                                     
                                     <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                        <button class="page-link" @onclick="() => GoToPage(currentPage + 1)" disabled="@(currentPage == totalPages)">
+                                        <button class="page-link" @onclick="() => GoToPage(currentPage + 1)" disabled="@(currentPage == totalPages)" id="admin-datagrid-next-page-btn">
                                             <i class="oi oi-chevron-right"></i>
                                         </button>
                                     </li>
                                     <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                                        <button class="page-link" @onclick="() => GoToPage(totalPages)" disabled="@(currentPage == totalPages)">
+                                        <button class="page-link" @onclick="() => GoToPage(totalPages)" disabled="@(currentPage == totalPages)" id="admin-datagrid-last-page-btn">
                                             Last <i class="oi oi-media-skip-forward"></i>
                                         </button>
                                     </li>
@@ -330,7 +330,7 @@
                         <i class="oi oi-plus text-warning"></i>
                         Generate Data for @selectedTable
                     </h5>
-                    <button type="button" class="btn-close" @onclick="HideGenerateModal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" @onclick="HideGenerateModal" aria-label="Close" id="admin-datagrid-generate-modal-close-btn"></button>
                 </div>
                 <div class="modal-body">
                     @if (!string.IsNullOrEmpty(generateValidationMessage))
@@ -372,10 +372,10 @@
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="HideGenerateModal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" @onclick="HideGenerateModal" id="admin-datagrid-generate-modal-cancel-btn">Cancel</button>
                     @if (string.IsNullOrEmpty(generateValidationMessage))
                     {
-                        <button type="button" class="btn btn-warning" @onclick="GenerateData" disabled="@isGenerating">
+                        <button type="button" class="btn btn-warning" @onclick="GenerateData" disabled="@isGenerating" id="admin-datagrid-generate-modal-submit-btn">
                             @if (isGenerating)
                             {
                                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -405,7 +405,7 @@
                         <i class="oi oi-warning text-danger"></i>
                         Clear Table @selectedTable
                     </h5>
-                    <button type="button" class="btn-close" @onclick="HideDeleteModal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" @onclick="HideDeleteModal" aria-label="Close" id="admin-datagrid-delete-modal-close-btn"></button>
                 </div>
                 <div class="modal-body">
                     @if (!string.IsNullOrEmpty(deleteValidationMessage))
@@ -438,11 +438,11 @@
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="HideDeleteModal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" @onclick="HideDeleteModal" id="admin-datagrid-delete-modal-cancel-btn">Cancel</button>
                     @if (string.IsNullOrEmpty(deleteValidationMessage))
                     {
-                        <button type="button" class="btn btn-danger" @onclick="DeleteAllData" 
-                                disabled="@(deleteConfirmation != "DELETE" || isDeleting)">
+                        <button type="button" class="btn btn-danger" @onclick="DeleteAllData"
+                                disabled="@(deleteConfirmation != "DELETE" || isDeleting)" id="admin-datagrid-delete-modal-confirm-btn">
                             @if (isDeleting)
                             {
                                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -469,7 +469,7 @@
             <div class="toast-header">
                 <i class="oi @toastIcon me-2"></i>
                 <strong class="me-auto">@toastTitle</strong>
-                <button type="button" class="btn-close" @onclick="HideToast" aria-label="Close"></button>
+                <button type="button" class="btn-close" @onclick="HideToast" aria-label="Close" id="admin-datagrid-toast-close-btn"></button>
             </div>
             <div class="toast-body">
                 @toastMessage

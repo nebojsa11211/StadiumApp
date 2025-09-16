@@ -7,7 +7,7 @@ namespace StadiumDrinkOrdering.API.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Route("api/demo-data")] // Support both routes for compatibility
-// [Authorize(Roles = "Admin")] // Temporarily disabled for testing
+[Authorize(Roles = "Admin")] // SECURITY: Admin-only access to demo data operations
 public class DemoDataController : ControllerBase
 {
     private readonly ILogger<DemoDataController> _logger;

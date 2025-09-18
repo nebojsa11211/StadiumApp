@@ -369,15 +369,15 @@
                 return true;
             };
 
-            // Run FORCE CLEAN every 2 seconds
+            // Run GENTLE CLEAN every 10 seconds (was 2 seconds - too aggressive!)
             setInterval(() => {
                 const backdrops = document.querySelectorAll('.modal-backdrop');
                 const openModals = document.querySelectorAll('.modal.show');
                 if (openModals.length === 0 && backdrops.length > 0) {
-                    console.log('🔍 Auto cleanup: Found orphaned backdrops, force cleaning');
+                    console.log('🔍 Gentle auto cleanup: Found orphaned backdrops after 10 seconds, cleaning');
                     window.forceCleanAllModals();
                 }
-            }, 2000);
+            }, 10000); // Changed from 2000ms to 10000ms
 
             // NUCLEAR OPTION: Override Bootstrap Modal hide method to ensure cleanup
             document.addEventListener('DOMContentLoaded', function() {
@@ -445,17 +445,25 @@
                 }
             });
 
-            // ULTRA AGGRESSIVE: Mutation observer to watch for backdrops
+            // SMART CLEANUP: Mutation observer to watch for backdrops (FIXED - no longer aggressive)
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     mutation.addedNodes.forEach(function(node) {
                         if (node.nodeType === 1 && node.classList && node.classList.contains('modal-backdrop')) {
-                            console.log('🔍 New backdrop detected, setting up cleanup watcher');
+                            console.log('🔍 New backdrop detected, but allowing modal to establish itself');
 
-                            // Set up multiple cleanup attempts for this backdrop
-                            setTimeout(() => window.forceCleanAllModals(), 100);
-                            setTimeout(() => window.forceCleanAllModals(), 500);
-                            setTimeout(() => window.forceCleanAllModals(), 1000);
+                            // Only clean up if backdrop exists WITHOUT any open modal after sufficient time
+                            setTimeout(() => {
+                                const backdrops = document.querySelectorAll('.modal-backdrop');
+                                const openModals = document.querySelectorAll('.modal.show');
+
+                                if (backdrops.length > 0 && openModals.length === 0) {
+                                    console.log('🔍 Found orphaned backdrop after 3 seconds, cleaning up');
+                                    window.forceCleanAllModals();
+                                } else if (openModals.length > 0) {
+                                    console.log('🔍 Modal is properly open, no cleanup needed');
+                                }
+                            }, 3000); // Give modal 3 seconds to establish itself
                         }
                     });
                 });
@@ -466,7 +474,7 @@
                 subtree: true
             });
 
-            console.log('✅ Modal functions ready with ULTRA AGGRESSIVE cleanup');
+            console.log('✅ Modal functions ready with SMART cleanup system');
         });
     </script>
 </body>

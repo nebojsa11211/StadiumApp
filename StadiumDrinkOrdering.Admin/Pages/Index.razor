@@ -1,641 +1,289 @@
 ﻿@page "/"
-@using System.Globalization
+@using StadiumDrinkOrdering.Admin.Components.Skeleton
 
-<PageTitle>@Localizer["PageTitle"]</PageTitle>
+<PageTitle>Stadium Admin Dashboard</PageTitle>
 
-<div class="container-fluid" id="admin-dashboard-container">
-    <!-- Real-time Statistics Dashboard -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-4">🏟️ Stadium Dashboard - @DateTime.Now.ToString("MMMM dd, yyyy")</h2>
+<div class="admin-dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2">Stadium Dashboard</h1>
+            <p class="text-muted">Monitor your stadium operations in real-time</p>
         </div>
-    </div>
-    
-    <!-- Key Metrics Row -->
-    <div class="row mb-4" id="admin-metrics-row">
-        <div class="col-lg-3 col-md-6 mb-3" id="admin-revenue-card-col">
-            <div class="card border-primary h-100" style="cursor: pointer;" @onclick="ShowRevenueDetails" id="admin-revenue-card">
-                <div class="card-body" id="admin-revenue-card-body">
-                    <div class="d-flex justify-content-between align-items-center" id="admin-revenue-content">
-                        <div id="admin-revenue-text">
-                            <h6 class="text-muted mb-2" id="admin-revenue-title">Today's Revenue</h6>
-                            <h3 class="mb-0 text-primary" id="admin-revenue-amount">@(todayRevenue.ToString("C", CultureInfo.CurrentCulture))</h3>
-                            <small class="@(revenueChange >= 0 ? "text-success" : "text-danger")" id="admin-revenue-change">
-                                <i class="bi @(revenueChange >= 0 ? "bi-arrow-up" : "bi-arrow-down")"></i> @revenueChange.ToString("F1")% from yesterday
-                            </small>
-                        </div>
-                        <div class="text-primary opacity-50" id="admin-revenue-icon">
-                            <i class="bi bi-cash-stack" style="font-size: 2.5rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6 mb-3" id="admin-active-orders-card-col">
-            <div class="card border-success h-100" style="cursor: pointer;" @onclick="ShowActiveOrders" id="admin-active-orders-card">
-                <div class="card-body" id="admin-active-orders-card-body">
-                    <div class="d-flex justify-content-between align-items-center" id="admin-active-orders-content">
-                        <div id="admin-active-orders-text">
-                            <h6 class="text-muted mb-2" id="admin-active-orders-title">Active Orders</h6>
-                            <h3 class="mb-0 text-success" id="admin-active-orders-count">@activeOrders</h3>
-                            <small class="text-muted" id="admin-active-orders-details">@pendingOrders pending, @inPreparationOrders preparing</small>
-                        </div>
-                        <div class="text-success opacity-50" id="admin-active-orders-icon">
-                            <i class="bi bi-cart-check" style="font-size: 2.5rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6 mb-3" id="admin-tickets-card-col">
-            <div class="card border-warning h-100" style="cursor: pointer;" @onclick="ShowTicketDetails" id="admin-tickets-card">
-                <div class="card-body" id="admin-tickets-card-body">
-                    <div class="d-flex justify-content-between align-items-center" id="admin-tickets-content">
-                        <div id="admin-tickets-text">
-                            <h6 class="text-muted mb-2" id="admin-tickets-title">Tickets Sold Today</h6>
-                            <h3 class="mb-0 text-warning" id="admin-tickets-count">@ticketsSoldToday</h3>
-                            <small class="text-muted" id="admin-tickets-event">@currentEventName</small>
-                        </div>
-                        <div class="text-warning opacity-50" id="admin-tickets-icon">
-                            <i class="bi bi-ticket-perforated" style="font-size: 2.5rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6 mb-3" id="admin-online-users-card-col">
-            <div class="card border-info h-100" style="cursor: pointer;" @onclick="ShowOnlineUsers" @onclick:preventDefault="true" id="admin-online-users-card">
-                <div class="card-body" id="admin-online-users-card-body">
-                    <div class="d-flex justify-content-between align-items-center" id="admin-online-users-content">
-                        <div id="admin-online-users-text">
-                            <h6 class="text-muted mb-2" id="admin-online-users-title">Online Users</h6>
-                            <h3 class="mb-0 text-info" id="admin-online-users-count">@onlineUsers</h3>
-                            <small class="text-muted" id="admin-online-users-details">@staffOnline staff, @customersOnline customers</small>
-                        </div>
-                        <div class="text-info opacity-50" id="admin-online-users-icon">
-                            <i class="bi bi-people" style="font-size: 2.5rem;"></i>
-                        </div>
-                    </div>
-                    <!-- Debug button -->
-                    <div class="mt-2 text-center" id="admin-online-users-hint">
-                        <small class="text-muted">Click anywhere on card to view details</small>
-                    </div>
-                </div>
-            </div>
+        <div>
+            <button class="btn btn-outline-primary me-2" @onclick="RefreshData" disabled="@isLoading" id="admin-dashboard-refresh-btn">
+                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i>
+                Refresh
+                @if (!isLoading)
+                {
+                    <span class="admin-countdown-circle @GetCountdownState()" title="Auto-refresh in @remainingSeconds seconds">
+                        <svg viewBox="0 0 32 32">
+                            <circle class="admin-countdown-circle-bg" cx="16" cy="16" r="15"></circle>
+                            <circle class="admin-countdown-circle-progress" cx="16" cy="16" r="15"
+                                    style="stroke-dashoffset: @(94.25 * (1 - (double)remainingSeconds / countdownSeconds))"></circle>
+                        </svg>
+                    </span>
+                }
+            </button>
+            <button class="btn btn-outline-secondary" @onclick="ToggleTheme" id="admin-dashboard-toggle-theme-btn">
+                <i class="oi oi-moon"></i>
+            </button>
         </div>
     </div>
 
-
-    <!-- Recent Activity & Quick Actions Row -->
-    <div class="row mb-4">
-        <!-- Recent Activity Feed -->
-        <div class="col-lg-8 mb-3">
-            <div class="card h-100">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">📊 Recent Activity</h5>
-                    <button class="btn btn-sm btn-outline-primary" @onclick="RefreshActivity" id="admin-index-refresh-activity-btn">
-                        <i class="bi bi-arrow-clockwise"></i> Refresh
-                    </button>
-                </div>
-                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                    @if (recentActivities.Any())
-                    {
-                        <div class="timeline">
-                            @foreach (var activity in recentActivities)
-                            {
-                                <div class="timeline-item mb-3 pb-3 border-bottom">
-                                    <div class="d-flex align-items-start">
-                                        <div class="timeline-icon me-3">
-                                            <i class="bi @GetActivityIcon(activity.Type) @GetActivityColor(activity.Type)"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between">
-                                                <h6 class="mb-1">@activity.Title</h6>
-                                                <small class="text-muted">@GetTimeAgo(activity.Timestamp)</small>
-                                            </div>
-                                            <p class="mb-0 text-muted small">@activity.Description</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted text-center">No recent activity</p>
-                    }
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quick Actions -->
-        <div class="col-lg-4 mb-3">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">⚡ Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary text-start" @onclick="@(() => Navigation.NavigateTo("/orders"))" id="admin-index-orders-quick-btn">
-                            <i class="bi bi-cart-plus me-2"></i> Process New Orders
-                            @if (pendingOrders > 0)
-                            {
-                                <span class="badge bg-danger float-end">@pendingOrders</span>
-                            }
-                        </button>
-                        <button class="btn btn-outline-success text-start" @onclick="@(() => Navigation.NavigateTo("/events"))" id="admin-index-events-quick-btn">
-                            <i class="bi bi-calendar-event me-2"></i> Manage Events
-                        </button>
-                        <button class="btn btn-outline-warning text-start" @onclick="@(() => Navigation.NavigateTo("/analytics"))" id="admin-index-analytics-quick-btn">
-                            <i class="bi bi-graph-up me-2"></i> View Analytics
-                        </button>
-                        <button class="btn btn-outline-info text-start" @onclick="@(() => Navigation.NavigateTo("/logs"))" id="admin-index-logs-quick-btn">
-                            <i class="bi bi-file-text me-2"></i> System Logs
-                            @if (recentErrors > 0)
-                            {
-                                <span class="badge bg-danger float-end">@recentErrors</span>
-                            }
-                        </button>
-                        <button class="btn btn-outline-secondary text-start" @onclick="@(() => Navigation.NavigateTo("/users"))" id="admin-index-users-quick-btn">
-                            <i class="bi bi-person-plus me-2"></i> Add Staff Member
-                        </button>
+    <!-- Loading Progress and Status -->
+    @if (isLoading)
+    {
+        <div class="mb-3">
+            <div class="d-flex align-items-center">
+                <div class="progress flex-grow-1 me-3" style="height: 4px;">
+                    <div class="progress-bar progress-bar-animated"
+                         role="progressbar"
+                         style="width: @(loadingProgress)%"
+                         aria-valuenow="@loadingProgress"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         aria-label="Dashboard loading progress">
                     </div>
                 </div>
+                <small class="text-muted">@(loadingProgress)%</small>
             </div>
+            <small class="text-muted d-block mt-1">@loadingMessage</small>
         </div>
+    }
+    else if (lastUpdated.HasValue)
+    {
+        <div class="mb-3">
+            <small class="text-muted">Last updated: @lastUpdated.Value.ToString("HH:mm:ss")</small>
+        </div>
+    }
+
+    <!-- ARIA Live Region for Screen Readers -->
+    <div aria-live="polite" aria-label="Dashboard loading status" class="visually-hidden" id="dashboard-loading-status">
+        @loadingMessage
     </div>
 
-    <div class="container" id="admin-cards-container">
-        <div class="row" id="admin-cards-row">
-            <div class="col-md-4 mb-4" id="admin-orders-card-col">
-                <div class="card text-center h-100" id="admin-orders-card">
+    <!-- Key Metrics Cards -->
+    @if (isLoadingMetrics)
+    {
+        <!-- Metrics Skeleton Loading State -->
+        <div class="row g-4 mb-4" role="status" aria-label="Loading metrics data">
+            <div class="col-lg-3 col-md-6">
+                <SkeletonMetricCard CardType="Orders" AnimationDelayMs="0" />
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <SkeletonMetricCard CardType="Active" AnimationDelayMs="100" />
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <SkeletonMetricCard CardType="Revenue" AnimationDelayMs="200" />
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <SkeletonMetricCard CardType="Health" AnimationDelayMs="300" />
+            </div>
+        </div>
+    }
+    else if (!isLoading || totalOrders > 0)
+    {
+        <!-- Key Metrics Cards -->
+        <div class="row g-4 mb-4 content-transition skeleton-fade-in">
+            <div class="col-lg-3 col-md-6">
+                <div class="card bg-primary text-white h-100" style="cursor: pointer;" @onclick="NavigateToOrders">
                     <div class="card-body">
-                        <div class="mb-3" id="admin-orders-icon">
-                            <span style="font-size: 3rem;">📋</span>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Total Orders</h6>
+                                <h3 class="mb-0">@totalOrders</h3>
+                                <small class="opacity-75">+@ordersTrend% from yesterday</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="oi oi-list-rich fs-1 opacity-75"></i>
+                            </div>
                         </div>
-                        <h5 class="card-title" id="admin-orders-title">@Localizer["OrderManagement"]</h5>
-                        <p class="card-text" id="admin-orders-description">@Localizer["OrderManagementDesc"]</p>
-                        <a href="/orders" class="btn btn-primary" id="admin-orders-btn">@Localizer["ViewOrders"]</a>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-4 mb-4" id="admin-drinks-card-col">
-                <div class="card text-center h-100" id="admin-drinks-card">
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card bg-info text-white h-100">
                     <div class="card-body">
-                        <div class="mb-3" id="admin-drinks-icon">
-                            <span style="font-size: 3rem;">🍺</span>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Active Orders</h6>
+                                <h3 class="mb-0">@activeOrders</h3>
+                                <small class="opacity-75">Currently processing</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="oi oi-clock fs-1 opacity-75"></i>
+                            </div>
                         </div>
-                        <h5 class="card-title" id="admin-drinks-title">@Localizer["DrinkCatalog"]</h5>
-                        <p class="card-text" id="admin-drinks-description">@Localizer["DrinkCatalogDesc"]</p>
-                        <a href="/drinks" class="btn btn-primary" id="admin-drinks-btn">@Localizer["ManageDrinksBtn"]</a>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-4 mb-4" id="admin-analytics-card-col">
-                <div class="card text-center h-100" id="admin-analytics-card">
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card bg-success text-white h-100">
                     <div class="card-body">
-                        <div class="mb-3" id="admin-analytics-icon">
-                            <span style="font-size: 3rem;">📊</span>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Today's Revenue</h6>
+                                <h3 class="mb-0">$@todaysRevenue.ToString("N2")</h3>
+                                <small class="opacity-75">+@revenueTrend% from yesterday</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="oi oi-dollar fs-1 opacity-75"></i>
+                            </div>
                         </div>
-                        <h5 class="card-title" id="admin-analytics-title">@Localizer["Analytics"]</h5>
-                        <p class="card-text" id="admin-analytics-description">@Localizer["AnalyticsDesc"]</p>
-                        <a href="/analytics" class="btn btn-primary" id="admin-analytics-btn">@Localizer["ViewAnalytics"]</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card @GetHealthCardClass() text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">System Health</h6>
+                                <h3 class="mb-0">@systemHealth</h3>
+                                <small class="opacity-75">@systemLoad</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="@GetHealthIcon() fs-1 opacity-75"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Second Row of Management Cards -->
-        <div class="row" id="admin-management-cards-row">
-            <div class="col-md-4 mb-4" id="admin-users-card-col">
-                <div class="card text-center h-100" id="admin-users-card">
+    }
+
+    <!-- Main Content Row -->
+    @if (isLoadingOrders || isLoadingSystemStatus)
+    {
+        <!-- Orders and Actions Skeleton Loading State -->
+        <div class="row g-4" role="status" aria-label="Loading orders and system data">
+            <!-- Recent Orders Table Skeleton -->
+            <div class="col-lg-8">
+                <SkeletonTable TableType="Orders" RowCount="5" ShowActionButton="true" AnimationDelayMs="400" />
+            </div>
+
+            <!-- Quick Actions and System Status Skeleton -->
+            <div class="col-lg-4">
+                <SkeletonActionButtons SectionType="Dashboard"
+                                     ButtonCount="4"
+                                     IncludeSystemStatus="true"
+                                     StatusItemCount="4"
+                                     AnimationDelayMs="500" />
+            </div>
+        </div>
+    }
+    else if (!isLoading || recentOrders != null)
+    {
+        <div class="row g-4 content-transition skeleton-fade-in">
+            <!-- Recent Orders -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Recent Orders</h5>
+                        <button class="btn btn-sm btn-outline-primary" @onclick="NavigateToOrders" id="admin-dashboard-orders-view-all-btn">View All</button>
+                    </div>
                     <div class="card-body">
-                        <div class="mb-3" id="admin-users-icon">
-                            <span style="font-size: 3rem;">👥</span>
-                        </div>
-                        <h5 class="card-title" id="admin-users-title">@Localizer["UserManagement"]</h5>
-                        <p class="card-text" id="admin-users-description">@Localizer["UserManagementDesc"]</p>
-                        <a href="/users" class="btn btn-success" id="admin-users-btn">@Localizer["ManageUsers"]</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 mb-4" id="admin-bartender-card-col">
-                <div class="card text-center h-100" id="admin-bartender-card">
-                    <div class="card-body">
-                        <div class="mb-3" id="admin-bartender-icon">
-                            <span style="font-size: 3rem;">🍸</span>
-                        </div>
-                        <h5 class="card-title" id="admin-bartender-title">@Localizer["BartenderDashboard"]</h5>
-                        <p class="card-text" id="admin-bartender-description">@Localizer["BartenderDashboardDesc"]</p>
-                        <a href="/bartender" class="btn btn-warning" id="admin-bartender-btn">@Localizer["ViewDashboard"]</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 mb-4" id="admin-events-card-col">
-                <div class="card text-center h-100" id="admin-events-card">
-                    <div class="card-body">
-                        <div class="mb-3" id="admin-events-icon">
-                            <span style="font-size: 3rem;">🎫</span>
-                        </div>
-                        <h5 class="card-title" id="admin-events-title">@Localizer["EventsManagement"]</h5>
-                        <p class="card-text" id="admin-events-description">@Localizer["EventsManagementDesc"]</p>
-                        <a href="/events" class="btn btn-info" id="admin-events-btn">@Localizer["ManageEvents"]</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-5" id="admin-setup-guide-row">
-            <div class="col-md-6 offset-md-3 text-center" id="admin-setup-guide-col">
-                <h3 id="admin-setup-guide-title">@Localizer["QuickSetupGuide"]</h3>
-                <ol class="list-unstyled" id="admin-setup-guide-list">
-                    <li class="mb-3" id="admin-setup-step-1">
-                        <span class="badge bg-primary rounded-circle me-3" id="admin-setup-badge-1">1</span>
-                        @Localizer["SetupStep1"]
-                    </li>
-                    <li class="mb-3" id="admin-setup-step-2">
-                        <span class="badge bg-primary rounded-circle me-3" id="admin-setup-badge-2">2</span>
-                        @Localizer["SetupStep2"]
-                    </li>
-                    <li class="mb-3" id="admin-setup-step-3">
-                        <span class="badge bg-primary rounded-circle me-3" id="admin-setup-badge-3">3</span>
-                        @Localizer["SetupStep3"]
-                    </li>
-                    <li class="mb-3" id="admin-setup-step-4">
-                        <span class="badge bg-primary rounded-circle me-3" id="admin-setup-badge-4">4</span>
-                        @Localizer["SetupStep4"]
-                    </li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Online Users Modal -->
-<div class="modal fade" id="onlineUsersModal" tabindex="-1" aria-labelledby="onlineUsersModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" id="admin-online-users-modal-dialog">
-        <div class="modal-content" id="admin-online-users-modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title" id="onlineUsersModalLabel">
-                    <i class="bi bi-people me-2"></i>Online Users
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="admin-index-online-users-modal-close-btn"></button>
-            </div>
-            <div class="modal-body">
-                @if (loadingModalData)
-                {
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-info" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                }
-                else if (onlineUsersList.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Last Activity</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var user in onlineUsersList)
-                                {
-                                    <tr>
-                                        <td>@user.Name</td>
-                                        <td>@user.Email</td>
-                                        <td>
-                                            <span class="badge @(user.Role == "Staff" ? "bg-primary" : "bg-secondary")">
-                                                @user.Role
-                                            </span>
-                                        </td>
-                                        <td>@user.LastActivity.ToString("HH:mm:ss")</td>
-                                        <td>
-                                            <span class="badge bg-success">
-                                                <i class="bi bi-circle-fill"></i> Online
-                                            </span>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-center text-muted">No users currently online</p>
-                }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="admin-index-online-users-close-btn">Close</button>
-                <button type="button" class="btn btn-info" @onclick="RefreshOnlineUsers" id="admin-index-online-users-refresh-btn">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Active Orders Modal -->
-<div class="modal fade" id="activeOrdersModal" tabindex="-1" aria-labelledby="activeOrdersModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl" id="admin-active-orders-modal-dialog">
-        <div class="modal-content" id="admin-active-orders-modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="activeOrdersModalLabel">
-                    <i class="bi bi-cart-check me-2"></i>Active Orders
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                @if (loadingModalData)
-                {
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-success" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                }
-                else if (activeOrdersList.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Order #</th>
-                                    <th>Customer</th>
-                                    <th>Items</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
-                                    <th>Time</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var order in activeOrdersList)
-                                {
-                                    <tr>
-                                        <td><strong>#@order.Id</strong></td>
-                                        <td>@order.CustomerName</td>
-                                        <td>@order.ItemCount items</td>
-                                        <td>@order.Total.ToString("C")</td>
-                                        <td>
-                                            <span class="badge @GetOrderStatusBadgeClass(order.Status)">
-                                                @order.Status
-                                            </span>
-                                        </td>
-                                        <td>@GetTimeAgo(order.CreatedAt)</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" @onclick="() => ViewOrderDetails(order.Id)" id="admin-index-order-details-btn-@order.Id">
-                                                View
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-center text-muted">No active orders at the moment</p>
-                }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="admin-index-active-orders-close-btn">Close</button>
-                <button type="button" class="btn btn-info" @onclick="RefreshActiveOrders" id="admin-index-active-orders-refresh-btn">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
-                </button>
-                <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/orders"))" id="admin-index-active-orders-manage-btn">
-                    View All Orders
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Revenue Details Modal -->
-<div class="modal fade" id="revenueModal" tabindex="-1" aria-labelledby="revenueModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" id="admin-revenue-modal-dialog">
-        <div class="modal-content" id="admin-revenue-modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="revenueModalLabel">
-                    <i class="bi bi-cash-stack me-2"></i>Revenue Details
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="admin-index-revenue-modal-close-btn"></button>
-            </div>
-            <div class="modal-body">
-                @if (loadingModalData)
-                {
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                }
-                else if (revenueDetails != null)
-                {
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Today's Breakdown</h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <strong>Drink Orders:</strong> @revenueDetails.DrinkRevenue.ToString("C")
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Ticket Sales:</strong> @revenueDetails.TicketRevenue.ToString("C")
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Service Fees:</strong> @revenueDetails.ServiceFees.ToString("C")
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Comparison</h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <strong>Yesterday:</strong> @revenueDetails.YesterdayTotal.ToString("C")
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Last Week:</strong> @revenueDetails.LastWeekTotal.ToString("C")
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Last Month:</strong> @revenueDetails.LastMonthTotal.ToString("C")
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <hr />
-                    <div class="row">
-                        <div class="col-12">
-                            <h6 class="text-muted">Top Selling Items Today</h6>
+                        @if (recentOrders?.Any() == true)
+                        {
                             <div class="table-responsive">
-                                <table class="table table-sm">
+                                <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Item</th>
-                                            <th>Quantity</th>
-                                            <th>Revenue</th>
+                                            <th>Order #</th>
+                                            <th>Customer</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Time</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in revenueDetails.TopItems)
+                                        @foreach (var order in recentOrders.Take(5))
                                         {
-                                            <tr>
-                                                <td>@item.Name</td>
-                                                <td>@item.Quantity</td>
-                                                <td>@item.Revenue.ToString("C")</td>
+                                            <tr style="cursor: pointer;" @onclick="@(() => NavigateToOrder(order.Id))">
+                                                <td>#@order.Id</td>
+                                                <td>@order.CustomerName</td>
+                                                <td>$@order.TotalAmount.ToString("N2")</td>
+                                                <td><span class="badge @GetStatusBadgeClass(order.Status)">@order.Status</span></td>
+                                                <td>@order.CreatedAt.ToString("HH:mm")</td>
                                             </tr>
                                         }
                                     </tbody>
                                 </table>
                             </div>
+                        }
+                        else
+                        {
+                            <div class="text-center p-4">
+                                <i class="oi oi-info text-muted fs-1"></i>
+                                <p class="text-muted mt-2">No recent orders</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" @onclick="NavigateToOrders" id="admin-dashboard-orders-manage-btn">
+                                <i class="oi oi-plus me-2"></i>New Order
+                            </button>
+                            <button class="btn btn-success" @onclick="NavigateToUsers" id="admin-dashboard-users-manage-btn">
+                                <i class="oi oi-person me-2"></i>Add User
+                            </button>
+                            <button class="btn btn-info" @onclick="NavigateToReports" id="admin-dashboard-reports-view-btn">
+                                <i class="oi oi-document me-2"></i>Export Reports
+                            </button>
+                            <button class="btn btn-secondary" @onclick="NavigateToLogs" id="admin-dashboard-logs-view-btn">
+                                <i class="oi oi-list me-2"></i>View Logs
+                            </button>
                         </div>
                     </div>
-                }
-                else
-                {
-                    <p class="text-center text-muted">No revenue data available</p>
-                }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="admin-index-revenue-close-btn">Close</button>
-                <button type="button" class="btn btn-info" @onclick="RefreshRevenueDetails" id="admin-index-revenue-refresh-btn">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
-                </button>
-                <button type="button" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/analytics"))" id="admin-index-revenue-analytics-btn">
-                    View Full Analytics
-                </button>
+                </div>
+
+                <!-- System Status -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">System Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Database</span>
+                                <span class="badge bg-success">Connected</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>API Health</span>
+                                <span class="badge bg-success">Healthy</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Cache Status</span>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Background Services</span>
+                                <span class="badge bg-success">Running</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    }
 </div>
-
-<!-- Ticket Details Modal -->
-<div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" id="admin-ticket-modal-dialog">
-        <div class="modal-content" id="admin-ticket-modal-content">
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title" id="ticketModalLabel">
-                    <i class="bi bi-ticket-perforated me-2"></i>Ticket Sales Details
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="admin-index-ticket-modal-close-btn"></button>
-            </div>
-            <div class="modal-body">
-                @if (loadingModalData)
-                {
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-warning" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                }
-                else if (ticketDetails != null)
-                {
-                    <div class="mb-3">
-                        <h6>Event: <strong>@ticketDetails.EventName</strong></h6>
-                        <p class="text-muted">@ticketDetails.EventDate.ToString("MMMM dd, yyyy HH:mm")</p>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Sales Summary</h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <strong>Total Capacity:</strong> @ticketDetails.TotalCapacity
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Sold Today:</strong> @ticketDetails.SoldToday
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Total Sold:</strong> @ticketDetails.TotalSold
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Available:</strong> @ticketDetails.Available
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Sales by Section</h6>
-                            <ul class="list-unstyled">
-                                @foreach (var sectionSale in ticketDetails.SectionSales)
-                                {
-                                    <li class="mb-2">
-                                        <strong>@sectionSale.Name:</strong> @sectionSale.Sold / @sectionSale.Capacity
-                                        <div class="progress" style="height: 5px;">
-                                            <div class="progress-bar bg-warning" role="progressbar"
-                                                 style="width: @((sectionSale.Sold * 100 / sectionSale.Capacity))%"></div>
-                                        </div>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-center text-muted">No ticket data available</p>
-                }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="admin-index-ticket-close-btn">Close</button>
-                <button type="button" class="btn btn-info" @onclick="RefreshTicketDetails" id="admin-index-ticket-refresh-btn">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
-                </button>
-                <button type="button" class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo("/events"))" id="admin-index-ticket-events-btn">
-                    Manage Events
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Enhanced modal cleanup using Bootstrap's modal events
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('🔧 Setting up enhanced modal cleanup...');
-
-        // Get all modals on the page
-        const modals = document.querySelectorAll('.modal');
-
-        modals.forEach(modal => {
-            console.log(`📋 Setting up cleanup for modal: ${modal.id}`);
-
-            // Listen for the 'hidden.bs.modal' event which fires after the modal is completely hidden
-            modal.addEventListener('hidden.bs.modal', function (event) {
-                console.log(`🧹 Modal ${modal.id} hidden, performing cleanup...`);
-
-                // Use setTimeout to ensure Bootstrap is completely done
-                setTimeout(() => {
-                    // Remove any leftover backdrops
-                    const backdrops = document.querySelectorAll('.modal-backdrop');
-                    console.log(`🗑️ Found ${backdrops.length} backdrops to remove`);
-                    backdrops.forEach(backdrop => {
-                        console.log('Removing backdrop:', backdrop.className);
-                        backdrop.remove();
-                    });
-
-                    // Reset body classes and styles
-                    document.body.classList.remove('modal-open');
-                    document.body.style.overflow = '';
-                    document.body.style.paddingRight = '';
-
-                    console.log('✅ Modal cleanup completed');
-                }, 50); // Small delay to ensure Bootstrap is done
-            });
-        });
-
-        console.log('✅ Enhanced modal cleanup initialized for all modals');
-    });
-</script>
-

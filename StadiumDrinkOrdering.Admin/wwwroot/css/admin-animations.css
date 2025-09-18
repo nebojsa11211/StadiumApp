@@ -705,3 +705,105 @@
 .admin-animate-contain {
   contain: layout style paint;
 }
+
+/* =============================================================================
+   COUNTDOWN CIRCLE ANIMATIONS
+   ============================================================================= */
+
+/* Countdown circle animation for auto-refresh indicator */
+@keyframes admin-countdown-stroke {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 94.25; /* 2 * π * 15 (circumference) */
+  }
+}
+
+/* Countdown circle container */
+.admin-countdown-circle {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* SVG circle styling */
+.admin-countdown-circle svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Start from top */
+}
+
+/* Circle background */
+.admin-countdown-circle-bg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  opacity: 0.2;
+}
+
+/* Animated progress circle */
+.admin-countdown-circle-progress {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 94.25; /* 2 * π * 15 (circumference) */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* Active countdown animation */
+.admin-countdown-circle.countdown-active .admin-countdown-circle-progress {
+  animation: admin-countdown-stroke 30s linear infinite;
+}
+
+/* Paused state */
+.admin-countdown-circle.countdown-paused .admin-countdown-circle-progress {
+  animation-play-state: paused;
+}
+
+/* Reset state */
+.admin-countdown-circle.countdown-reset .admin-countdown-circle-progress {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+
+/* Color states for countdown circle */
+.admin-countdown-circle.countdown-warning .admin-countdown-circle-progress {
+  stroke: var(--admin-color-warning-500);
+}
+
+.admin-countdown-circle.countdown-danger .admin-countdown-circle-progress {
+  stroke: var(--admin-color-danger-500);
+}
+
+.admin-countdown-circle.countdown-success .admin-countdown-circle-progress {
+  stroke: var(--admin-color-success-500);
+}
+
+/* Hover effect for countdown circle */
+.admin-countdown-circle:hover .admin-countdown-circle-progress {
+  opacity: 0.8;
+  stroke-width: 3;
+  transition: all var(--admin-transition-fast);
+}
+
+/* Smooth transitions for state changes */
+.admin-countdown-circle .admin-countdown-circle-progress {
+  transition: stroke var(--admin-transition-base), opacity var(--admin-transition-base);
+}
+
+/* Accessibility: Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .admin-countdown-circle.countdown-active .admin-countdown-circle-progress {
+    animation: none;
+    stroke-dashoffset: 47.125; /* Half circumference for static indicator */
+  }
+
+  .admin-countdown-circle:hover .admin-countdown-circle-progress {
+    transform: none;
+  }
+}

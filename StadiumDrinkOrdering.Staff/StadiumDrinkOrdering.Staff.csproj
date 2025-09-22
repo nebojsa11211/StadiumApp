@@ -17,4 +17,9 @@
     <ProjectReference Include="..\StadiumDrinkOrdering.Shared\StadiumDrinkOrdering.Shared.csproj" />
   </ItemGroup>
 
+  <!-- Kill process before build - runs the batch file -->
+  <Target Name="KillProcessBeforeBuild" BeforeTargets="BeforeBuild;Build;Clean;Rebuild;CoreCompile">
+    <Exec Command="$(ProjectDir)..\kill-staff-process.bat" ContinueOnError="true" IgnoreExitCode="true" />
+  </Target>
+
 </Project>

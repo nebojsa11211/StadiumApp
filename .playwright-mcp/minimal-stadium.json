@@ -1,0 +1,24 @@
+{
+  "name": "Minimal Stadium",
+  "description": "Basic stadium structure for testing",
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Main Stand",
+          "sectors": [
+            {
+              "code": "NA",
+              "name": "North A",
+              "rows": 10,
+              "seatsPerRow": 20
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

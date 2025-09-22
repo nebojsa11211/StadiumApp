@@ -142,12 +142,12 @@ public static class AuthenticationConstants
     /// </summary>
     public static class Endpoints
     {
-        public const string Login = "/api/auth/login";
-        public const string Register = "/api/auth/register";
-        public const string RefreshToken = "/api/auth/refresh-token";
-        public const string RevokeToken = "/api/auth/revoke-token";
-        public const string Profile = "/api/auth/profile";
-        public const string ChangePassword = "/api/auth/change-password";
+        public const string Login = "/auth/login";
+        public const string Register = "/auth/register";
+        public const string RefreshToken = "/auth/refresh-token";
+        public const string RevokeToken = "/auth/revoke-token";
+        public const string Profile = "/auth/profile";
+        public const string ChangePassword = "/auth/change-password";
     }
 
     /// <summary>

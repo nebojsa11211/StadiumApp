@@ -9,7 +9,7 @@ namespace StadiumDrinkOrdering.API.Controllers;
 /// API Controller for dynamic stadium SVG layout generation
 /// </summary>
 [ApiController]
-[Route("api/stadium-svg")]
+[Route("stadium-svg")]
 [Authorize] // SECURITY: Default to authorized access, individual endpoints can override with [AllowAnonymous]
 public class StadiumSvgController : ControllerBase
 {

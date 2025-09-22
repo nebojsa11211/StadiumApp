@@ -11,26 +11,44 @@ public static class HNKRijekaStadiumConstants
     /// <summary>
     /// EXACT sector coordinates from current static SVG - DO NOT MODIFY
     /// Each coordinate matches the static SVG rectangles precisely
+    /// Updated to support imported stadium structure with N1, N2, S1, S2, E1, E2, W1, W2 codes
     /// </summary>
     public static readonly Dictionary<string, SectorCoordinates> SECTOR_COORDINATES = new()
     {
+        // North Stand - N Sectors (mapped to HNK Rijeka coordinates)
+        ["N1"] = new(400, 120, 120, 100, "#4A90E2", "#2E5C9A"),
+        ["N2"] = new(540, 120, 120, 100, "#4A90E2", "#2E5C9A"),
+
+        // South Stand - S Sectors (mapped to HNK Rijeka coordinates)
+        ["S1"] = new(280, 600, 160, 80, "#4A90E2", "#2E5C9A"),
+        ["S2"] = new(490, 600, 160, 80, "#4A90E2", "#2E5C9A"),
+
+        // East Stand - E Sectors (mapped to HNK Rijeka coordinates)
+        ["E1"] = new(930, 280, 120, 80, "#4AE24A", "#16a34a"),
+        ["E2"] = new(930, 380, 120, 80, "#4AE24A", "#16a34a"),
+
+        // West Stand - W Sectors (mapped to HNK Rijeka coordinates)
+        ["W1"] = new(150, 260, 120, 90, "#F39C12", "#D68910"),
+        ["W2"] = new(150, 365, 120, 90, "#F39C12", "#D68910"),
+
+        // Legacy HNK Rijeka sector codes for backwards compatibility
         // North Stand - I Sectors (EXACT from static SVG lines 148-197)
         ["I4"] = new(400, 120, 120, 100, "#4A90E2", "#2E5C9A"),
         ["I3"] = new(540, 120, 120, 100, "#4A90E2", "#2E5C9A"),
         ["I2"] = new(680, 120, 120, 100, "#4A90E2", "#2E5C9A"),
-        
+
         // West Stand - S Sectors (EXACT from static SVG lines 200-251)
         ["S5"] = new(150, 260, 120, 90, "#F39C12", "#D68910"),
         ["S4"] = new(150, 365, 120, 90, "#F39C12", "#D68910"),
         ["S3"] = new(150, 470, 120, 90, "#F39C12", "#D68910"),
-        
+
         // South Stand - Z Sectors Top Row (EXACT from static SVG lines 278-362)
         ["Z10"] = new(280, 600, 95, 80, "#4A90E2", "#2E5C9A"),
         ["Z8"] = new(385, 600, 95, 80, "#4A90E2", "#2E5C9A"),
         ["Z6A"] = new(490, 600, 95, 80, "#4A90E2", "#2E5C9A"),
         ["Z4"] = new(595, 600, 95, 80, "#4A90E2", "#2E5C9A"),
         ["Z2"] = new(700, 600, 95, 80, "#4A90E2", "#2E5C9A"),
-        
+
         // South Stand - Z Sectors Bottom Row (EXACT from static SVG lines 365-414)
         ["Z9"] = new(350, 700, 100, 75, "#4A90E2", "#2E5C9A"),
         ["Z5A"] = new(470, 700, 100, 75, "#4A90E2", "#2E5C9A"),
@@ -89,19 +107,38 @@ public static class HNKRijekaStadiumConstants
     /// <summary>
     /// Default seat counts for HNK Rijeka sectors
     /// These are reasonable estimates based on sector size
+    /// Updated to support imported stadium structure with N1, N2, S1, S2, E1, E2, W1, W2 codes
     /// </summary>
     public static readonly Dictionary<string, int> DEFAULT_SEAT_COUNTS = new()
     {
+        // New imported stadium sector codes (4 tribunes, 8 sectors total)
+        // North Stand - N Sectors
+        ["N1"] = 100, // 10 rows × 10 seats (from imported data)
+        ["N2"] = 100, // 10 rows × 10 seats (from imported data)
+
+        // South Stand - S Sectors
+        ["S1"] = 100, // 10 rows × 10 seats (from imported data)
+        ["S2"] = 100, // 10 rows × 10 seats (from imported data)
+
+        // East Stand - E Sectors
+        ["E1"] = 100, // 10 rows × 10 seats (from imported data)
+        ["E2"] = 100, // 10 rows × 10 seats (from imported data)
+
+        // West Stand - W Sectors
+        ["W1"] = 100, // 10 rows × 10 seats (from imported data)
+        ["W2"] = 100, // 10 rows × 10 seats (from imported data)
+
+        // Legacy HNK Rijeka sector codes for backwards compatibility
         // North Stand - larger sectors
         ["I4"] = 480, // 20 rows × 24 seats
-        ["I3"] = 480, // 20 rows × 24 seats  
+        ["I3"] = 480, // 20 rows × 24 seats
         ["I2"] = 480, // 20 rows × 24 seats
-        
+
         // West Stand - medium sectors
         ["S5"] = 360, // 18 rows × 20 seats
         ["S4"] = 360, // 18 rows × 20 seats
         ["S3"] = 360, // 18 rows × 20 seats
-        
+
         // South Stand - varied sizes
         ["Z10"] = 304, // 16 rows × 19 seats
         ["Z8"] = 304,  // 16 rows × 19 seats

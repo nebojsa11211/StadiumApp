@@ -1,0 +1,192 @@
+@*
+    SkeletonManagementCard.razor
+    Professional skeleton loading placeholder for management cards
+    Features icon, title, description lines, and action button
+*@
+
+<div class="skeleton-management-card skeleton-container"
+     role="status"
+     aria-label="Loading management card"
+     tabindex="0"
+     id="skeleton-management-card-@CardType.ToLowerInvariant()">
+
+    <!-- Card header with icon and title -->
+    <div class="skeleton-management-header">
+        <div class="skeleton skeleton-management-icon" aria-hidden="true"></div>
+        <div class="skeleton skeleton-management-title" aria-hidden="true"></div>
+    </div>
+
+    <!-- Card content with description lines -->
+    <div class="skeleton-management-content">
+        @for (int i = 0; i < DescriptionLines; i++)
+        {
+            <div class="skeleton skeleton-management-description"
+                 style="animation-delay: @((i + 1) * 100)ms; @GetDescriptionWidth(i)"
+                 aria-hidden="true"></div>
+        }
+    </div>
+
+    <!-- Card footer with action button -->
+    @if (ShowActionButton)
+    {
+        <div class="skeleton-management-footer">
+            <div class="skeleton skeleton-management-button"
+                 style="animation-delay: @((DescriptionLines + 2) * 100)ms;"
+                 aria-hidden="true"></div>
+        </div>
+    }
+
+    <!-- Loading indicator for screen readers -->
+    <span class="visually-hidden">Loading @CardType.ToLowerInvariant() management card...</span>
+
+    <!-- Optional loading spinner -->
+    @if (ShowLoadingIndicator)
+    {
+        <div class="skeleton-loading-indicator" aria-hidden="true"></div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Type of management card for semantic identification (Users, Orders, Events, etc.)
+    /// </summary>
+    [Parameter] public string CardType { get; set; } = "Management";
+
+    /// <summary>
+    /// Number of description lines to display
+    /// </summary>
+    [Parameter] public int DescriptionLines { get; set; } = 2;
+
+    /// <summary>
+    /// Whether to show the action button at the bottom
+    /// </summary>
+    [Parameter] public bool ShowActionButton { get; set; } = true;
+
+    /// <summary>
+    /// Whether to show the spinning loading indicator
+    /// </summary>
+    [Parameter] public bool ShowLoadingIndicator { get; set; } = false;
+
+    /// <summary>
+    /// Custom icon type for specific card types
+    /// </summary>
+    [Parameter] public string IconType { get; set; } = "default";
+
+    /// <summary>
+    /// Additional CSS classes to apply to the skeleton card
+    /// </summary>
+    [Parameter] public string CssClass { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Additional attributes to apply to the skeleton container
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Custom animation delay for staggered loading effects
+    /// </summary>
+    [Parameter] public int AnimationDelayMs { get; set; } = 0;
+
+    /// <summary>
+    /// Whether to use compact layout (smaller padding, fewer lines)
+    /// </summary>
+    [Parameter] public bool CompactLayout { get; set; } = false;
+
+    /// <summary>
+    /// Configuration presets for different card types
+    /// </summary>
+    private readonly Dictionary<string, (int lines, bool hasButton, string icon)> _cardPresets = new()
+    {
+        { "Users", (2, true, "person") },
+        { "Orders", (2, true, "list") },
+        { "Events", (3, true, "calendar") },
+        { "Stadium", (2, true, "home") },
+        { "Analytics", (3, true, "graph") },
+        { "Settings", (1, true, "gear") },
+        { "Reports", (2, true, "document") },
+        { "Logs", (1, true, "journal") }
+    };
+
+    protected override void OnInitialized()
+    {
+        // Apply preset configuration if available
+        if (_cardPresets.TryGetValue(CardType, out var preset))
+        {
+            if (DescriptionLines == 2) // Only apply if using default
+                DescriptionLines = preset.lines;
+
+            if (ShowActionButton == true) // Only apply if using default
+                ShowActionButton = preset.hasButton;
+
+            if (IconType == "default") // Only apply if using default
+                IconType = preset.icon;
+        }
+
+        // Adjust for compact layout
+        if (CompactLayout)
+        {
+            DescriptionLines = Math.Max(1, DescriptionLines - 1);
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Apply animation delay if specified
+        if (AnimationDelayMs > 0)
+        {
+            AdditionalAttributes ??= new Dictionary<string, object>();
+            var existingStyle = AdditionalAttributes.GetValueOrDefault("style", "").ToString();
+            AdditionalAttributes["style"] = $"animation-delay: {AnimationDelayMs}ms; {existingStyle}";
+        }
+
+        // Apply compact class if needed
+        if (CompactLayout)
+        {
+            var existingClass = AdditionalAttributes?.GetValueOrDefault("class", "").ToString() ?? CssClass;
+            AdditionalAttributes ??= new Dictionary<string, object>();
+            AdditionalAttributes["class"] = $"{existingClass} skeleton-management-card-compact".Trim();
+        }
+    }
+
+    /// <summary>
+    /// Get varying widths for description lines to create realistic appearance
+    /// </summary>
+    /// <param name="lineIndex">Zero-based line index</param>
+    /// <returns>CSS width style</returns>
+    private string GetDescriptionWidth(int lineIndex)
+    {
+        var widths = new[] { "width: 90%;", "width: 70%;", "width: 85%;", "width: 60%;" };
+        return widths[lineIndex % widths.Length];
+    }
+
+    /// <summary>
+    /// Get the CSS class for the icon based on type
+    /// </summary>
+    /// <returns>CSS class string</returns>
+    private string GetIconClass()
+    {
+        return IconType switch
+        {
+            "person" => "skeleton-management-icon-person",
+            "list" => "skeleton-management-icon-list",
+            "calendar" => "skeleton-management-icon-calendar",
+            "home" => "skeleton-management-icon-home",
+            "graph" => "skeleton-management-icon-graph",
+            "gear" => "skeleton-management-icon-gear",
+            "document" => "skeleton-management-icon-document",
+            "journal" => "skeleton-management-icon-journal",
+            _ => "skeleton-management-icon-default"
+        };
+    }
+
+    /// <summary>
+    /// Get the total animation delay for a specific element
+    /// </summary>
+    /// <param name="elementIndex">Zero-based element index</param>
+    /// <returns>Animation delay in milliseconds</returns>
+    private int GetElementAnimationDelay(int elementIndex)
+    {
+        return AnimationDelayMs + (elementIndex * 100);
+    }
+}

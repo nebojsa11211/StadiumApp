@@ -8,7 +8,8 @@ services:
     environment:
       - TZ=${TZ:-Europe/Zagreb}
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
-      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - ConnectionStrings__DefaultConnection=Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=300;Keepalive=30;Connection Idle Lifetime=300;Maximum Pool Size=50;Minimum Pool Size=5;Pooling=true;No Reset On Close=true;Include Error Detail=true
+      - UseSqliteFallback=true
       - JwtSettings__SecretKey=${JWT_SECRET_KEY}
       - JwtSettings__Issuer=${JWT_ISSUER:-StadiumDrinkOrdering}
       - JwtSettings__Audience=${JWT_AUDIENCE:-StadiumDrinkOrdering}
@@ -16,7 +17,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8443
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_CERT_PASSWORD}
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore-multi-hostname.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
       - Logging__LogLevel__Default=${LOG_LEVEL_DEFAULT:-Information}
       - Logging__LogLevel__Microsoft.AspNetCore=${LOG_LEVEL_ASPNETCORE:-Information}
@@ -43,7 +44,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=8082
       - ASPNETCORE_HTTPS_PORTS=8445
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_CERT_PASSWORD}
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore-multi-hostname.pfx
       - DOTNET_RUNNING_IN_CONTAINER=true
       - Logging__LogLevel__Default=${LOG_LEVEL_DEFAULT:-Information}
       - Logging__LogLevel__Microsoft.AspNetCore=${LOG_LEVEL_ASPNETCORE:-Information}

@@ -1,6 +1,9 @@
 services:
   # API - Development overrides for enhanced debugging
   api:
+    build:
+      no_cache: true
+    pull_policy: build
     environment:
       # Enhanced logging for development
       - Logging__LogLevel__Default=${LOG_LEVEL_DEFAULT:-Debug}
@@ -10,6 +13,9 @@ services:
 
   # Admin - Development overrides for enhanced debugging
   admin:
+    build:
+      no_cache: true
+    pull_policy: build
     environment:
       # Enhanced logging for development
       - Logging__LogLevel__Default=${LOG_LEVEL_DEFAULT:-Debug}

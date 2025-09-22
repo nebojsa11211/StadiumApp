@@ -1,13 +1,14 @@
 using StadiumDrinkOrdering.Admin.Services.Base;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 
 namespace StadiumDrinkOrdering.Admin.Services.Stadium
 {
     public class StadiumService : BaseApiService, IStadiumService
     {
-        public StadiumService(HttpClient httpClient, ICentralizedLoggingClient loggingClient)
-            : base(httpClient, loggingClient)
+        public StadiumService(HttpClient httpClient, ICentralizedLoggingClient loggingClient, ITokenStorageService tokenStorage)
+            : base(httpClient, loggingClient, null, tokenStorage)
         {
         }
 
@@ -15,6 +16,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.GetAsync("StadiumStructure/full-structure");
                 if (response.IsSuccessStatusCode)
                 {
@@ -33,6 +35,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.GetAsync("StadiumStructure/summary");
                 if (response.IsSuccessStatusCode)
                 {
@@ -51,6 +54,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
+                SetAuthorizationHeader();
                 var content = new MultipartFormDataContent();
                 content.Add(new StreamContent(fileStream), "file", "stadium.json");
                 var response = await HttpClient.PostAsync("StadiumStructure/import/json", content);
@@ -68,6 +72,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
+                SetAuthorizationHeader();
                 var content = CreateJsonContent(jsonContent);
                 var response = await HttpClient.PostAsync("StadiumStructure/import/json", content);
                 return response.IsSuccessStatusCode;
@@ -83,6 +88,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.GetAsync("StadiumStructure/export/json");
                 if (response.IsSuccessStatusCode)
                 {
@@ -100,12 +106,28 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.DeleteAsync("StadiumStructure/clear");
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
                 await LogErrorAsync(ex, "ClearStadiumStructure", "Failed to clear stadium structure");
+            }
+            return false;
+        }
+
+        public async Task<bool> RefreshStadiumCacheAsync()
+        {
+            try
+            {
+                SetAuthorizationHeader();
+                var response = await HttpClient.PostAsync("stadium-svg/layout/refresh", null);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                await LogErrorAsync(ex, "RefreshStadiumCache", "Failed to refresh stadium layout cache");
             }
             return false;
         }

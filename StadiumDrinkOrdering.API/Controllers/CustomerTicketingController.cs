@@ -8,7 +8,7 @@ using StadiumDrinkOrdering.Shared.Models;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/customer/ticketing")]
+[Route("customer/ticketing")]
 public class CustomerTicketingController : ControllerBase
 {
     private readonly ApplicationDbContext _context;

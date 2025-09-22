@@ -134,6 +134,9 @@ public class TokenStorageService : ITokenStorageService
 
         try
         {
+            // Add a small delay to ensure JSRuntime is ready
+            await Task.Delay(50);
+
             var storedToken = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem",
                 AuthenticationConstants.StorageKeys.Admin.Token);
 
@@ -148,8 +151,14 @@ public class TokenStorageService : ITokenStorageService
 
             return storedToken;
         }
-        catch (Exception)
+        catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering") || ex.Message.Contains("JSRuntime"))
         {
+            Console.WriteLine($"TokenStorageService.GetTokenAsync: JSRuntime not available during prerendering");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"TokenStorageService.GetTokenAsync error: {ex.Message}");
             return null;
         }
     }

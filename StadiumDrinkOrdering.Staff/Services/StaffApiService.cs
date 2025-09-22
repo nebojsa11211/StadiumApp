@@ -53,7 +53,7 @@ public class StaffApiService : IStaffApiService
             var json = JsonSerializer.Serialize(loginDto, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/auth/login", content);
+            var response = await _httpClient.PostAsync("auth/login", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -80,7 +80,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/orders?status=pending,accepted,in-preparation");
+            var response = await _httpClient.GetAsync("orders?status=pending,accepted,in-preparation");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -98,7 +98,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/orders/{id}");
+            var response = await _httpClient.GetAsync($"orders/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -120,7 +120,7 @@ public class StaffApiService : IStaffApiService
             var json = JsonSerializer.Serialize(assignmentDto, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PutAsync($"api/orders/{orderId}/assign", content);
+            var response = await _httpClient.PutAsync($"orders/{orderId}/assign", content);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -137,7 +137,7 @@ public class StaffApiService : IStaffApiService
             var json = JsonSerializer.Serialize(updateDto, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PutAsync($"api/orders/{id}/status", content);
+            var response = await _httpClient.PutAsync($"orders/{id}/status", content);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -151,7 +151,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/orders/staff/{staffId}");
+            var response = await _httpClient.GetAsync($"orders/staff/{staffId}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -169,7 +169,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/stadium/layout");
+            var response = await _httpClient.GetAsync("stadium/layout");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -187,7 +187,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/stadium/section/{sectionName}/seats");
+            var response = await _httpClient.GetAsync($"stadium/section/{sectionName}/seats");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -205,7 +205,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/orders/queue");
+            var response = await _httpClient.GetAsync("orders/queue");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -223,7 +223,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.PostAsync($"api/orders/{orderId}/accept", null);
+            var response = await _httpClient.PostAsync($"orders/{orderId}/accept", null);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -237,7 +237,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.PostAsync($"api/orders/{orderId}/start-preparation", null);
+            var response = await _httpClient.PostAsync($"orders/{orderId}/start-preparation", null);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -251,7 +251,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.PostAsync($"api/orders/{orderId}/ready", null);
+            var response = await _httpClient.PostAsync($"orders/{orderId}/ready", null);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -265,7 +265,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.PostAsync($"api/orders/{orderId}/start-delivery", null);
+            var response = await _httpClient.PostAsync($"orders/{orderId}/start-delivery", null);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -279,7 +279,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.PostAsync($"api/orders/{orderId}/confirm-delivery", null);
+            var response = await _httpClient.PostAsync($"orders/{orderId}/confirm-delivery", null);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -296,7 +296,7 @@ public class StaffApiService : IStaffApiService
             var json = JsonSerializer.Serialize(filter, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/logs/search", content);
+            var response = await _httpClient.PostAsync("logs/search", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -314,7 +314,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/logs/summary");
+            var response = await _httpClient.GetAsync("logs/summary");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -345,7 +345,7 @@ public class StaffApiService : IStaffApiService
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/logs/log-action", content);
+            var response = await _httpClient.PostAsync("logs/log-action", content);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)

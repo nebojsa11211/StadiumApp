@@ -7,7 +7,7 @@ using StadiumDrinkOrdering.Shared.Models;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/customer/cart")]
+[Route("customer/cart")]
 public class ShoppingCartController : ControllerBase
 {
     private readonly IShoppingCartService _cartService;

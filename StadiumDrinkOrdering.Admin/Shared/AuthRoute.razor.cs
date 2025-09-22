@@ -7,20 +7,41 @@ public partial class AuthRoute : ComponentBase, IDisposable
 {
     [Inject] private IAuthStateService AuthStateService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
-    
+
     [Parameter] public RenderFragment ChildContent { get; set; } = default!;
-    
+
     private bool isChecking = true;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate a brief authentication check delay
-        await Task.Delay(100);
-        isChecking = false;
-        StateHasChanged();
+        // Ensure authentication is initialized before checking state
+        await AuthStateService.InitializeAsync();
 
-        // Listen for authentication state changes
-        AuthStateService.OnAuthenticationStateChanged += StateHasChanged;
+        // Now it's safe to check authentication state
+        isChecking = false;
+
+        // Listen for authentication state changes BEFORE checking authentication
+        // This ensures we don't miss any state updates
+        AuthStateService.OnAuthenticationStateChanged += HandleAuthStateChanged;
+
+        // If not authenticated, redirect to login
+        if (!AuthStateService.IsAuthenticated)
+        {
+            RedirectToLogin();
+        }
+    }
+
+    private void HandleAuthStateChanged()
+    {
+        // If authentication state changes and user is no longer authenticated, redirect to login
+        if (!AuthStateService.IsAuthenticated)
+        {
+            RedirectToLogin();
+        }
+        else
+        {
+            StateHasChanged();
+        }
     }
 
     private void RedirectToLogin()
@@ -31,6 +52,6 @@ public partial class AuthRoute : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        AuthStateService.OnAuthenticationStateChanged -= StateHasChanged;
+        AuthStateService.OnAuthenticationStateChanged -= HandleAuthStateChanged;
     }
 }

@@ -7,6 +7,12 @@
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>https://localhost:9030</DockerServiceUrl>
     <DockerServiceName>admin</DockerServiceName>
+    <DockerComposeProjectName>stadiumapp</DockerComposeProjectName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DockerComposeUpOptions>--force-recreate --remove-orphans</DockerComposeUpOptions>
+    <DockerComposeBuildOptions>--no-cache</DockerComposeBuildOptions>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
@@ -23,4 +29,31 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <!-- Force cleanup and recreation on F5 -->
+  <Target Name="ForceCleanupBeforeDockerUp" BeforeTargets="DockerComposeUp">
+    <Message Text="🔥 Forcing container cleanup before Docker Compose Up..." Importance="high" />
+    <Exec Command="docker-compose -f docker-compose.yml -f docker-compose.override.yml down --remove-orphans"
+          ContinueOnError="true"
+          IgnoreExitCode="true" />
+    <Exec Command="docker container prune -f"
+          ContinueOnError="true"
+          IgnoreExitCode="true" />
+    <Exec Command="docker network prune -f"
+          ContinueOnError="true"
+          IgnoreExitCode="true" />
+  </Target>
+
+  <Target Name="ForceCleanupAfterDockerDown" AfterTargets="DockerComposeDown">
+    <Message Text="🧹 Final cleanup after Docker Compose Down..." Importance="high" />
+    <Exec Command="docker container prune -f"
+          ContinueOnError="true"
+          IgnoreExitCode="true" />
+    <Exec Command="docker network prune -f"
+          ContinueOnError="true"
+          IgnoreExitCode="true" />
+    <Exec Command="docker volume prune -f"
+          ContinueOnError="true"
+          IgnoreExitCode="true" />
+  </Target>
 </Project>

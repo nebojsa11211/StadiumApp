@@ -42,8 +42,8 @@ public class TestController : ControllerBase
             httpClient.BaseAddress = new Uri("https://localhost:7000/");
             httpClient.Timeout = TimeSpan.FromSeconds(30);
             
-            _logger.LogInformation("Making GET request to api/orders (no auth token)");
-            var response = await httpClient.GetAsync("api/orders");
+            _logger.LogInformation("Making GET request to orders (no auth token)");
+            var response = await httpClient.GetAsync("orders");
             
             var responseContent = await response.Content.ReadAsStringAsync();
             

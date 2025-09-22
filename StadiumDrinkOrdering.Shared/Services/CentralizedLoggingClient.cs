@@ -240,7 +240,7 @@ namespace StadiumDrinkOrdering.Shared.Services
                 });
 
                 using var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"{_apiBaseUrl}/api/logs/log-batch", content, combinedCts.Token)
+                var response = await _httpClient.PostAsync($"{_apiBaseUrl}/logs/log-batch", content, combinedCts.Token)
                     .ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
@@ -283,7 +283,7 @@ namespace StadiumDrinkOrdering.Shared.Services
                 });
 
                 using var content = new StringContent(json, Encoding.UTF8, "application/json");
-                await _httpClient.PostAsync($"{_apiBaseUrl}/api/logs/log-action", content, combinedCts.Token)
+                await _httpClient.PostAsync($"{_apiBaseUrl}/logs/log-action", content, combinedCts.Token)
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException)

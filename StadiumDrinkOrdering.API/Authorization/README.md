@@ -232,13 +232,13 @@ Test controllers with different user roles:
 
 ```bash
 # Admin access
-curl -H "Authorization: Bearer $ADMIN_TOKEN" https://localhost:9010/api/users
+curl -H "Authorization: Bearer $ADMIN_TOKEN" https://localhost:9010/users
 
 # Customer access to own order
-curl -H "Authorization: Bearer $CUSTOMER_TOKEN" https://localhost:9010/api/orders/123
+curl -H "Authorization: Bearer $CUSTOMER_TOKEN" https://localhost:9010/orders/123
 
 # Unauthorized access (should return 403)
-curl -H "Authorization: Bearer $CUSTOMER_TOKEN" https://localhost:9010/api/users
+curl -H "Authorization: Bearer $CUSTOMER_TOKEN" https://localhost:9010/users
 ```
 
 ## Security Best Practices Implemented

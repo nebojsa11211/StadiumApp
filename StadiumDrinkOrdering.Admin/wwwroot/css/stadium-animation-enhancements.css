@@ -1,0 +1,593 @@
+/* ===============================================
+   Stadium Animation Enhancements
+   Premium Animation Integration with Existing Components
+   =============================================== */
+
+/* ===============================================
+   Animated Stadium Overview Container
+   =============================================== */
+
+.stadium-overview-container.animated-overview {
+    animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-header {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-content {
+    animation: slideInRight 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-icon {
+    animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-icon:hover {
+    transform: scale(1.1) rotate(5deg) translateZ(0);
+}
+
+.animated-text {
+    animation: slideUp 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-actions {
+    animation: slideInRight 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-status {
+    animation: fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===============================================
+   Animated Control Panel
+   =============================================== */
+
+.animated-controls {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-control-group {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: calc(var(--group-index, 0) * 150ms);
+    animation-fill-mode: both;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-control-group:hover {
+    transform: translateX(-6px) translateZ(0);
+    box-shadow: 4px 0 12px rgba(37, 99, 235, 0.15);
+}
+
+.animated-control-header {
+    animation: fadeIn 0.4s ease-out;
+    animation-delay: calc(var(--group-index, 0) * 150ms + 200ms);
+    animation-fill-mode: both;
+}
+
+.animated-label {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-label:hover {
+    color: var(--premium-primary);
+    transform: translateX(3px) translateZ(0);
+}
+
+/* ===============================================
+   Enhanced Form Controls
+   =============================================== */
+
+.animated-select,
+.animated-input {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+.animated-select:hover,
+.animated-input:hover {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.1);
+}
+
+.animated-select:focus,
+.animated-input:focus {
+    transform: translateY(-3px) translateZ(0);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1),
+                0 8px 25px rgba(37, 99, 235, 0.15);
+    animation: focusPulse 2s ease-in-out infinite;
+}
+
+.animated-input-group {
+    position: relative;
+    overflow: hidden;
+}
+
+.animated-input-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(37, 99, 235, 0.1),
+        transparent);
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.animated-input-group:hover::before {
+    left: 100%;
+}
+
+/* ===============================================
+   Enhanced Buttons
+   =============================================== */
+
+.animated-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+.animated-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%) translateZ(0);
+    transition: width 0.6s, height 0.6s;
+    pointer-events: none;
+}
+
+.animated-btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.animated-btn:hover {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.animated-btn.active {
+    animation: buttonActivate 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+}
+
+/* Magnetic button effect */
+.magnetic-btn {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===============================================
+   Legend Panel Animations
+   =============================================== */
+
+.animated-legend {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-legend-header {
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.1s;
+    animation-fill-mode: both;
+}
+
+.animated-legend-icon {
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.2s;
+    animation-fill-mode: both;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-legend-icon:hover {
+    transform: scale(1.2) rotate(15deg) translateZ(0);
+}
+
+.animated-title-section {
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.3s;
+    animation-fill-mode: both;
+}
+
+.animated-legend-content {
+    animation: fadeIn 0.5s ease-out;
+    animation-delay: 0.4s;
+    animation-fill-mode: both;
+}
+
+.animated-legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.animated-legend-item {
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: calc(var(--item-index, 0) * 100ms + 0.5s);
+    animation-fill-mode: both;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+.animated-legend-item:hover {
+    transform: translateX(8px) scale(1.02) translateZ(0);
+    background: rgba(37, 99, 235, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced color glow animation */
+.color-glow {
+    animation: glowPulse 3s ease-in-out infinite;
+    animation-delay: calc(var(--item-index, 0) * 0.5s);
+}
+
+/* ===============================================
+   Stadium Info Panel Animations
+   =============================================== */
+
+.animated-panel {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-panel.expanded {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-panel.collapsed {
+    animation: slideOutLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Overview cards animation */
+.overview-cards {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.2s;
+    animation-fill-mode: both;
+}
+
+.overview-card {
+    animation: fadeIn 0.5s ease-out;
+    animation-delay: calc(var(--card-index, 0) * 150ms + 0.3s);
+    animation-fill-mode: both;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+.overview-card:hover {
+    transform: translateY(-4px) scale(1.02) translateZ(0);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Occupancy circle animation */
+.occupancy-circle {
+    animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+}
+
+.occupancy-svg .progress-circle {
+    stroke-dasharray: 0 314;
+    animation: drawCircle 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.8s;
+}
+
+@keyframes drawCircle {
+    to {
+        stroke-dasharray: var(--circle-progress, 157) 314;
+    }
+}
+
+.occupancy-center {
+    animation: fadeIn 0.6s ease-out;
+    animation-delay: 1.5s;
+    animation-fill-mode: both;
+}
+
+/* ===============================================
+   View Options Animation
+   =============================================== */
+
+.animated-view-options {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.3s;
+    animation-fill-mode: both;
+}
+
+.animated-view-options .animated-btn {
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: calc(var(--btn-index, 0) * 100ms + 0.5s);
+    animation-fill-mode: both;
+}
+
+/* ===============================================
+   Loading State Enhancements
+   =============================================== */
+
+.loading-state-modern {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.loading-animation {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    position: relative;
+    animation: smoothRotate 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 4px;
+    margin-top: 12px;
+    justify-content: center;
+}
+
+.loading-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--premium-primary);
+    animation: loadingDotBounce 1.4s ease-in-out infinite both;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+.loading-dots span:nth-child(3) { animation-delay: 0s; }
+
+@keyframes loadingDotBounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.loading-text {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.3s;
+    animation-fill-mode: both;
+}
+
+/* ===============================================
+   No Data State Animation
+   =============================================== */
+
+.no-data-state-modern {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.no-data-icon {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.no-data-icon:hover {
+    transform: scale(1.1) rotate(5deg) translateZ(0);
+}
+
+.no-data-content {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.2s;
+    animation-fill-mode: both;
+}
+
+.no-data-action {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.4s;
+    animation-fill-mode: both;
+}
+
+/* ===============================================
+   Capacity Bar Animations
+   =============================================== */
+
+.capacity-bar-modern {
+    position: relative;
+    height: 8px;
+    background: var(--neutral-200);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.6s;
+    animation-fill-mode: both;
+}
+
+.capacity-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--premium-primary), var(--premium-primary-light));
+    border-radius: 4px;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    animation: expandWidth 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: 0.8s;
+    animation-fill-mode: both;
+}
+
+@keyframes expandWidth {
+    from {
+        width: 0 !important;
+    }
+    to {
+        width: var(--final-width, 50%);
+    }
+}
+
+.capacity-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+.capacity-labels {
+    animation: fadeIn 0.5s ease-out;
+    animation-delay: 1.2s;
+    animation-fill-mode: both;
+}
+
+/* ===============================================
+   Stat Items Animation
+   =============================================== */
+
+.stat-item.modern {
+    animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: calc(var(--stat-index, 0) * 150ms + 0.4s);
+    animation-fill-mode: both;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-item.modern:hover {
+    transform: translateY(-3px) scale(1.02) translateZ(0);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-item.modern:hover .stat-icon {
+    transform: scale(1.2) rotate(5deg) translateZ(0);
+}
+
+/* ===============================================
+   Availability Items Animation
+   =============================================== */
+
+.availability-item {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: calc(var(--availability-index, 0) * 200ms + 0.7s);
+    animation-fill-mode: both;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.availability-item:hover {
+    transform: translateX(5px) scale(1.02) translateZ(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.availability-trend {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.availability-item:hover .availability-trend {
+    transform: scale(1.3) translateZ(0);
+}
+
+/* ===============================================
+   Progressive Enhancement
+   =============================================== */
+
+@keyframes slideOutLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+/* ===============================================
+   Responsive Animation Adjustments
+   =============================================== */
+
+@media (max-width: 768px) {
+    .animated-control-group:hover {
+        transform: translateX(-2px) translateZ(0);
+    }
+
+    .animated-legend-item:hover {
+        transform: translateX(4px) scale(1.01) translateZ(0);
+    }
+
+    .overview-card:hover {
+        transform: translateY(-2px) scale(1.01) translateZ(0);
+    }
+}
+
+/* ===============================================
+   Accessibility Support
+   =============================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .animated-overview,
+    .animated-header,
+    .animated-content,
+    .animated-icon,
+    .animated-text,
+    .animated-actions,
+    .animated-status,
+    .animated-controls,
+    .animated-control-group,
+    .animated-control-header,
+    .animated-select,
+    .animated-input,
+    .animated-btn,
+    .animated-legend,
+    .animated-legend-header,
+    .animated-legend-icon,
+    .animated-title-section,
+    .animated-legend-content,
+    .animated-legend-item,
+    .animated-panel,
+    .overview-cards,
+    .overview-card,
+    .occupancy-circle,
+    .animated-view-options,
+    .loading-state-modern,
+    .loading-animation,
+    .loading-text,
+    .no-data-state-modern,
+    .no-data-icon,
+    .no-data-content,
+    .no-data-action,
+    .capacity-bar-modern,
+    .capacity-fill,
+    .capacity-labels,
+    .stat-item.modern,
+    .availability-item {
+        animation: none;
+        transition: none;
+    }
+
+    .animated-icon:hover,
+    .animated-control-group:hover,
+    .animated-label:hover,
+    .animated-select:hover,
+    .animated-input:hover,
+    .animated-btn:hover,
+    .animated-legend-icon:hover,
+    .animated-legend-item:hover,
+    .overview-card:hover,
+    .no-data-icon:hover,
+    .stat-item.modern:hover,
+    .availability-item:hover {
+        transform: none;
+    }
+}

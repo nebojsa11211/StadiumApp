@@ -32,7 +32,7 @@ public class TokenRefreshService : ITokenRefreshService
         _tokenStorage = tokenStorage ?? throw new ArgumentNullException(nameof(tokenStorage));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        _refreshEndpoint = "/api/auth/refresh-token";
+        _refreshEndpoint = "/auth/refresh-token";
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

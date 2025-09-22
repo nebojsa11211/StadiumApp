@@ -1,66 +1,237 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 
-<div class="stadium-svg-renderer">
+<div class="stadium-svg-renderer animated-renderer">
     @if (Layout != null)
     {
         <svg width="100%" height="100%" viewBox="@Layout.ViewBox.ViewBoxString"
              xmlns="http://www.w3.org/2000/svg"
-             class="stadium-svg"
+             class="stadium-svg gpu-accelerated"
              id="stadium-svg-main">
 
-            <!-- Define gradients and filters -->
+            <!-- Enhanced gradients, filters, and effects -->
             <defs>
-                <linearGradient id="field-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#2d5a2d;stop-opacity:1" />
-                    <stop offset="50%" style="stop-color:#1a4a1a;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#0d2f0d;stop-opacity:1" />
+                <!-- Field gradients -->
+                <radialGradient id="field-gradient" cx="50%" cy="50%" r="70%">
+                    <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
+                    <stop offset="40%" style="stop-color:#22c55e;stop-opacity:1" />
+                    <stop offset="80%" style="stop-color:#16a34a;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#15803d;stop-opacity:1" />
+                </radialGradient>
+
+                <!-- Tribune-specific gradients -->
+                <linearGradient id="north-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
                 </linearGradient>
-                <filter id="sector-shadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+
+                <linearGradient id="south-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+                </linearGradient>
+
+                <linearGradient id="east-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+                </linearGradient>
+
+                <linearGradient id="west-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                </linearGradient>
+
+                <!-- VIP section gradients -->
+                <linearGradient id="vip-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+                </linearGradient>
+
+                <linearGradient id="premium-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#e5e7eb;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#d1d5db;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#9ca3af;stop-opacity:1" />
+                </linearGradient>
+
+                <!-- Occupancy status gradients -->
+                <radialGradient id="available-gradient" cx="50%" cy="50%" r="60%">
+                    <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+                </radialGradient>
+
+                <radialGradient id="partial-gradient" cx="50%" cy="50%" r="60%">
+                    <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+                </radialGradient>
+
+                <radialGradient id="full-gradient" cx="50%" cy="50%" r="60%">
+                    <stop offset="0%" style="stop-color:#f87171;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ef4444;stop-opacity:1" />
+                </radialGradient>
+
+                <!-- Enhanced filters -->
+                <filter id="sector-shadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                    <feOffset dx="3" dy="3" result="offset"/>
+                    <feComponentTransfer>
+                        <feFuncA type="linear" slope="0.3"/>
+                    </feComponentTransfer>
+                    <feMerge>
+                        <feMergeNode/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+
+                <filter id="sector-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+
+                <filter id="hover-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                    <feOffset dx="0" dy="0" result="offsetBlur"/>
+                    <feMerge>
+                        <feMergeNode in="offsetBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+
+                <!-- Pulse animation for availability -->
+                <animate id="pulse-animation" attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite"/>
+
+                <!-- Scale animation for hover -->
+                <animateTransform id="scale-animation"
+                    attributeName="transform"
+                    type="scale"
+                    values="1;1.05;1"
+                    dur="0.3s"
+                    begin="mouseover"
+                    end="mouseout" />
+
+                <!-- Ripple animation pattern -->
+                <radialGradient id="ripple-gradient">
+                    <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8">
+                        <animate attributeName="offset" values="0;1" dur="0.6s" repeatCount="1" />
+                    </stop>
+                    <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0">
+                        <animate attributeName="offset" values="0;1" dur="0.6s" repeatCount="1" />
+                    </stop>
+                </radialGradient>
+
+                <!-- Text shadow filter -->
+                <filter id="text-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="1" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,0.8)"/>
                 </filter>
             </defs>
 
-            <!-- Stadium Field -->
+            <!-- Enhanced Stadium Field -->
             @if (Layout.Field != null)
             {
+                <!-- Field base -->
                 <rect x="@Layout.Field.Bounds.X" y="@Layout.Field.Bounds.Y"
                       width="@Layout.Field.Bounds.Width" height="@Layout.Field.Bounds.Height"
                       fill="url(#field-gradient)"
-                      stroke="@Layout.Field.StrokeColor"
-                      stroke-width="@Layout.Field.StrokeWidth"
-                      rx="40" ry="25"
+                      stroke="#ffffff"
+                      stroke-width="3"
+                      rx="45" ry="30"
                       filter="url(#sector-shadow)"
                       class="stadium-field" />
+
+                <!-- Field markings overlay -->
+                <g class="field-markings" opacity="0.3">
+                    <!-- Center circle -->
+                    <circle cx="@((Layout.Field.Bounds.X + Layout.Field.Bounds.Width/2))"
+                            cy="@((Layout.Field.Bounds.Y + Layout.Field.Bounds.Height/2))"
+                            r="@((Layout.Field.Bounds.Height * 0.15))"
+                            fill="none"
+                            stroke="#ffffff"
+                            stroke-width="2"/>
+                    <!-- Center line -->
+                    <line x1="@((Layout.Field.Bounds.X + Layout.Field.Bounds.Width/2))"
+                          y1="@Layout.Field.Bounds.Y"
+                          x2="@((Layout.Field.Bounds.X + Layout.Field.Bounds.Width/2))"
+                          y2="@((Layout.Field.Bounds.Y + Layout.Field.Bounds.Height))"
+                          stroke="#ffffff"
+                          stroke-width="2"/>
+                </g>
+
+                <!-- Field glow effect with animation -->
+                <rect x="@Layout.Field.Bounds.X" y="@Layout.Field.Bounds.Y"
+                      width="@Layout.Field.Bounds.Width" height="@Layout.Field.Bounds.Height"
+                      fill="none"
+                      stroke="url(#available-gradient)"
+                      stroke-width="1"
+                      rx="45" ry="30"
+                      opacity="0.5"
+                      class="field-glow animated-glow">
+                    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" />
+                    <animate attributeName="stroke-width" values="1;2;1" dur="3s" repeatCount="indefinite" />
+                </rect>
             }
 
-            <!-- Stadium Stands and Sectors -->
+            <!-- Stadium Stands and Sectors with Animation -->
             @if (Layout.Stands != null)
             {
-                @foreach (var stand in Layout.Stands)
+                @foreach (var stand in Layout.Stands.Select((s, standIndex) => new { Stand = s, StandIndex = standIndex }))
                 {
-                    <g class="stadium-stand @stand.CssClass" data-stand="@stand.DataAttribute">
-                        @foreach (var sector in stand.Sectors)
+                    <g class="stadium-stand animated-stand @stand.Stand.CssClass" data-stand="@stand.Stand.DataAttribute">
+                        @foreach (var sector in stand.Stand.Sectors.Select((s, sectorIndex) => new { Sector = s, Index = stand.StandIndex * 10 + sectorIndex }))
                         {
-                            <!-- Sector Rectangle -->
-                            <rect x="@sector.Bounds.X" y="@sector.Bounds.Y"
-                                  width="@sector.Bounds.Width" height="@sector.Bounds.Height"
-                                  fill="@GetSectorFillColor(sector)"
-                                  stroke="@sector.Style.StrokeColor"
-                                  stroke-width="@sector.Style.StrokeWidth"
-                                  rx="@sector.Style.BorderRadius"
+                            <!-- Enhanced Sector with multiple layers and animation -->
+                            <!-- Base sector with staggered animation -->
+                            <rect x="@sector.Sector.Bounds.X" y="@sector.Sector.Bounds.Y"
+                                  width="@sector.Sector.Bounds.Width" height="@sector.Sector.Bounds.Height"
+                                  fill="@GetSectorFillGradient(sector.Sector, stand.Stand.Code)"
+                                  stroke="@GetSectorStroke(sector.Sector)"
+                                  stroke-width="2"
+                                  rx="@GetSectorBorderRadius(sector.Sector)"
                                   filter="url(#sector-shadow)"
-                                  class="stadium-sector @GetSectorStatusClass(sector)"
-                                  id="@sector.ElementId"
-                                  aria-label="@sector.AriaLabel"
-                                  @onclick="() => HandleSectorClick(ConvertToSectorSvgDto(sector))"
-                                  @onmouseenter="() => HandleSectorHover(ConvertToSectorSvgDto(sector), true)"
-                                  @onmouseleave="() => HandleSectorHover(ConvertToSectorSvgDto(sector), false)"
+                                  class="stadium-sector animated-sector @GetSectorStatusClass(sector.Sector) @GetTribuneClass(stand.Stand.Code)"
+                                  style="--sector-index: @sector.Index;"
+                                  id="@sector.Sector.ElementId"
+                                  aria-label="@GetEnhancedAriaLabel(sector.Sector)"
+                                  @onclick="() => HandleSectorClick(ConvertToSectorSvgDto(sector.Sector))"
+                                  @onmouseenter="() => HandleSectorHover(ConvertToSectorSvgDto(sector.Sector), true)"
+                                  @onmouseleave="() => HandleSectorHover(ConvertToSectorSvgDto(sector.Sector), false)"
                                   role="button"
                                   tabindex="0" />
 
+                            <!-- Animated Capacity indicator overlay -->
+                            @if (ShowSeatCount && GetOccupancyPercentage(sector.Sector) > 0)
+                            {
+                                <rect x="@sector.Sector.Bounds.X" y="@(sector.Sector.Bounds.Y + sector.Sector.Bounds.Height - 4)"
+                                      width="@(sector.Sector.Bounds.Width * GetOccupancyPercentage(sector.Sector) / 100)"
+                                      height="4"
+                                      fill="@GetOccupancyBarColor(sector.Sector)"
+                                      rx="2"
+                                      class="capacity-bar animated-capacity-bar"
+                                      opacity="0.8">
+                                    <animate attributeName="width"
+                                             from="0"
+                                             to="@(sector.Sector.Bounds.Width * GetOccupancyPercentage(sector.Sector) / 100)"
+                                             dur="1s"
+                                             begin="0.5s"
+                                             fill="freeze" />
+                                </rect>
+                            }
+
+                            <!-- Animated Hover glow effect -->
+                            <rect x="@sector.Sector.Bounds.X" y="@sector.Sector.Bounds.Y"
+                                  width="@sector.Sector.Bounds.Width" height="@sector.Sector.Bounds.Height"
+                                  fill="none"
+                                  stroke="@GetSectorAccentColor(sector.Sector, stand.Stand.Code)"
+                                  stroke-width="0"
+                                  rx="@GetSectorBorderRadius(sector.Sector)"
+                                  class="sector-glow-effect animated-glow-effect"
+                                  opacity="0"
+                                  filter="url(#hover-glow)"
+                                  pointer-events="none" />
+
                             <!-- Sector Label -->
                             <g class="sector-text-group">
-                                <text x="@sector.TextCenter.X" y="@sector.TextCenter.Y" text-anchor="middle" dominant-baseline="middle" font-size="@sector.Style.FontSize" font-weight="@sector.Style.FontWeight" fill="@sector.Style.TextColor" style="text-shadow: @sector.Style.TextShadow; pointer-events: none;" class="sector-label">@GetSectorDisplayText(sector)</text>
+                                <text x="@sector.Sector.TextCenter.X" y="@sector.Sector.TextCenter.Y" text-anchor="middle" dominant-baseline="middle" font-size="@sector.Sector.Style.FontSize" font-weight="@sector.Sector.Style.FontWeight" fill="@sector.Sector.Style.TextColor" style="text-shadow: @sector.Sector.Style.TextShadow; pointer-events: none;" class="sector-label">@GetSectorDisplayText(sector.Sector)</text>
                             </g>
                         }
                     </g>
@@ -79,64 +250,3 @@
     }
 </div>
 
-<style>
-    .stadium-svg-renderer {
-        width: 100%;
-        height: 600px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
-        background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
-    }
-
-    .stadium-svg {
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-    }
-
-    .stadium-sector {
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .stadium-sector:hover {
-        stroke-width: 3;
-        filter: brightness(1.1);
-    }
-
-    .stadium-sector:focus {
-        outline: 2px solid #0066cc;
-        outline-offset: 2px;
-    }
-
-    .sector-label {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        user-select: none;
-    }
-
-    .stadium-field {
-        opacity: 0.9;
-    }
-
-    .stadium-loading {
-        height: 600px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* Occupancy status classes */
-    .status-available {
-        fill: #4CAF50 !important;
-    }
-
-    .status-partial {
-        fill: #FF9800 !important;
-    }
-
-    .status-full {
-        fill: #F44336 !important;
-    }
-</style>

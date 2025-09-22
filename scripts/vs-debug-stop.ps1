@@ -18,8 +18,8 @@ Write-Host "🛑 Stopping Visual Studio Docker Debug Session..." -ForegroundColo
 Set-Location $ProjectPath
 
 # Forcefully kill any processes using the required ports
-Write-Host "🔥 Forcefully cleaning up ports: 5001, 5002, 5003, 9000, 9001, 9002..." -ForegroundColor Red
-$ports = @(5001, 5002, 5003, 9000, 9001, 9002, 1433)
+Write-Host "🔥 Forcefully cleaning up ports: 9010, 9011, 9030, 9031, 9020, 9021, 9040, 9041..." -ForegroundColor Red
+$ports = @(9010, 9011, 9030, 9031, 9020, 9021, 9040, 9041)
 foreach ($port in $ports) {
     try {
         # Kill processes using the port
@@ -39,14 +39,14 @@ foreach ($port in $ports) {
 # Forcefully remove all containers
 Write-Host "🧹 Forcefully removing all containers..." -ForegroundColor Yellow
 $containers = @(
-    "stadium-sqlserver-debug",
-    "stadium-api-debug", 
-    "stadium-customer-debug",
-    "stadium-admin-debug",
-    "stadium-sqlserver-dev",
+    "stadium-api",
+    "stadium-admin",
+    "stadium-customer",
+    "stadium-staff",
     "stadiumdrinkordering.api",
     "stadiumdrinkordering.customer",
-    "stadiumdrinkordering.admin"
+    "stadiumdrinkordering.admin",
+    "stadiumdrinkordering.staff"
 )
 
 foreach ($container in $containers) {
@@ -60,30 +60,23 @@ foreach ($container in $containers) {
 
 # Stop and remove all containers via docker-compose
 Write-Host "🧹 Cleaning up containers via docker-compose..." -ForegroundColor Yellow
-docker-compose -f docker-compose.yml -f docker-compose.vs.debug.yml down --remove-orphans --volumes --rmi all
+docker-compose -f docker-compose.yml -f docker-compose.override.yml down --remove-orphans --volumes --rmi all
 
 # Clean up networks
 Write-Host "🌐 Cleaning up networks..." -ForegroundColor Yellow
 docker network prune -f
 try {
-    docker network rm stadium-network-debug 2>$null
-    docker network rm stadiontest_stadium-network 2>$null
     docker network rm stadium-network 2>$null
+    docker network rm stadiumdrinkordering_stadium-network 2>$null
+    docker network rm stadiumapp_stadium-network 2>$null
 } catch {
     Write-Host "   Networks already cleaned up" -ForegroundColor Gray
 }
 
-# Clean up specific debug volumes
-Write-Host "💾 Cleaning up debug volumes..." -ForegroundColor Yellow
-try {
-    docker volume rm stadiontest_sqlserver_debug_data 2>$null
-    docker volume rm sqlserver_debug_data 2>$null
-    docker volume rm stadiontest_sqlserver_data 2>$null
-    docker volume rm sqlserver_data 2>$null
-    Write-Host "Debug volumes cleaned up successfully" -ForegroundColor Green
-} catch {
-    Write-Host "Debug volumes already cleaned up or not found" -ForegroundColor Yellow
-}
+# Clean up any lingering volumes (PostgreSQL is external, so just cleanup temp volumes)
+Write-Host "💾 Cleaning up temporary volumes..." -ForegroundColor Yellow
+docker volume prune -f
+Write-Host "Temporary volumes cleaned up successfully" -ForegroundColor Green
 
 # Clean up any dangling volumes
 Write-Host "💾 Cleaning up dangling volumes..." -ForegroundColor Yellow
@@ -95,7 +88,7 @@ docker image prune -f
 
 # Final port verification
 Write-Host "🔍 Verifying ports are freed..." -ForegroundColor Blue
-foreach ($port in @(5001, 5002, 5003)) {
+foreach ($port in @(9010, 9030)) {
     $portCheck = Test-NetConnection -ComputerName "localhost" -Port $port -InformationLevel Quiet -ErrorAction SilentlyContinue
     if (!$portCheck) {
         Write-Host "   ✅ Port $port is freed" -ForegroundColor Green

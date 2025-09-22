@@ -282,7 +282,7 @@ else
     {
         try
         {
-            var userData = await ApiService.GetAsync<UserDto>("/api/users/profile");
+            var userData = await ApiService.GetAsync<UserDto>("/users/profile");
             if (userData != null)
             {
                 // Use user data

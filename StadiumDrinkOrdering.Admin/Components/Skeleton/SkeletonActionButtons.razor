@@ -1,0 +1,147 @@
+@*
+    SkeletonActionButtons.razor
+    Professional skeleton loading placeholder for action button groups
+    Supports configurable button count and includes system status section
+*@
+
+<div class="skeleton-container" id="skeleton-action-buttons-@SectionType.ToLowerInvariant()">
+    <!-- Quick Actions Card -->
+    <div class="skeleton-action-buttons"
+         role="status"
+         aria-label="Loading action buttons"
+         tabindex="0">
+
+        <!-- Card header -->
+        <div class="skeleton-action-header">
+            <div class="skeleton skeleton-action-title" aria-hidden="true"></div>
+        </div>
+
+        <!-- Card body with action buttons -->
+        <div class="skeleton-action-body">
+            @for (int i = 0; i < ButtonCount; i++)
+            {
+                <div class="skeleton skeleton-action-button"
+                     style="animation-delay: @(i * 100)ms;"
+                     aria-hidden="true"></div>
+            }
+        </div>
+
+        <!-- Optional loading spinner -->
+        @if (ShowLoadingIndicator)
+        {
+            <div class="skeleton-loading-indicator" aria-hidden="true"></div>
+        }
+    </div>
+
+    <!-- System Status Card (if enabled) -->
+    @if (IncludeSystemStatus)
+    {
+        <div class="skeleton-system-status"
+             role="status"
+             aria-label="Loading system status"
+             tabindex="0">
+
+            <!-- Status header -->
+            <div class="skeleton-system-header">
+                <div class="skeleton skeleton-system-title" aria-hidden="true"></div>
+            </div>
+
+            <!-- Status items -->
+            <div class="skeleton-system-body">
+                @for (int i = 0; i < StatusItemCount; i++)
+                {
+                    <div class="skeleton-system-item" style="animation-delay: @((ButtonCount + i) * 100)ms;">
+                        <div class="skeleton skeleton-system-label" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-system-status" aria-hidden="true"></div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Loading indicator for screen readers -->
+    <span class="visually-hidden">Loading @SectionType.ToLowerInvariant() actions and status...</span>
+</div>
+
+@code {
+    /// <summary>
+    /// Type of action section for semantic identification
+    /// </summary>
+    [Parameter] public string SectionType { get; set; } = "Quick";
+
+    /// <summary>
+    /// Number of action buttons to display
+    /// </summary>
+    [Parameter] public int ButtonCount { get; set; } = 4;
+
+    /// <summary>
+    /// Whether to include the system status section
+    /// </summary>
+    [Parameter] public bool IncludeSystemStatus { get; set; } = true;
+
+    /// <summary>
+    /// Number of system status items to display
+    /// </summary>
+    [Parameter] public int StatusItemCount { get; set; } = 4;
+
+    /// <summary>
+    /// Whether to show the spinning loading indicator
+    /// </summary>
+    [Parameter] public bool ShowLoadingIndicator { get; set; } = false;
+
+    /// <summary>
+    /// Additional CSS classes to apply to the container
+    /// </summary>
+    [Parameter] public string CssClass { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Additional attributes to apply to the skeleton container
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Custom animation delay base for staggered loading effects
+    /// </summary>
+    [Parameter] public int AnimationDelayBase { get; set; } = 0;
+
+    /// <summary>
+    /// Whether to show the quick actions section
+    /// </summary>
+    [Parameter] public bool ShowQuickActions { get; set; } = true;
+
+    /// <summary>
+    /// Configuration for different action button layouts
+    /// </summary>
+    private readonly Dictionary<string, (int buttons, bool hasStatus)> _presetConfigs = new()
+    {
+        { "Dashboard", (4, true) },
+        { "Quick", (4, true) },
+        { "Management", (6, false) },
+        { "Tools", (3, false) },
+        { "Settings", (5, true) }
+    };
+
+    protected override void OnInitialized()
+    {
+        // Apply preset configuration if available
+        if (_presetConfigs.TryGetValue(SectionType, out var config))
+        {
+            if (ButtonCount == 4) // Only apply if using default
+                ButtonCount = config.buttons;
+
+            if (IncludeSystemStatus == true) // Only apply if using default
+                IncludeSystemStatus = config.hasStatus;
+        }
+    }
+
+    /// <summary>
+    /// Get the total animation delay for an element
+    /// </summary>
+    /// <param name="elementIndex">Zero-based element index</param>
+    /// <returns>Animation delay in milliseconds</returns>
+    private int GetTotalAnimationDelay(int elementIndex)
+    {
+        return AnimationDelayBase + (elementIndex * 100);
+    }
+}

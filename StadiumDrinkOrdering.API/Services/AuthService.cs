@@ -80,7 +80,7 @@ public class AuthService : IAuthService
         {
             Token = token,
             User = userDto,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(15) // Shorter access token lifetime for security
+            ExpiresAt = DateTime.UtcNow.AddHours(24) // 24-hour access token for better user experience
         };
     }
 
@@ -171,7 +171,7 @@ public class AuthService : IAuthService
         {
             AccessToken = newAccessToken,
             RefreshToken = newRefreshToken.Token,
-            AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15),
+            AccessTokenExpiresAt = DateTime.UtcNow.AddHours(24),
             RefreshTokenExpiresAt = newRefreshToken.ExpiresAt,
             User = MapToUserDto(user)
         };
@@ -316,7 +316,7 @@ public class AuthService : IAuthService
             issuer: issuer,
             audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(15), // Short-lived access tokens
+            expires: DateTime.UtcNow.AddHours(24), // 24-hour access tokens for better UX
             signingCredentials: credentials
         );
 

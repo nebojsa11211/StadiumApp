@@ -6,6 +6,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Auth
     {
         string? Token { get; set; }
         Task<string?> LoginAsync(LoginDto loginDto);
+        Task<EnhancedLoginResponseDto?> LoginFullAsync(LoginDto loginDto);
         Task<bool> LogoutAsync();
         Task<UserDto?> GetCurrentUserAsync();
     }

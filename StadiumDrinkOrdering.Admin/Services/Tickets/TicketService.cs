@@ -15,7 +15,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
         {
             try
             {
-                var response = await HttpClient.GetAsync("api/tickets");
+                var response = await HttpClient.GetAsync("tickets");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -55,7 +55,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
         {
             try
             {
-                var response = await HttpClient.PostAsync($"api/tickets/validate/{ticketCode}", null);
+                var response = await HttpClient.PostAsync($"tickets/validate/{ticketCode}", null);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
         {
             try
             {
-                var endpoint = isActive ? $"api/tickets/{ticketId}/activate" : $"api/tickets/{ticketId}/deactivate";
+                var endpoint = isActive ? $"tickets/{ticketId}/activate" : $"tickets/{ticketId}/deactivate";
                 var response = await HttpClient.PutAsync(endpoint, null);
                 return response.IsSuccessStatusCode;
             }

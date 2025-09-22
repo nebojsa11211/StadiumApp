@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.API.Authorization;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.Shared.DTOs;
 using System.ComponentModel.DataAnnotations;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/events")]
+[Route("events")]
 public class EventController : ControllerBase
 {
     private readonly IEventService _eventService;
@@ -24,12 +25,13 @@ public class EventController : ControllerBase
     /// Get all events with optional filtering
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Event>>> GetEvents([FromQuery] bool activeOnly = false)
+    public async Task<ActionResult<IEnumerable<EventDto>>> GetEvents([FromQuery] bool activeOnly = false)
     {
         try
         {
             var events = await _eventService.GetEventsAsync(activeOnly);
-            return Ok(events);
+            var eventDtos = events.Select(e => MapEventToDto(e));
+            return Ok(eventDtos);
         }
         catch (Exception ex)
         {
@@ -42,12 +44,13 @@ public class EventController : ControllerBase
     /// Get currently active events
     /// </summary>
     [HttpGet("active")]
-    public async Task<ActionResult<IEnumerable<Event>>> GetActiveEvents()
+    public async Task<ActionResult<IEnumerable<EventDto>>> GetActiveEvents()
     {
         try
         {
             var events = await _eventService.GetActiveEventsAsync();
-            return Ok(events);
+            var eventDtos = events.Select(e => MapEventToDto(e));
+            return Ok(eventDtos);
         }
         catch (Exception ex)
         {
@@ -60,12 +63,13 @@ public class EventController : ControllerBase
     /// Get upcoming events
     /// </summary>
     [HttpGet("upcoming")]
-    public async Task<ActionResult<IEnumerable<Event>>> GetUpcomingEvents()
+    public async Task<ActionResult<IEnumerable<EventDto>>> GetUpcomingEvents()
     {
         try
         {
             var events = await _eventService.GetUpcomingEventsAsync();
-            return Ok(events);
+            var eventDtos = events.Select(e => MapEventToDto(e));
+            return Ok(eventDtos);
         }
         catch (Exception ex)
         {
@@ -78,12 +82,13 @@ public class EventController : ControllerBase
     /// Get past events
     /// </summary>
     [HttpGet("past")]
-    public async Task<ActionResult<IEnumerable<Event>>> GetPastEvents()
+    public async Task<ActionResult<IEnumerable<EventDto>>> GetPastEvents()
     {
         try
         {
             var events = await _eventService.GetPastEventsAsync();
-            return Ok(events);
+            var eventDtos = events.Select(e => MapEventToDto(e));
+            return Ok(eventDtos);
         }
         catch (Exception ex)
         {
@@ -96,7 +101,7 @@ public class EventController : ControllerBase
     /// Get event by ID
     /// </summary>
     [HttpGet("{id}")]
-    public async Task<ActionResult<Event>> GetEvent(int id)
+    public async Task<ActionResult<EventDto>> GetEvent(int id)
     {
         try
         {
@@ -106,7 +111,7 @@ public class EventController : ControllerBase
                 return NotFound($"Event with ID {id} not found");
             }
 
-            return Ok(eventItem);
+            return Ok(MapEventToDto(eventItem));
         }
         catch (Exception ex)
         {
@@ -144,7 +149,7 @@ public class EventController : ControllerBase
     [HttpPost]
     [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<Event>> CreateEvent([FromBody] CreateEventRequest request)
+    public async Task<ActionResult<EventDto>> CreateEvent([FromBody] CreateEventRequest request)
     {
         try
         {
@@ -166,7 +171,7 @@ public class EventController : ControllerBase
             };
 
             var createdEvent = await _eventService.CreateEventAsync(eventItem);
-            return CreatedAtAction(nameof(GetEvent), new { id = createdEvent.Id }, createdEvent);
+            return CreatedAtAction(nameof(GetEvent), new { id = createdEvent.Id }, MapEventToDto(createdEvent));
         }
         catch (Exception ex)
         {
@@ -181,7 +186,7 @@ public class EventController : ControllerBase
     [HttpPut("{id}")]
     [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<Event>> UpdateEvent(int id, [FromBody] UpdateEventRequest request)
+    public async Task<ActionResult<EventDto>> UpdateEvent(int id, [FromBody] UpdateEventRequest request)
     {
         try
         {
@@ -208,7 +213,7 @@ public class EventController : ControllerBase
                 return NotFound($"Event with ID {id} not found");
             }
 
-            return Ok(updatedEvent);
+            return Ok(MapEventToDto(updatedEvent));
         }
         catch (Exception ex)
         {
@@ -290,6 +295,38 @@ public class EventController : ControllerBase
             _logger.LogError(ex, "Error deactivating event {EventId}", id);
             return StatusCode(500, "Internal server error");
         }
+    }
+
+    /// <summary>
+    /// Maps Event entity to EventDto
+    /// </summary>
+    private EventDto MapEventToDto(Event evt)
+    {
+        if (evt == null)
+        {
+            return null;
+        }
+
+        // Calculate available seats based on sold tickets
+        int soldSeats = 0;
+        if (evt.Tickets != null)
+        {
+            soldSeats = evt.Tickets.Count(t => t.Status == "Active" || t.Status == "Used");
+        }
+
+        return new EventDto
+        {
+            Id = evt.Id,
+            Name = !string.IsNullOrWhiteSpace(evt.EventName) ? evt.EventName : $"Event {evt.Id}",
+            Date = evt.EventDate,
+            Description = evt.Description,
+            Location = evt.EventType ?? "Main Stadium", // Using EventType as location for now
+            Capacity = evt.TotalSeats,
+            AvailableSeats = Math.Max(0, evt.TotalSeats - soldSeats),
+            BasePrice = evt.BaseTicketPrice ?? 0m,
+            IsActive = evt.IsActive,
+            CreatedAt = evt.CreatedAt
+        };
     }
 }
 

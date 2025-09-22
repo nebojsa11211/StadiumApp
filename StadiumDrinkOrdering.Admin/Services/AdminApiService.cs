@@ -90,6 +90,7 @@ namespace StadiumDrinkOrdering.Admin.Services
 
         // Legacy methods - Auth operations (delegated to AuthService)
         public Task<string?> LoginAsync(LoginDto loginDto) => Auth.LoginAsync(loginDto);
+        public Task<EnhancedLoginResponseDto?> LoginFullAsync(LoginDto loginDto) => Auth.LoginFullAsync(loginDto);
         public Task<bool> LogoutAsync() => Auth.LogoutAsync();
         public Task<UserDto?> GetCurrentUserAsync() => Auth.GetCurrentUserAsync();
 
@@ -112,6 +113,7 @@ namespace StadiumDrinkOrdering.Admin.Services
         public Task<bool> ImportStadiumStructureAsync(string jsonContent) => Stadium.ImportStadiumStructureAsync(jsonContent);
         public Task<string?> ExportStadiumStructureAsync() => Stadium.ExportStadiumStructureAsync();
         public Task<bool> ClearStadiumStructureAsync() => Stadium.ClearStadiumStructureAsync();
+        public Task<bool> RefreshStadiumCacheAsync() => Stadium.RefreshStadiumCacheAsync();
 
         // Legacy methods - Event operations (delegated to EventService)
         public Task<IEnumerable<EventDto>?> GetEventsAsync() => Events.GetEventsAsync();

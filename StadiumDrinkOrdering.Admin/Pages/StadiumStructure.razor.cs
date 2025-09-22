@@ -17,6 +17,7 @@ public partial class StadiumStructure : ComponentBase
     private bool isImporting = false;
     private bool isExporting = false;
     private bool isClearing = false;
+    private bool isRefreshingCache = false;
     private bool isLoadingSummary = true;
     private bool showClearModal = false;
     private bool importSuccess = false;
@@ -153,6 +154,38 @@ public partial class StadiumStructure : ComponentBase
         finally
         {
             isExporting = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshCache()
+    {
+        isRefreshingCache = true;
+        try
+        {
+            var success = await ApiService.RefreshStadiumCacheAsync();
+            if (success)
+            {
+                importSuccess = true;
+                importMessage = "Stadium layout cache refreshed successfully. Stadium Overview will now display updated data.";
+                importError = "";
+            }
+            else
+            {
+                importError = "Failed to refresh stadium layout cache";
+                importMessage = "";
+                importSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            importError = $"Error refreshing cache: {ex.Message}";
+            importMessage = "";
+            importSuccess = false;
+        }
+        finally
+        {
+            isRefreshingCache = false;
             StateHasChanged();
         }
     }

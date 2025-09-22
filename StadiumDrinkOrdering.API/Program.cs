@@ -107,7 +107,7 @@ if (string.IsNullOrEmpty(connectionString))
 
     if (!string.IsNullOrEmpty(dbHost) && !string.IsNullOrEmpty(dbUsername) && !string.IsNullOrEmpty(dbPassword))
     {
-        connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUsername};Password={dbPassword};Ssl Mode=Require;Trust Server Certificate=true;Connection Timeout=120;Command Timeout=600;Keepalive=60;Connection Idle Lifetime=600;Maximum Pool Size=20;Minimum Pool Size=2;Pooling=true;No Reset On Close=true;Include Error Detail=true;Read Buffer Size=8192;Write Buffer Size=8192;Socket Receive Buffer Size=8192;Socket Send Buffer Size=8192";
+        connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUsername};Password={dbPassword};Ssl Mode=Require;Connection Timeout=120;Command Timeout=600;Keepalive=60;Connection Idle Lifetime=600;Maximum Pool Size=20;Minimum Pool Size=2;Pooling=true;No Reset On Close=true;Include Error Detail=true;Read Buffer Size=8192;Write Buffer Size=8192;Socket Receive Buffer Size=8192;Socket Send Buffer Size=8192";
     }
     else
     {
@@ -167,43 +167,72 @@ if (File.Exists("appsettings.json"))
 Console.WriteLine("=== END VISUAL STUDIO DEBUGGING ===\n");
 
 // Add comprehensive health checks
-builder.Services.AddHealthChecks()
-    .AddCheck<DatabaseHealthCheck>("database", 
-        failureStatus: HealthStatus.Unhealthy, 
-        tags: new[] { "database", "postgresql", "supabase" })
-    .AddNpgSql(connectionString!, 
+Console.WriteLine($"Connection String: {connectionString}");
+
+// Database Configuration with SQLite Fallback Support
+var useSqliteFallback = builder.Configuration.GetValue<bool>("UseSqliteFallback", false);
+
+// Configure Health Checks based on database type
+var healthChecksBuilder = builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("database",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "database" });
+
+if (!useSqliteFallback && !string.IsNullOrEmpty(connectionString))
+{
+    // Add PostgreSQL health check only when not using SQLite fallback
+    healthChecksBuilder.AddNpgSql(connectionString,
         name: "postgresql-connection",
         failureStatus: HealthStatus.Unhealthy,
         tags: new[] { "database", "postgresql" });
-Console.WriteLine($"Connection String: {connectionString}");
+    Console.WriteLine("Added PostgreSQL health check");
+}
+else
+{
+    Console.WriteLine("Skipped PostgreSQL health check (using SQLite fallback)");
+}
 
-// Database Configuration with Enhanced PostgreSQL Support
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    if (string.IsNullOrEmpty(connectionString))
+    if (useSqliteFallback)
     {
-        throw new InvalidOperationException("Database connection string is not configured. Please check your appsettings.json or environment variables.");
+        // Use SQLite for development/testing
+        var sqliteConnectionString = "Data Source=stadium_app.db;Cache=Shared";
+        Console.WriteLine("Configuring SQLite database connection (fallback mode)...");
+        Console.WriteLine($"Using SQLite database: {sqliteConnectionString}");
+
+        options.UseSqlite(sqliteConnectionString, sqliteOptions =>
+        {
+            sqliteOptions.CommandTimeout(300);
+        });
     }
-    
-    // Use PostgreSQL/Supabase - NO FALLBACK TO SQLITE
-    Console.WriteLine("Configuring PostgreSQL/Supabase connection...");
-    Console.WriteLine($"Using connection string: {connectionString.Replace("Password=d!hZ5A9@t+e!Nn2", "Password=***")}");
-    
-    options.UseNpgsql(connectionString, npgsqlOptions =>
+    else
     {
-        // TEMPORARILY DISABLED: Enhanced retry logic with exponential backoff
-        // npgsqlOptions.EnableRetryOnFailure(
-        //     maxRetryCount: 3,
-        //     maxRetryDelay: TimeSpan.FromSeconds(15),
-        //     errorCodesToAdd: new[] { "57P01", "53300", "53400" } // Common Supabase connection errors
-        // );
-        
-        // Longer command timeout for complex operations
-        npgsqlOptions.CommandTimeout(300);
-        
-        // PostgreSQL specific optimizations
-        npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-    });
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("Database connection string is not configured. Please check your appsettings.json or environment variables.");
+        }
+
+        // Use PostgreSQL/Supabase
+        Console.WriteLine("Configuring PostgreSQL/Supabase connection...");
+        Console.WriteLine($"Using connection string: {connectionString.Replace("Password=d!hZ5A9@t+e!Nn2", "Password=***")}");
+
+        options.UseNpgsql(connectionString, npgsqlOptions =>
+        {
+            // TEMPORARILY DISABLED: Enhanced retry logic with exponential backoff
+            // npgsqlOptions.EnableRetryOnFailure(
+            //     maxRetryCount: 3,
+            //     maxRetryDelay: TimeSpan.FromSeconds(15),
+            //     errorCodesToAdd: new[] { "57P01", "53300", "53400" } // Common Supabase connection errors
+            // );
+
+            // Longer command timeout for complex operations
+            npgsqlOptions.CommandTimeout(300);
+
+            // PostgreSQL specific optimizations
+            npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        });
+    }
     
     // Performance optimizations
     options.EnableDetailedErrors(builder.Environment.IsDevelopment());
@@ -471,13 +500,14 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var environment = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
     
-    await InitializeDatabaseAsync(context, logger);
+    await InitializeDatabaseAsync(context, logger, environment);
 }
 
 
 // Database initialization method - FIXED VERSION
-static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger logger)
+static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger logger, IWebHostEnvironment environment)
 {
     const int maxRetries = 5;
     const int baseDelayMs = 1000;
@@ -569,71 +599,121 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                 var userCount = await context.Users.CountAsync(cancellationToken);
                 logger.LogInformation("Database verification successful - found {UserCount} users", userCount);
                 
-                // Check if admin user exists or needs to be created/updated
-                var adminUser = await context.Users.FirstOrDefaultAsync(u => u.Email == "admin@stadium.com", cancellationToken);
+                // Check if admin user exists or needs to be created/updated. Only in Development.
+                if (environment.IsDevelopment())
+                {
+                    var adminUser = await context.Users.FirstOrDefaultAsync(u => u.Email == "admin@stadium.com", cancellationToken);
                 
-                if (adminUser == null)
-                {
-                    logger.LogInformation("No admin user found, creating default admin user...");
-                    adminUser = new StadiumDrinkOrdering.Shared.Models.User
+                    if (adminUser == null)
                     {
-                        Username = "admin",
-                        Email = "admin@stadium.com",
-                        PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
-                        Role = StadiumDrinkOrdering.Shared.Models.UserRole.Admin,
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    context.Users.Add(adminUser);
-                    await context.SaveChangesAsync(cancellationToken);
-                    logger.LogInformation("Default admin user created successfully: admin@stadium.com / admin123");
-                }
-                else
-                {
-                    // Admin user exists - only update if necessary (don't regenerate password hash every time)
-                    logger.LogInformation("Admin user found, checking if updates are needed...");
-                    
-                    var needsUpdate = false;
-                    
-                    // Only update username if it's different
-                    if (adminUser.Username != "admin")
-                    {
-                        logger.LogInformation("Updating admin username from '{OldUsername}' to 'admin'", adminUser.Username);
-                        adminUser.Username = "admin";
-                        context.Entry(adminUser).Property(u => u.Username).IsModified = true;
-                        needsUpdate = true;
-                    }
-                    
-                    // Only update role if it's different
-                    if (adminUser.Role != StadiumDrinkOrdering.Shared.Models.UserRole.Admin)
-                    {
-                        logger.LogInformation("Updating admin role from '{OldRole}' to 'Admin'", adminUser.Role);
-                        adminUser.Role = StadiumDrinkOrdering.Shared.Models.UserRole.Admin;
-                        needsUpdate = true;
-                    }
-                    
-                    // Only update password if it's empty or invalid format
-                    if (string.IsNullOrEmpty(adminUser.PasswordHash) || 
-                        (!adminUser.PasswordHash.StartsWith("$2a$") && 
-                         !adminUser.PasswordHash.StartsWith("$2b$") && 
-                         !adminUser.PasswordHash.StartsWith("$2y$")))
-                    {
-                        logger.LogInformation("Admin password hash is invalid or empty, regenerating...");
-                        adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
-                        needsUpdate = true;
-                    }
-                    else
-                    {
-                        logger.LogInformation("Admin password hash is valid, preserving existing hash");
-                    }
-                    
-                    if (needsUpdate)
-                    {
+                        logger.LogInformation("No admin user found, creating default admin user...");
+                        adminUser = new StadiumDrinkOrdering.Shared.Models.User
+                        {
+                            Username = "admin",
+                            Email = "admin@stadium.com",
+                            PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                            Role = StadiumDrinkOrdering.Shared.Models.UserRole.Admin,
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        context.Users.Add(adminUser);
                         await context.SaveChangesAsync(cancellationToken);
-                        logger.LogInformation("Admin user updated successfully: admin@stadium.com / admin123");
+                        logger.LogInformation("Default admin user created successfully: admin@stadium.com / admin123");
                     }
                     else
                     {
-                        logger.LogInformation("Admin user is already correctly configured, no updates needed");
+                        // Admin user exists - only update if necessary (don't regenerate password hash every time)
+                        logger.LogInformation("Admin user found, checking if updates are needed...");
+                        
+                        var needsUpdate = false;
+                        
+                        // Only update username if it's different
+                        if (adminUser.Username != "admin")
+                        {
+                            logger.LogInformation("Updating admin username from '{OldUsername}' to 'admin'", adminUser.Username);
+                            adminUser.Username = "admin";
+                            context.Entry(adminUser).Property(u => u.Username).IsModified = true;
+                            needsUpdate = true;
+                        }
+                        
+                        // Only update role if it's different
+                        if (adminUser.Role != StadiumDrinkOrdering.Shared.Models.UserRole.Admin)
+                        {
+                            logger.LogInformation("Updating admin role from '{OldRole}' to 'Admin'", adminUser.Role);
+                            adminUser.Role = StadiumDrinkOrdering.Shared.Models.UserRole.Admin;
+                            needsUpdate = true;
+                        }
+                        
+                        // Only update password if it's empty or invalid format
+                        if (string.IsNullOrEmpty(adminUser.PasswordHash) || 
+                            (!adminUser.PasswordHash.StartsWith("$2a$") && 
+                             !adminUser.PasswordHash.StartsWith("$2b$") && 
+                             !adminUser.PasswordHash.StartsWith("$2y$")))
+                        {
+                            logger.LogInformation("Admin password hash is invalid or empty, regenerating...");
+                            adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
+                            needsUpdate = true;
+                        }
+                        else
+                        {
+                            logger.LogInformation("Admin password hash is valid, preserving existing hash");
+                        }
+                        
+                        if (needsUpdate)
+                        {
+                            await context.SaveChangesAsync(cancellationToken);
+                            logger.LogInformation("Admin user updated successfully: admin@stadium.com / admin123");
+                        }
+                        else
+                        {
+                            logger.LogInformation("Admin user is already correctly configured, no updates needed");
+                        }
+                    }
+
+                    // Check if stadium structure exists, create basic structure if not
+                    var tribuneCount = await context.Tribunes.CountAsync(cancellationToken);
+                    if (tribuneCount == 0)
+                    {
+                        logger.LogInformation("No stadium structure found, creating basic structure...");
+
+                        var tribuneN = new StadiumDrinkOrdering.Shared.Models.Tribune
+                        {
+                            Code = "N",
+                            Name = "North Tribune",
+                            Description = "North tribune",
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        context.Tribunes.Add(tribuneN);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        var ring1 = new StadiumDrinkOrdering.Shared.Models.Ring
+                        {
+                            TribuneId = tribuneN.Id,
+                            Number = 1,
+                            Name = "Lower Ring",
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        context.Rings.Add(ring1);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        var sectorNA = new StadiumDrinkOrdering.Shared.Models.Sector
+                        {
+                            RingId = ring1.Id,
+                            Code = "NA",
+                            Name = "North A",
+                            TotalRows = 25,
+                            SeatsPerRow = 20,
+                            StartRow = 1,
+                            StartSeat = 1,
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        context.Sectors.Add(sectorNA);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        logger.LogInformation("Basic stadium structure created successfully (North Tribune with 500 seats)");
+                    }
+                    else
+                    {
+                        logger.LogInformation("Stadium structure found - {TribuneCount} tribunes exist", tribuneCount);
                     }
                 }
             }

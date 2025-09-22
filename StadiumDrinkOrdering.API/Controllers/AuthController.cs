@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Services;
+using System.Text;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
@@ -25,10 +26,18 @@ public class AuthController : ControllerBase
         _loggingClient = loggingClient;
         _logger = logger;
     }
-
     [HttpPost("login")]
     public async Task<ActionResult<EnhancedLoginResponseDto>> Login([FromBody] LoginDto loginDto)
     {
+#if DEBUG
+        Request.EnableBuffering();
+        using (var reader = new StreamReader(Request.Body, encoding: Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
+        {
+            var requestBody = await reader.ReadToEndAsync();
+            Console.WriteLine($"Request body: {requestBody}");
+            Request.Body.Position = 0;
+        }
+#endif
         var ipAddress = GetClientIPAddress();
         var userAgent = Request.Headers.UserAgent.ToString();
         var deviceInfo = GetDeviceInfo();
@@ -79,8 +88,16 @@ public class AuthController : ControllerBase
                 await Task.Delay(delay);
             }
 
-            // Attempt authentication with refresh token
-            var result = await _authService.LoginWithRefreshTokenAsync(loginDto, deviceInfo, ipAddress, userAgent);
+            // Attempt authentication with basic login (temporary fix for hanging issue)
+            var basicResult = await _authService.LoginAsync(loginDto);
+            var result = basicResult == null ? null : new EnhancedLoginResponseDto
+            {
+                Token = basicResult.Token,
+                RefreshToken = "temp_refresh_token", // Temporary placeholder
+                RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7),
+                User = basicResult.User,
+                ExpiresAt = basicResult.ExpiresAt
+            };
 
             if (result == null)
             {

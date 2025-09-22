@@ -55,22 +55,25 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 builder.Services.AddScoped<ICartService, CartService>();
 
 // ✅ Add standardized shared authentication services with refresh token support
-builder.Services.AddSharedAuthentication<CustomerAuthStateService, CustomerTokenStorageService, CustomerSecureApiService>(
-    "Customer",
-    apiBaseUrl);
+builder.Services.AddScoped<CustomerAuthStateService>();
+builder.Services.AddScoped<ICustomerAuthStateService>(provider => provider.GetRequiredService<CustomerAuthStateService>());
+builder.Services.AddScoped<ITokenStorageService, CustomerTokenStorageService>();
 
-// Note: Enhanced refresh token services will be implemented in future iterations
-
-// Register CustomerSecureApiService with its dependencies
+// Register CustomerSecureApiService with proper dependencies
 builder.Services.AddScoped<CustomerSecureApiService>(provider =>
 {
     var apiService = provider.GetRequiredService<IApiService>();
     var tokenStorage = provider.GetRequiredService<ITokenStorageService>();
     var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
     var httpClient = httpClientFactory.CreateClient("CustomerSecureApi");
-
     return new CustomerSecureApiService(apiService, tokenStorage, httpClient, apiBaseUrl);
 });
+
+builder.Services.AddSharedAuthentication(apiBaseUrl, "Customer");
+
+// Note: Enhanced refresh token services will be implemented in future iterations
+
+// CustomerSecureApiService registration moved to shared authentication services
 
 // Configure HTTP client for CustomerSecureApiService
 builder.Services.AddHttpClient("CustomerSecureApi", client =>

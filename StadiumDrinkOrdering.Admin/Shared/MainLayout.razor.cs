@@ -13,11 +13,10 @@ public partial class MainLayout : LayoutComponentBase, IAsyncDisposable
     private string currentTime = DateTime.Now.ToString("HH:mm:ss dd/MM/yy");
     private IJSObjectReference? jsModule;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await AuthStateService.InitializeAsync();
-
-        // Subscribe to authentication state changes
+        // Only subscribe to authentication state changes
+        // Authentication initialization is handled in App.razor.cs
         AuthStateService.OnAuthenticationStateChanged += OnAuthStateChanged;
     }
 

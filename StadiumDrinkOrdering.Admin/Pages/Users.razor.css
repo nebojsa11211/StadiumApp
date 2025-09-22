@@ -1,0 +1,16 @@
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.fs-1 {
+    font-size: 2.5rem !important;
+}
+
+.opacity-75 {
+    opacity: 0.75;
+}

@@ -15,7 +15,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Events
         {
             try
             {
-                var response = await HttpClient.GetAsync("api/events");
+                var response = await HttpClient.GetAsync("events");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -33,7 +33,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Events
         {
             try
             {
-                var response = await HttpClient.GetAsync($"api/events/{eventId}/seat-status");
+                var response = await HttpClient.GetAsync($"events/{eventId}/seat-status");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -54,7 +54,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Events
             {
                 var simulationData = new { EventId = eventId, TicketCount = ticketCount };
                 var content = CreateJsonContent(simulationData);
-                var response = await HttpClient.PostAsync($"api/events/{eventId}/simulate-sales", content);
+                var response = await HttpClient.PostAsync($"events/{eventId}/simulate-sales", content);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

@@ -122,7 +122,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = AuthorizationPolicies.RequireStaffRole)]
+    [Authorize(Policy = AuthorizationPolicies.CanReadOrders)]
     public async Task<ActionResult<List<OrderDto>>> GetOrders([FromQuery] OrderStatus? status = null)
     {
         var orders = await _orderService.GetOrdersAsync(status);

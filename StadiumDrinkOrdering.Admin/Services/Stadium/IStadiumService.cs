@@ -10,5 +10,6 @@ namespace StadiumDrinkOrdering.Admin.Services.Stadium
         Task<bool> ImportStadiumStructureAsync(string jsonContent);
         Task<string?> ExportStadiumStructureAsync();
         Task<bool> ClearStadiumStructureAsync();
+        Task<bool> RefreshStadiumCacheAsync();
     }
 }

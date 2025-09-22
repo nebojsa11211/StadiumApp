@@ -1,0 +1,977 @@
+/* ========================================
+   Stadium Info Panel - Responsive Design
+   Mobile-First Analytics Dashboard
+   ======================================== */
+
+/* Base Responsive Design Tokens */
+.stadium-info-panel {
+    /* Mobile-first spacing */
+    --panel-mobile-xs: 0.25rem;
+    --panel-mobile-sm: 0.5rem;
+    --panel-mobile-md: 0.75rem;
+    --panel-mobile-lg: 1rem;
+
+    /* Tablet spacing */
+    --panel-tablet-xs: 0.5rem;
+    --panel-tablet-sm: 0.75rem;
+    --panel-tablet-md: 1rem;
+    --panel-tablet-lg: 1.5rem;
+
+    /* Desktop spacing */
+    --panel-desktop-xs: 0.75rem;
+    --panel-desktop-sm: 1rem;
+    --panel-desktop-md: 1.5rem;
+    --panel-desktop-lg: 2rem;
+
+    /* Color system */
+    --panel-primary: #0f172a;
+    --panel-secondary: #1e293b;
+    --panel-accent: #3b82f6;
+    --panel-success: #16a34a;
+    --panel-warning: #f59e0b;
+    --panel-surface: #ffffff;
+    --panel-surface-alt: #f8fafc;
+    --panel-border: #e2e8f0;
+    --panel-text: #1e293b;
+    --panel-text-muted: #64748b;
+
+    /* Shadows */
+    --panel-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --panel-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --panel-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --panel-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+    /* Border radius */
+    --panel-radius: 8px;
+    --panel-radius-lg: 12px;
+    --panel-radius-xl: 16px;
+
+    /* Transitions */
+    --panel-transition: 200ms ease;
+    --panel-transition-slow: 300ms ease;
+}
+
+/* ========================================
+   Mobile Base Layout (320px+)
+   ======================================== */
+
+.stadium-info-panel {
+    background: linear-gradient(135deg, var(--panel-surface) 0%, var(--panel-surface-alt) 100%);
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+    border: 1px solid var(--panel-border);
+    overflow: hidden;
+    transition: all var(--panel-transition);
+    width: 100%;
+    position: relative;
+}
+
+.stadium-info-panel.expanded {
+    transform: translateX(0);
+}
+
+.stadium-info-panel.collapsed {
+    transform: translateX(0);
+}
+
+/* Panel Header - Mobile */
+.info-panel-header {
+    padding: var(--panel-mobile-md);
+    background: linear-gradient(135deg, var(--panel-primary) 0%, var(--panel-secondary) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--panel-mobile-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.info-panel-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--panel-mobile-sm);
+    flex: 1;
+    min-width: 0;
+}
+
+.header-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.header-icon i {
+    position: relative;
+    z-index: 2;
+}
+
+.icon-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    animation: glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow-pulse {
+    0% { opacity: 0.3; transform: scale(0.95); }
+    100% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.header-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.panel-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.panel-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 2px 0 0 0;
+    line-height: 1.3;
+    opacity: 0.9;
+}
+
+/* Toggle Button - Mobile */
+.toggle-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: var(--panel-mobile-sm) var(--panel-mobile-md);
+    border-radius: var(--panel-radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--panel-transition);
+    min-height: 36px;
+    flex-shrink: 0;
+    backdrop-filter: blur(10px);
+}
+
+.toggle-btn:hover,
+.toggle-btn:focus {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-btn i {
+    font-size: 12px;
+    transition: transform var(--panel-transition);
+}
+
+.toggle-text {
+    display: none;
+}
+
+/* Panel Content - Mobile */
+.info-panel-content {
+    padding: var(--panel-mobile-md);
+    background: var(--panel-surface);
+}
+
+/* ========================================
+   Overview Cards - Mobile Layout
+   ======================================== */
+
+.overview-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--panel-mobile-sm);
+    margin-bottom: var(--panel-mobile-md);
+}
+
+.overview-card {
+    background: linear-gradient(135deg, var(--panel-surface) 0%, var(--panel-surface-alt) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    padding: var(--panel-mobile-md);
+    display: flex;
+    align-items: center;
+    gap: var(--panel-mobile-sm);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--panel-transition);
+    box-shadow: var(--panel-shadow-sm);
+}
+
+.overview-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--panel-accent);
+    border-radius: 0 var(--panel-radius) var(--panel-radius) 0;
+}
+
+.overview-card.primary::after {
+    background: linear-gradient(to bottom, var(--panel-accent) 0%, #3b82f6 100%);
+}
+
+.overview-card.secondary::after {
+    background: linear-gradient(to bottom, var(--panel-success) 0%, #16a34a 100%);
+}
+
+.card-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--panel-accent) 0%, #3b82f6 100%);
+    border-radius: var(--panel-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+    box-shadow: var(--panel-shadow);
+}
+
+.overview-card.secondary .card-icon {
+    background: linear-gradient(135deg, var(--panel-success) 0%, #16a34a 100%);
+}
+
+.card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--panel-text);
+    line-height: 1.2;
+    margin: 0;
+}
+
+.card-label {
+    font-size: 0.75rem;
+    color: var(--panel-text-muted);
+    margin: 2px 0 0 0;
+    line-height: 1.3;
+    font-weight: 500;
+}
+
+/* ========================================
+   Statistics Section - Mobile
+   ======================================== */
+
+.detailed-stats {
+    margin-bottom: var(--panel-mobile-md);
+}
+
+.stat-group {
+    background: var(--panel-surface);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    padding: var(--panel-mobile-md);
+    box-shadow: var(--panel-shadow-sm);
+}
+
+.stat-group-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--panel-text);
+    margin: 0 0 var(--panel-mobile-sm) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--panel-mobile-sm);
+    line-height: 1.3;
+}
+
+.stat-group-title i {
+    color: var(--panel-accent);
+    font-size: 14px;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--panel-mobile-sm);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--panel-mobile-sm);
+    padding: var(--panel-mobile-sm);
+    background: var(--panel-surface-alt);
+    border-radius: var(--panel-radius);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.stat-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--panel-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.stat-icon.tribune {
+    background: linear-gradient(135deg, var(--panel-accent) 0%, #3b82f6 100%);
+}
+
+.stat-icon.ring {
+    background: linear-gradient(135deg, var(--panel-warning) 0%, #f59e0b 100%);
+}
+
+.stat-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--panel-text);
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--panel-text-muted);
+    margin: 2px 0 0 0;
+    font-weight: 500;
+}
+
+/* ========================================
+   Occupancy Analytics - Mobile
+   ======================================== */
+
+.occupancy-analytics {
+    background: var(--panel-surface);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    padding: var(--panel-mobile-md);
+    box-shadow: var(--panel-shadow-sm);
+}
+
+.occupancy-overview {
+    display: flex;
+    justify-content: center;
+    margin: var(--panel-mobile-md) 0;
+}
+
+.occupancy-circle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.occupancy-svg {
+    width: 100px;
+    height: 100px;
+    transform: rotate(-90deg);
+}
+
+.background-circle {
+    opacity: 0.2;
+}
+
+.progress-circle {
+    transition: stroke-dasharray var(--panel-transition-slow);
+}
+
+.occupancy-center {
+    position: absolute;
+    text-align: center;
+}
+
+.occupancy-percentage {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--panel-text);
+    line-height: 1;
+}
+
+.occupancy-label {
+    font-size: 0.75rem;
+    color: var(--panel-text-muted);
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/* Availability Breakdown */
+.availability-breakdown {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--panel-mobile-sm);
+    margin: var(--panel-mobile-md) 0;
+}
+
+.availability-item {
+    display: flex;
+    align-items: center;
+    gap: var(--panel-mobile-sm);
+    padding: var(--panel-mobile-sm);
+    background: var(--panel-surface-alt);
+    border-radius: var(--panel-radius);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.availability-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.availability-item.available-modern .availability-icon {
+    background: linear-gradient(135deg, var(--panel-success) 0%, #16a34a 100%);
+}
+
+.availability-item.occupied-modern .availability-icon {
+    background: linear-gradient(135deg, var(--panel-warning) 0%, #f59e0b 100%);
+}
+
+.availability-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.availability-number {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--panel-text);
+    line-height: 1.2;
+}
+
+.availability-text {
+    font-size: 0.75rem;
+    color: var(--panel-text-muted);
+    margin: 2px 0 0 0;
+    font-weight: 500;
+}
+
+.availability-trend {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.availability-trend.up {
+    background: var(--panel-success);
+}
+
+.availability-trend.neutral {
+    background: var(--panel-text-muted);
+}
+
+/* Capacity Status Bar */
+.capacity-status {
+    margin-top: var(--panel-mobile-md);
+}
+
+.capacity-bar-modern {
+    width: 100%;
+    height: 8px;
+    background: var(--panel-border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.capacity-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--panel-success) 0%, var(--panel-warning) 50%, #ef4444 100%);
+    border-radius: 4px;
+    transition: width var(--panel-transition-slow);
+    position: relative;
+}
+
+.capacity-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--panel-mobile-sm);
+    font-size: 0.75rem;
+    color: var(--panel-text-muted);
+    font-weight: 500;
+}
+
+.capacity-current {
+    color: var(--panel-text);
+    font-weight: 700;
+}
+
+/* ========================================
+   Loading and Empty States - Mobile
+   ======================================== */
+
+.loading-state-modern,
+.no-data-state-modern {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--panel-mobile-lg);
+    text-align: center;
+    min-height: 200px;
+}
+
+.loading-animation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--panel-mobile-md);
+    margin-bottom: var(--panel-mobile-md);
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--panel-border);
+    border-top: 3px solid var(--panel-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.loading-dots span {
+    width: 6px;
+    height: 6px;
+    background: var(--panel-accent);
+    border-radius: 50%;
+    animation: dot-pulse 1.4s ease-in-out infinite both;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes dot-pulse {
+    0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+.loading-text h6,
+.no-data-content h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--panel-text);
+    margin: 0 0 var(--panel-mobile-sm) 0;
+}
+
+.loading-text p,
+.no-data-content p {
+    font-size: 0.875rem;
+    color: var(--panel-text-muted);
+    margin: 0;
+}
+
+.no-data-icon {
+    font-size: 2rem;
+    color: var(--panel-text-muted);
+    margin-bottom: var(--panel-mobile-md);
+}
+
+.no-data-action {
+    margin-top: var(--panel-mobile-md);
+}
+
+.no-data-action .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--panel-mobile-sm);
+    padding: var(--panel-mobile-sm) var(--panel-mobile-md);
+    background: var(--panel-accent);
+    color: white;
+    border: none;
+    border-radius: var(--panel-radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--panel-transition);
+}
+
+.no-data-action .btn:hover {
+    background: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: var(--panel-shadow);
+}
+
+/* ========================================
+   Tablet Portrait (768px+)
+   ======================================== */
+
+@media (min-width: 768px) {
+    .info-panel-header {
+        padding: var(--panel-tablet-md);
+    }
+
+    .header-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .panel-title {
+        font-size: 1.125rem;
+    }
+
+    .panel-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .toggle-btn {
+        padding: var(--panel-tablet-sm) var(--panel-tablet-md);
+        font-size: 0.875rem;
+        min-height: 40px;
+    }
+
+    .toggle-text {
+        display: inline;
+    }
+
+    .info-panel-content {
+        padding: var(--panel-tablet-md);
+    }
+
+    .overview-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--panel-tablet-sm);
+        margin-bottom: var(--panel-tablet-md);
+    }
+
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .card-value {
+        font-size: 1.5rem;
+    }
+
+    .card-label {
+        font-size: 0.875rem;
+    }
+
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--panel-tablet-sm);
+    }
+
+    .occupancy-svg {
+        width: 120px;
+        height: 120px;
+    }
+
+    .occupancy-percentage {
+        font-size: 1.5rem;
+    }
+
+    .availability-breakdown {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--panel-tablet-sm);
+    }
+}
+
+/* ========================================
+   Tablet Landscape (834px+)
+   ======================================== */
+
+@media (min-width: 834px) {
+    .info-panel-header {
+        padding: var(--panel-tablet-lg);
+    }
+
+    .panel-title {
+        font-size: 1.25rem;
+    }
+
+    .info-panel-content {
+        padding: var(--panel-tablet-lg);
+    }
+
+    .overview-cards {
+        margin-bottom: var(--panel-tablet-lg);
+    }
+
+    .detailed-stats {
+        margin-bottom: var(--panel-tablet-lg);
+    }
+}
+
+/* ========================================
+   Desktop Small (1024px+)
+   ======================================== */
+
+@media (min-width: 1024px) {
+    .stadium-info-panel {
+        height: fit-content;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+    }
+
+    .info-panel-header {
+        padding: var(--panel-desktop-md);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .header-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+
+    .panel-title {
+        font-size: 1.375rem;
+    }
+
+    .panel-subtitle {
+        font-size: 1rem;
+    }
+
+    .toggle-btn {
+        padding: var(--panel-desktop-sm) var(--panel-desktop-md);
+        font-size: 1rem;
+        min-height: 44px;
+    }
+
+    .toggle-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--panel-shadow-lg);
+    }
+
+    .info-panel-content {
+        padding: var(--panel-desktop-md);
+    }
+
+    .overview-cards {
+        gap: var(--panel-desktop-sm);
+        margin-bottom: var(--panel-desktop-md);
+    }
+
+    .overview-card {
+        padding: var(--panel-desktop-md);
+        cursor: pointer;
+    }
+
+    .overview-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--panel-shadow-lg);
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    .card-value {
+        font-size: 1.75rem;
+    }
+
+    .stat-item {
+        padding: var(--panel-desktop-sm);
+        cursor: pointer;
+        transition: all var(--panel-transition);
+    }
+
+    .stat-item:hover {
+        background: var(--panel-surface);
+        box-shadow: var(--panel-shadow);
+    }
+
+    .stat-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .detailed-stats {
+        margin-bottom: var(--panel-desktop-md);
+    }
+}
+
+/* ========================================
+   Desktop Medium+ (1280px+)
+   ======================================== */
+
+@media (min-width: 1280px) {
+    .info-panel-header {
+        padding: var(--panel-desktop-lg);
+    }
+
+    .info-panel-content {
+        padding: var(--panel-desktop-lg);
+    }
+
+    .overview-cards {
+        gap: var(--panel-desktop-md);
+        margin-bottom: var(--panel-desktop-lg);
+    }
+
+    .overview-card {
+        padding: var(--panel-desktop-lg);
+    }
+
+    .card-value {
+        font-size: 2rem;
+    }
+
+    .stat-grid {
+        gap: var(--panel-desktop-sm);
+    }
+
+    .detailed-stats {
+        margin-bottom: var(--panel-desktop-lg);
+    }
+}
+
+/* ========================================
+   Accessibility & Performance
+   ======================================== */
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .stadium-info-panel {
+        border-width: 2px;
+        border-color: #000000;
+    }
+
+    .info-panel-header {
+        background: #000000;
+        color: #ffffff;
+    }
+
+    .overview-card,
+    .stat-item,
+    .availability-item {
+        border-width: 2px;
+        border-color: #000000;
+    }
+
+    .toggle-btn {
+        border-width: 2px;
+        border-color: #ffffff;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .icon-glow {
+        animation: none !important;
+    }
+
+    .loading-spinner,
+    .loading-dots span {
+        animation: none !important;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .stadium-info-panel {
+        --panel-surface: #1a1a1a;
+        --panel-surface-alt: #2a2a2a;
+        --panel-border: #404040;
+        --panel-text: #ffffff;
+        --panel-text-muted: #b0b0b0;
+
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    }
+
+    .info-panel-content,
+    .overview-card,
+    .stat-group,
+    .stat-item,
+    .availability-item,
+    .occupancy-analytics {
+        background: var(--panel-surface);
+        color: var(--panel-text);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .stadium-info-panel {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #000000 !important;
+        background: white !important;
+        color: black !important;
+    }
+
+    .info-panel-header {
+        background: white !important;
+        color: black !important;
+        border-bottom: 1px solid #000000 !important;
+    }
+
+    .toggle-btn {
+        display: none !important;
+    }
+
+    .loading-animation,
+    .icon-glow {
+        display: none !important;
+    }
+}

@@ -1,16 +1,27 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 
-<div class="stadium-info-panel" id="stadium-info-panel">
-    <div class="info-panel-header">
-        <h4>📊 Stadium Information</h4>
-        <button class="btn btn-sm btn-outline-secondary toggle-btn" @onclick="ToggleCollapse" id="admin-stadium-info-toggle-btn">
+<div class="stadium-info-panel premium-panel animated-panel @(IsCollapsed ? "collapsed" : "expanded")" id="stadium-info-panel">
+    <div class="info-panel-header premium-header animated-header">
+        <div class="header-content premium-content animated-content">
+            <div class="header-icon premium-icon animated-icon">
+                <i class="bi bi-building"></i>
+                <div class="icon-glow animated-glow"></div>
+            </div>
+            <div class="header-text premium-text animated-text">
+                <h4 class="panel-title">Stadium Intelligence Hub</h4>
+                <p class="panel-subtitle">Real-time analytics & operational insights</p>
+            </div>
+        </div>
+        <button class="btn btn-sm toggle-btn premium-toggle magnetic-btn" @onclick="ToggleCollapse" id="admin-stadium-info-toggle-btn">
             @if (IsCollapsed)
             {
                 <i class="bi bi-chevron-right"></i>
+                <span class="toggle-text">Expand Analytics</span>
             }
             else
             {
                 <i class="bi bi-chevron-left"></i>
+                <span class="toggle-text">Minimize Panel</span>
             }
         </button>
     </div>
@@ -20,239 +31,172 @@
         <div class="info-panel-content">
             @if (Summary != null)
             {
-                <div class="stadium-stats">
-                    <div class="stat-item">
-                        <div class="stat-icon">🏟️</div>
-                        <div class="stat-content">
-                            <div class="stat-label">Total Capacity</div>
-                            <div class="stat-value">@Summary.TotalSeats.ToString("N0")</div>
+                <!-- Stadium Overview Cards -->
+                <div class="overview-cards">
+                    <div class="overview-card primary">
+                        <div class="card-icon">
+                            <i class="bi bi-people-fill"></i>
                         </div>
+                        <div class="card-content">
+                            <div class="card-value">@Summary.TotalSeats.ToString("N0")</div>
+                            <div class="card-label">Total Capacity</div>
+                        </div>
+                        <div class="card-accent"></div>
                     </div>
 
-                    <div class="stat-item">
-                        <div class="stat-icon">🎯</div>
-                        <div class="stat-content">
-                            <div class="stat-label">Tribunes</div>
-                            <div class="stat-value">@Summary.TotalTribunes</div>
+                    <div class="overview-card secondary">
+                        <div class="card-icon">
+                            <i class="bi bi-grid-3x3-gap"></i>
                         </div>
-                    </div>
-
-                    <div class="stat-item">
-                        <div class="stat-icon">🔄</div>
-                        <div class="stat-content">
-                            <div class="stat-label">Rings</div>
-                            <div class="stat-value">@Summary.TotalRings</div>
+                        <div class="card-content">
+                            <div class="card-value">@Summary.TotalSectors</div>
+                            <div class="card-label">Active Sectors</div>
                         </div>
+                        <div class="card-accent"></div>
                     </div>
+                </div>
 
-                    <div class="stat-item">
-                        <div class="stat-icon">📦</div>
-                        <div class="stat-content">
-                            <div class="stat-label">Sectors</div>
-                            <div class="stat-value">@Summary.TotalSectors</div>
-                        </div>
-                    </div>
-
-                    @if (Summary.TotalSeats > 0)
-                    {
-                        <div class="availability-section">
-                            <h6>Seat Availability</h6>
-                            <div class="availability-stats">
-                                <div class="availability-item available">
-                                    <span class="availability-indicator"></span>
-                                    <span>Available: @Summary.AvailableSeats.ToString("N0")</span>
+                <!-- Detailed Statistics -->
+                <div class="detailed-stats">
+                    <div class="stat-group">
+                        <h6 class="stat-group-title">
+                            <i class="bi bi-diagram-3"></i>
+                            Stadium Structure
+                        </h6>
+                        <div class="stat-grid">
+                            <div class="stat-item modern">
+                                <div class="stat-icon tribune">
+                                    <i class="bi bi-building"></i>
                                 </div>
-                                <div class="availability-item occupied">
-                                    <span class="availability-indicator"></span>
-                                    <span>Occupied: @Summary.OccupiedSeats.ToString("N0")</span>
+                                <div class="stat-content">
+                                    <div class="stat-value">@Summary.TotalTribunes</div>
+                                    <div class="stat-label">Tribunes</div>
                                 </div>
                             </div>
 
-                            @if (Summary.TotalSeats > 0)
-                            {
-                                <div class="occupancy-bar">
-                                    <div class="occupancy-fill" style="width: @(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F1"))%"></div>
+                            <div class="stat-item modern">
+                                <div class="stat-icon ring">
+                                    <i class="bi bi-bullseye"></i>
                                 </div>
-                                <div class="occupancy-percentage">
-                                    @(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F1"))% Occupied
+                                <div class="stat-content">
+                                    <div class="stat-value">@Summary.TotalRings</div>
+                                    <div class="stat-label">Rings</div>
                                 </div>
-                            }
+                            </div>
                         </div>
-                    }
+                    </div>
                 </div>
+
+                @if (Summary.TotalSeats > 0)
+                {
+                    <!-- Real-time Occupancy Analytics -->
+                    <div class="occupancy-analytics">
+                        <h6 class="stat-group-title">
+                            <i class="bi bi-graph-up"></i>
+                            Live Occupancy Analytics
+                        </h6>
+
+                        <!-- Occupancy Overview -->
+                        <div class="occupancy-overview">
+                            <div class="occupancy-circle">
+                                <svg width="120" height="120" viewBox="0 0 120 120" class="occupancy-svg">
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="#e2e8f0" stroke-width="8" class="background-circle"></circle>
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="url(#occupancyGradient)" stroke-width="8"
+                                            stroke-dasharray="@(314 * ((double)Summary.OccupiedSeats / Summary.TotalSeats)) @(314 * (1 - ((double)Summary.OccupiedSeats / Summary.TotalSeats)))"
+                                            stroke-dashoffset="78.5" transform="rotate(-90 60 60)" class="progress-circle"></circle>
+                                    <defs>
+                                        <linearGradient id="occupancyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
+                                            <stop offset="50%" style="stop-color:#fbbf24;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#f87171;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="occupancy-center">
+                                    <div class="occupancy-percentage">@(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F0"))%</div>
+                                    <div class="occupancy-label">Occupied</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Availability Breakdown -->
+                        <div class="availability-breakdown">
+                            <div class="availability-item available-modern">
+                                <div class="availability-icon">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                                <div class="availability-content">
+                                    <div class="availability-number">@Summary.AvailableSeats.ToString("N0")</div>
+                                    <div class="availability-text">Available Seats</div>
+                                </div>
+                                <div class="availability-trend up">
+                                    <i class="bi bi-arrow-up"></i>
+                                </div>
+                            </div>
+
+                            <div class="availability-item occupied-modern">
+                                <div class="availability-icon">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div class="availability-content">
+                                    <div class="availability-number">@Summary.OccupiedSeats.ToString("N0")</div>
+                                    <div class="availability-text">Occupied Seats</div>
+                                </div>
+                                <div class="availability-trend neutral">
+                                    <i class="bi bi-dash"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Capacity Status Bar -->
+                        <div class="capacity-status">
+                            <div class="capacity-bar-modern">
+                                <div class="capacity-fill" style="width: @(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F1"))%"></div>
+                            </div>
+                            <div class="capacity-labels">
+                                <span class="capacity-start">0</span>
+                                <span class="capacity-current">@Summary.OccupiedSeats.ToString("N0")</span>
+                                <span class="capacity-end">@Summary.TotalSeats.ToString("N0")</span>
+                            </div>
+                        </div>
+                    </div>
+                }
             }
             else if (IsLoading)
             {
-                <div class="loading-state">
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                <div class="loading-state-modern">
+                    <div class="loading-animation">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
                     </div>
-                    <span class="ms-2">Loading stadium information...</span>
+                    <div class="loading-text">
+                        <h6>Analyzing Stadium Data</h6>
+                        <p>Gathering real-time insights...</p>
+                    </div>
                 </div>
             }
             else
             {
-                <div class="no-data-state">
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i>
-                        <strong>No Stadium Data</strong><br>
-                        No stadium structure found. Please import stadium structure data first.
+                <div class="no-data-state-modern">
+                    <div class="no-data-icon">
+                        <i class="bi bi-database-x"></i>
+                    </div>
+                    <div class="no-data-content">
+                        <h6>No Stadium Data Available</h6>
+                        <p>Import stadium structure to begin analytics</p>
+                        <div class="no-data-action">
+                            <a href="/admin/stadium-structure" class="btn btn-primary btn-sm">
+                                <i class="bi bi-upload"></i>
+                                Import Structure
+                            </a>
+                        </div>
                     </div>
                 </div>
             }
         </div>
     }
 </div>
-
-<style>
-    .stadium-info-panel {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .info-panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid #dee2e6;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 8px 8px 0 0;
-    }
-
-    .info-panel-header h4 {
-        margin: 0;
-        color: #495057;
-        font-weight: 600;
-    }
-
-    .toggle-btn {
-        width: 32px;
-        height: 32px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .info-panel-content {
-        padding: 0.75rem 1rem;
-    }
-
-    .stadium-stats {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.5rem;
-        background: #f8f9fa;
-        border-radius: 6px;
-        border-left: 4px solid #007bff;
-    }
-
-    .stat-icon {
-        font-size: 1.25rem;
-        width: 35px;
-        text-align: center;
-        flex-shrink: 0;
-    }
-
-    .stat-content {
-        flex: 1;
-    }
-
-    .stat-label {
-        font-size: 0.875rem;
-        color: #6c757d;
-        font-weight: 500;
-    }
-
-    .stat-value {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #495057;
-    }
-
-    .availability-section {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #dee2e6;
-    }
-
-    .availability-section h6 {
-        margin-bottom: 0.75rem;
-        color: #495057;
-        font-weight: 600;
-    }
-
-    .availability-stats {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .availability-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.875rem;
-    }
-
-    .availability-indicator {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        display: inline-block;
-    }
-
-    .availability-item.available .availability-indicator {
-        background-color: #28a745;
-    }
-
-    .availability-item.occupied .availability-indicator {
-        background-color: #dc3545;
-    }
-
-    .occupancy-bar {
-        width: 100%;
-        height: 8px;
-        background-color: #e9ecef;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 0.5rem;
-    }
-
-    .occupancy-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #28a745 0%, #ffc107 50%, #dc3545 100%);
-        transition: width 0.5s ease;
-    }
-
-    .occupancy-percentage {
-        font-size: 0.875rem;
-        color: #6c757d;
-        text-align: center;
-        font-weight: 500;
-    }
-
-    .loading-state, .no-data-state {
-        text-align: center;
-        padding: 1rem;
-    }
-
-    .loading-state {
-        color: #6c757d;
-    }
-
-    /* Responsive design handled via Bootstrap responsive classes */
-</style>

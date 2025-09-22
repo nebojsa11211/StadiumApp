@@ -10,11 +10,16 @@ public class StadiumStructureService : IStadiumStructureService
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<StadiumStructureService> _logger;
+    private readonly IStadiumLayoutService _stadiumLayoutService;
 
-    public StadiumStructureService(ApplicationDbContext context, ILogger<StadiumStructureService> logger)
+    public StadiumStructureService(
+        ApplicationDbContext context,
+        ILogger<StadiumStructureService> logger,
+        IStadiumLayoutService stadiumLayoutService)
     {
         _context = context;
         _logger = logger;
+        _stadiumLayoutService = stadiumLayoutService;
     }
 
     public async Task<bool> ImportFromJsonAsync(IFormFile jsonFile)
@@ -121,7 +126,10 @@ public class StadiumStructureService : IStadiumStructureService
             
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Stadium structure imported successfully: {stadiumData.Tribunes.Count} tribunes, {allSeats.Count} seats created");
+            // 6. IMPORTANT: Clear the stadium layout cache so new data is displayed immediately
+            await _stadiumLayoutService.RefreshLayoutCacheAsync();
+
+            _logger.LogInformation($"Stadium structure imported successfully: {stadiumData.Tribunes.Count} tribunes, {allSeats.Count} seats created. Cache refreshed.");
             return true;
         }
         catch (Exception ex)
@@ -198,7 +206,10 @@ public class StadiumStructureService : IStadiumStructureService
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Existing stadium structure cleared");
+            // Clear the stadium layout cache after clearing structure
+            await _stadiumLayoutService.RefreshLayoutCacheAsync();
+
+            _logger.LogInformation("Existing stadium structure cleared and cache refreshed");
             return true;
         }
         catch (Exception ex)

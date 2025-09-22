@@ -1,0 +1,149 @@
+{
+  "name": "Modern Arena Stadium",
+  "description": "Four-tribune stadium with uniform seating distribution",
+  "capacity": 800,
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "description": "North stand with premium viewing",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Main Level",
+          "priceMultiplier": 1.0,
+          "sectors": [
+            {
+              "code": "N1",
+              "name": "North Sector 1",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            },
+            {
+              "code": "N2",
+              "name": "North Sector 2",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "South Tribune",
+      "description": "South stand with excellent field view",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Main Level",
+          "priceMultiplier": 1.0,
+          "sectors": [
+            {
+              "code": "S1",
+              "name": "South Sector 1",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            },
+            {
+              "code": "S2",
+              "name": "South Sector 2",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "name": "East Tribune",
+      "description": "East stand with VIP amenities",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Main Level",
+          "priceMultiplier": 1.2,
+          "sectors": [
+            {
+              "code": "E1",
+              "name": "East Sector 1",
+              "type": "vip",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "VIP"
+            },
+            {
+              "code": "E2",
+              "name": "East Sector 2",
+              "type": "vip",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "VIP"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "name": "West Tribune",
+      "description": "West stand with family seating",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Main Level",
+          "priceMultiplier": 0.9,
+          "sectors": [
+            {
+              "code": "W1",
+              "name": "West Sector 1",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "B"
+            },
+            {
+              "code": "W2",
+              "name": "West Sector 2",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "B"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "createdDate": "2025-01-15",
+    "lastModified": "2025-01-15",
+    "description": "Custom stadium with 4 tribunes, 2 sectors each, 100 seats per sector = 800 total seats"
+  }
+}

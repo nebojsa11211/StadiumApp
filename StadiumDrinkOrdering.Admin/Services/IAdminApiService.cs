@@ -56,6 +56,7 @@ namespace StadiumDrinkOrdering.Admin.Services
 
         string? Token { get; set; }
         Task<string?> LoginAsync(LoginDto loginDto);
+        Task<EnhancedLoginResponseDto?> LoginFullAsync(LoginDto loginDto);
         Task<bool> LogoutAsync();
         Task<UserDto?> GetCurrentUserAsync();
 
@@ -74,6 +75,7 @@ namespace StadiumDrinkOrdering.Admin.Services
         Task<bool> ImportStadiumStructureAsync(string jsonContent);
         Task<string?> ExportStadiumStructureAsync();
         Task<bool> ClearStadiumStructureAsync();
+        Task<bool> RefreshStadiumCacheAsync();
 
         Task<IEnumerable<EventDto>?> GetEventsAsync();
         Task<object?> GetSeatStatusForEventAsync(int eventId);

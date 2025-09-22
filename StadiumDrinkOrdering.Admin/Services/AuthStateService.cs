@@ -47,30 +47,75 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
 
     public async Task InitializeAsync()
     {
-        if (_initialized) return;
+        if (_initialized)
+        {
+            Console.WriteLine($"AuthStateService already initialized - IsAuthenticated: {_state.IsAuthenticated}");
+            // Even if already initialized, ensure we have the current state
+            // This handles cases where a new component instance is checking authentication
+            return;
+        }
+
+        Console.WriteLine("AuthStateService: Starting initialization...");
 
         try
         {
-            var tokenInfo = await _tokenStorage.GetTokenInfoAsync();
+            // Add a small delay to ensure JSRuntime is ready
+            await Task.Delay(100);
 
-            if (tokenInfo?.Token != null && await _tokenStorage.IsTokenValidAsync())
+            var tokenInfo = await _tokenStorage.GetTokenInfoAsync();
+            Console.WriteLine($"AuthStateService: Retrieved token info - Token present: {tokenInfo?.Token != null}");
+
+            if (tokenInfo?.Token != null)
             {
-                await UpdateAuthenticationStateFromToken(tokenInfo.Token);
+                var isValid = await _tokenStorage.IsTokenValidAsync();
+                Console.WriteLine($"AuthStateService: Token valid: {isValid}");
+
+                if (isValid)
+                {
+                    await UpdateAuthenticationStateFromToken(tokenInfo.Token);
+                    Console.WriteLine($"AuthStateService: Authentication state updated - IsAuthenticated: {_state.IsAuthenticated}, Email: {_state.Email}");
+                }
+                else
+                {
+                    Console.WriteLine("AuthStateService: Token invalid - logging out");
+                    await LogoutAsync();
+                }
             }
             else
             {
-                await LogoutAsync();
+                Console.WriteLine("AuthStateService: No token found - setting unauthenticated state");
+                _state = new AuthenticationState
+                {
+                    IsAuthenticated = false,
+                    ApplicationContext = AuthenticationConstants.ApplicationContexts.Admin
+                };
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Handle initialization errors by logging out
-            await LogoutAsync();
+            Console.WriteLine($"AuthStateService: Initialization error - {ex.Message}");
+            Console.WriteLine($"AuthStateService: Stack trace - {ex.StackTrace}");
+            // Handle initialization errors by setting unauthenticated state
+            _state = new AuthenticationState
+            {
+                IsAuthenticated = false,
+                ApplicationContext = AuthenticationConstants.ApplicationContexts.Admin
+            };
         }
 
         _initialized = true;
-        OnAuthenticationStateChanged?.Invoke(_state);
-        _legacyAuthChanged?.Invoke();
+        Console.WriteLine($"AuthStateService: Initialization complete - IsAuthenticated: {_state.IsAuthenticated}");
+
+        // Only trigger events if there are listeners
+        try
+        {
+            OnAuthenticationStateChanged?.Invoke(_state);
+            _legacyAuthChanged?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"AuthStateService: Error invoking state change events - {ex.Message}");
+        }
     }
 
     public async Task<bool> LoginAsync(AuthenticationResult authResult)
@@ -190,7 +235,8 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
                 IsAuthenticated = true,
                 UserId = claims.GetValueOrDefault(AuthenticationConstants.ClaimTypes.UserId) ??
                         claims.GetValueOrDefault(AuthenticationConstants.StandardClaims.Subject),
-                Email = claims.GetValueOrDefault(AuthenticationConstants.ClaimTypes.Email),
+                Email = claims.GetValueOrDefault(AuthenticationConstants.ClaimTypes.Email) ??
+                        claims.GetValueOrDefault("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"),
                 Role = claims.GetValueOrDefault(AuthenticationConstants.ClaimTypes.Role),
                 UserName = claims.GetValueOrDefault(AuthenticationConstants.ClaimTypes.Username),
                 ApplicationContext = AuthenticationConstants.ApplicationContexts.Admin,

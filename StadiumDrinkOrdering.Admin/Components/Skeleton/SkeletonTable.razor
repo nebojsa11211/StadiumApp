@@ -1,0 +1,149 @@
+@*
+    SkeletonTable.razor
+    Professional skeleton loading placeholder for data tables
+    Supports both populated and empty states with configurable row count
+*@
+
+<div class="skeleton-table skeleton-container"
+     role="status"
+     aria-label="Loading table data"
+     tabindex="0"
+     id="skeleton-table-@TableType.ToLowerInvariant()">
+
+    <!-- Table header -->
+    <div class="skeleton-table-header">
+        <div class="skeleton skeleton-table-title" aria-hidden="true"></div>
+        @if (ShowActionButton)
+        {
+            <div class="skeleton skeleton-table-button" aria-hidden="true"></div>
+        }
+    </div>
+
+    <!-- Table body with rows -->
+    <div class="skeleton-table-body">
+        @if (ShowEmptyState)
+        {
+            <!-- Empty state skeleton -->
+            <div class="skeleton-table-empty">
+                <div class="skeleton skeleton-table-empty-icon" aria-hidden="true"></div>
+                <div class="skeleton skeleton-table-empty-text" aria-hidden="true"></div>
+            </div>
+        }
+        else
+        {
+            <!-- Data rows skeleton -->
+            @for (int i = 0; i < RowCount; i++)
+            {
+                <div class="skeleton-table-row" style="animation-delay: @(i * 100)ms;">
+                    @if (TableType.Equals("Orders", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <!-- Order-specific column layout -->
+                        <div class="skeleton skeleton-table-cell order-id" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell customer" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell amount" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell status" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell time" aria-hidden="true"></div>
+                    }
+                    else if (TableType.Equals("Users", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <!-- User-specific column layout -->
+                        <div class="skeleton skeleton-table-cell" style="width: 70%;" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell" style="width: 80%;" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell status" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell" style="width: 60%;" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell" style="width: 50%;" aria-hidden="true"></div>
+                    }
+                    else
+                    {
+                        <!-- Generic column layout -->
+                        @for (int j = 0; j < ColumnCount; j++)
+                        {
+                            <div class="skeleton skeleton-table-cell"
+                                 style="width: @GetColumnWidth(j)%;"
+                                 aria-hidden="true"></div>
+                        }
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Loading indicator for screen readers -->
+    <span class="visually-hidden">Loading @TableType.ToLowerInvariant() table data...</span>
+
+    <!-- Optional loading spinner -->
+    @if (ShowLoadingIndicator)
+    {
+        <div class="skeleton-loading-indicator" aria-hidden="true"></div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Type of table for semantic identification and column layout (Orders, Users, etc.)
+    /// </summary>
+    [Parameter] public string TableType { get; set; } = "Data";
+
+    /// <summary>
+    /// Number of skeleton rows to display
+    /// </summary>
+    [Parameter] public int RowCount { get; set; } = 5;
+
+    /// <summary>
+    /// Number of columns for generic tables
+    /// </summary>
+    [Parameter] public int ColumnCount { get; set; } = 5;
+
+    /// <summary>
+    /// Whether to show action button in header
+    /// </summary>
+    [Parameter] public bool ShowActionButton { get; set; } = true;
+
+    /// <summary>
+    /// Whether to show empty state instead of rows
+    /// </summary>
+    [Parameter] public bool ShowEmptyState { get; set; } = false;
+
+    /// <summary>
+    /// Whether to show the spinning loading indicator
+    /// </summary>
+    [Parameter] public bool ShowLoadingIndicator { get; set; } = false;
+
+    /// <summary>
+    /// Additional CSS classes to apply to the skeleton table
+    /// </summary>
+    [Parameter] public string CssClass { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Additional attributes to apply to the skeleton container
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Custom title for the table skeleton
+    /// </summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>
+    /// Get responsive column width for generic tables
+    /// </summary>
+    /// <param name="columnIndex">Zero-based column index</param>
+    /// <returns>Width percentage</returns>
+    private int GetColumnWidth(int columnIndex)
+    {
+        // Create varied column widths for more realistic appearance
+        var widths = new[] { 60, 80, 70, 50, 65, 75, 55, 85 };
+        return widths[columnIndex % widths.Length];
+    }
+
+    /// <summary>
+    /// Get staggered animation delay for rows
+    /// </summary>
+    /// <param name="rowIndex">Zero-based row index</param>
+    /// <returns>Animation delay in milliseconds</returns>
+    private int GetAnimationDelay(int rowIndex)
+    {
+        return rowIndex * 75; // 75ms stagger between rows
+    }
+}

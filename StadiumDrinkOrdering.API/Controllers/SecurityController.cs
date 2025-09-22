@@ -8,7 +8,7 @@ namespace StadiumDrinkOrdering.API.Controllers;
 /// <summary>
 /// Controller for security monitoring and management
 /// </summary>
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 [Authorize(Roles = "Admin")]
 public class SecurityController : ControllerBase
@@ -159,10 +159,10 @@ public class SecurityController : ControllerBase
                 },
                 Endpoints = new
                 {
-                    Statistics = "/api/security/stats",
-                    RemoveIPBan = "/api/security/ip-bans/{ipAddress}",
-                    RemoveAccountLockout = "/api/security/account-lockouts/{email}",
-                    TriggerCleanup = "/api/security/cleanup"
+                    Statistics = "/security/stats",
+                    RemoveIPBan = "/security/ip-bans/{ipAddress}",
+                    RemoveAccountLockout = "/security/account-lockouts/{email}",
+                    TriggerCleanup = "/security/cleanup"
                 }
             };
 

@@ -15,17 +15,13 @@ else if (AuthStateService.IsAuthenticated)
 }
 else
 {
+    @* Authentication check failed - redirecting to login automatically *@
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="text-center">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">🔐 Authentication Required</h5>
-                    <p class="card-text">You need to be logged in to access this page.</p>
-                    <button class="btn btn-primary" @onclick="RedirectToLogin" id="admin-auth-route-login-btn">
-                        Go to Login
-                    </button>
-                </div>
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Redirecting to login...</span>
             </div>
+            <p class="text-muted">Redirecting to login...</p>
         </div>
     </div>
 }

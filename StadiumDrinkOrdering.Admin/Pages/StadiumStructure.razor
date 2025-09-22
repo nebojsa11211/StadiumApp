@@ -133,8 +133,8 @@
                             <i class="fas fa-trash me-2"></i>Clear Structure
                         </button>
                         
-                        <button class="btn btn-outline-secondary"
-                                @onclick="ExportStructure" 
+                        <button class="btn btn-outline-secondary me-2"
+                                @onclick="ExportStructure"
                                 disabled="@(summary == null || summary.TotalSeats == 0 || isExporting)"
                                 id="admin-stadium-export-btn">
                             @if (isExporting)
@@ -145,6 +145,22 @@
                             else
                             {
                                 <i class="fas fa-download me-2"></i><text>Export JSON</text>
+                            }
+                        </button>
+
+                        <button class="btn btn-outline-info"
+                                @onclick="RefreshCache"
+                                disabled="@isRefreshingCache"
+                                id="admin-stadium-refresh-cache-btn"
+                                title="Refresh stadium layout cache to display updated data immediately">
+                            @if (isRefreshingCache)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <text>Refreshing</text>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sync-alt me-2"></i><text>Refresh Cache</text>
                             }
                         </button>
                     </div>

@@ -596,7 +596,7 @@
             StateHasChanged();
             await Task.Delay(1000);
             
-            var response = await ApiService.GetAsync<StadiumViewerDto>("api/stadium-viewer/overview");
+            var response = await ApiService.GetAsync<StadiumViewerDto>("stadium-viewer/overview");
             if (response != null)
             {
                 loadingStage = LoadingStage.ProcessingLayout;
@@ -639,7 +639,7 @@
     {
         try
         {
-            var response = await ApiService.GetAsync<List<EventDto>>("api/customer/ticketing/events");
+            var response = await ApiService.GetAsync<List<EventDto>>("customer/ticketing/events");
             events = response;
         }
         catch (Exception ex)
@@ -678,7 +678,7 @@
     {
         try
         {
-            var response = await ApiService.GetAsync<EventSeatStatusDto>($"api/stadium-viewer/event/{eventId}/seat-status");
+            var response = await ApiService.GetAsync<EventSeatStatusDto>($"stadium-viewer/event/{eventId}/seat-status");
             eventSeatStatus = response;
         }
         catch (Exception ex)
@@ -696,7 +696,7 @@
         // Load detailed seat data for the sector
         try
         {
-            var response = await ApiService.GetAsync<StadiumSectorDto>($"api/stadium-viewer/sector/{sector.Id}/seats");
+            var response = await ApiService.GetAsync<StadiumSectorDto>($"stadium-viewer/sector/{sector.Id}/seats");
             if (response != null)
             {
                 sectorWithSeats = response;
@@ -735,7 +735,7 @@
         try
         {
             var request = new { seatCode = searchSeatCode };
-            var response = await ApiService.PostAsync<object, SearchSeatResultDto>("api/stadium-viewer/search-seat", request);
+            var response = await ApiService.PostAsync<object, SearchSeatResultDto>("stadium-viewer/search-seat", request);
             
             if (response != null)
             {

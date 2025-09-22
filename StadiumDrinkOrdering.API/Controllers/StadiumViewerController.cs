@@ -9,7 +9,7 @@ using System.Text.Json;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/stadium-viewer")]
+[Route("[controller]")]
 public class StadiumViewerController : ControllerBase
 {
     private readonly ApplicationDbContext _context;

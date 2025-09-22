@@ -78,7 +78,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/drinks");
+            var response = await _httpClient.GetAsync("drinks");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -96,7 +96,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/drinks/{id}");
+            var response = await _httpClient.GetAsync($"drinks/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -117,7 +117,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(loginDto, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/auth/login", content);
+            var response = await _httpClient.PostAsync("auth/login", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -147,7 +147,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(registerDto, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/auth/register", content);
+            var response = await _httpClient.PostAsync("auth/register", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -168,7 +168,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(createOrderDto, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/orders", content);
+            var response = await _httpClient.PostAsync("orders", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -186,7 +186,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/orders/my-orders");
+            var response = await _httpClient.GetAsync("orders/my-orders");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -204,7 +204,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/orders/{id}");
+            var response = await _httpClient.GetAsync($"orders/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -222,7 +222,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.PostAsync($"api/orders/{id}/cancel", null);
+            var response = await _httpClient.PostAsync($"orders/{id}/cancel", null);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -235,7 +235,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/stadium/layout");
+            var response = await _httpClient.GetAsync("stadium/layout");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -253,7 +253,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/tickets/validate/{qrToken}");
+            var response = await _httpClient.GetAsync($"tickets/validate/{qrToken}");
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -267,7 +267,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/tickets/qr/{qrToken}");
+            var response = await _httpClient.GetAsync($"tickets/qr/{qrToken}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -285,7 +285,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/tickets/number/{ticketNumber}");
+            var response = await _httpClient.GetAsync($"tickets/number/{ticketNumber}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -303,7 +303,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/order-sessions/{sessionToken}");
+            var response = await _httpClient.GetAsync($"order-sessions/{sessionToken}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -322,7 +322,7 @@ public class ApiService : IApiService
         try
         {
             var content = new StringContent("{}", Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"api/order-sessions/{sessionToken}/checkout", content);
+            var response = await _httpClient.PostAsync($"order-sessions/{sessionToken}/checkout", content);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -340,7 +340,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.PostAsync($"api/payment/create-intent/{orderId}", null);
+            var response = await _httpClient.PostAsync($"payment/create-intent/{orderId}", null);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -359,7 +359,7 @@ public class ApiService : IApiService
         try
         {
             var content = new StringContent(JsonSerializer.Serialize(new { PaymentIntentId = paymentIntentId }, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/payment/confirm", content);
+            var response = await _httpClient.PostAsync("payment/confirm", content);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -378,7 +378,7 @@ public class ApiService : IApiService
         try
         {
             var content = new StringContent(JsonSerializer.Serialize(new { QRToken = qrToken }, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/order-sessions/create-from-qr", content);
+            var response = await _httpClient.PostAsync("order-sessions/create-from-qr", content);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -397,7 +397,7 @@ public class ApiService : IApiService
         try
         {
             var content = new StringContent(JsonSerializer.Serialize(new { DrinkId = drinkId, Quantity = quantity }, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"api/order-sessions/{sessionToken}/add-to-cart", content);
+            var response = await _httpClient.PostAsync($"order-sessions/{sessionToken}/add-to-cart", content);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -415,7 +415,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.DeleteAsync($"api/order-sessions/{sessionToken}/remove-from-cart/{drinkId}");
+            var response = await _httpClient.DeleteAsync($"order-sessions/{sessionToken}/remove-from-cart/{drinkId}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -434,7 +434,7 @@ public class ApiService : IApiService
         try
         {
             var content = new StringContent(JsonSerializer.Serialize(new { DrinkId = drinkId, Quantity = quantity }, _jsonOptions), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"api/order-sessions/{sessionToken}/update-cart-item", content);
+            var response = await _httpClient.PutAsync($"order-sessions/{sessionToken}/update-cart-item", content);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -465,7 +465,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/logs/log-action", content);
+            var response = await _httpClient.PostAsync("logs/log-action", content);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -496,7 +496,7 @@ public class ApiService : IApiService
             }
 
             var query = queryParams.Any() ? "?" + string.Join("&", queryParams) : "";
-            var response = await _httpClient.GetAsync($"api/customer/ticketing/events{query}");
+            var response = await _httpClient.GetAsync($"customer/ticketing/events{query}");
             
             if (response.IsSuccessStatusCode)
             {
@@ -515,7 +515,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/customer/ticketing/events/{eventId}");
+            var response = await _httpClient.GetAsync($"customer/ticketing/events/{eventId}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -533,7 +533,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/customer/ticketing/events/{eventId}/sections/{sectionId}/availability");
+            var response = await _httpClient.GetAsync($"customer/ticketing/events/{eventId}/sections/{sectionId}/availability");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -551,7 +551,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/customer/cart?sessionId={Uri.EscapeDataString(sessionId)}");
+            var response = await _httpClient.GetAsync($"customer/cart?sessionId={Uri.EscapeDataString(sessionId)}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -572,7 +572,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/customer/cart/add", content);
+            var response = await _httpClient.PostAsync("customer/cart/add", content);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -589,7 +589,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, "api/customer/cart/remove")
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, "customer/cart/remove")
             {
                 Content = content
             };
@@ -608,7 +608,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.DeleteAsync($"api/customer/cart/clear?sessionId={Uri.EscapeDataString(sessionId)}");
+            var response = await _httpClient.DeleteAsync($"customer/cart/clear?sessionId={Uri.EscapeDataString(sessionId)}");
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -622,7 +622,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/customer/cart/seat-availability?eventId={eventId}&sectorId={sectorId}&rowNumber={rowNumber}&seatNumber={seatNumber}");
+            var response = await _httpClient.GetAsync($"customer/cart/seat-availability?eventId={eventId}&sectorId={sectorId}&rowNumber={rowNumber}&seatNumber={seatNumber}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -640,7 +640,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/customer/cart/summary?sessionId={Uri.EscapeDataString(sessionId)}");
+            var response = await _httpClient.GetAsync($"customer/cart/summary?sessionId={Uri.EscapeDataString(sessionId)}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -661,7 +661,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("api/customer/orders/create", content);
+            var response = await _httpClient.PostAsync("customer/orders/create", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -679,7 +679,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/customer/orders/{orderId}/confirmation");
+            var response = await _httpClient.GetAsync($"customer/orders/{orderId}/confirmation");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -697,7 +697,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/auth/users/{userId}");
+            var response = await _httpClient.GetAsync($"auth/users/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -720,7 +720,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("api/TicketAuth/validate", content);
+            var response = await _httpClient.PostAsync("TicketAuth/validate", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -738,7 +738,7 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/TicketAuth/session/{sessionToken}");
+            var response = await _httpClient.GetAsync($"TicketAuth/session/{sessionToken}");
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -761,7 +761,7 @@ public class ApiService : IApiService
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("api/TicketAuth/logout", content);
+            var response = await _httpClient.PostAsync("TicketAuth/logout", content);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)

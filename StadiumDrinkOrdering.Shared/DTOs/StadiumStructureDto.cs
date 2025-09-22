@@ -44,6 +44,7 @@ public class StadiumSummaryDto
     public int TotalSeats { get; set; }
     public int AvailableSeats { get; set; }
     public int OccupiedSeats { get; set; }
+    public string StadiumName { get; set; } = string.Empty;
 }
 
 // Validation Result

@@ -40,9 +40,34 @@ else
     Console.WriteLine("💻 Local development mode - using default configuration");
 }
 
+// Add session state for authentication token bridge
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(2);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS only
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
+// Add HttpContextAccessor for session access in services
+builder.Services.AddHttpContextAccessor();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddControllers(); // Add MVC controllers for API endpoints
+builder.Services.AddServerSideBlazor(options =>
+{
+    // Configure SignalR for Docker environment
+    if (builder.Environment.IsDevelopment() || containerEnv == "true")
+    {
+        options.DetailedErrors = true;
+        options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(3);
+        options.DisconnectedCircuitMaxRetained = 100;
+        options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
+    }
+});
 builder.Services.AddSingleton<WeatherForecastService>();
 
 // Add localization services
@@ -58,48 +83,39 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 });
 
-// Helper function to configure HttpClient for API services
-static void ConfigureApiHttpClient(IServiceCollection services, string clientName)
+// Register a single, centralized HttpClient for all API communication
+builder.Services.AddHttpClient("ApiClient", client =>
 {
     var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-
-    services.AddHttpClient(clientName, client =>
+    string apiBaseUrl;
+    if (containerEnv == "true")
     {
-        string apiBaseUrl;
-        if (containerEnv == "true")
-        {
-            // Running in Docker container - use Docker networking (HTTPS in Docker)
-            apiBaseUrl = "https://api:8443/";
-        }
-        else
-        {
-            // Running locally - use localhost
-            apiBaseUrl = "https://localhost:7010/";
-        }
-
-        client.BaseAddress = new Uri(apiBaseUrl);
-        client.Timeout = TimeSpan.FromSeconds(10);
-        client.DefaultRequestVersion = new Version(1, 1);
-        client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
-    }).ConfigurePrimaryHttpMessageHandler(() =>
+        // Running in Docker container - use Docker networking (HTTPS in Docker)
+        apiBaseUrl = "https://api:8443/";
+    }
+    else
     {
-        var handler = new HttpClientHandler();
-        handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-        return handler;
-    });
-}
+        // Running locally - use localhost
+        apiBaseUrl = "https://localhost:7010/";
+    }
 
-// Register HTTP clients for each service
-ConfigureApiHttpClient(builder.Services, "OrderService");
-ConfigureApiHttpClient(builder.Services, "UserService");
-ConfigureApiHttpClient(builder.Services, "DrinkService");
-ConfigureApiHttpClient(builder.Services, "TicketService");
-ConfigureApiHttpClient(builder.Services, "AuthService");
-ConfigureApiHttpClient(builder.Services, "LogService");
-ConfigureApiHttpClient(builder.Services, "AnalyticsService");
-ConfigureApiHttpClient(builder.Services, "StadiumService");
-ConfigureApiHttpClient(builder.Services, "EventService");
-ConfigureApiHttpClient(builder.Services, "HttpService");
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30); // Increased from 10 to 30 seconds
+    client.DefaultRequestVersion = new Version(1, 1);
+    client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+
+    // In development, bypass SSL certificate validation for self-signed certificates
+    if (builder.Environment.IsDevelopment() || containerEnv == "true")
+    {
+        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+        Console.WriteLine("⚠️ SSL certificate validation bypassed for development");
+    }
+
+    return handler;
+});
 
 // Register throttling service as singleton for persistent state
 builder.Services.AddSingleton<IThrottlingService, ThrottlingService>();
@@ -107,49 +123,51 @@ builder.Services.AddSingleton<IThrottlingService, ThrottlingService>();
 // Register error notification service as scoped (depends on IJSRuntime which is scoped)
 builder.Services.AddScoped<IErrorNotificationService, ErrorNotificationService>();
 
-// Register specialized services
+// Register specialized services to use the authenticated HTTP client
 builder.Services.AddScoped<IOrderService>(provider =>
-    new OrderService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("OrderService"),
+    new OrderService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                      provider.GetRequiredService<ICentralizedLoggingClient>(),
-                     provider.GetRequiredService<IErrorNotificationService>()));
+                     provider.GetRequiredService<IErrorNotificationService>(),
+                     provider.GetRequiredService<ITokenStorageService>()));
 
 builder.Services.AddScoped<IUserService>(provider =>
-    new UserService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("UserService"),
+    new UserService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                     provider.GetRequiredService<ICentralizedLoggingClient>(),
                     provider.GetRequiredService<IErrorNotificationService>(),
                     provider.GetRequiredService<ITokenStorageService>()));
 
 builder.Services.AddScoped<IDrinkService>(provider =>
-    new DrinkService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("DrinkService"),
+    new DrinkService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                      provider.GetRequiredService<ICentralizedLoggingClient>(),
                      provider.GetRequiredService<IErrorNotificationService>()));
 
 builder.Services.AddScoped<ITicketService>(provider =>
-    new TicketService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("TicketService"),
+    new TicketService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                       provider.GetRequiredService<ICentralizedLoggingClient>()));
 
 builder.Services.AddScoped<IAuthService>(provider =>
-    new AuthService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthService"),
+    new AuthService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"),
                     provider.GetRequiredService<ICentralizedLoggingClient>()));
 
 builder.Services.AddScoped<ILogService>(provider =>
-    new LogService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("LogService"),
+    new LogService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                    provider.GetRequiredService<ICentralizedLoggingClient>()));
 
 builder.Services.AddScoped<IAnalyticsService>(provider =>
-    new AnalyticsService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AnalyticsService"),
+    new AnalyticsService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                          provider.GetRequiredService<ICentralizedLoggingClient>()));
 
 builder.Services.AddScoped<IStadiumService>(provider =>
-    new StadiumService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("StadiumService"),
-                       provider.GetRequiredService<ICentralizedLoggingClient>()));
+    new StadiumService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
+                       provider.GetRequiredService<ICentralizedLoggingClient>(),
+                       provider.GetRequiredService<ITokenStorageService>()));
 
 builder.Services.AddScoped<IEventService>(provider =>
-    new EventService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("EventService"),
+    new EventService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                      provider.GetRequiredService<ICentralizedLoggingClient>()));
 
 builder.Services.AddScoped<IHttpService>(provider =>
-    new HttpService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("HttpService"),
+    new HttpService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                     provider.GetRequiredService<ICentralizedLoggingClient>(),
                     provider.GetRequiredService<IErrorNotificationService>(),
                     provider.GetRequiredService<ITokenStorageService>()));
@@ -186,8 +204,25 @@ else
 builder.Services.AddScoped<AuthStateService>();
 builder.Services.AddScoped<IAuthStateService>(provider => provider.GetRequiredService<AuthStateService>());
 builder.Services.AddScoped<IAuthenticationStateService>(provider => provider.GetRequiredService<AuthStateService>());
-builder.Services.AddScoped<ITokenStorageService, TokenStorageService>();
+// Use hybrid token storage for both client-side and server-side authentication
+builder.Services.AddScoped<ITokenStorageService, HybridTokenStorageService>();
 builder.Services.AddClientAuthentication(apiBaseUrl, "Admin", enableBackgroundRefresh: true);
+
+// Note: AuthenticatedClient is configured by AddClientAuthentication() above with proper authentication handler
+// Configure SSL certificate bypass for development/container environments
+builder.Services.ConfigureHttpClientDefaults(clientBuilder =>
+{
+    if (builder.Environment.IsDevelopment() || containerEnv == "true")
+    {
+        clientBuilder.ConfigurePrimaryHttpMessageHandler(() =>
+        {
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            Console.WriteLine("⚠️ SSL certificate validation bypassed for development");
+            return handler;
+        });
+    }
+});
 
 // Note: Enhanced refresh token services will be implemented in future iterations
 
@@ -210,7 +245,13 @@ builder.Services.AddHttpClient("AdminSecureApi", client =>
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+
+    // In development, bypass SSL certificate validation for self-signed certificates
+    if (builder.Environment.IsDevelopment() || containerEnv == "true")
+    {
+        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    }
+
     return handler;
 });
 
@@ -261,7 +302,13 @@ builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+
+    // In development, bypass SSL certificate validation for self-signed certificates
+    if (builder.Environment.IsDevelopment() || containerEnv == "true")
+    {
+        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    }
+
     return handler;
 });
 
@@ -283,12 +330,26 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
+// Add session middleware BEFORE localization and routing
+app.UseSession();
+
 // Add localization middleware
 app.UseRequestLocalization();
 
 app.UseRouting();
 
-app.MapBlazorHub();
+// Map MVC controllers for API endpoints
+app.MapControllers();
+
+app.MapBlazorHub(options =>
+{
+    // Configure SignalR hub for Docker environment
+    if (builder.Environment.IsDevelopment() || containerEnv == "true")
+    {
+        options.ApplicationMaxBufferSize = 65536;
+        options.TransportMaxBufferSize = 65536;
+    }
+});
 app.MapFallbackToPage("/_Host");
 
 app.Run();

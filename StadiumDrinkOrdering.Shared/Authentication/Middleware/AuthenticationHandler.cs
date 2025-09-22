@@ -34,11 +34,11 @@ public class AuthenticationHandler : DelegatingHandler
         // Paths that should not include authentication headers
         _skipAuthPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/auth/refresh-token",
-            "/api/health",
-            "/api/ping"
+            "/auth/login",
+            "/auth/register",
+            "/auth/refresh-token",
+            "/health",
+            "/ping"
         };
     }
 

@@ -27,7 +27,7 @@ This implementation provides comprehensive rate limiting and brute force protect
 - **Referrer-Policy**: Privacy protection
 
 ### 4. Monitoring and Management
-- **Security Statistics**: Real-time monitoring via `/api/security/stats`
+- **Security Statistics**: Real-time monitoring via `/security/stats`
 - **Admin Controls**: Manual IP ban/account lockout removal
 - **Automatic Cleanup**: Background service for expired restrictions
 - **Comprehensive Logging**: All security events logged centrally
@@ -75,17 +75,17 @@ This implementation provides comprehensive rate limiting and brute force protect
     "HttpStatusCode": 429,
     "GeneralRules": [
       {
-        "Endpoint": "*:/api/auth/login",
+        "Endpoint": "*:/auth/login",
         "Period": "1m",
         "Limit": 5
       },
       {
-        "Endpoint": "*:/api/auth/register",
+        "Endpoint": "*:/auth/register",
         "Period": "1h",
         "Limit": 3
       },
       {
-        "Endpoint": "*:/api/*",
+        "Endpoint": "*:/*",
         "Period": "1m",
         "Limit": 100
       }
@@ -129,7 +129,7 @@ This implementation provides comprehensive rate limiting and brute force protect
 
 ### Security Management (Admin Only)
 
-#### GET `/api/security/stats`
+#### GET `/security/stats`
 Returns comprehensive security statistics:
 ```json
 {
@@ -148,16 +148,16 @@ Returns comprehensive security statistics:
 }
 ```
 
-#### DELETE `/api/security/ip-bans/{ipAddress}`
+#### DELETE `/security/ip-bans/{ipAddress}`
 Manually removes an IP ban (Admin only).
 
-#### DELETE `/api/security/account-lockouts/{email}`
+#### DELETE `/security/account-lockouts/{email}`
 Manually removes an account lockout (Admin only).
 
-#### POST `/api/security/cleanup`
+#### POST `/security/cleanup`
 Manually triggers cleanup of expired restrictions (Admin only).
 
-#### GET `/api/security/config`
+#### GET `/security/config`
 Returns current security configuration status.
 
 ## Error Responses
@@ -232,7 +232,7 @@ You can test the rate limiting by making multiple requests:
 ```bash
 # Test login rate limiting
 for i in {1..10}; do
-  curl -X POST https://localhost:9010/api/auth/login \
+  curl -X POST https://localhost:9010/auth/login \
     -H "Content-Type: application/json" \
     -d '{"email":"test@test.com","password":"wrong"}'
 done
@@ -286,7 +286,7 @@ The rate limiting tables are properly indexed for performance:
 ## Maintenance
 
 ### Regular Tasks
-1. **Monitor Security Stats**: Check `/api/security/stats` regularly
+1. **Monitor Security Stats**: Check `/security/stats` regularly
 2. **Review Failed Attempts**: Look for patterns in attack attempts
 3. **Update Rate Limits**: Adjust limits based on legitimate usage patterns
 4. **Clean Old Data**: The cleanup service handles this automatically

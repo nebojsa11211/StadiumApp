@@ -91,6 +91,7 @@ public class HNKRijekaLayoutGenerator : IStadiumLayoutGenerator
 
     /// <summary>
     /// Check if the provided tribunes match HNK Rijeka layout
+    /// Updated to recognize imported stadium structure with N1, N2, S1, S2, E1, E2, W1, W2 codes
     /// </summary>
     public bool IsHNKRijekaLayout(List<Tribune> tribunes)
     {
@@ -100,21 +101,34 @@ public class HNKRijekaLayoutGenerator : IStadiumLayoutGenerator
             return true;
         }
 
-        // Check if we have sectors that match HNK Rijeka codes
+        // Check if we have sectors that match HNK Rijeka codes (both legacy and new imported codes)
         var allSectorCodes = tribunes
             .SelectMany(t => t.Rings)
             .SelectMany(r => r.Sectors)
             .Select(s => s.Code)
             .ToHashSet();
 
+        _logger.LogInformation("All sector codes found: {SectorCodes}", string.Join(", ", allSectorCodes));
+
         var hnkRijekaCodes = HNKRijekaStadiumConstants.SECTOR_COORDINATES.Keys.ToHashSet();
         var matchingCodes = allSectorCodes.Intersect(hnkRijekaCodes).Count();
 
-        // If more than 50% of codes match HNK Rijeka, consider it HNK Rijeka layout
-        bool isHnkRijeka = matchingCodes > (allSectorCodes.Count * 0.5);
-        
-        _logger.LogInformation("Stadium layout analysis: {MatchingCodes}/{TotalCodes} codes match HNK Rijeka, IsHNKRijeka: {IsHNKRijeka}", 
-            matchingCodes, allSectorCodes.Count, isHnkRijeka);
+        // Check if this is the imported stadium structure (N1, N2, S1, S2, E1, E2, W1, W2)
+        var importedStadiumCodes = new HashSet<string> { "N1", "N2", "S1", "S2", "E1", "E2", "W1", "W2" };
+        var importedMatches = allSectorCodes.Intersect(importedStadiumCodes).Count();
+
+        _logger.LogInformation("Expected imported codes: {ExpectedCodes}", string.Join(", ", importedStadiumCodes));
+        _logger.LogInformation("Matching imported codes: {MatchingImportedCodes}",
+            string.Join(", ", allSectorCodes.Intersect(importedStadiumCodes)));
+
+        // If we have the imported stadium codes (4+ matches), consider it HNK Rijeka compatible
+        bool isImportedStadium = importedMatches >= 4;
+
+        // If more than 50% of codes match HNK Rijeka, or if we have imported stadium codes, consider it HNK Rijeka layout
+        bool isHnkRijeka = matchingCodes > (allSectorCodes.Count * 0.5) || isImportedStadium;
+
+        _logger.LogInformation("Stadium layout analysis: {MatchingCodes}/{TotalCodes} codes match HNK Rijeka, {ImportedMatches} imported codes, IsHNKRijeka: {IsHNKRijeka}",
+            matchingCodes, allSectorCodes.Count, importedMatches, isHnkRijeka);
 
         return isHnkRijeka;
     }
@@ -304,10 +318,122 @@ public class HNKRijekaLayoutGenerator : IStadiumLayoutGenerator
     /// </summary>
     private SectorSvgDto? GenerateGenericSectorLayout(Sector sector, string tribuneCode)
     {
-        // For now, return null - future enhancement
-        // This would implement generic coordinate calculation algorithms
-        _logger.LogWarning("Generic sector layout generation not implemented for sector {SectorCode}", sector.Code);
-        return null;
+        try
+        {
+            // Generate coordinates based on tribune and sector position
+            var coords = CalculateGenericSectorCoordinates(sector.Code, tribuneCode);
+
+            var sectorDto = new SectorSvgDto
+            {
+                Code = sector.Code,
+                Name = sector.Name,
+                Bounds = coords.ToRectangle(),
+                TextCenter = coords.TextCenter,
+                Style = coords.ToStyle(),
+                TotalSeats = CalculateTotalSeats(sector),
+                OccupiedSeats = 0 // Will be updated by real-time data
+            };
+
+            _logger.LogInformation("Generated generic layout for sector {SectorCode} in tribune {TribuneCode}: {X},{Y} {Width}x{Height}",
+                sector.Code, tribuneCode, coords.X, coords.Y, coords.Width, coords.Height);
+
+            return sectorDto;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating generic layout for sector {SectorCode}", sector.Code);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Calculate generic coordinates for sectors based on tribune and position
+    /// </summary>
+    private SectorCoordinates CalculateGenericSectorCoordinates(string sectorCode, string tribuneCode)
+    {
+        // Base dimensions for generic sectors
+        const int sectorWidth = 120;
+        const int sectorHeight = 60;
+        const int sectorSpacing = 10;
+
+        // Extract sector index from code (A=0, B=1, C=2, etc.)
+        int sectorIndex = 0;
+        if (!string.IsNullOrEmpty(sectorCode) && char.IsLetter(sectorCode[^1]))
+        {
+            sectorIndex = sectorCode[^1] - 'A';
+        }
+
+        // Calculate position based on tribune
+        int x, y;
+
+        switch (tribuneCode.ToUpper())
+        {
+            case "N": // North - top of stadium
+                x = 200 + (sectorIndex * (sectorWidth + sectorSpacing));
+                y = 50;
+                break;
+
+            case "S": // South - bottom of stadium
+                x = 200 + (sectorIndex * (sectorWidth + sectorSpacing));
+                y = 450;
+                break;
+
+            case "E": // East - right side of stadium
+                x = 650;
+                y = 150 + (sectorIndex * (sectorHeight + sectorSpacing));
+                break;
+
+            case "W": // West - left side of stadium
+                x = 50;
+                y = 150 + (sectorIndex * (sectorHeight + sectorSpacing));
+                break;
+
+            default:
+                // Default positioning for unknown tribunes
+                x = 300 + (sectorIndex * (sectorWidth + sectorSpacing));
+                y = 250;
+                break;
+        }
+
+        return new SectorCoordinates
+        {
+            X = x,
+            Y = y,
+            Width = sectorWidth,
+            Height = sectorHeight,
+            FillColor = GetTribuneFillColor(tribuneCode),
+            StrokeColor = GetTribuneStrokeColor(tribuneCode)
+        };
+    }
+
+    /// <summary>
+    /// Get fill color for tribune-based sectors
+    /// </summary>
+    private string GetTribuneFillColor(string tribuneCode)
+    {
+        return tribuneCode.ToUpper() switch
+        {
+            "N" => "#4A90E2", // Blue for North
+            "S" => "#E24A4A", // Red for South
+            "E" => "#4AE24A", // Green for East
+            "W" => "#E2A04A", // Orange for West
+            _ => "#9E9E9E"     // Gray for unknown
+        };
+    }
+
+    /// <summary>
+    /// Get stroke color for tribune-based sectors
+    /// </summary>
+    private string GetTribuneStrokeColor(string tribuneCode)
+    {
+        return tribuneCode.ToUpper() switch
+        {
+            "N" => "#2563eb", // Darker blue for North
+            "S" => "#dc2626", // Darker red for South
+            "E" => "#16a34a", // Darker green for East
+            "W" => "#ea580c", // Darker orange for West
+            _ => "#6b7280"    // Gray for unknown
+        };
     }
 
     /// <summary>

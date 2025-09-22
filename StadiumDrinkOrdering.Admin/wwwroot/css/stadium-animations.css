@@ -1,0 +1,758 @@
+/* ===============================================
+   Stadium Animations & Micro-interactions
+   Premium Animation System with Hardware Acceleration
+   =============================================== */
+
+/* ===============================================
+   Keyframe Animations
+   =============================================== */
+
+/* Fade and scale in animation for stadium sectors */
+@keyframes sectorReveal {
+    0% {
+        opacity: 0;
+        transform: scale(0.85) translateZ(0);
+        filter: blur(2px);
+    }
+    50% {
+        opacity: 0.7;
+        filter: blur(0.5px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateZ(0);
+        filter: blur(0);
+    }
+}
+
+/* Breathing animation for available sectors */
+@keyframes sectorBreathe {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1) translateZ(0);
+    }
+    50% {
+        opacity: 0.92;
+        transform: scale(1.015) translateZ(0);
+    }
+}
+
+/* Ripple effect for click interactions */
+@keyframes rippleEffect {
+    0% {
+        transform: scale(0) translateZ(0);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(4) translateZ(0);
+        opacity: 0;
+    }
+}
+
+/* Glow pulse animation */
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(37, 99, 235, 0.5),
+                    0 0 20px rgba(37, 99, 235, 0.3),
+                    0 0 40px rgba(37, 99, 235, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(37, 99, 235, 0.7),
+                    0 0 30px rgba(37, 99, 235, 0.5),
+                    0 0 60px rgba(37, 99, 235, 0.3);
+    }
+}
+
+/* Shimmer loading effect */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) translateZ(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) translateZ(0);
+    }
+}
+
+/* Slide in from right */
+@keyframes slideInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(30px) translateZ(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) translateZ(0);
+    }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Smooth rotation for loading spinners */
+@keyframes smoothRotate {
+    0% {
+        transform: rotate(0deg) translateZ(0);
+    }
+    100% {
+        transform: rotate(360deg) translateZ(0);
+    }
+}
+
+/* Particle float animation */
+@keyframes particleFloat {
+    0%, 100% {
+        transform: translateY(0) translateX(0) translateZ(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-100px) translateX(50px) translateZ(0);
+    }
+}
+
+/* Status dot pulse */
+@keyframes statusPulse {
+    0%, 100% {
+        transform: scale(1) translateZ(0);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5) translateZ(0);
+        opacity: 0.5;
+    }
+}
+
+/* Premium hover wave */
+@keyframes hoverWave {
+    0% {
+        transform: translateX(-100%) translateZ(0);
+    }
+    100% {
+        transform: translateX(100%) translateZ(0);
+    }
+}
+
+/* ===============================================
+   Loading States & Skeleton Screens
+   =============================================== */
+
+.stadium-loading-skeleton {
+    background: linear-gradient(90deg,
+        var(--neutral-200) 0%,
+        var(--neutral-100) 50%,
+        var(--neutral-200) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.stadium-loading-skeleton::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    transform: translateX(-100%);
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Premium loading spinner */
+.premium-spinner {
+    width: 48px;
+    height: 48px;
+    position: relative;
+    animation: smoothRotate 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.premium-spinner::before,
+.premium-spinner::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: var(--premium-primary);
+    animation: smoothRotate 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.premium-spinner::after {
+    animation-delay: 0.25s;
+    border-top-color: var(--premium-secondary);
+    transform: scale(0.8);
+}
+
+/* ===============================================
+   Stadium View Animations
+   =============================================== */
+
+/* Animated stadium container */
+.stadium-viewer-container.premium-viewer {
+    animation: fadeIn 0.6s ease-out;
+    position: relative;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/* Stadium sectors reveal animation */
+.stadium-sector {
+    animation: sectorReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: calc(var(--sector-index, 0) * 50ms);
+    transform-origin: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+}
+
+/* Available sectors breathing effect */
+.stadium-sector.available {
+    animation: sectorReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+              sectorBreathe 4s ease-in-out infinite;
+    animation-delay: calc(var(--sector-index, 0) * 50ms), 2s;
+}
+
+/* Hover effect for stadium sectors */
+.stadium-sector:hover {
+    transform: scale(1.05) translateZ(0);
+    filter: brightness(1.1) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    z-index: 10;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Active/Selected sector animation */
+.stadium-sector.active {
+    animation: glowPulse 2s ease-in-out infinite;
+    transform: scale(1.08) translateZ(0);
+    filter: brightness(1.15);
+    z-index: 20;
+}
+
+/* High occupancy warning pulse */
+.stadium-sector.high-occupancy {
+    animation: sectorReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+              warningPulse 2s ease-in-out infinite;
+    animation-delay: calc(var(--sector-index, 0) * 50ms), 1s;
+}
+
+@keyframes warningPulse {
+    0%, 100% {
+        filter: brightness(1) drop-shadow(0 0 8px rgba(239, 68, 68, 0.4));
+    }
+    50% {
+        filter: brightness(1.1) drop-shadow(0 0 16px rgba(239, 68, 68, 0.6));
+    }
+}
+
+/* ===============================================
+   Control Panel Animations
+   =============================================== */
+
+/* Slide-in animation for control panels */
+.viewer-controls.premium-controls {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: both;
+}
+
+.control-group {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-delay: calc(var(--group-index, 0) * 100ms);
+    animation-fill-mode: both;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.control-group:hover {
+    transform: translateX(-4px) translateZ(0);
+}
+
+/* Enhanced button animations */
+.premium-btn,
+.premium-toggle-btn,
+.premium-action-btn,
+.premium-search-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+.premium-btn::before,
+.premium-toggle-btn::before,
+.premium-action-btn::before,
+.premium-search-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%) translateZ(0);
+    transition: width 0.6s, height 0.6s;
+}
+
+.premium-btn:active::before,
+.premium-toggle-btn:active::before,
+.premium-action-btn:active::before,
+.premium-search-btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Button hover wave effect */
+.premium-btn::after,
+.premium-toggle-btn::after,
+.premium-action-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent);
+    transition: none;
+}
+
+.premium-btn:hover::after,
+.premium-toggle-btn:hover::after,
+.premium-action-btn:hover::after {
+    animation: hoverWave 0.5s ease-out;
+}
+
+/* Button press effect */
+.premium-btn:active,
+.premium-toggle-btn:active,
+.premium-action-btn:active,
+.premium-search-btn:active {
+    transform: scale(0.98) translateZ(0);
+    transition: transform 0.1s;
+}
+
+/* Toggle button active state */
+.premium-toggle-btn.active {
+    animation: buttonActivate 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+}
+
+@keyframes buttonActivate {
+    0% {
+        transform: scale(1) translateZ(0);
+    }
+    50% {
+        transform: scale(1.05) translateZ(0);
+    }
+    100% {
+        transform: scale(1) translateZ(0);
+    }
+}
+
+/* ===============================================
+   Dropdown & Select Animations
+   =============================================== */
+
+.premium-select {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+.premium-select:hover {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.premium-select:focus {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1),
+                0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: focusPulse 2s ease-in-out infinite;
+}
+
+@keyframes focusPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1),
+                    0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.05),
+                    0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* ===============================================
+   Legend & Info Panel Animations
+   =============================================== */
+
+.legend-panel.premium-legend {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.legend-item.premium-legend-item {
+    animation: fadeIn 0.4s ease-out;
+    animation-delay: calc(var(--item-index, 0) * 50ms);
+    animation-fill-mode: both;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.legend-item.premium-legend-item:hover {
+    transform: translateX(8px) translateZ(0);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+/* Color dots with glow animation */
+.legend-color-wrapper {
+    position: relative;
+}
+
+.color-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) translateZ(0);
+    animation: glowPulse 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.color-glow.available-glow {
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.4), transparent);
+}
+
+.color-glow.partial-glow {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.4), transparent);
+}
+
+.color-glow.full-glow {
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.4), transparent);
+}
+
+/* ===============================================
+   Modal Animations
+   =============================================== */
+
+.modal.fade.show {
+    animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalFadeIn {
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(4px);
+    }
+}
+
+.modal-dialog {
+    animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95) translateZ(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) translateZ(0);
+    }
+}
+
+.modal-content {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+/* ===============================================
+   Status Indicators
+   =============================================== */
+
+.status-indicator {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.status-dot {
+    position: relative;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success-color);
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+.status-dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: inherit;
+    transform: translate(-50%, -50%) translateZ(0);
+    animation: statusPulse 2s ease-in-out infinite;
+    animation-delay: 0.5s;
+    opacity: 0.6;
+}
+
+/* ===============================================
+   Occupancy Bar Animations
+   =============================================== */
+
+.occupancy-bar {
+    position: relative;
+    height: 8px;
+    background: var(--neutral-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.occupancy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--premium-primary), var(--premium-primary-light));
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.occupancy-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+/* ===============================================
+   Zoom & Pan Controls
+   =============================================== */
+
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid var(--neutral-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.zoom-btn:hover {
+    transform: scale(1.1) translateZ(0);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    background: var(--premium-primary);
+    color: white;
+}
+
+.zoom-btn:active {
+    transform: scale(0.95) translateZ(0);
+}
+
+/* ===============================================
+   Particle Effects Container
+   =============================================== */
+
+.particle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--premium-primary);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFloat 6s ease-in-out infinite;
+}
+
+.particle:nth-child(1) { animation-delay: 0s; left: 10%; }
+.particle:nth-child(2) { animation-delay: 1s; left: 30%; }
+.particle:nth-child(3) { animation-delay: 2s; left: 50%; }
+.particle:nth-child(4) { animation-delay: 3s; left: 70%; }
+.particle:nth-child(5) { animation-delay: 4s; left: 90%; }
+
+/* ===============================================
+   Accessibility & Reduced Motion
+   =============================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        animation-delay: 0.01ms !important;
+    }
+
+    .stadium-sector {
+        animation: none;
+    }
+
+    .premium-spinner {
+        animation: none;
+        border: 3px solid var(--neutral-200);
+        border-top-color: var(--premium-primary);
+    }
+}
+
+/* ===============================================
+   Performance Optimizations
+   =============================================== */
+
+/* Use will-change sparingly for elements that will animate */
+.stadium-sector,
+.premium-btn,
+.modal-dialog {
+    will-change: transform, opacity;
+}
+
+/* Remove will-change after animation */
+.animation-complete {
+    will-change: auto;
+}
+
+/* Hardware acceleration hints */
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* ===============================================
+   Advanced Hover Effects
+   =============================================== */
+
+/* 3D tilt effect for cards */
+.tilt-card {
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tilt-card:hover {
+    transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) translateZ(20px);
+}
+
+/* Magnetic button effect */
+.magnetic-btn {
+    position: relative;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===============================================
+   Loading Progress Bar
+   =============================================== */
+
+.progress-bar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--neutral-100);
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg,
+        var(--premium-primary),
+        var(--premium-secondary),
+        var(--premium-primary));
+    background-size: 200% 100%;
+    animation: progressMove 1.5s ease-in-out infinite;
+}
+
+@keyframes progressMove {
+    0% {
+        background-position: 0% 50%;
+        transform: translateX(-100%);
+    }
+    100% {
+        background-position: 100% 50%;
+        transform: translateX(100%);
+    }
+}
+
+/* ===============================================
+   Smooth Scroll Behavior
+   =============================================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+.smooth-scroll-container {
+    scroll-behavior: smooth;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}

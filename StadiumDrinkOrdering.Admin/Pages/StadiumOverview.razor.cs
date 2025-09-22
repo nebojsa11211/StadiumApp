@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 // using StadiumDrinkOrdering.Admin.Components; - Components removed
@@ -9,7 +10,7 @@ using StadiumDrinkOrdering.Shared.Models;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
 
-public partial class StadiumOverview : ComponentBase
+public partial class StadiumOverview : ComponentBase, IDisposable
 {
     [Inject] public IAdminApiService ApiService { get; set; } = default!;
     [Inject] public IJSRuntime JSRuntime { get; set; } = default!;
@@ -51,6 +52,19 @@ public partial class StadiumOverview : ComponentBase
     private string? highlightedTribune;
     private StadiumSummaryDto? stadiumSummary;
 
+    // Mobile interaction properties
+    private bool showMobileControls = true;
+    private double currentZoom = 1.0;
+    private double translateX = 0;
+    private double translateY = 0;
+    private bool isDragging = false;
+    private double lastTouchX = 0;
+    private double lastTouchY = 0;
+    private double lastMouseX = 0;
+    private double lastMouseY = 0;
+    private DateTime lastTouchTime = DateTime.MinValue;
+    private bool isMultiTouch = false;
+
     protected override async Task OnInitializedAsync()
     {
         // Load dynamic stadium layout first (fast and essential)
@@ -59,7 +73,7 @@ public partial class StadiumOverview : ComponentBase
         // Load stadium data for the info panel
         await LoadStadiumData();
 
-        // Load stadium summary for info panel
+        // Load stadium summary for info panel (after stadium data is loaded)
         await LoadStadiumSummary();
 
         // Don't wait for events - they can timeout without affecting stadium display
@@ -107,23 +121,36 @@ public partial class StadiumOverview : ComponentBase
         {
             await Task.Delay(100); // Small delay to ensure stadium renders first
             var eventDtos = await ApiService.GetEventsAsync();
-            events = eventDtos?.Select(e => new Event
+
+            if (eventDtos == null || !eventDtos.Any())
+            {
+                Logger?.LogWarning("No events received from API");
+                events = new List<Event>();
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+
+            events = eventDtos.Select(e => new Event
             {
                 Id = e.Id,
-                EventName = e.Name,
-                EventDate = e.Date ?? DateTime.Now,
+                EventName = !string.IsNullOrWhiteSpace(e.Name) ? e.Name : $"Event {e.Id}",
+                EventDate = e.Date ?? DateTime.UtcNow.AddDays(1), // Use future date as fallback
                 Description = e.Description,
                 TotalSeats = e.Capacity,
                 BaseTicketPrice = (decimal)e.BasePrice,
                 IsActive = e.IsActive,
                 CreatedAt = e.CreatedAt
-            }).ToList() ?? new List<Event>();
+            }).ToList();
+
+            Logger?.LogInformation($"Loaded {events.Count} events from API");
             await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
             // Events loading failed - stadium should still work
             Logger?.LogError(ex, "Failed to load events in background");
+            events = new List<Event>(); // Ensure events list is initialized
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -136,44 +163,65 @@ public partial class StadiumOverview : ComponentBase
 
             Logger.LogInformation("Starting to load stadium data from API...");
 
-            // Try the new stadium viewer endpoint first, then fallback to Stadium/layout
+            // Try the new stadium viewer endpoint first (no authentication required)
             try
             {
-                var viewerResponse = await ApiService.GetAsync<StadiumViewerDto>("stadium-viewer/overview");
-                if (viewerResponse != null)
+                var viewerResponse = await ApiService.GetAsync<StadiumViewerDto>("StadiumViewer/overview");
+                if (viewerResponse != null && viewerResponse.Stands != null && viewerResponse.Stands.Any())
                 {
-                    Logger.LogInformation($"Stadium data loaded successfully: {viewerResponse.Name}");
+                    Logger.LogInformation($"Stadium data loaded successfully from viewer endpoint: {viewerResponse.Name} with {viewerResponse.Stands.Count} stands");
                     stadiumData = viewerResponse;
+                    errorMessage = null; // Clear any previous error
                     return;
+                }
+                else if (viewerResponse != null)
+                {
+                    Logger.LogWarning($"Stadium viewer endpoint returned data but no stands: {viewerResponse.Name}");
+                }
+                else
+                {
+                    Logger.LogWarning("Stadium viewer endpoint returned null");
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogWarning(ex, "Stadium viewer endpoint failed, trying fallback");
+                Logger.LogError(ex, "Stadium viewer endpoint failed: {Message}", ex.Message);
             }
 
-            // Fallback to existing Stadium/layout endpoint
-            var layoutResponse = await ApiService.GetStadiumLayoutAsync();
-            if (layoutResponse != null)
+            // Fallback to existing Stadium/layout endpoint (requires authentication)
+            try
             {
-                Logger.LogInformation($"Stadium layout loaded, converting to viewer format");
-                stadiumData = ConvertStadiumLayoutToViewer(layoutResponse);
+                var layoutResponse = await ApiService.GetStadiumLayoutAsync();
+                if (layoutResponse != null)
+                {
+                    Logger.LogInformation($"Stadium layout loaded from fallback, converting to viewer format");
+                    stadiumData = ConvertStadiumLayoutToViewer(layoutResponse);
+                    errorMessage = null; // Clear any previous error
+                    return;
+                }
+                else
+                {
+                    Logger.LogWarning("Stadium layout endpoint returned null");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Logger.LogWarning("Both stadium endpoints returned null");
-                errorMessage = "Failed to load stadium data - no stadium structure found";
+                Logger.LogError(ex, "Stadium layout endpoint failed: {Message}", ex.Message);
             }
+
+            // If we get here, both endpoints failed
+            Logger.LogWarning("All stadium endpoints failed or returned no data");
+            errorMessage = "Failed to load stadium data - no stadium structure found";
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Exception loading stadium data: {Message}", ex.Message);
-            errorMessage = $"Error loading stadium layout: {ex.Message}";
+            Logger.LogError(ex, "Unexpected exception loading stadium data: {Message}", ex.Message);
+            errorMessage = $"Unexpected error loading stadium data: {ex.Message}";
         }
         finally
         {
             isLoading = false;
-            Logger.LogInformation($"LoadStadiumData completed. stadiumData is null: {stadiumData == null}");
+            Logger.LogInformation($"LoadStadiumData completed. stadiumData is null: {stadiumData == null}, errorMessage: {errorMessage}");
             StateHasChanged(); // Ensure UI updates after loading
         }
     }
@@ -191,12 +239,50 @@ public partial class StadiumOverview : ComponentBase
             }
             else
             {
-                Logger.LogWarning("Stadium summary returned null");
+                Logger.LogWarning("Stadium summary returned null - may require authentication");
+
+                // Generate basic summary from stadiumData if available
+                if (stadiumData != null && stadiumData.Stands != null && stadiumData.Stands.Any())
+                {
+                    var totalSeats = stadiumData.Stands.SelectMany(s => s.Sectors).Sum(s => s.TotalSeats);
+                    var totalSectors = stadiumData.Stands.SelectMany(s => s.Sectors).Count();
+
+                    stadiumSummary = new StadiumSummaryDto
+                    {
+                        TotalSeats = totalSeats,
+                        TotalSectors = totalSectors,
+                        TotalTribunes = stadiumData.Stands.Count,
+                        StadiumName = stadiumData.Name ?? "Main Stadium"
+                    };
+
+                    Logger.LogInformation($"Generated stadium summary from viewer data: {stadiumSummary.TotalSeats} total seats, {stadiumSummary.TotalTribunes} tribunes");
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot generate stadium summary - stadiumData is null: {stadiumData == null}, stands count: {stadiumData?.Stands?.Count ?? -1}");
+                }
             }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading stadium summary: {Message}", ex.Message);
+
+            // Generate basic summary from stadiumData if available and exception occurred
+            if (stadiumData != null && stadiumData.Stands != null)
+            {
+                var totalSeats = stadiumData.Stands.SelectMany(s => s.Sectors).Sum(s => s.TotalSeats);
+                var totalSectors = stadiumData.Stands.SelectMany(s => s.Sectors).Count();
+
+                stadiumSummary = new StadiumSummaryDto
+                {
+                    TotalSeats = totalSeats,
+                    TotalSectors = totalSectors,
+                    TotalTribunes = stadiumData.Stands.Count,
+                    StadiumName = stadiumData.Name ?? "Main Stadium"
+                };
+
+                Logger.LogInformation($"Generated fallback stadium summary from viewer data: {stadiumSummary.TotalSeats} total seats");
+            }
         }
         finally
         {
@@ -442,7 +528,7 @@ public partial class StadiumOverview : ComponentBase
     {
         try
         {
-            var response = await ApiService.GetAsync<EventSeatStatusDto>($"stadium-viewer/event/{eventId}/seat-status");
+            var response = await ApiService.GetAsync<EventSeatStatusDto>($"StadiumViewer/event/{eventId}/seat-status");
             eventSeatStatus = response;
         }
         catch (Exception ex)
@@ -505,7 +591,7 @@ public partial class StadiumOverview : ComponentBase
 
         try
         {
-            var response = await ApiService.GetAsync<StadiumSectorDto>($"stadium-viewer/sector/{sector.Id}/seats");
+            var response = await ApiService.GetAsync<StadiumSectorDto>($"StadiumViewer/sector/{sector.Id}/seats");
             if (response != null)
             {
                 sectorWithSeats = response;
@@ -544,7 +630,7 @@ public partial class StadiumOverview : ComponentBase
         try
         {
             var request = new { seatCode = searchSeatCode };
-            var response = await ApiService.PostAsync<SearchSeatResultDto>("stadium-viewer/search-seat", request);
+            var response = await ApiService.PostAsync<SearchSeatResultDto>("StadiumViewer/search-seat", request);
             
             if (response != null)
             {
@@ -814,5 +900,380 @@ public partial class StadiumOverview : ComponentBase
         };
         
         await OpenSectorModal(stadiumSector);
+    }
+
+    /* ========================================
+       Mobile Touch & Gesture Interaction Methods
+       Responsive Pan, Zoom, and Navigation
+       ======================================== */
+
+    /// <summary>
+    /// Handle touch start for mobile gesture recognition
+    /// </summary>
+    private async Task HandleTouchStart(TouchEventArgs e)
+    {
+        try
+        {
+            if (e.Touches.Length == 1)
+            {
+                // Single touch - potential pan
+                var touch = e.Touches[0];
+                lastTouchX = touch.ClientX;
+                lastTouchY = touch.ClientY;
+                lastTouchTime = DateTime.UtcNow;
+                isDragging = true;
+                isMultiTouch = false;
+            }
+            else if (e.Touches.Length == 2)
+            {
+                // Multi-touch - potential pinch zoom
+                isMultiTouch = true;
+                isDragging = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error handling touch start");
+        }
+    }
+
+    /// <summary>
+    /// Handle touch move for panning and zooming
+    /// </summary>
+    private async Task HandleTouchMove(TouchEventArgs e)
+    {
+        try
+        {
+            if (isDragging && e.Touches.Length == 1)
+            {
+                var touch = e.Touches[0];
+                var deltaX = touch.ClientX - lastTouchX;
+                var deltaY = touch.ClientY - lastTouchY;
+
+                // Update translation
+                translateX += deltaX * 0.5; // Reduce sensitivity for smoother movement
+                translateY += deltaY * 0.5;
+
+                // Constrain translation to reasonable bounds
+                var maxTranslate = 200 * currentZoom;
+                translateX = Math.Max(-maxTranslate, Math.Min(maxTranslate, translateX));
+                translateY = Math.Max(-maxTranslate, Math.Min(maxTranslate, translateY));
+
+                lastTouchX = touch.ClientX;
+                lastTouchY = touch.ClientY;
+
+                await ApplyTransformation();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error handling touch move");
+        }
+    }
+
+    /// <summary>
+    /// Handle touch end and detect tap gestures
+    /// </summary>
+    private async Task HandleTouchEnd(TouchEventArgs e)
+    {
+        try
+        {
+            var touchDuration = DateTime.UtcNow - lastTouchTime;
+
+            // Detect quick tap for toggle legend
+            if (touchDuration.TotalMilliseconds < 200 && !isMultiTouch)
+            {
+                // Quick tap - could be sector selection or legend toggle
+                // Let normal click handlers deal with sector selection
+            }
+
+            isDragging = false;
+            isMultiTouch = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error handling touch end");
+        }
+    }
+
+    /// <summary>
+    /// Handle mouse wheel for desktop zoom
+    /// </summary>
+    private async Task HandleMouseWheel(WheelEventArgs e)
+    {
+        try
+        {
+            if (e.DeltaY < 0)
+            {
+                await ZoomIn();
+            }
+            else if (e.DeltaY > 0)
+            {
+                await ZoomOut();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error handling mouse wheel");
+        }
+    }
+
+    /// <summary>
+    /// Handle mouse down for desktop dragging
+    /// </summary>
+    private void HandleMouseDown(MouseEventArgs e)
+    {
+        try
+        {
+            if (e.Button == 0) // Left mouse button
+            {
+                isDragging = true;
+                lastMouseX = e.ClientX;
+                lastMouseY = e.ClientY;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error handling mouse down");
+        }
+    }
+
+    /// <summary>
+    /// Handle mouse move for desktop panning
+    /// </summary>
+    private async Task HandleMouseMove(MouseEventArgs e)
+    {
+        try
+        {
+            if (isDragging)
+            {
+                var deltaX = e.ClientX - lastMouseX;
+                var deltaY = e.ClientY - lastMouseY;
+
+                translateX += deltaX * 0.3;
+                translateY += deltaY * 0.3;
+
+                // Constrain translation
+                var maxTranslate = 150 * currentZoom;
+                translateX = Math.Max(-maxTranslate, Math.Min(maxTranslate, translateX));
+                translateY = Math.Max(-maxTranslate, Math.Min(maxTranslate, translateY));
+
+                lastMouseX = e.ClientX;
+                lastMouseY = e.ClientY;
+
+                await ApplyTransformation();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error handling mouse move");
+        }
+    }
+
+    /// <summary>
+    /// Handle mouse up to stop dragging
+    /// </summary>
+    private void HandleMouseUp(MouseEventArgs e)
+    {
+        isDragging = false;
+    }
+
+    /// <summary>
+    /// Zoom in on the stadium view
+    /// </summary>
+    private async Task ZoomIn()
+    {
+        try
+        {
+            currentZoom = Math.Min(3.0, currentZoom * 1.2);
+            await ApplyTransformation();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error zooming in");
+        }
+    }
+
+    /// <summary>
+    /// Zoom out on the stadium view
+    /// </summary>
+    private async Task ZoomOut()
+    {
+        try
+        {
+            currentZoom = Math.Max(0.5, currentZoom * 0.8);
+            await ApplyTransformation();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error zooming out");
+        }
+    }
+
+    /// <summary>
+    /// Reset zoom and position to default
+    /// </summary>
+    private async Task ResetZoom()
+    {
+        try
+        {
+            currentZoom = 1.0;
+            translateX = 0;
+            translateY = 0;
+            await ApplyTransformation();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error resetting zoom");
+        }
+    }
+
+    /// <summary>
+    /// Toggle legend visibility for mobile
+    /// </summary>
+    private void ToggleLegendMobile()
+    {
+        showLegend = !showLegend;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Apply transformation to the SVG element
+    /// </summary>
+    private async Task ApplyTransformation()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("applyStadiumTransform",
+                svgContainer, currentZoom, translateX, translateY);
+        }
+        catch (JSDisconnectedException)
+        {
+            Logger.LogWarning("Cannot apply transformation: Blazor circuit disconnected");
+        }
+        catch (JSException jsEx)
+        {
+            Logger.LogWarning(jsEx, "JavaScript error applying transformation");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error applying stadium transformation");
+        }
+    }
+
+    /// <summary>
+    /// Handle device orientation change
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            try
+            {
+                // Initialize mobile controls and gesture support
+                await JSRuntime.InvokeVoidAsync("initializeStadiumGestures", svgContainer);
+
+                // Setup orientation change listener
+                await JSRuntime.InvokeVoidAsync("setupOrientationChangeListener",
+                    DotNetObjectReference.Create(this));
+            }
+            catch (JSDisconnectedException)
+            {
+                Logger.LogWarning("Cannot initialize gestures: Blazor circuit disconnected");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Error initializing mobile gestures");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handle orientation change from JavaScript
+    /// </summary>
+    [JSInvokable]
+    public async Task OnOrientationChanged()
+    {
+        try
+        {
+            // Reset transformation on orientation change for better UX
+            await Task.Delay(200); // Wait for orientation animation
+            await ResetZoom();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error handling orientation change");
+        }
+    }
+
+    /// <summary>
+    /// Handle visibility change (tab switching, app backgrounding)
+    /// </summary>
+    [JSInvokable]
+    public void OnVisibilityChanged(bool isVisible)
+    {
+        try
+        {
+            if (!isVisible)
+            {
+                // Stop any ongoing animations or updates when not visible
+                isDragging = false;
+                isMultiTouch = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error handling visibility change");
+        }
+    }
+
+    /// <summary>
+    /// Check if device has touch support
+    /// </summary>
+    private async Task<bool> IsTouchDevice()
+    {
+        try
+        {
+            return await JSRuntime.InvokeAsync<bool>("isTouchDevice");
+        }
+        catch (Exception)
+        {
+            return false; // Assume non-touch if detection fails
+        }
+    }
+
+    /// <summary>
+    /// Get viewport dimensions for responsive calculations
+    /// </summary>
+    private async Task<(int width, int height)> GetViewportDimensions()
+    {
+        try
+        {
+            var dimensions = await JSRuntime.InvokeAsync<int[]>("getViewportDimensions");
+            return (dimensions[0], dimensions[1]);
+        }
+        catch (Exception)
+        {
+            return (1024, 768); // Default dimensions
+        }
+    }
+
+    /// <summary>
+    /// Dispose method to clean up event listeners
+    /// </summary>
+    public void Dispose()
+    {
+        try
+        {
+            // Clean up JavaScript event listeners
+            _ = JSRuntime.InvokeVoidAsync("cleanupStadiumGestures");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error cleaning up gesture listeners");
+        }
     }
 }

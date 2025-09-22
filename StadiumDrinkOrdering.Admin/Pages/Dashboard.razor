@@ -1,10 +1,5 @@
 @page "/dashboard"
-@using StadiumDrinkOrdering.Shared.Models
-@using StadiumDrinkOrdering.Shared.DTOs
-@using StadiumDrinkOrdering.Admin.Services
-@inject IAdminApiService AdminApiService
-@inject NavigationManager Navigation
-@inject IJSRuntime JSRuntime
+@using StadiumDrinkOrdering.Admin.Components.Skeleton
 
 <PageTitle>Stadium Admin Dashboard</PageTitle>
 
@@ -25,26 +20,61 @@
         </div>
     </div>
 
-    @if (lastUpdated.HasValue)
+    <!-- Loading Progress and Status -->
+    @if (isLoading)
+    {
+        <div class="mb-3">
+            <div class="d-flex align-items-center">
+                <div class="progress flex-grow-1 me-3" style="height: 4px;">
+                    <div class="progress-bar progress-bar-animated"
+                         role="progressbar"
+                         style="width: @(loadingProgress)%"
+                         aria-valuenow="@loadingProgress"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         aria-label="Dashboard loading progress">
+                    </div>
+                </div>
+                <small class="text-muted">@(loadingProgress)%</small>
+            </div>
+            <small class="text-muted d-block mt-1">@loadingMessage</small>
+        </div>
+    }
+    else if (lastUpdated.HasValue)
     {
         <div class="mb-3">
             <small class="text-muted">Last updated: @lastUpdated.Value.ToString("HH:mm:ss")</small>
         </div>
     }
 
-    @if (isLoading && totalOrders == 0)
+    <!-- ARIA Live Region for Screen Readers -->
+    <div aria-live="polite" aria-label="Dashboard loading status" class="visually-hidden" id="dashboard-loading-status">
+        @loadingMessage
+    </div>
+
+    <!-- Key Metrics Cards -->
+    @if (isLoadingMetrics)
     {
-        <div class="text-center p-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+        <!-- Metrics Skeleton Loading State -->
+        <div class="row g-4 mb-4" role="status" aria-label="Loading metrics data">
+            <div class="col-lg-3 col-md-6">
+                <SkeletonMetricCard CardType="Orders" AnimationDelayMs="0" />
             </div>
-            <p class="mt-3">Loading dashboard data...</p>
+            <div class="col-lg-3 col-md-6">
+                <SkeletonMetricCard CardType="Active" AnimationDelayMs="100" />
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <SkeletonMetricCard CardType="Revenue" AnimationDelayMs="200" />
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <SkeletonMetricCard CardType="Health" AnimationDelayMs="300" />
+            </div>
         </div>
     }
-    else
+    else if (!isLoading || totalOrders > 0)
     {
         <!-- Key Metrics Cards -->
-        <div class="row g-4 mb-4">
+        <div class="row g-4 mb-4 content-transition skeleton-fade-in">
             <div class="col-lg-3 col-md-6">
                 <div class="card bg-primary text-white h-100" style="cursor: pointer;" @onclick="NavigateToOrders">
                     <div class="card-body">
@@ -114,8 +144,31 @@
             </div>
         </div>
 
-        <!-- Main Content Row -->
-        <div class="row g-4">
+    }
+
+    <!-- Main Content Row -->
+    @if (isLoadingOrders || isLoadingSystemStatus)
+    {
+        <!-- Orders and Actions Skeleton Loading State -->
+        <div class="row g-4" role="status" aria-label="Loading orders and system data">
+            <!-- Recent Orders Table Skeleton -->
+            <div class="col-lg-8">
+                <SkeletonTable TableType="Orders" RowCount="5" ShowActionButton="true" AnimationDelayMs="400" />
+            </div>
+
+            <!-- Quick Actions and System Status Skeleton -->
+            <div class="col-lg-4">
+                <SkeletonActionButtons SectionType="Dashboard"
+                                     ButtonCount="4"
+                                     IncludeSystemStatus="true"
+                                     StatusItemCount="4"
+                                     AnimationDelayMs="500" />
+            </div>
+        </div>
+    }
+    else if (!isLoading || recentOrders != null)
+    {
+        <div class="row g-4 content-transition skeleton-fade-in">
             <!-- Recent Orders -->
             <div class="col-lg-8">
                 <div class="card">
@@ -224,169 +277,3 @@
     }
 </div>
 
-@code {
-    private bool isLoading = false;
-    private DateTime? lastUpdated;
-    private System.Timers.Timer? autoRefreshTimer;
-
-    // Dashboard data
-    private int totalOrders = 0;
-    private int activeOrders = 0;
-    private decimal todaysRevenue = 0;
-    private string systemHealth = "Healthy";
-    private string systemLoad = "Normal load";
-    private decimal ordersTrend = 0;
-    private decimal revenueTrend = 0;
-    private List<OrderDto>? recentOrders;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadDashboardData();
-        SetupAutoRefresh();
-    }
-
-    private async Task LoadDashboardData()
-    {
-        isLoading = true;
-        StateHasChanged();
-
-        try
-        {
-            // Load dashboard data from API
-            var orders = await AdminApiService.GetOrdersAsync();
-            if (orders != null)
-            {
-                totalOrders = orders.Count();
-                activeOrders = orders.Count(o => o.Status == OrderStatus.Pending || o.Status == OrderStatus.InPreparation);
-                todaysRevenue = orders.Where(o => o.CreatedAt.Date == DateTime.Today).Sum(o => o.TotalAmount);
-                recentOrders = orders.OrderByDescending(o => o.CreatedAt).Take(10).ToList();
-
-                // Mock trend data
-                ordersTrend = 15.2m;
-                revenueTrend = 8.7m;
-            }
-
-            lastUpdated = DateTime.Now;
-        }
-        catch (Exception ex)
-        {
-            // Handle error
-            await JSRuntime.InvokeVoidAsync("console.error", "Failed to load dashboard data:", ex.Message);
-        }
-        finally
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task RefreshData()
-    {
-        await LoadDashboardData();
-        await JSRuntime.InvokeVoidAsync("showToast", "Dashboard refreshed successfully", "success");
-    }
-
-    private async Task ToggleTheme()
-    {
-        await JSRuntime.InvokeVoidAsync("toggleTheme");
-    }
-
-    private void SetupAutoRefresh()
-    {
-        autoRefreshTimer = new System.Timers.Timer(30000); // 30 seconds
-        autoRefreshTimer.Elapsed += async (sender, e) =>
-        {
-            await InvokeAsync(async () =>
-            {
-                await LoadDashboardData();
-            });
-        };
-        autoRefreshTimer.Start();
-    }
-
-    private string GetHealthCardClass()
-    {
-        return systemHealth.ToLower() switch
-        {
-            "healthy" => "bg-success",
-            "warning" => "bg-warning",
-            "critical" => "bg-danger",
-            _ => "bg-secondary"
-        };
-    }
-
-    private string GetHealthIcon()
-    {
-        return systemHealth.ToLower() switch
-        {
-            "healthy" => "oi oi-circle-check",
-            "warning" => "oi oi-warning",
-            "critical" => "oi oi-circle-x",
-            _ => "oi oi-question-mark"
-        };
-    }
-
-    private string GetStatusBadgeClass(OrderStatus status)
-    {
-        return status switch
-        {
-            OrderStatus.Pending => "bg-warning",
-            OrderStatus.Accepted => "bg-primary",
-            OrderStatus.InPreparation => "bg-info",
-            OrderStatus.Ready => "bg-success",
-            OrderStatus.Delivered => "bg-success",
-            OrderStatus.Cancelled => "bg-danger",
-            _ => "bg-secondary"
-        };
-    }
-
-    // Navigation methods
-    private void NavigateToOrders() => Navigation.NavigateTo("/orders");
-    private void NavigateToUsers() => Navigation.NavigateTo("/users");
-    private void NavigateToReports() => Navigation.NavigateTo("/reports");
-    private void NavigateToLogs() => Navigation.NavigateTo("/logs");
-    private void NavigateToOrder(int orderId) => Navigation.NavigateTo($"/orders/{orderId}");
-
-    public void Dispose()
-    {
-        autoRefreshTimer?.Stop();
-        autoRefreshTimer?.Dispose();
-    }
-}
-
-<style>
-    .admin-dashboard-container {
-        padding: 1rem;
-    }
-
-    .spin {
-        animation: spin 1s linear infinite;
-    }
-
-    @@keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
-    .card {
-        border: 1px solid rgba(0,0,0,.125);
-        border-radius: 0.375rem;
-    }
-
-    .card-header {
-        background-color: rgba(0,0,0,.03);
-        border-bottom: 1px solid rgba(0,0,0,.125);
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(0,0,0,.075);
-    }
-
-    .fs-1 {
-        font-size: 2.5rem !important;
-    }
-
-    .opacity-75 {
-        opacity: 0.75;
-    }
-</style>

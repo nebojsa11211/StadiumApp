@@ -18,8 +18,8 @@ Write-Host "🚀 Starting Visual Studio Docker Debug Session..." -ForegroundColo
 Set-Location $ProjectPath
 
 # Forcefully kill any processes using the required ports
-Write-Host "🔥 Forcefully cleaning up ports: 5001, 5002, 5003, 9000, 9001, 9002..." -ForegroundColor Red
-$ports = @(5001, 5002, 5003, 9000, 9001, 9002, 1433)
+Write-Host "🔥 Forcefully cleaning up ports: 9010, 9011, 9030, 9031, 9020, 9021, 9040, 9041..." -ForegroundColor Red
+$ports = @(9010, 9011, 9030, 9031, 9020, 9021, 9040, 9041)
 foreach ($port in $ports) {
     try {
         # Kill processes using the port
@@ -39,14 +39,14 @@ foreach ($port in $ports) {
 # Forcefully remove any existing containers that might conflict
 Write-Host "🧹 Forcefully removing existing containers..." -ForegroundColor Yellow
 $containers = @(
-    "stadium-sqlserver-debug",
-    "stadium-api-debug", 
-    "stadium-customer-debug",
-    "stadium-admin-debug",
-    "stadium-sqlserver-dev",
+    "stadium-api",
+    "stadium-admin",
+    "stadium-customer",
+    "stadium-staff",
     "stadiumdrinkordering.api",
     "stadiumdrinkordering.customer",
-    "stadiumdrinkordering.admin"
+    "stadiumdrinkordering.admin",
+    "stadiumdrinkordering.staff"
 )
 
 foreach ($container in $containers) {
@@ -62,29 +62,24 @@ foreach ($container in $containers) {
 Write-Host "🌐 Cleaning up networks..." -ForegroundColor Yellow
 docker network prune -f
 try {
-    docker network rm stadium-network-debug 2>$null
-    docker network rm stadiontest_stadium-network 2>$null
     docker network rm stadium-network 2>$null
+    docker network rm stadiumdrinkordering_stadium-network 2>$null
+    docker network rm stadiumapp_stadium-network 2>$null
 } catch {
     Write-Host "   Networks already cleaned up" -ForegroundColor Gray
 }
 
-# Clean up volumes to ensure fresh data
-Write-Host "💾 Cleaning up debug volumes..." -ForegroundColor Yellow
-try {
-    docker volume rm stadiontest_sqlserver_debug_data 2>$null
-    docker volume rm sqlserver_debug_data 2>$null
-} catch {
-    Write-Host "   Volumes already cleaned up" -ForegroundColor Gray
-}
+# Clean up any lingering volumes (PostgreSQL is external, so just cleanup any temp volumes)
+Write-Host "💾 Cleaning up temporary volumes..." -ForegroundColor Yellow
+docker volume prune -f
 
 # Build fresh images
 Write-Host "🏗️ Building fresh container images..." -ForegroundColor Cyan
-docker-compose -f docker-compose.yml -f docker-compose.vs.debug.yml build --no-cache
+docker-compose -f docker-compose.yml -f docker-compose.override.yml build --no-cache
 
-# Start containers
+# Start containers with force-recreate
 Write-Host "▶️ Starting fresh containers..." -ForegroundColor Green
-docker-compose -f docker-compose.yml -f docker-compose.vs.debug.yml up -d
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --force-recreate --remove-orphans
 
 # Wait for services to be ready
 Write-Host "⏳ Waiting for services to be ready..." -ForegroundColor Blue
@@ -95,8 +90,8 @@ $servicesReady = $false
 while ($attempt -lt $maxAttempts -and !$servicesReady) {
     $attempt++
     try {
-        $runningContainers = docker-compose -f docker-compose.yml -f docker-compose.vs.debug.yml ps --services --filter "status=running" | Measure-Object | Select-Object -ExpandProperty Count
-        $totalServices = 4  # sqlserver, api, customer, admin
+        $runningContainers = docker-compose -f docker-compose.yml -f docker-compose.override.yml ps --services --filter "status=running" | Measure-Object | Select-Object -ExpandProperty Count
+        $totalServices = 2  # api, admin (current services in docker-compose.yml)
         
         if ($runningContainers -ge $totalServices) {
             $servicesReady = $true
@@ -117,7 +112,7 @@ if (!$servicesReady) {
 
 # Final port verification
 Write-Host "🔍 Verifying ports are available..." -ForegroundColor Blue
-foreach ($port in @(5001, 5002, 5003)) {
+foreach ($port in @(9010, 9030)) {
     $portCheck = Test-NetConnection -ComputerName "localhost" -Port $port -InformationLevel Quiet -ErrorAction SilentlyContinue
     if ($portCheck) {
         Write-Host "   ✅ Port $port is available" -ForegroundColor Green
@@ -127,6 +122,5 @@ foreach ($port in @(5001, 5002, 5003)) {
 }
 
 Write-Host "🎯 Debug session ready!" -ForegroundColor Green
-Write-Host "   API: https://localhost:7010" -ForegroundColor Cyan
-Write-Host "   Customer: https://localhost:7020" -ForegroundColor Cyan
-Write-Host "   Admin: https://localhost:7030" -ForegroundColor Cyan
+Write-Host "   API: https://localhost:9010" -ForegroundColor Cyan
+Write-Host "   Admin: https://localhost:9030" -ForegroundColor Cyan

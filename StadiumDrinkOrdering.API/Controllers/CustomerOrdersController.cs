@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace StadiumDrinkOrdering.API.Controllers;
 
 [ApiController]
-[Route("api/customer/orders")]
+[Route("customer/orders")]
 public class CustomerOrdersController : ControllerBase
 {
     private readonly ApplicationDbContext _context;

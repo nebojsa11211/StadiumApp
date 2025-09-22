@@ -16,7 +16,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Analytics
             try
             {
                 var content = CreateJsonContent(filter);
-                var response = await HttpClient.PostAsync("api/analytics/customers", content);
+                var response = await HttpClient.PostAsync("analytics/customers", content);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseJson = await response.Content.ReadAsStringAsync();
@@ -34,7 +34,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Analytics
         {
             try
             {
-                var response = await HttpClient.GetAsync("api/analytics/customers/summary");
+                var response = await HttpClient.GetAsync("analytics/customers/summary");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -54,7 +54,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Analytics
             try
             {
                 var content = CreateJsonContent(filter);
-                return await HttpClient.PostAsync("api/analytics/customers/export", content);
+                return await HttpClient.PostAsync("analytics/customers/export", content);
             }
             catch (Exception ex)
             {

@@ -18,27 +18,27 @@ public class AuthenticationConfiguration
     /// <summary>
     /// Login endpoint path
     /// </summary>
-    public string LoginEndpoint { get; set; } = "/api/auth/login";
+    public string LoginEndpoint { get; set; } = "/auth/login";
 
     /// <summary>
     /// Logout endpoint path
     /// </summary>
-    public string LogoutEndpoint { get; set; } = "/api/auth/logout";
+    public string LogoutEndpoint { get; set; } = "/auth/logout";
 
     /// <summary>
     /// Token refresh endpoint path
     /// </summary>
-    public string RefreshEndpoint { get; set; } = "/api/auth/refresh";
+    public string RefreshEndpoint { get; set; } = "/auth/refresh";
 
     /// <summary>
     /// Register endpoint path
     /// </summary>
-    public string RegisterEndpoint { get; set; } = "/api/auth/register";
+    public string RegisterEndpoint { get; set; } = "/auth/register";
 
     /// <summary>
     /// Token validation endpoint path
     /// </summary>
-    public string ValidateEndpoint { get; set; } = "/api/auth/validate";
+    public string ValidateEndpoint { get; set; } = "/auth/validate";
 
     /// <summary>
     /// Local storage key prefix for this application

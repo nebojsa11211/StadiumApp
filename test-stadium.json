@@ -1,0 +1,148 @@
+{
+  "name": "Test Stadium",
+  "description": "Simple test stadium with 4 tribunes and 8 sectors",
+  "capacity": 800,
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "description": "North stand",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Ring 1",
+          "priceMultiplier": 1.0,
+          "sectors": [
+            {
+              "code": "N1",
+              "name": "North Sector 1",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            },
+            {
+              "code": "N2",
+              "name": "North Sector 2",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "South Tribune",
+      "description": "South stand",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Ring 1",
+          "priceMultiplier": 1.0,
+          "sectors": [
+            {
+              "code": "S1",
+              "name": "South Sector 1",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            },
+            {
+              "code": "S2",
+              "name": "South Sector 2",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "name": "East Tribune",
+      "description": "East stand",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Ring 1",
+          "priceMultiplier": 1.0,
+          "sectors": [
+            {
+              "code": "E1",
+              "name": "East Sector 1",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            },
+            {
+              "code": "E2",
+              "name": "East Sector 2",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "name": "West Tribune",
+      "description": "West stand",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Ring 1",
+          "priceMultiplier": 1.0,
+          "sectors": [
+            {
+              "code": "W1",
+              "name": "West Sector 1",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            },
+            {
+              "code": "W2",
+              "name": "West Sector 2",
+              "type": "standard",
+              "rows": 10,
+              "seatsPerRow": 10,
+              "startRow": 1,
+              "startSeat": 1,
+              "priceCategory": "A"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "createdDate": "2025-09-21",
+    "lastModified": "2025-09-21"
+  }
+}

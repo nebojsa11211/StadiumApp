@@ -32,7 +32,7 @@ public class StadiumSvgService : IStadiumSvgService
         {
             _logger.LogInformation("Fetching stadium SVG layout from API");
             
-            var response = await _httpClient.GetAsync("api/stadium-svg/layout");
+            var response = await _httpClient.GetAsync("stadium-svg/layout");
             
             if (response.IsSuccessStatusCode)
             {
@@ -67,7 +67,7 @@ public class StadiumSvgService : IStadiumSvgService
         {
             _logger.LogInformation("Fetching stadium SVG layout with event data for event {EventId}", eventId);
             
-            var response = await _httpClient.GetAsync($"api/stadium-svg/layout/event/{eventId}");
+            var response = await _httpClient.GetAsync($"stadium-svg/layout/event/{eventId}");
             
             if (response.IsSuccessStatusCode)
             {
@@ -100,7 +100,7 @@ public class StadiumSvgService : IStadiumSvgService
         {
             _logger.LogInformation("Fetching HNK Rijeka stadium layout from API");
             
-            var response = await _httpClient.GetAsync("api/stadium-svg/layout/hnk-rijeka");
+            var response = await _httpClient.GetAsync("stadium-svg/layout/hnk-rijeka");
             
             if (response.IsSuccessStatusCode)
             {
@@ -133,7 +133,7 @@ public class StadiumSvgService : IStadiumSvgService
         {
             _logger.LogInformation("Refreshing stadium layout cache via API");
             
-            var response = await _httpClient.PostAsync("api/stadium-svg/layout/refresh", null);
+            var response = await _httpClient.PostAsync("stadium-svg/layout/refresh", null);
             
             if (response.IsSuccessStatusCode)
             {
@@ -163,7 +163,7 @@ public class StadiumSvgService : IStadiumSvgService
         {
             _logger.LogDebug("Checking stadium data availability via API");
             
-            var response = await _httpClient.GetAsync("api/stadium-svg/status");
+            var response = await _httpClient.GetAsync("stadium-svg/status");
             
             if (response.IsSuccessStatusCode)
             {

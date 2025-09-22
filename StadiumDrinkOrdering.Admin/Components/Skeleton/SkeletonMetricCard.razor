@@ -1,0 +1,79 @@
+@*
+    SkeletonMetricCard.razor
+    Professional skeleton loading placeholder for dashboard metric cards
+    Mimics the structure of actual metric cards with shimmer animation
+*@
+
+<div class="skeleton-metric-card skeleton-container"
+     role="status"
+     aria-label="Loading metric data"
+     tabindex="0"
+     id="skeleton-metric-card-@CardType.ToLowerInvariant()">
+
+    <div class="skeleton-metric-header">
+        <div class="skeleton-metric-content">
+            <!-- Card title skeleton -->
+            <div class="skeleton skeleton-metric-label" aria-hidden="true"></div>
+
+            <!-- Large metric value skeleton -->
+            <div class="skeleton skeleton-metric-value" aria-hidden="true"></div>
+
+            <!-- Trend/subtitle skeleton -->
+            <div class="skeleton skeleton-metric-trend" aria-hidden="true"></div>
+        </div>
+
+        <!-- Icon placeholder -->
+        <div class="skeleton skeleton-metric-icon" aria-hidden="true"></div>
+    </div>
+
+    <!-- Loading indicator for screen readers -->
+    <span class="visually-hidden">Loading @CardType.ToLowerInvariant() metric data...</span>
+
+    <!-- Optional loading spinner -->
+    @if (ShowLoadingIndicator)
+    {
+        <div class="skeleton-loading-indicator" aria-hidden="true"></div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Type of metric card for semantic identification (Revenue, Orders, Users, etc.)
+    /// </summary>
+    [Parameter] public string CardType { get; set; } = "Metric";
+
+    /// <summary>
+    /// Whether to show the spinning loading indicator
+    /// </summary>
+    [Parameter] public bool ShowLoadingIndicator { get; set; } = false;
+
+    /// <summary>
+    /// Additional CSS classes to apply to the skeleton card
+    /// </summary>
+    [Parameter] public string CssClass { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Additional attributes to apply to the skeleton container
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Custom animation delay for staggered loading effects
+    /// </summary>
+    [Parameter] public int AnimationDelayMs { get; set; } = 0;
+
+    protected override void OnParametersSet()
+    {
+        // Apply animation delay if specified
+        if (AnimationDelayMs > 0 && AdditionalAttributes != null)
+        {
+            AdditionalAttributes["style"] = $"animation-delay: {AnimationDelayMs}ms; {AdditionalAttributes.GetValueOrDefault("style", "")}";
+        }
+        else if (AnimationDelayMs > 0)
+        {
+            AdditionalAttributes ??= new Dictionary<string, object>();
+            AdditionalAttributes["style"] = $"animation-delay: {AnimationDelayMs}ms;";
+        }
+    }
+}

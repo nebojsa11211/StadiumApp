@@ -111,7 +111,8 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
             {
                 loginUrl += $"?returnUrl={Uri.EscapeDataString(returnUrl)}";
             }
-            _navigation.NavigateTo(loginUrl, forceLoad: true);
+            // Use normal navigation instead of forceLoad to prevent refresh loops
+            _navigation.NavigateTo(loginUrl);
         }
 
         public async Task ShowPermissionDeniedAsync(string? resource = null)

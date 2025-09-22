@@ -67,7 +67,8 @@ public partial class MainLayout : LayoutComponentBase, IAsyncDisposable
         Console.WriteLine("HandleLogout called");
         await AuthStateService.LogoutAsync();
         Console.WriteLine("LogoutAsync completed");
-        NavigationManager.NavigateTo("/login", forceLoad: true);
+        // Use normal navigation instead of forceLoad to prevent refresh loops
+        NavigationManager.NavigateTo("/login");
         Console.WriteLine("Navigation triggered");
     }
 

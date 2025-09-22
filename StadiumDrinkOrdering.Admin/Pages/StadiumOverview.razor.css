@@ -67,22 +67,26 @@
     flex-direction: column;
     gap: var(--space-lg);
     min-height: calc(100vh - 120px);
+    height: calc(100vh - 120px);
 }
 
 /* Desktop: Side-by-side layout */
 @media (min-width: 1024px) {
     .stadium-layout-container {
-        display: grid;
-        grid-template-columns: 380px 1fr;
+        display: flex;
+        flex-direction: column;
         gap: var(--space-xl);
-        align-items: start;
+        align-items: stretch;
     }
 }
 
-/* Extra large screens: More space for info panel */
+/* Extra large screens: Same as desktop */
 @media (min-width: 1400px) {
     .stadium-layout-container {
-        grid-template-columns: 420px 1fr;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xl);
+        align-items: stretch;
     }
 }
 
@@ -91,6 +95,7 @@
     display: grid;
     grid-template-rows: auto 1fr;
     min-height: calc(100vh - 120px);
+    height: 100%;
     background: linear-gradient(135deg, var(--viewer-surface-dark) 0%, var(--viewer-primary) 100%);
     gap: var(--space-lg);
     padding: var(--space-lg);
@@ -283,7 +288,8 @@
     box-shadow: var(--shadow-xl);
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
-    min-height: 500px;
+    height: 100%;
+    min-height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;

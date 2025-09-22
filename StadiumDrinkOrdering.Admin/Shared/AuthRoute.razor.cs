@@ -14,8 +14,11 @@ public partial class AuthRoute : ComponentBase, IDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        // Ensure authentication is initialized before checking state
-        await AuthStateService.InitializeAsync();
+        // DO NOT call InitializeAsync here - it's already called in App.razor.cs
+        // This prevents multiple initialization calls that can cause loops
+
+        // Wait a moment to ensure App.razor has initialized authentication
+        await Task.Delay(50);
 
         // Now it's safe to check authentication state
         isChecking = false;

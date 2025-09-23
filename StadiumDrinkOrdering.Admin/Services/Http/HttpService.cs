@@ -15,7 +15,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Http
             _tokenStorage = tokenStorage;
         }
 
-        private void SetAuthorizationHeader()
+        private new void SetAuthorizationHeader()
         {
             if (!string.IsNullOrEmpty(_tokenStorage.Token))
             {

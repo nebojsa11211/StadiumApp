@@ -239,12 +239,12 @@
 <!-- Create User Modal -->
 @if (showCreateModal)
 {
-    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog">
+    <div class="modal fade show" id="admin-users-modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true" aria-labelledby="admin-users-modal-title">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add New User</h5>
-                    <button type="button" class="btn-close" @onclick="CloseCreateModal" id="admin-users-modal-close-btn"></button>
+                    <h5 class="modal-title" id="admin-users-modal-title">Add New User</h5>
+                    <button type="button" class="btn-close" @onclick="CloseCreateModal" id="admin-users-modal-close-btn" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <EditForm Model="newUser" OnValidSubmit="CreateUser">
@@ -253,27 +253,27 @@
 
                         <div class="mb-3">
                             <label class="form-label">Username *</label>
-                            <InputText class="form-control" @bind-Value="newUser.Username" />
+                            <InputText class="form-control" @bind-Value="newUser.Username" id="admin-users-modal-username-input" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Email *</label>
-                            <InputText class="form-control" @bind-Value="newUser.Email" type="email" />
+                            <InputText class="form-control" @bind-Value="newUser.Email" type="email" id="admin-users-modal-email-input" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
-                            <InputText class="form-control" @bind-Value="newUser.FirstName" />
+                            <InputText class="form-control" @bind-Value="newUser.FirstName" id="admin-users-modal-name-input" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Password *</label>
-                            <InputText class="form-control" @bind-Value="newUser.Password" type="password" />
+                            <InputText class="form-control" @bind-Value="newUser.Password" type="password" id="admin-users-modal-password-input" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Role *</label>
-                            <InputSelect class="form-select" @bind-Value="newUser.Role">
+                            <InputSelect class="form-select" @bind-Value="newUser.Role" id="admin-users-modal-role-select">
                                 <option value="Customer">Customer</option>
                                 <option value="Staff">Staff</option>
                                 <option value="Admin">Admin</option>
@@ -295,6 +295,7 @@
             </div>
         </div>
     </div>
+    <div class="modal-backdrop fade show"></div>
 }
 
 

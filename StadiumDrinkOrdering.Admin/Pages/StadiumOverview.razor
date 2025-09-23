@@ -1,378 +1,512 @@
 @page "/admin/stadium-overview"
-@using StadiumDrinkOrdering.Admin.Components.Stadium
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
 @using System.Globalization
 
-<PageTitle>Stadium Overview - Admin</PageTitle>
+<PageTitle>Stadium Operations Center - Admin</PageTitle>
 
-<div class="container-fluid stadium-overview-container premium-overview animated-overview" id="stadium-overview-container" role="main" aria-labelledby="stadium-overview-title">
-    <!-- Skip to Content Link for Accessibility -->
-    <a href="#stadium-main-view" class="skip-to-content sr-only-focusable">Skip to stadium visualization</a>
+<!-- Skip to Content Link for Accessibility -->
+<a href="#stadium-main-content" class="skip-to-content sr-only-focusable">Skip to stadium content</a>
 
-    <!-- Screen Reader Live Region for Dynamic Updates -->
-    <div aria-live="polite" aria-atomic="true" class="live-region" id="stadium-status-updates"></div>
-    <div class="overview-header premium-overview-header animated-header">
-        <div class="header-content animated-content">
-            <div class="header-icon-large animated-icon">
-                <i class="bi bi-building"></i>
-                <div class="header-glow animated-glow"></div>
+<!-- Live Region for Dynamic Updates -->
+<div aria-live="polite" aria-atomic="true" class="live-region" id="stadium-status-updates"></div>
+
+<div class="stadium-overview-wrapper" role="main" aria-labelledby="stadium-overview-title">
+    <!-- Enhanced Header with Real-time Status -->
+    <header class="stadium-overview-header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="bi bi-building" aria-hidden="true"></i>
             </div>
-            <div class="header-text-content animated-text">
-                <h1 class="overview-title" id="stadium-overview-title">Stadium Operations Center</h1>
-                <p class="overview-subtitle">Real-time stadium management & analytics dashboard</p>
+            <div class="header-info">
+                <h1 id="stadium-overview-title" class="overview-title">Stadium Operations Center</h1>
+                <p class="overview-subtitle">Real-time stadium management dashboard</p>
+            </div>
+            <div class="header-status">
+                <div class="status-indicator @(isLoading ? "loading" : "online")">
+                    <div class="status-dot" aria-hidden="true"></div>
+                    <span class="status-text">@(isLoading ? "Loading..." : "System Online")</span>
+                </div>
+                @if (lastUpdateTime.HasValue)
+                {
+                    <div class="last-update">
+                        <small>Updated: @lastUpdateTime.Value.ToString("HH:mm:ss")</small>
+                    </div>
+                }
             </div>
         </div>
-        <div class="header-actions animated-actions">
-            <div class="status-indicator online animated-status">
-                <div class="status-dot"></div>
-                <span>System Online</span>
-            </div>
-        </div>
-    </div>
+    </header>
 
-    <!-- Stadium Information and Map Layout -->
-    <div class="stadium-layout-container @(isInfoPanelCollapsed ? "info-panel-collapsed" : "info-panel-expanded")" id="stadium-layout-container">
-        <!-- Stadium Information Panel -->
-        <StadiumInfoPanel
-            Summary="@stadiumSummary"
-            IsLoading="@isLoading"
-            IsCollapsed="@isInfoPanelCollapsed"
-            IsCollapsedChanged="@((bool collapsed) => isInfoPanelCollapsed = collapsed)" />
-
-        <!-- Stadium Map Section -->
-        <div class="stadium-viewer-container premium-viewer" id="stadium-viewer-container">
-            <div class="viewer-header premium-viewer-header" id="stadium-viewer-header">
-                <div class="controls-section-header">
-                    <h3 class="controls-title">
-                        <i class="bi bi-sliders"></i>
-                        Stadium Control Panel
-                    </h3>
-                    <p class="controls-subtitle">Event selection, seat search, and visualization controls</p>
-                </div>
-
-                <div class="viewer-controls premium-controls animated-controls" id="stadium-viewer-controls">
-                    <div class="control-group event-control-group animated-control-group" style="--group-index: 0;" id="event-selector-container">
-                        <div class="control-header animated-control-header">
-                            <label for="eventSelect" class="control-label animated-label" id="event-select-label">
-                                <i class="bi bi-calendar-event"></i>
-                                Active Event
-                            </label>
-                            <span class="control-description">Select event to view occupancy data</span>
-                        </div>
-                        <select id="eventSelect" class="form-select premium-select animated-select" @bind="selectedEventId" @bind:after="OnEventChanged">
-                            <option value="0">-- No Event Selected --</option>
-                            @if (events != null)
-                            {
-                                @foreach (var evt in events)
-                                {
-                                    <option value="@evt.Id">@(!string.IsNullOrWhiteSpace(evt.EventName) ? evt.EventName : $"Event {evt.Id}") - @evt.EventDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)</option>
-                                }
-                            }
-                        </select>
-                    </div>
-
-                    <div class="control-group search-control-group animated-control-group" style="--group-index: 1;" id="seat-search-container">
-                        <div class="control-header animated-control-header">
-                            <label class="control-label animated-label">
-                                <i class="bi bi-search"></i>
-                                Seat Locator
-                            </label>
-                            <span class="control-description">Find specific seats in stadium</span>
-                        </div>
-                        <div class="search-input-group animated-input-group">
-                            <input type="text" class="form-control premium-input animated-input"
-                                   placeholder="Enter seat code (e.g., N1A-R5S12)"
-                                   @bind="searchSeatCode"
-                                   @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchSeat(); })"
-                                   id="seat-search-input" />
-                            <button class="btn premium-search-btn animated-btn magnetic-btn" @onclick="SearchSeat" id="seat-search-button">
-                                <i class="bi bi-search"></i>
-                                <span class="btn-text">Locate</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="control-group view-control-group animated-control-group" style="--group-index: 2;" id="view-options-container">
-                        <div class="control-header animated-control-header">
-                            <label class="control-label animated-label">
-                                <i class="bi bi-eye"></i>
-                                Display Options
-                            </label>
-                            <span class="control-description">Customize visualization settings</span>
-                        </div>
-                        <div class="view-options premium-view-options animated-view-options">
-                            <button class="btn premium-toggle-btn animated-btn magnetic-btn @(showLegend ? "active" : "")"
-                                    @onclick="() => showLegend = !showLegend"
-                                    id="toggle-legend-button">
-                                <i class="bi bi-info-circle"></i>
-                                <span class="btn-text">Legend</span>
-                            </button>
-                            <button class="btn premium-toggle-btn animated-btn magnetic-btn @(showOccupancy ? "active" : "")"
-                                    @onclick="() => showOccupancy = !showOccupancy"
-                                    id="toggle-occupancy-button">
-                                <i class="bi bi-pie-chart"></i>
-                                <span class="btn-text">Analytics</span>
-                            </button>
-                            @if (selectedEventId > 0)
-                            {
-                                <button class="btn premium-action-btn animated-btn magnetic-btn @(isSimulating ? "loading" : "")"
-                                        @onclick="SimulateTicketSales"
-                                        disabled="@isSimulating"
-                                        id="admin-stadium-simulate-btn">
-                                    @if (isSimulating)
-                                    {
-                                        <span class="premium-spinner spinner-border-sm me-2"></span>
-                                        <span class="btn-text">Processing...</span>
-                                    }
-                                    else
-                                    {
-                                        <i class="bi bi-lightning"></i>
-                                        <span class="btn-text">Simulate Sales</span>
-                                    }
-                                </button>
-                            }
-                        </div>
-                    </div>
-                </div>
+    <!-- Main Content Grid -->
+    <main id="stadium-main-content" class="stadium-main-content">
+        <!-- Control Panel -->
+        <section class="control-panel" aria-labelledby="control-panel-title">
+            <div class="control-panel-header">
+                <h2 id="control-panel-title" class="panel-title">
+                    <i class="bi bi-sliders" aria-hidden="true"></i>
+                    Control Panel
+                </h2>
+                <p class="panel-subtitle">Manage events and view settings</p>
             </div>
 
-            @* Dynamic Stadium Display - Always render, handle null inside *@
-            <!-- Dynamic Stadium Display -->
-            <div class="stadium-main-view" id="stadium-main-view">
-            @if (stadiumLayout != null)
-            {
-                <!-- SVG-based stadium rendering -->
-                <div class="svg-container" @ref="svgContainer" id="stadium-svg-container"
-                     @ontouchstart="HandleTouchStart" @ontouchmove="HandleTouchMove" @ontouchend="HandleTouchEnd"
-                     @onwheel="HandleMouseWheel" @onmousedown="HandleMouseDown" @onmousemove="HandleMouseMove" @onmouseup="HandleMouseUp">
-                    <StadiumSvgRenderer
-                        Layout="@stadiumLayout"
-                        EventSeatStatus="@svgEventSeatStatus"
-                        ShowSeatCount="@showOccupancy"
-                        OnSectorClick="@OnSectorClicked" />
-                </div>
-
-                <!-- Mobile Navigation Controls -->
-                <div class="mobile-controls d-md-none" id="stadium-mobile-controls" style="display: @(showMobileControls ? "flex" : "none")">
-                    <button class="mobile-control-btn" @onclick="ZoomIn" aria-label="Zoom in" id="mobile-zoom-in-btn">
-                        <i class="bi bi-zoom-in"></i>
-                    </button>
-                    <button class="mobile-control-btn" @onclick="ZoomOut" aria-label="Zoom out" id="mobile-zoom-out-btn">
-                        <i class="bi bi-zoom-out"></i>
-                    </button>
-                    <button class="mobile-control-btn" @onclick="ResetZoom" aria-label="Reset zoom" id="mobile-reset-zoom-btn">
-                        <i class="bi bi-arrows-fullscreen"></i>
-                    </button>
-                    <button class="mobile-control-btn" @onclick="ToggleLegendMobile" aria-label="Toggle legend" id="mobile-toggle-legend-btn">
-                        <i class="bi bi-info-circle"></i>
-                    </button>
-                </div>
-            }
-            else if (stadiumData != null && stadiumData.Stands != null && stadiumData.Stands.Any())
-            {
-                <!-- Data-based stadium display -->
-                <div class="stadium-data-view" id="stadium-data-view">
-                    <div class="alert alert-success">
-                        <h5><i class="bi bi-check-circle"></i> Stadium Data Loaded</h5>
-                        <p><strong>@stadiumData.Name</strong> - @stadiumData.Stands.Count stands with @stadiumData.Stands.SelectMany(s => s.Sectors).Count() sectors</p>
-                        <p>Total seats: <strong>@stadiumData.Stands.SelectMany(s => s.Sectors).Sum(s => s.TotalSeats)</strong></p>
-                    </div>
-
-                    <!-- Stadium sections overview -->
-                    <div class="row">
-                        @foreach (var stand in stadiumData.Stands)
+            <div class="control-groups">
+                <!-- Event Selection -->
+                <div class="control-group" id="event-selector-group">
+                    <label for="event-select" class="control-label">
+                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                        Active Event
+                    </label>
+                    <select id="event-select"
+                            class="form-select"
+                            @bind="selectedEventId"
+                            @bind:after="OnEventChanged"
+                            aria-describedby="event-help">
+                        <option value="0">-- No Event Selected --</option>
+                        @if (events != null)
                         {
-                            <div class="col-md-6 mb-3">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h6 class="mb-0">@stand.Name (@stand.TribuneCode)</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <p>Sectors: @stand.Sectors.Count</p>
-                                        <p>Total seats: @stand.Sectors.Sum(s => s.TotalSeats)</p>
+                            @foreach (var evt in events)
+                            {
+                                <option value="@evt.Id">
+                                    @(!string.IsNullOrWhiteSpace(evt.EventName) ? evt.EventName : $"Event {evt.Id}") -
+                                    @evt.EventDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)
+                                </option>
+                            }
+                        }
+                    </select>
+                    <small id="event-help" class="form-text text-muted">
+                        Select an event to view occupancy data
+                    </small>
+                </div>
 
-                                        @foreach (var sector in stand.Sectors)
-                                        {
-                                            <span class="badge bg-primary me-1 mb-1" style="background-color: @sector.FillColor !important;">
-                                                @sector.Name (@sector.TotalSeats seats)
-                                            </span>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
+                <!-- Seat Search -->
+                <div class="control-group" id="seat-search-group">
+                    <label for="seat-search-input" class="control-label">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        Seat Locator
+                    </label>
+                    <div class="input-group">
+                        <input type="text"
+                               id="seat-search-input"
+                               class="form-control"
+                               placeholder="Enter seat code (e.g., N1A-R5S12)"
+                               @bind="searchSeatCode"
+                               @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchSeat(); })"
+                               aria-describedby="search-help" />
+                        <button class="btn btn-outline-primary"
+                                @onclick="SearchSeat"
+                                type="button"
+                                aria-label="Search for seat">
+                            <i class="bi bi-search" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <small id="search-help" class="form-text text-muted">
+                        Find specific seats using stadium naming convention
+                    </small>
+                </div>
+
+                <!-- Display Options -->
+                <div class="control-group" id="display-options-group">
+                    <span class="control-label">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                        Display Options
+                    </span>
+                    <div class="btn-group" role="group" aria-label="Display options">
+                        <button type="button"
+                                class="btn btn-outline-secondary @(showLegend ? "active" : "")"
+                                @onclick="ToggleLegend"
+                                aria-pressed="@showLegend.ToString().ToLower()">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            Legend
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-secondary @(showOccupancy ? "active" : "")"
+                                @onclick="ToggleOccupancy"
+                                aria-pressed="@showOccupancy.ToString().ToLower()">
+                            <i class="bi bi-pie-chart" aria-hidden="true"></i>
+                            Analytics
+                        </button>
+                        @if (selectedEventId > 0)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary @(isSimulating ? "loading" : "")"
+                                    @onclick="SimulateTicketSales"
+                                    disabled="@isSimulating">
+                                @if (isSimulating)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                                    <span>Processing...</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-lightning" aria-hidden="true"></i>
+                                    <span>Simulate Sales</span>
+                                }
+                            </button>
                         }
                     </div>
                 </div>
-            }
-            else if (!isLoading && !string.IsNullOrEmpty(errorMessage))
-            {
-                <!-- Error state -->
-                <div class="alert alert-warning text-center">
-                    <h5><i class="bi bi-exclamation-triangle"></i> Stadium Layout Error</h5>
-                    <p>@errorMessage</p>
-                    <button class="btn btn-primary" @onclick="LoadStadiumLayout" id="admin-stadium-overview-reload-btn">
-                        <i class="bi bi-arrow-clockwise"></i> Retry
+            </div>
+        </section>
+
+        <!-- Stadium Visualization -->
+        <section class="stadium-visualization" aria-labelledby="stadium-viz-title">
+            <div class="visualization-header">
+                <h2 id="stadium-viz-title" class="panel-title">
+                    <i class="bi bi-diagram-3" aria-hidden="true"></i>
+                    Stadium Layout
+                </h2>
+                @if (selectedEvent != null)
+                {
+                    <div class="event-info">
+                        <span class="event-name">@selectedEvent.EventName</span>
+                        <span class="event-date">@selectedEvent.EventDate.ToString("MMM dd, yyyy")</span>
+                    </div>
+                }
+            </div>
+
+            <div class="stadium-container" id="stadium-container">
+                @if (isLoading)
+                {
+                    <div class="loading-state" role="status" aria-live="polite">
+                        <div class="loading-content">
+                            <div class="loading-spinner" aria-hidden="true"></div>
+                            <h3>Loading Stadium Layout</h3>
+                            <p>Preparing stadium visualization...</p>
+                            <div class="loading-progress">
+                                <div class="progress-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="error-state" role="alert">
+                        <div class="error-content">
+                            <i class="bi bi-exclamation-triangle error-icon" aria-hidden="true"></i>
+                            <h3>Stadium Layout Error</h3>
+                            <p>@errorMessage</p>
+                            <div class="error-actions">
+                                <button class="btn btn-primary" @onclick="LoadStadiumLayout">
+                                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                                    Retry Loading
+                                </button>
+                                <button class="btn btn-outline-primary" @onclick="GenerateDemoLayout">
+                                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                                    Generate Demo Layout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (stadiumData == null || !stadiumData.Stands.Any())
+                {
+                    <div class="empty-state" role="region" aria-labelledby="empty-state-title">
+                        <div class="empty-content">
+                            <i class="bi bi-database-x empty-icon" aria-hidden="true"></i>
+                            <h3 id="empty-state-title">No Stadium Data</h3>
+                            <p>No stadium layout is currently available.</p>
+                            <div class="empty-actions">
+                                <button class="btn btn-primary" @onclick="LoadStadiumLayout">
+                                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                                    Load Stadium Data
+                                </button>
+                                <button class="btn btn-outline-primary" @onclick="GenerateDemoLayout">
+                                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                                    Generate Demo Layout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Flexible Stadium Layout -->
+                    <div class="stadium-flex-layout"
+                         id="stadium-grid"
+                         role="application"
+                         aria-label="Interactive stadium seating map"
+                         tabindex="0">
+
+                        <!-- Stadium Field -->
+                        <div class="stadium-field" aria-label="Playing field">
+                            <div class="field-markings">
+                                <div class="center-circle"></div>
+                                <div class="center-line"></div>
+                            </div>
+                            <div class="field-label">FIELD</div>
+                        </div>
+
+                        <!-- Stadium Stands Container -->
+                        @if (stadiumData.Stands != null)
+                        {
+                            <div class="stands-container">
+                                @foreach (var stand in stadiumData.Stands)
+                                {
+                                    <div class="stadium-stand @GetStandPositionClass(stand)"
+                                         data-stand="@stand.TribuneCode"
+                                         role="region"
+                                         aria-labelledby="stand-@stand.Id-title">
+
+                                        <h3 id="stand-@stand.Id-title" class="stand-title">
+                                            @stand.Name
+                                        </h3>
+
+                                        <div class="sectors-grid">
+                                            @foreach (var sector in stand.Sectors)
+                                            {
+                                                <div class="sector @GetSectorCssClass(sector)"
+                                                     role="button"
+                                                     tabindex="0"
+                                                     aria-label="@GetSectorAriaLabel(sector)"
+                                                     data-sector="@sector.Id"
+                                                     @onclick="() => OpenSectorModal(sector)"
+                                                     @onkeydown="@(async (e) => { if (e.Key == "Enter" || e.Key == " ") await OpenSectorModal(sector); })">
+
+                                                    <div class="sector-header">
+                                                        <span class="sector-name">@sector.Name</span>
+                                                        @if (IsVipSector(sector))
+                                                        {
+                                                            <span class="vip-badge" aria-label="VIP section">VIP</span>
+                                                        }
+                                                    </div>
+
+                                                    <div class="sector-content">
+                                                        <div class="seat-count">
+                                                            <span class="available">@GetAvailableSeats(sector)</span>
+                                                            <span class="separator">/</span>
+                                                            <span class="total">@sector.TotalSeats</span>
+                                                        </div>
+
+                                                        @if (selectedEventId > 0 && showOccupancy)
+                                                        {
+                                                            <div class="occupancy-bar" aria-hidden="true">
+                                                                <div class="occupancy-fill"
+                                                                     style="width: @GetOccupancyPercentage(sector)%"></div>
+                                                            </div>
+                                                            <div class="occupancy-text">
+                                                                @GetOccupancyPercentage(sector)% occupied
+                                                            </div>
+                                                        }
+                                                    </div>
+
+                                                    <div class="sector-status-indicator @GetSectorStatusClass(sector)"
+                                                         aria-hidden="true"></div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+
+        <!-- Stadium Information Panel -->
+        @if (stadiumSummary != null)
+        {
+            <aside class="info-panel" aria-labelledby="info-panel-title">
+                <div class="info-panel-header">
+                    <h2 id="info-panel-title" class="panel-title">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                        Stadium Information
+                    </h2>
+                    <button class="btn btn-sm btn-outline-secondary"
+                            @onclick="ToggleInfoPanel"
+                            aria-expanded="@(!isInfoPanelCollapsed)"
+                            aria-controls="info-panel-content">
+                        <i class="bi bi-@(isInfoPanelCollapsed ? "chevron-down" : "chevron-up")" aria-hidden="true"></i>
                     </button>
                 </div>
-            }
-            else if (!isLoading)
-            {
-                <!-- No data state -->
-                <div class="alert alert-info text-center">
-                    <h5><i class="bi bi-info-circle"></i> No Stadium Data</h5>
-                    <p>Stadium layout not available. Please check the stadium structure configuration.</p>
-                </div>
-            }
-            else
-            {
-                <!-- Loading state -->
-                <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
-                    <div class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-2">Loading dynamic stadium layout...</p>
-                    </div>
-                </div>
-            }
 
-            @if (showLegend)
-                {
-                    <div class="legend-panel premium-legend animated-legend" id="legend-panel">
-                        <div class="legend-header animated-legend-header">
-                            <div class="legend-icon animated-legend-icon">
-                                <i class="bi bi-info-circle-fill"></i>
+                <div id="info-panel-content" class="info-panel-content @(isInfoPanelCollapsed ? "collapsed" : "")">
+                    <div class="stadium-stats">
+                        <div class="stat">
+                            <div class="stat-value">@stadiumSummary.TotalSeats.ToString("N0")</div>
+                            <div class="stat-label">Total Seats</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">@stadiumSummary.TotalSectors</div>
+                            <div class="stat-label">Sectors</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">@stadiumSummary.TotalTribunes</div>
+                            <div class="stat-label">Tribunes</div>
+                        </div>
+                        @if (selectedEventId > 0 && eventSeatStatus != null)
+                        {
+                            <div class="stat">
+                                <div class="stat-value">@GetOverallOccupancyPercentage()%</div>
+                                <div class="stat-label">Occupied</div>
                             </div>
-                            <div class="legend-title-section animated-title-section">
-                                <h5 class="legend-title" id="legend-title">@(stadiumLayout?.Name ?? stadiumData?.Name ?? "HNK Rijeka Stadium")</h5>
-                                <p class="legend-subtitle">Color coding reference</p>
+                        }
+                    </div>
+
+                    @if (selectedEventId > 0 && selectedEvent != null)
+                    {
+                        <div class="event-details">
+                            <h4>Current Event</h4>
+                            <div class="event-info-grid">
+                                <div class="info-item">
+                                    <span class="label">Event:</span>
+                                    <span class="value">@selectedEvent.EventName</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Date:</span>
+                                    <span class="value">@selectedEvent.EventDate.ToString("MMM dd, yyyy HH:mm")</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Status:</span>
+                                    <span class="value">
+                                        <span class="badge @(selectedEvent.IsActive ? "badge-success" : "badge-secondary")">
+                                            @(selectedEvent.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <div class="legend-content animated-legend-content">
-                            @if (selectedEventId > 0)
-                            {
-                                <!-- Event-based occupancy legend -->
-                                <div class="legend-section">
-                                    <h6 class="legend-section-title">
-                                        <i class="bi bi-people-fill"></i>
-                                        Occupancy Status
-                                    </h6>
-                                    <div class="legend-items animated-legend-items">
-                                        <div class="legend-item premium-legend-item animated-legend-item" style="--item-index: 0;" id="legend-available">
-                                            <div class="legend-color-wrapper">
-                                                <span class="legend-color available" style="background: linear-gradient(135deg, #16a34a, #22c55e);" id="legend-green-color"></span>
-                                                <div class="color-glow available-glow"></div>
-                                            </div>
-                                            <div class="legend-text-content">
-                                                <span class="legend-label" id="legend-green-text">Available</span>
-                                                <span class="legend-description">0-49% occupied</span>
-                                            </div>
-                                        </div>
-                                        <div class="legend-item premium-legend-item animated-legend-item" style="--item-index: 1;" id="legend-partial">
-                                            <div class="legend-color-wrapper">
-                                                <span class="legend-color partial" style="background: linear-gradient(135deg, #ca8a04, #f59e0b);" id="legend-orange-color"></span>
-                                                <div class="color-glow partial-glow"></div>
-                                            </div>
-                                            <div class="legend-text-content">
-                                                <span class="legend-label" id="legend-orange-text">Limited</span>
-                                                <span class="legend-description">50-89% occupied</span>
-                                            </div>
-                                        </div>
-                                        <div class="legend-item premium-legend-item animated-legend-item" style="--item-index: 2;" id="legend-full">
-                                            <div class="legend-color-wrapper">
-                                                <span class="legend-color full" style="background: linear-gradient(135deg, #dc2626, #ef4444);" id="legend-red-color"></span>
-                                                <div class="color-glow full-glow"></div>
-                                            </div>
-                                            <div class="legend-text-content">
-                                                <span class="legend-label" id="legend-red-text">Sold Out</span>
-                                                <span class="legend-description">90-100% occupied</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                    }
+                </div>
+            </aside>
+        }
+    </main>
+
+    <!-- Legend Panel -->
+    @if (showLegend)
+    {
+        <div class="legend-panel" role="complementary" aria-labelledby="legend-title">
+            <div class="legend-header">
+                <h3 id="legend-title" class="legend-title">
+                    <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+                    Legend
+                </h3>
+                <button class="btn btn-sm btn-outline-secondary"
+                        @onclick="ToggleLegend"
+                        aria-label="Close legend">
+                    <i class="bi bi-x" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="legend-content">
+                @if (selectedEventId > 0)
+                {
+                    <div class="legend-section">
+                        <h4>Occupancy Status</h4>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-color available" aria-hidden="true"></div>
+                                <div class="legend-text">
+                                    <span class="legend-label">Available</span>
+                                    <span class="legend-description">0-49% occupied</span>
                                 </div>
-                            }
-                            else
-                            {
-                                <!-- Default stadium colors -->
-                                <div class="legend-section">
-                                    <h6 class="legend-section-title">
-                                        <i class="bi bi-grid-3x3-gap"></i>
-                                        Sector Types
-                                    </h6>
-                                    <div class="legend-items">
-                                        <div class="legend-item premium-legend-item" id="legend-standard">
-                                            <div class="legend-color-wrapper">
-                                                <span class="legend-color standard" style="background: linear-gradient(135deg, #4A90E2, #3b82f6);" id="legend-blue-color"></span>
-                                                <div class="color-glow standard-glow"></div>
-                                            </div>
-                                            <div class="legend-text-content">
-                                                <span class="legend-label" id="legend-blue-text">Standard</span>
-                                                <span class="legend-description">Regular seating areas</span>
-                                            </div>
-                                        </div>
-                                        <div class="legend-item premium-legend-item" id="legend-premium">
-                                            <div class="legend-color-wrapper">
-                                                <span class="legend-color premium" style="background: linear-gradient(135deg, #F39C12, #f59e0b);" id="legend-orange-color"></span>
-                                                <div class="color-glow premium-glow"></div>
-                                            </div>
-                                            <div class="legend-text-content">
-                                                <span class="legend-label" id="legend-orange-text">Premium</span>
-                                                <span class="legend-description">Enhanced viewing areas</span>
-                                            </div>
-                                        </div>
-                                        <div class="legend-item premium-legend-item" id="legend-unavailable">
-                                            <div class="legend-color-wrapper">
-                                                <span class="legend-color unavailable" style="background: linear-gradient(135deg, #9E9E9E, #6b7280);" id="legend-gray-color"></span>
-                                                <div class="color-glow unavailable-glow"></div>
-                                            </div>
-                                            <div class="legend-text-content">
-                                                <span class="legend-label" id="legend-gray-text">Unavailable</span>
-                                                <span class="legend-description">Closed or restricted</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color partial" aria-hidden="true"></div>
+                                <div class="legend-text">
+                                    <span class="legend-label">Limited</span>
+                                    <span class="legend-description">50-89% occupied</span>
                                 </div>
-                            }
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color full" aria-hidden="true"></div>
+                                <div class="legend-text">
+                                    <span class="legend-label">Sold Out</span>
+                                    <span class="legend-description">90-100% occupied</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="legend-section">
+                        <h4>Sector Types</h4>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-color standard" aria-hidden="true"></div>
+                                <div class="legend-text">
+                                    <span class="legend-label">Standard</span>
+                                    <span class="legend-description">Regular seating</span>
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color vip" aria-hidden="true"></div>
+                                <div class="legend-text">
+                                    <span class="legend-label">VIP</span>
+                                    <span class="legend-description">Premium seating</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
             </div>
         </div>
-    </div>
+    }
 </div>
 
 <!-- Sector Detail Modal -->
 @if (showSectorModal && selectedSector != null)
 {
-    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);" id="sector-detail-modal">
-        <div class="modal-dialog modal-xl" id="sector-modal-dialog">
-            <div class="modal-content" id="sector-modal-content">
-                <div class="modal-header" id="sector-modal-header">
-                    <h5 class="modal-title" id="sector-modal-title">@selectedSector.Name - Admin View</h5>
-                    <button type="button" class="btn-close" @onclick="CloseSectorModal" id="sector-modal-close-button"></button>
+    <div class="modal-backdrop" @onclick="CloseSectorModal">
+        <div class="modal-dialog" @onclick:stopPropagation="true" role="dialog" aria-labelledby="modal-title">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title" class="modal-title">@selectedSector.Name</h3>
+                    <button type="button" class="btn-close" @onclick="CloseSectorModal" aria-label="Close modal">
+                        <i class="bi bi-x" aria-hidden="true"></i>
+                    </button>
                 </div>
-                <div class="modal-body" id="sector-modal-body">
-                    <div class="seat-canvas-container" id="seat-canvas-container">
-                        <canvas @ref="seatCanvas" width="1200" height="600" id="seat-canvas"></canvas>
-                    </div>
-                    <div class="seat-info-panel" id="seat-info-panel">
-                        @if (selectedSeats.Any())
+
+                <div class="modal-body">
+                    <div class="sector-details">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Sector ID:</span>
+                                <span class="detail-value">@selectedSector.Id</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Total Seats:</span>
+                                <span class="detail-value">@selectedSector.TotalSeats</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Available:</span>
+                                <span class="detail-value">@GetAvailableSeats(selectedSector)</span>
+                            </div>
+                            @if (selectedEventId > 0)
+                            {
+                                <div class="detail-item">
+                                    <span class="detail-label">Occupancy:</span>
+                                    <span class="detail-value">@GetOccupancyPercentage(selectedSector)%</span>
+                                </div>
+                            }
+                        </div>
+
+                        @if (selectedEventId > 0)
                         {
-                            <h6 id="selected-seats-title">Selected Seats:</h6>
-                            <ul id="selected-seats-list">
-                                @foreach (var seat in selectedSeats)
-                                {
-                                    <li id="selected-seat-@seat.Replace(" ", "-")">@seat</li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted" id="no-selected-seats-message">Click on seats to view details</p>
+                            <div class="occupancy-visualization">
+                                <h4>Seat Occupancy</h4>
+                                <div class="occupancy-chart">
+                                    <div class="chart-bar">
+                                        <div class="chart-segment available"
+                                             style="width: @(100 - GetOccupancyPercentage(selectedSector))%"
+                                             title="Available seats"></div>
+                                        <div class="chart-segment occupied"
+                                             style="width: @GetOccupancyPercentage(selectedSector)%"
+                                             title="Occupied seats"></div>
+                                    </div>
+                                    <div class="chart-labels">
+                                        <span class="available-label">@GetAvailableSeats(selectedSector) Available</span>
+                                        <span class="occupied-label">@(selectedSector.TotalSeats - GetAvailableSeats(selectedSector)) Occupied</span>
+                                    </div>
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>
-                <div class="modal-footer" id="sector-modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseSectorModal" id="sector-modal-close-footer-button">Close</button>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseSectorModal">Close</button>
                 </div>
             </div>
         </div>

@@ -167,7 +167,7 @@ public partial class Orders : ComponentBase
                 await LoadOrders();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await JSRuntime.InvokeVoidAsync("showToast", "Failed to accept order", "error");
         }
@@ -184,7 +184,7 @@ public partial class Orders : ComponentBase
                 await LoadOrders();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await JSRuntime.InvokeVoidAsync("showToast", "Failed to update order status", "error");
         }

@@ -232,8 +232,16 @@ main {
         z-index: 1;
     }
 
-    .top-row, article {
+    .top-row {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
+    }
+
+    /* Allow admin-layout-content to use full admin-layout-main space */
+    article.content {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        width: 100% !important;
+        max-width: none !important;
     }
 }

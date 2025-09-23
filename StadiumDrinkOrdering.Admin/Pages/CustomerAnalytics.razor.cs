@@ -120,7 +120,7 @@ public partial class CustomerAnalytics : ComponentBase
         }
     }
 
-    private async Task ViewCustomerDetails(string customerEmail)
+    private void ViewCustomerDetails(string customerEmail)
     {
         // await detailModal.ShowCustomerDetails(customerEmail); - Component removed
     }

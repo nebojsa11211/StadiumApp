@@ -33,34 +33,47 @@ public partial class StadiumSvgRenderer : ComponentBase
 
     private string GetSectorFillGradient(SectorSvgDto sector, string tribuneCode)
     {
-        // Priority 1: Event occupancy status with enhanced gradients
+        // Priority 1: Event occupancy status with solid colors for better visibility
         if (EventSeatStatus != null && EventSeatStatus.TryGetValue(sector.Code, out var seatStatus))
         {
             var occupancyPercentage = seatStatus.OccupancyPercentage;
 
             if (occupancyPercentage >= 90)
-                return "url(#full-gradient)"; // Red gradient - nearly full
+                return "#dc2626"; // Solid red - nearly full
             else if (occupancyPercentage >= 50)
-                return "url(#partial-gradient)"; // Orange gradient - partially full
+                return "#ea580c"; // Solid orange - partially full
             else
-                return "url(#available-gradient)"; // Green gradient - mostly available
+                return "#16a34a"; // Solid green - mostly available
         }
 
         // Priority 2: VIP/Premium sections get special treatment
         if (IsVipSector(sector))
         {
-            return sector.Name.ToUpper().Contains("PREMIUM") ? "url(#premium-gradient)" : "url(#vip-gradient)";
+            return sector.Name.ToUpper().Contains("PREMIUM") ? "#fbbf24" : "#f59e0b";
         }
 
-        // Priority 3: Tribune-specific gradients
-        if (_tribuneGradients.TryGetValue(tribuneCode.ToUpper(), out var gradient))
+        // Priority 3: Tribune-specific solid colors for better visibility
+        var solidColor = GetTribuneSolidColor(tribuneCode);
+        if (!string.IsNullOrEmpty(solidColor))
         {
-            return gradient;
+            return solidColor;
         }
 
         // Fallback: Use sector's custom color or default
         var customColor = sector.Style?.FillColor;
-        return !string.IsNullOrEmpty(customColor) ? customColor : "url(#north-gradient)";
+        return !string.IsNullOrEmpty(customColor) ? customColor : "#3b82f6";
+    }
+
+    private string GetTribuneSolidColor(string tribuneCode)
+    {
+        return tribuneCode.ToUpper() switch
+        {
+            "N" => "#3b82f6", // Blue
+            "S" => "#10b981", // Green
+            "E" => "#f59e0b", // Orange
+            "W" => "#8b5cf6", // Purple
+            _ => "#6b7280"    // Gray
+        };
     }
 
     private string GetSectorStatusClass(SectorSvgDto sector)

@@ -168,9 +168,10 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
             await ShowInfoAsync(message, "Please Wait", durationMs: 0); // 0 duration means no auto-close
         }
 
-        public async Task HideLoadingAsync()
+        public Task HideLoadingAsync()
         {
             ClearAllNotifications();
+            return Task.CompletedTask;
         }
 
         private async Task ShowNotificationAsync(string type, string message, string? title, int durationMs)

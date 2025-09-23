@@ -166,7 +166,7 @@ public partial class Users : ComponentBase
                 await LoadUsers();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await JSRuntime.InvokeVoidAsync("showToast", "Failed to create user", "error");
         }
@@ -189,7 +189,7 @@ public partial class Users : ComponentBase
             await JSRuntime.InvokeVoidAsync("showToast", "User activated successfully", "success");
             await LoadUsers();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await JSRuntime.InvokeVoidAsync("showToast", "Failed to activate user", "error");
         }
@@ -202,7 +202,7 @@ public partial class Users : ComponentBase
             await JSRuntime.InvokeVoidAsync("showToast", "User deactivated successfully", "warning");
             await LoadUsers();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await JSRuntime.InvokeVoidAsync("showToast", "Failed to deactivate user", "error");
         }
@@ -217,7 +217,7 @@ public partial class Users : ComponentBase
                 await JSRuntime.InvokeVoidAsync("showToast", "User deleted successfully", "success");
                 await LoadUsers();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("showToast", "Failed to delete user", "error");
             }
@@ -232,7 +232,7 @@ public partial class Users : ComponentBase
             {
                 await JSRuntime.InvokeVoidAsync("showToast", "Password reset successfully", "success");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await JSRuntime.InvokeVoidAsync("showToast", "Failed to reset password", "error");
             }

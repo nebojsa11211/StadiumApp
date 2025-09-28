@@ -9,7 +9,7 @@ services:
       - TZ=${TZ:-Europe/Zagreb}
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
       - ConnectionStrings__DefaultConnection=Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=300;Keepalive=30;Connection Idle Lifetime=300;Maximum Pool Size=50;Minimum Pool Size=5;Pooling=true;No Reset On Close=true;Include Error Detail=true
-      - UseSqliteFallback=true
+      - UseSqliteFallback=false
       - JwtSettings__SecretKey=${JWT_SECRET_KEY}
       - JwtSettings__Issuer=${JWT_ISSUER:-StadiumDrinkOrdering}
       - JwtSettings__Audience=${JWT_AUDIENCE:-StadiumDrinkOrdering}

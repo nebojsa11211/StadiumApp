@@ -39,9 +39,39 @@ namespace StadiumDrinkOrdering.API.Services
     {
         private readonly ApplicationDbContext _context;
 
+        // Database field length limits to prevent constraint violations
+        // Using CURRENT database constraints (before migration is applied)
+        private const int MaxActionLength = 200;  // Current DB constraint
+        private const int MaxCategoryLength = 100;
+        private const int MaxMessageLength = 500; // Current DB constraint
+        private const int MaxDetailsLength = 2000; // Conservative limit for Details field
+        private const int MaxUserIdLength = 100;
+        private const int MaxUserEmailLength = 100;
+        private const int MaxUserRoleLength = 50;
+        private const int MaxSourceLength = 100;  // Current DB constraint
+        private const int MaxLevelLength = 50;
+        private const int MaxIPAddressLength = 100;
+        private const int MaxUserAgentLength = 200; // Current DB constraint
+        private const int MaxRequestPathLength = 100;
+        private const int MaxHttpMethodLength = 20;
+        private const int MaxExceptionTypeLength = 200;
+
         public LoggingService(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        // Utility method to safely truncate strings to prevent database constraint violations
+        private static string TruncateString(string? value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            if (value.Length <= maxLength)
+                return value;
+
+            // Truncate and add ellipsis to indicate truncation
+            return value.Substring(0, Math.Max(0, maxLength - 3)) + "...";
         }
 
         public async Task LogUserActionAsync(string action, string category, string? userId = null, 
@@ -126,21 +156,21 @@ namespace StadiumDrinkOrdering.API.Services
                 var logEntry = new LogEntry
                 {
                     Timestamp = DateTime.UtcNow,
-                    Level = level,
-                    Category = category,
-                    Action = action,
-                    UserId = userId,
-                    UserEmail = userEmail,
-                    UserRole = userRole,
-                    IPAddress = ipAddress,
-                    UserAgent = userAgent,
-                    RequestPath = requestPath,
-                    HttpMethod = httpMethod,
-                    Message = message,
-                    Details = details,
-                    ExceptionType = exceptionType,
-                    StackTrace = stackTrace,
-                    Source = source,
+                    Level = TruncateString(level, MaxLevelLength),
+                    Category = TruncateString(category, MaxCategoryLength),
+                    Action = TruncateString(action, MaxActionLength),
+                    UserId = TruncateString(userId, MaxUserIdLength),
+                    UserEmail = TruncateString(userEmail, MaxUserEmailLength),
+                    UserRole = TruncateString(userRole, MaxUserRoleLength),
+                    IPAddress = TruncateString(ipAddress, MaxIPAddressLength),
+                    UserAgent = TruncateString(userAgent, MaxUserAgentLength),
+                    RequestPath = TruncateString(requestPath, MaxRequestPathLength),
+                    HttpMethod = TruncateString(httpMethod, MaxHttpMethodLength),
+                    Message = TruncateString(message, MaxMessageLength),
+                    Details = TruncateString(details, MaxDetailsLength),
+                    ExceptionType = TruncateString(exceptionType, MaxExceptionTypeLength),
+                    StackTrace = stackTrace, // Keep full stack trace
+                    Source = TruncateString(source, MaxSourceLength),
                     // Business Event Fields
                     BusinessEntityType = businessEntityType,
                     BusinessEntityId = businessEntityId,

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stadium Field-Centered Layout Demo - NK Osijek Style</title>
+    <style>
+        /* Stadium Field-Centered Layout System - NK Osijek Stadium-Style Visual Layout */
+        :root {
+            --field-green: #2d7a36;
+            --field-border: #ffffff;
+            --stand-bg: #e6e6e6;
+            --sector-bg: #ffffff;
+            --vip-gold: #ffd700;
+            --shadow-light: 0 2px 6px rgba(0,0,0,0.2);
+            --shadow-medium: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        /* Main Stadium Container with Field-Centered Layout */
+        #admin-stadium-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            width: 100%;
+            min-height: 700px;
+        }
+
+        /* Stadium Grid Layout - Field at Center with Stands Around */
+        #admin-stadium-flex-layout {
+            display: grid;
+            grid-template-areas:
+                ".       north    ."
+                "west    field    east"
+                ".       south    .";
+            grid-template-rows: auto 400px auto;
+            grid-template-columns: 200px 1fr 200px;
+            gap: 1.5rem;
+            max-width: 1400px;
+            width: 100%;
+            position: relative;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Stadium Field in the Center */
+        #admin-stadium-field {
+            grid-area: field;
+            background: var(--field-green);
+            border: 4px solid var(--field-border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Field Markings */
+        #admin-stadium-field-markings {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .center-circle {
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--field-border);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .center-line {
+            width: 100%;
+            height: 2px;
+            background: var(--field-border);
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .penalty-area-left,
+        .penalty-area-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 132px;
+            border: 2px solid var(--field-border);
+        }
+
+        .penalty-area-left {
+            left: 0;
+            border-right: none;
+        }
+
+        .penalty-area-right {
+            right: 0;
+            border-left: none;
+        }
+
+        .goal-left,
+        .goal-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 55px;
+            border: 2px solid var(--field-border);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .goal-left {
+            left: -4px;
+            border-right: none;
+        }
+
+        .goal-right {
+            right: -4px;
+            border-left: none;
+        }
+
+        .field-label {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--field-border);
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Tribune Positioning */
+        #admin-stadium-stand-n {
+            grid-area: north;
+            justify-self: center;
+            align-self: end;
+        }
+
+        #admin-stadium-stand-s {
+            grid-area: south;
+            justify-self: center;
+            align-self: start;
+        }
+
+        #admin-stadium-stand-e {
+            grid-area: east;
+            justify-self: start;
+            align-self: center;
+        }
+
+        #admin-stadium-stand-w {
+            grid-area: west;
+            justify-self: end;
+            align-self: center;
+        }
+
+        /* Stadium Stand Styling */
+        .stadium-stand {
+            background: var(--stand-bg);
+            border-radius: 8px;
+            padding: 12px;
+            min-width: 180px;
+            max-width: 220px;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+            border: 1px solid #d1d5db;
+            transition: all 0.3s ease;
+        }
+
+        .stadium-stand:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Stand Title */
+        .stand-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tribune-Specific Colors */
+        #admin-stadium-stand-n .stand-title {
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 4px;
+        }
+
+        #admin-stadium-stand-s .stand-title {
+            color: #10b981;
+            border-bottom: 2px solid #10b981;
+            padding-bottom: 4px;
+        }
+
+        #admin-stadium-stand-e .stand-title {
+            color: #f59e0b;
+            border-bottom: 2px solid #f59e0b;
+            padding-bottom: 4px;
+        }
+
+        #admin-stadium-stand-w .stand-title {
+            color: #8b5cf6;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 4px;
+        }
+
+        /* Sectors Grid */
+        .sectors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Individual Sector Styling */
+        .sector {
+            background: var(--sector-bg);
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .sector:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+        }
+
+        .sector[data-occupancy="available"] {
+            background: #dcfce7;
+            border-color: #16a34a;
+        }
+
+        .sector[data-occupancy="partial"] {
+            background: #fef3c7;
+            border-color: #d97706;
+        }
+
+        .sector[data-occupancy="full"] {
+            background: #fecaca;
+            border-color: #dc2626;
+        }
+
+        .sector-code {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .sector-capacity {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .features-list {
+            margin-top: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow-light);
+        }
+
+        .features-list h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+
+        .features-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .features-list li:before {
+            content: "✅";
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏟️ Stadium Field-Centered Layout Demo</h1>
+        <p>NK Osijek-Style Professional Stadium Visualization</p>
+    </div>
+
+    <div id="admin-stadium-container">
+        <div id="admin-stadium-flex-layout">
+            <!-- North Tribune -->
+            <div id="admin-stadium-stand-n" class="stadium-stand">
+                <h3 class="stand-title">North Tribune</h3>
+                <div class="sectors-grid">
+                    <div class="sector" data-occupancy="available">
+                        <span class="sector-code">N1A</span>
+                        <span class="sector-capacity">500 seats</span>
+                    </div>
+                    <div class="sector" data-occupancy="partial">
+                        <span class="sector-code">N1B</span>
+                        <span class="sector-capacity">500 seats</span>
+                    </div>
+                    <div class="sector" data-occupancy="full">
+                        <span class="sector-code">N1C</span>
+                        <span class="sector-capacity">500 seats</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stadium Field with Professional Markings -->
+            <div id="admin-stadium-field">
+                <div id="admin-stadium-field-markings">
+                    <!-- Center Circle and Line -->
+                    <div class="center-circle"></div>
+                    <div class="center-line"></div>
+
+                    <!-- Penalty Areas -->
+                    <div class="penalty-area-left"></div>
+                    <div class="penalty-area-right"></div>
+
+                    <!-- Goals -->
+                    <div class="goal-left"></div>
+                    <div class="goal-right"></div>
+                </div>
+                <div class="field-label">STADIUM FIELD</div>
+            </div>
+
+            <!-- South Tribune -->
+            <div id="admin-stadium-stand-s" class="stadium-stand">
+                <h3 class="stand-title">South Tribune</h3>
+                <div class="sectors-grid">
+                    <div class="sector" data-occupancy="partial">
+                        <span class="sector-code">S1A</span>
+                        <span class="sector-capacity">600 seats</span>
+                    </div>
+                    <div class="sector" data-occupancy="available">
+                        <span class="sector-code">S1B</span>
+                        <span class="sector-capacity">600 seats</span>
+                    </div>
+                    <div class="sector" data-occupancy="partial">
+                        <span class="sector-code">S1C</span>
+                        <span class="sector-capacity">600 seats</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- East Tribune -->
+            <div id="admin-stadium-stand-e" class="stadium-stand">
+                <h3 class="stand-title">East Tribune</h3>
+                <div class="sectors-grid">
+                    <div class="sector" data-occupancy="available">
+                        <span class="sector-code">E1A</span>
+                        <span class="sector-capacity">400 seats</span>
+                    </div>
+                    <div class="sector" data-occupancy="full">
+                        <span class="sector-code">E1B</span>
+                        <span class="sector-capacity">400 seats</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- West Tribune -->
+            <div id="admin-stadium-stand-w" class="stadium-stand">
+                <h3 class="stand-title">West Tribune</h3>
+                <div class="sectors-grid">
+                    <div class="sector" data-occupancy="partial">
+                        <span class="sector-code">W1A</span>
+                        <span class="sector-capacity">450 seats</span>
+                    </div>
+                    <div class="sector" data-occupancy="available">
+                        <span class="sector-code">W1B</span>
+                        <span class="sector-capacity">450 seats</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="features-list">
+        <h3>🏟️ Enhanced Stadium Visualization Features</h3>
+        <ul>
+            <li><strong>Field-Centered Layout:</strong> Professional soccer field positioned at the center with proper markings</li>
+            <li><strong>NK Osijek Stadium Style:</strong> Tribunes positioned around the field like a real stadium</li>
+            <li><strong>Professional Field Markings:</strong> Center circle, penalty areas, goals, and center line</li>
+            <li><strong>Color-Coded Occupancy:</strong> Green (available), Yellow (partial), Red (full occupancy)</li>
+            <li><strong>Tribune-Specific Colors:</strong> North (Blue), South (Green), East (Orange), West (Purple)</li>
+            <li><strong>Responsive Design:</strong> Adapts to different screen sizes and orientations</li>
+            <li><strong>CSS Grid Layout:</strong> Modern layout system for precise positioning</li>
+            <li><strong>Professional Styling:</strong> Shadows, hover effects, and smooth transitions</li>
+            <li><strong>Accessibility:</strong> Proper ARIA labels and keyboard navigation support</li>
+            <li><strong>Real Stadium Appearance:</strong> Visual representation matches actual stadium layouts</li>
+        </ul>
+    </div>
+</body>
+</html>

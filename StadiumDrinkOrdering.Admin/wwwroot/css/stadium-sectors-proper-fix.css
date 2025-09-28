@@ -1,0 +1,342 @@
+/* ===============================================
+   STADIUM SECTORS PROPER FIX
+   Ensures sectors never exceed parent container height
+   and maintain proper horizontal/vertical layouts
+   =============================================== */
+
+/* CRITICAL: Remove any aspect-ratio that causes height overflow */
+.sector {
+    aspect-ratio: unset !important;
+}
+
+/* ===============================================
+   NORTH AND SOUTH STANDS - HORIZONTAL LAYOUT
+   =============================================== */
+
+/* North and South stands container */
+#admin-stadium-stand-n,
+#admin-stadium-stand-s,
+.stand-position-north,
+.stand-position-south,
+.stand-n,
+.stand-s {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 200px !important; /* Fixed maximum height */
+    padding: 0.5rem !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important; /* Prevent overflow */
+}
+
+/* North/South sectors grid - ALWAYS HORIZONTAL */
+#admin-stadium-stand-n .sectors-grid,
+#admin-stadium-stand-s .sectors-grid,
+.stand-position-north .sectors-grid,
+.stand-position-south .sectors-grid,
+.stand-n .sectors-grid,
+.stand-s .sectors-grid {
+    display: flex !important; /* Use flexbox for horizontal layout */
+    flex-direction: row !important; /* Force horizontal */
+    justify-content: space-evenly !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    height: calc(100% - 2rem) !important; /* Account for title */
+    gap: 0.5rem !important;
+    overflow: hidden !important;
+}
+
+/* North/South individual sectors - CRITICAL HEIGHT CONSTRAINT */
+#admin-stadium-stand-n .sector,
+#admin-stadium-stand-s .sector,
+.stand-position-north .sector,
+.stand-position-south .sector,
+.stand-n .sector,
+.stand-s .sector {
+    flex: 1 1 0 !important; /* Equal width distribution */
+    min-width: 0 !important; /* Allow shrinking */
+    max-width: 200px !important; /* Reasonable max width */
+    width: auto !important; /* Let flex determine width */
+    height: 100% !important; /* Fill parent height */
+    max-height: calc(100% - 0.5rem) !important; /* Never exceed parent, account for gap */
+    min-height: 60px !important; /* Minimum viable height */
+    aspect-ratio: unset !important; /* REMOVE ANY ASPECT RATIO */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0.5rem !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* ===============================================
+   EAST AND WEST STANDS - VERTICAL LAYOUT
+   =============================================== */
+
+/* East and West stands container */
+#admin-stadium-stand-e,
+#admin-stadium-stand-w,
+.stand-position-east,
+.stand-position-west,
+.stand-e,
+.stand-w {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 300px !important; /* Fixed maximum width */
+    padding: 0.5rem !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* East/West sectors grid - ALWAYS VERTICAL */
+#admin-stadium-stand-e .sectors-grid,
+#admin-stadium-stand-w .sectors-grid,
+.stand-position-east .sectors-grid,
+.stand-position-west .sectors-grid,
+.stand-e .sectors-grid,
+.stand-w .sectors-grid {
+    display: flex !important; /* Use flexbox for vertical layout */
+    flex-direction: column !important; /* Force vertical */
+    justify-content: space-evenly !important;
+    align-items: stretch !important;
+    width: calc(100% - 1rem) !important;
+    height: 100% !important; /* Fill full height */
+    gap: 0.5rem !important;
+    margin: 0 0.5rem !important;
+    overflow: hidden !important;
+}
+
+/* East/West individual sectors */
+#admin-stadium-stand-e .sector,
+#admin-stadium-stand-w .sector,
+.stand-position-east .sector,
+.stand-position-west .sector,
+.stand-e .sector,
+.stand-w .sector {
+    flex: 1 1 0 !important; /* Equal height distribution */
+    width: 100% !important; /* Fill parent width */
+    min-height: 0 !important; /* Allow shrinking */
+    max-height: 150px !important; /* Reasonable max height */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0.5rem !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* ===============================================
+   RESPONSIVE ADJUSTMENTS
+   =============================================== */
+
+/* Large screens (1920px+) */
+@media (min-width: 1920px) {
+    /* Adjust North/South stand heights */
+    #admin-stadium-stand-n,
+    #admin-stadium-stand-s,
+    .stand-position-north,
+    .stand-position-south {
+        max-height: 220px !important;
+    }
+
+    /* Adjust East/West stand widths */
+    #admin-stadium-stand-e,
+    #admin-stadium-stand-w,
+    .stand-position-east,
+    .stand-position-west {
+        max-width: 320px !important;
+    }
+
+    /* Sector font sizes for better visibility */
+    .sector-name {
+        font-size: 0.9rem !important;
+    }
+
+    .seat-count {
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Desktop (1200px - 1919px) */
+@media (min-width: 1200px) and (max-width: 1919px) {
+    #admin-stadium-stand-n,
+    #admin-stadium-stand-s {
+        max-height: 180px !important;
+    }
+
+    #admin-stadium-stand-e,
+    #admin-stadium-stand-w {
+        max-width: 280px !important;
+    }
+
+    .sector-name {
+        font-size: 0.85rem !important;
+    }
+
+    .seat-count {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* Laptop (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+    #admin-stadium-stand-n,
+    #admin-stadium-stand-s {
+        max-height: 160px !important;
+    }
+
+    #admin-stadium-stand-e,
+    #admin-stadium-stand-w {
+        max-width: 250px !important;
+    }
+
+    .sector-name {
+        font-size: 0.8rem !important;
+    }
+
+    .seat-count {
+        font-size: 0.7rem !important;
+    }
+}
+
+/* Tablet and below (< 992px) */
+@media (max-width: 991px) {
+    /* On smaller screens, allow more flexible layouts */
+    #admin-stadium-stand-n,
+    #admin-stadium-stand-s {
+        max-height: 140px !important;
+    }
+
+    #admin-stadium-stand-e,
+    #admin-stadium-stand-w {
+        max-width: 100% !important;
+        max-height: 200px !important;
+    }
+
+    /* Adjust sector sizing for mobile */
+    .sector {
+        min-width: 60px !important;
+        min-height: 60px !important;
+    }
+
+    .sector-name {
+        font-size: 0.75rem !important;
+    }
+
+    .seat-count {
+        font-size: 0.65rem !important;
+    }
+}
+
+/* ===============================================
+   STAND TITLES
+   =============================================== */
+
+.stand-title {
+    margin: 0 0 0.5rem 0 !important;
+    padding: 0 !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    flex-shrink: 0 !important; /* Don't shrink title */
+}
+
+/* ===============================================
+   SECTOR CONTENT STYLING
+   =============================================== */
+
+.sector {
+    position: relative !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 0.5rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.sector:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-2px) !important;
+    z-index: 10 !important;
+}
+
+.sector-name {
+    font-weight: 600 !important;
+    text-align: center !important;
+    margin-bottom: 0.25rem !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+}
+
+.seat-count {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    opacity: 0.8 !important;
+}
+
+/* Occupancy bar at bottom of sector */
+.occupancy-bar {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 3px !important;
+    background: rgba(0, 0, 0, 0.1) !important;
+    border-radius: 0 0 0.5rem 0.5rem !important;
+    overflow: hidden !important;
+}
+
+.occupancy-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, #10b981, #059669) !important;
+    transition: width 0.3s ease !important;
+}
+
+/* ===============================================
+   ENSURE GRID LAYOUT STRUCTURE
+   =============================================== */
+
+.stadium-grid-layout {
+    display: grid !important;
+    grid-template-columns: minmax(250px, 300px) 1fr minmax(250px, 300px) !important;
+    grid-template-rows: minmax(150px, 200px) 1fr minmax(150px, 200px) !important;
+    grid-template-areas:
+        "corner-nw stand-n corner-ne"
+        "stand-w field stand-e"
+        "corner-sw stand-s corner-se" !important;
+    width: 100% !important;
+    height: 100% !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+    box-sizing: border-box !important;
+}
+
+/* Override any conflicting grid/display rules */
+#admin-stadium-sectors-grid-n,
+#admin-stadium-sectors-grid-s {
+    display: flex !important;
+}
+
+#admin-stadium-sectors-grid-e,
+#admin-stadium-sectors-grid-w {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+/* Ensure field stays in center */
+.stadium-field {
+    grid-area: field !important;
+    width: 100% !important;
+    height: 100% !important;
+}

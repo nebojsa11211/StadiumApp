@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient("TokenRefreshClient", client =>
         {
             client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(120);
             client.DefaultRequestHeaders.Add("User-Agent", $"Stadium-{applicationContext}/1.0");
         });
 
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient("AuthenticatedClient", client =>
         {
             client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(120);
             client.DefaultRequestHeaders.Add("User-Agent", $"Stadium-{applicationContext}/1.0");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         })

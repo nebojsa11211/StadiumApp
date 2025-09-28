@@ -19,5 +19,8 @@
   <Target Name="KillProcessBeforeBuild" BeforeTargets="BeforeBuild;Build;Clean;Rebuild;CoreCompile">
     <Exec Command="$(ProjectDir)..\kill-admin-process.bat" ContinueOnError="true" IgnoreExitCode="true" />
   </Target>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="for /f &quot;tokens=5&quot; %25%25a in ('netstat -ano ^| findstr :7030') do taskkill /PID %25%25a /F &gt;nul 2&gt;&amp;1 || ver &gt;nul" />
+  </Target>
 
 </Project>

@@ -2,16 +2,23 @@
 
 <PageTitle>User Management - Stadium Admin</PageTitle>
 
-<div class="container-fluid">
+<div class="container-fluid" id="admin-users-main-container">
     <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
+    <div class="d-flex justify-content-between align-items-center mb-4" id="admin-users-header">
+        <div id="admin-users-title-section">
             <h1 class="h2">User Management</h1>
             <p class="text-muted">Manage system users and their roles</p>
         </div>
-        <div>
+        <div id="admin-users-action-buttons">
             <button class="btn btn-primary me-2" @onclick="ShowCreateUserModal" id="admin-users-create-btn">
                 <i class="oi oi-plus me-2"></i>Add User
+            </button>
+            <button class="btn btn-success me-2" @onclick="CreateSampleUsers" disabled="@isCreatingSampleUsers" id="admin-users-create-sample-btn">
+                @if (isCreatingSampleUsers)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                <i class="oi oi-people me-2"></i>Create 20 Sample Users
             </button>
             <button class="btn btn-outline-secondary" @onclick="RefreshData" disabled="@isLoading" id="admin-users-refresh-btn">
                 <i class="oi oi-reload @(isLoading ? "spin" : "")"></i> Refresh
@@ -20,61 +27,61 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-lg-3 col-md-6">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
+    <div class="row g-4 mb-4" id="admin-users-summary-cards">
+        <div class="col-lg-3 col-md-6" id="admin-users-total-card">
+            <div class="card bg-primary text-white" id="admin-users-total-card-inner">
+                <div class="card-body" id="admin-users-total-card-body">
+                    <div class="d-flex justify-content-between" id="admin-users-total-card-content">
+                        <div id="admin-users-total-stats">
                             <h6 class="card-title">Total Users</h6>
                             <h3 class="mb-0">@totalUsers</h3>
                         </div>
-                        <div class="align-self-center">
+                        <div class="align-self-center" id="admin-users-total-icon">
                             <i class="oi oi-people fs-1 opacity-75"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
+        <div class="col-lg-3 col-md-6" id="admin-users-active-card">
+            <div class="card bg-success text-white" id="admin-users-active-card-inner">
+                <div class="card-body" id="admin-users-active-card-body">
+                    <div class="d-flex justify-content-between" id="admin-users-active-card-content">
+                        <div id="admin-users-active-stats">
                             <h6 class="card-title">Active Users</h6>
                             <h3 class="mb-0">@activeUsers</h3>
                         </div>
-                        <div class="align-self-center">
+                        <div class="align-self-center" id="admin-users-active-icon">
                             <i class="oi oi-circle-check fs-1 opacity-75"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
+        <div class="col-lg-3 col-md-6" id="admin-users-new-card">
+            <div class="card bg-info text-white" id="admin-users-new-card-inner">
+                <div class="card-body" id="admin-users-new-card-body">
+                    <div class="d-flex justify-content-between" id="admin-users-new-card-content">
+                        <div id="admin-users-new-stats">
                             <h6 class="card-title">New This Month</h6>
                             <h3 class="mb-0">@newUsersThisMonth</h3>
                         </div>
-                        <div class="align-self-center">
+                        <div class="align-self-center" id="admin-users-new-icon">
                             <i class="oi oi-person fs-1 opacity-75"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
+        <div class="col-lg-3 col-md-6" id="admin-users-admin-card">
+            <div class="card bg-warning text-white" id="admin-users-admin-card-inner">
+                <div class="card-body" id="admin-users-admin-card-body">
+                    <div class="d-flex justify-content-between" id="admin-users-admin-card-content">
+                        <div id="admin-users-admin-stats">
                             <h6 class="card-title">Admin Users</h6>
                             <h3 class="mb-0">@adminUsers</h3>
                         </div>
-                        <div class="align-self-center">
+                        <div class="align-self-center" id="admin-users-admin-icon">
                             <i class="oi oi-shield fs-1 opacity-75"></i>
                         </div>
                     </div>
@@ -84,12 +91,12 @@
     </div>
 
     <!-- Filters -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-3">
+    <div class="card mb-4" id="admin-users-filters-card">
+        <div class="card-body" id="admin-users-filters-body">
+            <div class="row g-3" id="admin-users-filters-row">
+                <div class="col-md-3" id="admin-users-role-filter-col">
                     <label class="form-label">Role Filter</label>
-                    <select class="form-select" @bind="selectedRole" @bind:after="FilterUsers">
+                    <select class="form-select" @bind="selectedRole" @bind:after="FilterUsers" id="admin-users-role-filter">
                         <option value="">All Roles</option>
                         <option value="Admin">Admin</option>
                         <option value="Staff">Staff</option>

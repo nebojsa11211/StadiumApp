@@ -79,7 +79,7 @@ builder.Services.AddSharedAuthentication(apiBaseUrl, "Customer");
 builder.Services.AddHttpClient("CustomerSecureApi", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl.TrimEnd('/') + "/");
-    client.Timeout = TimeSpan.FromSeconds(30);
+    client.Timeout = TimeSpan.FromSeconds(120);
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();

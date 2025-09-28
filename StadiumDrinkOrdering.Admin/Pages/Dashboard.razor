@@ -3,14 +3,14 @@
 
 <PageTitle>Stadium Admin Dashboard</PageTitle>
 
-<div class="admin-dashboard-container">
+<div class="admin-dashboard-container" id="admin-dashboard-main-container">
     <!-- Dashboard Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
+    <div class="d-flex justify-content-between align-items-center mb-4" id="admin-dashboard-header">
+        <div id="admin-dashboard-title-section">
             <h1 class="h2">Stadium Dashboard</h1>
             <p class="text-muted">Monitor your stadium operations in real-time</p>
         </div>
-        <div>
+        <div id="admin-dashboard-action-buttons">
             <button class="btn btn-outline-primary me-2" @onclick="RefreshData" disabled="@isLoading" id="admin-dashboard-refresh-btn">
                 <i class="oi oi-reload @(isLoading ? "spin" : "")"></i> Refresh
             </button>

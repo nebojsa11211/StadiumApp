@@ -1,4 +1,5 @@
 using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components;
 using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using StadiumDrinkOrdering.Shared.Authentication.Models;
 using StadiumDrinkOrdering.Shared.Authentication.Constants;
@@ -17,6 +18,7 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
 {
     private readonly ITokenStorageService _tokenStorage;
     private readonly IJSRuntime _jsRuntime;
+    private readonly SynchronizationContext? _synchronizationContext;
     private bool _initialized = false;
     private AuthenticationState _state = new();
 
@@ -40,6 +42,7 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
     {
         _tokenStorage = tokenStorage;
         _jsRuntime = jsRuntime;
+        _synchronizationContext = SynchronizationContext.Current;
 
         // Subscribe to token expiration events
         _tokenStorage.OnTokenExpired += HandleTokenExpired;
@@ -107,15 +110,7 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
         Console.WriteLine($"AuthStateService: Initialization complete - IsAuthenticated: {_state.IsAuthenticated}");
 
         // Only trigger events if there are listeners
-        try
-        {
-            OnAuthenticationStateChanged?.Invoke(_state);
-            _legacyAuthChanged?.Invoke();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"AuthStateService: Error invoking state change events - {ex.Message}");
-        }
+        await InvokeStateChangeAsync();
     }
 
     public async Task<bool> LoginAsync(AuthenticationResult authResult)
@@ -144,8 +139,7 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
             // Update authentication state
             await UpdateAuthenticationStateFromToken(authResult.Token);
 
-            OnAuthenticationStateChanged?.Invoke(_state);
-            _legacyAuthChanged?.Invoke();
+            await InvokeStateChangeAsync();
             return true;
         }
         catch (Exception)
@@ -167,8 +161,7 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
                 ApplicationContext = AuthenticationConstants.ApplicationContexts.Admin
             };
 
-            OnAuthenticationStateChanged?.Invoke(_state);
-            _legacyAuthChanged?.Invoke();
+            await InvokeStateChangeAsync();
         }
         catch (Exception)
         {
@@ -178,8 +171,7 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
                 IsAuthenticated = false,
                 ApplicationContext = AuthenticationConstants.ApplicationContexts.Admin
             };
-            OnAuthenticationStateChanged?.Invoke(_state);
-            _legacyAuthChanged?.Invoke();
+            await InvokeStateChangeAsync();
         }
     }
 
@@ -262,6 +254,42 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
     private async void HandleTokenExpired()
     {
         await LogoutAsync();
+    }
+
+    private async Task InvokeStateChangeAsync()
+    {
+        if (_synchronizationContext != null)
+        {
+            // Use the captured synchronization context to marshal to the UI thread
+            await Task.Run(() =>
+            {
+                _synchronizationContext.Post(_ =>
+                {
+                    try
+                    {
+                        OnAuthenticationStateChanged?.Invoke(_state);
+                        _legacyAuthChanged?.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"AuthStateService: Error invoking state change events - {ex.Message}");
+                    }
+                }, null);
+            });
+        }
+        else
+        {
+            // Fallback: invoke directly (may cause threading issues but better than failing)
+            try
+            {
+                OnAuthenticationStateChanged?.Invoke(_state);
+                _legacyAuthChanged?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"AuthStateService: Error invoking state change events - {ex.Message}");
+            }
+        }
     }
 
     // Legacy methods for backward compatibility

@@ -49,6 +49,17 @@ namespace StadiumDrinkOrdering.Shared.Services
         private const int BatchIntervalMs = 5000; // 5 seconds
         private volatile bool _disposed = false;
 
+        // Database field length limits to prevent constraint violations
+        // Using CURRENT database constraints (before migration is applied)
+        private const int MaxActionLength = 200;  // Current DB constraint
+        private const int MaxCategoryLength = 100;
+        private const int MaxMessageLength = 500; // Current DB constraint
+        private const int MaxDetailsLength = 2000; // Conservative limit for Details field
+        private const int MaxUserIdLength = 100;
+        private const int MaxUserEmailLength = 100;
+        private const int MaxUserRoleLength = 50;
+        private const int MaxSourceLength = 100;  // Current DB constraint
+
         public CentralizedLoggingClient(HttpClient httpClient, string apiBaseUrl, string source)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -134,15 +145,15 @@ namespace StadiumDrinkOrdering.Shared.Services
             {
                 var logEntry = new LogUserActionRequest
                 {
-                    Action = action,
-                    Category = category,
-                    UserId = userId,
-                    UserEmail = userEmail,
-                    UserRole = userRole,
-                    Details = $"Error: {exception.Message} | Details: {details}",
+                    Action = TruncateString(action, MaxActionLength),
+                    Category = TruncateString(category, MaxCategoryLength),
+                    UserId = TruncateString(userId, MaxUserIdLength),
+                    UserEmail = TruncateString(userEmail, MaxUserEmailLength),
+                    UserRole = TruncateString(userRole, MaxUserRoleLength),
+                    Details = TruncateString($"Error: {exception.Message} | Details: {details}", MaxDetailsLength),
                     RequestPath = requestPath,
                     HttpMethod = httpMethod,
-                    Source = source == "Unknown" ? _source : source
+                    Source = TruncateString(source == "Unknown" ? _source : source, MaxSourceLength)
                 };
 
                 // Errors are always sent immediately but fire-and-forget to prevent deadlocks
@@ -550,6 +561,19 @@ namespace StadiumDrinkOrdering.Shared.Services
                 "paid" => BusinessEventActions.OrderPaid,
                 _ => BusinessEventActions.OrderUpdated
             };
+        }
+
+        // Utility method to safely truncate strings to prevent database constraint violations
+        private static string TruncateString(string? value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            if (value.Length <= maxLength)
+                return value;
+
+            // Truncate and add ellipsis to indicate truncation
+            return value.Substring(0, Math.Max(0, maxLength - 3)) + "...";
         }
 
         public void Dispose()

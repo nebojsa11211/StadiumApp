@@ -1,0 +1,131 @@
+/* ===============================================
+   STADIUM SECTORS CRITICAL FIX - MAXIMUM SPECIFICITY
+   Forces sectors to respect parent container height
+   Removes aspect-ratio constraints completely
+   =============================================== */
+
+/* CRITICAL: Use maximum CSS specificity to override all other rules */
+.stadium-grid-layout #admin-stadium-stand-n .sector,
+.stadium-grid-layout #admin-stadium-stand-s .sector,
+html body .stadium-grid-layout #admin-stadium-stand-n .sector,
+html body .stadium-grid-layout #admin-stadium-stand-s .sector {
+    aspect-ratio: unset !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: 150px !important; /* Absolute maximum height */
+    min-height: 60px !important;
+    flex: 1 1 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* Force parent containers to have proper height constraints */
+.stadium-grid-layout #admin-stadium-stand-n,
+.stadium-grid-layout #admin-stadium-stand-s,
+html body .stadium-grid-layout #admin-stadium-stand-n,
+html body .stadium-grid-layout #admin-stadium-stand-s {
+    height: 100% !important;
+    max-height: 200px !important;
+    min-height: 180px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Force sectors grid to respect parent height */
+.stadium-grid-layout #admin-stadium-stand-n .sectors-grid,
+.stadium-grid-layout #admin-stadium-stand-s .sectors-grid,
+html body .stadium-grid-layout #admin-stadium-stand-n .sectors-grid,
+html body .stadium-grid-layout #admin-stadium-stand-s .sectors-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    height: calc(100% - 2rem) !important; /* Account for title */
+    max-height: 150px !important;
+    gap: 0.5rem !important;
+    justify-content: space-evenly !important;
+    align-items: stretch !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Ensure West and East stands fill full height */
+.stadium-grid-layout #admin-stadium-stand-w,
+.stadium-grid-layout #admin-stadium-stand-e,
+html body .stadium-grid-layout #admin-stadium-stand-w,
+html body .stadium-grid-layout #admin-stadium-stand-e {
+    height: 100% !important;
+    min-height: 400px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+.stadium-grid-layout #admin-stadium-stand-w .sectors-grid,
+.stadium-grid-layout #admin-stadium-stand-e .sectors-grid,
+html body .stadium-grid-layout #admin-stadium-stand-w .sectors-grid,
+html body .stadium-grid-layout #admin-stadium-stand-e .sectors-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100% - 2rem) !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+    overflow: hidden !important;
+}
+
+.stadium-grid-layout #admin-stadium-stand-w .sector,
+.stadium-grid-layout #admin-stadium-stand-e .sector,
+html body .stadium-grid-layout #admin-stadium-stand-w .sector,
+html body .stadium-grid-layout #admin-stadium-stand-e .sector {
+    flex: 1 1 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: unset !important;
+    overflow: hidden !important;
+}
+
+/* OVERRIDE stadium-maximum-width.css aspect-ratio rules with maximum specificity */
+html body .stadium-grid-layout #admin-stadium-stand-n .sector,
+html body .stadium-grid-layout #admin-stadium-stand-s .sector,
+html body .stadium-grid-layout #admin-stadium-stand-e .sector,
+html body .stadium-grid-layout #admin-stadium-stand-w .sector,
+html body div .stadium-grid-layout #admin-stadium-stand-n .sector,
+html body div .stadium-grid-layout #admin-stadium-stand-s .sector {
+    aspect-ratio: unset !important;
+}
+
+/* Override the specific rule from stadium-maximum-width.css line 328 and 694 */
+html body .sector {
+    aspect-ratio: unset !important;
+}
+
+/* Target all sector classes with maximum specificity */
+html body div div .sector,
+html body div .sector,
+.stadium-overview-wrapper .sector,
+.stadium-grid-layout .sector {
+    aspect-ratio: unset !important;
+}
+
+/* Responsive adjustments for 1920x1080 */
+@media (min-width: 1920px) {
+    .stadium-grid-layout #admin-stadium-stand-n,
+    .stadium-grid-layout #admin-stadium-stand-s {
+        max-height: 220px !important;
+        min-height: 200px !important;
+    }
+
+    .stadium-grid-layout #admin-stadium-stand-n .sectors-grid,
+    .stadium-grid-layout #admin-stadium-stand-s .sectors-grid {
+        max-height: 170px !important;
+        height: calc(100% - 2.5rem) !important;
+    }
+
+    .stadium-grid-layout #admin-stadium-stand-n .sector,
+    .stadium-grid-layout #admin-stadium-stand-s .sector {
+        max-height: 160px !important;
+        min-height: 80px !important;
+    }
+}

@@ -23,26 +23,30 @@ public class StadiumViewerController : ControllerBase
 
 [AllowAnonymous]
     [HttpGet("overview")]
-    public async Task<ActionResult<StadiumViewerDto>> GetStladiumOverview()
+    public async Task<ActionResult<StadiumViewerDto>> GetStadiumOverview()
     {
         try
         {
             _logger.LogInformation("Stadium overview API endpoint called");
-            var sections = await _context.StadiumSections
-                .Include(s => s.Seats)
-                .Where(s => s.IsActive)
+
+            // Load the full stadium structure with proper relationships
+            var tribunes = await _context.Tribunes
+                .Include(t => t.Rings)
+                    .ThenInclude(r => r.Sectors)
+                        .ThenInclude(s => s.Seats)
+                .OrderBy(t => t.Code)
                 .ToListAsync();
 
-            _logger.LogInformation($"Found {sections.Count} active stadium sections");
-            
-            if (!sections.Any())
+            _logger.LogInformation($"Found {tribunes.Count} active tribunes");
+
+            if (!tribunes.Any())
             {
-                _logger.LogWarning("No stadium sections found in database");
+                _logger.LogWarning("No tribunes found in database");
                 return NotFound(new { message = "No stadium structure found" });
             }
 
-            var stadiumViewer = GenerateStadiumLayout(sections);
-            _logger.LogInformation($"Generated stadium layout: {stadiumViewer.Name}");
+            var stadiumViewer = GenerateStadiumLayoutFromTribunes(tribunes);
+            _logger.LogInformation($"Generated stadium layout: {stadiumViewer.Name} with {stadiumViewer.Stands.Count} stands");
             return Ok(stadiumViewer);
         }
         catch (Exception ex)
@@ -322,6 +326,85 @@ public class StadiumViewerController : ControllerBase
         return stadiumViewer;
     }
 
+    private StadiumViewerDto GenerateStadiumLayoutFromTribunes(List<Tribune> tribunes)
+    {
+        var stadiumViewer = new StadiumViewerDto
+        {
+            StadiumId = "main-stadium",
+            Name = "Main Stadium",
+            CoordinateSystem = new StadiumCoordinateSystem
+            {
+                Width = 1200,
+                Height = 900,
+                OriginX = 600,
+                OriginY = 450,
+                Unit = "normalized"
+            }
+        };
+
+        // Generate professional oval field
+        var centerX = stadiumViewer.CoordinateSystem.Width / 2;
+        var centerY = stadiumViewer.CoordinateSystem.Height / 2;
+        var fieldRadiusX = 180;
+        var fieldRadiusY = 120;
+
+        // Create oval field using multiple points for smooth curves
+        var fieldPoints = new List<PointDto>();
+        for (int i = 0; i < 32; i++)
+        {
+            var angle = (2 * Math.PI * i) / 32;
+            var x = centerX + fieldRadiusX * Math.Cos(angle);
+            var y = centerY + fieldRadiusY * Math.Sin(angle);
+            fieldPoints.Add(new PointDto(x, y));
+        }
+
+        stadiumViewer.Field = new StadiumFieldDto
+        {
+            Polygon = fieldPoints,
+            FillColor = "#2d5a2d",
+            StrokeColor = "#ffffff"
+        };
+
+        // Process each tribune properly
+        foreach (var tribune in tribunes)
+        {
+            var stand = new StadiumStandDto
+            {
+                Id = tribune.Code.ToLower(),
+                Name = tribune.Name,
+                TribuneCode = tribune.Code,
+                Sectors = new List<StadiumSectorDto>()
+            };
+
+            // Calculate curved stand polygon
+            stand.Polygon = GenerateCurvedStandPolygon(tribune.Code, stadiumViewer.CoordinateSystem,
+                centerX, centerY, fieldRadiusX, fieldRadiusY);
+
+            // Process all sectors from all rings in this tribune
+            var allSectors = tribune.Rings.SelectMany(r => r.Sectors).ToList();
+
+            for (int i = 0; i < allSectors.Count; i++)
+            {
+                var sector = allSectors[i];
+                var sectorDto = ConvertSectorToSectorDto(sector, includeSeats: false);
+                sectorDto.StandId = stand.Id;
+
+                // Generate curved sector polygon for professional appearance
+                sectorDto.Polygon = GenerateCurvedSectorPolygonFromSector(sector, tribune.Code,
+                    allSectors.Count, i, stadiumViewer.CoordinateSystem, centerX, centerY, fieldRadiusX, fieldRadiusY);
+
+                stand.Sectors.Add(sectorDto);
+            }
+
+            stadiumViewer.Stands.Add(stand);
+        }
+
+        _logger.LogInformation($"Generated stadium layout from tribunes: {stadiumViewer.Stands.Count} stands, " +
+            $"{stadiumViewer.Stands.Sum(s => s.Sectors.Count)} total sectors");
+
+        return stadiumViewer;
+    }
+
     private StadiumSectorDto ConvertSectionToSectorDto(StadiumSection section, bool includeSeats)
     {
         var sectorDto = new StadiumSectorDto
@@ -361,6 +444,86 @@ public class StadiumViewerController : ControllerBase
         }
 
         return sectorDto;
+    }
+
+    private StadiumSectorDto ConvertSectorToSectorDto(Sector sector, bool includeSeats)
+    {
+        var sectorDto = new StadiumSectorDto
+        {
+            Id = sector.Code,
+            Name = sector.Name,
+            TotalSeats = sector.Seats.Count,
+            AvailableSeats = sector.Seats.Count(s => s.IsAvailable),
+            PriceMultiplier = 1.0m, // Default value since new structure doesn't have this field
+            FillColor = "#e3e3e3" // Default color since new structure doesn't have this field
+        };
+
+        sectorDto.OccupancyPercentage = 0; // Will be updated with event data
+
+        if (includeSeats && sector.Seats.Any())
+        {
+            sectorDto.Rows = sector.Seats
+                .GroupBy(s => s.RowNumber)
+                .OrderBy(g => g.Key)
+                .Select(g => new StadiumRowDto
+                {
+                    Index = g.Key - 1,
+                    RowNumber = g.Key,
+                    Seats = g.OrderBy(s => s.SeatNumber)
+                        .Select(s => new ViewerSeatDto
+                        {
+                            Id = s.UniqueCode,
+                            Code = s.UniqueCode,
+                            X = 0, // Default coordinates since new structure doesn't have them
+                            Y = 0, // Default coordinates since new structure doesn't have them
+                            RowNumber = s.RowNumber,
+                            SeatNumber = s.SeatNumber,
+                            IsAccessible = s.IsAvailable,
+                            Status = "free"
+                        }).ToList()
+                }).ToList();
+        }
+
+        return sectorDto;
+    }
+
+    private List<PointDto> GenerateCurvedSectorPolygonFromSector(Sector sector, string tribuneCode, int totalSectors,
+        int sectorIndex, StadiumCoordinateSystem coords, double centerX, double centerY, double fieldRadiusX, double fieldRadiusY)
+    {
+        var innerRadiusX = fieldRadiusX + 60;
+        var innerRadiusY = fieldRadiusY + 40;
+        var outerRadiusX = fieldRadiusX + 160;
+        var outerRadiusY = fieldRadiusY + 120;
+
+        var points = new List<PointDto>();
+
+        // Get tribune angle range and calculate sector portion
+        var (tribuneStartAngle, tribuneEndAngle) = GetTribuneAngles(tribuneCode);
+        var sectorAngleRange = (tribuneEndAngle - tribuneStartAngle) / totalSectors;
+        var sectorStartAngle = tribuneStartAngle + sectorAngleRange * sectorIndex;
+        var sectorEndAngle = sectorStartAngle + sectorAngleRange;
+
+        var angleStep = sectorAngleRange / 8; // 8 points per sector for smooth curves
+
+        // Inner arc (closer to field)
+        for (int i = 0; i <= 8; i++)
+        {
+            var angle = sectorStartAngle + angleStep * i;
+            var x = centerX + innerRadiusX * Math.Cos(angle);
+            var y = centerY + innerRadiusY * Math.Sin(angle);
+            points.Add(new PointDto(x, y));
+        }
+
+        // Outer arc (back of sector) - reverse order
+        for (int i = 8; i >= 0; i--)
+        {
+            var angle = sectorStartAngle + angleStep * i;
+            var x = centerX + outerRadiusX * Math.Cos(angle);
+            var y = centerY + outerRadiusY * Math.Sin(angle);
+            points.Add(new PointDto(x, y));
+        }
+
+        return points;
     }
 
     private string DetermineTribuneCode(string sectionCode)

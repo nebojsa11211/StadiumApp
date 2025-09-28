@@ -18,7 +18,7 @@ namespace StadiumDrinkOrdering.Shared.Models
         public string Category { get; set; } = string.Empty; // UserAction, SystemError, Authentication, etc.
         
         [Required]
-        [StringLength(200)]
+        [StringLength(500)]
         public string Action { get; set; } = string.Empty; // Login, Upload, ButtonClick, NavigateTo, Exception, etc.
         
         [StringLength(100)]
@@ -33,7 +33,7 @@ namespace StadiumDrinkOrdering.Shared.Models
         [StringLength(100)]
         public string? IPAddress { get; set; }
         
-        [StringLength(200)]
+        [StringLength(500)]
         public string? UserAgent { get; set; }
         
         [StringLength(100)]
@@ -42,7 +42,7 @@ namespace StadiumDrinkOrdering.Shared.Models
         [StringLength(20)]
         public string? HttpMethod { get; set; }
         
-        [StringLength(500)]
+        [StringLength(1000)]
         public string? Message { get; set; }
         
         public string? Details { get; set; } // JSON for additional data
@@ -52,7 +52,7 @@ namespace StadiumDrinkOrdering.Shared.Models
         
         public string? StackTrace { get; set; }
         
-        [StringLength(100)]
+        [StringLength(200)]
         public string Source { get; set; } = string.Empty; // API, Admin, Customer, Staff
         
         // Business Event Fields

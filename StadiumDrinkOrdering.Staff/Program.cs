@@ -42,7 +42,7 @@ var apiBaseUrl = containerEnv == "true"
 builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl + "/");
-    client.Timeout = TimeSpan.FromSeconds(30);
+    client.Timeout = TimeSpan.FromSeconds(120);
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
@@ -72,7 +72,7 @@ builder.Services.AddScoped<StaffSecureApiService>(provider =>
 builder.Services.AddHttpClient("StaffSecureApi", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl.TrimEnd('/') + "/");
-    client.Timeout = TimeSpan.FromSeconds(30);
+    client.Timeout = TimeSpan.FromSeconds(120);
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();

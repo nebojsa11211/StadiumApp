@@ -32,7 +32,97 @@
 
 ## Development Commands
 
-### Docker Development (Recommended)
+### 🔧 **Debugging Mode (Recommended for Development)** 🔧
+**For faster debugging and development, run services locally without Docker containers:**
+
+#### 🎯 **Current Debugging Focus: Admin + API Only**
+**For active debugging, we're currently focusing on Admin and API projects:**
+
+1. **Terminal 1 - API:** `cd StadiumDrinkOrdering.API && dotnet run --launch-profile https`
+2. **Terminal 2 - Admin:** `cd StadiumDrinkOrdering.Admin && dotnet run --launch-profile https`
+
+#### Full Stack Debugging (when needed):
+1. **Terminal 1 - API:** `cd StadiumDrinkOrdering.API && dotnet run --launch-profile https`
+2. **Terminal 2 - Admin:** `cd StadiumDrinkOrdering.Admin && dotnet run --launch-profile https`
+3. **Terminal 3 - Customer:** `cd StadiumDrinkOrdering.Customer && dotnet run --launch-profile https`
+4. **Terminal 4 - Staff:** `cd StadiumDrinkOrdering.Staff && dotnet run --launch-profile https`
+
+#### Debugging Advantages:
+- **Instant CSS changes**: No container rebuilds needed for frontend changes
+- **Hot reload**: Automatic code recompilation on file changes
+- **Direct debugging**: Full Visual Studio/VS Code debugging capabilities
+- **Faster iterations**: Immediate feedback without Docker overhead
+- **Live logging**: Direct console output for all services
+
+#### Local Development URLs (HTTPS):
+- **API (Active)**: https://localhost:7010 🎯
+- **Admin (Active)**: https://localhost:7030 🎯
+- **Customer**: https://localhost:7020
+- **Staff**: https://localhost:7040
+
+### 🚨 **MANDATORY CLEANUP RULE** 🚨
+
+**CRITICAL**: After ANY testing session or background service startup, you MUST immediately kill all running dotnet processes to prevent port conflicts and resource issues.
+
+**Required Cleanup Commands:**
+```bash
+# Kill all dotnet processes (MANDATORY after testing)
+taskkill //F //IM dotnet.exe
+
+# Or use the automated cleanup script
+powershell -ExecutionPolicy Bypass -File "cleanup-for-vs-debug.ps1"
+```
+
+**When to Execute Cleanup:**
+- ✅ **After every test run or debugging session**
+- ✅ **Before starting Visual Studio debugging**
+- ✅ **After background service startup for testing**
+- ✅ **When switching between local and Docker development**
+- ✅ **When experiencing port binding errors**
+
+**Why This is Critical:**
+- Prevents port conflicts (7010, 7030, 7020, 7040)
+- Avoids SSL connection issues between services
+- Eliminates resource leaks and hanging processes
+- Ensures clean state for Visual Studio debugging
+- Prevents database connection pool exhaustion
+
+#### Visual Studio Debugging Cleanup
+For clean Visual Studio debugging sessions, use these cleanup scripts to kill any running dotnet processes:
+
+**PowerShell Script** (Recommended):
+```powershell
+.\cleanup-for-vs-debug.ps1
+```
+
+**Batch Script** (Simple):
+```cmd
+cleanup-for-vs-debug.bat
+```
+
+**Features:**
+- Kills all running dotnet processes (API, Admin, etc.)
+- Frees up ports 7010 (API) and 7030 (Admin)
+- Provides clear status messages and next steps
+- Safe error handling for missing processes
+- Ready for immediate Visual Studio debugging
+
+**Usage Workflow:**
+1. **ALWAYS run cleanup** script before starting Visual Studio debugging
+2. Set `StadiumDrinkOrdering.API` as startup project in Visual Studio
+3. Press `F5` to start API debugging
+4. Set `StadiumDrinkOrdering.Admin` as startup project
+5. Press `F5` to start Admin debugging
+6. **ALWAYS run cleanup** after finishing debugging session
+
+#### Prerequisites for Local Development:
+- **Build solution:** `dotnet build StadiumDrinkOrdering.sln`
+- **Database migrations:** `dotnet ef database update -p StadiumDrinkOrdering.API`
+- **Valid appsettings.Development.json** with correct connection strings
+
+### Docker Development (Production/Testing)
+**Use Docker containers for production-like testing and deployment:**
+
 - **Start services:** `docker-compose up --build -d`
 - **Stop services:** `docker-compose down`
 - **View logs:** `docker-compose logs -f [service-name]`
@@ -41,12 +131,17 @@
 
 🔒 **HTTPS-ONLY**: All Docker containers use HTTPS exclusively for both internal and external communication. All mapped ports (9010-9040) use HTTPS with SSL certificates.
 
-### Local .NET Development
-- **Build solution:** `dotnet build StadiumDrinkOrdering.sln`
-- **Run API:** `cd StadiumDrinkOrdering.API && dotnet run --launch-profile https`
-- **Run Customer App:** `cd StadiumDrinkOrdering.Customer && dotnet run --launch-profile https`
-- **Run Admin App:** `cd StadiumDrinkOrdering.Admin && dotnet run --launch-profile https`
-- **Run Staff App:** `cd StadiumDrinkOrdering.Staff && dotnet run --launch-profile https`
+#### Docker URLs (HTTPS):
+- **API**: https://localhost:9010
+- **Customer**: https://localhost:9020
+- **Admin**: https://localhost:9030
+- **Staff**: https://localhost:9040
+
+### Development Workflow Recommendation:
+1. **Daily Development**: Use local .NET development for faster iteration
+2. **Integration Testing**: Use Docker to test container behavior
+3. **Final Testing**: Use Docker before committing changes
+4. **Production**: Deploy using Docker containers
 
 ---
 

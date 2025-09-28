@@ -1,0 +1,124 @@
+{
+  "name": "Test Stadium NK Osijek Style",
+  "description": "Professional 4-tribune stadium for visualization testing",
+  "capacity": 8000,
+  "tribunes": [
+    {
+      "code": "N",
+      "name": "North Tribune",
+      "description": "Main tribune",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "priceMultiplier": 1.0,
+          "sectors": [
+            {
+              "code": "N1A",
+              "name": "Sector N1A",
+              "type": "standard",
+              "rows": 20,
+              "seatsPerRow": 25,
+              "priceCategory": "A"
+            },
+            {
+              "code": "N1B",
+              "name": "Sector N1B",
+              "type": "vip",
+              "rows": 15,
+              "seatsPerRow": 20,
+              "priceCategory": "VIP"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "South Tribune",
+      "description": "Away fans section",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "priceMultiplier": 0.8,
+          "sectors": [
+            {
+              "code": "S1A",
+              "name": "Sector S1A",
+              "type": "standard",
+              "rows": 18,
+              "seatsPerRow": 30,
+              "priceCategory": "B"
+            },
+            {
+              "code": "S1B",
+              "name": "Sector S1B",
+              "type": "standard",
+              "rows": 18,
+              "seatsPerRow": 30,
+              "priceCategory": "B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "name": "East Tribune",
+      "description": "Family section",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "priceMultiplier": 1.2,
+          "sectors": [
+            {
+              "code": "E1A",
+              "name": "Sector E1A",
+              "type": "standard",
+              "rows": 22,
+              "seatsPerRow": 20,
+              "priceCategory": "A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "name": "West Tribune",
+      "description": "Premium section",
+      "rings": [
+        {
+          "number": 1,
+          "name": "Lower Ring",
+          "priceMultiplier": 1.5,
+          "sectors": [
+            {
+              "code": "W1A",
+              "name": "Sector W1A",
+              "type": "premium",
+              "rows": 20,
+              "seatsPerRow": 25,
+              "priceCategory": "Premium"
+            },
+            {
+              "code": "W1B",
+              "name": "Sector W1B",
+              "type": "wheelchair",
+              "rows": 5,
+              "seatsPerRow": 10,
+              "priceCategory": "Accessible"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "createdDate": "2024-09-25",
+    "lastModified": "2024-09-25"
+  }
+}

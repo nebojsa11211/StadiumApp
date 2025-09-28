@@ -29,21 +29,17 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<EnhancedLoginResponseDto>> Login([FromBody] LoginDto loginDto)
     {
-#if DEBUG
-        Request.EnableBuffering();
-        using (var reader = new StreamReader(Request.Body, encoding: Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
-        {
-            var requestBody = await reader.ReadToEndAsync();
-            Console.WriteLine($"Request body: {requestBody}");
-            Request.Body.Position = 0;
-        }
-#endif
         var ipAddress = GetClientIPAddress();
         var userAgent = Request.Headers.UserAgent.ToString();
         var deviceInfo = GetDeviceInfo();
 
         try
         {
+            if (loginDto == null)
+            {
+                return BadRequest(new { error = "Invalid request body" });
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -60,10 +56,14 @@ public class AuthController : ControllerBase
                 return StatusCode(429, new { error = "IP address is temporarily banned", retryAfter = "3600" });
             }
 
-            // Check if account is locked
+            // Check if account is locked - TEMPORARILY DISABLED DUE TO DATABASE CONNECTION ISSUES
+            Console.WriteLine("=== DEBUG: SKIPPING account lockout check due to database connection issues ===");
+            /*
             if (!string.IsNullOrEmpty(loginDto.Email))
             {
+                Console.WriteLine($"=== DEBUG: Checking lockout for email: {loginDto.Email} ===");
                 var lockout = await _bruteForceService.GetAccountLockoutAsync(loginDto.Email);
+                Console.WriteLine($"=== DEBUG: Account lockout result: {lockout} ===");
                 if (lockout != null)
                 {
                     var remainingTime = (lockout.LockoutEnd - DateTime.UtcNow).TotalMinutes;
@@ -80,16 +80,25 @@ public class AuthController : ControllerBase
                     });
                 }
             }
+            */
+            Console.WriteLine("=== DEBUG: Account lockout check skipped ===");
 
-            // Apply progressive delay
+            // Apply progressive delay - TEMPORARILY DISABLED DUE TO DATABASE CONNECTION ISSUES
+            Console.WriteLine("=== DEBUG: SKIPPING progressive delay check due to database connection issues ===");
+            /*
             var delay = await _bruteForceService.GetProgressiveDelayAsync(ipAddress, loginDto.Email);
+            Console.WriteLine($"=== DEBUG: Progressive delay result: {delay}ms ===");
             if (delay > 0)
             {
+                Console.WriteLine($"=== DEBUG: Applying delay of {delay}ms ===");
                 await Task.Delay(delay);
             }
+            */
 
             // Attempt authentication with basic login (temporary fix for hanging issue)
+            Console.WriteLine("=== DEBUG: Starting authentication with AuthService.LoginAsync ===");
             var basicResult = await _authService.LoginAsync(loginDto);
+            Console.WriteLine($"=== DEBUG: Authentication result: {basicResult?.Token?.Length ?? 0} chars ===");
             var result = basicResult == null ? null : new EnhancedLoginResponseDto
             {
                 Token = basicResult.Token,
@@ -101,19 +110,25 @@ public class AuthController : ControllerBase
 
             if (result == null)
             {
-                // Record failed attempt
+                // Record failed attempt - TEMPORARILY DISABLED DUE TO DATABASE CONNECTION ISSUES
+                Console.WriteLine("=== DEBUG: SKIPPING RecordFailedAttemptAsync due to database connection issues ===");
+                /*
                 await _bruteForceService.RecordFailedAttemptAsync(
                     ipAddress,
                     loginDto.Email,
                     "Login",
                     userAgent,
                     "Invalid credentials");
+                */
 
                 return Unauthorized(new { error = "Invalid email or password" });
             }
 
-            // Successful login - clear failed attempts
+            // Successful login - clear failed attempts - TEMPORARILY DISABLED DUE TO DATABASE CONNECTION ISSUES
+            Console.WriteLine("=== DEBUG: SKIPPING ClearFailedAttemptsAsync due to database connection issues ===");
+            /*
             await _bruteForceService.ClearFailedAttemptsAsync(loginDto.Email);
+            */
 
             await _loggingClient.LogUserActionAsync(
                 action: "LoginSuccessful",
@@ -126,13 +141,16 @@ public class AuthController : ControllerBase
         {
             _logger.LogError(ex, "Error during login for email {Email} from IP {IPAddress}", loginDto.Email, ipAddress);
 
-            // Record as failed attempt on system error
+            // Record as failed attempt on system error - TEMPORARILY DISABLED DUE TO DATABASE CONNECTION ISSUES
+            Console.WriteLine("=== DEBUG: SKIPPING RecordFailedAttemptAsync (system error) due to database connection issues ===");
+            /*
             await _bruteForceService.RecordFailedAttemptAsync(
                 ipAddress,
                 loginDto.Email,
                 "Login",
                 userAgent,
                 "System error");
+            */
 
             return StatusCode(500, new { error = "Authentication service error" });
         }

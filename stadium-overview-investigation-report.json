@@ -1,0 +1,690 @@
+{
+  "timestamp": "2025-09-25T19:50:03.467Z",
+  "pageInfo": {
+    "title": "Admin Login",
+    "url": "https://localhost:9030/login?returnUrl=https%3A%2F%2Flocalhost%3A9030%2Fadmin%2Fstadium-overview",
+    "redirectedToLogin": true
+  },
+  "stadiumElements": {
+    "#admin-stadium-container": {
+      "count": 1,
+      "details": [
+        {
+          "index": 0,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 33,
+            "y": 571.53125,
+            "width": 1856,
+            "height": 756
+          },
+          "innerHTML": "<!--!--><div id=\"admin-stadium-loading-state\" class=\"loading-state\" role=\"status\" aria-live=\"polite\" b-vgdj5lwjar=\"\"><div id=\"admin-stadium-loading-content\" class=\"loading-content\" b-vgdj5lwjar=\"\"><div class=\"loading-spinner\" aria-hidden=\"true\" b-vgdj5lwjar=\"\"></div>\n                            <h3 b-vgdj5lwjar=\"\">Loading Stadium Layout</h3>\n                            <p b-vgdj5lwjar=\"\">Preparing stadium visualization...</p>\n                            <div id=\"admin-stadium-loading-progress\" c",
+          "computedStyle": null
+        }
+      ]
+    },
+    "#admin-stadium-flex-layout": {
+      "count": 0,
+      "details": []
+    },
+    "#stadium-field": {
+      "count": 0,
+      "details": []
+    },
+    "[id*=\"stadium\"]": {
+      "count": 26,
+      "details": [
+        {
+          "index": 0,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 12,
+            "y": 524,
+            "width": 32,
+            "height": 50.59375
+          },
+          "innerHTML": "<div id=\"admin-nav-stadium-header\" class=\"nav-section-header\" b-2n6itkzwhz=\"\"><span class=\"text-muted small\" b-2n6itkzwhz=\"\">STADIUM MANAGEMENT</span></div>",
+          "computedStyle": null
+        },
+        {
+          "index": 1,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 28,
+            "y": 524,
+            "width": 24,
+            "height": 50.59375
+          },
+          "innerHTML": "<span class=\"text-muted small\" b-2n6itkzwhz=\"\">STADIUM MANAGEMENT</span>",
+          "computedStyle": null
+        },
+        {
+          "index": 2,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 12,
+            "y": 578.59375,
+            "width": 32,
+            "height": 48
+          },
+          "innerHTML": "<!--!--><a href=\"admin/stadium-structure\" class=\"nav-link\"><!--!--><span class=\"oi oi-map-marker\" aria-hidden=\"true\" b-2n6itkzwhz=\"\"></span> Structure Management\n            </a>",
+          "computedStyle": null
+        },
+        {
+          "index": 3,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 12,
+            "y": 630.59375,
+            "width": 32,
+            "height": 48
+          },
+          "innerHTML": "<!--!--><a href=\"admin/stadium-overview\" class=\"nav-link active\" aria-current=\"page\"><!--!--><span class=\"oi oi-eye\" aria-hidden=\"true\" b-2n6itkzwhz=\"\"></span> Stadium Overview\n            </a>",
+          "computedStyle": null
+        },
+        {
+          "index": 4,
+          "isVisible": true,
+          "boundingBox": {
+            "x": -9999,
+            "y": 64,
+            "width": 1,
+            "height": 1
+          },
+          "innerHTML": "",
+          "computedStyle": null
+        }
+      ]
+    },
+    "[class*=\"stadium\"]": {
+      "count": 5,
+      "details": [
+        {
+          "index": 0,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 1,
+            "y": 65,
+            "width": 1920,
+            "height": 1262.53125
+          },
+          "innerHTML": "<header class=\"stadium-overview-header stadium-header-optimized\" b-vgdj5lwjar=\"\"><div class=\"header-content\" b-vgdj5lwjar=\"\"><!--!--><div class=\"header-icon\" b-vgdj5lwjar=\"\"><i class=\"bi bi-building\" aria-hidden=\"true\" b-vgdj5lwjar=\"\"></i></div>\n            <!--!--><div class=\"header-info\" b-vgdj5lwjar=\"\"><h1 id=\"stadium-overview-title\" class=\"overview-title\" b-vgdj5lwjar=\"\">Stadium Operations Center</h1>\n                <p class=\"overview-subtitle\" b-vgdj5lwjar=\"\">Real-time stadium management d",
+          "computedStyle": null
+        },
+        {
+          "index": 1,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 33,
+            "y": 65,
+            "width": 1856,
+            "height": 116.578125
+          },
+          "innerHTML": "<div class=\"header-content\" b-vgdj5lwjar=\"\"><!--!--><div class=\"header-icon\" b-vgdj5lwjar=\"\"><i class=\"bi bi-building\" aria-hidden=\"true\" b-vgdj5lwjar=\"\"></i></div>\n            <!--!--><div class=\"header-info\" b-vgdj5lwjar=\"\"><h1 id=\"stadium-overview-title\" class=\"overview-title\" b-vgdj5lwjar=\"\">Stadium Operations Center</h1>\n                <p class=\"overview-subtitle\" b-vgdj5lwjar=\"\">Real-time stadium management dashboard</p></div>\n            <div class=\"header-status\" b-vgdj5lwjar=\"\"><div cl",
+          "computedStyle": null
+        },
+        {
+          "index": 2,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 33,
+            "y": 181.578125,
+            "width": 1856,
+            "height": 1145.953125
+          },
+          "innerHTML": "<section id=\"admin-stadium-control-panel\" class=\"control-panel control-panel-full-width\" aria-labelledby=\"control-panel-title\" data-responsive=\"true\" b-vgdj5lwjar=\"\"><!--!--><div id=\"admin-stadium-control-header\" class=\"control-panel-header\" b-vgdj5lwjar=\"\"><h2 id=\"control-panel-title\" class=\"panel-title\" b-vgdj5lwjar=\"\"><i class=\"bi bi-sliders\" aria-hidden=\"true\" b-vgdj5lwjar=\"\"></i>\n                    Control Panel\n                </h2>\n                <p class=\"panel-subtitle\" b-vgdj5lwjar=\"",
+          "computedStyle": null
+        },
+        {
+          "index": 3,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 33,
+            "y": 498.140625,
+            "width": 1856,
+            "height": 829.390625
+          },
+          "innerHTML": "<div id=\"admin-stadium-viz-header\" class=\"visualization-header\" b-vgdj5lwjar=\"\"><!--!--><h2 id=\"stadium-viz-title\" class=\"panel-title\" b-vgdj5lwjar=\"\"><i class=\"bi bi-diagram-3\" aria-hidden=\"true\" b-vgdj5lwjar=\"\"></i>\n                    Stadium Layout\n                </h2></div><div class=\"stadium-container stadium-container-maximum-width\" id=\"admin-stadium-container\" data-container=\"maximum-width\" data-viewport-optimized=\"true\" b-vgdj5lwjar=\"\"><!--!--><div id=\"admin-stadium-loading-state\" clas",
+          "computedStyle": null
+        },
+        {
+          "index": 4,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 33,
+            "y": 571.53125,
+            "width": 1856,
+            "height": 756
+          },
+          "innerHTML": "<!--!--><div id=\"admin-stadium-loading-state\" class=\"loading-state\" role=\"status\" aria-live=\"polite\" b-vgdj5lwjar=\"\"><div id=\"admin-stadium-loading-content\" class=\"loading-content\" b-vgdj5lwjar=\"\"><div class=\"loading-spinner\" aria-hidden=\"true\" b-vgdj5lwjar=\"\"></div>\n                            <h3 b-vgdj5lwjar=\"\">Loading Stadium Layout</h3>\n                            <p b-vgdj5lwjar=\"\">Preparing stadium visualization...</p>\n                            <div id=\"admin-stadium-loading-progress\" c",
+          "computedStyle": null
+        }
+      ]
+    },
+    ".stadium-container": {
+      "count": 1,
+      "details": [
+        {
+          "index": 0,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 33,
+            "y": 571.53125,
+            "width": 1856,
+            "height": 756
+          },
+          "innerHTML": "<!--!--><div id=\"admin-stadium-loading-state\" class=\"loading-state\" role=\"status\" aria-live=\"polite\" b-vgdj5lwjar=\"\"><div id=\"admin-stadium-loading-content\" class=\"loading-content\" b-vgdj5lwjar=\"\"><div class=\"loading-spinner\" aria-hidden=\"true\" b-vgdj5lwjar=\"\"></div>\n                            <h3 b-vgdj5lwjar=\"\">Loading Stadium Layout</h3>\n                            <p b-vgdj5lwjar=\"\">Preparing stadium visualization...</p>\n                            <div id=\"admin-stadium-loading-progress\" c",
+          "computedStyle": null
+        }
+      ]
+    },
+    ".stadium-visualization": {
+      "count": 1,
+      "details": [
+        {
+          "index": 0,
+          "isVisible": true,
+          "boundingBox": {
+            "x": 33,
+            "y": 498.140625,
+            "width": 1856,
+            "height": 829.390625
+          },
+          "innerHTML": "<div id=\"admin-stadium-viz-header\" class=\"visualization-header\" b-vgdj5lwjar=\"\"><!--!--><h2 id=\"stadium-viz-title\" class=\"panel-title\" b-vgdj5lwjar=\"\"><i class=\"bi bi-diagram-3\" aria-hidden=\"true\" b-vgdj5lwjar=\"\"></i>\n                    Stadium Layout\n                </h2></div><div class=\"stadium-container stadium-container-maximum-width\" id=\"admin-stadium-container\" data-container=\"maximum-width\" data-viewport-optimized=\"true\" b-vgdj5lwjar=\"\"><!--!--><div id=\"admin-stadium-loading-state\" clas",
+          "computedStyle": null
+        }
+      ]
+    }
+  },
+  "loadingStates": {
+    "hasLoadingSpinner": true,
+    "hasErrorMessage": false,
+    "hasEmptyState": false
+  },
+  "stadiumDataIndicators": {
+    "hasTribuneText": false,
+    "hasSectorText": true,
+    "hasSeatText": true,
+    "hasStadiumJson": false,
+    "hasCoordinatesData": false
+  },
+  "stadiumRelatedText": {
+    "containsStadium": true,
+    "containsVisualization": true,
+    "containsOverview": true,
+    "containsEmpty": false,
+    "containsError": true
+  },
+  "visualElements": {
+    "svgCount": 0,
+    "canvasCount": 0
+  },
+  "consoleMessages": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 ()",
+      "location": {
+        "url": "https://kit.fontawesome.com/your-kit-id.js",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "log",
+      "text": "Admin Charts module loaded successfully",
+      "location": {
+        "url": "https://localhost:9030/js/admin-charts.js",
+        "lineNumber": 368,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "log",
+      "text": "📊 Admin countdown manager loaded",
+      "location": {
+        "url": "https://localhost:9030/js/admin-countdown.js",
+        "lineNumber": 155,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "log",
+      "text": "Notification system initialized",
+      "location": {
+        "url": "https://localhost:9030/js/notifications.js",
+        "lineNumber": 227,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "log",
+      "text": "🏟️ Initializing Stadium Maximum Width Manager...",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 31,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "log",
+      "text": "🚀 Stadium Maximum Width Interactions script loaded",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 553,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme stored: light",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Meta theme-color updated: #f8fafc",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme change event dispatched ",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme applied: {requested: light, effective: light}",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme controls updated ",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme system initialized {currentTheme: light}",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Event listeners bound ",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "debug",
+      "text": "Initializing auth session bridge",
+      "location": {
+        "url": "https://localhost:9030/js/auth-session-bridge.js",
+        "lineNumber": 68,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ Stadium Maximum Width Manager initialized successfully",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 54,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "log",
+      "text": "🔍 DOM loaded, checking modal functions...",
+      "location": {
+        "url": "https://localhost:9030/admin/stadium-overview",
+        "lineNumber": 77,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ Modal positioning CSS injected for all modals",
+      "location": {
+        "url": "https://localhost:9030/admin/stadium-overview",
+        "lineNumber": 163,
+        "columnNumber": 24
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ showBootstrapModal already loaded from modals.js",
+      "location": {
+        "url": "https://localhost:9030/admin/stadium-overview",
+        "lineNumber": 352,
+        "columnNumber": 24
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ Modal functions ready with SMART cleanup system",
+      "location": {
+        "url": "https://localhost:9030/admin/stadium-overview",
+        "lineNumber": 492,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "info",
+      "text": "[2025-09-25T19:49:50.977Z] Information: Normalizing '_blazor' to 'https://localhost:9030/_blazor'.",
+      "location": {
+        "url": "https://localhost:9030/_framework/blazor.server.js",
+        "lineNumber": 0,
+        "columnNumber": 45365
+      }
+    },
+    {
+      "type": "info",
+      "text": "[2025-09-25T19:49:51.006Z] Information: WebSocket connected to wss://localhost:9030/_blazor?id=MnSdNgcfid9Q4c-yOVKsIQ.",
+      "location": {
+        "url": "https://localhost:9030/_framework/blazor.server.js",
+        "lineNumber": 0,
+        "columnNumber": 45365
+      }
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "location": {
+        "url": "https://localhost:9030/login?returnUrl=https%3A%2F%2Flocalhost%3A9030%2Fadmin%2Fstadium-overview",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ Server time display started successfully",
+      "location": {
+        "url": "https://localhost:9030/js/server-time.js",
+        "lineNumber": 19,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "⏹️ Server time display stopped",
+      "location": {
+        "url": "https://localhost:9030/js/server-time.js",
+        "lineNumber": 26,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 ()",
+      "location": {
+        "url": "https://kit.fontawesome.com/your-kit-id.js",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "log",
+      "text": "Admin Charts module loaded successfully",
+      "location": {
+        "url": "https://localhost:9030/js/admin-charts.js",
+        "lineNumber": 368,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "log",
+      "text": "📊 Admin countdown manager loaded",
+      "location": {
+        "url": "https://localhost:9030/js/admin-countdown.js",
+        "lineNumber": 155,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "log",
+      "text": "Notification system initialized",
+      "location": {
+        "url": "https://localhost:9030/js/notifications.js",
+        "lineNumber": 227,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "log",
+      "text": "🏟️ Initializing Stadium Maximum Width Manager...",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 31,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "log",
+      "text": "🚀 Stadium Maximum Width Interactions script loaded",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 553,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme stored: light",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Meta theme-color updated: #f8fafc",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme change event dispatched ",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme applied: {requested: light, effective: light}",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme controls updated ",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Theme system initialized {currentTheme: light}",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "[AdminTheme] Event listeners bound ",
+      "location": {
+        "url": "https://localhost:9030/js/admin-theme.js",
+        "lineNumber": 489,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "debug",
+      "text": "Initializing auth session bridge",
+      "location": {
+        "url": "https://localhost:9030/js/auth-session-bridge.js",
+        "lineNumber": 68,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ Stadium Maximum Width Manager initialized successfully",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 54,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "log",
+      "text": "🔍 DOM loaded, checking modal functions...",
+      "location": {
+        "url": "https://localhost:9030/admin/stadium-overview",
+        "lineNumber": 77,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ Modal positioning CSS injected for all modals",
+      "location": {
+        "url": "https://localhost:9030/admin/stadium-overview",
+        "lineNumber": 163,
+        "columnNumber": 24
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ showBootstrapModal already loaded from modals.js",
+      "location": {
+        "url": "https://localhost:9030/admin/stadium-overview",
+        "lineNumber": 352,
+        "columnNumber": 24
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ Modal functions ready with SMART cleanup system",
+      "location": {
+        "url": "https://localhost:9030/admin/stadium-overview",
+        "lineNumber": 492,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "info",
+      "text": "[2025-09-25T19:49:58.395Z] Information: Normalizing '_blazor' to 'https://localhost:9030/_blazor'.",
+      "location": {
+        "url": "https://localhost:9030/_framework/blazor.server.js",
+        "lineNumber": 0,
+        "columnNumber": 45365
+      }
+    },
+    {
+      "type": "info",
+      "text": "[2025-09-25T19:49:58.656Z] Information: WebSocket connected to wss://localhost:9030/_blazor?id=1TmPIc_ikP2-0EHGWL-vtg.",
+      "location": {
+        "url": "https://localhost:9030/_framework/blazor.server.js",
+        "lineNumber": 0,
+        "columnNumber": 45365
+      }
+    },
+    {
+      "type": "log",
+      "text": "✅ Server time display started successfully",
+      "location": {
+        "url": "https://localhost:9030/js/server-time.js",
+        "lineNumber": 19,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "📱 Breakpoint changed to: large-desktop",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 195,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "log",
+      "text": "📱 Breakpoint changed to: large-desktop",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 195,
+        "columnNumber": 16
+      }
+    },
+    {
+      "type": "log",
+      "text": "📱 Breakpoint changed to: large-desktop",
+      "location": {
+        "url": "https://localhost:9030/js/stadium-maximum-width-interactions.js",
+        "lineNumber": 195,
+        "columnNumber": 16
+      }
+    }
+  ],
+  "apiRequests": [],
+  "networkErrors": [
+    {
+      "url": "https://kit.fontawesome.com/your-kit-id.js",
+      "failure": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://localhost:9030/_blazor/disconnect",
+      "failure": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://kit.fontawesome.com/your-kit-id.js",
+      "failure": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    }
+  ],
+  "recommendations": [
+    "No API requests detected - stadium data may not be loading from backend",
+    "No SVG or Canvas elements found - visualization may use HTML/CSS only"
+  ]
+}

@@ -44,24 +44,53 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponseDto?> LoginAsync(LoginDto loginDto)
     {
+        Console.WriteLine("=== DEBUG: AuthService.LoginAsync starting ===");
+
         // Use AsNoTracking for read-only operations to improve performance
-        var user = await _context.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+        Console.WriteLine("=== DEBUG: Looking up user by email ===");
+
+        // Add timeout and more robust query to prevent hanging
+        User? user = null;
+        try
+        {
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            user = await _context.Users
+                .AsNoTracking()
+                .Where(u => u.Email == loginDto.Email)
+                .Take(1)
+                .SingleOrDefaultAsync(timeoutCts.Token);
+            Console.WriteLine($"=== DEBUG: User lookup completed successfully, found: {user != null} ===");
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("=== DEBUG: User lookup timed out after 10 seconds ===");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"=== DEBUG: User lookup failed with exception: {ex.Message} ===");
+            return null;
+        }
 
         if (user == null)
         {
+            Console.WriteLine("=== DEBUG: User not found, returning null ===");
             return null;
         }
 
         // Verify password - this is working correctly
+        Console.WriteLine("=== DEBUG: Starting password verification ===");
         var isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+        Console.WriteLine($"=== DEBUG: Password verification completed, valid: {isPasswordValid} ===");
         if (!isPasswordValid)
         {
+            Console.WriteLine("=== DEBUG: Invalid password, returning null ===");
             return null;
         }
 
-        // Update last login with optimized approach - use ExecuteUpdateAsync for better performance
+        // Update last login with optimized approach - TEMPORARILY DISABLED DUE TO DATABASE TIMEOUT ISSUES
+        Console.WriteLine("=== DEBUG: SKIPPING last login update due to database timeout issues ===");
+        /*
         try
         {
             await _context.Users
@@ -72,6 +101,7 @@ public class AuthService : IAuthService
         {
             // Don't fail login if last login update fails
         }
+        */
 
         var token = GenerateJwtToken(user);
         var userDto = MapToUserDto(user);

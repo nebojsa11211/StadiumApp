@@ -1,0 +1,732 @@
+/* ===============================================
+   STADIUM MAXIMUM WIDTH OPTIMIZATION
+   Ultimate Width Utilization for Stadium Visualization
+   =============================================== */
+
+:root {
+    /* Maximum Width Variables */
+    --stadium-max-width: 100vw;
+    --stadium-max-height: 85vh;
+    --container-padding: clamp(0.5rem, 2vw, 2rem);
+    --grid-gap: clamp(0.5rem, 1.5vw, 1.5rem);
+
+    /* Responsive Field Sizes */
+    --field-ratio: 3.5; /* 3.5:1 aspect ratio for field */
+    --field-min-width: 400px;
+    --field-max-width: min(60vw, 800px);
+
+    /* Stand Optimization */
+    --stand-min-width: clamp(200px, 15vw, 400px);
+    --stand-max-width: clamp(300px, 20vw, 500px);
+
+    /* Breakpoint Variables */
+    --mobile: 480px;
+    --tablet: 768px;
+    --desktop: 1024px;
+    --large-desktop: 1440px;
+    --ultra-wide: 1920px;
+    --super-wide: 2560px;
+}
+
+/* ===============================================
+   REMOVE ALL WIDTH CONSTRAINTS
+   =============================================== */
+
+/* Override Bootstrap container constraints */
+.container,
+.container-fluid,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl,
+.container-xxl {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Remove wrapper constraints */
+.stadium-overview-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 var(--container-padding) !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+}
+
+/* Remove main layout constraints */
+.stadium-main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: var(--grid-gap);
+}
+
+/* Remove visualization section constraints */
+#admin-stadium-visualization,
+.stadium-visualization {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Remove container constraints */
+#admin-stadium-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: var(--stadium-max-height);
+    padding: var(--container-padding);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===============================================
+   OPTIMIZED STADIUM LAYOUT - TRUE MAXIMUM WIDTH
+   =============================================== */
+
+.stadium-flex-layout {
+    /* Use CSS Grid for maximum space efficiency */
+    display: grid !important;
+    grid-template-areas:
+        "north-west north-center north-east"
+        "center-west field center-east"
+        "south-west south-center south-east" !important;
+
+    /* Optimized column ratios for maximum width usage */
+    grid-template-columns:
+        minmax(var(--stand-min-width), 1fr)
+        minmax(var(--field-min-width), var(--field-ratio)fr)
+        minmax(var(--stand-min-width), 1fr) !important;
+
+    /* Optimized row ratios */
+    grid-template-rows:
+        minmax(150px, 1fr)
+        minmax(300px, 2fr)
+        minmax(150px, 1fr) !important;
+
+    /* Use viewport-based sizing for maximum space usage */
+    width: 100% !important;
+    max-width: 100% !important;
+    height: var(--stadium-max-height) !important;
+    max-height: var(--stadium-max-height) !important;
+
+    gap: var(--grid-gap) !important;
+    padding: var(--container-padding) !important;
+    margin: 0 !important;
+
+    /* Visual enhancements */
+    background: linear-gradient(135deg,
+        rgba(74, 222, 128, 0.03) 0%,
+        rgba(34, 197, 94, 0.06) 50%,
+        rgba(22, 163, 74, 0.03) 100%);
+    border-radius: clamp(1rem, 2vw, 2rem);
+    box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: visible;
+}
+
+/* ===============================================
+   TRIBUNE POSITIONING - MAXIMUM SPACE USAGE
+   =============================================== */
+
+/* North Tribune - Full Width Usage */
+.stand-position-north {
+    grid-area: north-center !important;
+    justify-self: stretch !important;
+    align-self: end !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* South Tribune - Full Width Usage */
+.stand-position-south {
+    grid-area: south-center !important;
+    justify-self: stretch !important;
+    align-self: start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* East Tribune - Full Height Usage */
+.stand-position-east {
+    grid-area: center-east !important;
+    justify-self: start !important;
+    align-self: stretch !important;
+    height: 100% !important;
+    max-height: 100% !important;
+}
+
+/* West Tribune - Full Height Usage */
+.stand-position-west {
+    grid-area: center-west !important;
+    justify-self: end !important;
+    align-self: stretch !important;
+    height: 100% !important;
+    max-height: 100% !important;
+}
+
+/* ===============================================
+   FIELD OPTIMIZATION - MAXIMUM CENTERED FIELD
+   =============================================== */
+
+.stadium-field {
+    grid-area: field !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+
+    /* Maintain aspect ratio while maximizing size */
+    aspect-ratio: 1.6 / 1; /* Football field ratio */
+
+    /* Enhanced styling */
+    background: linear-gradient(135deg,
+        #4ade80 0%,
+        #22c55e 50%,
+        #16a34a 100%);
+    border-radius: clamp(1rem, 1.5vw, 1.5rem);
+    box-shadow:
+        inset 0 4px 12px rgba(0, 0, 0, 0.1),
+        0 8px 32px rgba(34, 197, 94, 0.2),
+        0 0 0 clamp(2px, 0.5vw, 4px) rgba(255, 255, 255, 0.3);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Field markings scaled to container */
+.field-markings {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-circle {
+    width: clamp(60px, 8vw, 120px);
+    height: clamp(60px, 8vw, 120px);
+    border: clamp(2px, 0.3vw, 3px) solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.center-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: clamp(4px, 0.6vw, 8px);
+    height: clamp(4px, 0.6vw, 8px);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+}
+
+.center-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: clamp(2px, 0.3vw, 3px);
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    transform: translateX(-50%);
+}
+
+.field-label {
+    position: absolute;
+    bottom: clamp(0.5rem, 2vw, 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.875rem, 2vw, 1.5rem);
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.2em;
+    z-index: 10;
+}
+
+/* ===============================================
+   STAND OPTIMIZATION - FLEXIBLE SIZING
+   =============================================== */
+
+.stadium-stand {
+    /* Remove fixed width constraints */
+    min-width: unset !important;
+    max-width: unset !important;
+    width: 100% !important;
+    height: 100% !important;
+
+    /* Flexible padding based on container size */
+    padding: clamp(1rem, 2vw, 2rem);
+
+    /* Enhanced styling */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    border-radius: clamp(1rem, 1.5vw, 1.5rem);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Flexbox for content optimization */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.stadium-stand:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.15),
+        0 10px 10px -5px rgba(0, 0, 0, 0.08);
+}
+
+/* Stand titles responsive sizing */
+.stand-title {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 700;
+    margin: 0 0 clamp(0.5rem, 1.5vw, 1rem) 0;
+    text-align: center;
+    color: var(--neutral-800);
+}
+
+/* ===============================================
+   SECTORS GRID - MAXIMUM DENSITY
+   =============================================== */
+
+.sectors-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(clamp(80px, 12vw, 120px), 1fr)) !important;
+    gap: clamp(0.5rem, 1vw, 1rem) !important;
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1;
+    align-content: start;
+}
+
+.sector {
+    /* Optimize sector sizing */
+    /* aspect-ratio: 1; */ /* REMOVED - causing sectors to exceed parent height */
+    min-height: clamp(60px, 8vw, 100px);
+
+    /* Enhanced styling */
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: clamp(0.5rem, 1vw, 1rem);
+    padding: clamp(0.5rem, 1vw, 1rem);
+
+    /* Flexbox for content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    /* Interactive states */
+    cursor: pointer;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.sector:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
+/* Sector text sizing */
+.sector-header .sector-name {
+    font-size: clamp(0.6rem, 1.5vw, 0.875rem);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.sector-content .seat-count {
+    font-size: clamp(0.5rem, 1.2vw, 0.75rem);
+    font-weight: 500;
+}
+
+.sector-content .occupancy-text {
+    font-size: clamp(0.4rem, 1vw, 0.625rem);
+    margin-top: 0.25rem;
+}
+
+/* ===============================================
+   RESPONSIVE BREAKPOINTS - OPTIMIZED FOR ALL SCREENS
+   =============================================== */
+
+/* Ultra-wide screens (2560px+) - Maximum stadium experience */
+@media (min-width: 2560px) {
+    :root {
+        --stadium-max-height: 90vh;
+        --field-ratio: 4;
+    }
+
+    .stadium-flex-layout {
+        grid-template-columns:
+            minmax(400px, 1.2fr)
+            minmax(800px, 4fr)
+            minmax(400px, 1.2fr) !important;
+        grid-template-rows:
+            minmax(200px, 1.2fr)
+            minmax(400px, 2.5fr)
+            minmax(200px, 1.2fr) !important;
+        gap: 2.5rem !important;
+        padding: 3rem !important;
+    }
+
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+        gap: 1.5rem !important;
+    }
+
+    .field-label {
+        font-size: 2rem !important;
+    }
+}
+
+/* Large desktop (1920px-2559px) - Premium stadium view */
+@media (min-width: 1920px) and (max-width: 2559px) {
+    .stadium-flex-layout {
+        grid-template-columns:
+            minmax(350px, 1fr)
+            minmax(700px, 3.8fr)
+            minmax(350px, 1fr) !important;
+        grid-template-rows:
+            minmax(180px, 1fr)
+            minmax(350px, 2.3fr)
+            minmax(180px, 1fr) !important;
+        gap: 2rem !important;
+        padding: 2.5rem !important;
+    }
+
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+        gap: 1.25rem !important;
+    }
+}
+
+/* Desktop (1440px-1919px) - Standard stadium view */
+@media (min-width: 1440px) and (max-width: 1919px) {
+    .stadium-flex-layout {
+        grid-template-columns:
+            minmax(300px, 1fr)
+            minmax(600px, 3.5fr)
+            minmax(300px, 1fr) !important;
+        grid-template-rows:
+            minmax(150px, 1fr)
+            minmax(300px, 2fr)
+            minmax(150px, 1fr) !important;
+        gap: 1.75rem !important;
+        padding: 2rem !important;
+    }
+}
+
+/* Standard desktop (1024px-1439px) - Compact stadium view */
+@media (min-width: 1024px) and (max-width: 1439px) {
+    .stadium-flex-layout {
+        grid-template-columns:
+            minmax(250px, 1fr)
+            minmax(400px, 3fr)
+            minmax(250px, 1fr) !important;
+        grid-template-rows:
+            minmax(120px, 1fr)
+            minmax(250px, 2fr)
+            minmax(120px, 1fr) !important;
+        gap: 1.5rem !important;
+        padding: 1.5rem !important;
+    }
+
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)) !important;
+        gap: 0.75rem !important;
+    }
+}
+
+/* Tablet landscape (768px-1023px) - Horizontal layout */
+@media (min-width: 768px) and (max-width: 1023px) {
+    :root {
+        --stadium-max-height: 80vh;
+    }
+
+    .stadium-flex-layout {
+        grid-template-columns:
+            minmax(200px, 1fr)
+            minmax(350px, 2.5fr)
+            minmax(200px, 1fr) !important;
+        grid-template-rows:
+            minmax(100px, 1fr)
+            minmax(200px, 1.8fr)
+            minmax(100px, 1fr) !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)) !important;
+        gap: 0.5rem !important;
+    }
+}
+
+/* Tablet portrait and mobile (up to 767px) - Stacked layout */
+@media (max-width: 767px) {
+    :root {
+        --stadium-max-height: auto;
+    }
+
+    .stadium-flex-layout {
+        /* Switch to single column layout */
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+
+    /* Reorder for mobile */
+    .stand-position-north { order: 1; }
+    .stand-position-west { order: 2; }
+    .stadium-field {
+        order: 3;
+        aspect-ratio: 1.4 / 1;
+        min-height: 250px;
+        max-height: 300px;
+    }
+    .stand-position-east { order: 4; }
+    .stand-position-south { order: 5; }
+
+    /* Reset stand positioning */
+    .stadium-stand {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 150px;
+    }
+
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)) !important;
+        gap: 0.5rem !important;
+        min-height: auto !important;
+    }
+
+    .sector {
+        min-height: 50px;
+        aspect-ratio: 1.2;
+    }
+}
+
+/* Small mobile (up to 480px) - Ultra-compact */
+@media (max-width: 480px) {
+    .stadium-flex-layout {
+        padding: 0.5rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .stadium-field {
+        min-height: 200px;
+        max-height: 250px;
+    }
+
+    .stadium-stand {
+        min-height: 120px;
+        padding: 0.75rem !important;
+    }
+
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)) !important;
+        gap: 0.25rem !important;
+    }
+
+    .sector {
+        min-height: 40px;
+        padding: 0.25rem !important;
+    }
+
+    .field-label {
+        font-size: 0.875rem !important;
+        bottom: 0.5rem !important;
+    }
+
+    .center-circle {
+        width: 40px !important;
+        height: 40px !important;
+        border-width: 2px !important;
+    }
+}
+
+/* ===============================================
+   ACCESSIBILITY & PERFORMANCE OPTIMIZATIONS
+   =============================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .stadium-field {
+        background: #228B22 !important;
+        border: 3px solid #000000 !important;
+    }
+
+    .center-circle,
+    .center-line {
+        border-color: #FFFFFF !important;
+        background: #FFFFFF !important;
+    }
+
+    .stadium-stand {
+        border: 2px solid #000000 !important;
+        background: #FFFFFF !important;
+    }
+
+    .sector {
+        border: 2px solid #000000 !important;
+        background: #FFFFFF !important;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .stadium-flex-layout,
+    .stadium-stand,
+    .sector,
+    .stadium-field {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .stadium-stand:hover,
+    .sector:hover {
+        transform: none !important;
+    }
+}
+
+/* GPU acceleration for smooth animations */
+.stadium-flex-layout,
+.stadium-stand,
+.sector {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* ===============================================
+   PRINT OPTIMIZATION
+   =============================================== */
+
+@media print {
+    .stadium-flex-layout {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        page-break-inside: avoid;
+        background: white !important;
+        box-shadow: none !important;
+    }
+
+    .stadium-field {
+        background: #e5e7eb !important;
+        box-shadow: none !important;
+    }
+
+    .stadium-stand,
+    .sector {
+        background: white !important;
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+}
+
+/* ===============================================
+   ADVANCED LAYOUT FEATURES
+   =============================================== */
+
+/* Container query support for future-proofing */
+@container (min-width: 1400px) {
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+    }
+}
+
+@container (min-width: 1800px) {
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    }
+}
+
+/* Subgrid support for enhanced layout control */
+@supports (grid-template-rows: subgrid) {
+    .stadium-stand {
+        display: grid;
+        grid-template-rows: subgrid;
+        grid-row: span 2;
+    }
+}
+
+/* Modern layout features */
+@supports (aspect-ratio: 1) {
+    .stadium-field {
+        aspect-ratio: 1.6 / 1 !important;
+    }
+
+    .sector {
+        /* aspect-ratio: 1 !important; */ /* REMOVED - causing sectors to exceed parent height */
+    }
+}
+
+/* Logical properties for international support */
+@supports (margin-inline-start: 0) {
+    .stadium-flex-layout {
+        padding-inline: var(--container-padding);
+        padding-block: var(--container-padding);
+    }
+
+    .stadium-stand {
+        padding-inline: clamp(1rem, 2vw, 2rem);
+        padding-block: clamp(1rem, 2vw, 2rem);
+    }
+}
+
+/* ===============================================
+   PERFORMANCE HINTS
+   =============================================== */
+
+/* Optimize rendering performance */
+.stadium-flex-layout {
+    contain: layout style paint;
+}
+
+.stadium-stand,
+.sector {
+    contain: layout paint;
+}
+
+.stadium-field {
+    contain: paint;
+}
+
+/* Optimize repainting */
+.stadium-stand:hover,
+.sector:hover {
+    contain: layout paint;
+}

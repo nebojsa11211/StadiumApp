@@ -34,27 +34,44 @@ namespace StadiumDrinkOrdering.API.Middleware
         {
             try
             {
-                // Log the exception to our centralized logging system
-                using var scope = _serviceProvider.CreateScope();
-                var loggingService = scope.ServiceProvider.GetService<ILoggingService>();
-                
-                if (loggingService != null)
+                // TEMPORARILY DISABLE database logging to prevent circular dependency deadlock
+                // TODO: Implement async fire-and-forget logging or use a message queue
+                _logger.LogError(exception, "Unhandled exception in {RequestPath}: {ExceptionMessage}",
+                    context.Request.Path, exception.Message);
+
+                // Optional: Try to log to centralized system but with timeout and no blocking
+                _ = Task.Run(async () =>
                 {
-                    await loggingService.LogErrorAsync(
-                        exception: exception,
-                        action: "UnhandledException",
-                        category: "SystemError",
-                        userId: GetUserIdFromContext(context),
-                        userEmail: GetUserEmailFromContext(context),
-                        userRole: GetUserRoleFromContext(context),
-                        details: $"Unhandled exception in {context.Request.Path}",
-                        requestPath: context.Request.Path,
-                        httpMethod: context.Request.Method,
-                        ipAddress: GetClientIpAddress(context),
-                        userAgent: context.Request.Headers.UserAgent.ToString(),
-                        source: "API"
-                    );
-                }
+                    try
+                    {
+                        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                        using var scope = _serviceProvider.CreateScope();
+                        var loggingService = scope.ServiceProvider.GetService<ILoggingService>();
+
+                        if (loggingService != null)
+                        {
+                            await loggingService.LogErrorAsync(
+                                exception: exception,
+                                action: "UnhandledException",
+                                category: "SystemError",
+                                userId: GetUserIdFromContext(context),
+                                userEmail: GetUserEmailFromContext(context),
+                                userRole: GetUserRoleFromContext(context),
+                                details: $"Unhandled exception in {context.Request.Path}",
+                                requestPath: context.Request.Path,
+                                httpMethod: context.Request.Method,
+                                ipAddress: GetClientIpAddress(context),
+                                userAgent: context.Request.Headers.UserAgent.ToString(),
+                                source: "API"
+                            );
+                        }
+                    }
+                    catch (Exception loggingException)
+                    {
+                        // Silent fail - don't block the main request
+                        Console.WriteLine($"Background logging failed: {loggingException.Message}");
+                    }
+                });
             }
             catch (Exception loggingException)
             {

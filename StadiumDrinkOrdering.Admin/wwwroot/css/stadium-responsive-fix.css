@@ -1,0 +1,332 @@
+/* ===============================================
+   STADIUM RESPONSIVE FIX - Visibility across all screen sizes
+   Ensures admin-stadium-container displays properly
+   =============================================== */
+
+/* Base Stadium Container Fixes */
+#admin-stadium-container,
+.stadium-container,
+.stadium-container-maximum-width {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+    overflow: visible !important;
+}
+
+/* Remove any conflicting height constraints */
+#admin-stadium-container {
+    height: auto !important;
+    min-height: 600px !important;
+    max-height: none !important;
+}
+
+/* Ensure proper display in stadium visualization */
+.stadium-visualization #admin-stadium-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Stadium Grid Layout Base Fixes */
+.stadium-grid-layout {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Desktop and Large Screens (1920px+) */
+@media (min-width: 1920px) {
+    #admin-stadium-container {
+        min-height: 800px !important;
+        padding: 2rem !important;
+    }
+
+    .stadium-grid-layout {
+        max-width: 1600px !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* Standard Desktop (1400px - 1920px) */
+@media (min-width: 1400px) and (max-width: 1919px) {
+    #admin-stadium-container {
+        min-height: 700px !important;
+        padding: 1.5rem !important;
+    }
+
+    .stadium-grid-layout {
+        max-width: 1300px !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* Small Desktop (1200px - 1399px) */
+@media (min-width: 1200px) and (max-width: 1399px) {
+    #admin-stadium-container {
+        min-height: 650px !important;
+        padding: 1.25rem !important;
+    }
+
+    .stadium-grid-layout {
+        max-width: 1100px !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* Laptop (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+    #admin-stadium-container {
+        min-height: 600px !important;
+        padding: 1rem !important;
+    }
+
+    .stadium-grid-layout {
+        max-width: 950px !important;
+        margin: 0 auto !important;
+        grid-template-columns: 0.7fr 2fr 0.7fr !important;
+    }
+}
+
+/* Tablet Landscape (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    #admin-stadium-container {
+        min-height: 550px !important;
+        padding: 1rem !important;
+    }
+
+    .stadium-grid-layout {
+        max-width: 100% !important;
+        grid-template-columns: 0.6fr 2fr 0.6fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .stadium-stand {
+        min-height: 120px !important;
+    }
+}
+
+/* Tablet Portrait (600px - 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+    #admin-stadium-container {
+        min-height: auto !important;
+        padding: 0.75rem !important;
+    }
+
+    .stadium-grid-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+        max-width: 100% !important;
+    }
+
+    .stadium-field {
+        order: 2 !important;
+        min-height: 280px !important;
+        max-height: 380px !important;
+        width: 100% !important;
+    }
+
+    .stadium-stand {
+        width: 100% !important;
+        min-height: 130px !important;
+    }
+
+    .stand-n, .stand-north, .stand-position-north { order: 1 !important; }
+    .stand-s, .stand-south, .stand-position-south { order: 3 !important; }
+    .stand-w, .stand-west, .stand-position-west { order: 4 !important; }
+    .stand-e, .stand-east, .stand-position-east { order: 5 !important; }
+}
+
+/* Mobile Large (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+    #admin-stadium-container {
+        min-height: auto !important;
+        padding: 0.5rem !important;
+    }
+
+    .stadium-grid-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        padding: 0.5rem !important;
+    }
+
+    .stadium-field {
+        min-height: 250px !important;
+        max-height: 350px !important;
+    }
+
+    .stadium-stand {
+        min-height: 120px !important;
+        padding: 0.75rem !important;
+    }
+
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)) !important;
+        gap: 0.5rem !important;
+    }
+
+    .sector {
+        min-height: 55px !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* Mobile Small (320px - 479px) */
+@media (max-width: 479px) {
+    #admin-stadium-container {
+        min-height: auto !important;
+        padding: 0.25rem !important;
+    }
+
+    .stadium-grid-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        padding: 0.25rem !important;
+    }
+
+    .stadium-field {
+        min-height: 200px !important;
+        max-height: 300px !important;
+    }
+
+    .stadium-stand {
+        min-height: 100px !important;
+        padding: 0.5rem !important;
+    }
+
+    .sectors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)) !important;
+        gap: 0.25rem !important;
+    }
+
+    .sector {
+        min-height: 45px !important;
+        padding: 0.25rem !important;
+        font-size: 0.65rem !important;
+    }
+
+    .sector-name {
+        font-size: 0.6rem !important;
+    }
+
+    .seat-count {
+        font-size: 0.55rem !important;
+    }
+
+    .field-label {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Ultra-wide screens (2560px+) */
+@media (min-width: 2560px) {
+    #admin-stadium-container {
+        min-height: 900px !important;
+        padding: 2.5rem !important;
+    }
+
+    .stadium-grid-layout {
+        max-width: 2000px !important;
+        margin: 0 auto !important;
+        grid-template-columns: 1fr 3fr 1fr !important;
+        grid-template-rows: 250px 1fr 250px !important;
+    }
+}
+
+/* 4K screens (3840px+) */
+@media (min-width: 3840px) {
+    #admin-stadium-container {
+        min-height: 1200px !important;
+        padding: 3rem !important;
+    }
+
+    .stadium-grid-layout {
+        max-width: 2800px !important;
+        grid-template-columns: 1.2fr 3.5fr 1.2fr !important;
+        grid-template-rows: 300px 1fr 300px !important;
+    }
+}
+
+/* Ensure visibility in all loading states */
+.loading-state,
+.error-state,
+.empty-state {
+    width: 100% !important;
+    min-height: 400px !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Fix for nested containers */
+.stadium-visualization {
+    width: 100% !important;
+    display: block !important;
+    visibility: visible !important;
+}
+
+.stadium-visualization > * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ensure proper scrolling behavior */
+@media (max-width: 1200px) {
+    .stadium-overview-wrapper {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+
+    #admin-stadium-container {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+}
+
+/* Print media fixes */
+@media print {
+    #admin-stadium-container {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        page-break-inside: avoid !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .stadium-grid-layout {
+        height: auto !important;
+        display: block !important;
+    }
+}
+
+/* Accessibility: High contrast mode */
+@media (prefers-contrast: high) {
+    #admin-stadium-container {
+        border: 2px solid currentColor !important;
+    }
+
+    .stadium-grid-layout {
+        border: 1px solid currentColor !important;
+    }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    #admin-stadium-container,
+    .stadium-grid-layout,
+    .stadium-field {
+        animation: none !important;
+        transition: none !important;
+    }
+}

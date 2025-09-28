@@ -220,4 +220,9 @@ if (!document.getElementById('notification-styles')) {
     document.head.appendChild(styles);
 }
 
+// Global function for C# interop
+window.showToast = function(message, type, title, duration) {
+    return window.notificationManager.showToast(type || 'info', message, title, duration);
+};
+
 console.log('Notification system initialized');

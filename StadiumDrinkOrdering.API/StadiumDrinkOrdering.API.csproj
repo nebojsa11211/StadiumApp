@@ -33,5 +33,11 @@
   <Target Name="KillProcessBeforeBuild" BeforeTargets="BeforeBuild;Build;Clean;Rebuild;CoreCompile">
     <Exec Command="$(ProjectDir)..\kill-api-process.bat" ContinueOnError="true" IgnoreExitCode="true" />
   </Target>
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="for /f &quot;tokens=5&quot; %%a in ('netstat -ano ^| findstr :7010') do taskkill /PID %%a /F &gt;nul 2&gt;&amp;1 || ver &gt;nul" />
+	</Target>
+
+
+
 
 </Project>

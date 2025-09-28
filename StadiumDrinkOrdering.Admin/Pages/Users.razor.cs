@@ -14,6 +14,7 @@ public partial class Users : ComponentBase
 
     private bool isLoading = false;
     private bool isCreatingUser = false;
+    private bool isCreatingSampleUsers = false;
     private List<UserDto> allUsers = new();
     private List<UserDto> filteredUsers = new();
     private HashSet<int> selectedUserIds = new();
@@ -271,5 +272,93 @@ public partial class Users : ComponentBase
             UserRole.Customer => "bg-success",
             _ => "bg-secondary"
         };
+    }
+
+    private async Task CreateSampleUsers()
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to create 20 sample users? This will add test data to your database."))
+        {
+            return;
+        }
+
+        isCreatingSampleUsers = true;
+        StateHasChanged();
+
+        try
+        {
+            var sampleUsers = GenerateSampleUsers();
+            var successCount = 0;
+            var errorCount = 0;
+
+            foreach (var user in sampleUsers)
+            {
+                try
+                {
+                    var result = await AdminApiService.CreateUserAsync(user);
+                    if (result != null)
+                    {
+                        successCount++;
+                    }
+                    else
+                    {
+                        errorCount++;
+                    }
+                }
+                catch (Exception)
+                {
+                    errorCount++;
+                }
+
+                // Small delay to prevent overwhelming the API
+                await Task.Delay(100);
+            }
+
+            if (successCount > 0)
+            {
+                // Success: reload the users list to show new users
+                await LoadUsers();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Failed to create sample users:", ex.Message);
+        }
+        finally
+        {
+            isCreatingSampleUsers = false;
+            StateHasChanged();
+        }
+    }
+
+    private List<CreateUserDto> GenerateSampleUsers()
+    {
+        var roles = new[] { UserRole.Customer, UserRole.Bartender, UserRole.Waiter };
+        var firstNames = new[] { "John", "Jane", "Mike", "Sarah", "David", "Emma", "Chris", "Lisa", "Tom", "Anna", "Mark", "Julia", "Steve", "Maria", "Paul", "Linda", "James", "Susan", "Daniel", "Nicole" };
+        var lastNames = new[] { "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin" };
+
+        var sampleUsers = new List<CreateUserDto>();
+        var random = new Random();
+
+        for (int i = 1; i <= 20; i++)
+        {
+            var firstName = firstNames[random.Next(firstNames.Length)];
+            var lastName = lastNames[random.Next(lastNames.Length)];
+            var role = roles[random.Next(roles.Length)];
+
+            var user = new CreateUserDto
+            {
+                Username = $"user{i:D2}_{firstName.ToLower()}",
+                Email = $"{firstName.ToLower()}.{lastName.ToLower()}{i}@stadium.com",
+                FirstName = firstName,
+                LastName = lastName,
+                Password = "Test123!",
+                ConfirmPassword = "Test123!",
+                Role = role
+            };
+
+            sampleUsers.Add(user);
+        }
+
+        return sampleUsers;
     }
 }

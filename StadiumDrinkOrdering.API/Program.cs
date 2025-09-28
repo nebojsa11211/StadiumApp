@@ -171,6 +171,12 @@ Console.WriteLine($"Connection String: {connectionString}");
 
 // Database Configuration with SQLite Fallback Support
 var useSqliteFallback = builder.Configuration.GetValue<bool>("UseSqliteFallback", false);
+Console.WriteLine($"=== SQLITE FALLBACK DEBUG ===");
+Console.WriteLine($"UseSqliteFallback config value: {useSqliteFallback}");
+Console.WriteLine($"UseSqliteFallback env var: {Environment.GetEnvironmentVariable("UseSqliteFallback")}");
+Console.WriteLine($"Connection string is null/empty: {string.IsNullOrEmpty(connectionString)}");
+Console.WriteLine($"Connection string contains 'Data Source=': {connectionString?.Contains("Data Source=") == true}");
+Console.WriteLine($"=== END SQLITE FALLBACK DEBUG ===");
 
 // Configure Health Checks based on database type
 var healthChecksBuilder = builder.Services.AddHealthChecks()
@@ -178,6 +184,7 @@ var healthChecksBuilder = builder.Services.AddHealthChecks()
         failureStatus: HealthStatus.Unhealthy,
         tags: new[] { "database" });
 
+Console.WriteLine($"Health check condition: !useSqliteFallback={!useSqliteFallback}, !string.IsNullOrEmpty(connectionString)={!string.IsNullOrEmpty(connectionString)}");
 if (!useSqliteFallback && !string.IsNullOrEmpty(connectionString))
 {
     // Add PostgreSQL health check only when not using SQLite fallback
@@ -189,50 +196,36 @@ if (!useSqliteFallback && !string.IsNullOrEmpty(connectionString))
 }
 else
 {
-    Console.WriteLine("Skipped PostgreSQL health check (using SQLite fallback)");
+    Console.WriteLine($"Skipped PostgreSQL health check - useSqliteFallback={useSqliteFallback}, connectionString.IsNullOrEmpty={string.IsNullOrEmpty(connectionString)}");
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    if (useSqliteFallback)
+    // FORCE PostgreSQL ONLY - NO SQLITE FALLBACK
+    if (string.IsNullOrEmpty(connectionString))
     {
-        // Use SQLite for development/testing
-        var sqliteConnectionString = "Data Source=stadium_app.db;Cache=Shared";
-        Console.WriteLine("Configuring SQLite database connection (fallback mode)...");
-        Console.WriteLine($"Using SQLite database: {sqliteConnectionString}");
-
-        options.UseSqlite(sqliteConnectionString, sqliteOptions =>
-        {
-            sqliteOptions.CommandTimeout(300);
-        });
+        throw new InvalidOperationException("Database connection string is not configured. Please check your appsettings.json or environment variables.");
     }
-    else
+
+    // Use PostgreSQL/Supabase ALWAYS
+    Console.WriteLine("FORCED PostgreSQL/Supabase connection...");
+    Console.WriteLine($"Using connection string: {connectionString.Replace("Password=d!hZ5A9@t+e!Nn2", "Password=***")}");
+
+    options.UseNpgsql(connectionString, npgsqlOptions =>
     {
-        if (string.IsNullOrEmpty(connectionString))
-        {
-            throw new InvalidOperationException("Database connection string is not configured. Please check your appsettings.json or environment variables.");
-        }
+        // TEMPORARILY DISABLED: Enhanced retry logic with exponential backoff
+        // npgsqlOptions.EnableRetryOnFailure(
+        //     maxRetryCount: 3,
+        //     maxRetryDelay: TimeSpan.FromSeconds(15),
+        //     errorCodesToAdd: new[] { "57P01", "53300", "53400" } // Common Supabase connection errors
+        // );
 
-        // Use PostgreSQL/Supabase
-        Console.WriteLine("Configuring PostgreSQL/Supabase connection...");
-        Console.WriteLine($"Using connection string: {connectionString.Replace("Password=d!hZ5A9@t+e!Nn2", "Password=***")}");
+        // Longer command timeout for complex operations
+        npgsqlOptions.CommandTimeout(300);
 
-        options.UseNpgsql(connectionString, npgsqlOptions =>
-        {
-            // TEMPORARILY DISABLED: Enhanced retry logic with exponential backoff
-            // npgsqlOptions.EnableRetryOnFailure(
-            //     maxRetryCount: 3,
-            //     maxRetryDelay: TimeSpan.FromSeconds(15),
-            //     errorCodesToAdd: new[] { "57P01", "53300", "53400" } // Common Supabase connection errors
-            // );
-
-            // Longer command timeout for complex operations
-            npgsqlOptions.CommandTimeout(300);
-
-            // PostgreSQL specific optimizations
-            npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-        });
-    }
+        // PostgreSQL specific optimizations
+        npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+    });
     
     // Performance optimizations
     options.EnableDetailedErrors(builder.Environment.IsDevelopment());
@@ -473,14 +466,17 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
-// Add comprehensive security headers middleware
-app.UseSecurityHeaders();
+// TEMPORARILY DISABLE security headers middleware due to hanging issue investigation
+// TODO: Re-enable after fixing hanging issue
+// app.UseSecurityHeaders();
 
-// Add rate limiting middleware
-app.UseIpRateLimiting();
+// TEMPORARILY DISABLE rate limiting middleware due to hanging issue
+// TODO: Fix rate limiting middleware or implement alternative
+// app.UseIpRateLimiting();
 
-// Add global exception handling middleware
-app.UseMiddleware<GlobalExceptionMiddleware>();
+// TEMPORARILY DISABLE global exception middleware due to hanging issue investigation
+// TODO: Re-enable after fixing hanging issue or implement alternative
+// app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,0 +1,156 @@
+@*
+    Stadium Drink Ordering - PWA Install Prompt Component
+
+    This component provides a native-like installation prompt for the Progressive Web App.
+    It detects if the app is installable, shows a dismissible banner, and handles the
+    beforeinstallprompt event to trigger installation.
+
+    Features:
+    - Automatic detection of PWA installability
+    - Dismissible install banner with smooth animations
+    - Tracks installation analytics
+    - Handles both browser and OS-level installation
+    - Persists dismissal preference in localStorage
+    - Responsive design for mobile and desktop
+*@
+
+@implements IDisposable
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
+@if (showInstallBanner && !isInstalled && !isDismissed)
+{
+    <div class="install-prompt" id="customer-pwa-install-prompt">
+        <div class="install-prompt-content">
+            <div class="install-prompt-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+
+            <div class="install-prompt-text">
+                <h4 class="install-prompt-title">Install Stadium Orders</h4>
+                <p class="install-prompt-description">
+                    Get the app for faster access and offline ordering
+                </p>
+            </div>
+
+            <div class="install-prompt-actions">
+                <button class="btn-install" @onclick="InstallApp" id="customer-pwa-install-btn">
+                    Install
+                </button>
+                <button class="btn-dismiss" @onclick="DismissBanner" id="customer-pwa-dismiss-btn">
+                    Not Now
+                </button>
+            </div>
+
+            <button class="btn-close" @onclick="DismissBanner" id="customer-pwa-close-btn" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private bool showInstallBanner = false;
+    private bool isInstalled = false;
+    private bool isDismissed = false;
+    private DotNetObjectReference<InstallPrompt>? dotNetRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+
+            // Initialize PWA install detection
+            await JSRuntime.InvokeVoidAsync("initializePwaInstall", dotNetRef);
+
+            // Check if user previously dismissed the prompt
+            isDismissed = await JSRuntime.InvokeAsync<bool>("checkInstallPromptDismissed");
+
+            // Check if app is already installed
+            isInstalled = await JSRuntime.InvokeAsync<bool>("checkIfPwaInstalled");
+
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void ShowInstallPrompt()
+    {
+        showInstallBanner = true;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void HideInstallPrompt()
+    {
+        showInstallBanner = false;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void OnAppInstalled()
+    {
+        isInstalled = true;
+        showInstallBanner = false;
+        StateHasChanged();
+    }
+
+    private async Task InstallApp()
+    {
+        try
+        {
+            // Trigger installation via JavaScript
+            var installed = await JSRuntime.InvokeAsync<bool>("installPwa");
+
+            if (installed)
+            {
+                // Track installation analytics
+                await TrackInstallation();
+
+                isInstalled = true;
+                showInstallBanner = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Installation failed: {ex.Message}");
+        }
+    }
+
+    private async Task DismissBanner()
+    {
+        isDismissed = true;
+        showInstallBanner = false;
+
+        // Persist dismissal in localStorage (expires in 7 days)
+        await JSRuntime.InvokeVoidAsync("dismissInstallPrompt");
+    }
+
+    private async Task TrackInstallation()
+    {
+        try
+        {
+            // Track installation event for analytics
+            await JSRuntime.InvokeVoidAsync("trackPwaInstallation", new
+            {
+                timestamp = DateTime.UtcNow,
+                platform = await JSRuntime.InvokeAsync<string>("getPlatform"),
+                userAgent = await JSRuntime.InvokeAsync<string>("getUserAgent")
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to track installation: {ex.Message}");
+        }
+    }
+
+    public void Dispose()
+    {
+        dotNetRef?.Dispose();
+    }
+}

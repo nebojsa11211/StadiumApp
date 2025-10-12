@@ -38,11 +38,23 @@ public partial class Index : ComponentBase, IDisposable
     private decimal revenueTrend = 0;
     private List<OrderDto>? recentOrders;
 
+    private bool hasLoadedData = false;
+
     protected override async Task OnInitializedAsync()
     {
-        await LoadDashboardData();
-        SetupAutoRefresh();
-        SetupCountdownTimer();
+        // Don't block page rendering - load data after render
+        await Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !hasLoadedData)
+        {
+            hasLoadedData = true;
+            await LoadDashboardData();
+            SetupAutoRefresh();
+            SetupCountdownTimer();
+        }
     }
 
     private async Task LoadDashboardData()
@@ -300,9 +312,22 @@ public partial class Index : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        autoRefreshTimer?.Stop();
-        autoRefreshTimer?.Dispose();
-        countdownTimer?.Stop();
-        countdownTimer?.Dispose();
+        try
+        {
+            autoRefreshTimer?.Stop();
+            autoRefreshTimer?.Dispose();
+            countdownTimer?.Stop();
+            countdownTimer?.Dispose();
+        }
+        catch (ObjectDisposedException)
+        {
+            // Timers may already be disposed, safe to ignore
+            // This happens during normal application shutdown
+        }
+        catch (Exception)
+        {
+            // Any other disposal exceptions should be ignored
+            // This prevents disposal issues from propagating
+        }
     }
 }

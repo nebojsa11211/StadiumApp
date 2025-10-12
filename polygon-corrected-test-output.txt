@@ -1,0 +1,8 @@
+[2m[WebServer] [22munable to get image 'stadiumapp-api': error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/images/stadiumapp-api/json": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+Error: Process from config.webServer was not able to start. Exit code: 1
+
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

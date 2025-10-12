@@ -77,8 +77,8 @@ public partial class Login
 
                 if (loginSuccess)
                 {
-                    // Log the successful login
-                    await ApiService.LogUserActionAsync("AdminLogin", "Authentication", details: $"Admin user {email} logged in successfully");
+                    // REMOVED: Centralized logging causing 62s timeout
+                    // await ApiService.LogUserActionAsync("AdminLogin", "Authentication", details: $"Admin user {email} logged in successfully");
 
                     Console.WriteLine($"Login successful for {email}, navigating...");
 
@@ -108,14 +108,16 @@ public partial class Login
             {
                 errorMessage = "Invalid credentials. Please try again.";
                 Console.WriteLine("Login failed: No valid response from API");
-                await ApiService.LogUserActionAsync("AdminLoginFailed", "Authentication", details: $"Failed login attempt for {email}");
+                // REMOVED: Centralized logging causing 62s timeout
+                // await ApiService.LogUserActionAsync("AdminLoginFailed", "Authentication", details: $"Failed login attempt for {email}");
             }
         }
         catch (Exception ex)
         {
             errorMessage = $"Login failed: {ex.Message}";
             Console.WriteLine($"Login error: {ex.Message}");
-            await ApiService.LogUserActionAsync("AdminLoginError", "Authentication", details: $"Login error for {email}: {ex.Message}");
+            // REMOVED: Centralized logging causing 62s timeout
+            // await ApiService.LogUserActionAsync("AdminLoginError", "Authentication", details: $"Login error for {email}: {ex.Message}");
         }
         finally
         {

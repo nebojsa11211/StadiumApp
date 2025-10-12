@@ -79,7 +79,20 @@ public partial class MainLayout : LayoutComponentBase, IAsyncDisposable
 
         if (jsModule is not null)
         {
-            await jsModule.DisposeAsync();
+            try
+            {
+                await jsModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Circuit is already disconnected, safe to ignore
+                // This happens during normal application shutdown
+            }
+            catch (ObjectDisposedException)
+            {
+                // Module is already disposed, safe to ignore
+                // This happens during normal application shutdown
+            }
         }
     }
 }

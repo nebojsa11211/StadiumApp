@@ -169,72 +169,37 @@ Console.WriteLine("=== END VISUAL STUDIO DEBUGGING ===\n");
 // Add comprehensive health checks
 Console.WriteLine($"Connection String: {connectionString}");
 
-// Database Configuration with SQLite Fallback Support
-var useSqliteFallback = builder.Configuration.GetValue<bool>("UseSqliteFallback", false);
-Console.WriteLine($"=== SQLITE FALLBACK DEBUG ===");
-Console.WriteLine($"UseSqliteFallback config value: {useSqliteFallback}");
-Console.WriteLine($"UseSqliteFallback env var: {Environment.GetEnvironmentVariable("UseSqliteFallback")}");
-Console.WriteLine($"Connection string is null/empty: {string.IsNullOrEmpty(connectionString)}");
-Console.WriteLine($"Connection string contains 'Data Source=': {connectionString?.Contains("Data Source=") == true}");
-Console.WriteLine($"=== END SQLITE FALLBACK DEBUG ===");
-
-// Configure Health Checks based on database type
-var healthChecksBuilder = builder.Services.AddHealthChecks()
-    .AddCheck<DatabaseHealthCheck>("database",
-        failureStatus: HealthStatus.Unhealthy,
-        tags: new[] { "database" });
-
-Console.WriteLine($"Health check condition: !useSqliteFallback={!useSqliteFallback}, !string.IsNullOrEmpty(connectionString)={!string.IsNullOrEmpty(connectionString)}");
-if (!useSqliteFallback && !string.IsNullOrEmpty(connectionString))
+// PostgreSQL/Supabase Database Configuration ONLY
+if (string.IsNullOrEmpty(connectionString))
 {
-    // Add PostgreSQL health check only when not using SQLite fallback
-    healthChecksBuilder.AddNpgSql(connectionString,
-        name: "postgresql-connection",
-        failureStatus: HealthStatus.Unhealthy,
-        tags: new[] { "database", "postgresql" });
-    Console.WriteLine("Added PostgreSQL health check");
+    throw new InvalidOperationException("Database connection string is not configured. Please check your appsettings.json or environment variables.");
 }
-else
-{
-    Console.WriteLine($"Skipped PostgreSQL health check - useSqliteFallback={useSqliteFallback}, connectionString.IsNullOrEmpty={string.IsNullOrEmpty(connectionString)}");
-}
+
+Console.WriteLine("Using PostgreSQL/Supabase connection...");
+Console.WriteLine($"Using connection string: {connectionString.Replace("Password=d!hZ5A9@t+e!Nn2", "Password=***")}");
+
+// Configure Health Checks
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("database", failureStatus: HealthStatus.Unhealthy, tags: new[] { "database" })
+    .AddNpgSql(connectionString, name: "postgresql-connection", failureStatus: HealthStatus.Unhealthy, tags: new[] { "database", "postgresql" });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    // FORCE PostgreSQL ONLY - NO SQLITE FALLBACK
-    if (string.IsNullOrEmpty(connectionString))
-    {
-        throw new InvalidOperationException("Database connection string is not configured. Please check your appsettings.json or environment variables.");
-    }
-
-    // Use PostgreSQL/Supabase ALWAYS
-    Console.WriteLine("FORCED PostgreSQL/Supabase connection...");
-    Console.WriteLine($"Using connection string: {connectionString.Replace("Password=d!hZ5A9@t+e!Nn2", "Password=***")}");
-
     options.UseNpgsql(connectionString, npgsqlOptions =>
     {
-        // TEMPORARILY DISABLED: Enhanced retry logic with exponential backoff
-        // npgsqlOptions.EnableRetryOnFailure(
-        //     maxRetryCount: 3,
-        //     maxRetryDelay: TimeSpan.FromSeconds(15),
-        //     errorCodesToAdd: new[] { "57P01", "53300", "53400" } // Common Supabase connection errors
-        // );
-
-        // Longer command timeout for complex operations
-        npgsqlOptions.CommandTimeout(300);
-
-        // PostgreSQL specific optimizations
+        npgsqlOptions.CommandTimeout(60);
+        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null);
         npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
     });
-    
+
     // Performance optimizations
     options.EnableDetailedErrors(builder.Environment.IsDevelopment());
     options.EnableServiceProviderCaching();
     options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
-    
+
     // Configure query behavior
     options.ConfigureWarnings(warnings => warnings.Log(RelationalEventId.MultipleCollectionIncludeWarning));
-    
+
     // Add logging for SQL queries in development
     if (builder.Environment.IsDevelopment())
     {
@@ -407,11 +372,10 @@ builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>()
 builder.Services.Configure<SecurityHeadersOptions>(builder.Configuration.GetSection("SecurityHeaders"));
 
 // Add background services
-builder.Services.AddHostedService<LogRetentionBackgroundService>();
-builder.Services.AddHostedService<RateLimitCleanupService>();
-
-// Background Services
-builder.Services.AddHostedService<TicketSessionCleanupService>();
+// TEMPORARILY DISABLED: All background services causing database connection pool exhaustion and 182-second timeouts
+// builder.Services.AddHostedService<LogRetentionBackgroundService>();
+// builder.Services.AddHostedService<RateLimitCleanupService>();
+// builder.Services.AddHostedService<TicketSessionCleanupService>();
 
 // Stripe Configuration
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
@@ -639,19 +603,49 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                             needsUpdate = true;
                         }
                         
-                        // Only update password if it's empty or invalid format
-                        if (string.IsNullOrEmpty(adminUser.PasswordHash) || 
-                            (!adminUser.PasswordHash.StartsWith("$2a$") && 
-                             !adminUser.PasswordHash.StartsWith("$2b$") && 
-                             !adminUser.PasswordHash.StartsWith("$2y$")))
+                        // Verify password hash is valid and works with "admin123"
+                        bool passwordNeedsReset = false;
+
+                        if (string.IsNullOrEmpty(adminUser.PasswordHash))
                         {
-                            logger.LogInformation("Admin password hash is invalid or empty, regenerating...");
-                            adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
-                            needsUpdate = true;
+                            logger.LogInformation("Admin password hash is empty, generating new hash...");
+                            passwordNeedsReset = true;
+                        }
+                        else if (!adminUser.PasswordHash.StartsWith("$2a$") &&
+                                 !adminUser.PasswordHash.StartsWith("$2b$") &&
+                                 !adminUser.PasswordHash.StartsWith("$2y$"))
+                        {
+                            logger.LogInformation("Admin password hash has invalid format, regenerating...");
+                            passwordNeedsReset = true;
                         }
                         else
                         {
-                            logger.LogInformation("Admin password hash is valid, preserving existing hash");
+                            // Verify the hash actually works with "admin123"
+                            try
+                            {
+                                bool passwordValid = BCrypt.Net.BCrypt.Verify("admin123", adminUser.PasswordHash);
+                                if (!passwordValid)
+                                {
+                                    logger.LogWarning("Admin password hash exists but doesn't verify with 'admin123', regenerating...");
+                                    passwordNeedsReset = true;
+                                }
+                                else
+                                {
+                                    logger.LogInformation("Admin password hash is valid and verified successfully");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.LogWarning(ex, "Failed to verify admin password hash, regenerating...");
+                                passwordNeedsReset = true;
+                            }
+                        }
+
+                        if (passwordNeedsReset)
+                        {
+                            adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
+                            needsUpdate = true;
+                            logger.LogInformation("Admin password hash regenerated successfully");
                         }
                         
                         if (needsUpdate)
@@ -662,6 +656,46 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                         else
                         {
                             logger.LogInformation("Admin user is already correctly configured, no updates needed");
+                        }
+                    }
+
+                    // Check if customer user exists or needs to be created
+                    var customerUser = await context.Users.FirstOrDefaultAsync(u => u.Email == "customer@stadium.com", cancellationToken);
+
+                    if (customerUser == null)
+                    {
+                        logger.LogInformation("No customer user found, creating default customer user...");
+                        customerUser = new StadiumDrinkOrdering.Shared.Models.User
+                        {
+                            Username = "customer",
+                            Email = "customer@stadium.com",
+                            PasswordHash = BCrypt.Net.BCrypt.HashPassword("customer123"),
+                            Role = StadiumDrinkOrdering.Shared.Models.UserRole.Customer,
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        context.Users.Add(customerUser);
+                        await context.SaveChangesAsync(cancellationToken);
+                        logger.LogInformation("Default customer user created successfully: customer@stadium.com / customer123");
+                    }
+                    else
+                    {
+                        logger.LogInformation("Customer user found: customer@stadium.com");
+
+                        // Verify password hash works with "customer123"
+                        bool passwordValid = false;
+                        try
+                        {
+                            passwordValid = BCrypt.Net.BCrypt.Verify("customer123", customerUser.PasswordHash);
+                        }
+                        catch { }
+
+                        if (!passwordValid)
+                        {
+                            logger.LogInformation("Customer password needs reset, updating...");
+                            customerUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("customer123");
+                            customerUser.Role = StadiumDrinkOrdering.Shared.Models.UserRole.Customer;
+                            await context.SaveChangesAsync(cancellationToken);
+                            logger.LogInformation("Customer user password reset successfully");
                         }
                     }
 

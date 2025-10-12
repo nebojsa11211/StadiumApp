@@ -1,0 +1,919 @@
+Using launch settings from D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Properties\launchSettings.json...
+Building...
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\SignalRService.cs(56,53): warning CS8619: Nullability of reference types in value of type 'Task<string>' doesn't match target type 'Task<string?>'. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\HybridTokenStorageService.cs(544,24): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\HybridTokenStorageService.cs(552,24): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\DataGrid.razor.cs(429,36): warning CS8604: Possible null reference argument for parameter 'message' in 'void DataGrid.ShowToast(string title, string message, string icon, string type)'. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StructureImportHelp.razor.cs(98,41): warning CS8602: Dereference of a possibly null reference. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StructureImportHelp.razor.cs(114,46): warning CS8602: Dereference of a possibly null reference. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StructureImportHelp.razor.cs(127,56): warning CS8602: Dereference of a possibly null reference. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StructureImportHelp.razor.cs(156,34): warning CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<RingDto> Enumerable.SelectMany<TribuneDto, RingDto>(IEnumerable<TribuneDto> source, Func<TribuneDto, IEnumerable<RingDto>> selector)'. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StadiumOverview.razor.cs(242,24): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\HybridTokenStorageService.cs(88,26): warning CS0067: The event 'HybridTokenStorageService.OnRefreshTokenExpired' is never used [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\TokenStorageService.cs(74,26): warning CS0067: The event 'TokenStorageService.OnRefreshTokenExpired' is never used [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+=== ADMIN PROGRAM START ===
+DOTNET_RUNNING_IN_CONTAINER: 
+ASPNETCORE_URLS: https://localhost:7030
+Container environment check: '' == 'true' = False
+💻 Local development mode - using default configuration
+✅ Registered specialized Admin API services:
+   - OrderService: Order management operations
+   - UserService: User management operations
+   - DrinkService: Drink catalog operations
+   - TicketService: Ticket validation operations
+   - AuthService: Authentication operations
+   - LogService: Logging and audit operations
+   - AnalyticsService: Customer analytics operations
+   - StadiumService: Stadium structure operations
+   - EventService: Event management operations
+   - HttpService: Generic HTTP operations
+   - AdminApiService: Composite service (backward compatibility)
+✅ Registered comprehensive Admin Service Layer:
+   - AdminCacheService (Scoped): Centralized caching with intelligent invalidation
+   - AdminDashboardService (Scoped): Consolidated dashboard data with 30s caching
+   - AdminOrderService (Scoped): Advanced order management with filtering & bulk ops
+   - AdminUserService (Scoped): User management with role-based access control
+   - AdminAnalyticsService (Scoped): Analytics with forecasting & insights
+   - AdminNotificationService (Singleton): Real-time notifications with SignalR
+info: StadiumDrinkOrdering.Shared.Authentication.Services.BackgroundTokenRefreshService[0]
+      Background token refresh service started
+⚠️ SSL certificate validation bypassed for development
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://localhost:7030
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: False
+AuthStateService: No token found - setting unauthenticated state
+AuthStateService: Initialization complete - IsAuthenticated: False
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+AuthStateService already initialized - IsAuthenticated: False
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[100]
+      Start processing HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[100]
+      Sending HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[101]
+      Received HTTP response headers after 1199.0061ms - 200
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[101]
+      End processing HTTP request after 1211.6635ms - 200
+Login response received: Token=eyJhbGciOi..., ExpiresAt=06. 10. 2025. 20:44:32
+AuthResult created with ExpiresAt: 06. 10. 2025. 20:44:32
+Login successful for admin@stadium.com, navigating...
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3858.8932ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3861.7843ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3503.0833ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3503.7581ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3566.0723ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3566.5115ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3379.6321ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3380.1098ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3489.4927ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3490.3995ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+⚠️ SSL certificate validation bypassed for development
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3510.0594ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3510.4741ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3408.2183ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3408.9113ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3693.4366ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3694.1149ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3410.6591ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3411.1735ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3498.7836ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3499.1707ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3389.4165ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3389.7153ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3468.3894ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3468.7581ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: False
+AuthStateService: No token found - setting unauthenticated state
+AuthStateService: Initialization complete - IsAuthenticated: False
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+AuthStateService already initialized - IsAuthenticated: False
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3620.4318ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3620.7912ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[100]
+      Start processing HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[100]
+      Sending HTTP request POST https://localhost:7010/Auth/login
+⚠️ SSL certificate validation bypassed for development
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[101]
+      Received HTTP response headers after 868.4449ms - 200
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[101]
+      End processing HTTP request after 868.5763ms - 200
+Login response received: Token=eyJhbGciOi..., ExpiresAt=06. 10. 2025. 20:47:47
+AuthResult created with ExpiresAt: 06. 10. 2025. 20:47:47
+Login successful for admin@stadium.com, navigating...
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3370.8053ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3371.2377ms - 200
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: True
+AuthStateService: Token valid: True
+AuthStateService: Authentication state updated - IsAuthenticated: True, Email: admin@stadium.com
+AuthStateService: Initialization complete - IsAuthenticated: True
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Loading sectors from API: https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.ClientHandler[101]
+      Received HTTP response headers after 832.4616ms - 200
+info: System.Net.Http.HttpClient.Default.LogicalHandler[101]
+      End processing HTTP request after 832.5984ms - 200
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      API Response Status: OK
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Deserialized 2 sectors from API
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      ✅ Loaded 2 sectors from database
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Drawing 2 sectors on canvas
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3473.1174ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3473.9259ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3509.3539ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3509.8229ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3460.4062ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3460.8589ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3452.9993ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3453.5786ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3859.1912ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3859.5157ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3450.6505ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3450.9516ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3480.0427ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3480.4342ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3522.3629ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3522.912ms - 200
+⚠️ SSL certificate validation bypassed for development
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3445.6011ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3445.9293ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3550.8379ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3551.1812ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3500.0401ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3500.5152ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3481.6178ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3482.4285ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3486.1709ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3486.4576ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3806.7059ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3807.0253ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3502.2344ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3502.9572ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3477.0107ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3477.3454ms - 200
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: False
+AuthStateService: No token found - setting unauthenticated state
+AuthStateService: Initialization complete - IsAuthenticated: False
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+AuthStateService already initialized - IsAuthenticated: False
+⚠️ SSL certificate validation bypassed for development
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[100]
+      Start processing HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[100]
+      Sending HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[101]
+      Received HTTP response headers after 854.9022ms - 200
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[101]
+      End processing HTTP request after 854.99ms - 200
+Login response received: Token=eyJhbGciOi..., ExpiresAt=06. 10. 2025. 20:51:48
+AuthResult created with ExpiresAt: 06. 10. 2025. 20:51:48
+Login successful for admin@stadium.com, navigating...
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: True
+AuthStateService: Token valid: True
+AuthStateService: Authentication state updated - IsAuthenticated: True, Email: admin@stadium.com
+AuthStateService: Initialization complete - IsAuthenticated: True
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Loading sectors from API: https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+warn: Microsoft.AspNetCore.Components.Server.Circuits.RemoteRenderer[100]
+      Unhandled exception rendering component: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+Error: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+    at https://localhost:7030/_framework/blazor.server.js:1:537
+    at Array.forEach (<anonymous>)
+    at l.findFunction (https://localhost:7030/_framework/blazor.server.js:1:505)
+    at _ (https://localhost:7030/_framework/blazor.server.js:1:5248)
+    at https://localhost:7030/_framework/blazor.server.js:1:3041
+    at new Promise (<anonymous>)
+    at y.beginInvokeJSFromDotNet (https://localhost:7030/_framework/blazor.server.js:1:3004)
+    at Xt._invokeClientMethod (https://localhost:7030/_framework/blazor.server.js:1:60890)
+    at Xt._processIncomingData (https://localhost:7030/_framework/blazor.server.js:1:58279)
+    at Xt.connection.onreceive (https://localhost:7030/_framework/blazor.server.js:1:51920)
+      Microsoft.JSInterop.JSException: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+Error: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+    at https://localhost:7030/_framework/blazor.server.js:1:537
+    at Array.forEach (<anonymous>)
+    at l.findFunction (https://localhost:7030/_framework/blazor.server.js:1:505)
+    at _ (https://localhost:7030/_framework/blazor.server.js:1:5248)
+    at https://localhost:7030/_framework/blazor.server.js:1:3041
+    at new Promise (<anonymous>)
+    at y.beginInvokeJSFromDotNet (https://localhost:7030/_framework/blazor.server.js:1:3004)
+    at Xt._invokeClientMethod (https://localhost:7030/_framework/blazor.server.js:1:60890)
+    at Xt._processIncomingData (https://localhost:7030/_framework/blazor.server.js:1:58279)
+    at Xt.connection.onreceive (https://localhost:7030/_framework/blazor.server.js:1:51920)
+         at Microsoft.JSInterop.JSRuntime.InvokeAsync[TValue](Int64 targetInstanceId, String identifier, Object[] args)
+         at Microsoft.JSInterop.JSRuntimeExtensions.InvokeVoidAsync(IJSRuntime jsRuntime, String identifier, Object[] args)
+         at StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool.OnAfterRenderAsync(Boolean firstRender) in D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StadiumDrawingTool.razor:line 371
+         at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+fail: Microsoft.AspNetCore.Components.Server.Circuits.CircuitHost[111]
+      Unhandled exception in circuit 'NfR-_Oz2z56mFjMbPHnM7sQkLj_syCzxCFDnCiyvER4'.
+      Microsoft.JSInterop.JSException: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+Error: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+    at https://localhost:7030/_framework/blazor.server.js:1:537
+    at Array.forEach (<anonymous>)
+    at l.findFunction (https://localhost:7030/_framework/blazor.server.js:1:505)
+    at _ (https://localhost:7030/_framework/blazor.server.js:1:5248)
+    at https://localhost:7030/_framework/blazor.server.js:1:3041
+    at new Promise (<anonymous>)
+    at y.beginInvokeJSFromDotNet (https://localhost:7030/_framework/blazor.server.js:1:3004)
+    at Xt._invokeClientMethod (https://localhost:7030/_framework/blazor.server.js:1:60890)
+    at Xt._processIncomingData (https://localhost:7030/_framework/blazor.server.js:1:58279)
+    at Xt.connection.onreceive (https://localhost:7030/_framework/blazor.server.js:1:51920)
+         at Microsoft.JSInterop.JSRuntime.InvokeAsync[TValue](Int64 targetInstanceId, String identifier, Object[] args)
+         at Microsoft.JSInterop.JSRuntimeExtensions.InvokeVoidAsync(IJSRuntime jsRuntime, String identifier, Object[] args)
+         at StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool.OnAfterRenderAsync(Boolean firstRender) in D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StadiumDrawingTool.razor:line 371
+         at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+fail: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Error loading sector overlays from database
+      System.Threading.Tasks.TaskCanceledException: The operation was canceled.
+       ---> System.IO.IOException: Unable to read data from the transport connection: The I/O operation has been aborted because of either a thread exit or an application request..
+       ---> System.Net.Sockets.SocketException (995): The I/O operation has been aborted because of either a thread exit or an application request.
+         --- End of inner exception stack trace ---
+         at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+         at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+         at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+         at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+         at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+         --- End of inner exception stack trace ---
+         at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+         at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+         at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+         at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+         at Microsoft.Extensions.Http.Logging.LoggingHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+         at Microsoft.Extensions.Http.Logging.LoggingScopeHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+         at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+         at StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool.LoadSectorOverlays() in D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StadiumDrawingTool.razor:line 394
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3486.6497ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3487.4118ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3475.0048ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3475.3154ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3509.1718ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3509.5585ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3375.6426ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3375.9548ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3424.81ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3425.3304ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3557.4323ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3557.761ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3377.4229ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3377.7589ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3376.5726ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3377.3062ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3496.2955ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3496.5742ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3374.0505ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3374.781ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3418.4644ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3418.7936ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3476.4104ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3477.0892ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3420.6041ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3420.8155ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3438.7706ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3439.0756ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3469.0901ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3469.5172ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3410.7084ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3411.085ms - 200
+⚠️ SSL certificate validation bypassed for development
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: False
+AuthStateService: No token found - setting unauthenticated state
+AuthStateService: Initialization complete - IsAuthenticated: False
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+AuthStateService already initialized - IsAuthenticated: False
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[100]
+      Start processing HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[100]
+      Sending HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 4669.7826ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 4670.2002ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+Login response received: Token=eyJhbGciOi..., ExpiresAt=06. 10. 2025. 20:54:01
+AuthResult created with ExpiresAt: 06. 10. 2025. 20:54:01
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[101]
+      Received HTTP response headers after 918.4327ms - 200
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[101]
+      End processing HTTP request after 918.5085ms - 200
+Login successful for admin@stadium.com, navigating...
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 5656.9887ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 5657.3532ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: True
+AuthStateService: Token valid: True
+AuthStateService: Authentication state updated - IsAuthenticated: True, Email: admin@stadium.com
+AuthStateService: Initialization complete - IsAuthenticated: True
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Loading sectors from API: https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+warn: Microsoft.AspNetCore.Components.Server.Circuits.RemoteRenderer[100]
+      Unhandled exception rendering component: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+Error: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+    at https://localhost:7030/_framework/blazor.server.js:1:537
+    at Array.forEach (<anonymous>)
+    at l.findFunction (https://localhost:7030/_framework/blazor.server.js:1:505)
+    at _ (https://localhost:7030/_framework/blazor.server.js:1:5248)
+    at https://localhost:7030/_framework/blazor.server.js:1:3041
+    at new Promise (<anonymous>)
+    at y.beginInvokeJSFromDotNet (https://localhost:7030/_framework/blazor.server.js:1:3004)
+    at Xt._invokeClientMethod (https://localhost:7030/_framework/blazor.server.js:1:60890)
+    at Xt._processIncomingData (https://localhost:7030/_framework/blazor.server.js:1:58279)
+    at Xt.connection.onreceive (https://localhost:7030/_framework/blazor.server.js:1:51920)
+      Microsoft.JSInterop.JSException: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+Error: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+    at https://localhost:7030/_framework/blazor.server.js:1:537
+    at Array.forEach (<anonymous>)
+    at l.findFunction (https://localhost:7030/_framework/blazor.server.js:1:505)
+    at _ (https://localhost:7030/_framework/blazor.server.js:1:5248)
+    at https://localhost:7030/_framework/blazor.server.js:1:3041
+    at new Promise (<anonymous>)
+    at y.beginInvokeJSFromDotNet (https://localhost:7030/_framework/blazor.server.js:1:3004)
+    at Xt._invokeClientMethod (https://localhost:7030/_framework/blazor.server.js:1:60890)
+    at Xt._processIncomingData (https://localhost:7030/_framework/blazor.server.js:1:58279)
+    at Xt.connection.onreceive (https://localhost:7030/_framework/blazor.server.js:1:51920)
+         at Microsoft.JSInterop.JSRuntime.InvokeAsync[TValue](Int64 targetInstanceId, String identifier, Object[] args)
+         at Microsoft.JSInterop.JSRuntimeExtensions.InvokeVoidAsync(IJSRuntime jsRuntime, String identifier, Object[] args)
+         at StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool.OnAfterRenderAsync(Boolean firstRender) in D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StadiumDrawingTool.razor:line 371
+         at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+fail: Microsoft.AspNetCore.Components.Server.Circuits.CircuitHost[111]
+      Unhandled exception in circuit 'MCu4XC1n76AC-S7SL-EIYhGaYnWFu6NNOBQmZ2pwN7c'.
+      Microsoft.JSInterop.JSException: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+Error: Could not find 'initializeDrawingCanvas' ('initializeDrawingCanvas' was undefined).
+    at https://localhost:7030/_framework/blazor.server.js:1:537
+    at Array.forEach (<anonymous>)
+    at l.findFunction (https://localhost:7030/_framework/blazor.server.js:1:505)
+    at _ (https://localhost:7030/_framework/blazor.server.js:1:5248)
+    at https://localhost:7030/_framework/blazor.server.js:1:3041
+    at new Promise (<anonymous>)
+    at y.beginInvokeJSFromDotNet (https://localhost:7030/_framework/blazor.server.js:1:3004)
+    at Xt._invokeClientMethod (https://localhost:7030/_framework/blazor.server.js:1:60890)
+    at Xt._processIncomingData (https://localhost:7030/_framework/blazor.server.js:1:58279)
+    at Xt.connection.onreceive (https://localhost:7030/_framework/blazor.server.js:1:51920)
+         at Microsoft.JSInterop.JSRuntime.InvokeAsync[TValue](Int64 targetInstanceId, String identifier, Object[] args)
+         at Microsoft.JSInterop.JSRuntimeExtensions.InvokeVoidAsync(IJSRuntime jsRuntime, String identifier, Object[] args)
+         at StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool.OnAfterRenderAsync(Boolean firstRender) in D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StadiumDrawingTool.razor:line 371
+         at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+fail: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Error loading sector overlays from database
+      System.Threading.Tasks.TaskCanceledException: The operation was canceled.
+       ---> System.IO.IOException: Unable to read data from the transport connection: The I/O operation has been aborted because of either a thread exit or an application request..
+       ---> System.Net.Sockets.SocketException (995): The I/O operation has been aborted because of either a thread exit or an application request.
+         --- End of inner exception stack trace ---
+         at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+         at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+         at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+         at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+         --- End of inner exception stack trace ---
+         at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+         at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+         at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+         at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+         at Microsoft.Extensions.Http.Logging.LoggingHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+         at Microsoft.Extensions.Http.Logging.LoggingScopeHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+         at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+         at StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool.LoadSectorOverlays() in D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StadiumDrawingTool.razor:line 394
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3509.4151ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3509.7189ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3395.2827ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3395.9422ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3503.9469ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3504.287ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3570.9943ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3571.3132ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3400.6723ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3400.9676ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3517.6318ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3517.917ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3427.6436ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3427.9361ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3526.861ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3527.1021ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3479.7768ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3480.0818ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3367.1813ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3367.8745ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3508.9282ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3509.244ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3445.98ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3446.2602ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3508.9392ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3509.3256ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3584.1339ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3584.4077ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3387.3713ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3387.6666ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3494.0722ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3494.4274ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3367.9235ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3368.3448ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3479.6454ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3479.9346ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3492.473ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3492.7006ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3478.0294ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3478.267ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3565.1144ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3565.5599ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3507.4688ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3507.8209ms - 200
+⚠️ SSL certificate validation bypassed for development
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3471.1207ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3471.4374ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3482.5689ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3482.8717ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3366.7514ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3367.0224ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3380.9574ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3381.2958ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3475.1794ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3475.4293ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders

@@ -1,0 +1,73 @@
+
+Running 1 test using 1 worker
+
+
+=== STARTING COMPREHENSIVE POLYGON TEST ===
+
+Using unique codes: TRI-1759773220585, RHO-1759773220585, HEX-1759773220585
+TEST 1: Admin Login
+✓ Login successful
+
+TEST 2: Navigate to Stadium Drawing Tool
+✓ Drawing tool loaded
+
+=== TEST 3: Triangle Sector Creation ===
+✓ Selected triangle mode
+Clicking triangle vertices...
+  Point 1 clicked: (300, 200)
+  Point 2 clicked: (500, 400)
+  Point 3 clicked: (200, 450)
+✓ Modal appeared after 3rd click
+✓ Triangle form filled
+✓ Triangle saved successfully
+✓ Modal closed
+✓ Screenshot: triangle-created.png
+
+=== TEST 4: Rhombus Sector Creation ===
+✓ Selected rhombus mode
+Clicking rhombus vertices...
+  Point 1 clicked: (700, 200)
+  Point 2 clicked: (900, 300)
+  Point 3 clicked: (700, 450)
+  Point 4 clicked: (500, 300)
+  x  1 [chromium] › tests\admin-complete-polygon-test.spec.ts:20:7 › Complete Polygon Shape Creation & Persistence Tests › Complete polygon shape creation and database persistence (34.3s)
+
+
+  1) [chromium] › tests\admin-complete-polygon-test.spec.ts:20:7 › Complete Polygon Shape Creation & Persistence Tests › Complete polygon shape creation and database persistence 
+
+    TimeoutError: page.waitForSelector: Timeout 5000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#sector-edit-modal') to be visible[22m
+
+
+      173 |
+      174 |     // Wait for modal
+    > 175 |     await page.waitForSelector('#sector-edit-modal', { state: 'visible', timeout: 5000 });
+          |                ^
+      176 |     console.log('✓ Modal appeared after 4th click');
+      177 |
+      178 |     // Fill rhombus form
+        at D:\AiApps\StadiumApp\StadiumApp\tests\admin-complete-polygon-test.spec.ts:175:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-complete-polygon\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results-complete-polygon\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-complete-polygon\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results-complete-polygon\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results-complete-polygon\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\admin-complete-polygon-test.spec.ts:20:7 › Complete Polygon Shape Creation & Persistence Tests › Complete polygon shape creation and database persistence 
+
+[36m  Serving HTML report at http://localhost:49227. Press Ctrl+C to quit.[39m

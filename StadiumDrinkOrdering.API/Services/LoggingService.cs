@@ -9,26 +9,27 @@ namespace StadiumDrinkOrdering.API.Services
 {
     public interface ILoggingService
     {
-        Task LogUserActionAsync(string action, string category, string? userId = null, string? userEmail = null, 
-            string? userRole = null, string? details = null, string? requestPath = null, 
+        Task LogUserActionAsync(string action, string category, string? userId = null, string? userEmail = null,
+            string? userRole = null, string? details = null, string? requestPath = null,
             string? httpMethod = null, string? ipAddress = null, string? userAgent = null, string source = "API");
-        
-        Task LogErrorAsync(Exception exception, string action, string category, string? userId = null, 
-            string? userEmail = null, string? userRole = null, string? details = null, 
-            string? requestPath = null, string? httpMethod = null, string? ipAddress = null, 
+
+        Task LogErrorAsync(Exception exception, string action, string category, string? userId = null,
+            string? userEmail = null, string? userRole = null, string? details = null,
+            string? requestPath = null, string? httpMethod = null, string? ipAddress = null,
             string? userAgent = null, string source = "API");
-        
-        Task LogInfoAsync(string message, string action, string category, string? userId = null, 
-            string? userEmail = null, string? userRole = null, string? details = null, 
-            string? requestPath = null, string? httpMethod = null, string? ipAddress = null, 
+
+        Task LogInfoAsync(string message, string action, string category, string? userId = null,
+            string? userEmail = null, string? userRole = null, string? details = null,
+            string? requestPath = null, string? httpMethod = null, string? ipAddress = null,
             string? userAgent = null, string source = "API");
-        
-        Task LogWarningAsync(string message, string action, string category, string? userId = null, 
-            string? userEmail = null, string? userRole = null, string? details = null, 
-            string? requestPath = null, string? httpMethod = null, string? ipAddress = null, 
+
+        Task LogWarningAsync(string message, string action, string category, string? userId = null,
+            string? userEmail = null, string? userRole = null, string? details = null,
+            string? requestPath = null, string? httpMethod = null, string? ipAddress = null,
             string? userAgent = null, string source = "API");
-        
+
         Task LogBusinessEventAsync(LogUserActionRequest request);
+        Task<int> LogBatchAsync(List<LogUserActionRequest> requests); // ✅ NEW: Bulk insert method
         Task<PagedLogsDto> GetLogsAsync(LogFilterDto filter);
         Task<LogSummaryDto> GetLogSummaryAsync();
         Task<bool> ClearOldLogsAsync(int daysToKeep = 30);
@@ -140,6 +141,70 @@ namespace StadiumDrinkOrdering.API.Services
                 statusAfter: request.StatusAfter,
                 metadataJson: request.MetadataJson
             );
+        }
+
+        /// <summary>
+        /// ✅ NEW: Bulk insert log entries in a single database transaction
+        /// MASSIVE performance improvement: 100 logs = 1 database round trip instead of 100
+        /// </summary>
+        public async Task<int> LogBatchAsync(List<LogUserActionRequest> requests)
+        {
+            if (!requests.Any())
+                return 0;
+
+            try
+            {
+                var logEntries = new List<LogEntry>();
+
+                foreach (var request in requests)
+                {
+                    var logEntry = new LogEntry
+                    {
+                        Timestamp = DateTime.UtcNow,
+                        Level = TruncateString(CustomLogLevel.Info.ToString(), MaxLevelLength),
+                        Category = TruncateString(request.Category, MaxCategoryLength),
+                        Action = TruncateString(request.Action, MaxActionLength),
+                        UserId = TruncateString(request.UserId, MaxUserIdLength),
+                        UserEmail = TruncateString(request.UserEmail, MaxUserEmailLength),
+                        UserRole = TruncateString(request.UserRole, MaxUserRoleLength),
+                        IPAddress = TruncateString(null, MaxIPAddressLength),
+                        UserAgent = TruncateString(null, MaxUserAgentLength),
+                        RequestPath = TruncateString(request.RequestPath, MaxRequestPathLength),
+                        HttpMethod = TruncateString(request.HttpMethod, MaxHttpMethodLength),
+                        Message = TruncateString(null, MaxMessageLength),
+                        Details = TruncateString(request.Details, MaxDetailsLength),
+                        ExceptionType = null,
+                        StackTrace = null,
+                        Source = TruncateString(request.Source ?? "API", MaxSourceLength),
+                        // Business Event Fields
+                        BusinessEntityType = request.BusinessEntityType,
+                        BusinessEntityId = request.BusinessEntityId,
+                        BusinessEntityName = request.BusinessEntityName,
+                        RelatedEntityType = request.RelatedEntityType,
+                        RelatedEntityId = request.RelatedEntityId,
+                        MonetaryAmount = request.MonetaryAmount,
+                        Currency = request.Currency,
+                        Quantity = request.Quantity,
+                        LocationInfo = request.LocationInfo,
+                        StatusBefore = request.StatusBefore,
+                        StatusAfter = request.StatusAfter,
+                        MetadataJson = request.MetadataJson
+                    };
+
+                    logEntries.Add(logEntry);
+                }
+
+                // ✅ Bulk insert: Add all entries to context, then save once
+                await _context.LogEntries.AddRangeAsync(logEntries);
+                await _context.SaveChangesAsync();
+
+                return logEntries.Count;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to bulk insert logs: {ex.Message}");
+                return 0;
+            }
         }
 
         private async Task CreateLogEntryAsync(string level, string category, string action, string? userId, 
@@ -284,22 +349,28 @@ namespace StadiumDrinkOrdering.API.Services
         {
             var summary = new LogSummaryDto();
 
-            var allLogs = await _context.LogEntries.ToListAsync();
-            
-            summary.TotalLogs = allLogs.Count;
-            summary.ErrorCount = allLogs.Count(l => l.Level == CustomLogLevel.Error.ToString());
-            summary.WarningCount = allLogs.Count(l => l.Level == CustomLogLevel.Warning.ToString());
-            summary.InfoCount = allLogs.Count(l => l.Level == CustomLogLevel.Info.ToString());
-            summary.CriticalCount = allLogs.Count(l => l.Level == CustomLogLevel.Critical.ToString());
-            summary.LastLogTime = allLogs.OrderByDescending(l => l.Timestamp).FirstOrDefault()?.Timestamp;
+            // ✅ FIX: Use database aggregation instead of loading all logs into memory
+            // This executes GROUP BY and COUNT operations on the database server
+            summary.TotalLogs = await _context.LogEntries.CountAsync();
+            summary.ErrorCount = await _context.LogEntries.CountAsync(l => l.Level == CustomLogLevel.Error.ToString());
+            summary.WarningCount = await _context.LogEntries.CountAsync(l => l.Level == CustomLogLevel.Warning.ToString());
+            summary.InfoCount = await _context.LogEntries.CountAsync(l => l.Level == CustomLogLevel.Info.ToString());
+            summary.CriticalCount = await _context.LogEntries.CountAsync(l => l.Level == CustomLogLevel.Critical.ToString());
+            summary.LastLogTime = await _context.LogEntries
+                .OrderByDescending(l => l.Timestamp)
+                .Select(l => (DateTime?)l.Timestamp)
+                .FirstOrDefaultAsync();
 
-            summary.LogsBySource = allLogs
+            // Use database GROUP BY for aggregations
+            summary.LogsBySource = await _context.LogEntries
                 .GroupBy(l => l.Source)
-                .ToDictionary(g => g.Key, g => g.Count());
+                .Select(g => new { Source = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Source, x => x.Count);
 
-            summary.LogsByCategory = allLogs
+            summary.LogsByCategory = await _context.LogEntries
                 .GroupBy(l => l.Category)
-                .ToDictionary(g => g.Key, g => g.Count());
+                .Select(g => new { Category = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Category, x => x.Count);
 
             return summary;
         }

@@ -10,78 +10,78 @@
 <PageTitle>Checkout - Stadium Drinks</PageTitle>
 
 <CustomerAuthRoute>
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Customer Information</h4>
+<div class="container-fluid py-4" id="customer-checkout-container">
+    <div class="row" id="customer-checkout-row">
+        <div class="col-lg-8" id="customer-checkout-form-col">
+            <div class="card shadow-sm" id="customer-checkout-form-card">
+                <div class="card-header bg-primary text-white" id="customer-checkout-form-header">
+                    <h4 class="mb-0" id="customer-checkout-form-title"><i class="fas fa-user-circle me-2"></i>Customer Information</h4>
                 </div>
-                <div class="card-body">
-                    <EditForm Model="@checkoutForm" OnValidSubmit="@ProcessCheckout">
+                <div class="card-body" id="customer-checkout-form-body">
+                    <EditForm Model="@checkoutForm" OnValidSubmit="@ProcessCheckout" id="customer-checkout-form">
                         <DataAnnotationsValidator />
-                        
+
                         <!-- Personal Information -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="firstName" class="form-label">First Name *</label>
+                        <div class="row mb-3" id="customer-checkout-personal-row">
+                            <div class="col-md-6" id="customer-checkout-firstname-col">
+                                <label for="firstName" class="form-label" id="customer-checkout-firstname-label">First Name *</label>
                                 <InputText id="firstName" class="form-control" @bind-Value="checkoutForm.FirstName" placeholder="Enter first name" />
                                 <ValidationMessage For="@(() => checkoutForm.FirstName)" class="text-danger small" />
                             </div>
-                            <div class="col-md-6">
-                                <label for="lastName" class="form-label">Last Name *</label>
+                            <div class="col-md-6" id="customer-checkout-lastname-col">
+                                <label for="lastName" class="form-label" id="customer-checkout-lastname-label">Last Name *</label>
                                 <InputText id="lastName" class="form-control" @bind-Value="checkoutForm.LastName" placeholder="Enter last name" />
                                 <ValidationMessage For="@(() => checkoutForm.LastName)" class="text-danger small" />
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="email" class="form-label">Email Address *</label>
+                        <div class="row mb-3" id="customer-checkout-contact-row">
+                            <div class="col-md-6" id="customer-checkout-email-col">
+                                <label for="email" class="form-label" id="customer-checkout-email-label">Email Address *</label>
                                 <InputText id="email" type="email" class="form-control" @bind-Value="checkoutForm.Email" placeholder="your.email@example.com" />
                                 <ValidationMessage For="@(() => checkoutForm.Email)" class="text-danger small" />
                             </div>
-                            <div class="col-md-6">
-                                <label for="phone" class="form-label">Phone Number *</label>
+                            <div class="col-md-6" id="customer-checkout-phone-col">
+                                <label for="phone" class="form-label" id="customer-checkout-phone-label">Phone Number *</label>
                                 <InputText id="phone" class="form-control" @bind-Value="checkoutForm.Phone" placeholder="+1 (555) 123-4567" />
                                 <ValidationMessage For="@(() => checkoutForm.Phone)" class="text-danger small" />
                             </div>
                         </div>
 
                         <!-- Payment Information -->
-                        <div class="card mt-4">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Information</h5>
+                        <div class="card mt-4" id="customer-checkout-payment-card">
+                            <div class="card-header bg-success text-white" id="customer-checkout-payment-header">
+                                <h5 class="mb-0" id="customer-checkout-payment-title"><i class="fas fa-credit-card me-2"></i>Payment Information</h5>
                                 <!-- Temporary button for testing -->
-                                <button type="button" class="btn btn-sm btn-warning float-end" @onclick="FillSamplePaymentData">
+                                <button type="button" class="btn btn-sm btn-warning float-end" @onclick="FillSamplePaymentData" id="customer-checkout-fill-sample-btn">
                                     <i class="fas fa-fill-drip me-1"></i>Fill Sample Data
                                 </button>
                             </div>
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label for="cardNumber" class="form-label">Card Number *</label>
+                            <div class="card-body" id="customer-checkout-payment-body">
+                                <div class="row mb-3" id="customer-checkout-cardnumber-row">
+                                    <div class="col-12" id="customer-checkout-cardnumber-col">
+                                        <label for="cardNumber" class="form-label" id="customer-checkout-cardnumber-label">Card Number *</label>
                                         <InputText id="cardNumber" class="form-control" @bind-Value="checkoutForm.CardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
                                         <ValidationMessage For="@(() => checkoutForm.CardNumber)" class="text-danger small" />
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="expiryDate" class="form-label">Expiry Date *</label>
+                                <div class="row mb-3" id="customer-checkout-expiry-cvv-row">
+                                    <div class="col-md-6" id="customer-checkout-expiry-col">
+                                        <label for="expiryDate" class="form-label" id="customer-checkout-expiry-label">Expiry Date *</label>
                                         <InputText id="expiryDate" class="form-control" @bind-Value="checkoutForm.ExpiryDate" placeholder="MM/YY" maxlength="5" />
                                         <ValidationMessage For="@(() => checkoutForm.ExpiryDate)" class="text-danger small" />
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="cvv" class="form-label">CVV *</label>
+                                    <div class="col-md-6" id="customer-checkout-cvv-col">
+                                        <label for="cvv" class="form-label" id="customer-checkout-cvv-label">CVV *</label>
                                         <InputText id="cvv" class="form-control" @bind-Value="checkoutForm.CVV" placeholder="123" maxlength="4" />
                                         <ValidationMessage For="@(() => checkoutForm.CVV)" class="text-danger small" />
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label for="cardholderName" class="form-label">Cardholder Name *</label>
+                                <div class="row mb-3" id="customer-checkout-cardholder-row">
+                                    <div class="col-12" id="customer-checkout-cardholder-col">
+                                        <label for="cardholderName" class="form-label" id="customer-checkout-cardholder-label">Cardholder Name *</label>
                                         <InputText id="cardholderName" class="form-control" @bind-Value="checkoutForm.CardholderName" placeholder="Name as it appears on card" />
                                         <ValidationMessage For="@(() => checkoutForm.CardholderName)" class="text-danger small" />
                                     </div>
@@ -90,7 +90,7 @@
                         </div>
 
                         <!-- Terms and Conditions -->
-                        <div class="form-check mt-4">
+                        <div class="form-check mt-4" id="customer-checkout-terms">
                             <InputCheckbox id="agreeTerms" class="form-check-input" @bind-Value="checkoutForm.AgreeToTerms" />
                             <label class="form-check-label" for="agreeTerms">
                                 I agree to the <a href="/terms" target="_blank">Terms and Conditions</a> and <a href="/privacy" target="_blank">Privacy Policy</a> *
@@ -103,63 +103,63 @@
         </div>
 
         <!-- Order Summary -->
-        <div class="col-lg-4">
-            <div class="card shadow-sm sticky-top" style="top: 20px;">
-                <div class="card-header bg-dark text-white">
-                    <h4 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h4>
+        <div class="col-lg-4" id="customer-checkout-summary-col">
+            <div class="card shadow-sm sticky-top" style="top: 20px;" id="customer-checkout-summary-card">
+                <div class="card-header bg-dark text-white" id="customer-checkout-summary-header">
+                    <h4 class="mb-0" id="customer-checkout-summary-title"><i class="fas fa-receipt me-2"></i>Order Summary</h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body" id="customer-checkout-summary-body">
                     @if (cart != null && cart.Items.Any())
                     {
                         <!-- Event Information -->
-                        <div class="mb-3 pb-3 border-bottom">
-                            <h6 class="text-muted mb-1">Event</h6>
-                            <strong>@(cart.Items.FirstOrDefault()?.EventName ?? "Unknown Event")</strong>
-                            <div class="text-muted small">
+                        <div class="mb-3 pb-3 border-bottom" id="customer-checkout-event-info">
+                            <h6 class="text-muted mb-1" id="customer-checkout-event-title">Event</h6>
+                            <strong id="customer-checkout-event-name">@(cart.Items.FirstOrDefault()?.EventName ?? "Unknown Event")</strong>
+                            <div class="text-muted small" id="customer-checkout-event-id">
                                 Event ID: @(cart.Items.FirstOrDefault()?.EventId ?? 0)
                             </div>
                         </div>
 
                         <!-- Seat Details -->
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2">Selected Seats</h6>
+                        <div class="mb-3" id="customer-checkout-seats">
+                            <h6 class="text-muted mb-2" id="customer-checkout-seats-title">Selected Seats</h6>
                             @foreach (var item in cart.Items)
                             {
-                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
-                                    <div>
-                                        <div class="fw-bold">@item.SeatCode</div>
-                                        <div class="text-muted small">Sector @item.SectorId</div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded" id="customer-checkout-seat-item-@item.SectorId-@item.RowNumber-@item.SeatNumber">
+                                    <div id="customer-checkout-seat-info-@item.SectorId-@item.RowNumber-@item.SeatNumber">
+                                        <div class="fw-bold" id="customer-checkout-seat-code-@item.SectorId-@item.RowNumber-@item.SeatNumber">@item.SeatCode</div>
+                                        <div class="text-muted small" id="customer-checkout-seat-sector-@item.SectorId-@item.RowNumber-@item.SeatNumber">Sector @item.SectorId</div>
                                     </div>
-                                    <div class="text-end">
-                                        <div class="fw-bold">$@item.Price.ToString("F2")</div>
+                                    <div class="text-end" id="customer-checkout-seat-price-container-@item.SectorId-@item.RowNumber-@item.SeatNumber">
+                                        <div class="fw-bold" id="customer-checkout-seat-price-@item.SectorId-@item.RowNumber-@item.SeatNumber">$@item.Price.ToString("F2")</div>
                                     </div>
                                 </div>
                             }
                         </div>
 
                         <!-- Pricing Breakdown -->
-                        <div class="border-top pt-3">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Subtotal (@cart.Items.Count tickets)</span>
-                                <span>$@subtotal.ToString("F2")</span>
+                        <div class="border-top pt-3" id="customer-checkout-pricing">
+                            <div class="d-flex justify-content-between mb-2" id="customer-checkout-subtotal">
+                                <span id="customer-checkout-subtotal-label">Subtotal (@cart.Items.Count tickets)</span>
+                                <span id="customer-checkout-subtotal-amount">$@subtotal.ToString("F2")</span>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Service Fee</span>
-                                <span>$@serviceFee.ToString("F2")</span>
+                            <div class="d-flex justify-content-between mb-2" id="customer-checkout-service-fee">
+                                <span id="customer-checkout-service-fee-label">Service Fee</span>
+                                <span id="customer-checkout-service-fee-amount">$@serviceFee.ToString("F2")</span>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Processing Fee</span>
-                                <span>$@processingFee.ToString("F2")</span>
+                            <div class="d-flex justify-content-between mb-2" id="customer-checkout-processing-fee">
+                                <span id="customer-checkout-processing-fee-label">Processing Fee</span>
+                                <span id="customer-checkout-processing-fee-amount">$@processingFee.ToString("F2")</span>
                             </div>
-                            <hr>
-                            <div class="d-flex justify-content-between fw-bold h5">
-                                <span>Total</span>
-                                <span>$@total.ToString("F2")</span>
+                            <hr id="customer-checkout-pricing-divider">
+                            <div class="d-flex justify-content-between fw-bold h5" id="customer-checkout-total">
+                                <span id="customer-checkout-total-label">Total</span>
+                                <span id="customer-checkout-total-amount">$@total.ToString("F2")</span>
                             </div>
                         </div>
 
                         <!-- Checkout Button -->
-                        <div class="d-grid gap-2 mt-4">
+                        <div class="d-grid gap-2 mt-4" id="customer-checkout-actions">
                             <button id="customer-checkout-complete-purchase-btn" type="submit" class="btn btn-success btn-lg" @onclick="ProcessCheckout" disabled="@isProcessing">
                                 @if (isProcessing)
                                 {
@@ -176,10 +176,10 @@
                     }
                     else
                     {
-                        <div class="text-center py-4">
-                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">Your cart is empty</p>
-                            <a href="/events" class="btn btn-primary">Browse Events</a>
+                        <div class="text-center py-4" id="customer-checkout-empty">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3" id="customer-checkout-empty-icon"></i>
+                            <p class="text-muted" id="customer-checkout-empty-text">Your cart is empty</p>
+                            <a href="/events" class="btn btn-primary" id="customer-checkout-browse-events-btn">Browse Events</a>
                         </div>
                     }
                 </div>
@@ -190,13 +190,13 @@
 
 @if (showProcessingModal)
 {
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center py-4">
-                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
-                    <h4>Processing Your Order</h4>
-                    <p class="text-muted">Please wait while we process your payment and generate your tickets...</p>
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="customer-checkout-processing-modal-overlay">
+        <div class="modal-dialog modal-dialog-centered" id="customer-checkout-processing-modal-dialog">
+            <div class="modal-content" id="customer-checkout-processing-modal-content">
+                <div class="modal-body text-center py-4" id="customer-checkout-processing-modal-body">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" id="customer-checkout-processing-spinner"></div>
+                    <h4 id="customer-checkout-processing-title">Processing Your Order</h4>
+                    <p class="text-muted" id="customer-checkout-processing-text">Please wait while we process your payment and generate your tickets...</p>
                 </div>
             </div>
         </div>

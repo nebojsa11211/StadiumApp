@@ -1,0 +1,1193 @@
+@page "/admin/stadium-drawing-tool"
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@using System.Text.Json
+@using System.Net.Http
+@using System.Net.Http.Json
+@using StadiumDrinkOrdering.Admin.Components.Stadium
+@inject IJSRuntime JSRuntime
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+@inject ILogger<StadiumDrawingTool> Logger
+
+<PageTitle>Stadium Drawing Tool - Admin</PageTitle>
+
+<div id="admin-drawing-tool-main-container" class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1 id="admin-drawing-tool-title" class="mb-3">🎨 Stadium Drawing Tool</h1>
+            <p class="text-muted">Draw layers over your stadium picture to create zone overlays, annotations, and custom layouts.</p>
+        </div>
+    </div>
+
+    <div class="row" id="admin-drawing-tool-main-row">
+        <!-- Left Sidebar - Tools & Layers -->
+        <div class="col-md-3" id="admin-drawing-tool-sidebar">
+            <!-- Image Upload Section -->
+            <div id="admin-drawing-tool-upload-card" class="card mb-3">
+                <div class="card-header" id="admin-drawing-tool-upload-header">
+                    <h5 class="mb-0" id="admin-drawing-tool-upload-title">📷 Stadium Image</h5>
+                </div>
+                <div class="card-body" id="admin-drawing-tool-upload-body">
+                    @if (string.IsNullOrEmpty(backgroundImageUrl))
+                    {
+                        <InputFile id="admin-drawing-tool-upload-input" OnChange="HandleImageUpload" accept="image/*" class="form-control mb-2" />
+                        <small class="text-muted" id="admin-drawing-tool-upload-hint">Upload a stadium picture to start drawing</small>
+                    }
+                    else
+                    {
+                        <div class="mb-2" id="admin-drawing-tool-image-loaded">
+                            <div class="d-flex justify-content-between align-items-center mb-2" id="admin-drawing-tool-image-status">
+                                <span class="text-success" id="admin-drawing-tool-image-loaded-text">✅ Stadium blueprint loaded</span>
+                                <button id="admin-drawing-tool-clear-image-btn" @onclick="ClearImage" class="btn btn-sm btn-danger">
+                                    Clear
+                                </button>
+                            </div>
+                            <InputFile id="admin-drawing-tool-replace-input" OnChange="HandleImageUpload" accept="image/*" class="form-control" />
+                            <small class="text-muted" id="admin-drawing-tool-replace-hint">Upload a different image if needed</small>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Drawing Tools Section -->
+            <div id="admin-drawing-tool-tools-card" class="card mb-3">
+                <div class="card-header" id="admin-drawing-tool-tools-header">
+                    <h5 class="mb-0" id="admin-drawing-tool-tools-title">🖌️ Drawing Tools</h5>
+                </div>
+                <div class="card-body" id="admin-drawing-tool-tools-body">
+                    <div class="btn-group-vertical w-100 mb-3" role="group" id="admin-drawing-tool-buttons">
+                        <button id="admin-drawing-tool-select-btn"
+                                @onclick="() => SetTool(DrawingTool.Select)"
+                                class="btn @(currentTool == DrawingTool.Select ? "btn-success" : "btn-outline-success")">
+                            👆 Select/Move
+                        </button>
+                    </div>
+
+                    <!-- Sector Management Section -->
+                    <div class="mt-3 pt-3 border-top" id="admin-drawing-tool-sector-section">
+                        <h6 class="text-muted mb-2" id="admin-drawing-tool-sector-title">🎯 Sector Tools</h6>
+                        <div class="btn-group w-100 mb-2" role="group" id="admin-drawing-tool-sector-dropdown">
+                            <button id="admin-drawing-tool-shape-dropdown-toggle"
+                                    type="button"
+                                    class="btn @(currentTool == DrawingTool.CreateSector ? "btn-primary" : "btn-outline-primary") dropdown-toggle w-100"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                ➕ Create Sector (@currentShapeMode)
+                            </button>
+                            <ul class="dropdown-menu w-100" id="admin-drawing-tool-shape-dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item @(currentShapeMode == "Rectangle" ? "active" : "")"
+                                       id="admin-drawing-tool-rectangle-shape-option"
+                                       @onclick='() => SetShapeMode("Rectangle")'>
+                                        ◻️ Rectangle
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(currentShapeMode == "Triangle" ? "active" : "")"
+                                       id="admin-drawing-tool-triangle-shape-option"
+                                       @onclick='() => SetShapeMode("Triangle")'>
+                                        🔺 Triangle (3 clicks)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(currentShapeMode == "Rhombus" ? "active" : "")"
+                                       id="admin-drawing-tool-rhombus-shape-option"
+                                       @onclick='() => SetShapeMode("Rhombus")'>
+                                        🔷 Rhombus (4 clicks)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(currentShapeMode == "Polygon" ? "active" : "")"
+                                       id="admin-drawing-tool-polygon-shape-option"
+                                       @onclick='() => SetShapeMode("Polygon")'>
+                                        ⬡ Custom Polygon (multi-click)
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item disabled text-muted"
+                                       id="admin-drawing-tool-circular-sector-shape-option">
+                                        🍕 Circular Sector (Coming Soon)
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <small class="text-muted d-block" id="admin-drawing-tool-shape-instructions">
+                            @GetShapeInstructions()
+                        </small>
+                    </div>
+
+                    <!-- Color Picker -->
+                    <div class="mb-3" id="admin-drawing-tool-color-picker">
+                        <label for="admin-drawing-tool-color-input" class="form-label" id="admin-drawing-tool-color-label">Color</label>
+                        <input id="admin-drawing-tool-color-input"
+                               type="color"
+                               @bind="currentColor"
+                               @bind:event="oninput"
+                               @bind:after="UpdateColor"
+                               class="form-control form-control-color w-100" />
+                    </div>
+
+                    <!-- Line Width -->
+                    <div class="mb-3" id="admin-drawing-tool-line-width">
+                        <label for="admin-drawing-tool-width-input" class="form-label" id="admin-drawing-tool-width-label">Line Width: @lineWidth px</label>
+                        <input id="admin-drawing-tool-width-input"
+                               type="range"
+                               @bind="lineWidth"
+                               @bind:event="oninput"
+                               @bind:after="UpdateLineWidth"
+                               min="1"
+                               max="50"
+                               class="form-range" />
+                    </div>
+
+                    <!-- Opacity -->
+                    <div class="mb-3" id="admin-drawing-tool-opacity">
+                        <label for="admin-drawing-tool-opacity-input" class="form-label" id="admin-drawing-tool-opacity-label">Opacity: @((opacity * 100).ToString("F0"))%</label>
+                        <input id="admin-drawing-tool-opacity-input"
+                               type="range"
+                               @bind="opacity"
+                               @bind:event="oninput"
+                               @bind:after="UpdateOpacity"
+                               min="0.1"
+                               max="1"
+                               step="0.1"
+                               class="form-range" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div id="admin-drawing-tool-actions-card" class="card">
+                <div class="card-body" id="admin-drawing-tool-actions-body">
+                    <button id="admin-drawing-tool-clear-layer-btn" @onclick="ClearCurrentLayer" class="btn btn-warning w-100 mb-2">
+                        🗑️ Clear Current Layer
+                    </button>
+                    <button id="admin-drawing-tool-export-btn" @onclick="ExportDrawing" class="btn btn-success w-100 mb-2">
+                        💾 Export Drawing
+                    </button>
+                    <button id="admin-drawing-tool-export-json-btn" @onclick="ExportJSON" class="btn btn-info w-100 mb-2">
+                        📄 Export JSON
+                    </button>
+                    <button id="admin-drawing-tool-save-sectors-btn" @onclick="SaveSectors" class="btn btn-primary w-100">
+                        💾 Save Sector Layout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Canvas Area -->
+        <div class="col-md-9" id="admin-drawing-tool-canvas-col">
+            <div id="admin-drawing-tool-canvas-card" class="card">
+                <div class="card-body" id="admin-drawing-tool-canvas-card-body">
+                    <div id="admin-drawing-tool-canvas-container" class="position-relative" style="width: 100%; height: 898px; border: 2px solid #dee2e6; background: #f8f9fa; overflow: hidden;">
+                        <canvas id="admin-drawing-tool-canvas"
+                                width="1170"
+                                height="898"
+                                style="cursor: crosshair; display: block; margin: auto;">
+                        </canvas>
+                    </div>
+                    <div class="mt-2 text-muted text-center" id="admin-drawing-tool-status">
+                        <small id="admin-drawing-tool-status-text">Current Tool: <strong>@currentTool.ToString()</strong> | Current Layer: <strong>@GetCurrentLayerName()</strong></small>
+                    </div>
+
+                    @* Save Position/Size Changes Button (appears when sector is modified) *@
+                    @if (hasUnsavedSectorChanges && modifiedSectorId != null)
+                    {
+                        <div class="alert alert-warning mt-3 d-flex justify-content-between align-items-center" role="alert" id="admin-drawing-tool-unsaved-alert">
+                            <span id="admin-drawing-tool-unsaved-message">
+                                <strong id="admin-drawing-tool-unsaved-title">⚠️ Unsaved Changes</strong> - Sector position or size has been modified
+                            </span>
+                            <div id="admin-drawing-tool-unsaved-actions">
+                                <button id="admin-drawing-tool-save-position-btn"
+                                        @onclick="SaveSectorPositionChanges"
+                                        class="btn btn-success btn-sm me-2">
+                                    💾 Save Changes
+                                </button>
+                                <button id="admin-drawing-tool-discard-position-btn"
+                                        @onclick="DiscardSectorChanges"
+                                        class="btn btn-secondary btn-sm">
+                                    ❌ Discard
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showAlert)
+{
+    <div id="admin-drawing-tool-alert-container" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div class="alert alert-@alertType alert-dismissible fade show" role="alert" id="admin-drawing-tool-alert">
+            <span id="admin-drawing-tool-alert-message">@alertMessage</span>
+            <button type="button" class="btn-close" @onclick="() => showAlert = false" id="admin-drawing-tool-alert-close"></button>
+        </div>
+    </div>
+}
+
+<!-- Sector Edit Modal -->
+<SectorEditModal IsVisible="@showSectorModal"
+                 Sector="@currentSectorData"
+                 IsNewSector="@isNewSector"
+                 OnSave="@HandleSectorSave"
+                 OnDelete="@HandleSectorDelete"
+                 OnCancel="@HandleSectorCancel"
+                 ValidateSectorCode="@ValidateSectorCode" />
+
+@code {
+    private enum DrawingTool
+    {
+        Pen,
+        Rectangle,
+        Circle,
+        Line,
+        Eraser,
+        Select,
+        CreateSector
+    }
+
+    private class DrawingLayer
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool IsVisible { get; set; } = true;
+        public int ZIndex { get; set; }
+        public List<DrawingObject> Objects { get; set; } = new();
+    }
+
+    private class DrawingObject
+    {
+        public string Type { get; set; } = string.Empty;
+        public string Color { get; set; } = string.Empty;
+        public double LineWidth { get; set; }
+        public double Opacity { get; set; }
+        public List<Point> Points { get; set; } = new();
+    }
+
+    private class Point
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+
+    private List<DrawingLayer> layers = new();
+    private int currentLayerId = 1;
+    private int nextLayerId = 2;
+    private DrawingTool currentTool = (DrawingTool)(-1); // No tool selected by default
+    private string currentColor = "#ff0000";
+    private double lineWidth = 3;
+    private double opacity = 0.7;
+    private string backgroundImageUrl = string.Empty;
+    private bool showAlert = false;
+    private string alertMessage = string.Empty;
+    private string alertType = "success";
+
+    // Sector modal state
+    private bool showSectorModal = false;
+    private SectorEditModal.SectorOverlayData? currentSectorData = null;
+    private bool isNewSector = false;
+
+    // Track sector position/size changes
+    private bool hasUnsavedSectorChanges = false;
+    private string? modifiedSectorId = null;
+    private SectorOverlay? modifiedSectorData = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create initial layer
+        layers.Add(new DrawingLayer
+        {
+            Id = 1,
+            Name = "Layer 1",
+            ZIndex = 1,
+            IsVisible = true
+        });
+
+        // Set default stadium image
+        backgroundImageUrl = "/images/stadium-blueprint.png";
+
+        // Load sector overlay configuration
+        await LoadSectorOverlays();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Wait for JavaScript to be fully loaded (retry mechanism)
+                int maxRetries = 10;
+                int retryCount = 0;
+                bool initialized = false;
+
+                while (!initialized && retryCount < maxRetries)
+                {
+                    try
+                    {
+                        // Create .NET object reference for JavaScript callbacks
+                        var dotNetReference = DotNetObjectReference.Create(this);
+                        await JSRuntime.InvokeVoidAsync("initializeDrawingCanvas", "admin-drawing-tool-canvas", dotNetReference);
+
+                        // If we get here, initialization succeeded
+                        initialized = true;
+                        Logger.LogInformation("Drawing canvas initialized successfully");
+                    }
+                    catch (JSException ex) when (ex.Message.Contains("undefined"))
+                    {
+                        retryCount++;
+                        Logger.LogWarning($"Drawing canvas JS not ready yet, retry {retryCount}/{maxRetries}");
+                        await Task.Delay(500); // Wait 500ms before retry
+                    }
+                }
+
+                if (!initialized)
+                {
+                    Logger.LogError("Failed to initialize drawing canvas after {maxRetries} retries", maxRetries);
+                    return;
+                }
+
+                // Initialize with no tool selected (empty string = default state, allows click-to-edit on sectors)
+                await JSRuntime.InvokeVoidAsync("setDrawingTool", "");
+
+                // Load default stadium image
+                if (!string.IsNullOrEmpty(backgroundImageUrl))
+                {
+                    await JSRuntime.InvokeVoidAsync("setBackgroundImage", backgroundImageUrl);
+                }
+
+                // Draw sector overlays on canvas
+                await DrawSectorOverlays();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error in OnAfterRenderAsync");
+                ShowAlert($"Error initializing drawing tool: {ex.Message}", "danger");
+            }
+        }
+    }
+
+    private async Task LoadSectorOverlays()
+    {
+        try
+        {
+            // Load sectors from database API
+            var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+            Logger.LogInformation($"Loading sectors from API: {apiBaseUrl}/api/StadiumSectorOverlay");
+            var response = await HttpClient.GetAsync($"{apiBaseUrl}/api/StadiumSectorOverlay");
+
+            Logger.LogInformation($"API Response Status: {response.StatusCode}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+                var dbSectors = await response.Content.ReadFromJsonAsync<List<StadiumDrinkOrdering.Shared.Models.StadiumSectorOverlay>>(jsonOptions);
+
+                Logger.LogInformation($"Deserialized {dbSectors?.Count ?? 0} sectors from API");
+
+                // Convert database entities to local overlay format
+                sectorOverlays = dbSectors?.Select(db => new SectorOverlay
+                {
+                    Id = db.Id.ToString(),
+                    SectorCode = db.SectorCode,
+                    Name = db.Name,
+                    TopPercent = db.TopPercent,
+                    LeftPercent = db.LeftPercent,
+                    WidthPercent = db.WidthPercent,
+                    HeightPercent = db.HeightPercent,
+                    ShapeType = db.ShapeType,
+                    ShapeData = db.ShapeData ?? string.Empty,
+                    Rows = db.Rows,
+                    SeatsPerRow = db.SeatsPerRow,
+                    UseVariableSeating = db.UseVariableSeating,
+                    VariableSeatingData = db.VariableSeatingData,
+                    Type = db.Type,
+                    Color = db.Color,
+                    CreatedDate = db.CreatedDate,
+                    ModifiedDate = db.ModifiedDate
+                }).ToList() ?? new List<SectorOverlay>();
+
+                Logger.LogInformation($"✅ Loaded {sectorOverlays.Count} sectors from database");
+
+                // Draw sectors even if list is empty (to clear canvas)
+                await DrawSectorOverlaysAfterLoad();
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Logger.LogWarning($"Failed to load sectors: {response.StatusCode} - {errorContent}");
+                sectorOverlays = new List<SectorOverlay>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading sector overlays from database");
+            ShowAlert($"Error loading sector overlays: {ex.Message}", "warning");
+            sectorOverlays = new List<SectorOverlay>();
+        }
+    }
+
+    private async Task DrawSectorOverlaysAfterLoad()
+    {
+        try
+        {
+            if (sectorOverlays != null && sectorOverlays.Any())
+            {
+                var overlaysJson = JsonSerializer.Serialize(sectorOverlays);
+                Logger.LogInformation($"Drawing {sectorOverlays.Count} sectors on canvas");
+                await JSRuntime.InvokeVoidAsync("drawSectorOverlays", overlaysJson);
+            }
+            else
+            {
+                Logger.LogInformation("No sectors to draw - clearing sector layer");
+                await JSRuntime.InvokeVoidAsync("clearSectorOverlays");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error drawing sector overlays after load");
+        }
+    }
+
+    private async Task DrawSectorOverlays()
+    {
+        if (sectorOverlays == null || !sectorOverlays.Any())
+            return;
+
+        try
+        {
+            var overlaysJson = JsonSerializer.Serialize(sectorOverlays);
+            await JSRuntime.InvokeVoidAsync("drawSectorOverlays", overlaysJson);
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Error drawing sector overlays: {ex.Message}", "warning");
+        }
+    }
+
+    private class SectorOverlayConfig
+    {
+        public string StadiumName { get; set; } = string.Empty;
+        public int ImageWidth { get; set; }
+        public int ImageHeight { get; set; }
+        public List<SectorOverlay> SectorOverlays { get; set; } = new();
+    }
+
+    private class SectorOverlay
+    {
+        // Identification
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string SectorCode { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+
+        // Position & Size (percentage-based for responsiveness)
+        public double TopPercent { get; set; }
+        public double LeftPercent { get; set; }
+        public double WidthPercent { get; set; }
+        public double HeightPercent { get; set; }
+
+        // Shape Definition
+        public string ShapeType { get; set; } = "rectangle";
+        public string ShapeData { get; set; } = string.Empty;
+
+        // Seating Capacity
+        public int Rows { get; set; } = 10;
+        public int SeatsPerRow { get; set; } = 20;
+        public bool UseVariableSeating { get; set; } = false;
+        public string? VariableSeatingData { get; set; }
+        public int TotalSeats => Rows * SeatsPerRow;
+
+        // Classification
+        public string Type { get; set; } = "standard";
+        public string Color { get; set; } = "#007bff";
+
+        // Metadata
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
+    }
+
+    private List<SectorOverlay> sectorOverlays = new();
+
+    private DrawingTool? previousTool = null;
+    private string currentShapeMode = "Rectangle"; // Default shape mode
+
+    private async Task SetTool(DrawingTool tool)
+    {
+        // Toggle behavior: if clicking the same tool again, deselect it (go to default/none state)
+        if (currentTool == tool)
+        {
+            // Deselect - set to a null/empty tool state
+            previousTool = currentTool;
+            currentTool = (DrawingTool)(-1); // Invalid enum value represents "no tool selected"
+            await JSRuntime.InvokeVoidAsync("setDrawingTool", ""); // Empty string = no tool in JavaScript
+            Console.WriteLine($"🔄 Tool deselected: {previousTool} - Click on sectors now opens edit modal");
+        }
+        else
+        {
+            // Select new tool
+            currentTool = tool;
+            await JSRuntime.InvokeVoidAsync("setDrawingTool", tool.ToString());
+            Console.WriteLine($"✏️ Tool selected: {tool}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateColor()
+    {
+        await JSRuntime.InvokeVoidAsync("updateDrawingColor", currentColor);
+    }
+
+    private async Task UpdateLineWidth()
+    {
+        await JSRuntime.InvokeVoidAsync("updateDrawingLineWidth", lineWidth);
+    }
+
+    private async Task UpdateOpacity()
+    {
+        await JSRuntime.InvokeVoidAsync("updateDrawingOpacity", opacity);
+    }
+
+    private void AddLayer()
+    {
+        var newLayer = new DrawingLayer
+        {
+            Id = nextLayerId++,
+            Name = $"Layer {layers.Count + 1}",
+            ZIndex = layers.Max(l => l.ZIndex) + 1,
+            IsVisible = true
+        };
+        layers.Add(newLayer);
+        currentLayerId = newLayer.Id;
+        ShowAlert("Layer added successfully!", "success");
+    }
+
+    private void SelectLayer(int layerId)
+    {
+        currentLayerId = layerId;
+        StateHasChanged();
+    }
+
+    private async Task ToggleLayerVisibility(int layerId)
+    {
+        var layer = layers.FirstOrDefault(l => l.Id == layerId);
+        if (layer != null)
+        {
+            await JSRuntime.InvokeVoidAsync("toggleLayerVisibility", layerId, layer.IsVisible);
+            StateHasChanged();
+        }
+    }
+
+    private void MoveLayerUp(int layerId)
+    {
+        var layer = layers.FirstOrDefault(l => l.Id == layerId);
+        if (layer != null)
+        {
+            var higherLayer = layers.Where(l => l.ZIndex > layer.ZIndex).OrderBy(l => l.ZIndex).FirstOrDefault();
+            if (higherLayer != null)
+            {
+                var tempZIndex = layer.ZIndex;
+                layer.ZIndex = higherLayer.ZIndex;
+                higherLayer.ZIndex = tempZIndex;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void MoveLayerDown(int layerId)
+    {
+        var layer = layers.FirstOrDefault(l => l.Id == layerId);
+        if (layer != null)
+        {
+            var lowerLayer = layers.Where(l => l.ZIndex < layer.ZIndex).OrderByDescending(l => l.ZIndex).FirstOrDefault();
+            if (lowerLayer != null)
+            {
+                var tempZIndex = layer.ZIndex;
+                layer.ZIndex = lowerLayer.ZIndex;
+                lowerLayer.ZIndex = tempZIndex;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task DeleteLayer(int layerId)
+    {
+        if (layers.Count > 1)
+        {
+            layers.RemoveAll(l => l.Id == layerId);
+            if (currentLayerId == layerId)
+            {
+                currentLayerId = layers.First().Id;
+            }
+            await JSRuntime.InvokeVoidAsync("deleteLayer", layerId);
+            ShowAlert("Layer deleted successfully!", "success");
+        }
+    }
+
+    private async Task ClearCurrentLayer()
+    {
+        await JSRuntime.InvokeVoidAsync("clearLayer", currentLayerId);
+        ShowAlert("Current layer cleared!", "success");
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).ReadAsync(buffer);
+            var base64 = Convert.ToBase64String(buffer);
+            backgroundImageUrl = $"data:{file.ContentType};base64,{base64}";
+
+            await JSRuntime.InvokeVoidAsync("setBackgroundImage", backgroundImageUrl);
+            ShowAlert("Stadium image uploaded successfully!", "success");
+        }
+    }
+
+    private async Task ClearImage()
+    {
+        backgroundImageUrl = string.Empty;
+        await JSRuntime.InvokeVoidAsync("clearBackgroundImage");
+        ShowAlert("Stadium image cleared!", "info");
+    }
+
+    private async Task ExportDrawing()
+    {
+        await JSRuntime.InvokeVoidAsync("exportDrawingAsImage");
+        ShowAlert("Drawing exported as image!", "success");
+    }
+
+
+    private async Task SaveSectors()
+    {
+        try
+        {
+            var jsonString = await JSRuntime.InvokeAsync<string>("exportSectorOverlays");
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                var filename = $"sector-overlay-config-{DateTime.Now:yyyyMMdd-HHmmss}.json";
+                await JSRuntime.InvokeVoidAsync("downloadJSON", jsonString, filename);
+                ShowAlert($"Sector layout saved: {filename}", "success");
+            }
+            else
+            {
+                ShowAlert("No sectors to export", "warning");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Error saving sectors: {ex.Message}", "danger");
+        }
+    }
+
+    private async Task ExportJSON()
+    {
+        var exportData = new
+        {
+            layers = layers.Select(l => new
+            {
+                id = l.Id,
+                name = l.Name,
+                isVisible = l.IsVisible,
+                zIndex = l.ZIndex
+            }),
+            backgroundImage = backgroundImageUrl
+        };
+
+        var json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
+        await JSRuntime.InvokeVoidAsync("downloadJSON", json, "stadium-drawing.json");
+        ShowAlert("Drawing data exported as JSON!", "success");
+    }
+
+    private string GetCurrentLayerName()
+    {
+        return layers.FirstOrDefault(l => l.Id == currentLayerId)?.Name ?? "Unknown";
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+        showAlert = true;
+        StateHasChanged();
+    }
+
+    // Sector Modal Handlers
+    [JSInvokable]
+    public void ShowSectorEditModal(string sectorId)
+    {
+        var sector = sectorOverlays.FirstOrDefault(s => s.Id == sectorId);
+        if (sector != null)
+        {
+            currentSectorData = ConvertToModalData(sector);
+            isNewSector = false;
+            showSectorModal = true;
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void OnSectorDrawComplete(double leftPercent, double topPercent, double widthPercent, double heightPercent)
+    {
+        // Create new sector with drawn boundaries
+        var newSector = new SectorOverlay
+        {
+            Id = Guid.NewGuid().ToString(),
+            SectorCode = $"SECT{sectorOverlays.Count + 1}",
+            Name = $"New Sector {sectorOverlays.Count + 1}",
+            LeftPercent = leftPercent,
+            TopPercent = topPercent,
+            WidthPercent = widthPercent,
+            HeightPercent = heightPercent,
+            ShapeType = "rectangle",
+            ShapeData = JsonSerializer.Serialize(new { leftPercent, topPercent, widthPercent, heightPercent }),
+            Rows = 10,
+            SeatsPerRow = 20,
+            Type = "standard",
+            Color = "#007bff",
+            CreatedDate = DateTime.UtcNow,
+            ModifiedDate = DateTime.UtcNow
+        };
+
+        // Open modal for user to configure sector details
+        OpenNewSectorModal(newSector);
+    }
+
+    private void OpenNewSectorModal(SectorOverlay newSector)
+    {
+        currentSectorData = ConvertToModalData(newSector);
+        isNewSector = true;
+        showSectorModal = true;
+        StateHasChanged();
+    }
+
+    private async Task HandleSectorSave()
+    {
+        if (currentSectorData == null) return;
+
+        try
+        {
+            var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+
+            if (isNewSector)
+            {
+                // Create new sector via API
+                var newDbSector = new StadiumDrinkOrdering.Shared.Models.StadiumSectorOverlay
+                {
+                    SectorCode = currentSectorData.SectorCode,
+                    Name = currentSectorData.Name,
+                    TopPercent = currentSectorData.TopPercent,
+                    LeftPercent = currentSectorData.LeftPercent,
+                    WidthPercent = currentSectorData.WidthPercent,
+                    HeightPercent = currentSectorData.HeightPercent,
+                    ShapeType = currentSectorData.ShapeType,
+                    ShapeData = currentSectorData.ShapeData,
+                    Rows = currentSectorData.Rows,
+                    SeatsPerRow = currentSectorData.SeatsPerRow,
+                    UseVariableSeating = currentSectorData.UseVariableSeating,
+                    VariableSeatingData = currentSectorData.VariableSeatingData,
+                    Type = currentSectorData.Type,
+                    Color = currentSectorData.Color
+                };
+
+                var response = await HttpClient.PostAsJsonAsync($"{apiBaseUrl}/api/StadiumSectorOverlay", newDbSector);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var createdSector = await response.Content.ReadFromJsonAsync<StadiumDrinkOrdering.Shared.Models.StadiumSectorOverlay>();
+                    if (createdSector != null)
+                    {
+                        // Add to local list
+                        var localSector = ConvertFromModalData(currentSectorData);
+                        localSector.Id = createdSector.Id.ToString();
+                        sectorOverlays.Add(localSector);
+
+                        ShowAlert($"Sector '{createdSector.SectorCode}' created successfully!", "success");
+                    }
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ShowAlert($"Error creating sector: {errorContent}", "danger");
+                    return;
+                }
+            }
+            else
+            {
+                // Update existing sector via API
+                var existing = sectorOverlays.FirstOrDefault(s => s.Id == currentSectorData.Id);
+                if (existing != null && int.TryParse(existing.Id, out int sectorId))
+                {
+                    var updatedDbSector = new StadiumDrinkOrdering.Shared.Models.StadiumSectorOverlay
+                    {
+                        Id = sectorId,
+                        SectorCode = currentSectorData.SectorCode,
+                        Name = currentSectorData.Name,
+                        TopPercent = currentSectorData.TopPercent,
+                        LeftPercent = currentSectorData.LeftPercent,
+                        WidthPercent = currentSectorData.WidthPercent,
+                        HeightPercent = currentSectorData.HeightPercent,
+                        ShapeType = currentSectorData.ShapeType,
+                        ShapeData = currentSectorData.ShapeData,
+                        Rows = currentSectorData.Rows,
+                        SeatsPerRow = currentSectorData.SeatsPerRow,
+                        UseVariableSeating = currentSectorData.UseVariableSeating,
+                        VariableSeatingData = currentSectorData.VariableSeatingData,
+                        Type = currentSectorData.Type,
+                        Color = currentSectorData.Color
+                    };
+
+                    var response = await HttpClient.PutAsJsonAsync($"{apiBaseUrl}/api/StadiumSectorOverlay/{sectorId}", updatedDbSector);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Update local sector
+                        UpdateSectorFromModalData(existing, currentSectorData);
+                        ShowAlert($"Sector '{existing.SectorCode}' updated successfully!", "success");
+                    }
+                    else
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        ShowAlert($"Error updating sector: {errorContent}", "danger");
+                        return;
+                    }
+                }
+            }
+
+            // Redraw canvas with updated sectors
+            await DrawSectorOverlays();
+
+            // Close modal
+            showSectorModal = false;
+            currentSectorData = null;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving sector to database");
+            ShowAlert($"Error saving sector: {ex.Message}", "danger");
+        }
+    }
+
+    private async Task HandleSectorDelete()
+    {
+        if (currentSectorData == null) return;
+
+        try
+        {
+            var sectorToDelete = sectorOverlays.FirstOrDefault(s => s.Id == currentSectorData.Id);
+            if (sectorToDelete != null && int.TryParse(sectorToDelete.Id, out int sectorId))
+            {
+                var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+                var response = await HttpClient.DeleteAsync($"{apiBaseUrl}/api/StadiumSectorOverlay/{sectorId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Remove from local list
+                    sectorOverlays.Remove(sectorToDelete);
+                    ShowAlert($"Sector '{sectorToDelete.SectorCode}' deleted successfully!", "success");
+
+                    // Redraw canvas without deleted sector
+                    await DrawSectorOverlays();
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ShowAlert($"Error deleting sector: {errorContent}", "danger");
+                    return;
+                }
+            }
+
+            // Close modal
+            showSectorModal = false;
+            currentSectorData = null;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error deleting sector from database");
+            ShowAlert($"Error deleting sector: {ex.Message}", "danger");
+        }
+    }
+
+    private void HandleSectorCancel()
+    {
+        showSectorModal = false;
+        currentSectorData = null;
+        StateHasChanged();
+    }
+
+    private bool ValidateSectorCode(string currentId, string sectorCode)
+    {
+        // Check if sector code already exists (excluding current sector)
+        return !sectorOverlays.Any(s => s.Id != currentId &&
+                                        s.SectorCode.Equals(sectorCode, StringComparison.OrdinalIgnoreCase));
+    }
+
+    // Handle sector position/size changes from JavaScript
+    [JSInvokable]
+    public void OnSectorModified(string sectorId, double topPercent, double leftPercent, double widthPercent, double heightPercent)
+    {
+        var sector = sectorOverlays.FirstOrDefault(s => s.Id == sectorId);
+        if (sector != null)
+        {
+            // Store the modified sector data temporarily
+            modifiedSectorId = sectorId;
+            modifiedSectorData = new SectorOverlay
+            {
+                Id = sector.Id,
+                SectorCode = sector.SectorCode,
+                Name = sector.Name,
+                TopPercent = topPercent,
+                LeftPercent = leftPercent,
+                WidthPercent = widthPercent,
+                HeightPercent = heightPercent,
+                ShapeType = sector.ShapeType,
+                ShapeData = sector.ShapeData,
+                Rows = sector.Rows,
+                SeatsPerRow = sector.SeatsPerRow,
+                UseVariableSeating = sector.UseVariableSeating,
+                VariableSeatingData = sector.VariableSeatingData,
+                Type = sector.Type,
+                Color = sector.Color,
+                CreatedDate = sector.CreatedDate,
+                ModifiedDate = DateTime.UtcNow
+            };
+
+            hasUnsavedSectorChanges = true;
+            StateHasChanged(); // Update UI to show save button
+        }
+    }
+
+    private async Task SaveSectorPositionChanges()
+    {
+        if (modifiedSectorData == null || modifiedSectorId == null) return;
+
+        try
+        {
+            // Update via API
+            var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+
+            if (int.TryParse(modifiedSectorId, out int sectorId))
+            {
+                var updatedDbSector = new StadiumDrinkOrdering.Shared.Models.StadiumSectorOverlay
+                {
+                    Id = sectorId,
+                    SectorCode = modifiedSectorData.SectorCode,
+                    Name = modifiedSectorData.Name,
+                    TopPercent = modifiedSectorData.TopPercent,
+                    LeftPercent = modifiedSectorData.LeftPercent,
+                    WidthPercent = modifiedSectorData.WidthPercent,
+                    HeightPercent = modifiedSectorData.HeightPercent,
+                    ShapeType = modifiedSectorData.ShapeType,
+                    ShapeData = modifiedSectorData.ShapeData,
+                    Rows = modifiedSectorData.Rows,
+                    SeatsPerRow = modifiedSectorData.SeatsPerRow,
+                    Type = modifiedSectorData.Type,
+                    Color = modifiedSectorData.Color
+                };
+
+                var response = await HttpClient.PutAsJsonAsync($"{apiBaseUrl}/api/StadiumSectorOverlay/{sectorId}", updatedDbSector);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Update local sector
+                    var localSector = sectorOverlays.FirstOrDefault(s => s.Id == modifiedSectorId);
+                    if (localSector != null)
+                    {
+                        localSector.TopPercent = modifiedSectorData.TopPercent;
+                        localSector.LeftPercent = modifiedSectorData.LeftPercent;
+                        localSector.WidthPercent = modifiedSectorData.WidthPercent;
+                        localSector.HeightPercent = modifiedSectorData.HeightPercent;
+                        localSector.ModifiedDate = DateTime.UtcNow;
+                    }
+
+                    // Clear unsaved changes flag
+                    hasUnsavedSectorChanges = false;
+                    modifiedSectorId = null;
+                    modifiedSectorData = null;
+
+                    ShowAlert($"Sector position/size saved successfully!", "success");
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ShowAlert($"Error saving sector: {errorContent}", "danger");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving sector position changes");
+            ShowAlert($"Error saving changes: {ex.Message}", "danger");
+        }
+    }
+
+    private async Task DiscardSectorChanges()
+    {
+        // Reset unsaved changes
+        hasUnsavedSectorChanges = false;
+        modifiedSectorId = null;
+        modifiedSectorData = null;
+
+        // Reload sectors from database to revert visual changes
+        await LoadSectorOverlays();
+
+        ShowAlert("Changes discarded", "info");
+    }
+
+    // Helper methods to convert between SectorOverlay and SectorOverlayData
+    private SectorEditModal.SectorOverlayData ConvertToModalData(SectorOverlay sector)
+    {
+        return new SectorEditModal.SectorOverlayData
+        {
+            Id = sector.Id,
+            SectorCode = sector.SectorCode,
+            Name = sector.Name,
+            TopPercent = sector.TopPercent,
+            LeftPercent = sector.LeftPercent,
+            WidthPercent = sector.WidthPercent,
+            HeightPercent = sector.HeightPercent,
+            ShapeType = sector.ShapeType,
+            ShapeData = sector.ShapeData,
+            Rows = sector.Rows,
+            SeatsPerRow = sector.SeatsPerRow,
+            UseVariableSeating = sector.UseVariableSeating,
+            VariableSeatingData = sector.VariableSeatingData,
+            Type = sector.Type,
+            Color = sector.Color,
+            CreatedDate = sector.CreatedDate,
+            ModifiedDate = sector.ModifiedDate
+        };
+    }
+
+    private SectorOverlay ConvertFromModalData(SectorEditModal.SectorOverlayData data)
+    {
+        return new SectorOverlay
+        {
+            Id = data.Id,
+            SectorCode = data.SectorCode,
+            Name = data.Name,
+            TopPercent = data.TopPercent,
+            LeftPercent = data.LeftPercent,
+            WidthPercent = data.WidthPercent,
+            HeightPercent = data.HeightPercent,
+            ShapeType = data.ShapeType,
+            ShapeData = data.ShapeData,
+            Rows = data.Rows,
+            SeatsPerRow = data.SeatsPerRow,
+            UseVariableSeating = data.UseVariableSeating,
+            VariableSeatingData = data.VariableSeatingData,
+            Type = data.Type,
+            Color = data.Color,
+            CreatedDate = data.CreatedDate,
+            ModifiedDate = DateTime.UtcNow
+        };
+    }
+
+    private void UpdateSectorFromModalData(SectorOverlay sector, SectorEditModal.SectorOverlayData data)
+    {
+        sector.SectorCode = data.SectorCode;
+        sector.Name = data.Name;
+        sector.Rows = data.Rows;
+        sector.SeatsPerRow = data.SeatsPerRow;
+        sector.UseVariableSeating = data.UseVariableSeating;
+        sector.VariableSeatingData = data.VariableSeatingData;
+        sector.Type = data.Type;
+        sector.Color = data.Color;
+        sector.ModifiedDate = DateTime.UtcNow;
+    }
+
+    // Shape mode selection handler
+    private async Task SetShapeMode(string shapeMode)
+    {
+        currentShapeMode = shapeMode;
+        await JSRuntime.InvokeVoidAsync("setShapeMode", shapeMode.ToLower());
+        await SetTool(DrawingTool.CreateSector); // Activate create sector tool
+        StateHasChanged();
+        Logger.LogInformation($"🔶 Shape mode changed to: {shapeMode}");
+    }
+
+    // Get instructions for current shape mode
+    private string GetShapeInstructions()
+    {
+        return currentShapeMode switch
+        {
+            "Rectangle" => "Click and drag to define rectangular sector boundaries",
+            "Triangle" => "Click 3 points to create a triangle sector (auto-completes)",
+            "Rhombus" => "Click 4 points to create a rhombus sector",
+            "Polygon" => "Click multiple points to create custom polygon. Double-click to finish (min 3 points)",
+            _ => "Select a shape type from the dropdown above"
+        };
+    }
+
+    // JavaScript callback for polygon/triangle vertex completion
+    [JSInvokable]
+    public async Task ShowSectorCreateModalWithVertices(string shapeMode, List<Dictionary<string, double>> vertices)
+    {
+        try
+        {
+            Logger.LogInformation($"Polygon/triangle sector created with {vertices.Count} vertices in {shapeMode} mode");
+
+            // Convert JavaScript vertex array to VertexCoordinate objects
+            var vertexList = vertices.Select(v => new StadiumDrinkOrdering.Shared.Models.VertexCoordinate
+            {
+                X = v["x"],
+                Y = v["y"]
+            }).ToList();
+
+            // Determine shape type from mode
+            var shapeType = shapeMode.ToLower() switch
+            {
+                "triangle" => "triangle",
+                "rhombus" => "rhombus",
+                "polygon" => "custompolygon",
+                _ => "rectangle"
+            };
+
+            // Calculate bounding box from vertices
+            var minX = vertexList.Min(v => v.X);
+            var maxX = vertexList.Max(v => v.X);
+            var minY = vertexList.Min(v => v.Y);
+            var maxY = vertexList.Max(v => v.Y);
+
+            // Create new sector with vertex data
+            var newSector = new SectorOverlay
+            {
+                Id = Guid.NewGuid().ToString(),
+                SectorCode = $"SECT{sectorOverlays.Count + 1}",
+                Name = $"New {shapeMode} {sectorOverlays.Count + 1}",
+                LeftPercent = minX,
+                TopPercent = minY,
+                WidthPercent = maxX - minX,
+                HeightPercent = maxY - minY,
+                ShapeType = shapeType,
+                ShapeData = JsonSerializer.Serialize(vertexList), // Store vertices as JSON
+                Rows = 10,
+                SeatsPerRow = 20,
+                Type = "standard",
+                Color = "#007bff",
+                CreatedDate = DateTime.UtcNow,
+                ModifiedDate = DateTime.UtcNow
+            };
+
+            // Open modal for user to configure sector details
+            OpenNewSectorModal(newSector);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in ShowSectorCreateModalWithVertices");
+            ShowAlert($"Error creating polygon sector: {ex.Message}", "danger");
+        }
+    }
+}

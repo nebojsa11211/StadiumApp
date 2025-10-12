@@ -1,0 +1,655 @@
+@using System.ComponentModel.DataAnnotations
+
+@if (IsVisible)
+{
+    <div class="modal fade show" id="sector-edit-modal"
+         style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; overflow-y: auto;"
+         tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered" style="margin: 1.75rem auto;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @if (IsNewSector)
+                        {
+                            <span>🆕 Create New Sector</span>
+                        }
+                        else
+                        {
+                            <span>✏️ Edit Sector: @Sector?.SectorCode</span>
+                        }
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Cancel"></button>
+                </div>
+
+                <div class="modal-body">
+                    @if (Sector != null)
+                    {
+                        <form>
+                            <!-- Row 1: Sector Code and Name -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Sector Code *</label>
+                                    <input type="text"
+                                           class="form-control @(ValidationErrors.ContainsKey(nameof(Sector.SectorCode)) ? "is-invalid" : "")"
+                                           @bind="Sector.SectorCode"
+                                           placeholder="e.g., A1, VIP1"
+                                           maxlength="50" />
+                                    @if (ValidationErrors.ContainsKey(nameof(Sector.SectorCode)))
+                                    {
+                                        <div class="invalid-feedback d-block">@ValidationErrors[nameof(Sector.SectorCode)]</div>
+                                    }
+                                    <small class="text-muted">Unique identifier</small>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label fw-bold">Sector Name *</label>
+                                    <input type="text"
+                                           class="form-control @(ValidationErrors.ContainsKey(nameof(Sector.Name)) ? "is-invalid" : "")"
+                                           @bind="Sector.Name"
+                                           placeholder="e.g., Tribune A1, VIP Section"
+                                           maxlength="200" />
+                                    @if (ValidationErrors.ContainsKey(nameof(Sector.Name)))
+                                    {
+                                        <div class="invalid-feedback d-block">@ValidationErrors[nameof(Sector.Name)]</div>
+                                    }
+                                    <small class="text-muted">Display name for customers</small>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Seating Mode -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Seating Mode</label>
+                                    <div class="btn-group d-block" role="group">
+                                        <input type="radio" class="btn-check" id="uniformMode" checked="@(!Sector.UseVariableSeating)"
+                                               @onchange="@(() => ToggleSeatingMode(false))" />
+                                        <label class="btn btn-outline-primary" for="uniformMode">
+                                            ⚪ Uniform (Same seats per row)
+                                        </label>
+
+                                        <input type="radio" class="btn-check" id="variableMode" checked="@Sector.UseVariableSeating"
+                                               @onchange="@(() => ToggleSeatingMode(true))" />
+                                        <label class="btn btn-outline-success" for="variableMode">
+                                            🎯 Variable (Different seats per row)
+                                        </label>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">
+                                        @if (!Sector.UseVariableSeating)
+                                        {
+                                            <span>All rows will have the same number of seats</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Define different seat counts for row ranges</span>
+                                        }
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Seating Capacity -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Number of Rows *</label>
+                                    <input type="number"
+                                           class="form-control @(ValidationErrors.ContainsKey(nameof(Sector.Rows)) ? "is-invalid" : "")"
+                                           @bind="Sector.Rows"
+                                           min="1"
+                                           max="100"
+                                           @bind:event="oninput"
+                                           @bind:after="UpdateTotalSeats" />
+                                    @if (ValidationErrors.ContainsKey(nameof(Sector.Rows)))
+                                    {
+                                        <div class="invalid-feedback d-block">@ValidationErrors[nameof(Sector.Rows)]</div>
+                                    }
+                                    <small class="text-muted">1-100 rows</small>
+                                </div>
+
+                                @if (!Sector.UseVariableSeating)
+                                {
+                                    <!-- Uniform Mode: Single seats per row input -->
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold">Seats per Row *</label>
+                                        <input type="number"
+                                               class="form-control @(ValidationErrors.ContainsKey(nameof(Sector.SeatsPerRow)) ? "is-invalid" : "")"
+                                               @bind="Sector.SeatsPerRow"
+                                               min="1"
+                                               max="200"
+                                               @bind:event="oninput"
+                                               @bind:after="UpdateTotalSeats" />
+                                        @if (ValidationErrors.ContainsKey(nameof(Sector.SeatsPerRow)))
+                                        {
+                                            <div class="invalid-feedback d-block">@ValidationErrors[nameof(Sector.SeatsPerRow)]</div>
+                                        }
+                                        <small class="text-muted">1-200 seats</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold">Total Seats</label>
+                                        <input type="number"
+                                               class="form-control bg-light"
+                                               value="@totalSeats"
+                                               readonly />
+                                        <small class="text-muted">Calculated automatically</small>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <!-- Variable Mode: Show total only -->
+                                    <div class="col-md-8">
+                                        <label class="form-label fw-bold">Total Seats</label>
+                                        <input type="number"
+                                               class="form-control bg-light"
+                                               value="@totalSeats"
+                                               readonly />
+                                        <small class="text-muted">Calculated from row patterns below</small>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (Sector.UseVariableSeating)
+                            {
+                                <!-- Row Patterns Editor -->
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold">Row Patterns</label>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th style="width: 15%">From Row</th>
+                                                        <th style="width: 15%">To Row</th>
+                                                        <th style="width: 20%">Seats/Row</th>
+                                                        <th style="width: 20%">Subtotal</th>
+                                                        <th style="width: 15%">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var (pattern, index) in rowPatterns.Select((p, i) => (p, i)))
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                <input type="number" class="form-control form-control-sm"
+                                                                       @bind="pattern.FromRow" min="1" max="@Sector.Rows"
+                                                                       @bind:event="oninput" @bind:after="UpdateTotalSeats" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control form-control-sm"
+                                                                       @bind="pattern.ToRow" min="@pattern.FromRow" max="@Sector.Rows"
+                                                                       @bind:event="oninput" @bind:after="UpdateTotalSeats" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" class="form-control form-control-sm"
+                                                                       @bind="pattern.SeatsPerRow" min="1" max="200"
+                                                                       @bind:event="oninput" @bind:after="UpdateTotalSeats" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control form-control-sm bg-light"
+                                                                       value="@((pattern.ToRow - pattern.FromRow + 1) * pattern.SeatsPerRow) seats"
+                                                                       readonly />
+                                                            </td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-sm btn-danger"
+                                                                        @onclick="@(() => RemoveRowPattern(index))">
+                                                                    <span class="oi oi-trash"></span>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    @if (rowPatterns.Count == 0)
+                                                    {
+                                                        <tr>
+                                                            <td colspan="5" class="text-center text-muted">
+                                                                No row patterns defined. Click "Add Row Range" to start.
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-primary" @onclick="AddRowPattern">
+                                            <span class="oi oi-plus"></span> Add Row Range
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Row 4: Type and Color -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Sector Type</label>
+                                    <select class="form-select" @bind="Sector.Type">
+                                        <option value="standard">Standard</option>
+                                        <option value="vip">VIP</option>
+                                        <option value="wheelchair">Wheelchair Accessible</option>
+                                        <option value="premium">Premium</option>
+                                        <option value="family">Family Section</option>
+                                    </select>
+                                    <small class="text-muted">Classification for pricing and access</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Display Color</label>
+                                    <div class="input-group">
+                                        <input type="color"
+                                               class="form-control form-control-color"
+                                               @bind="Sector.Color"
+                                               title="Choose sector color"
+                                               style="width: 60px;" />
+                                        <input type="text"
+                                               class="form-control"
+                                               @bind="Sector.Color"
+                                               placeholder="#007bff"
+                                               maxlength="7" />
+                                    </div>
+                                    <small class="text-muted">Visual color on stadium map</small>
+                                </div>
+                            </div>
+
+                            <!-- Row 4: Position Information (Read-only for context) -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Position & Size</label>
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2">
+                                            <div class="row text-center">
+                                                <div class="col-3">
+                                                    <small class="text-muted d-block">Left</small>
+                                                    <strong>@Sector.LeftPercent.ToString("F1")%</strong>
+                                                </div>
+                                                <div class="col-3">
+                                                    <small class="text-muted d-block">Top</small>
+                                                    <strong>@Sector.TopPercent.ToString("F1")%</strong>
+                                                </div>
+                                                <div class="col-3">
+                                                    <small class="text-muted d-block">Width</small>
+                                                    <strong>@Sector.WidthPercent.ToString("F1")%</strong>
+                                                </div>
+                                                <div class="col-3">
+                                                    <small class="text-muted d-block">Height</small>
+                                                    <strong>@Sector.HeightPercent.ToString("F1")%</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Use Select/Move tool on canvas to adjust position</small>
+                                </div>
+                            </div>
+
+                            <!-- Metadata (show for existing sectors) -->
+                            @if (!IsNewSector)
+                            {
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <small class="text-muted">
+                                            Created: @Sector.CreatedDate.ToString("yyyy-MM-dd HH:mm")
+                                        </small>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <small class="text-muted">
+                                            Modified: @Sector.ModifiedDate.ToString("yyyy-MM-dd HH:mm")
+                                        </small>
+                                    </div>
+                                </div>
+                            }
+                        </form>
+                    }
+                </div>
+
+                <div class="modal-footer">
+                    @if (!IsNewSector)
+                    {
+                        <button type="button" class="btn btn-danger me-auto" @onclick="DeleteSector">
+                            <span class="oi oi-trash"></span> Delete Sector
+                        </button>
+                    }
+                    <button type="button" class="btn btn-info" @onclick="TogglePreview">
+                        <span class="oi oi-eye"></span> @(showPreview ? "Hide Preview" : "Preview Sector")
+                    </button>
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">
+                        <span class="oi oi-x"></span> Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveSector">
+                        <span class="oi oi-check"></span> Save Sector
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Sector Preview Modal *@
+    @if (showPreview && Sector != null)
+    {
+        <div class="modal fade show" id="sector-preview-modal"
+             style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; overflow-y: auto;"
+             tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-centered" style="margin: 1.75rem auto; max-width: 90%;">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title">
+                            🎯 Sector Preview: @Sector.SectorCode - @Sector.Name
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" @onclick="TogglePreview"></button>
+                    </div>
+
+                    <div class="modal-body" style="background: #1a1a1a;">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="alert alert-info">
+                                    <strong>ℹ️ Sector Information:</strong> @Sector.Rows rows × @Sector.SeatsPerRow seats/row = @totalSeats total seats
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card bg-dark text-white">
+                                    <div class="card-body p-4" style="overflow-x: auto;">
+                                        <div class="text-center mb-3">
+                                            <span class="badge bg-success fs-5">⬇️ FIELD / STAGE ⬇️</span>
+                                        </div>
+
+                                        <div class="sector-preview-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                            @for (int row = 1; row <= Sector.Rows; row++)
+                                            {
+                                                var seatsInRow = GetSeatsForRow(row);
+                                                <div class="seat-row" style="display: flex; gap: 4px; align-items: center;">
+                                                    <span class="row-label" style="color: #888; font-size: 12px; width: 40px; text-align: right; margin-right: 8px;">
+                                                        Row @row
+                                                    </span>
+                                                    @for (int seat = 1; seat <= seatsInRow; seat++)
+                                                    {
+                                                        <div class="seat-item"
+                                                             style="width: 32px; height: 32px; background: @GetSeatColor(Sector.Type); border: 1px solid #555; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; cursor: pointer; transition: all 0.2s;"
+                                                             title="Row @row, Seat @seat">
+                                                            @seat
+                                                        </div>
+                                                    }
+                                                    <span class="row-label" style="color: #888; font-size: 12px; width: 60px; text-align: left; margin-left: 8px;">
+                                                        @seatsInRow seats
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <div class="text-center mt-3">
+                                            <span class="badge bg-secondary fs-6">Legend:</span>
+                                            <span class="badge ms-2" style="background: @GetSeatColor(Sector.Type);">@Sector.Type.ToUpper() Seat</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="TogglePreview">
+                            Close Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public SectorOverlayData? Sector { get; set; }
+    [Parameter] public bool IsNewSector { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public Func<string, string, bool>? ValidateSectorCode { get; set; }
+
+    private Dictionary<string, string> ValidationErrors = new();
+    private int totalSeats = 0;
+    private List<StadiumDrinkOrdering.Shared.Models.RowPattern> rowPatterns = new();
+
+    protected override void OnParametersSet()
+    {
+        LoadRowPatterns();
+        UpdateTotalSeats();
+    }
+
+    private void LoadRowPatterns()
+    {
+        if (Sector != null && Sector.UseVariableSeating && !string.IsNullOrEmpty(Sector.VariableSeatingData))
+        {
+            try
+            {
+                rowPatterns = System.Text.Json.JsonSerializer.Deserialize<List<StadiumDrinkOrdering.Shared.Models.RowPattern>>(Sector.VariableSeatingData) ?? new();
+            }
+            catch
+            {
+                rowPatterns = new();
+            }
+        }
+        else
+        {
+            rowPatterns = new();
+        }
+    }
+
+    private void ToggleSeatingMode(bool useVariable)
+    {
+        if (Sector == null) return;
+
+        Sector.UseVariableSeating = useVariable;
+
+        if (useVariable && rowPatterns.Count == 0)
+        {
+            // Initialize with one pattern covering all rows
+            rowPatterns.Add(new StadiumDrinkOrdering.Shared.Models.RowPattern
+            {
+                FromRow = 1,
+                ToRow = Sector.Rows,
+                SeatsPerRow = Sector.SeatsPerRow
+            });
+        }
+
+        UpdateTotalSeats();
+        StateHasChanged();
+    }
+
+    private void AddRowPattern()
+    {
+        if (Sector == null) return;
+
+        // Find the next available row
+        int nextRow = 1;
+        if (rowPatterns.Count > 0)
+        {
+            nextRow = rowPatterns.Max(p => p.ToRow) + 1;
+        }
+
+        if (nextRow <= Sector.Rows)
+        {
+            rowPatterns.Add(new StadiumDrinkOrdering.Shared.Models.RowPattern
+            {
+                FromRow = nextRow,
+                ToRow = Math.Min(nextRow + 4, Sector.Rows), // Default 5 rows
+                SeatsPerRow = Sector.SeatsPerRow
+            });
+            UpdateTotalSeats();
+            StateHasChanged();
+        }
+    }
+
+    private void RemoveRowPattern(int index)
+    {
+        if (index >= 0 && index < rowPatterns.Count)
+        {
+            rowPatterns.RemoveAt(index);
+            UpdateTotalSeats();
+            StateHasChanged();
+        }
+    }
+
+    private void UpdateTotalSeats()
+    {
+        if (Sector == null) return;
+
+        if (Sector.UseVariableSeating)
+        {
+            // Calculate from row patterns
+            totalSeats = rowPatterns.Sum(p => (p.ToRow - p.FromRow + 1) * p.SeatsPerRow);
+
+            // Serialize patterns to JSON
+            Sector.VariableSeatingData = System.Text.Json.JsonSerializer.Serialize(rowPatterns);
+        }
+        else
+        {
+            // Uniform mode calculation
+            totalSeats = Sector.Rows * Sector.SeatsPerRow;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task SaveSector()
+    {
+        if (Sector == null) return;
+
+        // Clear previous errors
+        ValidationErrors.Clear();
+
+        // Validate required fields
+        if (string.IsNullOrWhiteSpace(Sector.SectorCode))
+        {
+            ValidationErrors[nameof(Sector.SectorCode)] = "Sector code is required";
+        }
+        else if (ValidateSectorCode != null && !ValidateSectorCode(Sector.Id, Sector.SectorCode))
+        {
+            ValidationErrors[nameof(Sector.SectorCode)] = "Sector code already exists";
+        }
+
+        if (string.IsNullOrWhiteSpace(Sector.Name))
+        {
+            ValidationErrors[nameof(Sector.Name)] = "Sector name is required";
+        }
+
+        if (Sector.Rows < 1 || Sector.Rows > 100)
+        {
+            ValidationErrors[nameof(Sector.Rows)] = "Rows must be between 1 and 100";
+        }
+
+        if (Sector.SeatsPerRow < 1 || Sector.SeatsPerRow > 200)
+        {
+            ValidationErrors[nameof(Sector.SeatsPerRow)] = "Seats per row must be between 1 and 200";
+        }
+
+        // If validation failed, return
+        if (ValidationErrors.Any())
+        {
+            StateHasChanged();
+            return;
+        }
+
+        // Update modified date
+        Sector.ModifiedDate = DateTime.UtcNow;
+
+        // Trigger save callback
+        await OnSave.InvokeAsync();
+    }
+
+    private async Task DeleteSector()
+    {
+        if (Sector == null) return;
+
+        // Confirm deletion
+        await OnDelete.InvokeAsync();
+    }
+
+    private async Task Cancel()
+    {
+        ValidationErrors.Clear();
+        await OnCancel.InvokeAsync();
+    }
+
+    // Preview modal state
+    private bool showPreview = false;
+
+    private void TogglePreview()
+    {
+        showPreview = !showPreview;
+        StateHasChanged();
+    }
+
+    private string GetSeatColor(string type)
+    {
+        return type.ToLower() switch
+        {
+            "vip" => "#ffd700",        // Gold
+            "premium" => "#6f42c1",    // Purple
+            "wheelchair" => "#28a745", // Green
+            "family" => "#fd7e14",     // Orange
+            "standard" => "#007bff",   // Blue
+            _ => "#007bff"             // Default blue
+        };
+    }
+
+    private int GetSeatsForRow(int rowNumber)
+    {
+        if (Sector == null || !Sector.UseVariableSeating || string.IsNullOrEmpty(Sector.VariableSeatingData))
+        {
+            return Sector?.SeatsPerRow ?? 20;
+        }
+
+        try
+        {
+            var patterns = System.Text.Json.JsonSerializer.Deserialize<List<StadiumDrinkOrdering.Shared.Models.RowPattern>>(Sector.VariableSeatingData);
+            if (patterns != null)
+            {
+                var pattern = patterns.FirstOrDefault(p => rowNumber >= p.FromRow && rowNumber <= p.ToRow);
+                if (pattern != null)
+                {
+                    return pattern.SeatsPerRow;
+                }
+            }
+        }
+        catch
+        {
+            // If deserialization fails, fall back to uniform seating
+        }
+
+        return Sector?.SeatsPerRow ?? 20;
+    }
+
+    // Data class for sector overlay (matches the one in StadiumDrawingTool)
+    public class SectorOverlayData
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string SectorCode { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public double TopPercent { get; set; }
+        public double LeftPercent { get; set; }
+        public double WidthPercent { get; set; }
+        public double HeightPercent { get; set; }
+        public string ShapeType { get; set; } = "rectangle";
+        public string ShapeData { get; set; } = string.Empty;
+        public int Rows { get; set; } = 10;
+        public int SeatsPerRow { get; set; } = 20;
+        public bool UseVariableSeating { get; set; } = false;
+        public string? VariableSeatingData { get; set; }
+        public int TotalSeats
+        {
+            get
+            {
+                if (UseVariableSeating && !string.IsNullOrEmpty(VariableSeatingData))
+                {
+                    try
+                    {
+                        var patterns = System.Text.Json.JsonSerializer.Deserialize<List<StadiumDrinkOrdering.Shared.Models.RowPattern>>(VariableSeatingData);
+                        return patterns?.Sum(p => (p.ToRow - p.FromRow + 1) * p.SeatsPerRow) ?? (Rows * SeatsPerRow);
+                    }
+                    catch
+                    {
+                        return Rows * SeatsPerRow;
+                    }
+                }
+                return Rows * SeatsPerRow;
+            }
+        }
+        public string Type { get; set; } = "standard";
+        public string Color { get; set; } = "#007bff";
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
+    }
+}

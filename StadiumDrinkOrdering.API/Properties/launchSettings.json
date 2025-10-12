@@ -17,7 +17,7 @@
       "applicationUrl": "https://localhost:7010",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ConnectionStrings__DefaultConnection": "Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Ssl Mode=Require;Trust Server Certificate=true;Command Timeout=300;Connection Lifetime=0;Connection Idle Lifetime=300;Include Error Detail=true"
+        "ConnectionStrings__DefaultConnection": "Host=aws-1-eu-north-1.pooler.supabase.com;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Port=5432;Ssl Mode=Require;Trust Server Certificate=true;Pooling=false;Command Timeout=30"
       }
     },
     "IIS Express": {
@@ -26,7 +26,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ConnectionStrings__DefaultConnection": "Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Ssl Mode=Require;Trust Server Certificate=true;Command Timeout=300;Connection Lifetime=0;Connection Idle Lifetime=300;Include Error Detail=true"
+        "ConnectionStrings__DefaultConnection": "Host=aws-1-eu-north-1.pooler.supabase.com;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Port=5432;Ssl Mode=Require;Trust Server Certificate=true;Pooling=false;Command Timeout=30"
       }
     }
   }

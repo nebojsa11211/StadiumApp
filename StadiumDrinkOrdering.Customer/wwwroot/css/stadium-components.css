@@ -1,0 +1,731 @@
+/* ============================================
+   STADIUM COMPONENTS - Feature Cards & More
+   ============================================ */
+
+/* Section Headers */
+.section-title {
+    font-family: var(--stadium-font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--stadium-gray-900);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+    font-size: 1.25rem;
+    color: var(--stadium-gray-600);
+    margin-bottom: 2rem;
+}
+
+/* Feature Cards */
+.feature-card {
+    background: white;
+    border-radius: var(--stadium-radius-lg);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid var(--stadium-gray-200);
+    box-shadow: var(--stadium-shadow-sm);
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--stadium-shadow-xl);
+    border-color: var(--stadium-primary);
+}
+
+.feature-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: var(--stadium-gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--stadium-gray-900);
+    margin-bottom: 1rem;
+}
+
+.feature-text {
+    font-size: 1rem;
+    color: var(--stadium-gray-600);
+    line-height: 1.6;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+    background: var(--stadium-gray-50);
+    padding: 4rem 2rem;
+    border-radius: var(--stadium-radius-xl);
+}
+
+.steps-list-styled {
+    list-style: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: white;
+    border-radius: var(--stadium-radius-lg);
+    box-shadow: var(--stadium-shadow);
+    transition: all 0.3s ease;
+}
+
+.step-item:hover {
+    transform: translateX(8px);
+    box-shadow: var(--stadium-shadow-md);
+}
+
+.step-number {
+    width: 48px;
+    height: 48px;
+    background: var(--stadium-gradient-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.step-text {
+    font-size: 1.125rem;
+    color: var(--stadium-gray-700);
+    flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .feature-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .feature-icon-wrapper {
+        width: 80px;
+        height: 80px;
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+    }
+}
+
+/* ============================================
+   STADIUM NAVIGATION - Concourse Style
+   ============================================ */
+
+.stadium-navbar {
+    background: var(--stadium-gray-900);
+    border-bottom: 4px solid var(--stadium-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0;
+}
+
+.stadium-nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+/* Stadium Branding */
+.stadium-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.stadium-brand:hover {
+    transform: scale(1.05);
+    color: white;
+    text-decoration: none;
+}
+
+.brand-icon {
+    font-size: 2.5rem;
+    animation: rotate-ball 8s linear infinite;
+}
+
+@keyframes rotate-ball {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.brand-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.brand-stadium {
+    font-family: var(--stadium-font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--stadium-primary);
+}
+
+.brand-services {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--stadium-accent);
+    text-transform: uppercase;
+}
+
+/* Desktop Navigation Items */
+.stadium-nav-items {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.stadium-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--stadium-radius);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 2px solid transparent;
+}
+
+.stadium-nav-link:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--stadium-primary);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+.stadium-nav-link.active {
+    background: var(--stadium-gradient-primary);
+    color: white;
+    border-color: var(--stadium-accent);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.nav-icon {
+    font-size: 1.25rem;
+}
+
+.nav-badge {
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.live-badge {
+    background: var(--stadium-danger);
+    color: white;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.hamburger-line {
+    width: 28px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Mobile Navigation Overlay */
+.mobile-nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-nav-overlay.collapsed {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.mobile-nav-overlay.expanded {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-nav-menu {
+    background: var(--stadium-gray-900);
+    border: 4px solid var(--stadium-primary);
+    border-radius: var(--stadium-radius-lg);
+    padding: 2rem;
+    min-width: 320px;
+    max-width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--stadium-primary);
+}
+
+.mobile-nav-title {
+    font-family: var(--stadium-font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--stadium-primary);
+    letter-spacing: 0.1em;
+}
+
+.mobile-nav-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+.mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--stadium-radius);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.125rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.mobile-nav-link:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--stadium-primary);
+    transform: translateX(8px);
+    color: white;
+    text-decoration: none;
+}
+
+.mobile-nav-link.active {
+    background: var(--stadium-gradient-primary);
+    border-color: var(--stadium-accent);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Responsive Navigation */
+@media (max-width: 768px) {
+    .stadium-nav-items {
+        display: none;
+    }
+
+    .mobile-menu-toggle {
+        display: flex;
+    }
+
+    .stadium-brand {
+        flex: 1;
+    }
+
+    .brand-stadium {
+        font-size: 1.25rem;
+    }
+
+    .brand-services {
+        font-size: 0.65rem;
+    }
+
+    .brand-icon {
+        font-size: 2rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-nav-overlay {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   MATCH FIXTURE CARDS - Events Page
+   ============================================ */
+
+.match-fixture-card {
+    background: white;
+    border-radius: var(--stadium-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--stadium-shadow);
+    transition: all 0.3s ease;
+    position: relative;
+    border: 2px solid transparent;
+}
+
+.match-fixture-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--stadium-shadow-xl);
+    border-color: var(--stadium-primary);
+}
+
+.venue-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(17, 24, 39, 0.9);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.match-header {
+    background: var(--stadium-gradient-primary);
+    color: white;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.match-date-block,
+.match-time-block {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1rem;
+    border-radius: var(--stadium-radius);
+    min-width: 80px;
+    backdrop-filter: blur(10px);
+}
+
+.match-month,
+.match-timezone {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.match-day,
+.match-time {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: var(--stadium-font-display);
+    line-height: 1;
+    margin-top: 0.25rem;
+}
+
+.match-info {
+    flex: 1;
+}
+
+.match-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+.match-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--stadium-accent);
+    color: var(--stadium-gray-900);
+}
+
+.match-type-badge.football {
+    background: var(--stadium-accent);
+    color: var(--stadium-gray-900);
+}
+
+.match-type-badge.concert {
+    background: var(--stadium-accent-orange);
+    color: white;
+}
+
+.match-type-badge.basketball {
+    background: var(--stadium-secondary);
+    color: white;
+}
+
+.match-pitch-details {
+    background: linear-gradient(to bottom,
+        var(--stadium-primary-light) 0%,
+        var(--stadium-primary) 50%,
+        var(--stadium-primary-dark) 100%);
+    padding: 1.5rem;
+}
+
+.pitch-line {
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detail-item {
+    text-align: center;
+    color: white;
+}
+
+.detail-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+}
+
+.detail-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--stadium-font-display);
+}
+
+.detail-value.price {
+    color: var(--stadium-accent);
+}
+
+.detail-value.high {
+    color: #ffffff;
+}
+
+.detail-value.medium {
+    color: var(--stadium-accent);
+}
+
+.detail-value.low {
+    color: var(--stadium-danger);
+}
+
+.stadium-capacity-bar {
+    position: relative;
+    height: 40px;
+    background: var(--stadium-gray-200);
+    overflow: hidden;
+}
+
+.capacity-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--stadium-primary) 0%, var(--stadium-accent) 100%);
+    transition: width 0.6s ease;
+}
+
+.capacity-text {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--stadium-gray-900);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.match-cta {
+    padding: 1.5rem;
+}
+
+.btn-get-tickets {
+    width: 100%;
+    background: var(--stadium-gradient-accent);
+    border: none;
+    color: var(--stadium-gray-900);
+    padding: 1.25rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--stadium-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+    cursor: pointer;
+}
+
+.btn-get-tickets:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(251, 191, 36, 0.6);
+}
+
+.btn-get-tickets .btn-arrow {
+    transition: transform 0.3s ease;
+}
+
+.btn-get-tickets:hover .btn-arrow {
+    transform: translateX(5px);
+}
+
+.btn-sold-out {
+    width: 100%;
+    background: var(--stadium-gray-400);
+    border: none;
+    color: white;
+    padding: 1.25rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--stadium-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    cursor: not-allowed;
+}
+
+.urgency-banner {
+    background: var(--stadium-danger);
+    color: white;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    animation: urgency-pulse 2s infinite;
+}
+
+@keyframes urgency-pulse {
+    0%, 100% { background: var(--stadium-danger); }
+    50% { background: #B91C1C; }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .match-header {
+        flex-wrap: wrap;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .match-date-block,
+    .match-time-block {
+        min-width: 70px;
+        padding: 0.75rem;
+    }
+
+    .match-day,
+    .match-time {
+        font-size: 1.5rem;
+    }
+
+    .match-title {
+        font-size: 1.25rem;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .detail-value {
+        font-size: 1.25rem;
+    }
+}

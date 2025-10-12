@@ -34,13 +34,12 @@ public class StadiumLayoutService : IStadiumLayoutService
     /// </summary>
     public async Task<StadiumSvgLayoutDto> GetStadiumLayoutAsync()
     {
-        _logger.LogInformation("GetStadiumLayoutAsync called - BYPASSING CACHE FOR DEBUG");
+        _logger.LogInformation("GetStadiumLayoutAsync called - using memory cache");
 
-        // TEMPORARY DEBUG: Bypass cache completely
-        // return await _cache.GetOrCreateAsync("stadium-svg-layout-v3", async entry =>
-        // {
-            _logger.LogInformation("BYPASSING CACHE - regenerating stadium SVG layout directly");
-            // entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15);
+        return await _cache.GetOrCreateAsync("stadium-svg-layout-v4-optimized", async entry =>
+        {
+            _logger.LogInformation("Cache miss - generating stadium SVG layout");
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15);
 
             try
             {
@@ -65,7 +64,7 @@ public class StadiumLayoutService : IStadiumLayoutService
                 _logger.LogError(ex, "Error generating stadium layout, falling back to default HNK Rijeka layout");
                 return await GenerateHNKRijekaLayoutAsync();
             }
-        // });
+        });
     }
 
     /// <summary>
@@ -129,27 +128,33 @@ public class StadiumLayoutService : IStadiumLayoutService
     /// </summary>
     public async Task RefreshLayoutCacheAsync()
     {
-        // Force clear all possible cache entries
+        // Force clear all possible cache entries (including old versions)
         _cache.Remove("stadium-svg-layout");
         _cache.Remove("stadium-svg-layout-v2");
         _cache.Remove("stadium-svg-layout-v3");
-        _logger.LogInformation("Stadium layout cache cleared");
+        _cache.Remove("stadium-svg-layout-v4-optimized");
+        _logger.LogInformation("Stadium layout cache cleared (all versions)");
 
         // Check current database state before regenerating
         var hasData = await HasStadiumDataAsync();
         _logger.LogInformation("Database has stadium data: {HasData}", hasData);
 
-        // DEBUG: Direct database query to see what's actually in Tribunes table
+        // DEBUG: Direct database query to see what's actually in Tribunes table (OPTIMIZED)
         try
         {
-            var allTribunes = await _context.Tribunes.Include(t => t.Rings).ThenInclude(r => r.Sectors).ToListAsync();
-            _logger.LogInformation("DIRECT DATABASE QUERY - Found {Count} total tribunes", allTribunes.Count);
+            var allTribunes = await _context.Tribunes
+                .AsNoTracking()
+                .Include(t => t.Rings)
+                    .ThenInclude(r => r.Sectors)
+                .ToListAsync();
+            _logger.LogInformation("DIRECT DATABASE QUERY (OPTIMIZED) - Found {Count} total tribunes", allTribunes.Count);
             foreach (var tribune in allTribunes)
             {
                 var ringCount = tribune.Rings?.Count ?? 0;
                 var sectorCount = tribune.Rings?.SelectMany(r => r.Sectors)?.Count() ?? 0;
-                _logger.LogInformation("DIRECT DATABASE QUERY - Tribune: Code={Code}, Name={Name}, Rings={RingCount}, Sectors={SectorCount}",
-                    tribune.Code, tribune.Name, ringCount, sectorCount);
+                var calculatedSeats = tribune.Rings?.SelectMany(r => r.Sectors)?.Sum(s => s.TotalRows * s.SeatsPerRow) ?? 0;
+                _logger.LogInformation("DIRECT DATABASE QUERY - Tribune: Code={Code}, Name={Name}, Rings={RingCount}, Sectors={SectorCount}, CalculatedSeats={CalculatedSeats}",
+                    tribune.Code, tribune.Name, ringCount, sectorCount, calculatedSeats);
             }
         }
         catch (Exception ex)
@@ -195,18 +200,21 @@ public class StadiumLayoutService : IStadiumLayoutService
 
     /// <summary>
     /// Get tribunes from database with full hierarchy (from imported Tribune/Ring/Sector structure)
+    /// OPTIMIZED: No seat loading - uses calculated counts from sector metadata
     /// </summary>
     private async Task<List<Tribune>> GetTribunesFromDatabaseAsync()
     {
         try
         {
-            _logger.LogInformation("Loading tribune structure from database");
+            _logger.LogInformation("Loading tribune structure from database (optimized - no seat loading)");
 
-            // Query the proper Tribune/Ring/Sector tables that the import actually uses
+            // PERFORMANCE OPTIMIZATION: Remove .ThenInclude(s => s.Seats) to avoid loading 80,000+ seat records
+            // We only need seat COUNTS, which we calculate from sector metadata (TotalRows × SeatsPerRow)
             var tribunes = await _context.Tribunes
+                .AsNoTracking()  // Read-only query - no change tracking overhead
                 .Include(t => t.Rings)
                     .ThenInclude(r => r.Sectors)
-                        .ThenInclude(s => s.Seats)
+                // REMOVED: .ThenInclude(s => s.Seats) - Don't load individual seats for overview!
                 .OrderBy(t => t.Code)
                 .ToListAsync();
 
@@ -218,22 +226,24 @@ public class StadiumLayoutService : IStadiumLayoutService
 
             _logger.LogInformation("Found {TribuneCount} tribunes from database", tribunes.Count);
 
-            // Debug: Log all tribune and sector details
+            // Debug: Log all tribune and sector details using CALCULATED seat counts
             foreach (var tribune in tribunes)
             {
                 var sectorCodes = tribune.Rings?.SelectMany(r => r.Sectors)?.Select(s => s.Code) ?? Enumerable.Empty<string>();
-                var seatCount = tribune.Rings?.SelectMany(r => r.Sectors)?.SelectMany(s => s.Seats)?.Count() ?? 0;
+                // OPTIMIZED: Calculate seat count from metadata instead of counting actual seat records
+                var calculatedSeatCount = tribune.Rings?.SelectMany(r => r.Sectors)?.Sum(s => s.TotalRows * s.SeatsPerRow) ?? 0;
 
-                _logger.LogInformation("Tribune {Code} ({Name}): {RingCount} rings, sectors: [{SectorCodes}], {SeatCount} seats",
+                _logger.LogInformation("Tribune {Code} ({Name}): {RingCount} rings, sectors: [{SectorCodes}], {CalculatedSeats} seats (calculated)",
                     tribune.Code, tribune.Name, tribune.Rings?.Count ?? 0,
-                    string.Join(", ", sectorCodes), seatCount);
+                    string.Join(", ", sectorCodes), calculatedSeatCount);
             }
 
             var totalSectors = tribunes.SelectMany(t => t.Rings).SelectMany(r => r.Sectors).Count();
-            var totalSeats = tribunes.SelectMany(t => t.Rings).SelectMany(r => r.Sectors).SelectMany(s => s.Seats).Count();
+            // OPTIMIZED: Calculate total seats from sector metadata (TotalRows × SeatsPerRow)
+            var totalCalculatedSeats = tribunes.SelectMany(t => t.Rings).SelectMany(r => r.Sectors).Sum(s => s.TotalRows * s.SeatsPerRow);
 
-            _logger.LogInformation("Loaded tribune structure: {TribuneCount} tribunes, {SectorCount} total sectors, {SeatCount} total seats",
-                tribunes.Count, totalSectors, totalSeats);
+            _logger.LogInformation("Loaded tribune structure (OPTIMIZED): {TribuneCount} tribunes, {SectorCount} total sectors, {CalculatedSeats} calculated seats",
+                tribunes.Count, totalSectors, totalCalculatedSeats);
 
             return tribunes;
         }

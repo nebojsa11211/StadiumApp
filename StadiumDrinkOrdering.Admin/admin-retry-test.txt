@@ -1,0 +1,187 @@
+Using launch settings from D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Properties\launchSettings.json...
+Building...
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\HybridTokenStorageService.cs(544,24): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\HybridTokenStorageService.cs(552,24): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\DataGrid.razor.cs(429,36): warning CS8604: Possible null reference argument for parameter 'message' in 'void DataGrid.ShowToast(string title, string message, string icon, string type)'. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\SignalRService.cs(56,53): warning CS8619: Nullability of reference types in value of type 'Task<string>' doesn't match target type 'Task<string?>'. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StadiumOverview.razor.cs(242,24): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StructureImportHelp.razor.cs(98,41): warning CS8602: Dereference of a possibly null reference. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StructureImportHelp.razor.cs(114,46): warning CS8602: Dereference of a possibly null reference. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StructureImportHelp.razor.cs(127,56): warning CS8602: Dereference of a possibly null reference. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Pages\StructureImportHelp.razor.cs(156,34): warning CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<RingDto> Enumerable.SelectMany<TribuneDto, RingDto>(IEnumerable<TribuneDto> source, Func<TribuneDto, IEnumerable<RingDto>> selector)'. [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\HybridTokenStorageService.cs(88,26): warning CS0067: The event 'HybridTokenStorageService.OnRefreshTokenExpired' is never used [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\Services\TokenStorageService.cs(74,26): warning CS0067: The event 'TokenStorageService.OnRefreshTokenExpired' is never used [D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin\StadiumDrinkOrdering.Admin.csproj]
+=== ADMIN PROGRAM START ===
+DOTNET_RUNNING_IN_CONTAINER: 
+ASPNETCORE_URLS: https://localhost:7030
+Container environment check: '' == 'true' = False
+💻 Local development mode - using default configuration
+✅ Registered specialized Admin API services:
+   - OrderService: Order management operations
+   - UserService: User management operations
+   - DrinkService: Drink catalog operations
+   - TicketService: Ticket validation operations
+   - AuthService: Authentication operations
+   - LogService: Logging and audit operations
+   - AnalyticsService: Customer analytics operations
+   - StadiumService: Stadium structure operations
+   - EventService: Event management operations
+   - HttpService: Generic HTTP operations
+   - AdminApiService: Composite service (backward compatibility)
+✅ Registered comprehensive Admin Service Layer:
+   - AdminCacheService (Scoped): Centralized caching with intelligent invalidation
+   - AdminDashboardService (Scoped): Consolidated dashboard data with 30s caching
+   - AdminOrderService (Scoped): Advanced order management with filtering & bulk ops
+   - AdminUserService (Scoped): User management with role-based access control
+   - AdminAnalyticsService (Scoped): Analytics with forecasting & insights
+   - AdminNotificationService (Singleton): Real-time notifications with SignalR
+info: StadiumDrinkOrdering.Shared.Authentication.Services.BackgroundTokenRefreshService[0]
+      Background token refresh service started
+⚠️ SSL certificate validation bypassed for development
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://localhost:7030
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.Admin
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: False
+AuthStateService: No token found - setting unauthenticated state
+AuthStateService: Initialization complete - IsAuthenticated: False
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+⚠️ SSL certificate validation bypassed for development
+AuthStateService already initialized - IsAuthenticated: False
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[100]
+      Start processing HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[100]
+      Sending HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[101]
+      Received HTTP response headers after 1258.3988ms - 200
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[101]
+      End processing HTTP request after 1270.423ms - 200
+Login response received: Token=eyJhbGciOi..., ExpiresAt=06. 10. 2025. 21:10:18
+AuthResult created with ExpiresAt: 06. 10. 2025. 21:10:18
+Login successful for admin@stadium.com, navigating...
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: True
+AuthStateService: Token valid: True
+AuthStateService: Authentication state updated - IsAuthenticated: True, Email: admin@stadium.com
+AuthStateService: Initialization complete - IsAuthenticated: True
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Loading sectors from API: https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+warn: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Drawing canvas JS not ready yet, retry 1/10
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Drawing canvas initialized successfully
+info: System.Net.Http.HttpClient.Default.ClientHandler[101]
+      Received HTTP response headers after 843.6598ms - 200
+info: System.Net.Http.HttpClient.Default.LogicalHandler[101]
+      End processing HTTP request after 843.7953ms - 200
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      API Response Status: OK
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Deserialized 2 sectors from API
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      ✅ Loaded 2 sectors from database
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Drawing 2 sectors on canvas
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3799.2974ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3803.7541ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3500.0413ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3500.4442ms - 200
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: False
+AuthStateService: No token found - setting unauthenticated state
+AuthStateService: Initialization complete - IsAuthenticated: False
+AuthStateService already initialized - IsAuthenticated: False
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[100]
+      Start processing HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[100]
+      Sending HTTP request POST https://localhost:7010/Auth/login
+info: System.Net.Http.HttpClient.ApiClient.ClientHandler[101]
+      Received HTTP response headers after 1124.3617ms - 200
+info: System.Net.Http.HttpClient.ApiClient.LogicalHandler[101]
+      End processing HTTP request after 1124.5004ms - 200
+Login response received: Token=eyJhbGciOi..., ExpiresAt=06. 10. 2025. 21:10:54
+AuthResult created with ExpiresAt: 06. 10. 2025. 21:10:54
+Login successful for admin@stadium.com, navigating...
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+AuthStateService: Starting initialization...
+AuthStateService: Retrieved token info - Token present: True
+AuthStateService: Token valid: True
+AuthStateService: Authentication state updated - IsAuthenticated: True, Email: admin@stadium.com
+AuthStateService: Initialization complete - IsAuthenticated: True
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Loading sectors from API: https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+info: System.Net.Http.HttpClient.Default.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/api/StadiumSectorOverlay
+warn: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Drawing canvas JS not ready yet, retry 1/10
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Drawing canvas initialized successfully
+info: System.Net.Http.HttpClient.Default.ClientHandler[101]
+      Received HTTP response headers after 743.3297ms - 200
+info: System.Net.Http.HttpClient.Default.LogicalHandler[101]
+      End processing HTTP request after 743.4389ms - 200
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      API Response Status: OK
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Deserialized 2 sectors from API
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      ✅ Loaded 2 sectors from database
+info: StadiumDrinkOrdering.Admin.Pages.StadiumDrawingTool[0]
+      Drawing 2 sectors on canvas
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3433.5151ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3434.0688ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+⚠️ SSL certificate validation bypassed for development
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3484.5799ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3485.0439ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[100]
+      Start processing HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[100]
+      Sending HTTP request GET https://localhost:7010/orders
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3418.0731ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3418.6438ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.ClientHandler[101]
+      Received HTTP response headers after 3406.7279ms - 200
+info: System.Net.Http.HttpClient.AuthenticatedClient.LogicalHandler[101]
+      End processing HTTP request after 3407.1241ms - 200

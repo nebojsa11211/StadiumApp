@@ -27,8 +27,8 @@ public class DatabaseHealthCheck : IHealthCheck
         {
             _logger.LogDebug("Performing database health check");
 
-            // Test basic connectivity with timeout
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            // Test basic connectivity with adequate timeout for Supabase
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(
                 cancellationToken, timeoutCts.Token);
 

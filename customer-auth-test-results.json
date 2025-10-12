@@ -1,0 +1,306 @@
+{
+  "config": {
+    "configFile": "D:\\AiApps\\StadiumApp\\StadiumApp\\playwright.customer-auth-test.config.ts",
+    "rootDir": "D:/AiApps/StadiumApp/StadiumApp/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report-customer-auth",
+          "open": "never"
+        }
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "customer-auth-test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "D:/AiApps/StadiumApp/StadiumApp/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/AiApps/StadiumApp/StadiumApp/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/customer-login-auth-state-verification.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "customer-login-auth-state-verification.spec.ts",
+      "file": "customer-login-auth-state-verification.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Customer Login Authentication State Verification",
+          "file": "customer-login-auth-state-verification.spec.ts",
+          "line": 17,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should verify authenticated UI state after login without page reload",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 9943,
+                      "error": {
+                        "message": "Error: Profile link should be visible in dropdown\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: Profile link should be visible in dropdown\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\customer-login-auth-state-verification.spec.ts:229:55",
+                        "location": {
+                          "file": "D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\customer-login-auth-state-verification.spec.ts",
+                          "column": 55,
+                          "line": 229
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 227 |\u001b[39m\n \u001b[90m 228 |\u001b[39m       expect(verificationResults\u001b[33m.\u001b[39mprofileLinkVisible\u001b[33m,\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 229 |\u001b[39m         \u001b[32m'Profile link should be visible in dropdown'\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 230 |\u001b[39m\n \u001b[90m 231 |\u001b[39m       expect(verificationResults\u001b[33m.\u001b[39mordersLinkVisible\u001b[33m,\u001b[39m\n \u001b[90m 232 |\u001b[39m         \u001b[32m'Orders link should be visible in dropdown'\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\customer-login-auth-state-verification.spec.ts",
+                            "column": 55,
+                            "line": 229
+                          },
+                          "message": "Error: Profile link should be visible in dropdown\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  227 |\n  228 |       expect(verificationResults.profileLinkVisible,\n> 229 |         'Profile link should be visible in dropdown').toBe(true);\n      |                                                       ^\n  230 |\n  231 |       expect(verificationResults.ordersLinkVisible,\n  232 |         'Orders link should be visible in dropdown').toBe(true);\n    at D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\customer-login-auth-state-verification.spec.ts:229:55"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n=== STEP 1: Navigate to Login Page ===\n"
+                        },
+                        {
+                          "text": "✓ Login page loaded: PASS\n"
+                        },
+                        {
+                          "text": "\n=== STEP 2: Fill Login Form ===\n"
+                        },
+                        {
+                          "text": "✓ Email filled: customer@stadium.com\n"
+                        },
+                        {
+                          "text": "✓ Password filled: customer123\n"
+                        },
+                        {
+                          "text": "\n=== STEP 3: Click Login Button ===\n"
+                        },
+                        {
+                          "text": "✓ Login button clicked\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for navigation to complete...\n"
+                        },
+                        {
+                          "text": "✓ Navigation completed: PASS\n"
+                        },
+                        {
+                          "text": "\n=== STEP 4: Verify Authenticated UI State ===\n"
+                        },
+                        {
+                          "text": "✓ User dropdown visible: PASS ✅\n"
+                        },
+                        {
+                          "text": "✓ Sign In button hidden: PASS ✅\n"
+                        },
+                        {
+                          "text": "✓ Sign Up button hidden: PASS ✅\n"
+                        },
+                        {
+                          "text": "\n=== STEP 5: Verify User Dropdown Contents ===\n"
+                        },
+                        {
+                          "text": "✓ User dropdown menu opened: PASS\n"
+                        },
+                        {
+                          "text": "✗ Profile link visible: FAIL ❌\n"
+                        },
+                        {
+                          "text": "✗ Orders link visible: FAIL ❌\n"
+                        },
+                        {
+                          "text": "✗ Logout button visible: FAIL ❌\n"
+                        },
+                        {
+                          "text": "\n=== STEP 6: Print Test Summary ===\n"
+                        },
+                        {
+                          "text": "\n╔═══════════════════════════════════════════════════════════╗\n"
+                        },
+                        {
+                          "text": "║       AUTHENTICATION STATE VERIFICATION RESULTS           ║\n"
+                        },
+                        {
+                          "text": "╠═══════════════════════════════════════════════════════════╣\n"
+                        },
+                        {
+                          "text": "║  Login Page Loaded                  : ✅ PASS  ║\n"
+                        },
+                        {
+                          "text": "║  Form Filled Successfully           : ✅ PASS  ║\n"
+                        },
+                        {
+                          "text": "║  Login Button Clicked               : ✅ PASS  ║\n"
+                        },
+                        {
+                          "text": "║  Navigation Completed               : ✅ PASS  ║\n"
+                        },
+                        {
+                          "text": "║  User Dropdown Visible              : ✅ PASS  ║\n"
+                        },
+                        {
+                          "text": "║  Sign In Button Hidden              : ✅ PASS  ║\n"
+                        },
+                        {
+                          "text": "║  Sign Up Button Hidden              : ✅ PASS  ║\n"
+                        },
+                        {
+                          "text": "║  Dropdown Menu Opens                : ✅ PASS  ║\n"
+                        },
+                        {
+                          "text": "║  Profile Link Visible               : ❌ FAIL  ║\n"
+                        },
+                        {
+                          "text": "║  Orders Link Visible                : ❌ FAIL  ║\n"
+                        },
+                        {
+                          "text": "║  Logout Button Visible              : ❌ FAIL  ║\n"
+                        },
+                        {
+                          "text": "╠═══════════════════════════════════════════════════════════╣\n"
+                        },
+                        {
+                          "text": "║  OVERALL RESULTS: 8/11 checks passed (73%)           ║\n"
+                        },
+                        {
+                          "text": "╠═══════════════════════════════════════════════════════════╣\n"
+                        },
+                        {
+                          "text": "║  Screenshots Captured:                                    ║\n"
+                        },
+                        {
+                          "text": "║    1. customer-auth-test-01-login-page.png              ║\n"
+                        },
+                        {
+                          "text": "║    2. customer-auth-test-02-form-filled.png             ║\n"
+                        },
+                        {
+                          "text": "║    3. customer-auth-test-03-after-login.png             ║\n"
+                        },
+                        {
+                          "text": "║    4. customer-auth-test-04-dropdown-open.png           ║\n"
+                        },
+                        {
+                          "text": "║    5. customer-auth-test-05-final-state.png             ║\n"
+                        },
+                        {
+                          "text": "╚═══════════════════════════════════════════════════════════╝\n\n"
+                        },
+                        {
+                          "text": "\n=== CRITICAL ASSERTIONS ===\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-06T23:14:52.037Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "D:\\AiApps\\StadiumApp\\StadiumApp\\test-results\\customer-login-auth-state--0b662-r-login-without-page-reload-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "D:\\AiApps\\StadiumApp\\StadiumApp\\test-results\\customer-login-auth-state--0b662-r-login-without-page-reload-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\AiApps\\StadiumApp\\StadiumApp\\test-results\\customer-login-auth-state--0b662-r-login-without-page-reload-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "D:\\AiApps\\StadiumApp\\StadiumApp\\test-results\\customer-login-auth-state--0b662-r-login-without-page-reload-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\customer-login-auth-state-verification.spec.ts",
+                        "column": 55,
+                        "line": 229
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "c6a66045205ad63f4d50-4c0c3a60c9c2ca91d542",
+              "file": "customer-login-auth-state-verification.spec.ts",
+              "line": 20,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-06T23:14:50.919Z",
+    "duration": 12474.895,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

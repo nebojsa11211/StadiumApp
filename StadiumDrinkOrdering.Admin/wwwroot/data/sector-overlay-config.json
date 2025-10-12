@@ -1,0 +1,187 @@
+{
+  "stadiumName": "NK Osijek Stadium",
+  "imageWidth": 1170,
+  "imageHeight": 898,
+  "sectorOverlays": [
+    {
+      "sectorCode": "A1",
+      "name": "Tribune A1",
+      "topPercent": 7,
+      "leftPercent": 23,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "A2",
+      "name": "Tribune A2",
+      "topPercent": 7,
+      "leftPercent": 33.5,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "A3",
+      "name": "Tribune A3",
+      "topPercent": 7,
+      "leftPercent": 44,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "VIP",
+      "name": "VIP Skybox",
+      "topPercent": 7,
+      "leftPercent": 54.5,
+      "widthPercent": 14,
+      "heightPercent": 18,
+      "type": "vip"
+    },
+    {
+      "sectorCode": "A4",
+      "name": "Tribune A4",
+      "topPercent": 7,
+      "leftPercent": 69,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "A5",
+      "name": "Tribune A5",
+      "topPercent": 7,
+      "leftPercent": 79.5,
+      "widthPercent": 9,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "A6",
+      "name": "Tribune A6",
+      "topPercent": 7,
+      "leftPercent": 89,
+      "widthPercent": 9,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "Y1",
+      "name": "Yellow Tribune Y1",
+      "topPercent": 26,
+      "leftPercent": 2,
+      "widthPercent": 12,
+      "heightPercent": 14,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "Y2",
+      "name": "Yellow Tribune Y2",
+      "topPercent": 40.5,
+      "leftPercent": 2,
+      "widthPercent": 12,
+      "heightPercent": 14,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "Y3",
+      "name": "Yellow Tribune Y3",
+      "topPercent": 55,
+      "leftPercent": 2,
+      "widthPercent": 12,
+      "heightPercent": 14,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "B1",
+      "name": "Tribune B1",
+      "topPercent": 26,
+      "leftPercent": 87,
+      "widthPercent": 11,
+      "heightPercent": 14,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "B2",
+      "name": "Tribune B2",
+      "topPercent": 40.5,
+      "leftPercent": 87,
+      "widthPercent": 11,
+      "heightPercent": 14,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "B3",
+      "name": "Tribune B3",
+      "topPercent": 55,
+      "leftPercent": 87,
+      "widthPercent": 11,
+      "heightPercent": 14,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "B4",
+      "name": "Tribune B4",
+      "topPercent": 69.5,
+      "leftPercent": 87,
+      "widthPercent": 11,
+      "heightPercent": 14,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "C1",
+      "name": "Tribune C1",
+      "topPercent": 76,
+      "leftPercent": 79,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "C2",
+      "name": "Tribune C2",
+      "topPercent": 76,
+      "leftPercent": 68.5,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "C3",
+      "name": "Tribune C3",
+      "topPercent": 76,
+      "leftPercent": 58,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "C4",
+      "name": "Tribune C4",
+      "topPercent": 76,
+      "leftPercent": 47.5,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "C5",
+      "name": "Tribune C5",
+      "topPercent": 76,
+      "leftPercent": 37,
+      "widthPercent": 10,
+      "heightPercent": 18,
+      "type": "standard"
+    },
+    {
+      "sectorCode": "C6",
+      "name": "Tribune C6",
+      "topPercent": 76,
+      "leftPercent": 23.5,
+      "widthPercent": 13,
+      "heightPercent": 18,
+      "type": "standard"
+    }
+  ]
+}

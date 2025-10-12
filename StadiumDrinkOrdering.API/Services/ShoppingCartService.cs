@@ -305,27 +305,60 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task CleanupExpiredReservationsAsync()
     {
-        try
+        const int maxRetries = 3;
+        var retryDelay = TimeSpan.FromSeconds(2);
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
-            var expiredReservations = await _context.SeatReservations
-                .Where(r => r.Status == ReservationStatus.Active && r.ReservedUntil <= DateTime.UtcNow)
-                .ToListAsync();
-
-            foreach (var reservation in expiredReservations)
+            try
             {
-                reservation.Status = ReservationStatus.Expired;
-            }
+                // Use AsNoTracking for read operations to avoid tracking issues
+                var expiredReservations = await _context.SeatReservations
+                    .AsNoTracking()
+                    .Where(r => r.Status == ReservationStatus.Active && r.ReservedUntil <= DateTime.UtcNow)
+                    .Select(r => r.Id)
+                    .ToListAsync();
 
-            if (expiredReservations.Any())
-            {
-                await _context.SaveChangesAsync();
+                if (!expiredReservations.Any())
+                {
+                    return; // No expired reservations to clean up
+                }
+
+                // Update in batches to avoid long-running transactions
+                const int batchSize = 100;
+                for (int i = 0; i < expiredReservations.Count; i += batchSize)
+                {
+                    var batch = expiredReservations.Skip(i).Take(batchSize).ToList();
+
+                    // Use ExecuteUpdateAsync for better performance and to avoid loading entities
+                    await _context.SeatReservations
+                        .Where(r => batch.Contains(r.Id))
+                        .ExecuteUpdateAsync(s => s.SetProperty(r => r.Status, ReservationStatus.Expired));
+                }
+
                 _logger.LogInformation("Cleaned up {Count} expired seat reservations", expiredReservations.Count);
+                return; // Success, exit the method
+            }
+            catch (Npgsql.NpgsqlException ex) when (ex.InnerException is IOException || attempt < maxRetries)
+            {
+                _logger.LogWarning(ex, "Database connection error during cleanup (attempt {Attempt}/{MaxRetries}). Retrying...", attempt, maxRetries);
+                await Task.Delay(retryDelay);
+                retryDelay = TimeSpan.FromSeconds(retryDelay.TotalSeconds * 2); // Exponential backoff
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("transient failure") && attempt < maxRetries)
+            {
+                _logger.LogWarning(ex, "Transient database error during cleanup (attempt {Attempt}/{MaxRetries}). Retrying...", attempt, maxRetries);
+                await Task.Delay(retryDelay);
+                retryDelay = TimeSpan.FromSeconds(retryDelay.TotalSeconds * 2); // Exponential backoff
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error cleaning up expired reservations after {Attempts} attempts", attempt);
+                throw; // Rethrow unexpected exceptions
             }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error cleaning up expired reservations");
-        }
+
+        _logger.LogError("Failed to clean up expired reservations after {MaxRetries} attempts", maxRetries);
     }
 
     public async Task<decimal> CalculateCartTotalAsync(string sessionId)

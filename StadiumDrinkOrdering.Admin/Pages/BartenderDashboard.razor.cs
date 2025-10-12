@@ -337,9 +337,22 @@ public partial class BartenderDashboard : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        SignalRService.NewOrder -= OnNewOrder;
-        SignalRService.OrderUpdated -= OnOrderUpdated;
-        SignalRService.OrderStatusChanged -= OnOrderStatusChanged;
-        _ = SignalRService.StopAsync();
+        try
+        {
+            SignalRService.NewOrder -= OnNewOrder;
+            SignalRService.OrderUpdated -= OnOrderUpdated;
+            SignalRService.OrderStatusChanged -= OnOrderStatusChanged;
+            _ = SignalRService.StopAsync();
+        }
+        catch (ObjectDisposedException)
+        {
+            // SignalR service may already be disposed, safe to ignore
+            // This happens during normal application shutdown
+        }
+        catch (Exception)
+        {
+            // Any other disposal exceptions should be ignored
+            // This prevents disposal issues from propagating
+        }
     }
 }

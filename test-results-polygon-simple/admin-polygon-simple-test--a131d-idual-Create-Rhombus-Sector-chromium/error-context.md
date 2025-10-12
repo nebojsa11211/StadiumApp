@@ -1,0 +1,134 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - link "⚡ Stadium Admin" [ref=e6] [cursor=pointer]:
+      - /url: ""
+    - navigation [ref=e8]:
+      - link "Dashboard" [ref=e10] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e11] [cursor=pointer]: 
+        - text: Dashboard
+      - link "Orders" [ref=e13] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e14] [cursor=pointer]: 
+        - text: Orders
+      - link "Drinks" [ref=e16] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e17] [cursor=pointer]: 
+        - text: Drinks
+      - link "Analytics" [ref=e19] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e20] [cursor=pointer]: 
+        - text: Analytics
+      - link "Customer Analytics" [ref=e22] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e23] [cursor=pointer]: 
+        - text: Customer Analytics
+      - link "Events" [ref=e25] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e26] [cursor=pointer]: 
+        - text: Events
+      - link "Tickets" [ref=e28] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e29] [cursor=pointer]: 
+        - text: Tickets
+      - link "Bartender Dashboard" [ref=e31] [cursor=pointer]:
+        - /url: bartender
+        - generic [ref=e32] [cursor=pointer]: 
+        - text: Bartender Dashboard
+      - generic [ref=e35]: STADIUM MANAGEMENT
+      - link "Structure Management" [ref=e37] [cursor=pointer]:
+        - /url: admin/stadium-structure
+        - generic [ref=e38] [cursor=pointer]: 
+        - text: Structure Management
+      - link "Stadium Overview" [ref=e40] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e41] [cursor=pointer]: 
+        - text: Stadium Overview
+      - link "Import Guide" [ref=e43] [cursor=pointer]:
+        - /url: admin/structure-help
+      - link "Drawing Tool" [ref=e45] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e46] [cursor=pointer]: 
+        - text: Drawing Tool
+      - generic [ref=e49]: SYSTEM MANAGEMENT
+      - link "User Management" [ref=e51] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e52] [cursor=pointer]: 
+        - text: User Management
+      - link "System Logs" [ref=e54] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e55] [cursor=pointer]: 
+        - text: System Logs
+      - link "Database Explorer" [ref=e57] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e58] [cursor=pointer]: 
+        - text: Database Explorer
+  - main [ref=e59]:
+    - generic [ref=e61]:
+      - generic [ref=e62]:
+        - heading "Admin Dashboard" [level=6] [ref=e63]
+        - generic [ref=e67]:
+          - generic [ref=e68]: Server Time
+          - generic [ref=e69]: 20:02:52 06/10/25
+      - generic [ref=e71]:
+        - combobox [ref=e73]:
+          - option "Hrvatski" [selected]
+          - option "English"
+        - generic [ref=e74]:
+          - generic [ref=e76]: 👤 admin@stadium.com
+          - button "Logout" [ref=e77] [cursor=pointer]: Logout
+        - link "Help" [ref=e78] [cursor=pointer]:
+          - /url: https://docs.microsoft.com/aspnet/
+    - article [ref=e79]:
+      - generic [ref=e80]:
+        - generic [ref=e82]:
+          - heading "🎨 Stadium Drawing Tool" [level=1] [ref=e83]
+          - paragraph [ref=e84]: Draw layers over your stadium picture to create zone overlays, annotations, and custom layouts.
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - heading "📷 Stadium Image" [level=5] [ref=e89]
+              - generic [ref=e91]:
+                - generic [ref=e92]:
+                  - generic [ref=e93]: ✅ Stadium blueprint loaded
+                  - button "Clear" [ref=e94] [cursor=pointer]
+                - button "Choose File" [ref=e95] [cursor=pointer]
+                - generic [ref=e96]: Upload a different image if needed
+            - generic [ref=e97]:
+              - heading "🖌️ Drawing Tools" [level=5] [ref=e99]
+              - generic [ref=e100]:
+                - group [ref=e101]:
+                  - button "✏️ Pen" [ref=e102] [cursor=pointer]
+                  - button "◻️ Rectangle" [ref=e103] [cursor=pointer]
+                  - button "⭕ Circle" [ref=e104] [cursor=pointer]
+                  - button "➖ Line" [ref=e105] [cursor=pointer]
+                  - button "🧹 Eraser" [ref=e106] [cursor=pointer]
+                  - button "👆 Select/Move" [ref=e107] [cursor=pointer]
+                - generic [ref=e108]:
+                  - heading "🎯 Sector Tools" [level=6] [ref=e109]
+                  - group [ref=e110]:
+                    - button "➕ Create Sector (Rhombus)" [ref=e111] [cursor=pointer]
+                  - generic [ref=e112]: Click 4 points to create a rhombus sector
+                - generic [ref=e113]:
+                  - generic [ref=e114]: Color
+                  - textbox "Color" [ref=e115] [cursor=pointer]: "#ff0000"
+                - generic [ref=e116]:
+                  - generic [ref=e117]: "Line Width: 3 px"
+                  - 'slider "Line Width: 3 px" [ref=e118]': "3"
+                - generic [ref=e119]:
+                  - generic [ref=e120]: "Opacity: 70%"
+                  - 'slider "Opacity: 70%" [ref=e121]': "0.6"
+            - generic [ref=e123]:
+              - button "🗑️ Clear Current Layer" [ref=e124] [cursor=pointer]
+              - button "💾 Export Drawing" [ref=e125] [cursor=pointer]
+              - button "📄 Export JSON" [ref=e126] [cursor=pointer]
+              - button "💾 Save Sector Layout" [ref=e127] [cursor=pointer]
+          - generic [ref=e134]:
+            - text: "Current Tool:"
+            - strong [ref=e135]: CreateSector
+            - text: "| Current Layer:"
+            - strong [ref=e136]: Layer 1
+```

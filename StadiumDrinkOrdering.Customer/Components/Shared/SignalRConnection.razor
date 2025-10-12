@@ -2,21 +2,14 @@
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
-<div class="connection-status @(_connectionStatus.ToLower())" title="Connection: @_connectionStatus">
-    @if (_connectionStatus == "Connected")
-    {
+@* Connection status hidden - SignalR is optional for customer app *@
+@if (_connectionStatus == "Connected")
+{
+    <div class="connection-status @(_connectionStatus.ToLower())" title="Connection: @_connectionStatus">
         <span class="connection-indicator connected"></span>
-    }
-    else if (_connectionStatus == "Connecting" || _connectionStatus == "Reconnecting")
-    {
-        <span class="connection-indicator connecting"></span>
-    }
-    else
-    {
-        <span class="connection-indicator disconnected"></span>
-    }
-    <span class="connection-text d-none d-md-inline">@_connectionStatus</span>
-</div>
+        <span class="connection-text d-none d-md-inline">@_connectionStatus</span>
+    </div>
+}
 
 @code {
     private HubConnection? hubConnection;

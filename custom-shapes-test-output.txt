@@ -1,0 +1,64 @@
+
+Running 1 test using 1 worker
+
+
+==============================================
+CUSTOM SHAPES VISIBILITY VERIFICATION
+==============================================
+
+📊 Fetching sector data from API...
+✓ Found 13 sectors in database
+
+📐 Shape Type Distribution:
+  rectangle: 4 sector(s)
+  triangle: 4 sector(s)
+  rhombus: 3 sector(s)
+
+🏟️ Navigating to Stadium Overview...
+SVG Overlay Present: ✅ YES
+
+✓ Rendered sector groups: 4
+  x  1 [chromium] › tests\verify-custom-shapes-visible.spec.ts:15:7 › Verify Custom Shapes Visible in Stadium Overview › Verify all sector shapes render correctly (12.7s)
+
+
+  1) [chromium] › tests\verify-custom-shapes-visible.spec.ts:15:7 › Verify Custom Shapes Visible in Stadium Overview › Verify all sector shapes render correctly 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m13[39m
+    Received: [31m4[39m
+
+      69 |     console.log(`\n✓ Rendered sector groups: ${renderedCount}`);
+      70 |
+    > 71 |     expect(renderedCount).toBe(sectors.length);
+         |                           ^
+      72 |
+      73 |     // ==================== SHAPE-BY-SHAPE VERIFICATION ====================
+      74 |     console.log('\n📋 Verifying Individual Shapes:\n');
+        at D:\AiApps\StadiumApp\StadiumApp\tests\verify-custom-shapes-visible.spec.ts:71:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-alignment\verify-custom-shapes-visib-6b63d-tor-shapes-render-correctly-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results-alignment\verify-custom-shapes-visib-6b63d-tor-shapes-render-correctly-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-alignment\verify-custom-shapes-visib-6b63d-tor-shapes-render-correctly-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results-alignment\verify-custom-shapes-visib-6b63d-tor-shapes-render-correctly-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results-alignment\verify-custom-shapes-visib-6b63d-tor-shapes-render-correctly-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\verify-custom-shapes-visible.spec.ts:15:7 › Verify Custom Shapes Visible in Stadium Overview › Verify all sector shapes render correctly 
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report playwright-report-alignment[39m
+[36m[39m

@@ -1,0 +1,248 @@
+{
+  "config": {
+    "configFile": "D:\\AiApps\\StadiumApp\\StadiumApp\\playwright.complete-polygon.config.ts",
+    "rootDir": "D:/AiApps/StadiumApp/StadiumApp/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report-complete-polygon"
+        }
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results-complete-polygon/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "D:/AiApps/StadiumApp/StadiumApp/test-results-complete-polygon",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/AiApps/StadiumApp/StadiumApp/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/admin-complete-polygon-test.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "admin-complete-polygon-test.spec.ts",
+      "file": "admin-complete-polygon-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Complete Polygon Shape Creation & Persistence Tests",
+          "file": "admin-complete-polygon-test.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Complete polygon shape creation and database persistence",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 37190,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#sector-edit-modal') to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#sector-edit-modal') to be visible\u001b[22m\n\n    at D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\admin-complete-polygon-test.spec.ts:177:16",
+                        "location": {
+                          "file": "D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\admin-complete-polygon-test.spec.ts",
+                          "column": 16,
+                          "line": 177
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 175 |\u001b[39m\n \u001b[90m 176 |\u001b[39m     \u001b[90m// Wait for modal\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 177 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#sector-edit-modal'\u001b[39m\u001b[33m,\u001b[39m { state\u001b[33m:\u001b[39m \u001b[32m'visible'\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 178 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m'✓ Modal appeared after 4th click'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 179 |\u001b[39m\n \u001b[90m 180 |\u001b[39m     \u001b[90m// Fill rhombus form\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\admin-complete-polygon-test.spec.ts",
+                            "column": 16,
+                            "line": 177
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#sector-edit-modal') to be visible\u001b[22m\n\n\n  175 |\n  176 |     // Wait for modal\n> 177 |     await page.waitForSelector('#sector-edit-modal', { state: 'visible', timeout: 10000 });\n      |                ^\n  178 |     console.log('✓ Modal appeared after 4th click');\n  179 |\n  180 |     // Fill rhombus form\n    at D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\admin-complete-polygon-test.spec.ts:177:16"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n=== STARTING COMPREHENSIVE POLYGON TEST ===\n\n"
+                        },
+                        {
+                          "text": "Using unique codes: TRI-1759773443758, RHO-1759773443758, HEX-1759773443758\n"
+                        },
+                        {
+                          "text": "TEST 1: Admin Login\n"
+                        },
+                        {
+                          "text": "✓ Login successful\n"
+                        },
+                        {
+                          "text": "\nTEST 2: Navigate to Stadium Drawing Tool\n"
+                        },
+                        {
+                          "text": "✓ Drawing tool loaded\n"
+                        },
+                        {
+                          "text": "\n=== TEST 3: Triangle Sector Creation ===\n"
+                        },
+                        {
+                          "text": "✓ Selected triangle mode\n"
+                        },
+                        {
+                          "text": "Clicking triangle vertices...\n"
+                        },
+                        {
+                          "text": "  Point 1 clicked: (300, 200)\n"
+                        },
+                        {
+                          "text": "  Point 2 clicked: (500, 400)\n"
+                        },
+                        {
+                          "text": "  Point 3 clicked: (200, 450)\n"
+                        },
+                        {
+                          "text": "✓ Modal appeared after 3rd click\n"
+                        },
+                        {
+                          "text": "✓ Triangle form filled\n"
+                        },
+                        {
+                          "text": "✓ Triangle saved successfully\n"
+                        },
+                        {
+                          "text": "✓ Modal closed\n"
+                        },
+                        {
+                          "text": "✓ Screenshot: triangle-created.png\n"
+                        },
+                        {
+                          "text": "✓ Waiting for UI to stabilize...\n"
+                        },
+                        {
+                          "text": "\n=== TEST 4: Rhombus Sector Creation ===\n"
+                        },
+                        {
+                          "text": "✓ Selected rhombus mode\n"
+                        },
+                        {
+                          "text": "Clicking rhombus vertices...\n"
+                        },
+                        {
+                          "text": "  Point 1 clicked: (700, 200)\n"
+                        },
+                        {
+                          "text": "  Point 2 clicked: (900, 300)\n"
+                        },
+                        {
+                          "text": "  Point 3 clicked: (700, 450)\n"
+                        },
+                        {
+                          "text": "  Point 4 clicked: (500, 300)\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-06T17:57:22.888Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "D:\\AiApps\\StadiumApp\\StadiumApp\\test-results-complete-polygon\\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "D:\\AiApps\\StadiumApp\\StadiumApp\\test-results-complete-polygon\\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\AiApps\\StadiumApp\\StadiumApp\\test-results-complete-polygon\\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "D:\\AiApps\\StadiumApp\\StadiumApp\\test-results-complete-polygon\\admin-complete-polygon-tes-893d5-on-and-database-persistence-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\AiApps\\StadiumApp\\StadiumApp\\tests\\admin-complete-polygon-test.spec.ts",
+                        "column": 16,
+                        "line": 177
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a50c6082db2bac1cf961-f5e297bec1bff65bcf23",
+              "file": "admin-complete-polygon-test.spec.ts",
+              "line": 20,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-06T17:57:21.537Z",
+    "duration": 41169.07,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

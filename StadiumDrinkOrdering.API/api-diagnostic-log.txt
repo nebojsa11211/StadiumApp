@@ -1,0 +1,31 @@
+Using launch settings from D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.API\Properties\launchSettings.json...
+=== VISUAL STUDIO DEBUGGING - Configuration Sources ===
+ASPNETCORE_ENVIRONMENT: Development
+ConnectionStrings__DefaultConnection env var: Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Ssl Mode=Require;Trust Server Certificate=true;Command Timeout=300;Connection Lifetime=0;Connection Idle Lifetime=300;Include Error Detail=true
+
+=== Configuration Providers ===
+Provider: MemoryConfigurationSource
+Provider: EnvironmentVariablesConfigurationSource
+Provider: MemoryConfigurationSource
+Provider: EnvironmentVariablesConfigurationSource
+Provider: JsonConfigurationSource
+Provider: JsonConfigurationSource
+Provider: JsonConfigurationSource
+Provider: EnvironmentVariablesConfigurationSource
+Provider: ChainedConfigurationSource
+
+=== Final Connection String ===
+Connection String: Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Ssl Mode=Require;Trust Server Certificate=true;Command Timeout=300;Connection Lifetime=0;Connection Idle Lifetime=300;Include Error Detail=true
+
+=== File System Context ===
+Current Directory: D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.API
+appsettings.json exists: True
+appsettings.Development.json exists: True
+
+=== appsettings.json Content ===
+✓ appsettings.json looks correct (no SQLite reference)
+=== END VISUAL STUDIO DEBUGGING ===
+
+Connection String: Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Ssl Mode=Require;Trust Server Certificate=true;Command Timeout=300;Connection Lifetime=0;Connection Idle Lifetime=300;Include Error Detail=true
+Using PostgreSQL/Supabase connection...
+Using connection string: Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=***;Ssl Mode=Require;Trust Server Certificate=true;Command Timeout=300;Connection Lifetime=0;Connection Idle Lifetime=300;Include Error Detail=true

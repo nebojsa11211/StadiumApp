@@ -8,9 +8,43 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
-    <link href="css/site.css" rel="stylesheet" />
-    <link href="css/auth.css" rel="stylesheet" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Stadium Orders">
+    <meta name="description" content="Order drinks and snacks directly to your seat at the stadium. Fast, convenient, and easy ticket booking.">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Stadium Orders">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link href="css/professional-design.css" rel="stylesheet" />
+    <link href="css/homepage.css" rel="stylesheet" />
+    <link href="css/dark-mode.css" rel="stylesheet" />
+    <link href="css/accessibility.css" rel="stylesheet" />
+    <link href="css/premium-footer.css" rel="stylesheet" />
+    <link href="css/premium-dark-theme.css" rel="stylesheet" />
     <link href="StadiumDrinkOrdering.Customer.styles.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
@@ -29,7 +63,17 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+    <script src="js/theme-manager.js"></script>
     <script src="js/culture.js"></script>
     <script src="js/stadium-viewer.js"></script>
+    <script src="js/professional-ui.js"></script>
+
+    <!-- Accessibility Enhancements -->
+    <script src="js/keyboard-navigation.js"></script>
+    <script src="js/aria-enhancements.js"></script>
+    <script src="js/a11y-test.js"></script>
+
+    <!-- PWA Installation -->
+    <script src="js/pwa-install.js"></script>
 </body>
 </html>

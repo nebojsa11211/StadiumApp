@@ -1,0 +1,146 @@
+
+Running 1 test using 1 worker
+
+
+⏰ Waiting 20 seconds for services to start...
+
+
+🔷 CRITICAL BUG FIX VERIFICATION TEST
+
+1️⃣ Logging in...
+   Current URL after login: https://localhost:7030/
+2️⃣ Navigating to Stadium Drawing Tool...
+
+🔷 BUG FIX #1: Testing Rhombus Modal After 4th Click...
+   Selected Rhombus tool
+   Click 1/4: (550, 200)
+   Click 2/4: (750, 300)
+   Click 3/4: (550, 400)
+   Click 4/4: (350, 300)
+   🚨 Verifying modal appeared after 4th click...
+   ✅ ✅ ✅ BUG FIX #1 VERIFIED: Modal appeared after 4th click!
+   Filling rhombus form...
+   Form filled with test data
+   Clicked Save Sector button
+   ✅ Rhombus saved: RHO-BUG-1759775035059
+
+⬡ BUG FIX #2: Testing Custom Polygon ShapeType...
+   Selected Custom Polygon tool
+   Click 1/6: (150, 500)
+   Click 2/6: (300, 450)
+   Click 3/6: (400, 550)
+  x  1 [chromium] › tests\polygon-critical-bugfix-test.spec.ts:19:7 › Critical Polygon Bug Fixes › Verify Rhombus Modal After 4th Click + Custom Polygon ShapeType (41.4s)
+
+
+  1) [chromium] › tests\polygon-critical-bugfix-test.spec.ts:19:7 › Critical Polygon Bug Fixes › Verify Rhombus Modal After 4th Click + Custom Polygon ShapeType 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('canvas#admin-drawing-tool-canvas')[22m
+    [2m    - locator resolved to <canvas width="1200" height="700" id="admin-drawing-tool-canvas"></canvas>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="col-md-12">…</div> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="col-md-12">…</div> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is visible, enabled and stable[22m
+    [2m    - scrolling into view if needed[22m
+    [2m    - done scrolling[22m
+    [2m    - <div class="col-md-12">…</div> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is visible, enabled and stable[22m
+    [2m    - scrolling into view if needed[22m
+    [2m    - done scrolling[22m
+    [2m    - <th>Subtotal</th> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="col-md-12">…</div> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <th>Subtotal</th> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="col-md-12">…</div> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is visible, enabled and stable[22m
+    [2m    - scrolling into view if needed[22m
+    [2m    - done scrolling[22m
+    [2m    - <th>Subtotal</th> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="col-md-12">…</div> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <th>Subtotal</th> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  2 × retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m      - waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="col-md-12">…</div> from <div tabindex="-1" id="sector-edit-modal" class="modal fade show">…</div> subtree intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+
+
+      150 |     for (let i = 0; i < hexagonVertices.length; i++) {
+      151 |       console.log(`   Click ${i + 1}/6: (${hexagonVertices[i].x}, ${hexagonVertices[i].y})`);
+    > 152 |       await canvas.click({ position: hexagonVertices[i] });
+          |                    ^
+      153 |       await page.waitForTimeout(400);
+      154 |     }
+      155 |
+        at D:\AiApps\StadiumApp\StadiumApp\tests\polygon-critical-bugfix-test.spec.ts:152:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\polygon-critical-bugfix-te-e0488-ck-Custom-Polygon-ShapeType-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\polygon-critical-bugfix-te-e0488-ck-Custom-Polygon-ShapeType-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\polygon-critical-bugfix-te-e0488-ck-Custom-Polygon-ShapeType-chromium\error-context.md
+
+  1 failed
+    [chromium] › tests\polygon-critical-bugfix-test.spec.ts:19:7 › Critical Polygon Bug Fixes › Verify Rhombus Modal After 4th Click + Custom Polygon ShapeType 

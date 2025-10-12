@@ -32,6 +32,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<Ring> Rings { get; set; }
     public DbSet<Sector> Sectors { get; set; }
     public DbSet<StadiumSeatNew> StadiumSeatsNew { get; set; }
+
+    // Stadium Drawing Tool entities
+    public DbSet<StadiumSectorOverlay> StadiumSectorOverlays { get; set; }
     
     // Logging entities
     public DbSet<LogEntry> LogEntries { get; set; }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace StadiumDrinkOrdering.API.Services;
 
@@ -69,13 +70,23 @@ public class TicketSessionCleanupService : BackgroundService
         {
             using var scope = _serviceProvider.CreateScope();
             var shoppingCartService = scope.ServiceProvider.GetRequiredService<IShoppingCartService>();
-            
+
             await shoppingCartService.CleanupExpiredReservationsAsync();
             _logger.LogDebug("Completed shopping cart reservation cleanup");
         }
+        catch (Npgsql.NpgsqlException ex) when (ex.InnerException is IOException)
+        {
+            // Log as warning for connection issues - these are often transient
+            _logger.LogWarning(ex, "Database connection issue during shopping cart reservation cleanup - will retry on next interval");
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("transient failure"))
+        {
+            // Log as warning for transient failures
+            _logger.LogWarning(ex, "Transient database error during shopping cart reservation cleanup - will retry on next interval");
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during shopping cart reservation cleanup");
+            _logger.LogError(ex, "Unexpected error during shopping cart reservation cleanup");
         }
     }
 

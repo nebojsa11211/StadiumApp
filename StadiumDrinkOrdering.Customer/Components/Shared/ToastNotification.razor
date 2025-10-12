@@ -1,0 +1,135 @@
+@inject IJSRuntime JSRuntime
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    @foreach (var toast in Toasts)
+    {
+        <div class="toast @GetToastClass(toast.Type) show fade-in" role="alert" aria-live="assertive" aria-atomic="true" id="toast-@toast.Id">
+            <div class="toast-header">
+                <span class="toast-icon me-2">@GetToastIcon(toast.Type)</span>
+                <strong class="me-auto">@GetToastTitle(toast.Type)</strong>
+                <small class="text-muted">@toast.TimeAgo</small>
+                <button type="button" class="btn-close" @onclick="() => RemoveToast(toast.Id)" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @toast.Message
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ToastItem> Toasts { get; set; } = new();
+    private int _nextId = 1;
+
+    public enum ToastType
+    {
+        Success,
+        Error,
+        Warning,
+        Info
+    }
+
+    private class ToastItem
+    {
+        public int Id { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public ToastType Type { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string TimeAgo => GetTimeAgo(CreatedAt);
+
+        private string GetTimeAgo(DateTime time)
+        {
+            var span = DateTime.Now - time;
+            if (span.TotalSeconds < 10) return "Just now";
+            if (span.TotalSeconds < 60) return $"{(int)span.TotalSeconds}s ago";
+            if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes}m ago";
+            return time.ToString("HH:mm");
+        }
+    }
+
+    public void ShowSuccess(string message, int durationMs = 5000)
+    {
+        ShowToast(message, ToastType.Success, durationMs);
+    }
+
+    public void ShowError(string message, int durationMs = 7000)
+    {
+        ShowToast(message, ToastType.Error, durationMs);
+    }
+
+    public void ShowWarning(string message, int durationMs = 6000)
+    {
+        ShowToast(message, ToastType.Warning, durationMs);
+    }
+
+    public void ShowInfo(string message, int durationMs = 5000)
+    {
+        ShowToast(message, ToastType.Info, durationMs);
+    }
+
+    private void ShowToast(string message, ToastType type, int durationMs)
+    {
+        var toast = new ToastItem
+        {
+            Id = _nextId++,
+            Message = message,
+            Type = type,
+            CreatedAt = DateTime.Now
+        };
+
+        Toasts.Add(toast);
+        StateHasChanged();
+
+        // Auto-remove after duration
+        Task.Delay(durationMs).ContinueWith(_ =>
+        {
+            RemoveToast(toast.Id);
+        });
+    }
+
+    private void RemoveToast(int id)
+    {
+        var toast = Toasts.FirstOrDefault(t => t.Id == id);
+        if (toast != null)
+        {
+            Toasts.Remove(toast);
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private string GetToastClass(ToastType type)
+    {
+        return type switch
+        {
+            ToastType.Success => "toast-success",
+            ToastType.Error => "toast-error",
+            ToastType.Warning => "toast-warning",
+            ToastType.Info => "toast-info",
+            _ => ""
+        };
+    }
+
+    private string GetToastIcon(ToastType type)
+    {
+        return type switch
+        {
+            ToastType.Success => "✅",
+            ToastType.Error => "❌",
+            ToastType.Warning => "⚠️",
+            ToastType.Info => "ℹ️",
+            _ => ""
+        };
+    }
+
+    private string GetToastTitle(ToastType type)
+    {
+        return type switch
+        {
+            ToastType.Success => "Success",
+            ToastType.Error => "Error",
+            ToastType.Warning => "Warning",
+            ToastType.Info => "Information",
+            _ => ""
+        };
+    }
+}

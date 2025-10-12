@@ -49,22 +49,17 @@ public class AuthService : IAuthService
         // Use AsNoTracking for read-only operations to improve performance
         Console.WriteLine("=== DEBUG: Looking up user by email ===");
 
-        // Add timeout and more robust query to prevent hanging
+        // User lookup - database is fast, no timeout needed
         User? user = null;
         try
         {
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            // Use FirstOrDefaultAsync for better performance
             user = await _context.Users
                 .AsNoTracking()
                 .Where(u => u.Email == loginDto.Email)
-                .Take(1)
-                .SingleOrDefaultAsync(timeoutCts.Token);
+                .FirstOrDefaultAsync();
+
             Console.WriteLine($"=== DEBUG: User lookup completed successfully, found: {user != null} ===");
-        }
-        catch (OperationCanceledException)
-        {
-            Console.WriteLine("=== DEBUG: User lookup timed out after 10 seconds ===");
-            return null;
         }
         catch (Exception ex)
         {
@@ -338,6 +333,10 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
+            // Add custom claims for Supabase RLS compatibility
+            new Claim("user_id", user.Id.ToString()),
+            new Claim("email", user.Email),
+            new Claim("role", user.Role.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, jwtId),
             new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };

@@ -1,0 +1,323 @@
+@*
+    Skip Navigation Component
+    WCAG 2.4.1 (Bypass Blocks) - Level A
+
+    Purpose:
+    Provides keyboard users with quick access to skip repetitive navigation content
+    and jump directly to main content or other key page sections.
+
+    Accessibility Features:
+    - Visible only on keyboard focus
+    - High contrast styling for visibility
+    - Positioned at top of page for first Tab press
+    - Smooth scroll to target (respects prefers-reduced-motion)
+
+    Usage:
+    Add this component at the top of MainLayout.razor before all other content:
+    <SkipNavigation />
+
+    Target elements must have matching IDs:
+    - id="main-content" for main content area
+    - id="navigation" for primary navigation
+    - id="search" for search functionality (optional)
+*@
+
+<div class="skip-navigation-container" role="navigation" aria-label="Skip navigation">
+    @*
+        Skip to Main Content Link
+        Most important skip link - allows users to bypass header, navigation, and sidebars
+        WCAG Success Criterion: 2.4.1 Bypass Blocks (Level A)
+    *@
+    <a href="#main-content"
+       class="skip-navigation"
+       id="skip-to-main"
+       @onclick="HandleSkipToMain"
+       @onclick:preventDefault="true">
+        <span class="sr-only">Press Enter to</span>
+        Skip to main content
+    </a>
+
+    @*
+        Skip to Navigation Link
+        Allows users to quickly access navigation menu
+        Useful for users who want to browse different sections
+    *@
+    <a href="#navigation"
+       class="skip-navigation"
+       id="skip-to-nav"
+       @onclick="HandleSkipToNavigation"
+       @onclick:preventDefault="true">
+        <span class="sr-only">Press Enter to</span>
+        Skip to navigation
+    </a>
+
+    @*
+        Skip to Search Link (Optional)
+        Displayed only if search functionality exists on page
+        Allows quick access to search feature
+    *@
+    @if (ShowSearchLink)
+    {
+        <a href="#search"
+           class="skip-navigation"
+           id="skip-to-search"
+           @onclick="HandleSkipToSearch"
+           @onclick:preventDefault="true">
+            <span class="sr-only">Press Enter to</span>
+            Skip to search
+        </a>
+    }
+</div>
+
+<style>
+    /*
+        Skip Navigation Styling
+        These styles ensure skip links are:
+        1. Hidden by default (off-screen)
+        2. Visible when focused with keyboard
+        3. High contrast for visibility
+        4. Properly positioned and sized
+    */
+
+    .skip-navigation-container {
+        position: relative;
+        z-index: 10000;
+    }
+
+    .skip-navigation {
+        /* Position off-screen by default */
+        position: absolute;
+        top: -100px;
+        left: 8px;
+        z-index: 10001;
+
+        /* Styling for visibility when focused */
+        background-color: #000000;
+        color: #ffffff;
+        padding: 12px 24px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+        /* Visual enhancements */
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        border: 2px solid #ffd700;
+
+        /* Smooth transition when appearing */
+        transition: top 0.2s ease-in-out, background-color 0.2s ease-in-out;
+
+        /* Ensure adequate touch target */
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /*
+        Focus State - Makes link visible
+        WCAG 2.4.7 (Focus Visible) - Level AA
+    */
+    .skip-navigation:focus {
+        top: 0;
+        outline: 3px solid #ffd700;
+        outline-offset: 2px;
+    }
+
+    /* Hover state for mouse users who discover the link */
+    .skip-navigation:hover {
+        background-color: #333333;
+        text-decoration: underline;
+    }
+
+    /* Active state when link is clicked */
+    .skip-navigation:active {
+        background-color: #555555;
+        transform: translateY(1px);
+    }
+
+    /* Multiple skip links side-by-side */
+    .skip-navigation:nth-child(2) {
+        left: calc(8px + 200px); /* Offset for second link */
+    }
+
+    .skip-navigation:nth-child(3) {
+        left: calc(8px + 400px); /* Offset for third link */
+    }
+
+    /* High contrast mode support */
+    @@media (prefers-contrast: high) {
+        .skip-navigation {
+            border: 3px solid currentColor;
+        }
+
+        .skip-navigation:focus {
+            outline: 4px solid currentColor;
+        }
+    }
+
+    /* Reduced motion support */
+    @@media (prefers-reduced-motion: reduce) {
+        .skip-navigation {
+            transition: none;
+        }
+    }
+
+    /* Responsive adjustments for mobile */
+    @@media (max-width: 768px) {
+        .skip-navigation {
+            font-size: 14px;
+            padding: 10px 16px;
+            left: 4px;
+        }
+
+        .skip-navigation:nth-child(2) {
+            left: 4px;
+            top: -150px; /* Stack vertically on mobile */
+        }
+
+        .skip-navigation:nth-child(2):focus {
+            top: 52px; /* Below first link */
+        }
+
+        .skip-navigation:nth-child(3) {
+            left: 4px;
+            top: -200px;
+        }
+
+        .skip-navigation:nth-child(3):focus {
+            top: 104px; /* Below second link */
+        }
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Determines whether to show the "Skip to Search" link
+    /// Set this to true on pages that have search functionality
+    /// </summary>
+    [Parameter]
+    public bool ShowSearchLink { get; set; } = false;
+
+    /// <summary>
+    /// Handles the Skip to Main Content action
+    /// Focuses on the main content area and scrolls smoothly
+    /// </summary>
+    private async Task HandleSkipToMain(MouseEventArgs e)
+    {
+        await FocusElementById("main-content");
+        await ScrollToElement("main-content");
+        await AnnounceToScreenReader("Skipped to main content");
+    }
+
+    /// <summary>
+    /// Handles the Skip to Navigation action
+    /// Focuses on the navigation menu and scrolls smoothly
+    /// </summary>
+    private async Task HandleSkipToNavigation(MouseEventArgs e)
+    {
+        await FocusElementById("navigation");
+        await ScrollToElement("navigation");
+        await AnnounceToScreenReader("Skipped to navigation menu");
+    }
+
+    /// <summary>
+    /// Handles the Skip to Search action
+    /// Focuses on the search input and scrolls smoothly
+    /// </summary>
+    private async Task HandleSkipToSearch(MouseEventArgs e)
+    {
+        await FocusElementById("search");
+        await ScrollToElement("search");
+        await AnnounceToScreenReader("Skipped to search");
+    }
+
+    /// <summary>
+    /// Focuses on an element by its ID using JavaScript interop
+    /// Also sets tabindex="-1" if element is not naturally focusable
+    /// </summary>
+    /// <param name="elementId">The ID of the element to focus</param>
+    private async Task FocusElementById(string elementId)
+    {
+        await JSRuntime.InvokeVoidAsync("eval", $@"
+            (function() {{
+                const element = document.getElementById('{elementId}');
+                if (element) {{
+                    // Make element focusable if it isn't already
+                    if (!element.hasAttribute('tabindex')) {{
+                        element.setAttribute('tabindex', '-1');
+                    }}
+                    // Focus the element
+                    element.focus();
+                    // Remove tabindex after focus to restore natural tab order
+                    setTimeout(() => {{
+                        if (element.getAttribute('tabindex') === '-1') {{
+                            element.removeAttribute('tabindex');
+                        }}
+                    }}, 100);
+                }}
+            }})();
+        ");
+    }
+
+    /// <summary>
+    /// Scrolls smoothly to an element by its ID
+    /// Respects prefers-reduced-motion user preference
+    /// </summary>
+    /// <param name="elementId">The ID of the element to scroll to</param>
+    private async Task ScrollToElement(string elementId)
+    {
+        await JSRuntime.InvokeVoidAsync("eval", $@"
+            (function() {{
+                const element = document.getElementById('{elementId}');
+                if (element) {{
+                    // Check if user prefers reduced motion
+                    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                    element.scrollIntoView({{
+                        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+                        block: 'start'
+                    }});
+                }}
+            }})();
+        ");
+    }
+
+    /// <summary>
+    /// Announces a message to screen readers using an ARIA live region
+    /// WCAG 4.1.3 (Status Messages) - Level AA
+    /// </summary>
+    /// <param name="message">The message to announce</param>
+    private async Task AnnounceToScreenReader(string message)
+    {
+        await JSRuntime.InvokeVoidAsync("eval", $@"
+            (function() {{
+                // Create or get live region for announcements
+                let liveRegion = document.getElementById('skip-nav-announcer');
+                if (!liveRegion) {{
+                    liveRegion = document.createElement('div');
+                    liveRegion.id = 'skip-nav-announcer';
+                    liveRegion.setAttribute('role', 'status');
+                    liveRegion.setAttribute('aria-live', 'polite');
+                    liveRegion.setAttribute('aria-atomic', 'true');
+                    liveRegion.className = 'sr-only';
+                    document.body.appendChild(liveRegion);
+                }}
+
+                // Clear and set new message
+                liveRegion.textContent = '';
+                setTimeout(() => {{
+                    liveRegion.textContent = '{message}';
+                }}, 100);
+
+                // Clear message after announcement
+                setTimeout(() => {{
+                    liveRegion.textContent = '';
+                }}, 3000);
+            }})();
+        ");
+    }
+}
+
+@inject IJSRuntime JSRuntime

@@ -62,6 +62,9 @@ window.initializeDrawingCanvas = function(canvasId, dotNetReference) {
     canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
     canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
 
+    // Setup polygon-specific event listeners (double-click, right-click, ESC key)
+    setupPolygonEventListeners();
+
     redrawCanvas();
 };
 
@@ -202,8 +205,8 @@ function handleMouseDown(e) {
 
     // Handle CreateSector tool with multi-shape support
     if (currentTool === 'createsector') {
-        if (currentShapeMode === 'polygon' || currentShapeMode === 'triangle') {
-            // Polygon/Triangle: Click-to-add-vertex mode
+        if (currentShapeMode === 'polygon' || currentShapeMode === 'triangle' || currentShapeMode === 'rhombus') {
+            // Polygon/Triangle/Rhombus: Click-to-add-vertex mode
             isDrawingPolygon = true;
             polygonVertices.push({ x: startX, y: startY });
 
@@ -211,6 +214,12 @@ function handleMouseDown(e) {
 
             // Auto-complete triangle after 3 points
             if (currentShapeMode === 'triangle' && polygonVertices.length === 3) {
+                finishPolygonCreation();
+                return;
+            }
+
+            // Auto-complete rhombus after 4 points
+            if (currentShapeMode === 'rhombus' && polygonVertices.length === 4) {
                 finishPolygonCreation();
                 return;
             }
@@ -737,9 +746,15 @@ function redrawWithSectors() {
         ctx.fillStyle = fillColor;
         ctx.lineWidth = isSelected ? 3 : 2;
 
-        // Draw rectangle
-        ctx.strokeRect(sector.x, sector.y, sector.width, sector.height);
-        ctx.fillRect(sector.x, sector.y, sector.width, sector.height);
+        // Draw shape based on shapeType
+        if (sector.ShapeType && sector.ShapeType !== 'rectangle' && sector.ShapeData) {
+            // Draw polygon (triangle, rhombus, or custom polygon)
+            drawPolygonSector(ctx, sector, strokeColor, fillColor, isSelected);
+        } else {
+            // Draw rectangle (default)
+            ctx.strokeRect(sector.x, sector.y, sector.width, sector.height);
+            ctx.fillRect(sector.x, sector.y, sector.width, sector.height);
+        }
 
         // Draw resize handles if selected
         if (isSelected) {
@@ -775,6 +790,57 @@ function redrawWithSectors() {
     ctx.restore();
 }
 
+// Draw polygon-based sector (triangle, rhombus, custom polygon)
+function drawPolygonSector(context, sector, strokeColor, fillColor, isSelected) {
+    try {
+        // Parse vertex data from ShapeData JSON
+        const vertices = JSON.parse(sector.ShapeData);
+
+        if (!vertices || vertices.length < 3) {
+            console.warn('Invalid polygon data for sector:', sector.SectorCode);
+            // Fall back to rectangle
+            context.strokeRect(sector.x, sector.y, sector.width, sector.height);
+            context.fillRect(sector.x, sector.y, sector.width, sector.height);
+            return;
+        }
+
+        // Begin path
+        context.beginPath();
+
+        // Convert percentage vertices to pixel coordinates
+        const firstVertex = vertices[0];
+        context.moveTo(
+            (firstVertex.X / 100) * canvas.width,
+            (firstVertex.Y / 100) * canvas.height
+        );
+
+        // Draw lines to each vertex
+        for (let i = 1; i < vertices.length; i++) {
+            const vertex = vertices[i];
+            context.lineTo(
+                (vertex.X / 100) * canvas.width,
+                (vertex.Y / 100) * canvas.height
+            );
+        }
+
+        // Close the path
+        context.closePath();
+
+        // Fill and stroke
+        context.fillStyle = fillColor;
+        context.fill();
+        context.strokeStyle = strokeColor;
+        context.lineWidth = isSelected ? 3 : 2;
+        context.stroke();
+
+    } catch (error) {
+        console.error('Error drawing polygon sector:', error);
+        // Fall back to rectangle on error
+        context.strokeRect(sector.x, sector.y, sector.width, sector.height);
+        context.fillRect(sector.x, sector.y, sector.width, sector.height);
+    }
+}
+
 // Draw resize handles for selected sector
 function drawResizeHandles(sector) {
     const handleSize = 8;
@@ -797,8 +863,40 @@ function drawResizeHandles(sector) {
 
 // Check if point is inside sector
 function isPointInSector(x, y, sector) {
+    // For polygon shapes, use point-in-polygon algorithm
+    if (sector.ShapeType && sector.ShapeType !== 'rectangle' && sector.ShapeData) {
+        try {
+            const vertices = JSON.parse(sector.ShapeData);
+            if (vertices && vertices.length >= 3) {
+                // Convert percentage vertices to pixel coordinates
+                const pixelVertices = vertices.map(v => ({
+                    x: (v.X / 100) * canvas.width,
+                    y: (v.Y / 100) * canvas.height
+                }));
+                return isPointInPolygon(x, y, pixelVertices);
+            }
+        } catch (error) {
+            console.error('Error checking point in polygon:', error);
+        }
+    }
+
+    // For rectangles (default)
     return x >= sector.x && x <= sector.x + sector.width &&
            y >= sector.y && y <= sector.y + sector.height;
+}
+
+// Ray-casting algorithm for point-in-polygon test
+function isPointInPolygon(x, y, vertices) {
+    let inside = false;
+    for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+        const xi = vertices[i].x, yi = vertices[i].y;
+        const xj = vertices[j].x, yj = vertices[j].y;
+
+        const intersect = ((yi > y) !== (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
 }
 
 // Check if point is on resize handle
@@ -919,11 +1017,13 @@ function redrawWithPolygonPreview() {
     if (currentShapeMode === 'triangle' && remaining > 0) {
         showHelperText(`Click ${remaining} more point(s)`);
     } else if (currentShapeMode === 'polygon') {
-        showHelperText(`${polygonVertices.length} vertices. Double-click to finish (min 3).`);
+        showHelperText(`${polygonVertices.length} vertices. Right-click or double-click to finish (min 3).`);
+    } else if (currentShapeMode === 'rhombus' && polygonVertices.length > 0) {
+        showHelperText(`Click ${4 - polygonVertices.length} more point(s) for rhombus`);
     }
 }
 
-// Show helper text overlay
+// Show helper text overlay with cancel button
 function showHelperText(message) {
     if (!helperTextElement) {
         helperTextElement = document.createElement('div');
@@ -941,13 +1041,39 @@ function showHelperText(message) {
             font-weight: 500;
             z-index: 1000;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         `;
         canvas.parentElement.style.position = 'relative';
         canvas.parentElement.appendChild(helperTextElement);
     }
-    helperTextElement.textContent = message;
-    helperTextElement.style.display = 'block';
+
+    // Create message span and cancel button
+    helperTextElement.innerHTML = `
+        <span>${message}</span>
+        <button id="cancel-polygon-btn" style="
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        ">✕ Cancel (ESC)</button>
+    `;
+
+    // Add click handler to cancel button
+    const cancelBtn = helperTextElement.querySelector('#cancel-polygon-btn');
+    if (cancelBtn) {
+        cancelBtn.onclick = function(e) {
+            e.stopPropagation();
+            cancelPolygonDrawing();
+        };
+    }
+
+    helperTextElement.style.display = 'flex';
 }
 
 // Hide helper text
@@ -957,17 +1083,52 @@ function hideHelperText() {
     }
 }
 
-// Handle double-click to finish polygon
-canvas?.addEventListener('dblclick', function(e) {
-    if (currentTool === 'createsector' && currentShapeMode === 'polygon') {
-        e.preventDefault();
-        if (polygonVertices.length >= 3) {
-            finishPolygonCreation();
+// Cancel polygon drawing function
+function cancelPolygonDrawing() {
+    console.log('🚫 Polygon drawing cancelled');
+    polygonVertices = [];
+    isDrawingPolygon = false;
+    hideHelperText();
+    redrawWithSectors(); // Clear the preview vertices
+}
+
+// Setup polygon event listeners (called after canvas is initialized)
+function setupPolygonEventListeners() {
+    // Handle ESC key to cancel polygon drawing
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isDrawingPolygon) {
+            e.preventDefault();
+            cancelPolygonDrawing();
         }
+    });
+
+    // Handle double-click to finish polygon
+    if (canvas) {
+        canvas.addEventListener('dblclick', function(e) {
+            if (currentTool === 'createsector' && currentShapeMode === 'polygon') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (polygonVertices.length >= 3) {
+                    console.log('🔶 Double-click detected - finishing polygon');
+                    finishPolygonCreation();
+                } else {
+                    console.log('⚠️ Need at least 3 vertices to finish polygon');
+                }
+            }
+        });
+
+        // Right-click to finish polygon (alternative to double-click)
+        canvas.addEventListener('contextmenu', function(e) {
+            if (currentTool === 'createsector' && currentShapeMode === 'polygon' && polygonVertices.length >= 3) {
+                e.preventDefault();
+                console.log('🔶 Right-click detected - finishing polygon');
+                finishPolygonCreation();
+            }
+        });
     }
-});
+}
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Drawing canvas script loaded with multi-shape support');
+    console.log('Drawing canvas script loaded with multi-shape support + cancel functionality');
 });

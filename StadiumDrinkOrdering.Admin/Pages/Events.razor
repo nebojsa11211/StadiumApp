@@ -15,19 +15,19 @@
     @if (events == null)
     {
         <div class="text-center" id="admin-events-loading">
-            <div class="spinner-border" role="status">
+            <div class="spinner-border" role="status" id="admin-events-loading-spinner">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p>Loading events...</p>
+            <p id="admin-events-loading-text">Loading events...</p>
         </div>
     }
     else if (loadingFailed)
     {
         <div class="alert alert-danger" role="alert" id="admin-events-error">
-            <h4 class="alert-heading">⚠️ Error Loading Events</h4>
-            <p>@loadingError</p>
-            <hr>
-            <p class="mb-0">
+            <h4 class="alert-heading" id="admin-events-error-title">⚠️ Error Loading Events</h4>
+            <p id="admin-events-error-message">@loadingError</p>
+            <hr id="admin-events-error-divider">
+            <p class="mb-0" id="admin-events-error-actions">
                 <button class="btn btn-primary" @onclick="async () => await LoadEvents()" id="admin-events-retry-btn">
                     <i class="bi bi-arrow-clockwise"></i> Retry
                 </button>
@@ -37,11 +37,11 @@
     else if (!events.Any())
     {
         <div class="text-center py-5" id="admin-events-empty">
-            <div class="mb-4">
+            <div class="mb-4" id="admin-events-empty-icon">
                 <span style="font-size: 4rem;">📅</span>
             </div>
-            <h3>No events found</h3>
-            <p class="text-muted">Start by creating your first event.</p>
+            <h3 id="admin-events-empty-title">No events found</h3>
+            <p class="text-muted" id="admin-events-empty-message">Start by creating your first event.</p>
             <button class="btn btn-primary btn-lg" @onclick="ShowCreateEventModal" id="admin-events-first-event-btn">
                 Create First Event
             </button>
@@ -68,15 +68,15 @@
                             </div>
                         </div>
                         <div class="card-body" id="admin-event-body-@evt.Id">
-                            <p class="card-text">
-                                <strong>📅 Date:</strong> @evt.Date?.ToString("MMM dd, yyyy HH:mm")<br>
-                                <strong>📍 Location:</strong> @evt.Location<br>
-                                <strong>💺 Capacity:</strong> @evt.Capacity.ToString("N0") seats<br>
-                                <strong>💵 Base Price:</strong> $@evt.BasePrice.ToString("F2")
+                            <p class="card-text" id="admin-event-details-@evt.Id">
+                                <strong>📅 Date:</strong> <span id="admin-event-date-@evt.Id">@evt.Date?.ToString("MMM dd, yyyy HH:mm")</span><br>
+                                <strong>📍 Location:</strong> <span id="admin-event-location-@evt.Id">@evt.Location</span><br>
+                                <strong>💺 Capacity:</strong> <span id="admin-event-capacity-@evt.Id">@evt.Capacity.ToString("N0") seats</span><br>
+                                <strong>💵 Base Price:</strong> <span id="admin-event-price-@evt.Id">$@evt.BasePrice.ToString("F2")</span>
                             </p>
                             @if (!string.IsNullOrEmpty(evt.Description))
                             {
-                                <p class="card-text text-muted small">@evt.Description</p>
+                                <p class="card-text text-muted small" id="admin-event-description-@evt.Id">@evt.Description</p>
                             }
                         </div>
                         <div class="card-footer" id="admin-event-footer-@evt.Id">

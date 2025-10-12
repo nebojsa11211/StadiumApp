@@ -1,0 +1,38 @@
+<div class="empty-state @CssClass" id="@ComponentId">
+    <div class="empty-state-content">
+        <div class="empty-state-icon">
+            @Icon
+        </div>
+        <h3 class="empty-state-title">@Title</h3>
+        <p class="empty-state-description">@Description</p>
+        @if (!string.IsNullOrEmpty(ActionText) && ActionCallback.HasDelegate)
+        {
+            <button class="btn btn-primary mt-3" @onclick="ActionCallback" id="@ComponentId-action-btn">
+                @ActionText
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Icon { get; set; } = "📭";
+
+    [Parameter]
+    public string Title { get; set; } = "No items found";
+
+    [Parameter]
+    public string Description { get; set; } = "There are no items to display at this time.";
+
+    [Parameter]
+    public string? ActionText { get; set; }
+
+    [Parameter]
+    public EventCallback ActionCallback { get; set; }
+
+    [Parameter]
+    public string CssClass { get; set; } = "";
+
+    [Parameter]
+    public string ComponentId { get; set; } = $"empty-state-{Guid.NewGuid():N}";
+}

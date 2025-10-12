@@ -34,6 +34,13 @@ public partial class Users : ComponentBase
     private bool showCreateModal = false;
     private CreateUserDto newUser = new();
 
+    // Edit user modal
+    private bool showEditModal = false;
+    private UpdateUserDto editUser = new();
+    private int editUserId = 0;
+    private bool isUpdatingUser = false;
+    private bool isActiveChecked = true;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadUsers();
@@ -179,8 +186,52 @@ public partial class Users : ComponentBase
 
     private void EditUser(UserDto user)
     {
-        // Implementation for user editing
-        Navigation.NavigateTo($"/users/edit/{user.Id}");
+        editUserId = user.Id;
+        isActiveChecked = user.IsActive;
+        editUser = new UpdateUserDto
+        {
+            Username = user.Username,
+            Email = user.Email,
+            FirstName = user.Name?.Split(' ').FirstOrDefault(),
+            LastName = user.Name?.Contains(' ') == true ? string.Join(" ", user.Name.Split(' ').Skip(1)) : null,
+            PhoneNumber = user.PhoneNumber,
+            Role = user.Role,
+            IsActive = user.IsActive
+        };
+        showEditModal = true;
+    }
+
+    private void CloseEditModal()
+    {
+        showEditModal = false;
+        editUser = new UpdateUserDto();
+        editUserId = 0;
+    }
+
+    private async Task UpdateUser()
+    {
+        isUpdatingUser = true;
+        try
+        {
+            // Set the IsActive value from the checkbox
+            editUser.IsActive = isActiveChecked;
+
+            var result = await AdminApiService.UpdateUserAsync(editUserId, editUser);
+            if (result != null)
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "User updated successfully", "success");
+                CloseEditModal();
+                await LoadUsers();
+            }
+        }
+        catch (Exception)
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", "Failed to update user", "error");
+        }
+        finally
+        {
+            isUpdatingUser = false;
+        }
     }
 
     private async Task ActivateUser(int userId)

@@ -18,7 +18,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Auth
             try
             {
                 var content = CreateJsonContent(loginDto);
-                var response = await HttpClient.PostAsync("auth/login", content);
+                var response = await HttpClient.PostAsync("Auth/login", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -46,7 +46,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Auth
             try
             {
                 var content = CreateJsonContent(loginDto);
-                var response = await HttpClient.PostAsync("auth/login", content);
+                var response = await HttpClient.PostAsync("Auth/login", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -112,7 +112,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Auth
         {
             try
             {
-                var response = await HttpClient.PostAsync("auth/logout", null);
+                var response = await HttpClient.PostAsync("Auth/logout", null);
                 if (response.IsSuccessStatusCode)
                 {
                     Token = null;
@@ -130,7 +130,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Auth
         {
             try
             {
-                var response = await HttpClient.GetAsync("auth/current");
+                var response = await HttpClient.GetAsync("Auth/current");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();

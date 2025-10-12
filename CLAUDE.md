@@ -62,30 +62,36 @@
 
 ### 🚨 **MANDATORY CLEANUP RULE** 🚨
 
-**CRITICAL**: After ANY testing session or background service startup, you MUST immediately kill all running dotnet processes to prevent port conflicts and resource issues.
+**CRITICAL**: You MUST ALWAYS kill all running dotnet processes BEFORE and AFTER making ANY code changes, debugging sessions, or testing. This is NOT optional - it's MANDATORY for proper development workflow.
 
 **Required Cleanup Commands:**
 ```bash
-# Kill all dotnet processes (MANDATORY after testing)
+# Kill all dotnet processes (MANDATORY before AND after ANY changes)
 taskkill //F //IM dotnet.exe
 
 # Or use the automated cleanup script
 powershell -ExecutionPolicy Bypass -File "cleanup-for-vs-debug.ps1"
 ```
 
-**When to Execute Cleanup:**
-- ✅ **After every test run or debugging session**
-- ✅ **Before starting Visual Studio debugging**
-- ✅ **After background service startup for testing**
+**⚠️ MANDATORY CLEANUP SITUATIONS:**
+- ✅ **BEFORE making any code changes** - Kill all processes first
+- ✅ **AFTER making any code changes** - Kill before restarting
+- ✅ **BEFORE starting debugging** - Always start clean
+- ✅ **AFTER every test run or debugging session**
+- ✅ **BEFORE starting Visual Studio debugging**
+- ✅ **AFTER background service startup for testing**
 - ✅ **When switching between local and Docker development**
-- ✅ **When experiencing port binding errors**
+- ✅ **When experiencing ANY errors or issues**
+- ✅ **BEFORE committing code changes**
 
-**Why This is Critical:**
+**Why This is CRITICAL:**
 - Prevents port conflicts (7010, 7030, 7020, 7040)
 - Avoids SSL connection issues between services
 - Eliminates resource leaks and hanging processes
 - Ensures clean state for Visual Studio debugging
 - Prevents database connection pool exhaustion
+- **ENSURES CODE CHANGES ARE ACTUALLY APPLIED**
+- **PREVENTS OLD CACHED PROCESSES FROM RUNNING**
 
 #### Visual Studio Debugging Cleanup
 For clean Visual Studio debugging sessions, use these cleanup scripts to kill any running dotnet processes:

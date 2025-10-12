@@ -10,29 +10,29 @@
 <CustomerAuthRoute>
 @if (isLoading)
 {
-    <div class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
+    <div class="text-center py-5" id="customer-eventdetails-loading">
+        <div class="spinner-border text-primary" role="status" id="customer-eventdetails-loading-spinner">
             <span class="visually-hidden">Loading event details...</span>
         </div>
-        <p class="mt-2">Loading event details...</p>
+        <p class="mt-2" id="customer-eventdetails-loading-text">Loading event details...</p>
     </div>
 }
 else if (eventDetails == null)
 {
-    <div class="alert alert-danger">
-        <h5><i class="fas fa-exclamation-triangle me-2"></i>Event Not Found</h5>
-        <p>The requested event could not be found or is no longer available.</p>
-        <a href="/events" class="btn btn-primary">Back to Events</a>
+    <div class="alert alert-danger" id="customer-eventdetails-not-found">
+        <h5 id="customer-eventdetails-not-found-title"><i class="fas fa-exclamation-triangle me-2"></i>Event Not Found</h5>
+        <p id="customer-eventdetails-not-found-message">The requested event could not be found or is no longer available.</p>
+        <a href="/events" class="btn btn-primary" id="customer-eventdetails-back-btn">Back to Events</a>
     </div>
 }
 else
 {
-    <div class="container-fluid py-4">
+    <div class="container-fluid py-4" id="customer-eventdetails-container">
         <!-- Event Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
+        <div class="row mb-4" id="customer-eventdetails-header-row">
+            <div class="col-12" id="customer-eventdetails-header-col">
+                <nav aria-label="breadcrumb" id="customer-eventdetails-breadcrumb">
+                    <ol class="breadcrumb" id="customer-eventdetails-breadcrumb-list">
                         <li class="breadcrumb-item"><a href="/events">Events</a></li>
                         <li class="breadcrumb-item active">@eventDetails.EventName</li>
                     </ol>
@@ -40,46 +40,46 @@ else
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="customer-eventdetails-content-row">
             <!-- Event Info -->
-            <div class="col-lg-4 mb-4">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">@eventDetails.EventName</h4>
-                        <small class="opacity-75">@eventDetails.EventType</small>
+            <div class="col-lg-4 mb-4" id="customer-eventdetails-sidebar">
+                <div class="card" id="customer-eventdetails-info-card">
+                    <div class="card-header bg-primary text-white" id="customer-eventdetails-info-header">
+                        <h4 class="mb-0" id="customer-eventdetails-info-title">@eventDetails.EventName</h4>
+                        <small class="opacity-75" id="customer-eventdetails-info-type">@eventDetails.EventType</small>
                     </div>
-                    <div class="card-body">
-                        <p class="card-text">@eventDetails.Description</p>
-                        
-                        <div class="event-info">
-                            <div class="mb-2">
-                                <strong>📅 Date:</strong> @eventDetails.EventDate.ToString("dddd, MMM dd, yyyy")
+                    <div class="card-body" id="customer-eventdetails-info-body">
+                        <p class="card-text" id="customer-eventdetails-info-description">@eventDetails.Description</p>
+
+                        <div class="event-info" id="customer-eventdetails-info-details">
+                            <div class="mb-2" id="customer-eventdetails-date">
+                                <strong id="customer-eventdetails-date-label">📅 Date:</strong> <span id="customer-eventdetails-date-value">@eventDetails.EventDate.ToString("dddd, MMM dd, yyyy")</span>
                             </div>
-                            <div class="mb-2">
-                                <strong>🕒 Time:</strong> @eventDetails.EventDate.ToString("HH:mm")
+                            <div class="mb-2" id="customer-eventdetails-time">
+                                <strong id="customer-eventdetails-time-label">🕒 Time:</strong> <span id="customer-eventdetails-time-value">@eventDetails.EventDate.ToString("HH:mm")</span>
                             </div>
-                            <div class="mb-2">
-                                <strong>🏟️ Venue:</strong> @eventDetails.VenueInfo
+                            <div class="mb-2" id="customer-eventdetails-venue">
+                                <strong id="customer-eventdetails-venue-label">🏟️ Venue:</strong> <span id="customer-eventdetails-venue-value">@eventDetails.VenueInfo</span>
                             </div>
-                            <div class="mb-3">
-                                <strong>🪑 Available Seats:</strong> 
-                                <span class="badge @(eventDetails.AvailableSeats > 100 ? "bg-success" : eventDetails.AvailableSeats > 50 ? "bg-warning" : "bg-danger")">
+                            <div class="mb-3" id="customer-eventdetails-available-seats">
+                                <strong id="customer-eventdetails-available-seats-label">🪑 Available Seats:</strong>
+                                <span class="badge @(eventDetails.AvailableSeats > 100 ? "bg-success" : eventDetails.AvailableSeats > 50 ? "bg-warning" : "bg-danger")" id="customer-eventdetails-available-seats-badge">
                                     @eventDetails.AvailableSeats
                                 </span>
                             </div>
                         </div>
 
                         <!-- Pricing Tiers -->
-                        <div class="pricing-tiers">
-                            <h6><strong>💰 Pricing Tiers</strong></h6>
+                        <div class="pricing-tiers" id="customer-eventdetails-pricing-tiers">
+                            <h6 id="customer-eventdetails-pricing-title"><strong>💰 Pricing Tiers</strong></h6>
                             @foreach (var tier in eventDetails.PricingTiers)
                             {
-                                <div class="tier-info mb-2">
-                                    <div class="d-flex justify-content-between">
-                                        <span class="fw-bold">@tier.Name</span>
-                                        <span class="text-success">$@tier.BasePrice.ToString("F2")</span>
+                                <div class="tier-info mb-2" id="customer-eventdetails-tier-@tier.Name">
+                                    <div class="d-flex justify-content-between" id="customer-eventdetails-tier-info-@tier.Name">
+                                        <span class="fw-bold" id="customer-eventdetails-tier-name-@tier.Name">@tier.Name</span>
+                                        <span class="text-success" id="customer-eventdetails-tier-price-@tier.Name">$@tier.BasePrice.ToString("F2")</span>
                                     </div>
-                                    <small class="text-muted">@tier.Description</small>
+                                    <small class="text-muted" id="customer-eventdetails-tier-desc-@tier.Name">@tier.Description</small>
                                 </div>
                             }
                         </div>
@@ -87,9 +87,9 @@ else
                 </div>
 
                 <!-- Shopping Cart -->
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5 class="mb-0">
+                <div class="card mt-3" id="customer-eventdetails-cart-card">
+                    <div class="card-header" id="customer-eventdetails-cart-header">
+                        <h5 class="mb-0" id="customer-eventdetails-cart-title">
                             🛒 Your Cart 
                             @if (cartItems.Any())
                             {
@@ -97,32 +97,32 @@ else
                             }
                         </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" id="customer-eventdetails-cart-body">
                         @if (!cartItems.Any())
                         {
-                            <p class="text-muted mb-0">No seats selected yet.</p>
+                            <p class="text-muted mb-0" id="customer-eventdetails-cart-empty">No seats selected yet.</p>
                         }
                         else
                         {
                             @foreach (var item in cartItems)
                             {
-                                <div class="cart-item d-flex justify-content-between align-items-center mb-2">
-                                    <div>
-                                        <strong>@item.SeatCode</strong><br>
-                                        <small class="text-muted">@item.EventName</small>
+                                <div class="cart-item d-flex justify-content-between align-items-center mb-2" id="customer-eventdetails-cart-item-@item.SectorId-@item.RowNumber-@item.SeatNumber">
+                                    <div id="customer-eventdetails-cart-item-info-@item.SectorId-@item.RowNumber-@item.SeatNumber">
+                                        <strong id="customer-eventdetails-cart-item-code-@item.SectorId-@item.RowNumber-@item.SeatNumber">@item.SeatCode</strong><br>
+                                        <small class="text-muted" id="customer-eventdetails-cart-item-event-@item.SectorId-@item.RowNumber-@item.SeatNumber">@item.EventName</small>
                                     </div>
-                                    <div class="text-end">
-                                        <div>$@item.Price.ToString("F2")</div>
+                                    <div class="text-end" id="customer-eventdetails-cart-item-actions-@item.SectorId-@item.RowNumber-@item.SeatNumber">
+                                        <div id="customer-eventdetails-cart-item-price-@item.SectorId-@item.RowNumber-@item.SeatNumber">$@item.Price.ToString("F2")</div>
                                         <button id="customer-eventdetails-remove-seat-btn-@item.SectorId-@item.RowNumber-@item.SeatNumber" class="btn btn-sm btn-outline-danger" @onclick="() => RemoveSeatFromCart(item)">
                                             <i class="fas fa-times"></i>
                                         </button>
                                     </div>
                                 </div>
                             }
-                            <hr>
-                            <div class="d-flex justify-content-between fw-bold">
-                                <span>Total:</span>
-                                <span class="text-success">$@cartItems.Sum(i => i.Price).ToString("F2")</span>
+                            <hr id="customer-eventdetails-cart-divider">
+                            <div class="d-flex justify-content-between fw-bold" id="customer-eventdetails-cart-total">
+                                <span id="customer-eventdetails-cart-total-label">Total:</span>
+                                <span class="text-success" id="customer-eventdetails-cart-total-amount">$@cartItems.Sum(i => i.Price).ToString("F2")</span>
                             </div>
                             <button id="customer-eventdetails-checkout-btn" class="btn btn-success w-100 mt-2" @onclick="ProceedToCheckout">
                                 <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
@@ -136,16 +136,16 @@ else
             </div>
 
             <!-- Stadium Sections -->
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">🏟️ Stadium Sections</h5>
-                        <small class="text-muted">Click on a section to view available seats</small>
+            <div class="col-lg-8" id="customer-eventdetails-sections-col">
+                <div class="card" id="customer-eventdetails-sections-card">
+                    <div class="card-header" id="customer-eventdetails-sections-header">
+                        <h5 class="mb-0" id="customer-eventdetails-sections-title">🏟️ Stadium Sections</h5>
+                        <small class="text-muted" id="customer-eventdetails-sections-subtitle">Click on a section to view available seats</small>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" id="customer-eventdetails-sections-body">
                         @if (eventDetails.SectionAvailability.Any())
                         {
-                            <div class="row">
+                            <div class="row" id="customer-eventdetails-sections-row">
                                 @foreach (var section in eventDetails.SectionAvailability)
                                 {
                                     var info = section.Value;

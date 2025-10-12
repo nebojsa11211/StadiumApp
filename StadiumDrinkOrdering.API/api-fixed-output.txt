@@ -1,0 +1,383 @@
+Using launch settings from D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.API\Properties\launchSettings.json...
+Building...
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.API\StadiumDrinkOrdering.API.csproj : warning NU1603: StadiumDrinkOrdering.API depends on Supabase (>= 0.15.0) but Supabase 0.15.0 was not found. Supabase 1.0.0 was resolved instead.
+D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.API\StadiumDrinkOrdering.API.csproj : warning NU1603: StadiumDrinkOrdering.API depends on Supabase (>= 0.15.0) but Supabase 0.15.0 was not found. Supabase 1.0.0 was resolved instead.
+=== VISUAL STUDIO DEBUGGING - Configuration Sources ===
+ASPNETCORE_ENVIRONMENT: Development
+ConnectionStrings__DefaultConnection env var: Host=aws-1-eu-north-1.pooler.supabase.com;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Port=5432;Ssl Mode=Require;Trust Server Certificate=true;Pooling=false;Command Timeout=30
+
+=== Configuration Providers ===
+Provider: MemoryConfigurationSource
+Provider: EnvironmentVariablesConfigurationSource
+Provider: MemoryConfigurationSource
+Provider: EnvironmentVariablesConfigurationSource
+Provider: JsonConfigurationSource
+Provider: JsonConfigurationSource
+Provider: JsonConfigurationSource
+Provider: EnvironmentVariablesConfigurationSource
+Provider: ChainedConfigurationSource
+
+=== Final Connection String ===
+Connection String: Host=aws-1-eu-north-1.pooler.supabase.com;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Port=5432;Ssl Mode=Require;Trust Server Certificate=true;Pooling=false;Command Timeout=30
+
+=== File System Context ===
+Current Directory: D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.API
+appsettings.json exists: True
+appsettings.Development.json exists: True
+
+=== appsettings.json Content ===
+✓ appsettings.json looks correct (no SQLite reference)
+=== END VISUAL STUDIO DEBUGGING ===
+
+Connection String: Host=aws-1-eu-north-1.pooler.supabase.com;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;Port=5432;Ssl Mode=Require;Trust Server Certificate=true;Pooling=false;Command Timeout=30
+Using PostgreSQL/Supabase connection...
+Using connection string: Host=aws-1-eu-north-1.pooler.supabase.com;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=***;Port=5432;Ssl Mode=Require;Trust Server Certificate=true;Pooling=false;Command Timeout=30
+Initializing database connection and migrations...
+info: Program[0]
+      Database initialization attempt 1 of 5
+warn: Microsoft.EntityFrameworkCore.Model.Validation[10400]
+      Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+warn: Microsoft.EntityFrameworkCore.Model.Validation[10625]
+      The foreign key property 'Order.TicketSessionId1' was created in shadow state because a conflicting property with the simple name 'TicketSessionId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+info: Program[0]
+      Attempting to connect to database...
+info: Program[0]
+      Connected to database: postgres
+info: Program[0]
+      Connection test query executed successfully, result: 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (114ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+info: 06/10/25 22:28:47.604 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (114ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (115ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+info: 06/10/25 22:28:47.738 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (115ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (108ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+info: 06/10/25 22:28:48.489 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (108ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (111ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+info: 06/10/25 22:28:48.600 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (111ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+info: Program[0]
+      Migration status - Applied: 7, Pending: 0
+info: Program[0]
+      No pending migrations, database schema is up to date
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (110ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT count(*)::int
+      FROM "Users" AS u
+info: 06/10/25 22:28:49.201 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (110ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT count(*)::int
+      FROM "Users" AS u
+info: Program[0]
+      Database verification successful - found 35 users
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (109ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT u."Id", u."CreatedAt", u."Email", u."LastLoginAt", u."PasswordHash", u."Role", u."Username"
+      FROM "Users" AS u
+      WHERE u."Email" = 'admin@stadium.com'
+      LIMIT 1
+info: 06/10/25 22:28:49.473 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (109ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT u."Id", u."CreatedAt", u."Email", u."LastLoginAt", u."PasswordHash", u."Role", u."Username"
+      FROM "Users" AS u
+      WHERE u."Email" = 'admin@stadium.com'
+      LIMIT 1
+info: Program[0]
+      Admin user found, checking if updates are needed...
+info: Program[0]
+      Admin password hash is valid and verified successfully
+info: Program[0]
+      Admin user is already correctly configured, no updates needed
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (110ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT count(*)::int
+      FROM "Tribunes" AS t
+info: 06/10/25 22:28:49.900 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (110ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT count(*)::int
+      FROM "Tribunes" AS t
+info: Program[0]
+      Stadium structure found - 4 tribunes exist
+info: Program[0]
+      ✓ Database initialization completed successfully!
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://localhost:7010
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: D:\AiApps\StadiumApp\StadiumApp\StadiumDrinkOrdering.API
+=== DEBUG: SKIPPING IP ban check due to database connection issues ===
+=== DEBUG: SKIPPING account lockout check due to database connection issues ===
+=== DEBUG: Account lockout check skipped ===
+=== DEBUG: SKIPPING progressive delay check due to database connection issues ===
+=== DEBUG: Starting authentication with AuthService.LoginAsync ===
+=== DEBUG: AuthService.LoginAsync starting ===
+=== DEBUG: Looking up user by email ===
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (110ms) [Parameters=[@__loginDto_Email_0='admin@stadium.com'], CommandType='Text', CommandTimeout='60']
+      SELECT u."Id", u."CreatedAt", u."Email", u."LastLoginAt", u."PasswordHash", u."Role", u."Username"
+      FROM "Users" AS u
+      WHERE u."Email" = @__loginDto_Email_0
+      LIMIT 1
+info: 06/10/25 22:29:42.380 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (110ms) [Parameters=[@__loginDto_Email_0='admin@stadium.com'], CommandType='Text', CommandTimeout='60']
+      SELECT u."Id", u."CreatedAt", u."Email", u."LastLoginAt", u."PasswordHash", u."Role", u."Username"
+      FROM "Users" AS u
+      WHERE u."Email" = @__loginDto_Email_0
+      LIMIT 1
+=== DEBUG: User lookup completed successfully, found: True ===
+=== DEBUG: Starting password verification ===
+=== DEBUG: Password verification completed, valid: True ===
+=== DEBUG: SKIPPING last login update due to database timeout issues ===
+=== DEBUG: Authentication result: 747 chars ===
+=== DEBUG: SKIPPING ClearFailedAttemptsAsync due to database connection issues ===
+=== DEBUG: Login successful for admin@stadium.com, skipping centralized logging ===
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (107ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT s."Id", s."Color", s."CreatedDate", s."HeightPercent", s."IsDeleted", s."LeftPercent", s."ModifiedDate", s."Name", s."Rows", s."SeatsPerRow", s."SectorCode", s."ShapeData", s."ShapeTypeEnum", s."StadiumSectionId", s."TopPercent", s."Type", s."UseVariableSeating", s."VariableSeatingData", s."VertexCoordinatesJson", s."WidthPercent"
+      FROM "StadiumSectorOverlays" AS s
+      WHERE NOT (s."IsDeleted")
+      ORDER BY s."SectorCode"
+info: 06/10/25 22:29:44.320 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (107ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT s."Id", s."Color", s."CreatedDate", s."HeightPercent", s."IsDeleted", s."LeftPercent", s."ModifiedDate", s."Name", s."Rows", s."SeatsPerRow", s."SectorCode", s."ShapeData", s."ShapeTypeEnum", s."StadiumSectionId", s."TopPercent", s."Type", s."UseVariableSeating", s."VariableSeatingData", s."VertexCoordinatesJson", s."WidthPercent"
+      FROM "StadiumSectorOverlays" AS s
+      WHERE NOT (s."IsDeleted")
+      ORDER BY s."SectorCode"
+info: StadiumDrinkOrdering.API.Controllers.StadiumViewerController[0]
+      Stadium overview API endpoint called - starting optimized query
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (104ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT t."Id", t."Code", t."CreatedAt", t."Description", t."Name", t."UpdatedAt"
+      FROM "Tribunes" AS t
+      ORDER BY t."Code", t."Id"
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (103ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      
+                  SELECT
+                      e."Id", e."EventName", e."EventType", e."EventDate",
+                      e."VenueId", e."TotalSeats", e."IsActive", e."CreatedAt",
+                      e."UpdatedAt", e."Description", e."ImageUrl", e."BaseTicketPrice"
+                  FROM "Events" e
+                  WHERE e."IsActive" = true
+                  ORDER BY e."EventDate"
+info: 06/10/25 22:29:45.307 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (104ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT t."Id", t."Code", t."CreatedAt", t."Description", t."Name", t."UpdatedAt"
+      FROM "Tribunes" AS t
+      ORDER BY t."Code", t."Id"
+info: 06/10/25 22:29:45.307 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (103ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      
+                  SELECT
+                      e."Id", e."EventName", e."EventType", e."EventDate",
+                      e."VenueId", e."TotalSeats", e."IsActive", e."CreatedAt",
+                      e."UpdatedAt", e."Description", e."ImageUrl", e."BaseTicketPrice"
+                  FROM "Events" e
+                  WHERE e."IsActive" = true
+                  ORDER BY e."EventDate"
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (148ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT r."Id", r."CreatedAt", r."Name", r."Number", r."TribuneId", r."UpdatedAt", t."Id"
+      FROM "Tribunes" AS t
+      INNER JOIN "Rings" AS r ON t."Id" = r."TribuneId"
+      ORDER BY t."Code", t."Id", r."Id"
+info: 06/10/25 22:29:45.470 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (148ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT r."Id", r."CreatedAt", r."Name", r."Number", r."TribuneId", r."UpdatedAt", t."Id"
+      FROM "Tribunes" AS t
+      INNER JOIN "Rings" AS r ON t."Id" = r."TribuneId"
+      ORDER BY t."Code", t."Id", r."Id"
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (100ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT s."Id", s."Code", s."CreatedAt", s."Name", s."RingId", s."SeatsPerRow", s."StartRow", s."StartSeat", s."TotalRows", s."UpdatedAt", t."Id", r."Id"
+      FROM "Tribunes" AS t
+      INNER JOIN "Rings" AS r ON t."Id" = r."TribuneId"
+      INNER JOIN "Sectors" AS s ON r."Id" = s."RingId"
+      ORDER BY t."Code", t."Id", r."Id"
+info: 06/10/25 22:29:45.576 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (100ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT s."Id", s."Code", s."CreatedAt", s."Name", s."RingId", s."SeatsPerRow", s."StartRow", s."StartSeat", s."TotalRows", s."UpdatedAt", t."Id", r."Id"
+      FROM "Tribunes" AS t
+      INNER JOIN "Rings" AS r ON t."Id" = r."TribuneId"
+      INNER JOIN "Sectors" AS s ON r."Id" = s."RingId"
+      ORDER BY t."Code", t."Id", r."Id"
+info: StadiumDrinkOrdering.API.Controllers.StadiumViewerController[0]
+      Database query completed in 1038,15ms - Found 4 tribunes
+info: StadiumDrinkOrdering.API.Controllers.StadiumViewerController[0]
+      ULTRA-OPTIMIZED: Calculating seat counts for 10 sectors from metadata (no database query)
+info: StadiumDrinkOrdering.API.Controllers.StadiumViewerController[0]
+      ULTRA-OPTIMIZED: Calculated 5765 total seats across 10 sectors in <1ms (metadata-based, no database query)
+info: StadiumDrinkOrdering.API.Controllers.StadiumViewerController[0]
+      Seat count aggregation completed in 4,41ms
+info: StadiumDrinkOrdering.API.Controllers.StadiumViewerController[0]
+      Generated stadium layout from tribunes: 4 stands, 10 total sectors
+info: StadiumDrinkOrdering.API.Controllers.StadiumViewerController[0]
+      Stadium overview generated successfully in 1046,58ms total (Query: 1038,15ms, Aggregation: 4,41ms, Layout: 4,01ms) - 4 stands, 10 sectors
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2,501ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT o."Id", o."AcceptedAt", o."AcceptedByUserId", o."ActualDeliveryTime", o."AssignedStaffId", o."CancelledAt", o."CreatedAt", o."CustomerId", o."CustomerNotes", o."DeliveredAt", o."DeliveredByUserId", o."DeliveryNotes", o."EstimatedDeliveryTime", o."EventId", o."Notes", o."PaymentId", o."PreparedAt", o."PreparedByUserId", o."SeatId", o."SeatNumber", o."SessionId", o."StadiumSeatId", o."Status", o."TicketId", o."TicketNumber", o."TicketSessionId", o."TicketSessionId1", o."TotalAmount", u."Id", u."CreatedAt", u."Email", u."LastLoginAt", u."PasswordHash", u."Role", u."Username", u0."Id", u0."CreatedAt", u0."Email", u0."LastLoginAt", u0."PasswordHash", u0."Role", u0."Username", u1."Id", u1."CreatedAt", u1."Email", u1."LastLoginAt", u1."PasswordHash", u1."Role", u1."Username", u2."Id", u2."CreatedAt", u2."Email", u2."LastLoginAt", u2."PasswordHash", u2."Role", u2."Username", p."Id", e."Id", s."Id", s0."Id", p."Amount", p."CreatedAt", p."Currency", p."FailedAt", p."FailureReason", p."OrderId", p."PaymentDate", p."PaymentGatewayResponse", p."PaymentMethod", p."ProcessedAt", p."RefundAmount", p."RefundDate", p."RefundReason", p."Status", p."TransactionId", e."BaseTicketPrice", e."CreatedAt", e."Description", e."EventDate", e."EventName", e."EventType", e."ImageUrl", e."IsActive", e."TotalSeats", e."UpdatedAt", e."VenueId", s."IsAccessible", s."RowNumber", s."SeatCode", s."SeatNumber", s."SectionId", s."XCoordinate", s."YCoordinate", s0."Color", s0."IsActive", s0."PriceMultiplier", s0."SeatsPerRow", s0."SectionCode", s0."SectionName", s0."TotalRows"
+      FROM "Orders" AS o
+      INNER JOIN "Users" AS u ON o."CustomerId" = u."Id"
+      LEFT JOIN "Users" AS u0 ON o."AcceptedByUserId" = u0."Id"
+      LEFT JOIN "Users" AS u1 ON o."PreparedByUserId" = u1."Id"
+      LEFT JOIN "Users" AS u2 ON o."DeliveredByUserId" = u2."Id"
+      LEFT JOIN "Payments" AS p ON o."Id" = p."OrderId"
+      LEFT JOIN "Events" AS e ON o."EventId" = e."Id"
+      LEFT JOIN "Seats" AS s ON o."SeatId" = s."Id"
+      LEFT JOIN "StadiumSections" AS s0 ON s."SectionId" = s0."Id"
+      ORDER BY o."CreatedAt" DESC, o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+info: 06/10/25 22:29:46.741 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (2,501ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT o."Id", o."AcceptedAt", o."AcceptedByUserId", o."ActualDeliveryTime", o."AssignedStaffId", o."CancelledAt", o."CreatedAt", o."CustomerId", o."CustomerNotes", o."DeliveredAt", o."DeliveredByUserId", o."DeliveryNotes", o."EstimatedDeliveryTime", o."EventId", o."Notes", o."PaymentId", o."PreparedAt", o."PreparedByUserId", o."SeatId", o."SeatNumber", o."SessionId", o."StadiumSeatId", o."Status", o."TicketId", o."TicketNumber", o."TicketSessionId", o."TicketSessionId1", o."TotalAmount", u."Id", u."CreatedAt", u."Email", u."LastLoginAt", u."PasswordHash", u."Role", u."Username", u0."Id", u0."CreatedAt", u0."Email", u0."LastLoginAt", u0."PasswordHash", u0."Role", u0."Username", u1."Id", u1."CreatedAt", u1."Email", u1."LastLoginAt", u1."PasswordHash", u1."Role", u1."Username", u2."Id", u2."CreatedAt", u2."Email", u2."LastLoginAt", u2."PasswordHash", u2."Role", u2."Username", p."Id", e."Id", s."Id", s0."Id", p."Amount", p."CreatedAt", p."Currency", p."FailedAt", p."FailureReason", p."OrderId", p."PaymentDate", p."PaymentGatewayResponse", p."PaymentMethod", p."ProcessedAt", p."RefundAmount", p."RefundDate", p."RefundReason", p."Status", p."TransactionId", e."BaseTicketPrice", e."CreatedAt", e."Description", e."EventDate", e."EventName", e."EventType", e."ImageUrl", e."IsActive", e."TotalSeats", e."UpdatedAt", e."VenueId", s."IsAccessible", s."RowNumber", s."SeatCode", s."SeatNumber", s."SectionId", s."XCoordinate", s."YCoordinate", s0."Color", s0."IsActive", s0."PriceMultiplier", s0."SeatsPerRow", s0."SectionCode", s0."SectionName", s0."TotalRows"
+      FROM "Orders" AS o
+      INNER JOIN "Users" AS u ON o."CustomerId" = u."Id"
+      LEFT JOIN "Users" AS u0 ON o."AcceptedByUserId" = u0."Id"
+      LEFT JOIN "Users" AS u1 ON o."PreparedByUserId" = u1."Id"
+      LEFT JOIN "Users" AS u2 ON o."DeliveredByUserId" = u2."Id"
+      LEFT JOIN "Payments" AS p ON o."Id" = p."OrderId"
+      LEFT JOIN "Events" AS e ON o."EventId" = e."Id"
+      LEFT JOIN "Seats" AS s ON o."SeatId" = s."Id"
+      LEFT JOIN "StadiumSections" AS s0 ON s."SectionId" = s0."Id"
+      ORDER BY o."CreatedAt" DESC, o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (131ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT t."Id", t."DrinkId", t."OrderId", t."Quantity", t."SpecialInstructions", t."TotalPrice", t."UnitPrice", t."Id0", t."Category", t."CreatedAt", t."Description", t."ImageUrl", t."IsAvailable", t."Name", t."Price", t."StockQuantity", t."UpdatedAt", o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+      FROM "Orders" AS o
+      INNER JOIN "Users" AS u ON o."CustomerId" = u."Id"
+      LEFT JOIN "Users" AS u0 ON o."AcceptedByUserId" = u0."Id"
+      LEFT JOIN "Users" AS u1 ON o."PreparedByUserId" = u1."Id"
+      LEFT JOIN "Users" AS u2 ON o."DeliveredByUserId" = u2."Id"
+      LEFT JOIN "Payments" AS p ON o."Id" = p."OrderId"
+      LEFT JOIN "Events" AS e ON o."EventId" = e."Id"
+      LEFT JOIN "Seats" AS s ON o."SeatId" = s."Id"
+      LEFT JOIN "StadiumSections" AS s0 ON s."SectionId" = s0."Id"
+      INNER JOIN (
+          SELECT o0."Id", o0."DrinkId", o0."OrderId", o0."Quantity", o0."SpecialInstructions", o0."TotalPrice", o0."UnitPrice", d."Id" AS "Id0", d."Category", d."CreatedAt", d."Description", d."ImageUrl", d."IsAvailable", d."Name", d."Price", d."StockQuantity", d."UpdatedAt"
+          FROM "OrderItems" AS o0
+          INNER JOIN "Drinks" AS d ON o0."DrinkId" = d."Id"
+      ) AS t ON o."Id" = t."OrderId"
+      ORDER BY o."CreatedAt" DESC, o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+info: 06/10/25 22:29:47.159 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (131ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT t."Id", t."DrinkId", t."OrderId", t."Quantity", t."SpecialInstructions", t."TotalPrice", t."UnitPrice", t."Id0", t."Category", t."CreatedAt", t."Description", t."ImageUrl", t."IsAvailable", t."Name", t."Price", t."StockQuantity", t."UpdatedAt", o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+      FROM "Orders" AS o
+      INNER JOIN "Users" AS u ON o."CustomerId" = u."Id"
+      LEFT JOIN "Users" AS u0 ON o."AcceptedByUserId" = u0."Id"
+      LEFT JOIN "Users" AS u1 ON o."PreparedByUserId" = u1."Id"
+      LEFT JOIN "Users" AS u2 ON o."DeliveredByUserId" = u2."Id"
+      LEFT JOIN "Payments" AS p ON o."Id" = p."OrderId"
+      LEFT JOIN "Events" AS e ON o."EventId" = e."Id"
+      LEFT JOIN "Seats" AS s ON o."SeatId" = s."Id"
+      LEFT JOIN "StadiumSections" AS s0 ON s."SectionId" = s0."Id"
+      INNER JOIN (
+          SELECT o0."Id", o0."DrinkId", o0."OrderId", o0."Quantity", o0."SpecialInstructions", o0."TotalPrice", o0."UnitPrice", d."Id" AS "Id0", d."Category", d."CreatedAt", d."Description", d."ImageUrl", d."IsAvailable", d."Name", d."Price", d."StockQuantity", d."UpdatedAt"
+          FROM "OrderItems" AS o0
+          INNER JOIN "Drinks" AS d ON o0."DrinkId" = d."Id"
+      ) AS t ON o."Id" = t."OrderId"
+      ORDER BY o."CreatedAt" DESC, o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2,463ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT o."Id", o."AcceptedAt", o."AcceptedByUserId", o."ActualDeliveryTime", o."AssignedStaffId", o."CancelledAt", o."CreatedAt", o."CustomerId", o."CustomerNotes", o."DeliveredAt", o."DeliveredByUserId", o."DeliveryNotes", o."EstimatedDeliveryTime", o."EventId", o."Notes", o."PaymentId", o."PreparedAt", o."PreparedByUserId", o."SeatId", o."SeatNumber", o."SessionId", o."StadiumSeatId", o."Status", o."TicketId", o."TicketNumber", o."TicketSessionId", o."TicketSessionId1", o."TotalAmount", u."Id", u."CreatedAt", u."Email", u."LastLoginAt", u."PasswordHash", u."Role", u."Username", u0."Id", u0."CreatedAt", u0."Email", u0."LastLoginAt", u0."PasswordHash", u0."Role", u0."Username", u1."Id", u1."CreatedAt", u1."Email", u1."LastLoginAt", u1."PasswordHash", u1."Role", u1."Username", u2."Id", u2."CreatedAt", u2."Email", u2."LastLoginAt", u2."PasswordHash", u2."Role", u2."Username", p."Id", e."Id", s."Id", s0."Id", p."Amount", p."CreatedAt", p."Currency", p."FailedAt", p."FailureReason", p."OrderId", p."PaymentDate", p."PaymentGatewayResponse", p."PaymentMethod", p."ProcessedAt", p."RefundAmount", p."RefundDate", p."RefundReason", p."Status", p."TransactionId", e."BaseTicketPrice", e."CreatedAt", e."Description", e."EventDate", e."EventName", e."EventType", e."ImageUrl", e."IsActive", e."TotalSeats", e."UpdatedAt", e."VenueId", s."IsAccessible", s."RowNumber", s."SeatCode", s."SeatNumber", s."SectionId", s."XCoordinate", s."YCoordinate", s0."Color", s0."IsActive", s0."PriceMultiplier", s0."SeatsPerRow", s0."SectionCode", s0."SectionName", s0."TotalRows"
+      FROM "Orders" AS o
+      INNER JOIN "Users" AS u ON o."CustomerId" = u."Id"
+      LEFT JOIN "Users" AS u0 ON o."AcceptedByUserId" = u0."Id"
+      LEFT JOIN "Users" AS u1 ON o."PreparedByUserId" = u1."Id"
+      LEFT JOIN "Users" AS u2 ON o."DeliveredByUserId" = u2."Id"
+      LEFT JOIN "Payments" AS p ON o."Id" = p."OrderId"
+      LEFT JOIN "Events" AS e ON o."EventId" = e."Id"
+      LEFT JOIN "Seats" AS s ON o."SeatId" = s."Id"
+      LEFT JOIN "StadiumSections" AS s0 ON s."SectionId" = s0."Id"
+      ORDER BY o."CreatedAt" DESC, o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+info: 06/10/25 22:29:50.779 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (2,463ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT o."Id", o."AcceptedAt", o."AcceptedByUserId", o."ActualDeliveryTime", o."AssignedStaffId", o."CancelledAt", o."CreatedAt", o."CustomerId", o."CustomerNotes", o."DeliveredAt", o."DeliveredByUserId", o."DeliveryNotes", o."EstimatedDeliveryTime", o."EventId", o."Notes", o."PaymentId", o."PreparedAt", o."PreparedByUserId", o."SeatId", o."SeatNumber", o."SessionId", o."StadiumSeatId", o."Status", o."TicketId", o."TicketNumber", o."TicketSessionId", o."TicketSessionId1", o."TotalAmount", u."Id", u."CreatedAt", u."Email", u."LastLoginAt", u."PasswordHash", u."Role", u."Username", u0."Id", u0."CreatedAt", u0."Email", u0."LastLoginAt", u0."PasswordHash", u0."Role", u0."Username", u1."Id", u1."CreatedAt", u1."Email", u1."LastLoginAt", u1."PasswordHash", u1."Role", u1."Username", u2."Id", u2."CreatedAt", u2."Email", u2."LastLoginAt", u2."PasswordHash", u2."Role", u2."Username", p."Id", e."Id", s."Id", s0."Id", p."Amount", p."CreatedAt", p."Currency", p."FailedAt", p."FailureReason", p."OrderId", p."PaymentDate", p."PaymentGatewayResponse", p."PaymentMethod", p."ProcessedAt", p."RefundAmount", p."RefundDate", p."RefundReason", p."Status", p."TransactionId", e."BaseTicketPrice", e."CreatedAt", e."Description", e."EventDate", e."EventName", e."EventType", e."ImageUrl", e."IsActive", e."TotalSeats", e."UpdatedAt", e."VenueId", s."IsAccessible", s."RowNumber", s."SeatCode", s."SeatNumber", s."SectionId", s."XCoordinate", s."YCoordinate", s0."Color", s0."IsActive", s0."PriceMultiplier", s0."SeatsPerRow", s0."SectionCode", s0."SectionName", s0."TotalRows"
+      FROM "Orders" AS o
+      INNER JOIN "Users" AS u ON o."CustomerId" = u."Id"
+      LEFT JOIN "Users" AS u0 ON o."AcceptedByUserId" = u0."Id"
+      LEFT JOIN "Users" AS u1 ON o."PreparedByUserId" = u1."Id"
+      LEFT JOIN "Users" AS u2 ON o."DeliveredByUserId" = u2."Id"
+      LEFT JOIN "Payments" AS p ON o."Id" = p."OrderId"
+      LEFT JOIN "Events" AS e ON o."EventId" = e."Id"
+      LEFT JOIN "Seats" AS s ON o."SeatId" = s."Id"
+      LEFT JOIN "StadiumSections" AS s0 ON s."SectionId" = s0."Id"
+      ORDER BY o."CreatedAt" DESC, o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (116ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT t."Id", t."DrinkId", t."OrderId", t."Quantity", t."SpecialInstructions", t."TotalPrice", t."UnitPrice", t."Id0", t."Category", t."CreatedAt", t."Description", t."ImageUrl", t."IsAvailable", t."Name", t."Price", t."StockQuantity", t."UpdatedAt", o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+      FROM "Orders" AS o
+      INNER JOIN "Users" AS u ON o."CustomerId" = u."Id"
+      LEFT JOIN "Users" AS u0 ON o."AcceptedByUserId" = u0."Id"
+      LEFT JOIN "Users" AS u1 ON o."PreparedByUserId" = u1."Id"
+      LEFT JOIN "Users" AS u2 ON o."DeliveredByUserId" = u2."Id"
+      LEFT JOIN "Payments" AS p ON o."Id" = p."OrderId"
+      LEFT JOIN "Events" AS e ON o."EventId" = e."Id"
+      LEFT JOIN "Seats" AS s ON o."SeatId" = s."Id"
+      LEFT JOIN "StadiumSections" AS s0 ON s."SectionId" = s0."Id"
+      INNER JOIN (
+          SELECT o0."Id", o0."DrinkId", o0."OrderId", o0."Quantity", o0."SpecialInstructions", o0."TotalPrice", o0."UnitPrice", d."Id" AS "Id0", d."Category", d."CreatedAt", d."Description", d."ImageUrl", d."IsAvailable", d."Name", d."Price", d."StockQuantity", d."UpdatedAt"
+          FROM "OrderItems" AS o0
+          INNER JOIN "Drinks" AS d ON o0."DrinkId" = d."Id"
+      ) AS t ON o."Id" = t."OrderId"
+      ORDER BY o."CreatedAt" DESC, o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+info: 06/10/25 22:29:51.098 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (116ms) [Parameters=[], CommandType='Text', CommandTimeout='60']
+      SELECT t."Id", t."DrinkId", t."OrderId", t."Quantity", t."SpecialInstructions", t."TotalPrice", t."UnitPrice", t."Id0", t."Category", t."CreatedAt", t."Description", t."ImageUrl", t."IsAvailable", t."Name", t."Price", t."StockQuantity", t."UpdatedAt", o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"
+      FROM "Orders" AS o
+      INNER JOIN "Users" AS u ON o."CustomerId" = u."Id"
+      LEFT JOIN "Users" AS u0 ON o."AcceptedByUserId" = u0."Id"
+      LEFT JOIN "Users" AS u1 ON o."PreparedByUserId" = u1."Id"
+      LEFT JOIN "Users" AS u2 ON o."DeliveredByUserId" = u2."Id"
+      LEFT JOIN "Payments" AS p ON o."Id" = p."OrderId"
+      LEFT JOIN "Events" AS e ON o."EventId" = e."Id"
+      LEFT JOIN "Seats" AS s ON o."SeatId" = s."Id"
+      LEFT JOIN "StadiumSections" AS s0 ON s."SectionId" = s0."Id"
+      INNER JOIN (
+          SELECT o0."Id", o0."DrinkId", o0."OrderId", o0."Quantity", o0."SpecialInstructions", o0."TotalPrice", o0."UnitPrice", d."Id" AS "Id0", d."Category", d."CreatedAt", d."Description", d."ImageUrl", d."IsAvailable", d."Name", d."Price", d."StockQuantity", d."UpdatedAt"
+          FROM "OrderItems" AS o0
+          INNER JOIN "Drinks" AS d ON o0."DrinkId" = d."Id"
+      ) AS t ON o."Id" = t."OrderId"
+      ORDER BY o."CreatedAt" DESC, o."Id", u."Id", u0."Id", u1."Id", u2."Id", p."Id", e."Id", s."Id", s0."Id"

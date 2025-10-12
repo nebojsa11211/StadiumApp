@@ -100,7 +100,7 @@ builder.Services.AddHttpClient("ApiClient", client =>
     }
 
     client.BaseAddress = new Uri(apiBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(15); // Match API timeout plus buffer
+    client.Timeout = TimeSpan.FromSeconds(120); // Extended timeout for database operations
     client.DefaultRequestVersion = new Version(1, 1);
     client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
 }).ConfigurePrimaryHttpMessageHandler(() =>
@@ -241,7 +241,7 @@ builder.Services.AddScoped<SecureApiService>(provider =>
 builder.Services.AddHttpClient("AdminSecureApi", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl.TrimEnd('/') + "/");
-    client.Timeout = TimeSpan.FromSeconds(15); // Match API timeout plus buffer
+    client.Timeout = TimeSpan.FromSeconds(120); // Extended timeout for database operations
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
@@ -298,7 +298,7 @@ builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
         apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
     }
     client.BaseAddress = new Uri(apiBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(15); // Match API timeout plus buffer
+    client.Timeout = TimeSpan.FromSeconds(120); // Extended timeout for database operations
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();

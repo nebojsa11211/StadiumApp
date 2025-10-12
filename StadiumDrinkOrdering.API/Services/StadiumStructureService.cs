@@ -191,17 +191,18 @@ public class StadiumStructureService : IStadiumStructureService
     {
         try
         {
-            // Delete in order due to foreign key constraints using regular LINQ operations
-            var seats = await _context.StadiumSeatsNew.ToListAsync();
+            // Delete in order due to foreign key constraints
+            // Use AsNoTracking() since we're just deleting these entities
+            var seats = await _context.StadiumSeatsNew.AsNoTracking().ToListAsync();
             _context.StadiumSeatsNew.RemoveRange(seats);
 
-            var sectors = await _context.Sectors.ToListAsync();
+            var sectors = await _context.Sectors.AsNoTracking().ToListAsync();
             _context.Sectors.RemoveRange(sectors);
 
-            var rings = await _context.Rings.ToListAsync();
+            var rings = await _context.Rings.AsNoTracking().ToListAsync();
             _context.Rings.RemoveRange(rings);
 
-            var tribunes = await _context.Tribunes.ToListAsync();
+            var tribunes = await _context.Tribunes.AsNoTracking().ToListAsync();
             _context.Tribunes.RemoveRange(tribunes);
 
             await _context.SaveChangesAsync();
@@ -221,32 +222,42 @@ public class StadiumStructureService : IStadiumStructureService
 
     public async Task<StadiumSummaryDto> GetStadiumSummaryAsync()
     {
-        var summary = new StadiumSummaryDto
+        try
         {
-            TotalTribunes = await _context.Tribunes.CountAsync(),
-            TotalRings = await _context.Rings.CountAsync(),
-            TotalSectors = await _context.Sectors.CountAsync(),
-            TotalSeats = await _context.StadiumSeatsNew.CountAsync(),
-            AvailableSeats = await _context.StadiumSeatsNew.CountAsync(s => s.IsAvailable),
-            OccupiedSeats = await _context.StadiumSeatsNew.CountAsync(s => !s.IsAvailable)
-        };
-        
-        return summary;
+            // OPTIMIZED: Use AsNoTracking() for count queries (no entities loaded)
+            var summary = new StadiumSummaryDto();
+            summary.TotalTribunes = await _context.Tribunes.AsNoTracking().CountAsync();
+            summary.TotalRings = await _context.Rings.AsNoTracking().CountAsync();
+            summary.TotalSectors = await _context.Sectors.AsNoTracking().CountAsync();
+            summary.TotalSeats = await _context.StadiumSeatsNew.AsNoTracking().CountAsync();
+            summary.AvailableSeats = await _context.StadiumSeatsNew.AsNoTracking().CountAsync(s => s.IsAvailable);
+            summary.OccupiedSeats = await _context.StadiumSeatsNew.AsNoTracking().CountAsync(s => !s.IsAvailable);
+            return summary;
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
     }
 
     public async Task<List<Tribune>> GetFullStructureAsync()
     {
+        // NOTE: This method loads full structure including seats for export purposes
+        // Use AsNoTracking() since this is read-only for export
         return await _context.Tribunes
+            .AsNoTracking()  // Read-only query for export
             .Include(t => t.Rings)
             .ThenInclude(r => r.Sectors)
-            .ThenInclude(s => s.Seats)
+            .ThenInclude(s => s.Seats)  // Seats needed for complete export
             .OrderBy(t => t.Code)
             .ToListAsync();
     }
 
     public async Task<int> GetTotalSeatsCountAsync()
     {
-        return await _context.StadiumSeatsNew.CountAsync();
+        return await _context.StadiumSeatsNew.AsNoTracking().CountAsync();
     }
 
     public async Task<MemoryStream> ExportToJsonAsync()

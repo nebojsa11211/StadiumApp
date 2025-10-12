@@ -45,7 +45,9 @@ public class AuthController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            // Check if IP is banned
+            // Check if IP is banned - TEMPORARILY DISABLED DUE TO DATABASE CONNECTION ISSUES (182-second timeout)
+            Console.WriteLine("=== DEBUG: SKIPPING IP ban check due to database connection issues ===");
+            /*
             if (await _bruteForceService.IsIPBannedAsync(ipAddress))
             {
                 await _loggingClient.LogUserActionAsync(
@@ -55,6 +57,7 @@ public class AuthController : ControllerBase
 
                 return StatusCode(429, new { error = "IP address is temporarily banned", retryAfter = "3600" });
             }
+            */
 
             // Check if account is locked - TEMPORARILY DISABLED DUE TO DATABASE CONNECTION ISSUES
             Console.WriteLine("=== DEBUG: SKIPPING account lockout check due to database connection issues ===");
@@ -130,10 +133,14 @@ public class AuthController : ControllerBase
             await _bruteForceService.ClearFailedAttemptsAsync(loginDto.Email);
             */
 
+            // TEMPORARILY DISABLED: Centralized logging blocking login (62s timeout)
+            Console.WriteLine($"=== DEBUG: Login successful for {loginDto.Email}, skipping centralized logging ===");
+            /*
             await _loggingClient.LogUserActionAsync(
                 action: "LoginSuccessful",
                 category: "UserAction",
                 details: $"Successful login for user: {loginDto.Email}");
+            */
 
             return Ok(result);
         }

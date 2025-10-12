@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1001,
+    "name": "Champions League Final",
+    "date": "2024-06-15T19:00:00Z",
+    "description": "Real Madrid vs Manchester City - The ultimate showdown",
+    "location": "Football",
+    "capacity": 65000,
+    "availableSeats": 65000,
+    "basePrice": 250.00,
+    "isActive": false,
+    "createdAt": "2024-01-15T09:00:00Z"
+  },
+  {
+    "id": 1002,
+    "name": "Rock Festival 2024",
+    "date": "2024-08-20T16:00:00Z",
+    "description": "Metallica, AC/DC, and more legendary bands",
+    "location": "Concert",
+    "capacity": 60000,
+    "availableSeats": 60000,
+    "basePrice": 85.00,
+    "isActive": false,
+    "createdAt": "2024-03-10T13:30:00Z"
+  },
+  {
+    "id": 1003,
+    "name": "NBA All-Star Game",
+    "date": "2025-02-16T19:00:00Z",
+    "description": "East vs West - Basketball's finest showcase",
+    "location": "Basketball",
+    "capacity": 20000,
+    "availableSeats": 20000,
+    "basePrice": 175.00,
+    "isActive": true,
+    "createdAt": "2024-11-01T08:00:00Z"
+  },
+  {
+    "id": 1004,
+    "name": "Taylor Swift - Eras Tour",
+    "date": "2025-03-28T18:30:00Z",
+    "description": "The most anticipated concert event of the year",
+    "location": "Concert",
+    "capacity": 70000,
+    "availableSeats": 70000,
+    "basePrice": 125.00,
+    "isActive": true,
+    "createdAt": "2024-11-30T23:00:00Z"
+  },
+  {
+    "id": 1005,
+    "name": "World Cup Qualifier",
+    "date": "2025-04-10T18:45:00Z",
+    "description": "Croatia vs Brazil - Crucial qualifying match",
+    "location": "Football",
+    "capacity": 55000,
+    "availableSeats": 55000,
+    "basePrice": 65.00,
+    "isActive": true,
+    "createdAt": "2024-12-15T10:00:00Z"
+  },
+  {
+    "id": 1006,
+    "name": "Summer Music Festival",
+    "date": "2025-07-12T14:00:00Z",
+    "description": "Electronic music extravaganza with world's top DJs",
+    "location": "Festival",
+    "capacity": 45000,
+    "availableSeats": 45000,
+    "basePrice": 95.00,
+    "isActive": true,
+    "createdAt": "2025-01-02T12:00:00Z"
+  },
+  {
+    "id": 1,
+    "name": "Championship Match",
+    "date": "2025-09-27T19:00:00Z",
+    "description": "Championship final match",
+    "location": "Football",
+    "capacity": 100,
+    "availableSeats": 100,
+    "basePrice": 50.00,
+    "isActive": true,
+    "createdAt": "2025-09-27T20:01:33.78639Z"
+  },
+  {
+    "id": 9999,
+    "name": "Test Event",
+    "date": "2025-10-07T08:43:09.041852Z",
+    "description": "Test Event for Orders",
+    "location": "Test",
+    "capacity": 1000,
+    "availableSeats": 1000,
+    "basePrice": 50.00,
+    "isActive": true,
+    "createdAt": "2025-09-07T08:43:09.041854Z"
+  }
+]

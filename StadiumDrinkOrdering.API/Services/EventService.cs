@@ -32,18 +32,33 @@ public class EventService : IEventService
 
     public async Task<IEnumerable<Event>> GetEventsAsync(bool activeOnly = false)
     {
-        var query = _context.Events.AsQueryable();
-        
-        if (activeOnly)
+        try
         {
-            query = query.Where(e => e.IsActive);
-        }
+            // Use raw SQL for much better performance
+            var sql = @"
+                SELECT
+                    e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
+                    e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""CreatedAt"",
+                    e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
+                FROM ""Events"" e
+                {0}
+                ORDER BY e.""EventDate""";
 
-        return await query
-            .Include(e => e.Analytics)
-            .Include(e => e.Tickets)
-            .OrderBy(e => e.EventDate)
-            .ToListAsync();
+            var whereClause = activeOnly ? "WHERE e.\"IsActive\" = true" : "";
+            var finalSql = string.Format(sql, whereClause);
+
+            var events = await _context.Events
+                .FromSqlRaw(finalSql)
+                .AsNoTracking() // Better performance for read-only operations
+                .ToListAsync();
+
+            return events;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting events (activeOnly: {ActiveOnly})", activeOnly);
+            throw;
+        }
     }
 
     public async Task<Event?> GetEventByIdAsync(int id)
@@ -217,30 +232,57 @@ public class EventService : IEventService
 
     public async Task<IEnumerable<Event>> GetActiveEventsAsync()
     {
+        // Use raw SQL for better performance
+        var sql = @"
+            SELECT
+                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
+                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""CreatedAt"",
+                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
+            FROM ""Events"" e
+            WHERE e.""IsActive"" = true
+            ORDER BY e.""EventDate""";
+
         return await _context.Events
-            .Where(e => e.IsActive)
-            .Include(e => e.Analytics)
-            .OrderBy(e => e.EventDate)
+            .FromSqlRaw(sql)
+            .AsNoTracking()
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Event>> GetUpcomingEventsAsync()
     {
         var now = DateTime.UtcNow;
+        // Use raw SQL for better performance
+        var sql = @"
+            SELECT
+                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
+                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""CreatedAt"",
+                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
+            FROM ""Events"" e
+            WHERE e.""IsActive"" = true AND e.""EventDate"" > {0}
+            ORDER BY e.""EventDate""";
+
         return await _context.Events
-            .Where(e => e.IsActive && e.EventDate > now)
-            .Include(e => e.Analytics)
-            .OrderBy(e => e.EventDate)
+            .FromSqlRaw(sql, now)
+            .AsNoTracking()
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Event>> GetPastEventsAsync()
     {
         var now = DateTime.UtcNow;
+        // Use raw SQL for better performance
+        var sql = @"
+            SELECT
+                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
+                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""CreatedAt"",
+                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
+            FROM ""Events"" e
+            WHERE e.""EventDate"" < {0}
+            ORDER BY e.""EventDate"" DESC";
+
         return await _context.Events
-            .Where(e => e.EventDate < now)
-            .Include(e => e.Analytics)
-            .OrderByDescending(e => e.EventDate)
+            .FromSqlRaw(sql, now)
+            .AsNoTracking()
             .ToListAsync();
     }
 }

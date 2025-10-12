@@ -1,57 +1,24 @@
 @using StadiumDrinkOrdering.Customer.Services
 @using Microsoft.Extensions.Localization
 @inject ICustomerAuthStateService AuthStateService
-@inject NavigationManager NavigationManager
 @inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<div class="top-row ps-3 navbar navbar-dark" id="customer-nav-top-row">
-    <div class="container-fluid" id="customer-nav-container">
-        <a class="navbar-brand" href="" id="customer-nav-brand">🎟️ @Localizer["AppTitle"]</a>
-        <button id="customer-nav-menu-toggle-btn" title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<nav class="stadium-nav" role="navigation" aria-label="Main navigation">
+    <div class="container-fluid">
+        <ul class="nav-links" role="list">
+            <li role="listitem"><a href="/" class="nav-link" aria-label="Navigate to home page">🏠 @Localizer["Home"]</a></li>
+            <li role="listitem"><a href="/events" class="nav-link" aria-label="View available events">🎟️ @Localizer["Events"]</a></li>
+            <li role="listitem"><a href="/menu" class="nav-link" aria-label="Browse drinks menu">🍺 @Localizer["Menu"]</a></li>
+            @if (AuthStateService.IsAuthenticated)
+            {
+                <li role="listitem"><a href="/orders" class="nav-link" aria-label="View your orders">📋 @Localizer["MyOrders"]</a></li>
+            }
+        </ul>
     </div>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu" id="customer-nav-menu">
-    <nav class="flex-column" id="customer-nav-items">
-        <div class="nav-item px-3" id="customer-nav-home">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" id="customer-nav-home-link">
-                <span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
-            </NavLink>
-        </div>
-        <div class="nav-item px-3" id="customer-nav-events">
-            <NavLink class="nav-link" href="events" id="customer-nav-events-link">
-                <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["Events"]
-            </NavLink>
-        </div>
-        <div class="nav-item px-3" id="customer-nav-menu-item">
-            <NavLink class="nav-link" href="menu" id="customer-nav-menu-link">
-                <span class="oi oi-fork" aria-hidden="true"></span> @Localizer["Menu"]
-            </NavLink>
-        </div>
-        @if (AuthStateService.IsAuthenticated)
-        {
-            <div class="nav-item px-3" id="customer-nav-orders">
-                <NavLink class="nav-link" href="orders" id="customer-nav-orders-link">
-                    <span class="oi oi-list" aria-hidden="true"></span> @Localizer["MyOrders"]
-                </NavLink>
-            </div>
-            <div class="nav-item px-3" id="customer-nav-logs">
-                <NavLink class="nav-link" href="logs" id="customer-nav-logs-link">
-                    <span class="oi oi-document" aria-hidden="true"></span> My Activity
-                </NavLink>
-            </div>
-        }
-    </nav>
-</div>
+</nav>
 
 @code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
     protected override void OnInitialized()
     {
         AuthStateService.OnAuthenticationStateChanged += OnAuthenticationStateChanged;
@@ -60,11 +27,6 @@
     private void OnAuthenticationStateChanged()
     {
         InvokeAsync(StateHasChanged);
-    }
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
     }
 
     public void Dispose()

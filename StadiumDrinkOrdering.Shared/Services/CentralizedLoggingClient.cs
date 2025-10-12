@@ -241,7 +241,8 @@ namespace StadiumDrinkOrdering.Shared.Services
 
             try
             {
-                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+                // 3-second timeout for batch operations - must not block user operations
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                 using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(
                     _cancellationTokenSource.Token, timeoutCts.Token);
 
@@ -284,7 +285,8 @@ namespace StadiumDrinkOrdering.Shared.Services
 
             try
             {
-                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                // AGGRESSIVE 2-SECOND TIMEOUT - logging must NEVER block critical user operations like login
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
                 using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(
                     _cancellationTokenSource.Token, timeoutCts.Token);
 
@@ -301,9 +303,13 @@ namespace StadiumDrinkOrdering.Shared.Services
             {
                 // Timeout or cancellation - fail silently to prevent blocking
             }
+            catch (HttpRequestException)
+            {
+                // Network error (404, 500, etc.) - fail silently to prevent blocking
+            }
             catch (Exception ex)
             {
-                // Log to console as fallback
+                // Log to console as fallback (but don't block)
                 Console.WriteLine($"Failed to send log entry: {ex.Message}");
             }
         }
@@ -641,7 +647,7 @@ namespace StadiumDrinkOrdering.Shared.Services
             services.AddHttpClient("CentralizedLogging", client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(15);
+                client.Timeout = TimeSpan.FromSeconds(5); // SHORT timeout - logging must NEVER block user operations
                 client.DefaultRequestHeaders.Add("User-Agent", $"CentralizedLogging/{source}");
             }).ConfigurePrimaryHttpMessageHandler(() =>
             {

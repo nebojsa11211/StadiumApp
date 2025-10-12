@@ -56,9 +56,10 @@ public static class HNKRijekaStadiumConstants
     };
     
     /// <summary>
-    /// Football field coordinates (EXACT from static SVG lines 104-142)
+    /// Football field coordinates with proper 100m x 50m proportions (2:1 ratio)
+    /// Width: 500 units (represents 100m), Height: 250 units (represents 50m)
     /// </summary>
-    public static readonly FieldCoordinates FIELD = new(350, 250, 500, 320);
+    public static readonly FieldCoordinates FIELD = new(350, 285, 500, 250);
     
     /// <summary>
     /// East Stand unavailable areas (EXACT from static SVG lines 254-273)

@@ -232,7 +232,20 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        autoRefreshTimer?.Stop();
-        autoRefreshTimer?.Dispose();
+        try
+        {
+            autoRefreshTimer?.Stop();
+            autoRefreshTimer?.Dispose();
+        }
+        catch (ObjectDisposedException)
+        {
+            // Timer may already be disposed, safe to ignore
+            // This happens during normal application shutdown
+        }
+        catch (Exception)
+        {
+            // Any other disposal exceptions should be ignored
+            // This prevents disposal issues from propagating
+        }
     }
 }

@@ -1,4 +1,5 @@
 @page "/users"
+@using StadiumDrinkOrdering.Shared.Models
 
 <PageTitle>User Management - Stadium Admin</PageTitle>
 
@@ -246,7 +247,7 @@
 <!-- Create User Modal -->
 @if (showCreateModal)
 {
-    <div class="modal fade show" id="admin-users-modal" tabindex="-1" role="dialog" style="display: block;" aria-modal="true" aria-labelledby="admin-users-modal-title">
+    <div class="modal fade show" id="admin-users-modal" tabindex="-1" role="dialog" style="display: block; z-index: 1055;" aria-modal="true" aria-labelledby="admin-users-modal-title">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -302,7 +303,83 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show"></div>
+    <div class="modal-backdrop fade show" style="z-index: 1050;"></div>
+}
+
+<!-- Edit User Modal -->
+@if (showEditModal)
+{
+    <div class="modal fade show" id="admin-users-edit-modal" tabindex="-1" role="dialog" style="display: block; z-index: 1055;" aria-modal="true" aria-labelledby="admin-users-edit-modal-title">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="admin-users-edit-modal-title">Edit User</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal" id="admin-users-edit-modal-close-btn" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="editUser" OnValidSubmit="UpdateUser">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <InputText class="form-control" @bind-Value="editUser.Username" id="admin-users-edit-modal-username-input" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <InputText class="form-control" @bind-Value="editUser.Email" type="email" id="admin-users-edit-modal-email-input" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <InputText class="form-control" @bind-Value="editUser.FirstName" id="admin-users-edit-modal-firstname-input" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <InputText class="form-control" @bind-Value="editUser.LastName" id="admin-users-edit-modal-lastname-input" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <InputText class="form-control" @bind-Value="editUser.PhoneNumber" id="admin-users-edit-modal-phone-input" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <InputSelect class="form-select" @bind-Value="editUser.Role" id="admin-users-edit-modal-role-select">
+                                <option value="">Select Role</option>
+                                <option value="@UserRole.Customer">Customer</option>
+                                <option value="@UserRole.Bartender">Staff</option>
+                                <option value="@UserRole.Admin">Admin</option>
+                            </InputSelect>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" @bind="isActiveChecked" id="admin-users-edit-modal-active-checkbox" />
+                            <label class="form-check-label" for="admin-users-edit-modal-active-checkbox">
+                                Active
+                            </label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseEditModal" id="admin-users-edit-modal-cancel-btn">Cancel</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isUpdatingUser" id="admin-users-edit-modal-submit-btn">
+                                @if (isUpdatingUser)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                Update User
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" style="z-index: 1050;"></div>
 }
 
 

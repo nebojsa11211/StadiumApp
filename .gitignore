@@ -25,6 +25,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+# Don't ignore the Admin source-code Logs folder (namespace StadiumDrinkOrdering.Admin.Services.Logs)
+!StadiumDrinkOrdering.Admin/Services/Logs/
+!StadiumDrinkOrdering.Admin/Services/Logs/**
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

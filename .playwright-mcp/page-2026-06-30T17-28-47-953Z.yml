@@ -1,0 +1,150 @@
+- generic [ref=e9]:
+  - complementary [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e13]: 
+      - generic [ref=e14]:
+        - generic [ref=e15]: STADIUM
+        - generic [ref=e16]: ADMIN
+    - generic [ref=e17]:
+      - generic [ref=e18]: 19:28:47
+      - generic [ref=e19]: 30. 06. 26 HR
+    - navigation [ref=e20]:
+      - link " Dashboard" [ref=e21] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e22]: 
+        - generic [ref=e23]: Dashboard
+      - link " Narudžbe" [ref=e24] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e25]: 
+        - generic [ref=e26]: Narudžbe
+      - link " Pića" [ref=e27] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e28]: 
+        - generic [ref=e29]: Pića
+      - link " Analitika" [ref=e30] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e31]: 
+        - generic [ref=e32]: Analitika
+      - link " Korisnička analitika" [ref=e33] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e34]: 
+        - generic [ref=e35]: Korisnička analitika
+      - generic [ref=e36]: Upravljanje stadionom
+      - link " Događaji" [ref=e37] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e38]: 
+        - generic [ref=e39]: Događaji
+      - link " Karte" [ref=e40] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e41]: 
+        - generic [ref=e42]: Karte
+      - link "👁 Pregled" [ref=e43] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e44]: 👁
+        - generic [ref=e45]: Pregled
+      - link " Alat za crtanje" [ref=e46] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e47]: 
+        - generic [ref=e48]: Alat za crtanje
+      - generic [ref=e49]: Sustav
+      - link " Logs" [ref=e50] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e51]: 
+        - generic [ref=e52]: Logs
+      - link " Database" [ref=e53] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e54]: 
+        - generic [ref=e55]: Database
+      - link " Security" [ref=e56] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e57]: 
+        - generic [ref=e58]: Security
+    - generic [ref=e59]:
+      - generic [ref=e60]:
+        - generic [ref=e61]: 
+        - generic [ref=e62]:
+          - generic [ref=e63]: Centralizirani Logging
+          - generic [ref=e64]: "Zadnja objava: 19:28"
+      - generic [ref=e65]:
+        - generic [ref=e66]: A
+        - generic [ref=e67]:
+          - button "Odjava" [ref=e68] [cursor=pointer]
+          - generic [ref=e69]: admin@stadium.com
+      - generic [ref=e70]:
+        - generic [ref=e71]: HR/EN
+        - generic [ref=e72]:
+          - button "HR" [ref=e73] [cursor=pointer]
+          - button "EN" [ref=e74] [cursor=pointer]
+  - main [ref=e75]:
+    - generic [ref=e243]:
+      - generic [ref=e244]:
+        - generic [ref=e245]:
+          - generic [ref=e246]: Operations
+          - heading "Order Management" [active] [level=1] [ref=e247]
+          - paragraph [ref=e248]: Manage and track all stadium beverage orders
+        - generic [ref=e249]:
+          - button " New Order" [ref=e250] [cursor=pointer]:
+            - generic [ref=e251]: 
+            - generic [ref=e252]: New Order
+          - button "" [ref=e253] [cursor=pointer]:
+            - generic [ref=e254]: 
+      - generic [ref=e255]:
+        - article [ref=e256]:
+          - generic [ref=e257]:
+            - generic [ref=e258]: Total Orders
+            - generic [ref=e259]: 
+          - generic [ref=e260]: "0"
+          - generic [ref=e262]: All orders on record
+        - article [ref=e263]:
+          - generic [ref=e264]:
+            - generic [ref=e265]: Pending Orders
+            - generic [ref=e266]: 
+          - generic [ref=e267]: "0"
+          - generic [ref=e269]: Awaiting acceptance
+        - article [ref=e270]:
+          - generic [ref=e271]:
+            - generic [ref=e272]: Completed Today
+            - generic [ref=e273]: 
+          - generic [ref=e274]: "0"
+          - generic [ref=e276]: Delivered since midnight
+        - article [ref=e277]:
+          - generic [ref=e278]:
+            - generic [ref=e279]: Revenue Today
+            - generic [ref=e280]: 
+          - generic [ref=e281]: $0
+          - generic [ref=e283]: Delivered orders
+      - generic [ref=e284]:
+        - generic [ref=e285]:
+          - heading "Filters" [level=2] [ref=e286]
+          - button " Clear" [ref=e287] [cursor=pointer]:
+            - generic [ref=e288]: 
+            - text: Clear
+        - generic [ref=e289]:
+          - generic [ref=e290]:
+            - generic [ref=e291]: Status
+            - combobox [ref=e292] [cursor=pointer]:
+              - option "All Statuses" [selected]
+              - option "Pending"
+              - option "Accepted"
+              - option "In Preparation"
+              - option "Ready"
+              - option "Out for Delivery"
+              - option "Delivered"
+              - option "Cancelled"
+          - generic [ref=e293]:
+            - generic [ref=e294]: Customer Search
+            - textbox "Search by customer name" [ref=e295]
+          - generic [ref=e296]:
+            - generic [ref=e297]: From Date
+            - textbox [ref=e298]
+          - generic [ref=e299]:
+            - generic [ref=e300]: To Date
+            - textbox [ref=e301]
+      - generic [ref=e302]:
+        - heading "Orders 0" [level=2] [ref=e304]:
+          - text: Orders
+          - generic [ref=e305]: "0"
+        - generic [ref=e306]:
+          - generic [ref=e307]: 
+          - paragraph [ref=e308]: No orders found
+          - text: No orders match your current filters.

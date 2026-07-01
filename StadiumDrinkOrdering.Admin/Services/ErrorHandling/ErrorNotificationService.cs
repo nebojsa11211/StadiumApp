@@ -105,11 +105,15 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
         {
             await _authService.LogoutAsync(); // Clear invalid tokens
 
-            // No JavaScript alert - just redirect immediately to login
-            var loginUrl = "/login";
+            // Redirect to login with sessionExpired=true. This flag tells the Login page that
+            // the SERVER rejected the token (401) - so Login must NOT auto-redirect back to the
+            // requested page just because the token still passes the client-side validity check
+            // (expiry + format). Without this, a server-rejected-but-client-valid token causes an
+            // infinite dashboard <-> login loop (~137 redirects/sec).
+            var loginUrl = "/login?sessionExpired=true";
             if (!string.IsNullOrEmpty(returnUrl))
             {
-                loginUrl += $"?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                loginUrl += $"&returnUrl={Uri.EscapeDataString(returnUrl)}";
             }
             // Use normal navigation instead of forceLoad to prevent refresh loops
             _navigation.NavigateTo(loginUrl);

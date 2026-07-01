@@ -1,45 +1,59 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Stadium Brand Colors & Variables */
+/* =============================================================================
+   Stadium Admin — "Matchday Control Room" design tokens
+   Near-monochrome ops console on warm concrete, single pitch-green accent.
+   ============================================================================= */
 :root {
-    --stadium-primary: #2563eb;
-    --stadium-primary-dark: #1d4ed8;
-    --stadium-primary-light: #3b82f6;
-    --stadium-secondary: #10b981;
-    --stadium-accent: #f59e0b;
-    --stadium-danger: #ef4444;
-    --stadium-warning: #f97316;
-    --stadium-success: #22c55e;
-    --stadium-info: #06b6d4;
-    
-    --stadium-gray-50: #f8fafc;
-    --stadium-gray-100: #f1f5f9;
-    --stadium-gray-200: #e2e8f0;
-    --stadium-gray-300: #cbd5e1;
-    --stadium-gray-400: #94a3b8;
-    --stadium-gray-500: #64748b;
-    --stadium-gray-600: #475569;
-    --stadium-gray-700: #334155;
-    --stadium-gray-800: #1e293b;
-    --stadium-gray-900: #0f172a;
-    
-    --stadium-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --stadium-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --stadium-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --stadium-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --stadium-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    
+    /* Pitch green — the single brand accent (floodlit grass) */
+    --stadium-primary: #1f7a4d;
+    --stadium-primary-dark: #176239;
+    --stadium-primary-light: #2f9d68;
+    --stadium-secondary: #1f7a4d;
+    --stadium-accent: #b7791f;
+    --stadium-danger: #b91c1c;
+    --stadium-warning: #b7791f;
+    --stadium-success: #1f7a4d;
+    --stadium-info: #2f6f8f;
+
+    /* Accent tints */
+    --pitch: #1f7a4d;
+    --pitch-dark: #176239;
+    --pitch-soft: #eaf3ec;
+    --pitch-line: #cfe6d7;
+
+    /* Neutral ramp — warm-cool ink, not blue-slate */
+    --stadium-gray-50: #f6f7f5;   /* canvas / concrete */
+    --stadium-gray-100: #eef0ec;
+    --stadium-gray-200: #e4e7e1;  /* hairlines */
+    --stadium-gray-300: #d2d6cf;
+    --stadium-gray-400: #a7ada2;
+    --stadium-gray-500: #71776e;  /* muted text */
+    --stadium-gray-600: #565b53;
+    --stadium-gray-700: #3a3e38;
+    --stadium-gray-800: #242722;
+    --stadium-gray-900: #16181d;  /* ink */
+
+    /* Quiet, tight shadows — instrument panels, not glossy cards */
+    --stadium-shadow-sm: 0 1px 2px 0 rgb(20 22 18 / 0.04);
+    --stadium-shadow: 0 1px 2px 0 rgb(20 22 18 / 0.05), 0 1px 1px -1px rgb(20 22 18 / 0.04);
+    --stadium-shadow-md: 0 4px 12px -4px rgb(20 22 18 / 0.10);
+    --stadium-shadow-lg: 0 12px 28px -10px rgb(20 22 18 / 0.14);
+    --stadium-shadow-xl: 0 24px 48px -16px rgb(20 22 18 / 0.18);
+
     --stadium-radius: 8px;
     --stadium-radius-lg: 12px;
     --stadium-radius-xl: 16px;
-    
+
     --stadium-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    
-    /* Admin-specific theme adjustments */
-    --admin-primary: #7c3aed;
-    --admin-primary-dark: #6d28d9;
-    --admin-primary-light: #8b5cf6;
+    /* Signature: telemetry / scoreboard readout */
+    --stadium-font-mono: 'IBM Plex Mono', 'SF Mono', 'Cascadia Code', 'Roboto Mono', monospace;
+
+    /* Admin accent aliases (kept for backwards compatibility across pages) */
+    --admin-primary: #1f7a4d;
+    --admin-primary-dark: #176239;
+    --admin-primary-light: #2f9d68;
 }
 
 /* Base Styles */
@@ -204,16 +218,14 @@ a:hover {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+    background: var(--admin-primary);
     color: white;
     border-color: var(--admin-primary);
-    box-shadow: var(--stadium-shadow-sm);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--admin-primary-dark) 0%, #5b21b6 100%);
-    box-shadow: var(--stadium-shadow);
-    transform: translateY(-1px);
+    background: var(--admin-primary-dark);
+    border-color: var(--admin-primary-dark);
 }
 
 .btn-secondary {
@@ -228,36 +240,36 @@ a:hover {
 }
 
 .btn-success {
-    background: linear-gradient(135deg, var(--stadium-success) 0%, #16a34a 100%);
+    background: var(--stadium-success);
     color: white;
     border-color: var(--stadium-success);
 }
 
 .btn-success:hover {
-    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-    transform: translateY(-1px);
+    background: var(--stadium-primary-dark);
+    border-color: var(--stadium-primary-dark);
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, var(--stadium-danger) 0%, #dc2626 100%);
+    background: var(--stadium-danger);
     color: white;
     border-color: var(--stadium-danger);
 }
 
 .btn-danger:hover {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    transform: translateY(-1px);
+    background: #991b1b;
+    border-color: #991b1b;
 }
 
 .btn-warning {
-    background: linear-gradient(135deg, var(--stadium-warning) 0%, #ea580c 100%);
+    background: var(--stadium-warning);
     color: white;
     border-color: var(--stadium-warning);
 }
 
 .btn-warning:hover {
-    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
-    transform: translateY(-1px);
+    background: #92600f;
+    border-color: #92600f;
 }
 
 .btn-lg {
@@ -1121,7 +1133,7 @@ a:hover {
     left: 0;
     right: 0;
     height: 200px;
-    background: linear-gradient(180deg, rgba(124, 58, 237, 0.03) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(31, 122, 77, 0.03) 0%, transparent 100%);
     pointer-events: none;
     z-index: 0;
 }

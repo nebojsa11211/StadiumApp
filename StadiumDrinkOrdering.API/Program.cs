@@ -18,6 +18,11 @@ using Microsoft.Extensions.Options;
 using System.Text;
 using Npgsql;
 
+// Load variables from the gitignored .env file (if present) BEFORE the configuration builder is
+// created, so values like ConnectionStrings__Supabase become available to configuration. Existing
+// process/launch-profile environment variables are NOT overwritten (NoClobber semantics).
+StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.LoadDotEnvFile();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ================================================================================================
@@ -81,102 +86,56 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// COMPREHENSIVE DEBUG: Print ALL connection string sources
-Console.WriteLine("=== VISUAL STUDIO DEBUGGING - Configuration Sources ===");
-Console.WriteLine($"ASPNETCORE_ENVIRONMENT: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
-Console.WriteLine($"ConnectionStrings__DefaultConnection env var: {Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")}");
+// ================================================================================================
+// DATABASE PROVIDER SELECTION
+// ================================================================================================
+// Two databases are supported, selected by the Database:Provider configuration value:
+//   "LocalPostgres" (default) -> ConnectionStrings:LocalPostgres (appsettings.json, no secret)
+//   "Supabase"                -> ConnectionStrings:Supabase (the password lives in the gitignored
+//                                .env file as ConnectionStrings__Supabase, loaded at startup)
+//
+// Precedence:
+//   1. A full ConnectionStrings:DefaultConnection (e.g. set by docker-compose / production / CI)
+//      always wins. This keeps container and deployment behaviour unchanged.
+//   2. Otherwise the connection string named by Database:Provider is used.
+// This is the single place that decides which database the API talks to.
 
-// Check all configuration sources
-Console.WriteLine("\n=== Configuration Providers ===");
-foreach (var provider in builder.Configuration.Sources)
+string connectionString;
+var explicitConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (!string.IsNullOrWhiteSpace(explicitConnection) && !explicitConnection.Contains("{DB_"))
 {
-    Console.WriteLine($"Provider: {provider.GetType().Name}");
+    connectionString = explicitConnection;
+    Console.WriteLine("Database selection: explicit ConnectionStrings:DefaultConnection (Docker/production override)");
+}
+else
+{
+    var dbProvider = (builder.Configuration["Database:Provider"] ?? "LocalPostgres").Trim();
+
+    connectionString = dbProvider.ToLowerInvariant() switch
+    {
+        "supabase" => builder.Configuration.GetConnectionString("Supabase"),
+        "localpostgres" or "local" or "postgres" => builder.Configuration.GetConnectionString("LocalPostgres"),
+        _ => throw new InvalidOperationException(
+            $"Unknown Database:Provider '{dbProvider}'. Valid values are 'LocalPostgres' or 'Supabase'.")
+    };
+
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        var hint = dbProvider.ToLowerInvariant().Contains("supabase")
+            ? "Set ConnectionStrings__Supabase in the gitignored .env file."
+            : "Set ConnectionStrings:LocalPostgres in appsettings.json.";
+        throw new InvalidOperationException(
+            $"Database:Provider is '{dbProvider}' but no matching connection string was found. {hint}");
+    }
+
+    Console.WriteLine($"Database selection: Database:Provider = '{dbProvider}'");
 }
 
-// Build connection string from environment variables if available
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-
-if (string.IsNullOrEmpty(connectionString))
-{
-    // Try to build from individual environment variables
-    var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-    var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "6543";
-    var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "postgres";
-    var dbUsername = Environment.GetEnvironmentVariable("DB_USERNAME");
-    var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-
-    if (!string.IsNullOrEmpty(dbHost) && !string.IsNullOrEmpty(dbUsername) && !string.IsNullOrEmpty(dbPassword))
-    {
-        connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUsername};Password={dbPassword};Ssl Mode=Require;Connection Timeout=120;Command Timeout=600;Keepalive=60;Connection Idle Lifetime=600;Maximum Pool Size=20;Minimum Pool Size=2;Pooling=true;No Reset On Close=true;Include Error Detail=true;Read Buffer Size=8192;Write Buffer Size=8192;Socket Receive Buffer Size=8192;Socket Send Buffer Size=8192";
-    }
-    else
-    {
-        // Fall back to configuration file (with placeholders substituted)
-        connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-        // Replace placeholders with environment variables if they exist
-        if (!string.IsNullOrEmpty(connectionString))
-        {
-            connectionString = connectionString
-                .Replace("{DB_HOST}", Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost")
-                .Replace("{DB_PORT}", Environment.GetEnvironmentVariable("DB_PORT") ?? "5432")
-                .Replace("{DB_NAME}", Environment.GetEnvironmentVariable("DB_NAME") ?? "postgres")
-                .Replace("{DB_USERNAME}", Environment.GetEnvironmentVariable("DB_USERNAME") ?? "postgres")
-                .Replace("{DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password");
-        }
-    }
-}
-Console.WriteLine($"\n=== Final Connection String ===");
-Console.WriteLine($"Connection String: {connectionString}");
-
-// Check if this is a SQLite connection string
-if (!string.IsNullOrEmpty(connectionString) && connectionString.Contains("Data Source="))
-{
-    Console.WriteLine("⚠️  WARNING: This appears to be a SQLite connection string!");
-    Console.WriteLine("Expected: PostgreSQL connection string with Host=aws-1-eu-north-1.pooler.supabase.com");
-    
-    // Show all ConnectionStrings section
-    Console.WriteLine("\n=== All ConnectionStrings Configuration ===");
-    var connStringsSection = builder.Configuration.GetSection("ConnectionStrings");
-    foreach (var item in connStringsSection.GetChildren())
-    {
-        Console.WriteLine($"{item.Key}: {item.Value}");
-    }
-}
-
-// Check current working directory and appsettings files
-Console.WriteLine($"\n=== File System Context ===");
-Console.WriteLine($"Current Directory: {Directory.GetCurrentDirectory()}");
-Console.WriteLine($"appsettings.json exists: {File.Exists("appsettings.json")}");
-Console.WriteLine($"appsettings.Development.json exists: {File.Exists("appsettings.Development.json")}");
-
-if (File.Exists("appsettings.json"))
-{
-    Console.WriteLine("\n=== appsettings.json Content ===");
-    var content = File.ReadAllText("appsettings.json");
-    if (content.Contains("Data Source="))
-    {
-        Console.WriteLine("⚠️  appsettings.json contains SQLite connection string!");
-    }
-    else
-    {
-        Console.WriteLine("✓ appsettings.json looks correct (no SQLite reference)");
-    }
-}
-
-Console.WriteLine("=== END VISUAL STUDIO DEBUGGING ===\n");
-
-// Add comprehensive health checks
-Console.WriteLine($"Connection String: {connectionString}");
-
-// PostgreSQL/Supabase Database Configuration ONLY
-if (string.IsNullOrEmpty(connectionString))
-{
-    throw new InvalidOperationException("Database connection string is not configured. Please check your appsettings.json or environment variables.");
-}
-
-Console.WriteLine("Using PostgreSQL/Supabase connection...");
-Console.WriteLine($"Using connection string: {connectionString.Replace("Password=d!hZ5A9@t+e!Nn2", "Password=***")}");
+// Masked connection string for diagnostics (never log the password)
+var maskedConnection = System.Text.RegularExpressions.Regex.Replace(
+    connectionString, @"(?i)(Password\s*=)[^;]*", "$1***");
+Console.WriteLine($"Using PostgreSQL connection: {maskedConnection}");
 
 // Configure Health Checks
 builder.Services.AddHealthChecks()
@@ -454,16 +413,28 @@ app.MapHub<StadiumDrinkOrdering.API.Hubs.CustomerHub>("/customerHub");
 // Add health check endpoint
 app.MapHealthChecks("/health");
 
-// Enhanced database migration with circuit breaker pattern
-Console.WriteLine("Initializing database connection and migrations...");
-using (var scope = app.Services.CreateScope())
+// Enhanced database migration with circuit breaker pattern.
+// Run in the BACKGROUND so Kestrel starts listening immediately instead of blocking the
+// port until migrations + BCrypt seeding finish. On a warm DB the init is a no-op anyway;
+// on a cold/first boot the only exposure is a tiny window where the seeded admin/customer
+// users aren't present yet (login may 401 for ~1-2s until init completes).
+Console.WriteLine("Scheduling database initialization (non-blocking)...");
+_ = Task.Run(async () =>
 {
+    using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     var environment = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
-    
-    await InitializeDatabaseAsync(context, logger, environment);
-}
+
+    try
+    {
+        await InitializeDatabaseAsync(context, logger, environment);
+    }
+    catch (Exception ex)
+    {
+        logger.LogCritical(ex, "Background database initialization failed");
+    }
+});
 
 
 // Database initialization method - FIXED VERSION
@@ -788,10 +759,29 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Database initialization failed on attempt {Attempt}: {ErrorType} - {Message}", 
+            logger.LogError(ex, "Database initialization failed on attempt {Attempt}: {ErrorType} - {Message}",
                 attempt, ex.GetType().Name, ex.Message);
         }
-        
+        finally
+        {
+            // The connection is reused across retries via the shared DbContext.
+            // If an attempt fails after the connection was opened (e.g. a transient
+            // SSL/stream timeout mid-migration), it is left open, and the next
+            // attempt's OpenAsync throws "Connection already open" - masking the
+            // real error and guaranteeing total failure. Close it here so each
+            // retry starts from a clean state.
+            try
+            {
+                var conn = context.Database.GetDbConnection();
+                if (conn.State != System.Data.ConnectionState.Closed)
+                    await conn.CloseAsync();
+            }
+            catch
+            {
+                // Best-effort cleanup; ignore errors closing a broken connection.
+            }
+        }
+
         if (attempt == maxRetries)
         {
             logger.LogCritical("Database initialization failed after {MaxRetries} attempts", maxRetries);

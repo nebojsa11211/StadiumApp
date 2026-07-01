@@ -1,289 +1,238 @@
-﻿@page "/"
-@using StadiumDrinkOrdering.Admin.Components.Skeleton
+@page "/"
+@layout DashboardLayout
+@using StadiumDrinkOrdering.Admin.Components.Stadium
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
 
-<PageTitle>Stadium Admin Dashboard</PageTitle>
+@inject IStringLocalizer<SharedResources> L
 
-<div class="admin-dashboard-container">
-    <!-- Dashboard Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h2">Stadium Dashboard</h1>
-            <p class="text-muted">Monitor your stadium operations in real-time</p>
-        </div>
-        <div>
-            <button class="btn btn-outline-primary me-2" @onclick="RefreshData" disabled="@isLoading" id="admin-dashboard-refresh-btn">
-                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i>
-                Refresh
-                @if (!isLoading)
-                {
-                    <span class="admin-countdown-circle @GetCountdownState()" title="Auto-refresh in @remainingSeconds seconds">
-                        <svg viewBox="0 0 32 32">
-                            <circle class="admin-countdown-circle-bg" cx="16" cy="16" r="15"></circle>
-                            <circle class="admin-countdown-circle-progress" cx="16" cy="16" r="15"
-                                    style="stroke-dashoffset: @(94.25 * (1 - (double)remainingSeconds / countdownSeconds))"></circle>
-                        </svg>
-                    </span>
-                }
-            </button>
-            <button class="btn btn-outline-secondary" @onclick="ToggleTheme" id="admin-dashboard-toggle-theme-btn">
-                <i class="oi oi-moon"></i>
-            </button>
-        </div>
-    </div>
+<PageTitle>@L["Index_PageTitle"]</PageTitle>
 
-    <!-- Loading Progress and Status -->
-    @if (isLoading)
-    {
-        <div class="mb-3">
-            <div class="d-flex align-items-center">
-                <div class="progress flex-grow-1 me-3" style="height: 4px;">
-                    <div class="progress-bar progress-bar-animated"
-                         role="progressbar"
-                         style="width: @(loadingProgress)%"
-                         aria-valuenow="@loadingProgress"
-                         aria-valuemin="0"
-                         aria-valuemax="100"
-                         aria-label="Dashboard loading progress">
+@* The sidebar + dash-main shell is provided by DashboardLayout. *@
+
+        @* ---------- EVENT SELECTOR (scopes the whole dashboard) ---------- *@
+        @if (_loading)
+        {
+            <div class="dash-event-bar dash-event-bar--loading" id="admin-dashboard-event-bar">
+                <i class="bi bi-arrow-repeat dash-spin"></i>
+                <span>@L["Index_LoadingEvents"]</span>
+            </div>
+        }
+        else if (_selectedEvent != null)
+        {
+            <div class="dash-event-bar" id="admin-dashboard-event-bar">
+                <button class="dash-event-nav" @onclick="SelectPrevEvent" disabled="@(!CanGoPrev)" id="admin-dashboard-event-prev-btn" title="@L["Index_PreviousEvent"]">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <div class="dash-event-info">
+                    <div class="dash-event-meta">
+                        <span class="dash-event-pos">@L["Index_EventPosition", SelectedIndex + 1, _events.Count]</span>
+                        <span class="dash-event-phase phase-@GetPhaseModifier(_selectedEvent.Phase)">
+                            <i class="dot"></i>@_selectedEvent.StatusName
+                        </span>
                     </div>
-                </div>
-                <small class="text-muted">@(loadingProgress)%</small>
-            </div>
-            <small class="text-muted d-block mt-1">@loadingMessage</small>
-        </div>
-    }
-    else if (lastUpdated.HasValue)
-    {
-        <div class="mb-3">
-            <small class="text-muted">Last updated: @lastUpdated.Value.ToString("HH:mm:ss")</small>
-        </div>
-    }
-
-    <!-- ARIA Live Region for Screen Readers -->
-    <div aria-live="polite" aria-label="Dashboard loading status" class="visually-hidden" id="dashboard-loading-status">
-        @loadingMessage
-    </div>
-
-    <!-- Key Metrics Cards -->
-    @if (isLoadingMetrics)
-    {
-        <!-- Metrics Skeleton Loading State -->
-        <div class="row g-4 mb-4" role="status" aria-label="Loading metrics data">
-            <div class="col-lg-3 col-md-6">
-                <SkeletonMetricCard CardType="Orders" AnimationDelayMs="0" />
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <SkeletonMetricCard CardType="Active" AnimationDelayMs="100" />
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <SkeletonMetricCard CardType="Revenue" AnimationDelayMs="200" />
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <SkeletonMetricCard CardType="Health" AnimationDelayMs="300" />
-            </div>
-        </div>
-    }
-    else if (!isLoading || totalOrders > 0)
-    {
-        <!-- Key Metrics Cards -->
-        <div class="row g-4 mb-4 content-transition skeleton-fade-in">
-            <div class="col-lg-3 col-md-6">
-                <div class="card bg-primary text-white h-100" style="cursor: pointer;" @onclick="NavigateToOrders">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Total Orders</h6>
-                                <h3 class="mb-0">@totalOrders</h3>
-                                <small class="opacity-75">+@ordersTrend% from yesterday</small>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="oi oi-list-rich fs-1 opacity-75"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card bg-info text-white h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Active Orders</h6>
-                                <h3 class="mb-0">@activeOrders</h3>
-                                <small class="opacity-75">Currently processing</small>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="oi oi-clock fs-1 opacity-75"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card bg-success text-white h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Today's Revenue</h6>
-                                <h3 class="mb-0">$@todaysRevenue.ToString("N2")</h3>
-                                <small class="opacity-75">+@revenueTrend% from yesterday</small>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="oi oi-dollar fs-1 opacity-75"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card @GetHealthCardClass() text-white h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">System Health</h6>
-                                <h3 class="mb-0">@systemHealth</h3>
-                                <small class="opacity-75">@systemLoad</small>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="@GetHealthIcon() fs-1 opacity-75"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    }
-
-    <!-- Main Content Row -->
-    @if (isLoadingOrders || isLoadingSystemStatus)
-    {
-        <!-- Orders and Actions Skeleton Loading State -->
-        <div class="row g-4" role="status" aria-label="Loading orders and system data">
-            <!-- Recent Orders Table Skeleton -->
-            <div class="col-lg-8">
-                <SkeletonTable TableType="Orders" RowCount="5" ShowActionButton="true" AnimationDelayMs="400" />
-            </div>
-
-            <!-- Quick Actions and System Status Skeleton -->
-            <div class="col-lg-4">
-                <SkeletonActionButtons SectionType="Dashboard"
-                                     ButtonCount="4"
-                                     IncludeSystemStatus="true"
-                                     StatusItemCount="4"
-                                     AnimationDelayMs="500" />
-            </div>
-        </div>
-    }
-    else if (!isLoading || recentOrders != null)
-    {
-        <div class="row g-4 content-transition skeleton-fade-in">
-            <!-- Recent Orders -->
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Recent Orders</h5>
-                        <button class="btn btn-sm btn-outline-primary" @onclick="NavigateToOrders" id="admin-dashboard-orders-view-all-btn">View All</button>
-                    </div>
-                    <div class="card-body">
-                        @if (recentOrders?.Any() == true)
+                    <div class="dash-event-name-row">
+                        <i class="bi bi-calendar-event"></i>
+                        <h2 class="dash-event-name" id="admin-dashboard-event-name">@_selectedEvent.Name</h2>
+                        @if (_selectedEvent.Date.HasValue)
                         {
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Order #</th>
-                                            <th>Customer</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Time</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var order in recentOrders.Take(5))
-                                        {
-                                            <tr style="cursor: pointer;" @onclick="@(() => NavigateToOrder(order.Id))">
-                                                <td>#@order.Id</td>
-                                                <td>@order.CustomerName</td>
-                                                <td>$@order.TotalAmount.ToString("N2")</td>
-                                                <td><span class="badge @GetStatusBadgeClass(order.Status)">@order.Status</span></td>
-                                                <td>@order.CreatedAt.ToString("HH:mm")</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <span class="dash-event-date">@_selectedEvent.Date.Value.ToString("ddd, dd. MMM yyyy. · HH:mm")</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="dash-event-controls">
+                    @if (!IsOnDefaultEvent)
+                    {
+                        <button class="dash-event-current" @onclick="GoToCurrentEvent" id="admin-dashboard-event-current-btn" title="@L["Index_ReturnToCurrent"]">
+                            <i class="bi bi-broadcast"></i> @L["Index_Current"]
+                        </button>
+                    }
+                    <select class="dash-event-select" @onchange="OnSelectEvent" id="admin-dashboard-event-select" title="@L["Index_SelectEvent"]">
+                        @foreach (var ev in _events)
+                        {
+                            <option value="@ev.Id" selected="@(ev.Id == _selectedEvent.Id)">@ev.Name</option>
+                        }
+                    </select>
+                    <button class="dash-event-nav" @onclick="SelectNextEvent" disabled="@(!CanGoNext)" id="admin-dashboard-event-next-btn" title="@L["Index_NextEvent"]">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="dash-event-bar dash-event-bar--empty" id="admin-dashboard-event-bar-empty">
+                <i class="bi bi-calendar-x"></i>
+                <span>@L["Index_NoEvents"]</span>
+                <a href="events" class="dash-btn-outline" id="admin-dashboard-event-create-btn">@L["Index_CreateEvent"]</a>
+            </div>
+        }
+
+        @* ---------- KPI CARDS (scoped to selected event) ---------- *@
+        <section class="dash-kpis" id="admin-dashboard-kpis">
+            <div class="dash-kpi-card" id="admin-dashboard-kpi-tickets">
+                <div class="dash-kpi-head">
+                    <div class="dash-kpi-label">
+                        <span class="dash-kpi-title">@L["Index_TicketsSold"]</span>
+                        <span class="dash-kpi-context">@(_selectedEvent != null ? L["Index_OfSeats", _selectedEvent.Capacity] : "—")</span>
+                    </div>
+                    <div class="dash-kpi-icon"><i class="bi bi-ticket-perforated"></i></div>
+                </div>
+                <div class="dash-kpi-value">@_ticketsSold.ToString("N0")</div>
+            </div>
+
+            <div class="dash-kpi-card" id="admin-dashboard-kpi-revenue">
+                <div class="dash-kpi-head">
+                    <div class="dash-kpi-label">
+                        <span class="dash-kpi-title">@L["Index_TotalRevenue"]</span>
+                        <span class="dash-kpi-context">@L["Index_ForThisEvent"]</span>
+                    </div>
+                    <div class="dash-kpi-icon"><i class="bi bi-cash-stack"></i></div>
+                </div>
+                <div class="dash-kpi-value">@_eventRevenue.ToString("N0")€</div>
+            </div>
+
+            <div class="dash-kpi-card" id="admin-dashboard-kpi-orders">
+                <div class="dash-kpi-head">
+                    <div class="dash-kpi-label">
+                        <span class="dash-kpi-title">@L["Index_ActiveOrders"]</span>
+                        <span class="dash-kpi-context">@L["Index_DrinksInProgress"]</span>
+                    </div>
+                    <div class="dash-kpi-icon"><i class="bi bi-cup-straw"></i></div>
+                </div>
+                <div class="dash-kpi-value">@_activeDrinkOrders</div>
+            </div>
+
+            <div class="dash-kpi-card" id="admin-dashboard-kpi-nps">
+                <div class="dash-kpi-head">
+                    <div class="dash-kpi-label">
+                        <span class="dash-kpi-title">@L["Index_UserSatisfaction"]</span>
+                        <span class="dash-kpi-context">@L["Index_NPSComingSoon"]</span>
+                    </div>
+                    <div class="dash-kpi-icon"><i class="bi bi-hand-thumbs-up"></i></div>
+                </div>
+                <div class="dash-kpi-value dash-kpi-value--muted">—</div>
+            </div>
+        </section>
+
+        @* ---------- MIDDLE ROW: STADIUM + ORDERS ---------- *@
+        <section class="dash-mid">
+            @* Stadium overview *@
+            <div class="dash-card dash-stadium-card" id="admin-dashboard-stadium-card">
+                <div class="dash-card-head">
+                    <h2 class="dash-card-title">@L["Index_StadiumOverview"]</h2>
+                </div>
+
+                <div class="dash-stadium-body">
+                    @* Read-only canvas only (background image + DB sector overlays), no drawing toolbar. *@
+                    <StadiumCanvasView />
+                </div>
+            </div>
+
+            @* Recent orders (scoped to selected event) *@
+            <div class="dash-card dash-orders-card" id="admin-dashboard-orders-card">
+                <div class="dash-card-head">
+                    <h2 class="dash-card-title">@L["Index_RecentOrders"]</h2>
+                </div>
+                <table class="dash-orders-table">
+                    <thead>
+                        <tr><th>@L["Index_HeaderID"]</th><th>@L["Index_HeaderSeat"]</th><th>@L["Index_HeaderAmount"]</th><th>@L["Index_HeaderStatus"]</th></tr>
+                    </thead>
+                    <tbody>
+                        @if (_recentOrders.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="4" class="dash-muted" style="text-align:center; padding:22px 8px;">
+                                    @(_selectedEvent == null ? @L["Index_SelectEventPrompt"] : @L["Index_NoOrdersThisEvent"])
+                                </td>
+                            </tr>
                         }
                         else
                         {
-                            <div class="text-center p-4">
-                                <i class="oi oi-info text-muted fs-1"></i>
-                                <p class="text-muted mt-2">No recent orders</p>
-                            </div>
+                            @foreach (var o in _recentOrders)
+                            {
+                                <tr id="@($"admin-dashboard-order-{o.Id}")">
+                                    <td class="dash-order-id">#@o.Id</td>
+                                    <td>@(string.IsNullOrWhiteSpace(o.SeatNumber) ? "—" : o.SeatNumber)</td>
+                                    <td class="dash-muted">@o.TotalAmount.ToString("N2")€</td>
+                                    <td><span class="dash-status @StatusClass(o.Status)"><i class="dot"></i>@StatusLabel(o.Status)</span></td>
+                                </tr>
+                            }
                         }
-                    </div>
+                    </tbody>
+                </table>
+                <a href="orders" class="dash-btn-ghost" id="admin-dashboard-orders-viewall-btn">@L["Index_ViewAllOrders"]</a>
+            </div>
+        </section>
+
+        @* ---------- BOTTOM ROW: LOGS + HEALTH/ACTIONS ---------- *@
+        <section class="dash-bottom">
+            @* Centralized logs *@
+            <div class="dash-card dash-logs-card" id="admin-dashboard-logs-card">
+                <div class="dash-card-head">
+                    <h2 class="dash-card-title">@L["Index_CentralizedLogs"]</h2>
+                    <a href="logs" class="dash-btn-outline" id="admin-dashboard-logs-viewall-btn">@L["Index_ViewAllLogs"]</a>
                 </div>
+                <ul class="dash-log-list">
+                    <li class="dash-log-row">
+                        <i class="bi bi-exclamation-triangle dash-log-ico log-warn"></i>
+                        <span><b class="log-warn-txt">[Upozorenje]</b> ConnectionPool iscrpljen (referencing <a href="#" class="dash-log-link">CLAUDE.md</a>)</span>
+                    </li>
+                    <li class="dash-log-row">
+                        <i class="bi bi-person-circle dash-log-ico log-user"></i>
+                        <span><b class="log-user-txt">[Korisnik]</b> @@Bartender1 je preuzeo narudžbu #123</span>
+                    </li>
+                    <li class="dash-log-row">
+                        <i class="bi bi-ticket-detailed dash-log-ico log-ok"></i>
+                        <span><b class="log-ok-txt">[Karta]</b> Karta validirana (A, RS 512)</span>
+                    </li>
+                    <li class="dash-log-row">
+                        <i class="bi bi-x-octagon dash-log-ico log-err"></i>
+                        <span><b class="log-err-txt">[Greška]</b> API greška (Npgea), retry 1</span>
+                    </li>
+                </ul>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Quick Actions</h5>
+            @* Health + quick actions *@
+            <div class="dash-card dash-health-card" id="admin-dashboard-health-card">
+                <div class="dash-card-head">
+                    <h2 class="dash-card-title">@L["Index_SystemHealthQuickActions"]</h2>
+                </div>
+
+                <div class="dash-health-grid">
+                    <div class="dash-health-box">
+                        <div class="dash-health-status"><i class="dot dot-pulse"></i> @L["Index_Connected"]</div>
+                        <div class="dash-health-label">@L["Index_Database"]</div>
                     </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary" @onclick="NavigateToOrders" id="admin-dashboard-orders-manage-btn">
-                                <i class="oi oi-plus me-2"></i>New Order
-                            </button>
-                            <button class="btn btn-success" @onclick="NavigateToUsers" id="admin-dashboard-users-manage-btn">
-                                <i class="oi oi-person me-2"></i>Add User
-                            </button>
-                            <button class="btn btn-info" @onclick="NavigateToReports" id="admin-dashboard-reports-view-btn">
-                                <i class="oi oi-document me-2"></i>Export Reports
-                            </button>
-                            <button class="btn btn-secondary" @onclick="NavigateToLogs" id="admin-dashboard-logs-view-btn">
-                                <i class="oi oi-list me-2"></i>View Logs
-                            </button>
-                        </div>
+                    <div class="dash-health-box">
+                        <div class="dash-health-status"><i class="dot dot-pulse"></i> @L["Index_Healthy"]</div>
+                        <div class="dash-health-label">@L["Index_APIHealth"]</div>
+                    </div>
+                    <div class="dash-health-box">
+                        <div class="dash-health-status"><i class="dot dot-pulse"></i> @L["Index_Active"]</div>
+                        <div class="dash-health-label">@L["Index_Cache"]</div>
+                    </div>
+                    <div class="dash-health-box">
+                        <div class="dash-health-status"><i class="dot dot-pulse"></i> @L["Index_Running"]</div>
+                        <div class="dash-health-label">@L["Index_BackgroundServices"]</div>
                     </div>
                 </div>
 
-                <!-- System Status -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">System Status</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>Database</span>
-                                <span class="badge bg-success">Connected</span>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>API Health</span>
-                                <span class="badge bg-success">Healthy</span>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>Cache Status</span>
-                                <span class="badge bg-success">Active</span>
-                            </div>
-                        </div>
-                        <div class="mb-0">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>Background Services</span>
-                                <span class="badge bg-success">Running</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="dash-actions-grid">
+                    <a href="orders" class="dash-action" id="admin-dashboard-action-new-order">
+                        <i class="bi bi-plus-circle"></i> @L["Index_NewOrder"]
+                    </a>
+                    <a href="users" class="dash-action" id="admin-dashboard-action-add-user">
+                        <i class="bi bi-person-plus"></i> @L["Index_AddUser"]
+                    </a>
+                    <a href="analytics" class="dash-action" id="admin-dashboard-action-export">
+                        <i class="bi bi-file-earmark-arrow-down"></i> @L["Index_ExportReport"]
+                    </a>
+                    <a href="logs" class="dash-action" id="admin-dashboard-action-logs">
+                        <i class="bi bi-journal-text"></i> @L["Index_ViewLogs"]
+                    </a>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        </section>

@@ -1,4 +1,5 @@
 @using StadiumDrinkOrdering.Shared.Models
+@inject IStringLocalizer<SharedResources> L
 
 <div class="sector-modal-overlay"
      @onclick="HandleOverlayClick"
@@ -25,22 +26,22 @@
             {
                 <div class="stadium-loading">
                     <div class="loading-spinner"></div>
-                    <p>Loading sector details...</p>
+                    <p>@L["SectorDetail_Loading"]</p>
                 </div>
             }
             else if (Seats != null && Seats.Any())
             {
                 <div class="sector-info">
-                    <p><strong>Total Seats:</strong> @Seats.Count()</p>
-                    <p><strong>Active:</strong> <span style="color: #22c55e;">@Seats.Count(s => s.IsActive)</span></p>
-                    <p><strong>Inactive:</strong> <span style="color: #ef4444;">@Seats.Count(s => !s.IsActive)</span></p>
+                    <p><strong>@L["SectorDetail_TotalSeatsLabel"]:</strong> @Seats.Count()</p>
+                    <p><strong>@L["SectorDetail_ActiveLabel"]:</strong> <span style="color: #22c55e;">@Seats.Count(s => s.IsActive)</span></p>
+                    <p><strong>@L["SectorDetail_InactiveLabel"]:</strong> <span style="color: #ef4444;">@Seats.Count(s => !s.IsActive)</span></p>
                 </div>
 
                 <div class="seat-grid">
                     @foreach (var seat in Seats.OrderBy(s => s.RowNumber).ThenBy(s => s.SeatNumber))
                     {
                         <div class="seat @GetSeatClass(seat)"
-                             title="Row @seat.RowNumber - Seat @seat.SeatNumber"
+                             title="@L["SectorDetail_SeatTooltip", seat.RowNumber, seat.SeatNumber]"
                              @onclick="() => HandleSeatClick(seat)">
                             @seat.SeatNumber
                         </div>
@@ -49,7 +50,7 @@
             }
             else
             {
-                <p>No seats found for this sector.</p>
+                <p>@L["SectorDetail_NoSeats"]</p>
             }
         </div>
     </div>

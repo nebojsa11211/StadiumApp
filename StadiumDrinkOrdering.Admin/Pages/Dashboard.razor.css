@@ -1,34 +1,561 @@
-.admin-dashboard-container {
-    padding: 1rem;
+/* =============================================================================
+   Matchday Dashboard — operations console
+   Quiet, instrument-grade surfaces with one pitch-green accent and
+   IBM Plex Mono telemetry readouts.
+   ============================================================================= */
+
+.console {
+    --line: var(--stadium-gray-200);
+    --ink: var(--stadium-gray-900);
+    --muted: var(--stadium-gray-500);
+    --surface: #ffffff;
+    --pitch: #1f7a4d;
+    --pitch-dark: #176239;
+    --pitch-soft: #eaf3ec;
+    width: 100%;
+    color: var(--ink);
 }
 
-.spin {
-    animation: spin 1s linear infinite;
+.console .mono {
+    font-family: var(--stadium-font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
 }
 
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+/* ----- Header ------------------------------------------------------------- */
+.console-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
 }
 
-.card {
-    border: 1px solid rgba(0,0,0,.125);
-    border-radius: 0.375rem;
+.eyebrow {
+    display: inline-block;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pitch);
+    margin-bottom: 0.5rem;
 }
 
-.card-header {
-    background-color: rgba(0,0,0,.03);
-    border-bottom: 1px solid rgba(0,0,0,.125);
+.console-head__title h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin: 0 0 0.35rem;
+    line-height: 1.1;
 }
 
-.table-hover tbody tr:hover {
-    background-color: rgba(0,0,0,.075);
+.console-head__title p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
 }
 
-.fs-1 {
-    font-size: 2.5rem !important;
+.console-head__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
 }
 
-.opacity-75 {
-    opacity: 0.75;
+/* LIVE pill */
+.live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 36px;
+    padding: 0 0.8rem;
+    border: 1px solid var(--pitch-line, #cfe6d7);
+    background: var(--pitch-soft);
+    color: var(--pitch-dark);
+    border-radius: 8px;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+}
+
+.live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pitch);
+    box-shadow: 0 0 0 0 rgba(31, 122, 77, 0.5);
+    animation: live-pulse 2.4s infinite;
+}
+
+.live-dot.is-busy {
+    background: var(--stadium-accent);
+    animation-duration: 0.9s;
+}
+
+@keyframes live-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(31, 122, 77, 0.45); }
+    70% { box-shadow: 0 0 0 6px rgba(31, 122, 77, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(31, 122, 77, 0); }
+}
+
+/* Icon button */
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--stadium-gray-600);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.icon-btn:hover:not(:disabled) {
+    background: var(--stadium-gray-100);
+    color: var(--ink);
+    border-color: var(--stadium-gray-300);
+}
+
+.icon-btn:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.icon-btn .oi {
+    font-size: 0.85rem;
+}
+
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ----- Status line --------------------------------------------------------- */
+.status-line {
+    margin-bottom: 1.5rem;
+}
+
+.status-line .progress {
+    background: var(--stadium-gray-200);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.status-line__meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.status-line--idle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.status-line__pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pitch);
+}
+
+.status-line .mono { color: var(--stadium-gray-700); }
+
+/* ----- Metrics ------------------------------------------------------------- */
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metric {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.15rem 1.25rem 1.1rem;
+    overflow: hidden;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* thin top rule, neutral by default */
+.metric::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--stadium-gray-200);
+}
+
+.metric--accent::before { background: var(--pitch); }
+
+.metric--clickable { cursor: pointer; }
+
+.metric--clickable:hover {
+    border-color: var(--stadium-gray-300);
+    box-shadow: var(--stadium-shadow-md);
+}
+
+.metric__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+}
+
+.metric__label {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.metric__icon {
+    font-size: 0.85rem;
+    color: var(--stadium-gray-400);
+}
+
+.metric__icon.is-ok { color: var(--pitch); }
+.metric__icon.is-warn { color: var(--stadium-accent); }
+.metric__icon.is-crit { color: var(--stadium-danger); }
+
+.metric__value {
+    font-size: 2.1rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+}
+
+.metric__value--text {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.metric__unit {
+    font-size: 1.2rem;
+    color: var(--muted);
+    margin-right: 0.05rem;
+}
+
+.metric__foot {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.7rem;
+    font-size: 0.76rem;
+    color: var(--muted);
+}
+
+.metric__hint { color: var(--muted); }
+
+.delta {
+    font-family: var(--stadium-font-mono);
+    font-weight: 600;
+    font-size: 0.74rem;
+}
+
+.delta--up { color: var(--pitch-dark); }
+.delta--down { color: var(--stadium-danger); }
+
+.health-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.health-dot.is-ok { background: var(--pitch); box-shadow: 0 0 0 3px var(--pitch-soft); }
+.health-dot.is-warn { background: var(--stadium-accent); box-shadow: 0 0 0 3px #f6efdf; }
+.health-dot.is-crit { background: var(--stadium-danger); box-shadow: 0 0 0 3px #fbe9e9; }
+.health-dot.is-neutral { background: var(--stadium-gray-400); }
+
+/* ----- Board (orders + rail) ---------------------------------------------- */
+.board {
+    display: grid;
+    grid-template-columns: minmax(0, 2.1fr) minmax(300px, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.panel + .panel { margin-top: 1rem; }
+
+.rail .panel { margin-bottom: 0; }
+.rail > .panel + .panel { margin-top: 1rem; }
+
+.panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.panel__title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+
+.link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--pitch);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+
+.link-btn:hover { color: var(--pitch-dark); }
+.link-btn .oi { font-size: 0.7rem; }
+
+/* ----- Orders table -------------------------------------------------------- */
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-table thead th {
+    text-align: left;
+    padding: 0.7rem 1.25rem;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-400);
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+}
+
+.order-table th.num,
+.order-table td.num { text-align: right; }
+
+.order-table tbody tr {
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+
+.order-table tbody tr:hover { background: var(--stadium-gray-50); }
+
+.order-table tbody td {
+    padding: 0.8rem 1.25rem;
+    font-size: 0.875rem;
+    color: var(--stadium-gray-700);
+    border-bottom: 1px solid var(--stadium-gray-100);
+    vertical-align: middle;
+}
+
+.order-table tbody tr:last-child td { border-bottom: none; }
+
+.order-table__id { color: var(--ink); font-weight: 500; }
+.order-table__time { color: var(--muted); }
+
+/* status pill — dot + label, quiet */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--stadium-gray-600);
+}
+
+.status__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--stadium-gray-400);
+}
+
+.status.is-pending { color: #946200; }
+.status.is-pending .status__dot { background: var(--stadium-accent); }
+.status.is-accepted { color: #2f6f8f; }
+.status.is-accepted .status__dot { background: var(--stadium-info); }
+.status.is-preparing { color: #2f6f8f; }
+.status.is-preparing .status__dot { background: var(--stadium-info); }
+.status.is-ready { color: var(--pitch-dark); }
+.status.is-ready .status__dot { background: var(--pitch); }
+.status.is-delivered { color: var(--stadium-gray-500); }
+.status.is-delivered .status__dot { background: var(--stadium-gray-400); }
+.status.is-cancelled { color: #991b1b; }
+.status.is-cancelled .status__dot { background: var(--stadium-danger); }
+
+/* ----- Empty state --------------------------------------------------------- */
+.empty {
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+
+.empty .oi {
+    font-size: 1.6rem;
+    color: var(--stadium-gray-300);
+}
+
+.empty p {
+    margin: 0.75rem 0 0.25rem;
+    font-weight: 600;
+    color: var(--stadium-gray-700);
+}
+
+.empty span {
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+
+/* ----- Quick actions ------------------------------------------------------- */
+.actions {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 0.75rem;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--stadium-gray-700);
+    text-align: left;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.action > span { flex: 1; }
+
+.action > .oi:first-child {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: var(--stadium-gray-100);
+    color: var(--stadium-gray-500);
+    font-size: 0.8rem;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.action__go {
+    font-size: 0.62rem;
+    color: var(--stadium-gray-300);
+    transition: transform 0.12s ease, color 0.12s ease;
+}
+
+.action:hover {
+    background: var(--stadium-gray-50);
+    color: var(--ink);
+}
+
+.action:hover > .oi:first-child {
+    background: var(--pitch-soft);
+    color: var(--pitch);
+}
+
+.action:hover .action__go {
+    color: var(--stadium-gray-400);
+    transform: translateX(2px);
+}
+
+/* ----- System statuses ----------------------------------------------------- */
+.statuses {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0.4rem;
+}
+
+.statuses li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.85rem;
+}
+
+.statuses__name { color: var(--stadium-gray-600); }
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--stadium-gray-600);
+    font-family: var(--stadium-font-mono);
+    letter-spacing: 0.02em;
+}
+
+.chip__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--stadium-gray-400);
+}
+
+.chip--ok { color: var(--pitch-dark); }
+.chip--ok .chip__dot { background: var(--pitch); }
+
+/* ----- Fade in ------------------------------------------------------------- */
+.skeleton-fade-in { animation: fade-in 0.35s ease both; }
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ----- Responsive ---------------------------------------------------------- */
+@media (max-width: 1100px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .board { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+    .console-head { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .metrics { grid-template-columns: 1fr; }
+    .metric__value { font-size: 1.85rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .live-dot, .spin, .skeleton-fade-in { animation: none; }
 }

@@ -1,0 +1,6 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e3]:
+    - status [ref=f3e4]:
+      - generic [ref=f3e5]: Redirecting to login...
+    - paragraph [ref=f3e6]: Redirecting to login...
+  - generic [ref=f3e7]: Stadium viewer initialized with keyboard navigation support

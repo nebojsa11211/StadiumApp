@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Shared.DTOs;
@@ -163,33 +164,104 @@ public partial class Events : ComponentBase
         }
     }
 
-    private async Task ActivateEvent(int eventId)
+    private async Task TransitionStatus(EventDto evt, EventStatus newStatus)
     {
-        var response = await ApiService.Http.PostAsync<bool>($"events/{eventId}/activate", null);
-        if (response)
+        // Confirm irreversible (terminal) transitions, which also invalidate ticket sessions.
+        if (newStatus is EventStatus.Cancelled or EventStatus.Completed)
         {
-            await LoadEvents();
-            ShowAlert("Event activated successfully", "success");
+            var verb = newStatus == EventStatus.Cancelled ? "cancel" : "complete";
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+                $"Are you sure you want to {verb} '{evt.Name}'? This invalidates any active ticket sessions and cannot be undone.");
+            if (!confirmed)
+                return;
         }
-        else
+
+        try
         {
-            ShowAlert("Failed to activate event", "danger");
+            // Use the raw HttpResponseMessage overload so we can surface the API's
+            // state-machine rejection reason (400 { "message": ... }) instead of a generic error.
+            var response = await ApiService.Http.PostAsync(
+                $"events/{evt.Id}/status",
+                new TransitionEventStatusRequest { NewStatus = newStatus });
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadEvents();
+                ShowAlert($"'{evt.Name}' is now {StatusDisplay(newStatus)}", "success");
+            }
+            else
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                ShowAlert(ExtractErrorMessage(body) ?? $"Could not change status ({(int)response.StatusCode})", "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Could not change status: {ex.Message}", "danger");
         }
     }
 
-    private async Task DeactivateEvent(int eventId)
+    private static string? ExtractErrorMessage(string body)
     {
-        var response = await ApiService.Http.PostAsync<bool>($"events/{eventId}/deactivate", null);
-        if (response)
+        if (string.IsNullOrWhiteSpace(body))
+            return null;
+        try
         {
-            await LoadEvents();
-            ShowAlert("Event deactivated successfully", "success");
+            using var doc = JsonDocument.Parse(body);
+            if (doc.RootElement.ValueKind == JsonValueKind.Object &&
+                doc.RootElement.TryGetProperty("message", out var message))
+            {
+                return message.GetString();
+            }
         }
-        else
+        catch (JsonException)
         {
-            ShowAlert("Failed to deactivate event", "danger");
+            // Non-JSON body — fall through.
         }
+        return null;
     }
+
+    // --- Lifecycle display helpers (badge colour, button style, labels) ---
+
+    private static string StatusDisplay(EventStatus status) => status switch
+    {
+        EventStatus.OnSale => "On Sale",
+        EventStatus.SoldOut => "Sold Out",
+        EventStatus.InProgress => "In Progress",
+        _ => status.ToString()
+    };
+
+    private static string StatusBadgeClass(EventStatus status) => status switch
+    {
+        EventStatus.Planned => "is-pending",
+        EventStatus.OnSale => "is-accepted",
+        EventStatus.SoldOut => "is-ready",
+        EventStatus.Active => "is-active",
+        EventStatus.InProgress => "is-active",
+        EventStatus.Completed => "is-inactive",
+        EventStatus.Cancelled => "is-cancelled",
+        _ => "is-inactive"
+    };
+
+    private static string TransitionButtonClass(EventStatus target) => target switch
+    {
+        EventStatus.OnSale => "pill-btn pill-btn--primary",
+        EventStatus.Active or EventStatus.InProgress => "pill-btn pill-btn--success",
+        EventStatus.Cancelled => "pill-btn pill-btn--danger",
+        _ => "pill-btn"
+    };
+
+    private static (string Label, string Icon) TransitionMeta(EventStatus target) => target switch
+    {
+        EventStatus.Planned => ("Unpublish", "bi-arrow-counterclockwise"),
+        EventStatus.OnSale => ("Put On Sale", "bi-megaphone"),
+        EventStatus.SoldOut => ("Mark Sold Out", "bi-x-octagon"),
+        EventStatus.Active => ("Go Live", "bi-broadcast"),
+        EventStatus.InProgress => ("Start Play", "bi-play-circle"),
+        EventStatus.Completed => ("Complete", "bi-check2-circle"),
+        EventStatus.Cancelled => ("Cancel Event", "bi-x-circle"),
+        _ => (target.ToString(), "bi-arrow-right")
+    };
 
     private async Task DeleteEvent(int eventId)
     {

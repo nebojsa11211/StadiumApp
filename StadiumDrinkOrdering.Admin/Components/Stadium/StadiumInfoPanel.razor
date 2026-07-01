@@ -1,4 +1,5 @@
 @using StadiumDrinkOrdering.Shared.DTOs
+@inject IStringLocalizer<SharedResources> L
 
 <div class="stadium-info-panel premium-panel animated-panel @(IsCollapsed ? "collapsed" : "expanded")" id="stadium-info-panel">
     <div class="info-panel-header premium-header animated-header">
@@ -8,20 +9,20 @@
                 <div class="icon-glow animated-glow"></div>
             </div>
             <div class="header-text premium-text animated-text">
-                <h4 class="panel-title">Stadium Intelligence Hub</h4>
-                <p class="panel-subtitle">Real-time analytics & operational insights</p>
+                <h4 class="panel-title">@L["InfoPanel_Title"]</h4>
+                <p class="panel-subtitle">@L["InfoPanel_Subtitle"]</p>
             </div>
         </div>
         <button class="btn btn-sm toggle-btn premium-toggle magnetic-btn" @onclick="ToggleCollapse" id="admin-stadium-info-toggle-btn">
             @if (IsCollapsed)
             {
                 <i class="bi bi-chevron-right"></i>
-                <span class="toggle-text">Expand Analytics</span>
+                <span class="toggle-text">@L["InfoPanel_ExpandAnalytics"]</span>
             }
             else
             {
                 <i class="bi bi-chevron-left"></i>
-                <span class="toggle-text">Minimize Panel</span>
+                <span class="toggle-text">@L["InfoPanel_MinimizePanel"]</span>
             }
         </button>
     </div>
@@ -39,7 +40,7 @@
                         </div>
                         <div class="card-content">
                             <div class="card-value">@Summary.TotalSeats.ToString("N0")</div>
-                            <div class="card-label">Total Capacity</div>
+                            <div class="card-label">@L["InfoPanel_TotalCapacity"]</div>
                         </div>
                         <div class="card-accent"></div>
                     </div>
@@ -50,7 +51,7 @@
                         </div>
                         <div class="card-content">
                             <div class="card-value">@Summary.TotalSectors</div>
-                            <div class="card-label">Active Sectors</div>
+                            <div class="card-label">@L["InfoPanel_ActiveSectors"]</div>
                         </div>
                         <div class="card-accent"></div>
                     </div>
@@ -61,7 +62,7 @@
                     <div class="stat-group">
                         <h6 class="stat-group-title">
                             <i class="bi bi-diagram-3"></i>
-                            Stadium Structure
+                            @L["InfoPanel_StadiumStructure"]
                         </h6>
                         <div class="stat-grid">
                             <div class="stat-item modern">
@@ -70,7 +71,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <div class="stat-value">@Summary.TotalTribunes</div>
-                                    <div class="stat-label">Tribunes</div>
+                                    <div class="stat-label">@L["InfoPanel_Tribunes"]</div>
                                 </div>
                             </div>
 
@@ -80,7 +81,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <div class="stat-value">@Summary.TotalRings</div>
-                                    <div class="stat-label">Rings</div>
+                                    <div class="stat-label">@L["InfoPanel_Rings"]</div>
                                 </div>
                             </div>
                         </div>
@@ -93,7 +94,7 @@
                     <div class="occupancy-analytics">
                         <h6 class="stat-group-title">
                             <i class="bi bi-graph-up"></i>
-                            Live Occupancy Analytics
+                            @L["InfoPanel_LiveOccupancy"]
                         </h6>
 
                         <!-- Occupancy Overview -->
@@ -114,7 +115,7 @@
                                 </svg>
                                 <div class="occupancy-center">
                                     <div class="occupancy-percentage">@(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F0"))%</div>
-                                    <div class="occupancy-label">Occupied</div>
+                                    <div class="occupancy-label">@L["InfoPanel_Occupied"]</div>
                                 </div>
                             </div>
                         </div>
@@ -127,7 +128,7 @@
                                 </div>
                                 <div class="availability-content">
                                     <div class="availability-number">@Summary.AvailableSeats.ToString("N0")</div>
-                                    <div class="availability-text">Available Seats</div>
+                                    <div class="availability-text">@L["InfoPanel_AvailableSeats"]</div>
                                 </div>
                                 <div class="availability-trend up">
                                     <i class="bi bi-arrow-up"></i>
@@ -140,7 +141,7 @@
                                 </div>
                                 <div class="availability-content">
                                     <div class="availability-number">@Summary.OccupiedSeats.ToString("N0")</div>
-                                    <div class="availability-text">Occupied Seats</div>
+                                    <div class="availability-text">@L["InfoPanel_OccupiedSeats"]</div>
                                 </div>
                                 <div class="availability-trend neutral">
                                     <i class="bi bi-dash"></i>
@@ -174,8 +175,8 @@
                         </div>
                     </div>
                     <div class="loading-text">
-                        <h6>Analyzing Stadium Data</h6>
-                        <p>Gathering real-time insights...</p>
+                        <h6>@L["InfoPanel_AnalyzingData"]</h6>
+                        <p>@L["InfoPanel_GatheringInsights"]</p>
                     </div>
                 </div>
             }
@@ -186,12 +187,12 @@
                         <i class="bi bi-database-x"></i>
                     </div>
                     <div class="no-data-content">
-                        <h6>No Stadium Data Available</h6>
-                        <p>Import stadium structure to begin analytics</p>
+                        <h6>@L["InfoPanel_NoDataAvailable"]</h6>
+                        <p>@L["InfoPanel_ImportStructureMessage"]</p>
                         <div class="no-data-action">
                             <a href="/admin/stadium-structure" class="btn btn-primary btn-sm">
                                 <i class="bi bi-upload"></i>
-                                Import Structure
+                                @L["InfoPanel_ImportStructureBtn"]
                             </a>
                         </div>
                     </div>

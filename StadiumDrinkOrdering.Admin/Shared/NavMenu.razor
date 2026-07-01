@@ -1,7 +1,15 @@
+@inject IStringLocalizer<SharedResources> L
+
 <div id="admin-nav-top-row" class="top-row ps-3 navbar navbar-dark">
     <div id="admin-nav-container" class="container-fluid">
-        <a class="navbar-brand" href="">Stadium Admin</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu" id="admin-nav-toggle-btn">
+        <a class="navbar-brand" href="">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-text">
+                <span class="brand-name">Stadium</span>
+                <span class="brand-sub">Operations Console</span>
+            </span>
+        </a>
+        <button title="@L["NavMenu_NavigationMenuTitle"]" class="navbar-toggler" @onclick="ToggleNavMenu" id="admin-nav-toggle-btn">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
@@ -11,91 +19,91 @@
     <nav id="admin-nav-items" class="flex-column">
         <div id="admin-nav-dashboard" class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Dashboard
+                <span class="oi oi-home" aria-hidden="true"></span> @L["NavMenu_Dashboard"]
             </NavLink>
         </div>
         <div id="admin-nav-orders" class="nav-item px-3">
             <NavLink class="nav-link" href="orders">
-                <span class="oi oi-list" aria-hidden="true"></span> Orders
+                <span class="oi oi-list" aria-hidden="true"></span> @L["NavMenu_Orders"]
             </NavLink>
         </div>
         <div id="admin-nav-drinks" class="nav-item px-3">
             <NavLink class="nav-link" href="drinks">
-                <span class="oi oi-fork" aria-hidden="true"></span> Drinks
+                <span class="oi oi-fork" aria-hidden="true"></span> @L["NavMenu_Drinks"]
             </NavLink>
         </div>
         <div id="admin-nav-analytics" class="nav-item px-3">
             <NavLink class="nav-link" href="analytics">
-                <span class="oi oi-bar-chart" aria-hidden="true"></span> Analytics
+                <span class="oi oi-bar-chart" aria-hidden="true"></span> @L["NavMenu_Analytics"]
             </NavLink>
         </div>
         <div id="admin-nav-customer-analytics" class="nav-item px-3">
             <NavLink class="nav-link" href="customer-analytics">
-                <span class="oi oi-people" aria-hidden="true"></span> Customer Analytics
+                <span class="oi oi-people" aria-hidden="true"></span> @L["NavMenu_CustomerAnalytics"]
             </NavLink>
         </div>
         <div id="admin-nav-events" class="nav-item px-3">
             <NavLink class="nav-link" href="events">
-                <span class="oi oi-calendar" aria-hidden="true"></span> Events
+                <span class="oi oi-calendar" aria-hidden="true"></span> @L["NavMenu_Events"]
             </NavLink>
         </div>
         <div id="admin-nav-tickets" class="nav-item px-3">
             <NavLink class="nav-link" href="tickets">
-                <span class="oi oi-tag" aria-hidden="true"></span> Tickets
+                <span class="oi oi-tag" aria-hidden="true"></span> @L["NavMenu_Tickets"]
             </NavLink>
         </div>
         <div id="admin-nav-bartender" class="nav-item px-3">
             <NavLink class="nav-link" href="bartender">
-                <span class="oi oi-monitor" aria-hidden="true"></span> Bartender Dashboard
+                <span class="oi oi-monitor" aria-hidden="true"></span> @L["NavMenu_BartenderDashboard"]
             </NavLink>
         </div>
         
         <!-- Stadium Management Section -->
         <div id="admin-nav-stadium-section" class="nav-item px-3 mt-2">
             <div id="admin-nav-stadium-header" class="nav-section-header">
-                <span class="text-muted small">STADIUM MANAGEMENT</span>
+                <span class="text-muted small">@L["NavMenu_StadiumManagement"]</span>
             </div>
         </div>
         <div id="admin-nav-stadium-structure" class="nav-item px-3">
             <NavLink class="nav-link" href="admin/stadium-structure">
-                <span class="oi oi-map-marker" aria-hidden="true"></span> Structure Management
+                <span class="oi oi-map-marker" aria-hidden="true"></span> @L["NavMenu_StructureManagement"]
             </NavLink>
         </div>
         <div id="admin-nav-stadium-overview" class="nav-item px-3">
             <NavLink class="nav-link" href="admin/stadium-overview">
-                <span class="oi oi-eye" aria-hidden="true"></span> Stadium Overview
+                <span class="oi oi-eye" aria-hidden="true"></span> @L["NavMenu_StadiumOverview"]
             </NavLink>
         </div>
         <div id="admin-nav-structure-help" class="nav-item px-3">
             <NavLink class="nav-link" href="admin/structure-help">
-                <span class="oi oi-question" aria-hidden="true"></span> Import Guide
+                <span class="oi oi-question" aria-hidden="true"></span> @L["NavMenu_ImportGuide"]
             </NavLink>
         </div>
         <div id="admin-nav-drawing-tool" class="nav-item px-3">
             <NavLink class="nav-link" href="admin/stadium-drawing-tool">
-                <span class="oi oi-brush" aria-hidden="true"></span> Drawing Tool
+                <span class="oi oi-brush" aria-hidden="true"></span> @L["NavMenu_DrawingTool"]
             </NavLink>
         </div>
 
         <!-- System Management Section -->
         <div id="admin-nav-system-section" class="nav-item px-3 mt-2">
             <div id="admin-nav-system-header" class="nav-section-header">
-                <span class="text-muted small">SYSTEM MANAGEMENT</span>
+                <span class="text-muted small">@L["NavMenu_SystemManagement"]</span>
             </div>
         </div>
         <div id="admin-nav-users" class="nav-item px-3">
             <NavLink class="nav-link" href="users">
-                <span class="oi oi-people" aria-hidden="true"></span> User Management
+                <span class="oi oi-people" aria-hidden="true"></span> @L["NavMenu_UserManagement"]
             </NavLink>
         </div>
         <div id="admin-nav-logs" class="nav-item px-3">
             <NavLink class="nav-link" href="logs">
-                <span class="oi oi-document" aria-hidden="true"></span> System Logs
+                <span class="oi oi-document" aria-hidden="true"></span> @L["NavMenu_SystemLogs"]
             </NavLink>
         </div>
         <div id="admin-nav-datagrid" class="nav-item px-3">
             <NavLink class="nav-link" href="datagrid">
-                <span class="oi oi-grid-three-up" aria-hidden="true"></span> Database Explorer
+                <span class="oi oi-grid-three-up" aria-hidden="true"></span> @L["NavMenu_DatabaseExplorer"]
             </NavLink>
         </div>
     </nav>

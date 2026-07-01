@@ -1,14 +1,15 @@
 @page "/admin/structure-help"
 @using System.Text.Json
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Stadium Structure Import Guide</PageTitle>
+<PageTitle>@L["StructHelp_PageTitle"]</PageTitle>
 
 <div class="container-fluid">
     <div class="d-flex align-items-center mb-4">
-        <h3 class="mb-0">📚 Stadium Structure Import Guide</h3>
+        <h3 class="mb-0">@L["StructHelp_MainTitle"]</h3>
         <div class="ms-auto">
             <a href="/admin/stadium-structure" class="btn btn-outline-primary">
-                <i class="fas fa-arrow-left me-2"></i>Back to Structure Management
+                <i class="fas fa-arrow-left me-2"></i>@L["StructHelp_BackButton"]
             </a>
         </div>
     </div>
@@ -16,19 +17,19 @@
     <!-- Quick Navigation -->
     <div class="card mb-4">
         <div class="card-body">
-            <h5>📖 Quick Navigation</h5>
+            <h5>@L["StructHelp_QuickNav"]</h5>
             <div class="row">
                 <div class="col-md-3">
-                    <a href="#overview" class="btn btn-outline-info btn-sm w-100 mb-2">Overview</a>
+                    <a href="#overview" class="btn btn-outline-info btn-sm w-100 mb-2">@L["StructHelp_NavOverview"]</a>
                 </div>
                 <div class="col-md-3">
-                    <a href="#structure" class="btn btn-outline-info btn-sm w-100 mb-2">JSON Structure</a>
+                    <a href="#structure" class="btn btn-outline-info btn-sm w-100 mb-2">@L["StructHelp_NavJsonStructure"]</a>
                 </div>
                 <div class="col-md-3">
-                    <a href="#samples" class="btn btn-outline-info btn-sm w-100 mb-2">Sample Files</a>
+                    <a href="#samples" class="btn btn-outline-info btn-sm w-100 mb-2">@L["StructHelp_NavSamples"]</a>
                 </div>
                 <div class="col-md-3">
-                    <a href="#validation" class="btn btn-outline-info btn-sm w-100 mb-2">Validation</a>
+                    <a href="#validation" class="btn btn-outline-info btn-sm w-100 mb-2">@L["StructHelp_NavValidation"]</a>
                 </div>
             </div>
         </div>
@@ -38,7 +39,7 @@
     <section id="overview" class="mb-5">
         <div class="card">
             <div class="card-header">
-                <h4>🏟️ Stadium Structure Hierarchy</h4>
+                <h4>@L["StructHelp_HierarchyTitle"]</h4>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -80,13 +81,13 @@
                     </div>
                     <div class="col-md-4">
                         <div class="alert alert-info">
-                            <h6>📝 Key Concepts:</h6>
+                            <h6>@L["StructHelp_KeyConcepts"]</h6>
                             <ul class="mb-0 small">
-                                <li><strong>Stadium</strong>: Root container with name & description</li>
-                                <li><strong>Tribunes</strong>: 4 directions (N, S, E, W)</li>
-                                <li><strong>Rings</strong>: Vertical levels (1-5)</li>
-                                <li><strong>Sectors</strong>: Seating areas within rings</li>
-                                <li><strong>Seats</strong>: Auto-generated based on rows × seats per row</li>
+                                <li><strong>@L["StructHelp_ConceptStadium"]</strong>: @L["StructHelp_ConceptStadiumDesc"]</li>
+                                <li><strong>@L["StructHelp_ConceptTribunes"]</strong>: @L["StructHelp_ConceptTribunesDesc"]</li>
+                                <li><strong>@L["StructHelp_ConceptRings"]</strong>: @L["StructHelp_ConceptRingsDesc"]</li>
+                                <li><strong>@L["StructHelp_ConceptSectors"]</strong>: @L["StructHelp_ConceptSectorsDesc"]</li>
+                                <li><strong>@L["StructHelp_ConceptSeats"]</strong>: @L["StructHelp_ConceptSeatsDesc"]</li>
                             </ul>
                         </div>
                     </div>
@@ -99,9 +100,9 @@
     <section id="structure" class="mb-5">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4>📋 Complete JSON Structure</h4>
+                <h4>@L["StructHelp_JsonStructureTitle"]</h4>
                 <button class="btn btn-sm btn-outline-secondary" @onclick="CopyJsonStructure" id="admin-structure-help-copy-json-btn">
-                    <i class="fas fa-copy me-1"></i>Copy Template
+                    <i class="fas fa-copy me-1"></i>@L["StructHelp_CopyButton"]
                 </button>
             </div>
             <div class="card-body">
@@ -148,67 +149,67 @@
                 
                 <!-- Field Descriptions Table -->
                 <div class="mt-4">
-                    <h5>📋 Field Descriptions</h5>
+                    <h5>@L["StructHelp_FieldDescTitle"]</h5>
                     <div class="table-responsive">
                         <table class="table table-sm table-striped">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Field</th>
-                                    <th>Type</th>
-                                    <th>Required</th>
-                                    <th>Constraints</th>
-                                    <th>Description</th>
+                                    <th>@L["StructHelp_TableField"]</th>
+                                    <th>@L["StructHelp_TableType"]</th>
+                                    <th>@L["StructHelp_TableRequired"]</th>
+                                    <th>@L["StructHelp_TableConstraints"]</th>
+                                    <th>@L["StructHelp_TableDescription"]</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><code>name</code></td>
                                     <td>string</td>
-                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>3-100 chars</td>
-                                    <td>Stadium display name</td>
+                                    <td>@L["StructHelp_NameDesc"]</td>
                                 </tr>
                                 <tr>
                                     <td><code>description</code></td>
                                     <td>string</td>
-                                    <td><span class="badge bg-secondary">No</span></td>
+                                    <td><span class="badge bg-secondary">@L["StructHelp_No"]</span></td>
                                     <td>max 500 chars</td>
-                                    <td>Stadium description</td>
+                                    <td>@L["StructHelp_DescriptionDesc"]</td>
                                 </tr>
                                 <tr>
                                     <td><code>tribunes[].code</code></td>
                                     <td>string</td>
-                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>N, S, E, W only</td>
-                                    <td>Tribune direction code</td>
+                                    <td>@L["StructHelp_TribuneCodeDesc"]</td>
                                 </tr>
                                 <tr>
                                     <td><code>rings[].number</code></td>
                                     <td>int</td>
-                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>1-5</td>
-                                    <td>Ring level (1=field level)</td>
+                                    <td>@L["StructHelp_RingNumberDesc"]</td>
                                 </tr>
                                 <tr>
                                     <td><code>sectors[].code</code></td>
                                     <td>string</td>
-                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>Unique, 2-10 chars</td>
-                                    <td>Sector identifier</td>
+                                    <td>@L["StructHelp_SectorCodeDesc"]</td>
                                 </tr>
                                 <tr>
                                     <td><code>sectors[].rows</code></td>
                                     <td>int</td>
-                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>1-100</td>
-                                    <td>Number of rows in sector</td>
+                                    <td>@L["StructHelp_RowsDesc"]</td>
                                 </tr>
                                 <tr>
                                     <td><code>sectors[].seatsPerRow</code></td>
                                     <td>int</td>
-                                    <td><span class="badge bg-danger">Yes</span></td>
+                                    <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>1-100</td>
-                                    <td>Seats per row</td>
+                                    <td>@L["StructHelp_SeatsPerRowDesc"]</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -222,7 +223,7 @@
     <section id="samples" class="mb-5">
         <div class="card">
             <div class="card-header">
-                <h4>📁 Sample Import Files</h4>
+                <h4>@L["StructHelp_SamplesTitle"]</h4>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -230,10 +231,10 @@
                     <div class="col-md-4 mb-3">
                         <div class="card h-100">
                             <div class="card-header bg-success text-white">
-                                <h6 class="mb-0">🏟️ Minimal Stadium</h6>
+                                <h6 class="mb-0">@L["StructHelp_MinimalStadium"]</h6>
                             </div>
                             <div class="card-body">
-                                <p class="small">Basic single-tribune structure (200 seats)</p>
+                                <p class="small">@L["StructHelp_MinimalStadiumDesc"]</p>
                                 <pre class="bg-light p-2 rounded small"><code>{
   "name": "Basic Stadium",
   "tribunes": [{
@@ -252,7 +253,7 @@
   }]
 }</code></pre>
                                 <button class="btn btn-sm btn-outline-success w-100" @onclick="@(() => DownloadSample("minimal"))" id="admin-structure-help-download-minimal-btn">
-                                    <i class="fas fa-download me-1"></i>Download Sample
+                                    <i class="fas fa-download me-1"></i>@L["StructHelp_DownloadSample"]
                                 </button>
                             </div>
                         </div>
@@ -262,10 +263,10 @@
                     <div class="col-md-4 mb-3">
                         <div class="card h-100">
                             <div class="card-header bg-primary text-white">
-                                <h6 class="mb-0">🏟️ Standard Stadium</h6>
+                                <h6 class="mb-0">@L["StructHelp_StandardStadium"]</h6>
                             </div>
                             <div class="card-body">
-                                <p class="small">Four-tribune structure with multiple sectors (20,000 seats)</p>
+                                <p class="small">@L["StructHelp_StandardStadiumDesc"]</p>
                                 <pre class="bg-light p-2 rounded small"><code>{
   "name": "Standard Stadium",
   "description": "Professional stadium",
@@ -296,7 +297,7 @@
   ]
 }</code></pre>
                                 <button class="btn btn-sm btn-outline-primary w-100" @onclick="@(() => DownloadSample("standard"))" id="admin-structure-help-download-standard-btn">
-                                    <i class="fas fa-download me-1"></i>Download Sample
+                                    <i class="fas fa-download me-1"></i>@L["StructHelp_DownloadSample"]
                                 </button>
                             </div>
                         </div>
@@ -306,10 +307,10 @@
                     <div class="col-md-4 mb-3">
                         <div class="card h-100">
                             <div class="card-header bg-warning text-dark">
-                                <h6 class="mb-0">🏟️ Complex Stadium</h6>
+                                <h6 class="mb-0">@L["StructHelp_ComplexStadium"]</h6>
                             </div>
                             <div class="card-body">
-                                <p class="small">Multi-ring stadium with VIP sections (80,000 seats)</p>
+                                <p class="small">@L["StructHelp_ComplexStadiumDesc"]</p>
                                 <pre class="bg-light p-2 rounded small"><code>{
   "name": "Premier Stadium",
   "description": "World-class venue",
@@ -338,7 +339,7 @@
   }]
 }</code></pre>
                                 <button class="btn btn-sm btn-outline-warning w-100" @onclick="@(() => DownloadSample("complex"))" id="admin-structure-help-download-complex-btn">
-                                    <i class="fas fa-download me-1"></i>Download Sample
+                                    <i class="fas fa-download me-1"></i>@L["StructHelp_DownloadSample"]
                                 </button>
                             </div>
                         </div>
@@ -352,56 +353,56 @@
     <section id="validation" class="mb-5">
         <div class="card">
             <div class="card-header">
-                <h4>✅ Validation Rules & Error Handling</h4>
+                <h4>@L["StructHelp_ValidationTitle"]</h4>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h5 class="text-success">✅ Required Fields</h5>
+                        <h5 class="text-success">@L["StructHelp_RequiredFields"]</h5>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
-                                <code>name</code> - Stadium name (3-100 characters)
+                                <code>name</code> - @L["StructHelp_ReqFieldName"]
                             </li>
                             <li class="list-group-item">
-                                <code>tribunes[]</code> - At least one tribune
+                                <code>tribunes[]</code> - @L["StructHelp_ReqFieldTribunes"]
                             </li>
                             <li class="list-group-item">
-                                <code>tribune.code</code> - Must be N, S, E, or W
+                                <code>tribune.code</code> - @L["StructHelp_ReqFieldTribuneCode"]
                             </li>
                             <li class="list-group-item">
-                                <code>tribune.rings[]</code> - At least one ring per tribune
+                                <code>tribune.rings[]</code> - @L["StructHelp_ReqFieldRings"]
                             </li>
                             <li class="list-group-item">
-                                <code>ring.number</code> - Integer 1-5
+                                <code>ring.number</code> - @L["StructHelp_ReqFieldRingNumber"]
                             </li>
                             <li class="list-group-item">
-                                <code>ring.sectors[]</code> - At least one sector per ring
+                                <code>ring.sectors[]</code> - @L["StructHelp_ReqFieldSectors"]
                             </li>
                             <li class="list-group-item">
-                                <code>sector.rows</code> & <code>sector.seatsPerRow</code> - Both required
+                                <code>sector.rows</code> & <code>sector.seatsPerRow</code> - @L["StructHelp_ReqFieldRowsSeats"]
                             </li>
                         </ul>
                     </div>
                     <div class="col-md-6">
-                        <h5 class="text-warning">⚠️ Validation Rules</h5>
+                        <h5 class="text-warning">@L["StructHelp_ValidationRules"]</h5>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
-                                Tribune codes must be unique (can't have two "N" tribunes)
+                                @L["StructHelp_RuleUniqueTribunes"]
                             </li>
                             <li class="list-group-item">
-                                Sector codes must be unique across entire stadium
+                                @L["StructHelp_RuleUniqueSectors"]
                             </li>
                             <li class="list-group-item">
-                                Ring numbers should be sequential (1, 2, 3, not 1, 3, 5)
+                                @L["StructHelp_RuleSequential"]
                             </li>
                             <li class="list-group-item">
-                                Maximum 4 tribunes, 5 rings per tribune
+                                @L["StructHelp_RuleMax"]
                             </li>
                             <li class="list-group-item">
-                                Rows: 1-100, Seats per row: 1-100
+                                @L["StructHelp_RuleRowsSeats"]
                             </li>
                             <li class="list-group-item">
-                                File size limit: 10MB
+                                @L["StructHelp_RuleFileSize"]
                             </li>
                         </ul>
                     </div>
@@ -409,41 +410,41 @@
 
                 <!-- Common Errors Table -->
                 <div class="mt-4">
-                    <h5 class="text-danger">❌ Common Errors & Solutions</h5>
+                    <h5 class="text-danger">@L["StructHelp_CommonErrors"]</h5>
                     <div class="table-responsive">
                         <table class="table table-sm table-striped">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Error Message</th>
-                                    <th>Cause</th>
-                                    <th>Solution</th>
+                                    <th>@L["StructHelp_ErrorMessage"]</th>
+                                    <th>@L["StructHelp_Cause"]</th>
+                                    <th>@L["StructHelp_Solution"]</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="table-danger">
-                                    <td>"Stadium name is required"</td>
-                                    <td>Missing or empty name field</td>
-                                    <td>Add <code>"name": "Your Stadium"</code></td>
+                                    <td>@L["StructHelp_ErrorNameRequired"]</td>
+                                    <td>@L["StructHelp_CauseNameRequired"]</td>
+                                    <td>@L["StructHelp_SolutionNameRequired"]</td>
                                 </tr>
                                 <tr class="table-danger">
-                                    <td>"Invalid tribune code"</td>
-                                    <td>Using codes other than N,S,E,W</td>
-                                    <td>Change to valid code (N, S, E, or W)</td>
+                                    <td>@L["StructHelp_ErrorInvalidCode"]</td>
+                                    <td>@L["StructHelp_CauseInvalidCode"]</td>
+                                    <td>@L["StructHelp_SolutionInvalidCode"]</td>
                                 </tr>
                                 <tr class="table-danger">
-                                    <td>"Duplicate sector code"</td>
-                                    <td>Same sector code used twice</td>
-                                    <td>Make all sector codes unique</td>
+                                    <td>@L["StructHelp_ErrorDuplicate"]</td>
+                                    <td>@L["StructHelp_CauseDuplicate"]</td>
+                                    <td>@L["StructHelp_SolutionDuplicate"]</td>
                                 </tr>
                                 <tr class="table-danger">
-                                    <td>"Invalid JSON format"</td>
-                                    <td>Syntax errors in JSON</td>
-                                    <td>Validate with JSON validator</td>
+                                    <td>@L["StructHelp_ErrorInvalidJson"]</td>
+                                    <td>@L["StructHelp_CauseInvalidJson"]</td>
+                                    <td>@L["StructHelp_SolutionInvalidJson"]</td>
                                 </tr>
                                 <tr class="table-danger">
-                                    <td>"File too large"</td>
-                                    <td>File > 10MB</td>
-                                    <td>Reduce sectors or split import</td>
+                                    <td>@L["StructHelp_ErrorTooLarge"]</td>
+                                    <td>@L["StructHelp_CauseTooLarge"]</td>
+                                    <td>@L["StructHelp_SolutionTooLarge"]</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -457,47 +458,47 @@
     <section id="validator" class="mb-5">
         <div class="card">
             <div class="card-header">
-                <h4>🔍 JSON Validator Tool</h4>
+                <h4>@L["StructHelp_ValidatorTitle"]</h4>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h6>📝 Paste Your JSON:</h6>
-                        <textarea class="form-control" rows="12" @bind="jsonInput" placeholder="Paste your stadium structure JSON here..."></textarea>
+                        <h6>@L["StructHelp_PasteJson"]</h6>
+                        <textarea class="form-control" rows="12" @bind="jsonInput" placeholder="@L["StructHelp_JsonPlaceholder"]"></textarea>
                         <div class="mt-2">
                             <button class="btn btn-primary me-2" @onclick="ValidateJson" id="admin-structure-help-validate-btn">
-                                <i class="fas fa-check me-1"></i>Validate JSON
+                                <i class="fas fa-check me-1"></i>@L["StructHelp_ValidateButton"]
                             </button>
                             <button class="btn btn-outline-secondary" @onclick="ClearValidator" id="admin-structure-help-clear-validator-btn">
-                                <i class="fas fa-trash me-1"></i>Clear
+                                <i class="fas fa-trash me-1"></i>@L["StructHelp_ClearButton"]
                             </button>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <h6>📊 Validation Results:</h6>
+                        <h6>@L["StructHelp_ValidationResults"]</h6>
                         <div class="border rounded p-3" style="min-height: 300px;">
                             @if (!string.IsNullOrEmpty(validationResult))
                             {
                                 <div class="@(isValidJson ? "alert alert-success" : "alert alert-danger")">
                                     @if (isValidJson)
                                     {
-                                        <h6 class="alert-heading">✅ Valid JSON Structure!</h6>
+                                        <h6 class="alert-heading">@L["StructHelp_ValidJson"]</h6>
                                     }
                                     else
                                     {
-                                        <h6 class="alert-heading">❌ Validation Failed</h6>
+                                        <h6 class="alert-heading">@L["StructHelp_ValidationFailedHeading"]</h6>
                                     }
                                     <pre class="mb-0 small">@validationResult</pre>
                                 </div>
-                                
+
                                 @if (isValidJson && parsedStadium != null)
                                 {
                                     <div class="mt-3">
-                                        <h6>📊 Structure Preview:</h6>
+                                        <h6>@L["StructHelp_PreviewHeading"]</h6>
                                         <ul class="list-unstyled">
-                                            <li><strong>Stadium:</strong> @parsedStadium.Name</li>
-                                            <li><strong>Tribunes:</strong> @parsedStadium.Tribunes?.Count</li>
-                                            <li><strong>Estimated Seats:</strong> @CalculateTotalSeats(parsedStadium)</li>
+                                            <li><strong>@L["StructHelp_StadiumLabel"]:</strong> @parsedStadium.Name</li>
+                                            <li><strong>@L["StructHelp_TribunesLabel"]:</strong> @parsedStadium.Tribunes?.Count</li>
+                                            <li><strong>@L["StructHelp_EstimatedSeatsLabel"]:</strong> @CalculateTotalSeats(parsedStadium)</li>
                                         </ul>
                                     </div>
                                 }
@@ -506,7 +507,7 @@
                             {
                                 <div class="text-muted text-center" style="padding-top: 100px;">
                                     <i class="fas fa-clipboard-check fa-3x mb-3"></i>
-                                    <p>Paste JSON and click Validate to see results</p>
+                                    <p>@L["StructHelp_EmptyValidatorState"]</p>
                                 </div>
                             }
                         </div>

@@ -24,22 +24,59 @@ public partial class Login
         // Ensure authentication is initialized
         await AuthService.InitializeAsync();
 
-        // Check if user is already authenticated
-        if (AuthService.IsAuthenticated)
-        {
-            var targetUrl = string.IsNullOrEmpty(returnUrl) ? "/" : Uri.UnescapeDataString(returnUrl);
-            if (targetUrl.StartsWith("http"))
-            {
-                targetUrl = "/";
-            }
-            NavigationManager.NavigateTo(targetUrl);
-            return;
-        }
-
-        // Get return URL from query string
+        // Get return URL from query string first so it is available for any redirect below
         var uri = new Uri(NavigationManager.Uri);
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
         returnUrl = query["returnUrl"];
+
+        // The server rejected the token (401 -> ShowAuthenticationErrorAsync redirected here
+        // with sessionExpired=true). The token may STILL pass the client-side validity check
+        // (expiry + format), so we must NOT auto-redirect back to the dashboard - that is the
+        // infinite dashboard <-> login loop. Force a logout so the rejected token is gone and
+        // show the login form.
+        if (query["sessionExpired"] == "true")
+        {
+            await AuthService.LogoutAsync();
+            errorMessage = "Your session has expired. Please log in again.";
+            return;
+        }
+
+        // Only redirect away from /login if the TOKEN STORE actually holds a valid token -
+        // the same check AuthRoute uses. Using the raw in-memory IsAuthenticated flag here
+        // let Login and AuthRoute disagree (flag stale-true while the token was cleared),
+        // producing an infinite dashboard <-> login bounce. ValidateAuthenticationAsync
+        // reconciles the in-memory state with storage before we decide.
+        if (await AuthService.ValidateAuthenticationAsync())
+        {
+            NavigationManager.NavigateTo(ResolveReturnUrl());
+        }
+    }
+
+    // Resolves the post-login destination, preserving the originally requested page.
+    // Absolute URLs are only honored when same-origin (prevents open-redirect); anything
+    // else (or a loop back to /login) falls back to the dashboard.
+    private string ResolveReturnUrl()
+    {
+        if (string.IsNullOrEmpty(returnUrl))
+            return "/";
+
+        var decoded = Uri.UnescapeDataString(returnUrl);
+
+        if (Uri.TryCreate(decoded, UriKind.Absolute, out var absolute))
+        {
+            var sameOrigin = Uri.Compare(absolute, new Uri(NavigationManager.BaseUri),
+                UriComponents.SchemeAndServer, UriFormat.Unescaped, StringComparison.OrdinalIgnoreCase) == 0;
+
+            if (!sameOrigin)
+                return "/";
+
+            decoded = absolute.PathAndQuery; // keep only the local path (e.g. /orders)
+        }
+
+        if (decoded.StartsWith("/login", StringComparison.OrdinalIgnoreCase))
+            return "/";
+
+        return decoded;
     }
 
     private async Task HandleLogin()
@@ -89,14 +126,8 @@ public partial class Login
                     // Use a small delay to ensure everything is updated
                     await Task.Delay(100);
 
-                    // Navigate to the return URL or dashboard
-                    var targetUrl = string.IsNullOrEmpty(returnUrl) ? "/" : Uri.UnescapeDataString(returnUrl);
-                    if (targetUrl.StartsWith("http"))
-                    {
-                        targetUrl = "/";
-                    }
-
-                    NavigationManager.NavigateTo(targetUrl);
+                    // Navigate to the originally requested page (or dashboard as fallback)
+                    NavigationManager.NavigateTo(ResolveReturnUrl());
                 }
                 else
                 {

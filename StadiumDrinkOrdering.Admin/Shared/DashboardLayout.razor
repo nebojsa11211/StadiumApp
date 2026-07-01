@@ -1,0 +1,100 @@
+@inherits LayoutComponentBase
+@using Microsoft.Extensions.Localization
+@using StadiumDrinkOrdering.Admin
+@inject IStringLocalizer<SharedResources> L
+
+@* Modern dashboard shell: shared sidebar (admin-dashboard-sidebar) + page content in dash-main. *@
+<div class="dash" id="admin-dashboard">
+
+    @* ============================ SIDEBAR ============================ *@
+    <aside class="dash-sidebar" id="admin-dashboard-sidebar">
+        <div class="dash-brand" id="admin-dashboard-brand">
+            <div class="dash-brand-logo" aria-hidden="true">
+                <i class="bi bi-building"></i>
+            </div>
+            <div class="dash-brand-text">
+                <span class="dash-brand-name">STADIUM</span>
+                <span class="dash-brand-sub">ADMIN</span>
+            </div>
+        </div>
+
+        <div class="dash-clock" id="admin-dashboard-clock">
+            <div class="dash-clock-time">@_now.ToString("HH:mm:ss")</div>
+            <div class="dash-clock-date">@_now.ToString("dd/MM/yy") <span class="dash-clock-hr">HR</span></div>
+        </div>
+
+        <nav class="dash-nav" id="admin-dashboard-nav">
+            <a href="" class="@NavClass("")" id="admin-dashboard-nav-dashboard">
+                <i class="bi bi-grid-1x2"></i><span>@L["Nav_Dashboard"]</span>
+            </a>
+            <a href="orders" class="@NavClass("orders")" id="admin-dashboard-nav-orders">
+                <i class="bi bi-cart3"></i><span>@L["Nav_Orders"]</span>
+            </a>
+            <a href="drinks" class="@NavClass("drinks")" id="admin-dashboard-nav-drinks">
+                <i class="bi bi-cup-straw"></i><span>@L["Nav_Drinks"]</span>
+            </a>
+            <a href="analytics" class="@NavClass("analytics")" id="admin-dashboard-nav-analytics">
+                <i class="bi bi-bar-chart-line"></i><span>@L["Nav_Analytics"]</span>
+            </a>
+            <a href="customer-analytics" class="@NavClass("customer-analytics", "dash-nav-sub")" id="admin-dashboard-nav-customer-analytics">
+                <i class="bi bi-dash"></i><span>@L["Nav_CustomerAnalytics"]</span>
+            </a>
+
+            <div class="dash-nav-group">@L["Nav_GroupStadium"]</div>
+            <a href="events" class="@NavClass("events", "dash-nav-sub")" id="admin-dashboard-nav-events">
+                <i class="bi bi-calendar-event"></i><span>@L["Nav_Events"]</span>
+            </a>
+            <a href="tickets" class="@NavClass("tickets", "dash-nav-sub")" id="admin-dashboard-nav-tickets">
+                <i class="bi bi-ticket-perforated"></i><span>@L["Nav_Tickets"]</span>
+            </a>
+            <a href="admin/stadium-overview" class="@NavClass("admin/stadium-overview", "dash-nav-sub")" id="admin-dashboard-nav-overview">
+                <i class="bi bi-eye"></i><span>@L["Nav_Overview"]</span>
+            </a>
+            <a href="admin/stadium-drawing-tool" class="@NavClass("admin/stadium-drawing-tool", "dash-nav-sub")" id="admin-dashboard-nav-drawing">
+                <i class="bi bi-brush"></i><span>@L["Nav_DrawingTool"]</span>
+            </a>
+
+            <div class="dash-nav-group">@L["Nav_GroupSystem"]</div>
+            <a href="logs" class="@NavClass("logs")" id="admin-dashboard-nav-logs">
+                <i class="bi bi-card-list"></i><span>@L["Nav_Logs"]</span>
+            </a>
+            <a href="datagrid" class="@NavClass("datagrid")" id="admin-dashboard-nav-database">
+                <i class="bi bi-database"></i><span>@L["Nav_Database"]</span>
+            </a>
+            <a href="users" class="@NavClass("users")" id="admin-dashboard-nav-security">
+                <i class="bi bi-shield-lock"></i><span>@L["Nav_Security"]</span>
+            </a>
+        </nav>
+
+        <div class="dash-sidebar-footer">
+            <div class="dash-logging-panel" id="admin-dashboard-logging-panel">
+                <i class="bi bi-broadcast-pin"></i>
+                <div>
+                    <div class="dash-logging-title">@L["Sidebar_LoggingTitle"]</div>
+                    <div class="dash-logging-meta">@L["Sidebar_LastPublished"] @_now.ToString("HH:mm")</div>
+                </div>
+            </div>
+
+            <div class="dash-profile" id="admin-dashboard-profile">
+                <div class="dash-avatar">@GetInitials()</div>
+                <div class="dash-profile-info">
+                    <button class="dash-logout" @onclick="HandleLogout" id="admin-dashboard-logout-btn">@L["Logout"]</button>
+                    <div class="dash-profile-email">@_userEmail</div>
+                </div>
+            </div>
+
+            <div class="dash-lang" id="admin-dashboard-lang">
+                <span class="dash-lang-label">HR/EN</span>
+                <div class="dash-lang-switch">
+                    <button class="@LangClass("hr")" @onclick="@(() => SetLang("hr"))" id="admin-dashboard-lang-hr">HR</button>
+                    <button class="@LangClass("en")" @onclick="@(() => SetLang("en"))" id="admin-dashboard-lang-en">EN</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    @* ============================ MAIN ============================ *@
+    <main class="dash-main" id="admin-dashboard-main">
+        @Body
+    </main>
+</div>

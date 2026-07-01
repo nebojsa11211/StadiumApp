@@ -205,18 +205,19 @@ public partial class Orders : ComponentBase
         // Implementation for loading more orders
     }
 
-    private string GetStatusBadgeClass(OrderStatus status)
+    // Console status pill modifier (dot + label) matching the dashboard design
+    private string GetStatusModifier(OrderStatus status)
     {
         return status switch
         {
-            OrderStatus.Pending => "bg-warning text-dark",
-            OrderStatus.Accepted => "bg-primary",
-            OrderStatus.InPreparation => "bg-info",
-            OrderStatus.Ready => "bg-success",
-            OrderStatus.OutForDelivery => "bg-dark",
-            OrderStatus.Delivered => "bg-success",
-            OrderStatus.Cancelled => "bg-danger",
-            _ => "bg-secondary"
+            OrderStatus.Pending => "is-pending",
+            OrderStatus.Accepted => "is-accepted",
+            OrderStatus.InPreparation => "is-preparing",
+            OrderStatus.OutForDelivery => "is-preparing",
+            OrderStatus.Ready => "is-ready",
+            OrderStatus.Delivered => "is-delivered",
+            OrderStatus.Cancelled => "is-cancelled",
+            _ => "is-neutral"
         };
     }
 }

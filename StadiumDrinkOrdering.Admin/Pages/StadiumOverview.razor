@@ -4,6 +4,7 @@
 @using System.Globalization
 @using System.Text.Json
 @using StadiumDrinkOrdering.Admin.Components.Stadium
+@inject IStringLocalizer<SharedResources> L
 
 <PageTitle>Stadium Operations Center - Admin</PageTitle>
 
@@ -14,13 +15,13 @@
                 <i class="bi bi-building" aria-hidden="true"></i>
             </div>
             <div class="header-info">
-                <h1 id="stadium-overview-title" class="overview-title">Stadium Operations Center</h1>
-                <p class="overview-subtitle">Real-time stadium management dashboard</p>
+                <h1 id="stadium-overview-title" class="overview-title">@L["Overview_Title"]</h1>
+                <p class="overview-subtitle">@L["Overview_Subtitle"]</p>
             </div>
             <div class="header-status">
                 <div class="status-indicator @(isLoading ? "loading" : "online")">
                     <div class="status-dot" aria-hidden="true"></div>
-                    <span class="status-text">@(isLoading ? "Loading..." : "System Online")</span>
+                    <span class="status-text">@(isLoading ? L["Overview_Loading"] : L["Overview_SystemOnline"])</span>
                 </div>
             </div>
         </div>
@@ -39,9 +40,9 @@
     {
         <div id="admin-stadium-overview-event-selector" class="card mb-4">
             <div id="admin-stadium-overview-event-card-body" class="card-body">
-                <label for="admin-stadium-overview-event-select" class="form-label fw-bold">Select Event:</label>
+                <label for="admin-stadium-overview-event-select" class="form-label fw-bold">@L["Overview_SelectEvent"]</label>
                 <select id="admin-stadium-overview-event-select" class="form-select" @bind="selectedEventId" @bind:after="OnEventChanged">
-                    <option value="0">-- No Event Selected --</option>
+                    <option value="0">@L["Overview_NoEventSelected"]</option>
                     @foreach (var evt in events)
                     {
                         <option value="@evt.Id">@evt.EventName (@evt.EventDate.ToString("dd MMM yyyy"))</option>
@@ -55,7 +56,7 @@
     {
         <div id="admin-stadium-overview-loading" class="stadium-loading">
             <div id="admin-stadium-overview-loading-spinner" class="loading-spinner"></div>
-            <p id="admin-stadium-overview-loading-text">Loading stadium layout...</p>
+            <p id="admin-stadium-overview-loading-text">@L["Overview_LoadingStadiumLayout"]</p>
         </div>
     }
     else
@@ -64,7 +65,7 @@
         <div id="admin-stadium-overview-image-container" class="stadium-image-container">
             <img id="admin-stadium-overview-blueprint-img"
                  src="/images/stadium-blueprint.png"
-                 alt="Stadium Layout"
+                 alt="@L["Overview_StadiumLayoutAlt"]"
                  class="stadium-blueprint-img" />
 
             @* SVG Sector Overlays - CONDITIONALLY RENDER *@
@@ -140,10 +141,10 @@
                 <div id="admin-stadium-overview-no-sectors-overlay" class="no-sectors-overlay">
                     <div class="no-sectors-content">
                         <i class="bi bi-info-circle-fill fs-1 mb-3"></i>
-                        <h4>No Sector Overlays Configured</h4>
-                        <p class="text-muted">Use the Stadium Drawing Tool to create sector overlays</p>
+                        <h4>@L["Overview_NoSectorOverlaysTitle"]</h4>
+                        <p class="text-muted">@L["Overview_NoSectorOverlaysMessage"]</p>
                         <a href="/admin/stadium-drawing-tool" class="btn btn-primary mt-3">
-                            <i class="bi bi-pencil-square"></i> Open Drawing Tool
+                            <i class="bi bi-pencil-square"></i> @L["Overview_OpenDrawingToolBtn"]
                         </a>
                     </div>
                 </div>
@@ -153,23 +154,23 @@
         @* Legend - ALWAYS SHOW *@
         <div id="admin-stadium-overview-legend" class="card mt-4">
             <div id="admin-stadium-overview-legend-body" class="card-body">
-                <h5 id="admin-stadium-overview-legend-title" class="card-title">Occupancy Legend</h5>
+                <h5 id="admin-stadium-overview-legend-title" class="card-title">@L["Overview_OccupancyLegend"]</h5>
                 <div id="admin-stadium-overview-legend-items" class="d-flex gap-4 flex-wrap">
                     <div id="admin-stadium-overview-legend-available" class="d-flex align-items-center gap-2">
                         <div style="width: 24px; height: 24px; background: rgba(34, 197, 94, 0.3); border: 2px solid #22c55e; border-radius: 4px;"></div>
-                        <span>Available (0-49%)</span>
+                        <span>@L["Overview_AvailableLabel"]</span>
                     </div>
                     <div id="admin-stadium-overview-legend-partial" class="d-flex align-items-center gap-2">
                         <div style="width: 24px; height: 24px; background: rgba(245, 158, 11, 0.3); border: 2px solid #f59e0b; border-radius: 4px;"></div>
-                        <span>Partial (50-89%)</span>
+                        <span>@L["Overview_PartialLabel"]</span>
                     </div>
                     <div id="admin-stadium-overview-legend-full" class="d-flex align-items-center gap-2">
                         <div style="width: 24px; height: 24px; background: rgba(239, 68, 68, 0.3); border: 2px solid #ef4444; border-radius: 4px;"></div>
-                        <span>Full (90-100%)</span>
+                        <span>@L["Overview_FullLabel"]</span>
                     </div>
                     <div id="admin-stadium-overview-legend-vip" class="d-flex align-items-center gap-2">
                         <div style="width: 24px; height: 24px; background: rgba(139, 92, 246, 0.3); border: 2px solid #8b5cf6; border-radius: 4px;"></div>
-                        <span>VIP Section</span>
+                        <span>@L["Overview_VipLabel"]</span>
                     </div>
                 </div>
             </div>

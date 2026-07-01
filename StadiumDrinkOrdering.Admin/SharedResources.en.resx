@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -290,5 +290,2646 @@
   </data>
   <data name="ViewAnalytics" xml:space="preserve">
     <value>View Analytics</value>
+  </data>
+
+  <!-- Dashboard Sidebar Navigation -->
+  <data name="Nav_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Nav_Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="Nav_Drinks" xml:space="preserve">
+    <value>Drinks</value>
+  </data>
+  <data name="Nav_Analytics" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="Nav_CustomerAnalytics" xml:space="preserve">
+    <value>Customer Analytics</value>
+  </data>
+  <data name="Nav_GroupStadium" xml:space="preserve">
+    <value>Stadium Management</value>
+  </data>
+  <data name="Nav_Events" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="Nav_Tickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="Nav_Overview" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="Nav_DrawingTool" xml:space="preserve">
+    <value>Drawing Tool</value>
+  </data>
+  <data name="Nav_GroupSystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Nav_Logs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Nav_Database" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="Nav_Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="Sidebar_LoggingTitle" xml:space="preserve">
+    <value>Centralized Logging</value>
+  </data>
+  <data name="Sidebar_LastPublished" xml:space="preserve">
+    <value>Last published:</value>
+  </data>
+
+  <!-- AUTO-GENERATED PAGE LOCALIZATION KEYS -->
+  <data name="Drawing_PageTitle" xml:space="preserve">
+    <value>Stadium Drawing Tool - Admin</value>
+  </data>
+  <data name="Drawing_MainTitle" xml:space="preserve">
+    <value>🎨 Stadium Drawing Tool</value>
+  </data>
+  <data name="Drawing_Subtitle" xml:space="preserve">
+    <value>Draw layers over your stadium picture to create zone overlays, annotations, and custom layouts.</value>
+  </data>
+  <data name="Drawing_ImageTitle" xml:space="preserve">
+    <value>📷 Stadium Image</value>
+  </data>
+  <data name="Drawing_UploadHint" xml:space="preserve">
+    <value>Upload a stadium picture to start drawing</value>
+  </data>
+  <data name="Drawing_BlueprintLoaded" xml:space="preserve">
+    <value>✅ Stadium blueprint loaded</value>
+  </data>
+  <data name="Drawing_ClearBtn" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Drawing_ReplaceHint" xml:space="preserve">
+    <value>Upload a different image if needed</value>
+  </data>
+  <data name="Drawing_ToolsTitle" xml:space="preserve">
+    <value>🖌️ Drawing Tools</value>
+  </data>
+  <data name="Drawing_SelectBtn" xml:space="preserve">
+    <value>👆 Select/Move</value>
+  </data>
+  <data name="Drawing_SectorTitle" xml:space="preserve">
+    <value>🎯 Sector Tools</value>
+  </data>
+  <data name="Drawing_CreateSectorBtn" xml:space="preserve">
+    <value>➕ Create Sector</value>
+  </data>
+  <data name="Drawing_RectangleShape" xml:space="preserve">
+    <value>◻️ Rectangle</value>
+  </data>
+  <data name="Drawing_TriangleShape" xml:space="preserve">
+    <value>🔺 Triangle (3 clicks)</value>
+  </data>
+  <data name="Drawing_RhombusShape" xml:space="preserve">
+    <value>🔷 Rhombus (4 clicks)</value>
+  </data>
+  <data name="Drawing_PolygonShape" xml:space="preserve">
+    <value>⬡ Custom Polygon (multi-click)</value>
+  </data>
+  <data name="Drawing_CircularShape" xml:space="preserve">
+    <value>🍕 Circular Sector (Coming Soon)</value>
+  </data>
+  <data name="Drawing_ColorLabel" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Drawing_LineWidthLabel" xml:space="preserve">
+    <value>Line Width: {0} px</value>
+  </data>
+  <data name="Drawing_OpacityLabel" xml:space="preserve">
+    <value>Opacity: {0}%</value>
+  </data>
+  <data name="Drawing_ClearLayerBtn" xml:space="preserve">
+    <value>🗑️ Clear Current Layer</value>
+  </data>
+  <data name="Drawing_ExportDrawingBtn" xml:space="preserve">
+    <value>💾 Export Drawing</value>
+  </data>
+  <data name="Drawing_ExportJsonBtn" xml:space="preserve">
+    <value>📄 Export JSON</value>
+  </data>
+  <data name="Drawing_SaveSectorsBtn" xml:space="preserve">
+    <value>💾 Save Sector Layout</value>
+  </data>
+  <data name="Drawing_CurrentTool" xml:space="preserve">
+    <value>Current Tool</value>
+  </data>
+  <data name="Drawing_CurrentLayer" xml:space="preserve">
+    <value>Current Layer</value>
+  </data>
+  <data name="Drawing_UnsavedChangesTitle" xml:space="preserve">
+    <value>⚠️ Unsaved Changes</value>
+  </data>
+  <data name="Drawing_UnsavedChangesMsg" xml:space="preserve">
+    <value>Sector position or size has been modified</value>
+  </data>
+  <data name="Drawing_SaveBtn" xml:space="preserve">
+    <value>💾 Save Changes</value>
+  </data>
+  <data name="Drawing_DiscardBtn" xml:space="preserve">
+    <value>❌ Discard</value>
+  </data>
+  <data name="Drawing_RectangleInstructions" xml:space="preserve">
+    <value>Click and drag to define rectangular sector boundaries</value>
+  </data>
+  <data name="Drawing_TriangleInstructions" xml:space="preserve">
+    <value>Click 3 points to create a triangle sector (auto-completes)</value>
+  </data>
+  <data name="Drawing_RhombusInstructions" xml:space="preserve">
+    <value>Click 4 points to create a rhombus sector</value>
+  </data>
+  <data name="Drawing_PolygonInstructions" xml:space="preserve">
+    <value>Click multiple points to create custom polygon. Double-click to finish (min 3 points)</value>
+  </data>
+  <data name="Drawing_DefaultInstructions" xml:space="preserve">
+    <value>Select a shape type from the dropdown above</value>
+  </data>
+  <data name="NavMenu_NavigationMenuTitle" xml:space="preserve">
+    <value>Navigation menu</value>
+  </data>
+  <data name="NavMenu_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="NavMenu_Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="NavMenu_Drinks" xml:space="preserve">
+    <value>Drinks</value>
+  </data>
+  <data name="NavMenu_Analytics" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="NavMenu_CustomerAnalytics" xml:space="preserve">
+    <value>Customer Analytics</value>
+  </data>
+  <data name="NavMenu_Events" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="NavMenu_Tickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="NavMenu_BartenderDashboard" xml:space="preserve">
+    <value>Bartender Dashboard</value>
+  </data>
+  <data name="NavMenu_StadiumManagement" xml:space="preserve">
+    <value>STADIUM MANAGEMENT</value>
+  </data>
+  <data name="NavMenu_StructureManagement" xml:space="preserve">
+    <value>Structure Management</value>
+  </data>
+  <data name="NavMenu_StadiumOverview" xml:space="preserve">
+    <value>Stadium Overview</value>
+  </data>
+  <data name="NavMenu_ImportGuide" xml:space="preserve">
+    <value>Import Guide</value>
+  </data>
+  <data name="NavMenu_DrawingTool" xml:space="preserve">
+    <value>Drawing Tool</value>
+  </data>
+  <data name="NavMenu_SystemManagement" xml:space="preserve">
+    <value>SYSTEM MANAGEMENT</value>
+  </data>
+  <data name="NavMenu_UserManagement" xml:space="preserve">
+    <value>User Management</value>
+  </data>
+  <data name="NavMenu_SystemLogs" xml:space="preserve">
+    <value>System Logs</value>
+  </data>
+  <data name="NavMenu_DatabaseExplorer" xml:space="preserve">
+    <value>Database Explorer</value>
+  </data>
+  <data name="MainLayout_AdminDashboard" xml:space="preserve">
+    <value>Admin Dashboard</value>
+  </data>
+  <data name="MainLayout_ServerTime" xml:space="preserve">
+    <value>Server Time</value>
+  </data>
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Admin Login</value>
+  </data>
+  <data name="Login_StadiumAdmin" xml:space="preserve">
+    <value>Stadium Admin</value>
+  </data>
+  <data name="Login_OperationsConsoleAccess" xml:space="preserve">
+    <value>Operations Console access</value>
+  </data>
+  <data name="Login_LoggingIn" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
+  <data name="Login_DemoCredentialsHint" xml:space="preserve">
+    <value>Use admin@stadium.com/admin123 for demo purposes</value>
+  </data>
+  <data name="SectorEdit_CreateNewTitle" xml:space="preserve">
+    <value>Create New Sector</value>
+  </data>
+  <data name="SectorEdit_EditSectorTitle" xml:space="preserve">
+    <value>Edit Sector: {0}</value>
+  </data>
+  <data name="SectorEdit_SectorCodeLabel" xml:space="preserve">
+    <value>Sector Code *</value>
+  </data>
+  <data name="SectorEdit_SectorCodePlaceholder" xml:space="preserve">
+    <value>e.g., A1, VIP1</value>
+  </data>
+  <data name="SectorEdit_SectorCodeHint" xml:space="preserve">
+    <value>Unique identifier</value>
+  </data>
+  <data name="SectorEdit_SectorNameLabel" xml:space="preserve">
+    <value>Sector Name *</value>
+  </data>
+  <data name="SectorEdit_SectorNamePlaceholder" xml:space="preserve">
+    <value>e.g., Tribune A1, VIP Section</value>
+  </data>
+  <data name="SectorEdit_SectorNameHint" xml:space="preserve">
+    <value>Display name for customers</value>
+  </data>
+  <data name="SectorEdit_SeatingModeLabel" xml:space="preserve">
+    <value>Seating Mode</value>
+  </data>
+  <data name="SectorEdit_UniformModeLabel" xml:space="preserve">
+    <value>Uniform (Same seats per row)</value>
+  </data>
+  <data name="SectorEdit_UniformModeHint" xml:space="preserve">
+    <value>All rows will have the same number of seats</value>
+  </data>
+  <data name="SectorEdit_VariableModeLabel" xml:space="preserve">
+    <value>Variable (Different seats per row)</value>
+  </data>
+  <data name="SectorEdit_VariableModeHint" xml:space="preserve">
+    <value>Define different seat counts for row ranges</value>
+  </data>
+  <data name="SectorEdit_RowsLabel" xml:space="preserve">
+    <value>Number of Rows *</value>
+  </data>
+  <data name="SectorEdit_RowsHint" xml:space="preserve">
+    <value>1-100 rows</value>
+  </data>
+  <data name="SectorEdit_SeatsPerRowLabel" xml:space="preserve">
+    <value>Seats per Row *</value>
+  </data>
+  <data name="SectorEdit_SeatsPerRowHint" xml:space="preserve">
+    <value>1-200 seats</value>
+  </data>
+  <data name="SectorEdit_TotalSeatsLabel" xml:space="preserve">
+    <value>Total Seats</value>
+  </data>
+  <data name="SectorEdit_TotalSeatsCalcAuto" xml:space="preserve">
+    <value>Calculated automatically</value>
+  </data>
+  <data name="SectorEdit_TotalSeatsCalcVariable" xml:space="preserve">
+    <value>Calculated from row patterns below</value>
+  </data>
+  <data name="SectorEdit_RowPatternsLabel" xml:space="preserve">
+    <value>Row Patterns</value>
+  </data>
+  <data name="SectorEdit_TableFromRow" xml:space="preserve">
+    <value>From Row</value>
+  </data>
+  <data name="SectorEdit_TableToRow" xml:space="preserve">
+    <value>To Row</value>
+  </data>
+  <data name="SectorEdit_TableSeatsPerRow" xml:space="preserve">
+    <value>Seats/Row</value>
+  </data>
+  <data name="SectorEdit_TableSubtotal" xml:space="preserve">
+    <value>Subtotal</value>
+  </data>
+  <data name="SectorEdit_TableAction" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="SectorEdit_TableSeatUnit" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="SectorEdit_NoRowPatterns" xml:space="preserve">
+    <value>No row patterns defined. Click "Add Row Range" to start.</value>
+  </data>
+  <data name="SectorEdit_AddRowPattern" xml:space="preserve">
+    <value>Add Row Range</value>
+  </data>
+  <data name="SectorEdit_SectorTypeLabel" xml:space="preserve">
+    <value>Sector Type</value>
+  </data>
+  <data name="SectorEdit_TypeStandard" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="SectorEdit_TypeVip" xml:space="preserve">
+    <value>VIP</value>
+  </data>
+  <data name="SectorEdit_TypeWheelchair" xml:space="preserve">
+    <value>Wheelchair Accessible</value>
+  </data>
+  <data name="SectorEdit_TypePremium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="SectorEdit_TypeFamily" xml:space="preserve">
+    <value>Family Section</value>
+  </data>
+  <data name="SectorEdit_SectorTypeHint" xml:space="preserve">
+    <value>Classification for pricing and access</value>
+  </data>
+  <data name="SectorEdit_DisplayColorLabel" xml:space="preserve">
+    <value>Display Color</value>
+  </data>
+  <data name="SectorEdit_DisplayColorTooltip" xml:space="preserve">
+    <value>Choose sector color</value>
+  </data>
+  <data name="SectorEdit_ColorPlaceholder" xml:space="preserve">
+    <value>#007bff</value>
+  </data>
+  <data name="SectorEdit_DisplayColorHint" xml:space="preserve">
+    <value>Visual color on stadium map</value>
+  </data>
+  <data name="SectorEdit_PositionSizeLabel" xml:space="preserve">
+    <value>Position &amp; Size</value>
+  </data>
+  <data name="SectorEdit_PositionLeft" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="SectorEdit_PositionTop" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="SectorEdit_PositionWidth" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="SectorEdit_PositionHeight" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="SectorEdit_PositionAdjustHint" xml:space="preserve">
+    <value>Use Select/Move tool on canvas to adjust position</value>
+  </data>
+  <data name="SectorEdit_CreatedLabel" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="SectorEdit_ModifiedLabel" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="SectorEdit_DeleteButton" xml:space="preserve">
+    <value>Delete Sector</value>
+  </data>
+  <data name="SectorEdit_PreviewButton" xml:space="preserve">
+    <value>Preview Sector</value>
+  </data>
+  <data name="SectorEdit_PreviewHiddenButton" xml:space="preserve">
+    <value>Hide Preview</value>
+  </data>
+  <data name="SectorEdit_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SectorEdit_SaveButton" xml:space="preserve">
+    <value>Save Sector</value>
+  </data>
+  <data name="SectorEdit_PreviewTitle" xml:space="preserve">
+    <value>Sector Preview: {0}</value>
+  </data>
+  <data name="SectorEdit_PreviewInfo" xml:space="preserve">
+    <value>Sector Information: {0}</value>
+  </data>
+  <data name="SectorEdit_PreviewField" xml:space="preserve">
+    <value>⬇️ FIELD / STAGE ⬇️</value>
+  </data>
+  <data name="SectorEdit_PreviewRow" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="SectorEdit_PreviewSeats" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="SectorEdit_PreviewSeatTooltip" xml:space="preserve">
+    <value>Row {0}, Seat {1}</value>
+  </data>
+  <data name="SectorEdit_PreviewLegend" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+  <data name="SectorEdit_PreviewSeatType" xml:space="preserve">
+    <value>{0} Seat</value>
+  </data>
+  <data name="SectorEdit_PreviewClose" xml:space="preserve">
+    <value>Close Preview</value>
+  </data>
+  <data name="SectorEdit_ErrorCodeRequired" xml:space="preserve">
+    <value>Sector code is required</value>
+  </data>
+  <data name="SectorEdit_ErrorCodeExists" xml:space="preserve">
+    <value>Sector code already exists</value>
+  </data>
+  <data name="SectorEdit_ErrorNameRequired" xml:space="preserve">
+    <value>Sector name is required</value>
+  </data>
+  <data name="SectorEdit_ErrorRowsRange" xml:space="preserve">
+    <value>Rows must be between 1 and 100</value>
+  </data>
+  <data name="SectorEdit_ErrorSeatsRange" xml:space="preserve">
+    <value>Seats per row must be between 1 and 200</value>
+  </data>
+  <data name="SectorDetail_Loading" xml:space="preserve">
+    <value>Loading sector details...</value>
+  </data>
+  <data name="SectorDetail_TotalSeatsLabel" xml:space="preserve">
+    <value>Total Seats</value>
+  </data>
+  <data name="SectorDetail_ActiveLabel" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="SectorDetail_InactiveLabel" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="SectorDetail_NoSeats" xml:space="preserve">
+    <value>No seats found for this sector.</value>
+  </data>
+  <data name="SectorDetail_SeatTooltip" xml:space="preserve">
+    <value>Row {0}, Seat {1}</value>
+  </data>
+  <data name="StructHelp_PageTitle" xml:space="preserve">
+    <value>Stadium Structure Import Guide</value>
+  </data>
+  <data name="StructHelp_MainTitle" xml:space="preserve">
+    <value>📚 Stadium Structure Import Guide</value>
+  </data>
+  <data name="StructHelp_BackButton" xml:space="preserve">
+    <value>Back to Structure Management</value>
+  </data>
+  <data name="StructHelp_QuickNav" xml:space="preserve">
+    <value>📖 Quick Navigation</value>
+  </data>
+  <data name="StructHelp_NavOverview" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="StructHelp_NavJsonStructure" xml:space="preserve">
+    <value>JSON Structure</value>
+  </data>
+  <data name="StructHelp_NavSamples" xml:space="preserve">
+    <value>Sample Files</value>
+  </data>
+  <data name="StructHelp_NavValidation" xml:space="preserve">
+    <value>Validation</value>
+  </data>
+  <data name="StructHelp_HierarchyTitle" xml:space="preserve">
+    <value>🏟️ Stadium Structure Hierarchy</value>
+  </data>
+  <data name="StructHelp_KeyConcepts" xml:space="preserve">
+    <value>📝 Key Concepts:</value>
+  </data>
+  <data name="StructHelp_ConceptStadium" xml:space="preserve">
+    <value>Stadium</value>
+  </data>
+  <data name="StructHelp_ConceptStadiumDesc" xml:space="preserve">
+    <value>Root container with name &amp; description</value>
+  </data>
+  <data name="StructHelp_ConceptTribunes" xml:space="preserve">
+    <value>Tribunes</value>
+  </data>
+  <data name="StructHelp_ConceptTribunesDesc" xml:space="preserve">
+    <value>4 directions (N, S, E, W)</value>
+  </data>
+  <data name="StructHelp_ConceptRings" xml:space="preserve">
+    <value>Rings</value>
+  </data>
+  <data name="StructHelp_ConceptRingsDesc" xml:space="preserve">
+    <value>Vertical levels (1-5)</value>
+  </data>
+  <data name="StructHelp_ConceptSectors" xml:space="preserve">
+    <value>Sectors</value>
+  </data>
+  <data name="StructHelp_ConceptSectorsDesc" xml:space="preserve">
+    <value>Seating areas within rings</value>
+  </data>
+  <data name="StructHelp_ConceptSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="StructHelp_ConceptSeatsDesc" xml:space="preserve">
+    <value>Auto-generated based on rows × seats per row</value>
+  </data>
+  <data name="StructHelp_JsonStructureTitle" xml:space="preserve">
+    <value>📋 Complete JSON Structure</value>
+  </data>
+  <data name="StructHelp_CopyButton" xml:space="preserve">
+    <value>Copy Template</value>
+  </data>
+  <data name="StructHelp_FieldDescTitle" xml:space="preserve">
+    <value>📋 Field Descriptions</value>
+  </data>
+  <data name="StructHelp_TableField" xml:space="preserve">
+    <value>Field</value>
+  </data>
+  <data name="StructHelp_TableType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="StructHelp_TableRequired" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="StructHelp_TableConstraints" xml:space="preserve">
+    <value>Constraints</value>
+  </data>
+  <data name="StructHelp_TableDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="StructHelp_Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="StructHelp_No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="StructHelp_NameDesc" xml:space="preserve">
+    <value>Stadium display name</value>
+  </data>
+  <data name="StructHelp_DescriptionDesc" xml:space="preserve">
+    <value>Stadium description</value>
+  </data>
+  <data name="StructHelp_TribuneCodeDesc" xml:space="preserve">
+    <value>Tribune direction code</value>
+  </data>
+  <data name="StructHelp_RingNumberDesc" xml:space="preserve">
+    <value>Ring level (1=field level)</value>
+  </data>
+  <data name="StructHelp_SectorCodeDesc" xml:space="preserve">
+    <value>Sector identifier</value>
+  </data>
+  <data name="StructHelp_RowsDesc" xml:space="preserve">
+    <value>Number of rows in sector</value>
+  </data>
+  <data name="StructHelp_SeatsPerRowDesc" xml:space="preserve">
+    <value>Seats per row</value>
+  </data>
+  <data name="StructHelp_SamplesTitle" xml:space="preserve">
+    <value>📁 Sample Import Files</value>
+  </data>
+  <data name="StructHelp_MinimalStadium" xml:space="preserve">
+    <value>🏟️ Minimal Stadium</value>
+  </data>
+  <data name="StructHelp_MinimalStadiumDesc" xml:space="preserve">
+    <value>Basic single-tribune structure (200 seats)</value>
+  </data>
+  <data name="StructHelp_StandardStadium" xml:space="preserve">
+    <value>🏟️ Standard Stadium</value>
+  </data>
+  <data name="StructHelp_StandardStadiumDesc" xml:space="preserve">
+    <value>Four-tribune structure with multiple sectors (20,000 seats)</value>
+  </data>
+  <data name="StructHelp_ComplexStadium" xml:space="preserve">
+    <value>🏟️ Complex Stadium</value>
+  </data>
+  <data name="StructHelp_ComplexStadiumDesc" xml:space="preserve">
+    <value>Multi-ring stadium with VIP sections (80,000 seats)</value>
+  </data>
+  <data name="StructHelp_DownloadSample" xml:space="preserve">
+    <value>Download Sample</value>
+  </data>
+  <data name="StructHelp_ValidationTitle" xml:space="preserve">
+    <value>✅ Validation Rules &amp; Error Handling</value>
+  </data>
+  <data name="StructHelp_RequiredFields" xml:space="preserve">
+    <value>✅ Required Fields</value>
+  </data>
+  <data name="StructHelp_ReqFieldName" xml:space="preserve">
+    <value>Stadium name (3-100 characters)</value>
+  </data>
+  <data name="StructHelp_ReqFieldTribunes" xml:space="preserve">
+    <value>At least one tribune</value>
+  </data>
+  <data name="StructHelp_ReqFieldTribuneCode" xml:space="preserve">
+    <value>Must be N, S, E, or W</value>
+  </data>
+  <data name="StructHelp_ReqFieldRings" xml:space="preserve">
+    <value>At least one ring per tribune</value>
+  </data>
+  <data name="StructHelp_ReqFieldRingNumber" xml:space="preserve">
+    <value>Integer 1-5</value>
+  </data>
+  <data name="StructHelp_ReqFieldSectors" xml:space="preserve">
+    <value>At least one sector per ring</value>
+  </data>
+  <data name="StructHelp_ReqFieldRowsSeats" xml:space="preserve">
+    <value>Both required</value>
+  </data>
+  <data name="StructHelp_ValidationRules" xml:space="preserve">
+    <value>⚠️ Validation Rules</value>
+  </data>
+  <data name="StructHelp_RuleUniqueTribunes" xml:space="preserve">
+    <value>Tribune codes must be unique (can't have two "N" tribunes)</value>
+  </data>
+  <data name="StructHelp_RuleUniqueSectors" xml:space="preserve">
+    <value>Sector codes must be unique across entire stadium</value>
+  </data>
+  <data name="StructHelp_RuleSequential" xml:space="preserve">
+    <value>Ring numbers should be sequential (1, 2, 3, not 1, 3, 5)</value>
+  </data>
+  <data name="StructHelp_RuleMax" xml:space="preserve">
+    <value>Maximum 4 tribunes, 5 rings per tribune</value>
+  </data>
+  <data name="StructHelp_RuleRowsSeats" xml:space="preserve">
+    <value>Rows: 1-100, Seats per row: 1-100</value>
+  </data>
+  <data name="StructHelp_RuleFileSize" xml:space="preserve">
+    <value>File size limit: 10MB</value>
+  </data>
+  <data name="StructHelp_CommonErrors" xml:space="preserve">
+    <value>❌ Common Errors &amp; Solutions</value>
+  </data>
+  <data name="StructHelp_ErrorMessage" xml:space="preserve">
+    <value>Error Message</value>
+  </data>
+  <data name="StructHelp_Cause" xml:space="preserve">
+    <value>Cause</value>
+  </data>
+  <data name="StructHelp_Solution" xml:space="preserve">
+    <value>Solution</value>
+  </data>
+  <data name="StructHelp_ErrorNameRequired" xml:space="preserve">
+    <value>"Stadium name is required"</value>
+  </data>
+  <data name="StructHelp_CauseNameRequired" xml:space="preserve">
+    <value>Missing or empty name field</value>
+  </data>
+  <data name="StructHelp_SolutionNameRequired" xml:space="preserve">
+    <value>Add "name": "Your Stadium"</value>
+  </data>
+  <data name="StructHelp_ErrorInvalidCode" xml:space="preserve">
+    <value>"Invalid tribune code"</value>
+  </data>
+  <data name="StructHelp_CauseInvalidCode" xml:space="preserve">
+    <value>Using codes other than N,S,E,W</value>
+  </data>
+  <data name="StructHelp_SolutionInvalidCode" xml:space="preserve">
+    <value>Change to valid code (N, S, E, or W)</value>
+  </data>
+  <data name="StructHelp_ErrorDuplicate" xml:space="preserve">
+    <value>"Duplicate sector code"</value>
+  </data>
+  <data name="StructHelp_CauseDuplicate" xml:space="preserve">
+    <value>Same sector code used twice</value>
+  </data>
+  <data name="StructHelp_SolutionDuplicate" xml:space="preserve">
+    <value>Make all sector codes unique</value>
+  </data>
+  <data name="StructHelp_ErrorInvalidJson" xml:space="preserve">
+    <value>"Invalid JSON format"</value>
+  </data>
+  <data name="StructHelp_CauseInvalidJson" xml:space="preserve">
+    <value>Syntax errors in JSON</value>
+  </data>
+  <data name="StructHelp_SolutionInvalidJson" xml:space="preserve">
+    <value>Validate with JSON validator</value>
+  </data>
+  <data name="StructHelp_ErrorTooLarge" xml:space="preserve">
+    <value>"File too large"</value>
+  </data>
+  <data name="StructHelp_CauseTooLarge" xml:space="preserve">
+    <value>File &gt; 10MB</value>
+  </data>
+  <data name="StructHelp_SolutionTooLarge" xml:space="preserve">
+    <value>Reduce sectors or split import</value>
+  </data>
+  <data name="StructHelp_ValidatorTitle" xml:space="preserve">
+    <value>🔍 JSON Validator Tool</value>
+  </data>
+  <data name="StructHelp_PasteJson" xml:space="preserve">
+    <value>📝 Paste Your JSON:</value>
+  </data>
+  <data name="StructHelp_JsonPlaceholder" xml:space="preserve">
+    <value>Paste your stadium structure JSON here...</value>
+  </data>
+  <data name="StructHelp_ValidateButton" xml:space="preserve">
+    <value>Validate JSON</value>
+  </data>
+  <data name="StructHelp_ClearButton" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="StructHelp_ValidationResults" xml:space="preserve">
+    <value>📊 Validation Results:</value>
+  </data>
+  <data name="StructHelp_ValidJson" xml:space="preserve">
+    <value>✅ Valid JSON Structure!</value>
+  </data>
+  <data name="StructHelp_ValidationFailedHeading" xml:space="preserve">
+    <value>❌ Validation Failed</value>
+  </data>
+  <data name="StructHelp_PreviewHeading" xml:space="preserve">
+    <value>📊 Structure Preview:</value>
+  </data>
+  <data name="StructHelp_StadiumLabel" xml:space="preserve">
+    <value>Stadium</value>
+  </data>
+  <data name="StructHelp_TribunesLabel" xml:space="preserve">
+    <value>Tribunes</value>
+  </data>
+  <data name="StructHelp_EstimatedSeatsLabel" xml:space="preserve">
+    <value>Estimated Seats</value>
+  </data>
+  <data name="StructHelp_EmptyValidatorState" xml:space="preserve">
+    <value>Paste JSON and click Validate to see results</value>
+  </data>
+  <data name="Structure_PageTitle" xml:space="preserve">
+    <value>Stadium Structure Management</value>
+  </data>
+  <data name="Structure_Eyebrow" xml:space="preserve">
+    <value>Stadium</value>
+  </data>
+  <data name="Structure_Heading" xml:space="preserve">
+    <value>Stadium Structure Management</value>
+  </data>
+  <data name="Structure_Subtitle" xml:space="preserve">
+    <value>Import, export, and review the stadium seating structure</value>
+  </data>
+  <data name="Structure_HelpLink" xml:space="preserve">
+    <value>Import Guide &amp; Samples</value>
+  </data>
+  <data name="Structure_ImportTitle" xml:space="preserve">
+    <value>Import Structure</value>
+  </data>
+  <data name="Structure_QuickStart" xml:space="preserve">
+    <value>Quick Start:</value>
+  </data>
+  <data name="Structure_QsJsonFile" xml:space="preserve">
+    <value>JSON file must contain stadium name and tribunes</value>
+  </data>
+  <data name="Structure_QsTribuneCode" xml:space="preserve">
+    <value>Tribune codes: N, S, E, W (North, South, East, West)</value>
+  </data>
+  <data name="Structure_QsSectorNeeds" xml:space="preserve">
+    <value>Each sector needs rows and seatsPerRow values</value>
+  </data>
+  <data name="Structure_ViewGuide" xml:space="preserve">
+    <value>View Complete Guide &amp; Samples</value>
+  </data>
+  <data name="Structure_SelectFile" xml:space="preserve">
+    <value>Select JSON file</value>
+  </data>
+  <data name="Structure_SelectedPrefix" xml:space="preserve">
+    <value>Selected:</value>
+  </data>
+  <data name="Structure_ImportErrorPrefix" xml:space="preserve">
+    <value>Import Error:</value>
+  </data>
+  <data name="Structure_ImportWarning" xml:space="preserve">
+    <value>Warning: Import will replace the existing stadium structure!</value>
+  </data>
+  <data name="Structure_Importing" xml:space="preserve">
+    <value>Importing</value>
+  </data>
+  <data name="Structure_ImportButton" xml:space="preserve">
+    <value>Import Structure</value>
+  </data>
+  <data name="Structure_CurrentStructure" xml:space="preserve">
+    <value>Current Structure</value>
+  </data>
+  <data name="Structure_MetricTribunes" xml:space="preserve">
+    <value>Tribunes</value>
+  </data>
+  <data name="Structure_MetricRings" xml:space="preserve">
+    <value>Rings</value>
+  </data>
+  <data name="Structure_MetricSectors" xml:space="preserve">
+    <value>Sectors</value>
+  </data>
+  <data name="Structure_MetricTotalSeats" xml:space="preserve">
+    <value>Total Seats</value>
+  </data>
+  <data name="Structure_MetricAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Structure_MetricOccupied" xml:space="preserve">
+    <value>Occupied</value>
+  </data>
+  <data name="Structure_Loading" xml:space="preserve">
+    <value>Loading structure...</value>
+  </data>
+  <data name="Structure_NoData" xml:space="preserve">
+    <value>No structure data available</value>
+  </data>
+  <data name="Structure_EmptyStateText" xml:space="preserve">
+    <value>Import a stadium structure to get started.</value>
+  </data>
+  <data name="Structure_ClearButton" xml:space="preserve">
+    <value>Clear Structure</value>
+  </data>
+  <data name="Structure_ExportButton" xml:space="preserve">
+    <value>Export JSON</value>
+  </data>
+  <data name="Structure_Exporting" xml:space="preserve">
+    <value>Exporting</value>
+  </data>
+  <data name="Structure_RefreshButton" xml:space="preserve">
+    <value>Refresh Cache</value>
+  </data>
+  <data name="Structure_Refreshing" xml:space="preserve">
+    <value>Refreshing</value>
+  </data>
+  <data name="Structure_RefreshTooltip" xml:space="preserve">
+    <value>Refresh stadium layout cache to display updated data immediately</value>
+  </data>
+  <data name="Structure_ImportSuccessHeading" xml:space="preserve">
+    <value>Import Successful!</value>
+  </data>
+  <data name="Structure_ImportSuccessText" xml:space="preserve">
+    <value>Stadium structure has been imported successfully.</value>
+  </data>
+  <data name="Structure_ConfirmDeleteTitle" xml:space="preserve">
+    <value>Confirm Deletion</value>
+  </data>
+  <data name="Structure_ConfirmDeleteText" xml:space="preserve">
+    <value>Are you sure you want to delete the entire stadium structure?</value>
+  </data>
+  <data name="Structure_ConfirmCannotUndo" xml:space="preserve">
+    <value>This action cannot be undone!</value>
+  </data>
+  <data name="Structure_ConfirmRemovePrefix" xml:space="preserve">
+    <value>This will remove</value>
+  </data>
+  <data name="Structure_SeatsLabel" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="Structure_ConfirmRemoveMiddle" xml:space="preserve">
+    <value>across</value>
+  </data>
+  <data name="Structure_SectorsLabel" xml:space="preserve">
+    <value>sectors</value>
+  </data>
+  <data name="Structure_ConfirmRemoveEnd" xml:space="preserve">
+    <value>in</value>
+  </data>
+  <data name="Structure_TribunesLabel" xml:space="preserve">
+    <value>tribunes</value>
+  </data>
+  <data name="Structure_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Structure_Deleting" xml:space="preserve">
+    <value>Deleting</value>
+  </data>
+  <data name="Structure_DeleteButton" xml:space="preserve">
+    <value>Delete Structure</value>
+  </data>
+  <data name="DataGrid_PageTitle" xml:space="preserve">
+    <value>Database Explorer</value>
+  </data>
+  <data name="DataGrid_HeadingTitle" xml:space="preserve">
+    <value>Database Explorer</value>
+  </data>
+  <data name="DataGrid_HeadingSubtitle" xml:space="preserve">
+    <value>Browse and manage database tables with advanced filtering, sorting, and export capabilities</value>
+  </data>
+  <data name="DataGrid_LoadingSpinner" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="DataGrid_ConnectingMessage" xml:space="preserve">
+    <value>Connecting to database...</value>
+  </data>
+  <data name="DataGrid_ConnectionErrorLabel" xml:space="preserve">
+    <value>Connection Error:</value>
+  </data>
+  <data name="DataGrid_RetryButton" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="DataGrid_SelectTableLabel" xml:space="preserve">
+    <value>Select Table:</value>
+  </data>
+  <data name="DataGrid_ChooseTableOption" xml:space="preserve">
+    <value>-- Choose a table to explore --</value>
+  </data>
+  <data name="DataGrid_ColumnsText" xml:space="preserve">
+    <value>columns</value>
+  </data>
+  <data name="DataGrid_RefreshButton" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="DataGrid_RefreshTitle" xml:space="preserve">
+    <value>Refresh Data</value>
+  </data>
+  <data name="DataGrid_ExportButton" xml:space="preserve">
+    <value>Export CSV</value>
+  </data>
+  <data name="DataGrid_ExportTitle" xml:space="preserve">
+    <value>Export to CSV</value>
+  </data>
+  <data name="DataGrid_TableInfoButton" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="DataGrid_TableInfoTitle" xml:space="preserve">
+    <value>Table Information</value>
+  </data>
+  <data name="DataGrid_GenerateButton" xml:space="preserve">
+    <value>Generate</value>
+  </data>
+  <data name="DataGrid_GenerateTitle" xml:space="preserve">
+    <value>Generate Data</value>
+  </data>
+  <data name="DataGrid_ClearTableButton" xml:space="preserve">
+    <value>Clear Table</value>
+  </data>
+  <data name="DataGrid_DeleteTitle" xml:space="preserve">
+    <value>Delete All Data</value>
+  </data>
+  <data name="DataGrid_RecordsBadge" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="DataGrid_TableStructureHeading" xml:space="preserve">
+    <value>Table Structure</value>
+  </data>
+  <data name="DataGrid_NullableText" xml:space="preserve">
+    <value>nullable</value>
+  </data>
+  <data name="DataGrid_FiltersAppliedCount" xml:space="preserve">
+    <value>filter(s) applied</value>
+  </data>
+  <data name="DataGrid_ClearAllButton" xml:space="preserve">
+    <value>Clear All</value>
+  </data>
+  <data name="DataGrid_NoFiltersApplied" xml:space="preserve">
+    <value>No filters applied</value>
+  </data>
+  <data name="DataGrid_QuickSearchPlaceholder" xml:space="preserve">
+    <value>Quick search...</value>
+  </data>
+  <data name="DataGrid_FilterPlaceholder" xml:space="preserve">
+    <value>Filter...</value>
+  </data>
+  <data name="DataGrid_LoadingDataSpinner" xml:space="preserve">
+    <value>Loading data...</value>
+  </data>
+  <data name="DataGrid_FetchingRecords" xml:space="preserve">
+    <value>Fetching records...</value>
+  </data>
+  <data name="DataGrid_NoRecordsFound" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="DataGrid_ClearFiltersButton" xml:space="preserve">
+    <value>Clear Filters</value>
+  </data>
+  <data name="DataGrid_NullValue" xml:space="preserve">
+    <value>null</value>
+  </data>
+  <data name="DataGrid_TrueValue" xml:space="preserve">
+    <value>True</value>
+  </data>
+  <data name="DataGrid_FalseValue" xml:space="preserve">
+    <value>False</value>
+  </data>
+  <data name="DataGrid_RowsPerPageLabel" xml:space="preserve">
+    <value>Rows per page:</value>
+  </data>
+  <data name="DataGrid_FirstPageButton" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="DataGrid_LastPageButton" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="DataGrid_PageInfo" xml:space="preserve">
+    <value>Page {0} of {1}</value>
+  </data>
+  <data name="DataGrid_TotalRecords" xml:space="preserve">
+    <value>({0} total records)</value>
+  </data>
+  <data name="DataGrid_GenerateDataModalTitle" xml:space="preserve">
+    <value>Generate Data for {0}</value>
+  </data>
+  <data name="DataGrid_NumberOfRecordsLabel" xml:space="preserve">
+    <value>Number of records to generate:</value>
+  </data>
+  <data name="DataGrid_RecordCountPlaceholder" xml:space="preserve">
+    <value>Enter count (1-1000)</value>
+  </data>
+  <data name="DataGrid_GenerateSampleInfo" xml:space="preserve">
+    <value>Generate up to 1000 sample records with realistic data for testing purposes.</value>
+  </data>
+  <data name="DataGrid_AboutGeneratedData" xml:space="preserve">
+    <value>About Generated Data:</value>
+  </data>
+  <data name="DataGrid_GeneratedDataInfo1" xml:space="preserve">
+    <value>Data will be created with realistic sample values</value>
+  </data>
+  <data name="DataGrid_GeneratedDataInfo2" xml:space="preserve">
+    <value>All required relationships will be properly linked</value>
+  </data>
+  <data name="DataGrid_GeneratedDataInfo3" xml:space="preserve">
+    <value>Generated data is safe for testing and development</value>
+  </data>
+  <data name="DataGrid_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DataGrid_GeneratingMessage" xml:space="preserve">
+    <value>Generating...</value>
+  </data>
+  <data name="DataGrid_GenerateRecordsButton" xml:space="preserve">
+    <value>Generate {0} Records</value>
+  </data>
+  <data name="DataGrid_ClearTableModalTitle" xml:space="preserve">
+    <value>Clear Table {0}</value>
+  </data>
+  <data name="DataGrid_CannotDeleteLabel" xml:space="preserve">
+    <value>Cannot Delete:</value>
+  </data>
+  <data name="DataGrid_DependenciesFoundLabel" xml:space="preserve">
+    <value>Dependencies found:</value>
+  </data>
+  <data name="DataGrid_WarningText" xml:space="preserve">
+    <value>Warning: This action cannot be undone!</value>
+  </data>
+  <data name="DataGrid_DeleteConfirmationMessage" xml:space="preserve">
+    <value>You are about to delete ALL {0} records from the {1} table.</value>
+  </data>
+  <data name="DataGrid_TypeDeleteText" xml:space="preserve">
+    <value>Type DELETE to confirm this action:</value>
+  </data>
+  <data name="DataGrid_DeleteConfirmPlaceholder" xml:space="preserve">
+    <value>Type DELETE to confirm</value>
+  </data>
+  <data name="DataGrid_DeletingMessage" xml:space="preserve">
+    <value>Deleting...</value>
+  </data>
+  <data name="DataGrid_DeleteAllRecordsButton" xml:space="preserve">
+    <value>Delete All Records</value>
+  </data>
+  <data name="Logs_PageTitle" xml:space="preserve">
+    <value>System Logs</value>
+  </data>
+  <data name="Logs_EyebrowText" xml:space="preserve">
+    <value>LOGS</value>
+  </data>
+  <data name="Logs_MainHeading" xml:space="preserve">
+    <value>System Logs</value>
+  </data>
+  <data name="Logs_Description" xml:space="preserve">
+    <value>Monitor system activity, errors, and audit events across all applications</value>
+  </data>
+  <data name="Logs_ConsoleToggleLabel" xml:space="preserve">
+    <value>Console → System Logs</value>
+  </data>
+  <data name="Logs_RefreshButton" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Logs_ClearAllButton" xml:space="preserve">
+    <value>Clear All Logs</value>
+  </data>
+  <data name="Logs_LoadingMessage" xml:space="preserve">
+    <value>Loading logs...</value>
+  </data>
+  <data name="Logs_TotalLogsLabel" xml:space="preserve">
+    <value>Total Logs</value>
+  </data>
+  <data name="Logs_TotalLogsHint" xml:space="preserve">
+    <value>All recorded events</value>
+  </data>
+  <data name="Logs_ErrorsLabel" xml:space="preserve">
+    <value>Errors</value>
+  </data>
+  <data name="Logs_ErrorsHint" xml:space="preserve">
+    <value>Needs attention</value>
+  </data>
+  <data name="Logs_WarningsLabel" xml:space="preserve">
+    <value>Warnings</value>
+  </data>
+  <data name="Logs_WarningsHint" xml:space="preserve">
+    <value>Potential issues</value>
+  </data>
+  <data name="Logs_InfoLabel" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Logs_InfoHint" xml:space="preserve">
+    <value>Routine activity</value>
+  </data>
+  <data name="Logs_FiltersPanelTitle" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="Logs_TimeRangeLabel" xml:space="preserve">
+    <value>Time Range</value>
+  </data>
+  <data name="Logs_Last24HoursButton" xml:space="preserve">
+    <value>Last 24 Hours</value>
+  </data>
+  <data name="Logs_TodayButton" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Logs_Last7DaysButton" xml:space="preserve">
+    <value>Last 7 Days</value>
+  </data>
+  <data name="Logs_Last30DaysButton" xml:space="preserve">
+    <value>Last 30 Days</value>
+  </data>
+  <data name="Logs_AllTimeButton" xml:space="preserve">
+    <value>All Time</value>
+  </data>
+  <data name="Logs_CustomRangeButton" xml:space="preserve">
+    <value>Custom Range</value>
+  </data>
+  <data name="Logs_FromDateLabel" xml:space="preserve">
+    <value>From Date</value>
+  </data>
+  <data name="Logs_ToDateLabel" xml:space="preserve">
+    <value>To Date</value>
+  </data>
+  <data name="Logs_ApplyButton" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Logs_CurrentFilterLabel" xml:space="preserve">
+    <value>Current Filter:</value>
+  </data>
+  <data name="Logs_LogsFoundCount" xml:space="preserve">
+    <value>logs found</value>
+  </data>
+  <data name="Logs_FilterByLevelLabel" xml:space="preserve">
+    <value>Filter by Level</value>
+  </data>
+  <data name="Logs_ErrorsFilterButton" xml:space="preserve">
+    <value>Errors</value>
+  </data>
+  <data name="Logs_WarningsFilterButton" xml:space="preserve">
+    <value>Warnings</value>
+  </data>
+  <data name="Logs_InfoFilterButton" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Logs_AllLevelsButton" xml:space="preserve">
+    <value>All Levels</value>
+  </data>
+  <data name="Logs_LogsPanelTitle" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Logs_TimeHeader" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Logs_LevelHeader" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Logs_ActionHeader" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Logs_UserHeader" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Logs_SourceHeader" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="Logs_MessageHeader" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Logs_ShowingFirst50" xml:space="preserve">
+    <value>Showing first 50 of {0} logs. Use filters to narrow results.</value>
+  </data>
+  <data name="Logs_NoLogsFound" xml:space="preserve">
+    <value>No logs found</value>
+  </data>
+  <data name="Logs_NoLogsDescription" xml:space="preserve">
+    <value>No log entries match your current filters.</value>
+  </data>
+  <data name="Users_PageTitle" xml:space="preserve">
+    <value>User Management - Stadium Admin</value>
+  </data>
+  <data name="Users_EyebrowLabel" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Users_MainTitle" xml:space="preserve">
+    <value>User Management</value>
+  </data>
+  <data name="Users_Subtitle" xml:space="preserve">
+    <value>Manage system users and their roles</value>
+  </data>
+  <data name="Users_AddUserButtonText" xml:space="preserve">
+    <value>Add User</value>
+  </data>
+  <data name="Users_CreateSampleUsersButtonText" xml:space="preserve">
+    <value>Create 20 Sample Users</value>
+  </data>
+  <data name="Users_RefreshButtonTooltip" xml:space="preserve">
+    <value>Refresh data</value>
+  </data>
+  <data name="Users_TotalUsersLabel" xml:space="preserve">
+    <value>Total Users</value>
+  </data>
+  <data name="Users_TotalUsersHint" xml:space="preserve">
+    <value>All registered users</value>
+  </data>
+  <data name="Users_ActiveUsersLabel" xml:space="preserve">
+    <value>Active Users</value>
+  </data>
+  <data name="Users_ActiveUsersHint" xml:space="preserve">
+    <value>Currently enabled accounts</value>
+  </data>
+  <data name="Users_NewThisMonthLabel" xml:space="preserve">
+    <value>New This Month</value>
+  </data>
+  <data name="Users_NewThisMonthHint" xml:space="preserve">
+    <value>Registered since the 1st</value>
+  </data>
+  <data name="Users_AdminUsersLabel" xml:space="preserve">
+    <value>Admin Users</value>
+  </data>
+  <data name="Users_AdminUsersHint" xml:space="preserve">
+    <value>Privileged accounts</value>
+  </data>
+  <data name="Users_FiltersTitle" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="Users_ClearFiltersButton" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Users_RoleFilterLabel" xml:space="preserve">
+    <value>Role Filter</value>
+  </data>
+  <data name="Users_AllRolesOption" xml:space="preserve">
+    <value>All Roles</value>
+  </data>
+  <data name="Users_StatusFilterLabel" xml:space="preserve">
+    <value>Status Filter</value>
+  </data>
+  <data name="Users_AllStatusesOption" xml:space="preserve">
+    <value>All Statuses</value>
+  </data>
+  <data name="Users_ActiveStatusOption" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Users_InactiveStatusOption" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Users_SearchUsersLabel" xml:space="preserve">
+    <value>Search Users</value>
+  </data>
+  <data name="Users_SearchUsersPlaceholder" xml:space="preserve">
+    <value>Search by name, username, or email</value>
+  </data>
+  <data name="Users_LoadingMessage" xml:space="preserve">
+    <value>Loading users...</value>
+  </data>
+  <data name="Users_UsersTableTitle" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Users_ActivateButtonText" xml:space="preserve">
+    <value>Activate ({0})</value>
+  </data>
+  <data name="Users_DeactivateButtonText" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="Users_UserColumnHeader" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Users_NameColumnHeader" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Users_UsernameColumnHeader" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Users_EmailColumnHeader" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Users_RoleColumnHeader" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Users_StatusColumnHeader" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Users_CreatedColumnHeader" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="Users_ActionsColumnHeader" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Users_ActiveStatus" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Users_InactiveStatus" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Users_EditUserTitle" xml:space="preserve">
+    <value>Edit User</value>
+  </data>
+  <data name="Users_ResetPasswordTitle" xml:space="preserve">
+    <value>Reset Password</value>
+  </data>
+  <data name="Users_DeactivateUserTitle" xml:space="preserve">
+    <value>Deactivate User</value>
+  </data>
+  <data name="Users_ActivateUserTitle" xml:space="preserve">
+    <value>Activate User</value>
+  </data>
+  <data name="Users_DeleteUserTitle" xml:space="preserve">
+    <value>Delete User</value>
+  </data>
+  <data name="Users_ShowingFirstMessage" xml:space="preserve">
+    <value>Showing first 50 of</value>
+  </data>
+  <data name="Users_OfTotalMessage" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="Users_TotalUsersText" xml:space="preserve">
+    <value>total users</value>
+  </data>
+  <data name="Users_NoUsersFound" xml:space="preserve">
+    <value>No users found</value>
+  </data>
+  <data name="Users_NoUsersFiltersMessage" xml:space="preserve">
+    <value>No users match your current filters.</value>
+  </data>
+  <data name="Users_AddNewUserModalTitle" xml:space="preserve">
+    <value>Add New User</value>
+  </data>
+  <data name="Users_UsernameLabel" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Users_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Users_FullNameLabel" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Users_PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Users_RoleLabel" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Users_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Users_CreateUserButton" xml:space="preserve">
+    <value>Create User</value>
+  </data>
+  <data name="Users_EditUserModalTitle" xml:space="preserve">
+    <value>Edit User</value>
+  </data>
+  <data name="Users_FirstNameLabel" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="Users_LastNameLabel" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Users_PhoneNumberLabel" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Users_SelectRoleOption" xml:space="preserve">
+    <value>Select Role</value>
+  </data>
+  <data name="Users_ActiveCheckboxLabel" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Users_UpdateUserButton" xml:space="preserve">
+    <value>Update User</value>
+  </data>
+  <data name="Drinks_PageTitle" xml:space="preserve">
+    <value>Drink Management</value>
+  </data>
+  <data name="Drinks_EyebrowLabel" xml:space="preserve">
+    <value>Drinks</value>
+  </data>
+  <data name="Drinks_MainTitle" xml:space="preserve">
+    <value>Drink Management</value>
+  </data>
+  <data name="Drinks_Subtitle" xml:space="preserve">
+    <value>Manage your beverage catalog, stock levels and availability</value>
+  </data>
+  <data name="Drinks_AddNewDrinkButton" xml:space="preserve">
+    <value>Add New Drink</value>
+  </data>
+  <data name="Drinks_LoadingMessage" xml:space="preserve">
+    <value>Loading drinks...</value>
+  </data>
+  <data name="Drinks_ErrorLoadingTitle" xml:space="preserve">
+    <value>Error Loading Drinks</value>
+  </data>
+  <data name="Drinks_RetryButton" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Drinks_NoDrinksFound" xml:space="preserve">
+    <value>No drinks found</value>
+  </data>
+  <data name="Drinks_StartByAddingMessage" xml:space="preserve">
+    <value>Start by adding your first drink to the menu.</value>
+  </data>
+  <data name="Drinks_AddFirstDrinkButton" xml:space="preserve">
+    <value>Add First Drink</value>
+  </data>
+  <data name="Drinks_TotalDrinksLabel" xml:space="preserve">
+    <value>Total Drinks</value>
+  </data>
+  <data name="Drinks_InCatalogHint" xml:space="preserve">
+    <value>In the catalog</value>
+  </data>
+  <data name="Drinks_AvailableLabel" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Drinks_OrderableNowHint" xml:space="preserve">
+    <value>Orderable now</value>
+  </data>
+  <data name="Drinks_LowStockLabel" xml:space="preserve">
+    <value>Low Stock</value>
+  </data>
+  <data name="Drinks_BelowUnitsHint" xml:space="preserve">
+    <value>Below 10 units</value>
+  </data>
+  <data name="Drinks_CategoriesLabel" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Drinks_DistinctTypesHint" xml:space="preserve">
+    <value>Distinct types</value>
+  </data>
+  <data name="Drinks_FilterDrinksTitle" xml:space="preserve">
+    <value>Filter Drinks</value>
+  </data>
+  <data name="Drinks_CategoryLabel" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Drinks_AllCategoriesOption" xml:space="preserve">
+    <value>All Categories</value>
+  </data>
+  <data name="Drinks_AvailabilityLabel" xml:space="preserve">
+    <value>Availability</value>
+  </data>
+  <data name="Drinks_AllDrinksOption" xml:space="preserve">
+    <value>All Drinks</value>
+  </data>
+  <data name="Drinks_AvailableOnlyOption" xml:space="preserve">
+    <value>Available Only</value>
+  </data>
+  <data name="Drinks_UnavailableOnlyOption" xml:space="preserve">
+    <value>Unavailable Only</value>
+  </data>
+  <data name="Drinks_LowStockOption" xml:space="preserve">
+    <value>Low Stock (&lt; 10)</value>
+  </data>
+  <data name="Drinks_SearchLabel" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Drinks_SearchPlaceholder" xml:space="preserve">
+    <value>Search drinks...</value>
+  </data>
+  <data name="Drinks_DrinksTableTitle" xml:space="preserve">
+    <value>Drinks</value>
+  </data>
+  <data name="Drinks_DrinkColumnHeader" xml:space="preserve">
+    <value>Drink</value>
+  </data>
+  <data name="Drinks_CategoryColumnHeader" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Drinks_DescriptionColumnHeader" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Drinks_PriceColumnHeader" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Drinks_StockColumnHeader" xml:space="preserve">
+    <value>Stock</value>
+  </data>
+  <data name="Drinks_StatusColumnHeader" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Drinks_ActionsColumnHeader" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Drinks_UnavailableStatus" xml:space="preserve">
+    <value>Unavailable</value>
+  </data>
+  <data name="Drinks_LowStockStatus" xml:space="preserve">
+    <value>Low Stock</value>
+  </data>
+  <data name="Drinks_AvailableStatus" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Drinks_EditButton" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Drinks_DisableButton" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="Drinks_EnableButton" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Drinks_DeleteButton" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Drinks_AddNewDrinkModalTitle" xml:space="preserve">
+    <value>Add New Drink</value>
+  </data>
+  <data name="Drinks_EditDrinkModalTitle" xml:space="preserve">
+    <value>Edit Drink</value>
+  </data>
+  <data name="Drinks_NameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Drinks_DescriptionLabel" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Drinks_PriceLabel" xml:space="preserve">
+    <value>Price ($)</value>
+  </data>
+  <data name="Drinks_StockQuantityLabel" xml:space="preserve">
+    <value>Stock Quantity</value>
+  </data>
+  <data name="Drinks_CategoryModalLabel" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Drinks_ImageUrlLabel" xml:space="preserve">
+    <value>Image URL</value>
+  </data>
+  <data name="Drinks_ImageUrlPlaceholder" xml:space="preserve">
+    <value>https://example.com/image.jpg</value>
+  </data>
+  <data name="Drinks_AvailableForOrderingLabel" xml:space="preserve">
+    <value>Available for ordering</value>
+  </data>
+  <data name="Drinks_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Drinks_CreateDrinkButton" xml:space="preserve">
+    <value>Create Drink</value>
+  </data>
+  <data name="Drinks_SaveChangesButton" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="Bartender_PageTitle" xml:space="preserve">
+    <value>Bartender Dashboard</value>
+  </data>
+  <data name="Bartender_Title" xml:space="preserve">
+    <value>ARENA 2025</value>
+  </data>
+  <data name="Bartender_Subtitle" xml:space="preserve">
+    <value>Stadium Drink Ordering • Real-time Dashboard</value>
+  </data>
+  <data name="Bartender_StadiumMapTitle" xml:space="preserve">
+    <value>🏟️ Stadium Map</value>
+  </data>
+  <data name="Bartender_RefreshButton" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Bartender_LoadingStadiumLayout" xml:space="preserve">
+    <value>Loading stadium layout...</value>
+  </data>
+  <data name="Bartender_LegendAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Bartender_LegendPending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Bartender_LegendAccepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Bartender_LegendPreparing" xml:space="preserve">
+    <value>Preparing</value>
+  </data>
+  <data name="Bartender_LegendReady" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Bartender_StandNorth" xml:space="preserve">
+    <value>NORTH</value>
+  </data>
+  <data name="Bartender_StandSouth" xml:space="preserve">
+    <value>SOUTH</value>
+  </data>
+  <data name="Bartender_StandEast" xml:space="preserve">
+    <value>EAST</value>
+  </data>
+  <data name="Bartender_StandWest" xml:space="preserve">
+    <value>WEST</value>
+  </data>
+  <data name="Bartender_OrderQueueTitle" xml:space="preserve">
+    <value>📋 Order Queue</value>
+  </data>
+  <data name="Bartender_LoadingOrders" xml:space="preserve">
+    <value>Loading orders...</value>
+  </data>
+  <data name="Bartender_NoPendingOrders" xml:space="preserve">
+    <value>No pending orders</value>
+  </data>
+  <data name="Bartender_MoreItems" xml:space="preserve">
+    <value>+{0} more items</value>
+  </data>
+  <data name="Bartender_TotalSeatsLabel" xml:space="preserve">
+    <value>Total Seats</value>
+  </data>
+  <data name="Bartender_PendingOrdersLabel" xml:space="preserve">
+    <value>Pending Orders</value>
+  </data>
+  <data name="Bartender_ActiveOrdersLabel" xml:space="preserve">
+    <value>Active Orders</value>
+  </data>
+  <data name="Bartender_TotalOrdersLabel" xml:space="preserve">
+    <value>Total Orders</value>
+  </data>
+  <data name="Bartender_ItemHeader" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="Bartender_QtyHeader" xml:space="preserve">
+    <value>Qty</value>
+  </data>
+  <data name="Bartender_PriceHeader" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Bartender_OrderItemsTitle" xml:space="preserve">
+    <value>Order Items</value>
+  </data>
+  <data name="Bartender_OrderDetailsTitle" xml:space="preserve">
+    <value>Order Details</value>
+  </data>
+  <data name="Bartender_TicketLabel" xml:space="preserve">
+    <value>Ticket:</value>
+  </data>
+  <data name="Bartender_SeatLabel" xml:space="preserve">
+    <value>Seat:</value>
+  </data>
+  <data name="Bartender_StatusLabel" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="Bartender_CreatedLabel" xml:space="preserve">
+    <value>Created:</value>
+  </data>
+  <data name="Bartender_NotesLabel" xml:space="preserve">
+    <value>Notes:</value>
+  </data>
+  <data name="Bartender_AcceptOrderButton" xml:space="preserve">
+    <value>Accept Order</value>
+  </data>
+  <data name="Bartender_StartPreparationButton" xml:space="preserve">
+    <value>Start Preparation</value>
+  </data>
+  <data name="Bartender_MarkReadyButton" xml:space="preserve">
+    <value>Mark Ready</value>
+  </data>
+  <data name="Bartender_MarkDeliveredButton" xml:space="preserve">
+    <value>Mark Delivered</value>
+  </data>
+  <data name="Bartender_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Tickets_PageTitle" xml:space="preserve">
+    <value>Tickets Management</value>
+  </data>
+  <data name="Tickets_Eyebrow" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="Tickets_Title" xml:space="preserve">
+    <value>Tickets Management</value>
+  </data>
+  <data name="Tickets_Description" xml:space="preserve">
+    <value>Browse, validate and manage all stadium tickets</value>
+  </data>
+  <data name="Tickets_ShowingFor" xml:space="preserve">
+    <value>Showing tickets for:</value>
+  </data>
+  <data name="Tickets_BackToEvents" xml:space="preserve">
+    <value>Back to Events</value>
+  </data>
+  <data name="Tickets_LoadingTickets" xml:space="preserve">
+    <value>Loading tickets...</value>
+  </data>
+  <data name="Tickets_FiltersPanelTitle" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="Tickets_ResetButton" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Tickets_FilterByEventLabel" xml:space="preserve">
+    <value>Filter by Event</value>
+  </data>
+  <data name="Tickets_AllEventsOption" xml:space="preserve">
+    <value>All Events</value>
+  </data>
+  <data name="Tickets_FilterByStatusLabel" xml:space="preserve">
+    <value>Filter by Status</value>
+  </data>
+  <data name="Tickets_AllTicketsOption" xml:space="preserve">
+    <value>All Tickets</value>
+  </data>
+  <data name="Tickets_ActiveOption" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Tickets_InactiveOption" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Tickets_SearchLabel" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Tickets_SearchPlaceholder" xml:space="preserve">
+    <value>Search by ticket #, customer...</value>
+  </data>
+  <data name="Tickets_TotalTicketsLabel" xml:space="preserve">
+    <value>Total Tickets</value>
+  </data>
+  <data name="Tickets_AllTicketsRecordHint" xml:space="preserve">
+    <value>All tickets on record</value>
+  </data>
+  <data name="Tickets_ActiveTicketsLabel" xml:space="preserve">
+    <value>Active Tickets</value>
+  </data>
+  <data name="Tickets_CurrentlyValidHint" xml:space="preserve">
+    <value>Currently valid</value>
+  </data>
+  <data name="Tickets_TotalRevenueLabel" xml:space="preserve">
+    <value>Total Revenue</value>
+  </data>
+  <data name="Tickets_AcrossAllTicketsHint" xml:space="preserve">
+    <value>Across all tickets</value>
+  </data>
+  <data name="Tickets_UniqueEventsLabel" xml:space="preserve">
+    <value>Unique Events</value>
+  </data>
+  <data name="Tickets_EventsWithTicketsHint" xml:space="preserve">
+    <value>Events with tickets</value>
+  </data>
+  <data name="Tickets_NoTicketsFound" xml:space="preserve">
+    <value>No tickets found</value>
+  </data>
+  <data name="Tickets_NoTicketsFilters" xml:space="preserve">
+    <value>No tickets match the current filters.</value>
+  </data>
+  <data name="Tickets_TicketsPanelTitle" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="Tickets_TicketNumberHeader" xml:space="preserve">
+    <value>Ticket #</value>
+  </data>
+  <data name="Tickets_EventHeader" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="Tickets_DateHeader" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Tickets_SeatHeader" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Tickets_CustomerHeader" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="Tickets_PurchaseDateHeader" xml:space="preserve">
+    <value>Purchase Date</value>
+  </data>
+  <data name="Tickets_PriceHeader" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Tickets_StatusHeader" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Tickets_ActionsHeader" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Tickets_RowLabel" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="Tickets_SeatLabel" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Tickets_ActiveStatus" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Tickets_InactiveStatus" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Tickets_ViewOrderTitle" xml:space="preserve">
+    <value>View Order</value>
+  </data>
+  <data name="Tickets_ValidateTicketTitle" xml:space="preserve">
+    <value>Validate Ticket</value>
+  </data>
+  <data name="Tickets_DeactivateTicketTitle" xml:space="preserve">
+    <value>Deactivate Ticket</value>
+  </data>
+  <data name="Tickets_ActivateTicketTitle" xml:space="preserve">
+    <value>Activate Ticket</value>
+  </data>
+  <data name="Events_PageTitle" xml:space="preserve">
+    <value>Event Management</value>
+  </data>
+  <data name="Events_Eyebrow" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="Events_Title" xml:space="preserve">
+    <value>Event Management</value>
+  </data>
+  <data name="Events_Subtitle" xml:space="preserve">
+    <value>Create, activate and manage stadium events</value>
+  </data>
+  <data name="Events_CreateButton" xml:space="preserve">
+    <value>Create New Event</value>
+  </data>
+  <data name="Events_Loading" xml:space="preserve">
+    <value>Loading events...</value>
+  </data>
+  <data name="Events_ErrorTitle" xml:space="preserve">
+    <value>Error Loading Events</value>
+  </data>
+  <data name="Events_RetryButton" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Events_NoEventsFound" xml:space="preserve">
+    <value>No events found</value>
+  </data>
+  <data name="Events_EmptyMessage" xml:space="preserve">
+    <value>Start by creating your first event.</value>
+  </data>
+  <data name="Events_CreateFirstButton" xml:space="preserve">
+    <value>Create First Event</value>
+  </data>
+  <data name="Events_TotalEventsLabel" xml:space="preserve">
+    <value>Total Events</value>
+  </data>
+  <data name="Events_TotalEventsHint" xml:space="preserve">
+    <value>All events on record</value>
+  </data>
+  <data name="Events_OnSaleLabel" xml:space="preserve">
+    <value>On Sale</value>
+  </data>
+  <data name="Events_OnSaleHint" xml:space="preserve">
+    <value>Currently available for ticket sales</value>
+  </data>
+  <data name="Events_TotalCapacityLabel" xml:space="preserve">
+    <value>Total Capacity</value>
+  </data>
+  <data name="Events_TotalCapacityHint" xml:space="preserve">
+    <value>Seats across all events</value>
+  </data>
+  <data name="Events_PanelTitle" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="Events_DateLabel" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Events_LocationLabel" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Events_CapacityLabel" xml:space="preserve">
+    <value>Capacity</value>
+  </data>
+  <data name="Events_SeatsLabel" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="Events_BasePriceLabel" xml:space="preserve">
+    <value>Base Price</value>
+  </data>
+  <data name="Events_PhaseLabel" xml:space="preserve">
+    <value>Phase</value>
+  </data>
+  <data name="Events_SellingStatus" xml:space="preserve">
+    <value>Selling</value>
+  </data>
+  <data name="Events_OrdersStatus" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="Events_EditButton" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Events_DeleteButton" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Events_CreateModalTitle" xml:space="preserve">
+    <value>Create New Event</value>
+  </data>
+  <data name="Events_EditModalTitle" xml:space="preserve">
+    <value>Edit Event</value>
+  </data>
+  <data name="Events_EventNameLabel" xml:space="preserve">
+    <value>Event Name *</value>
+  </data>
+  <data name="Events_LocationFieldLabel" xml:space="preserve">
+    <value>Location *</value>
+  </data>
+  <data name="Events_DescriptionFieldLabel" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Events_DateTimeLabel" xml:space="preserve">
+    <value>Event Date &amp; Time *</value>
+  </data>
+  <data name="Events_CapacityFieldLabel" xml:space="preserve">
+    <value>Capacity *</value>
+  </data>
+  <data name="Events_BasePriceFieldLabel" xml:space="preserve">
+    <value>Base Price *</value>
+  </data>
+  <data name="Events_StatusFieldLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Events_ActiveLabel" xml:space="preserve">
+    <value>Active (Available for ticket sales)</value>
+  </data>
+  <data name="Events_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Events_CreateEventButton" xml:space="preserve">
+    <value>Create Event</value>
+  </data>
+  <data name="Events_SaveChangesButton" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="Orders_PageTitle" xml:space="preserve">
+    <value>Order Management - Stadium Admin</value>
+  </data>
+  <data name="Orders_Eyebrow" xml:space="preserve">
+    <value>Operations</value>
+  </data>
+  <data name="Orders_Title" xml:space="preserve">
+    <value>Order Management</value>
+  </data>
+  <data name="Orders_Subtitle" xml:space="preserve">
+    <value>Manage and track all stadium beverage orders</value>
+  </data>
+  <data name="Orders_NewButton" xml:space="preserve">
+    <value>New Order</value>
+  </data>
+  <data name="Orders_RefreshTitle" xml:space="preserve">
+    <value>Refresh data</value>
+  </data>
+  <data name="Orders_TotalLabel" xml:space="preserve">
+    <value>Total Orders</value>
+  </data>
+  <data name="Orders_TotalHint" xml:space="preserve">
+    <value>All orders on record</value>
+  </data>
+  <data name="Orders_PendingLabel" xml:space="preserve">
+    <value>Pending Orders</value>
+  </data>
+  <data name="Orders_PendingHint" xml:space="preserve">
+    <value>Awaiting acceptance</value>
+  </data>
+  <data name="Orders_CompletedLabel" xml:space="preserve">
+    <value>Completed Today</value>
+  </data>
+  <data name="Orders_CompletedHint" xml:space="preserve">
+    <value>Delivered since midnight</value>
+  </data>
+  <data name="Orders_RevenueLabel" xml:space="preserve">
+    <value>Revenue Today</value>
+  </data>
+  <data name="Orders_RevenueHint" xml:space="preserve">
+    <value>Delivered orders</value>
+  </data>
+  <data name="Orders_FiltersTitle" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="Orders_ClearButton" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Orders_StatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Orders_AllStatusesOption" xml:space="preserve">
+    <value>All Statuses</value>
+  </data>
+  <data name="Orders_PendingOption" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Orders_AcceptedOption" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Orders_InPreparationOption" xml:space="preserve">
+    <value>In Preparation</value>
+  </data>
+  <data name="Orders_ReadyOption" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Orders_OutForDeliveryOption" xml:space="preserve">
+    <value>Out for Delivery</value>
+  </data>
+  <data name="Orders_DeliveredOption" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="Orders_CancelledOption" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Orders_CustomerSearchLabel" xml:space="preserve">
+    <value>Customer Search</value>
+  </data>
+  <data name="Orders_SearchPlaceholder" xml:space="preserve">
+    <value>Search by customer name</value>
+  </data>
+  <data name="Orders_FromDateLabel" xml:space="preserve">
+    <value>From Date</value>
+  </data>
+  <data name="Orders_ToDateLabel" xml:space="preserve">
+    <value>To Date</value>
+  </data>
+  <data name="Orders_Loading" xml:space="preserve">
+    <value>Loading orders...</value>
+  </data>
+  <data name="Orders_PanelTitle" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="Orders_AcceptButtonText" xml:space="preserve">
+    <value>Accept ({0})</value>
+  </data>
+  <data name="Orders_CancelBulkButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Orders_OrderHeader" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="Orders_CustomerHeader" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="Orders_ItemsHeader" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="Orders_TotalHeader" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Orders_StatusHeader" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Orders_CreatedHeader" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="Orders_ActionsHeader" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Orders_ItemsSuffix" xml:space="preserve">
+    <value>items</value>
+  </data>
+  <data name="Orders_ViewTitle" xml:space="preserve">
+    <value>View order</value>
+  </data>
+  <data name="Orders_AcceptTitle" xml:space="preserve">
+    <value>Accept order</value>
+  </data>
+  <data name="Orders_AdvanceTitle" xml:space="preserve">
+    <value>Advance status</value>
+  </data>
+  <data name="Orders_ShowingMessage" xml:space="preserve">
+    <value>Showing first 50 of {0} total orders</value>
+  </data>
+  <data name="Orders_LoadMoreButton" xml:space="preserve">
+    <value>Load More</value>
+  </data>
+  <data name="Orders_NoOrdersFound" xml:space="preserve">
+    <value>No orders found</value>
+  </data>
+  <data name="Orders_NoOrdersMessage" xml:space="preserve">
+    <value>No orders match your current filters.</value>
+  </data>
+  <data name="Analytics_PageTitle" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="Analytics_Eyebrow" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="Analytics_Title" xml:space="preserve">
+    <value>Analytics Dashboard</value>
+  </data>
+  <data name="Analytics_Subtitle" xml:space="preserve">
+    <value>Comprehensive overview of system performance, sales, and trends</value>
+  </data>
+  <data name="Analytics_RefreshTitle" xml:space="preserve">
+    <value>Refresh data</value>
+  </data>
+  <data name="Analytics_Loading" xml:space="preserve">
+    <value>Loading analytics data...</value>
+  </data>
+  <data name="Analytics_RetryButton" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Analytics_DashboardTitle" xml:space="preserve">
+    <value>Analytics Dashboard</value>
+  </data>
+  <data name="Analytics_InfoMessage" xml:space="preserve">
+    <value>Advanced analytics features are currently in development. Use the quick actions below to access available analytics and reports.</value>
+  </data>
+  <data name="Analytics_AvailableEventsTitle" xml:space="preserve">
+    <value>Available Events</value>
+  </data>
+  <data name="Analytics_EventNameHeader" xml:space="preserve">
+    <value>Event Name</value>
+  </data>
+  <data name="Analytics_DateHeader" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Analytics_LocationHeader" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Analytics_StatusHeader" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Analytics_TBDLabel" xml:space="preserve">
+    <value>TBD</value>
+  </data>
+  <data name="Analytics_ActiveStatus" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Analytics_InactiveStatus" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Analytics_ReportsTitle" xml:space="preserve">
+    <value>Analytics &amp; Reports</value>
+  </data>
+  <data name="Analytics_CustomerAnalyticsButton" xml:space="preserve">
+    <value>Customer Analytics</value>
+  </data>
+  <data name="Analytics_EventManagementButton" xml:space="preserve">
+    <value>Event Management</value>
+  </data>
+  <data name="Analytics_OrderReportsButton" xml:space="preserve">
+    <value>Order Reports</value>
+  </data>
+  <data name="Analytics_SystemLogsButton" xml:space="preserve">
+    <value>System Logs</value>
+  </data>
+  <data name="CustAnalytics_PageTitle" xml:space="preserve">
+    <value>Customer Analytics</value>
+  </data>
+  <data name="CustAnalytics_Eyebrow" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="CustAnalytics_Title" xml:space="preserve">
+    <value>Customer Analytics</value>
+  </data>
+  <data name="CustAnalytics_Subtitle" xml:space="preserve">
+    <value>View and analyze customer purchasing behavior and spending patterns</value>
+  </data>
+  <data name="CustAnalytics_ExportCSV" xml:space="preserve">
+    <value>Export CSV</value>
+  </data>
+  <data name="CustAnalytics_Loading" xml:space="preserve">
+    <value>Loading customer analytics...</value>
+  </data>
+  <data name="CustAnalytics_Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="CustAnalytics_TotalCustomers" xml:space="preserve">
+    <value>Total Customers</value>
+  </data>
+  <data name="CustAnalytics_AllTimeRegistered" xml:space="preserve">
+    <value>All-time registered buyers</value>
+  </data>
+  <data name="CustAnalytics_TotalRevenue" xml:space="preserve">
+    <value>Total Revenue</value>
+  </data>
+  <data name="CustAnalytics_TicketsDrinksCombined" xml:space="preserve">
+    <value>Tickets and drinks combined</value>
+  </data>
+  <data name="CustAnalytics_AvgCustomerValue" xml:space="preserve">
+    <value>Avg Customer Value</value>
+  </data>
+  <data name="CustAnalytics_RevenuePerCustomer" xml:space="preserve">
+    <value>Revenue per customer</value>
+  </data>
+  <data name="CustAnalytics_ActiveLast30" xml:space="preserve">
+    <value>Active Last 30 Days</value>
+  </data>
+  <data name="CustAnalytics_RecentlyEngaged" xml:space="preserve">
+    <value>Recently engaged customers</value>
+  </data>
+  <data name="CustAnalytics_FiltersSearch" xml:space="preserve">
+    <value>Filters &amp; Search</value>
+  </data>
+  <data name="CustAnalytics_ToggleFilters" xml:space="preserve">
+    <value>Toggle filters</value>
+  </data>
+  <data name="CustAnalytics_SearchCustomer" xml:space="preserve">
+    <value>Search Customer</value>
+  </data>
+  <data name="CustAnalytics_SearchPlaceholder" xml:space="preserve">
+    <value>Search by name or email...</value>
+  </data>
+  <data name="CustAnalytics_MinSpent" xml:space="preserve">
+    <value>Min Spent (€)</value>
+  </data>
+  <data name="CustAnalytics_MaxSpent" xml:space="preserve">
+    <value>Max Spent (€)</value>
+  </data>
+  <data name="CustAnalytics_SortBy" xml:space="preserve">
+    <value>Sort By</value>
+  </data>
+  <data name="CustAnalytics_Sort_TotalSpent" xml:space="preserve">
+    <value>Total Spent</value>
+  </data>
+  <data name="CustAnalytics_Sort_CustomerName" xml:space="preserve">
+    <value>Customer Name</value>
+  </data>
+  <data name="CustAnalytics_Sort_TicketsPurchased" xml:space="preserve">
+    <value>Tickets Purchased</value>
+  </data>
+  <data name="CustAnalytics_Sort_LastPurchase" xml:space="preserve">
+    <value>Last Purchase</value>
+  </data>
+  <data name="CustAnalytics_Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="CustAnalytics_Descending" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="CustAnalytics_Ascending" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="CustAnalytics_RefineList" xml:space="preserve">
+    <value>Refine the customer list using the filters above.</value>
+  </data>
+  <data name="CustAnalytics_ApplyFilters" xml:space="preserve">
+    <value>Apply Filters</value>
+  </data>
+  <data name="CustAnalytics_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="CustAnalytics_CustomerList" xml:space="preserve">
+    <value>Customer List</value>
+  </data>
+  <data name="CustAnalytics_Total" xml:space="preserve">
+    <value>total</value>
+  </data>
+  <data name="CustAnalytics_Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="CustAnalytics_HeaderCustomer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="CustAnalytics_HeaderTotalSpent" xml:space="preserve">
+    <value>Total Spent</value>
+  </data>
+  <data name="CustAnalytics_HeaderTickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="CustAnalytics_HeaderEvents" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="CustAnalytics_HeaderAvgTransaction" xml:space="preserve">
+    <value>Avg/Transaction</value>
+  </data>
+  <data name="CustAnalytics_HeaderLastPurchase" xml:space="preserve">
+    <value>Last Purchase</value>
+  </data>
+  <data name="CustAnalytics_HeaderActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="CustAnalytics_ViewDetails" xml:space="preserve">
+    <value>View details</value>
+  </data>
+  <data name="CustAnalytics_ShowingResults" xml:space="preserve">
+    <value>Showing {0} to {1} of {2} customers</value>
+  </data>
+  <data name="CustAnalytics_PreviousPage" xml:space="preserve">
+    <value>Previous page</value>
+  </data>
+  <data name="CustAnalytics_NextPage" xml:space="preserve">
+    <value>Next page</value>
+  </data>
+  <data name="CustAnalytics_NoCustomersFound" xml:space="preserve">
+    <value>No customers found matching your criteria</value>
+  </data>
+  <data name="CustAnalytics_AdjustFilters" xml:space="preserve">
+    <value>Try adjusting or clearing your filters.</value>
+  </data>
+  <data name="CustAnalytics_ClearFilters" xml:space="preserve">
+    <value>Clear Filters</value>
+  </data>
+  <data name="Dash_PageTitle" xml:space="preserve">
+    <value>Stadium Admin Dashboard</value>
+  </data>
+  <data name="Dash_Eyebrow" xml:space="preserve">
+    <value>Operations</value>
+  </data>
+  <data name="Dash_Title" xml:space="preserve">
+    <value>Matchday Dashboard</value>
+  </data>
+  <data name="Dash_Subtitle" xml:space="preserve">
+    <value>Live beverage operations across the stadium</value>
+  </data>
+  <data name="Dash_AutoRefreshing" xml:space="preserve">
+    <value>Auto-refreshing every 30 seconds</value>
+  </data>
+  <data name="Dash_Syncing" xml:space="preserve">
+    <value>SYNCING</value>
+  </data>
+  <data name="Dash_Live" xml:space="preserve">
+    <value>LIVE</value>
+  </data>
+  <data name="Dash_RefreshData" xml:space="preserve">
+    <value>Refresh data</value>
+  </data>
+  <data name="Dash_ToggleTheme" xml:space="preserve">
+    <value>Toggle theme</value>
+  </data>
+  <data name="Dash_LoadingProgress" xml:space="preserve">
+    <value>Dashboard loading progress</value>
+  </data>
+  <data name="Dash_Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="Dash_AutoRefreshOn" xml:space="preserve">
+    <value>auto-refresh on</value>
+  </data>
+  <data name="Dash_LoadingStatus" xml:space="preserve">
+    <value>Dashboard loading status</value>
+  </data>
+  <data name="Dash_LoadingMetrics" xml:space="preserve">
+    <value>Loading metrics data</value>
+  </data>
+  <data name="Dash_TotalOrders" xml:space="preserve">
+    <value>Total Orders</value>
+  </data>
+  <data name="Dash_VsYesterday" xml:space="preserve">
+    <value>vs yesterday</value>
+  </data>
+  <data name="Dash_ActiveOrders" xml:space="preserve">
+    <value>Active Orders</value>
+  </data>
+  <data name="Dash_InQueue" xml:space="preserve">
+    <value>In the queue right now</value>
+  </data>
+  <data name="Dash_TodaysRevenue" xml:space="preserve">
+    <value>Today's Revenue</value>
+  </data>
+  <data name="Dash_SystemHealth" xml:space="preserve">
+    <value>System Health</value>
+  </data>
+  <data name="Dash_LoadingOrdersSystem" xml:space="preserve">
+    <value>Loading orders and system data</value>
+  </data>
+  <data name="Dash_RecentOrders" xml:space="preserve">
+    <value>Recent Orders</value>
+  </data>
+  <data name="Dash_ViewAll" xml:space="preserve">
+    <value>View all</value>
+  </data>
+  <data name="Dash_HeaderOrder" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="Dash_HeaderCustomer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="Dash_HeaderAmount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Dash_HeaderStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Dash_HeaderTime" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Dash_NoOrdersToday" xml:space="preserve">
+    <value>No orders yet today</value>
+  </data>
+  <data name="Dash_OrdersAppearHere" xml:space="preserve">
+    <value>New orders will appear here as they come in.</value>
+  </data>
+  <data name="Dash_QuickActions" xml:space="preserve">
+    <value>Quick Actions</value>
+  </data>
+  <data name="Dash_NewOrder" xml:space="preserve">
+    <value>New Order</value>
+  </data>
+  <data name="Dash_AddUser" xml:space="preserve">
+    <value>Add User</value>
+  </data>
+  <data name="Dash_ExportReports" xml:space="preserve">
+    <value>Export Reports</value>
+  </data>
+  <data name="Dash_ViewLogs" xml:space="preserve">
+    <value>View Logs</value>
+  </data>
+  <data name="Dash_SystemStatus" xml:space="preserve">
+    <value>System Status</value>
+  </data>
+  <data name="Dash_Database" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="Dash_Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="Dash_APIHealth" xml:space="preserve">
+    <value>API Health</value>
+  </data>
+  <data name="Dash_Healthy" xml:space="preserve">
+    <value>Healthy</value>
+  </data>
+  <data name="Dash_Cache" xml:space="preserve">
+    <value>Cache</value>
+  </data>
+  <data name="Dash_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Dash_BackgroundServices" xml:space="preserve">
+    <value>Background Services</value>
+  </data>
+  <data name="Dash_Running" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="Index_PageTitle" xml:space="preserve">
+    <value>Stadium Admin Dashboard</value>
+  </data>
+  <data name="Index_LoadingEvents" xml:space="preserve">
+    <value>Loading events…</value>
+  </data>
+  <data name="Index_PreviousEvent" xml:space="preserve">
+    <value>Previous event</value>
+  </data>
+  <data name="Index_EventPosition" xml:space="preserve">
+    <value>Event {0} / {1}</value>
+  </data>
+  <data name="Index_ReturnToCurrent" xml:space="preserve">
+    <value>Return to current event</value>
+  </data>
+  <data name="Index_Current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Index_SelectEvent" xml:space="preserve">
+    <value>Select event</value>
+  </data>
+  <data name="Index_NextEvent" xml:space="preserve">
+    <value>Next event</value>
+  </data>
+  <data name="Index_NoEvents" xml:space="preserve">
+    <value>No events. Create an event to track matchday operations.</value>
+  </data>
+  <data name="Index_CreateEvent" xml:space="preserve">
+    <value>Create Event</value>
+  </data>
+  <data name="Index_TicketsSold" xml:space="preserve">
+    <value>Tickets Sold</value>
+  </data>
+  <data name="Index_OfSeats" xml:space="preserve">
+    <value>of {0} seats</value>
+  </data>
+  <data name="Index_TotalRevenue" xml:space="preserve">
+    <value>Total Revenue</value>
+  </data>
+  <data name="Index_ForThisEvent" xml:space="preserve">
+    <value>for this event</value>
+  </data>
+  <data name="Index_ActiveOrders" xml:space="preserve">
+    <value>Active Orders</value>
+  </data>
+  <data name="Index_DrinksInProgress" xml:space="preserve">
+    <value>drinks · in progress</value>
+  </data>
+  <data name="Index_UserSatisfaction" xml:space="preserve">
+    <value>User Satisfaction</value>
+  </data>
+  <data name="Index_NPSComingSoon" xml:space="preserve">
+    <value>(NPS) · coming soon</value>
+  </data>
+  <data name="Index_StadiumOverview" xml:space="preserve">
+    <value>Stadium Overview in Real-Time</value>
+  </data>
+  <data name="Index_RecentOrders" xml:space="preserve">
+    <value>Recent Orders</value>
+  </data>
+  <data name="Index_HeaderID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Index_HeaderSeat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Index_HeaderAmount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Index_HeaderStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Index_SelectEventPrompt" xml:space="preserve">
+    <value>Select event</value>
+  </data>
+  <data name="Index_NoOrdersThisEvent" xml:space="preserve">
+    <value>No orders for this event</value>
+  </data>
+  <data name="Index_ViewAllOrders" xml:space="preserve">
+    <value>View all orders</value>
+  </data>
+  <data name="Index_CentralizedLogs" xml:space="preserve">
+    <value>Centralized Logs</value>
+  </data>
+  <data name="Index_ViewAllLogs" xml:space="preserve">
+    <value>View All Logs</value>
+  </data>
+  <data name="Index_SystemHealthQuickActions" xml:space="preserve">
+    <value>System Health &amp; Quick Actions</value>
+  </data>
+  <data name="Index_Connected" xml:space="preserve">
+    <value>CONNECTED</value>
+  </data>
+  <data name="Index_Database" xml:space="preserve">
+    <value>Database (PostgreSQL)</value>
+  </data>
+  <data name="Index_Healthy" xml:space="preserve">
+    <value>HEALTHY</value>
+  </data>
+  <data name="Index_APIHealth" xml:space="preserve">
+    <value>API Health</value>
+  </data>
+  <data name="Index_Active" xml:space="preserve">
+    <value>ACTIVE</value>
+  </data>
+  <data name="Index_Cache" xml:space="preserve">
+    <value>Cache</value>
+  </data>
+  <data name="Index_Running" xml:space="preserve">
+    <value>RUNNING</value>
+  </data>
+  <data name="Index_BackgroundServices" xml:space="preserve">
+    <value>Background Services</value>
+  </data>
+  <data name="Index_NewOrder" xml:space="preserve">
+    <value>New Order</value>
+  </data>
+  <data name="Index_AddUser" xml:space="preserve">
+    <value>Add User</value>
+  </data>
+  <data name="Index_ExportReport" xml:space="preserve">
+    <value>Export Report</value>
+  </data>
+  <data name="Index_ViewLogs" xml:space="preserve">
+    <value>View Logs</value>
+  </data>
+  <data name="Overview_Title" xml:space="preserve">
+    <value>Stadium Operations Center</value>
+  </data>
+  <data name="Overview_Subtitle" xml:space="preserve">
+    <value>Real-time stadium management dashboard</value>
+  </data>
+  <data name="Overview_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Overview_SystemOnline" xml:space="preserve">
+    <value>System Online</value>
+  </data>
+  <data name="Overview_SelectEvent" xml:space="preserve">
+    <value>Select Event:</value>
+  </data>
+  <data name="Overview_NoEventSelected" xml:space="preserve">
+    <value>-- No Event Selected --</value>
+  </data>
+  <data name="Overview_LoadingStadiumLayout" xml:space="preserve">
+    <value>Loading stadium layout...</value>
+  </data>
+  <data name="Overview_StadiumLayoutAlt" xml:space="preserve">
+    <value>Stadium Layout</value>
+  </data>
+  <data name="Overview_NoSectorOverlaysTitle" xml:space="preserve">
+    <value>No Sector Overlays Configured</value>
+  </data>
+  <data name="Overview_NoSectorOverlaysMessage" xml:space="preserve">
+    <value>Use the Stadium Drawing Tool to create sector overlays</value>
+  </data>
+  <data name="Overview_OpenDrawingToolBtn" xml:space="preserve">
+    <value>Open Drawing Tool</value>
+  </data>
+  <data name="Overview_OccupancyLegend" xml:space="preserve">
+    <value>Occupancy Legend</value>
+  </data>
+  <data name="Overview_AvailableLabel" xml:space="preserve">
+    <value>Available (0-49%)</value>
+  </data>
+  <data name="Overview_PartialLabel" xml:space="preserve">
+    <value>Partial (50-89%)</value>
+  </data>
+  <data name="Overview_FullLabel" xml:space="preserve">
+    <value>Full (90-100%)</value>
+  </data>
+  <data name="Overview_VipLabel" xml:space="preserve">
+    <value>VIP Section</value>
+  </data>
+  <data name="InfoPanel_Title" xml:space="preserve">
+    <value>Stadium Intelligence Hub</value>
+  </data>
+  <data name="InfoPanel_Subtitle" xml:space="preserve">
+    <value>Real-time analytics &amp; operational insights</value>
+  </data>
+  <data name="InfoPanel_ExpandAnalytics" xml:space="preserve">
+    <value>Expand Analytics</value>
+  </data>
+  <data name="InfoPanel_MinimizePanel" xml:space="preserve">
+    <value>Minimize Panel</value>
+  </data>
+  <data name="InfoPanel_TotalCapacity" xml:space="preserve">
+    <value>Total Capacity</value>
+  </data>
+  <data name="InfoPanel_ActiveSectors" xml:space="preserve">
+    <value>Active Sectors</value>
+  </data>
+  <data name="InfoPanel_StadiumStructure" xml:space="preserve">
+    <value>Stadium Structure</value>
+  </data>
+  <data name="InfoPanel_Tribunes" xml:space="preserve">
+    <value>Tribunes</value>
+  </data>
+  <data name="InfoPanel_Rings" xml:space="preserve">
+    <value>Rings</value>
+  </data>
+  <data name="InfoPanel_LiveOccupancy" xml:space="preserve">
+    <value>Live Occupancy Analytics</value>
+  </data>
+  <data name="InfoPanel_Occupied" xml:space="preserve">
+    <value>Occupied</value>
+  </data>
+  <data name="InfoPanel_AvailableSeats" xml:space="preserve">
+    <value>Available Seats</value>
+  </data>
+  <data name="InfoPanel_OccupiedSeats" xml:space="preserve">
+    <value>Occupied Seats</value>
+  </data>
+  <data name="InfoPanel_AnalyzingData" xml:space="preserve">
+    <value>Analyzing Stadium Data</value>
+  </data>
+  <data name="InfoPanel_GatheringInsights" xml:space="preserve">
+    <value>Gathering real-time insights...</value>
+  </data>
+  <data name="InfoPanel_NoDataAvailable" xml:space="preserve">
+    <value>No Stadium Data Available</value>
+  </data>
+  <data name="InfoPanel_ImportStructureMessage" xml:space="preserve">
+    <value>Import stadium structure to begin analytics</value>
+  </data>
+  <data name="InfoPanel_ImportStructureBtn" xml:space="preserve">
+    <value>Import Structure</value>
+  </data>
+  <data name="SvgRender_LoadingHidden" xml:space="preserve">
+    <value>Loading stadium layout...</value>
+  </data>
+  <data name="SvgRender_LoadingText" xml:space="preserve">
+    <value>Loading dynamic stadium layout...</value>
   </data>
 </root>

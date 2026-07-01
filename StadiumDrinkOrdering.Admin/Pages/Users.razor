@@ -1,245 +1,229 @@
 @page "/users"
 @using StadiumDrinkOrdering.Shared.Models
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>User Management - Stadium Admin</PageTitle>
+<PageTitle>@L["Users_PageTitle"]</PageTitle>
 
-<div class="container-fluid" id="admin-users-main-container">
+<div class="console" id="admin-users-main-container">
     <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4" id="admin-users-header">
-        <div id="admin-users-title-section">
-            <h1 class="h2">User Management</h1>
-            <p class="text-muted">Manage system users and their roles</p>
+    <header class="console-head" id="admin-users-header">
+        <div class="console-head__title" id="admin-users-title-section">
+            <span class="eyebrow">@L["Users_EyebrowLabel"]</span>
+            <h1>@L["Users_MainTitle"]</h1>
+            <p>@L["Users_Subtitle"]</p>
         </div>
-        <div id="admin-users-action-buttons">
-            <button class="btn btn-primary me-2" @onclick="ShowCreateUserModal" id="admin-users-create-btn">
-                <i class="oi oi-plus me-2"></i>Add User
+        <div class="console-head__actions" id="admin-users-action-buttons">
+            <button class="pill-btn pill-btn--primary" @onclick="ShowCreateUserModal" id="admin-users-create-btn">
+                <i class="oi oi-plus"></i><span>@L["Users_AddUserButtonText"]</span>
             </button>
-            <button class="btn btn-success me-2" @onclick="CreateSampleUsers" disabled="@isCreatingSampleUsers" id="admin-users-create-sample-btn">
-                @if (isCreatingSampleUsers)
-                {
-                    <span class="spinner-border spinner-border-sm me-2"></span>
-                }
-                <i class="oi oi-people me-2"></i>Create 20 Sample Users
+            <button class="pill-btn pill-btn--success" @onclick="CreateSampleUsers" disabled="@isCreatingSampleUsers" id="admin-users-create-sample-btn">
+                <i class="oi oi-people @(isCreatingSampleUsers ? "spin" : "")"></i><span>@L["Users_CreateSampleUsersButtonText"]</span>
             </button>
-            <button class="btn btn-outline-secondary" @onclick="RefreshData" disabled="@isLoading" id="admin-users-refresh-btn">
-                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i> Refresh
+            <button class="icon-btn" @onclick="RefreshData" disabled="@isLoading" id="admin-users-refresh-btn" title="@L["Users_RefreshButtonTooltip"]">
+                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i>
             </button>
         </div>
-    </div>
+    </header>
 
-    <!-- Summary Cards -->
-    <div class="row g-4 mb-4" id="admin-users-summary-cards">
-        <div class="col-lg-3 col-md-6" id="admin-users-total-card">
-            <div class="card bg-primary text-white" id="admin-users-total-card-inner">
-                <div class="card-body" id="admin-users-total-card-body">
-                    <div class="d-flex justify-content-between" id="admin-users-total-card-content">
-                        <div id="admin-users-total-stats">
-                            <h6 class="card-title">Total Users</h6>
-                            <h3 class="mb-0">@totalUsers</h3>
-                        </div>
-                        <div class="align-self-center" id="admin-users-total-icon">
-                            <i class="oi oi-people fs-1 opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
+    <!-- Key Metrics Cards -->
+    <section class="metrics" id="admin-users-summary-cards">
+        <!-- Total Users -->
+        <article class="metric" id="admin-users-total-card">
+            <div class="metric__head" id="admin-users-total-card-content">
+                <span class="metric__label" id="admin-users-total-stats">@L["Users_TotalUsersLabel"]</span>
+                <i class="oi oi-people metric__icon" id="admin-users-total-icon"></i>
             </div>
-        </div>
-        <div class="col-lg-3 col-md-6" id="admin-users-active-card">
-            <div class="card bg-success text-white" id="admin-users-active-card-inner">
-                <div class="card-body" id="admin-users-active-card-body">
-                    <div class="d-flex justify-content-between" id="admin-users-active-card-content">
-                        <div id="admin-users-active-stats">
-                            <h6 class="card-title">Active Users</h6>
-                            <h3 class="mb-0">@activeUsers</h3>
-                        </div>
-                        <div class="align-self-center" id="admin-users-active-icon">
-                            <i class="oi oi-circle-check fs-1 opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
+            <div class="metric__value mono" id="admin-users-total-card-inner">@totalUsers</div>
+            <div class="metric__foot" id="admin-users-total-card-body">
+                <span class="metric__hint">@L["Users_TotalUsersHint"]</span>
             </div>
-        </div>
-        <div class="col-lg-3 col-md-6" id="admin-users-new-card">
-            <div class="card bg-info text-white" id="admin-users-new-card-inner">
-                <div class="card-body" id="admin-users-new-card-body">
-                    <div class="d-flex justify-content-between" id="admin-users-new-card-content">
-                        <div id="admin-users-new-stats">
-                            <h6 class="card-title">New This Month</h6>
-                            <h3 class="mb-0">@newUsersThisMonth</h3>
-                        </div>
-                        <div class="align-self-center" id="admin-users-new-icon">
-                            <i class="oi oi-person fs-1 opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
+        </article>
+
+        <!-- Active Users (accent) -->
+        <article class="metric metric--accent" id="admin-users-active-card">
+            <div class="metric__head" id="admin-users-active-card-content">
+                <span class="metric__label" id="admin-users-active-stats">@L["Users_ActiveUsersLabel"]</span>
+                <i class="oi oi-circle-check metric__icon is-ok" id="admin-users-active-icon"></i>
             </div>
-        </div>
-        <div class="col-lg-3 col-md-6" id="admin-users-admin-card">
-            <div class="card bg-warning text-white" id="admin-users-admin-card-inner">
-                <div class="card-body" id="admin-users-admin-card-body">
-                    <div class="d-flex justify-content-between" id="admin-users-admin-card-content">
-                        <div id="admin-users-admin-stats">
-                            <h6 class="card-title">Admin Users</h6>
-                            <h3 class="mb-0">@adminUsers</h3>
-                        </div>
-                        <div class="align-self-center" id="admin-users-admin-icon">
-                            <i class="oi oi-shield fs-1 opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
+            <div class="metric__value mono" id="admin-users-active-card-inner">@activeUsers</div>
+            <div class="metric__foot" id="admin-users-active-card-body">
+                <span class="metric__hint">@L["Users_ActiveUsersHint"]</span>
             </div>
-        </div>
-    </div>
+        </article>
+
+        <!-- New This Month -->
+        <article class="metric" id="admin-users-new-card">
+            <div class="metric__head" id="admin-users-new-card-content">
+                <span class="metric__label" id="admin-users-new-stats">@L["Users_NewThisMonthLabel"]</span>
+                <i class="oi oi-person metric__icon" id="admin-users-new-icon"></i>
+            </div>
+            <div class="metric__value mono" id="admin-users-new-card-inner">@newUsersThisMonth</div>
+            <div class="metric__foot" id="admin-users-new-card-body">
+                <span class="metric__hint">@L["Users_NewThisMonthHint"]</span>
+            </div>
+        </article>
+
+        <!-- Admin Users -->
+        <article class="metric" id="admin-users-admin-card">
+            <div class="metric__head" id="admin-users-admin-card-content">
+                <span class="metric__label" id="admin-users-admin-stats">@L["Users_AdminUsersLabel"]</span>
+                <i class="oi oi-shield metric__icon" id="admin-users-admin-icon"></i>
+            </div>
+            <div class="metric__value mono" id="admin-users-admin-card-inner">@adminUsers</div>
+            <div class="metric__foot" id="admin-users-admin-card-body">
+                <span class="metric__hint">@L["Users_AdminUsersHint"]</span>
+            </div>
+        </article>
+    </section>
 
     <!-- Filters -->
-    <div class="card mb-4" id="admin-users-filters-card">
-        <div class="card-body" id="admin-users-filters-body">
-            <div class="row g-3" id="admin-users-filters-row">
-                <div class="col-md-3" id="admin-users-role-filter-col">
-                    <label class="form-label">Role Filter</label>
-                    <select class="form-select" @bind="selectedRole" @bind:after="FilterUsers" id="admin-users-role-filter">
-                        <option value="">All Roles</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Staff">Staff</option>
-                        <option value="Customer">Customer</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Status Filter</label>
-                    <select class="form-select" @bind="selectedStatus" @bind:after="FilterUsers">
-                        <option value="">All Statuses</option>
-                        <option value="true">Active</option>
-                        <option value="false">Inactive</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Search Users</label>
-                    <input type="text" class="form-control" placeholder="Search by name, username, or email"
-                           @bind="searchTerm" @oninput="FilterUsers" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">&nbsp;</label>
-                    <div class="d-grid">
-                        <button class="btn btn-outline-secondary" @onclick="ClearFilters" id="admin-users-clear-filters-btn">Clear Filters</button>
-                    </div>
-                </div>
+    <div class="panel" id="admin-users-filters-card">
+        <div class="panel__head" id="admin-users-filters-body">
+            <h2 class="panel__title">@L["Users_FiltersTitle"]</h2>
+            <button class="link-btn" @onclick="ClearFilters" id="admin-users-clear-filters-btn">
+                <i class="oi oi-x"></i> @L["Users_ClearFiltersButton"]
+            </button>
+        </div>
+        <div class="filters" id="admin-users-filters-row">
+            <div class="field" id="admin-users-role-filter-col">
+                <label class="field__label">@L["Users_RoleFilterLabel"]</label>
+                <select class="field__input" @bind="selectedRole" @bind:after="FilterUsers" id="admin-users-role-filter">
+                    <option value="">@L["Users_AllRolesOption"]</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Customer">Customer</option>
+                </select>
+            </div>
+            <div class="field">
+                <label class="field__label">@L["Users_StatusFilterLabel"]</label>
+                <select class="field__input" @bind="selectedStatus" @bind:after="FilterUsers">
+                    <option value="">@L["Users_AllStatusesOption"]</option>
+                    <option value="true">@L["Users_ActiveStatusOption"]</option>
+                    <option value="false">@L["Users_InactiveStatusOption"]</option>
+                </select>
+            </div>
+            <div class="field field--grow">
+                <label class="field__label">@L["Users_SearchUsersLabel"]</label>
+                <input type="text" class="field__input" placeholder="@L["Users_SearchUsersPlaceholder"]"
+                       @bind="searchTerm" @oninput="FilterUsers" />
             </div>
         </div>
     </div>
 
     @if (isLoading)
     {
-        <div class="text-center p-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-3">Loading users...</p>
+        <div class="loading-state">
+            <span class="loading-spinner"></span>
+            <p>@L["Users_LoadingMessage"]</p>
         </div>
     }
     else
     {
         <!-- Users Table -->
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Users (@filteredUsers.Count)</h5>
+        <div class="panel">
+            <div class="panel__head">
+                <h2 class="panel__title">@L["Users_UsersTableTitle"] <span class="panel__count mono">@filteredUsers.Count</span></h2>
                 @if (selectedUserIds.Any())
                 {
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-success" @onclick="BulkActivate" id="admin-users-bulk-activate-btn">Activate Selected (@selectedUserIds.Count)</button>
-                        <button class="btn btn-sm btn-warning" @onclick="BulkDeactivate" id="admin-users-bulk-deactivate-btn">Deactivate Selected</button>
+                    <div class="bulk-actions">
+                        <button class="pill-btn pill-btn--success" @onclick="BulkActivate" id="admin-users-bulk-activate-btn">
+                            <i class="oi oi-circle-check"></i><span>@L["Users_ActivateButtonText", selectedUserIds.Count]</span>
+                        </button>
+                        <button class="pill-btn" @onclick="BulkDeactivate" id="admin-users-bulk-deactivate-btn">
+                            <i class="oi oi-ban"></i><span>@L["Users_DeactivateButtonText"]</span>
+                        </button>
                     </div>
                 }
             </div>
-            <div class="card-body">
-                @if (filteredUsers?.Any() == true)
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <input type="checkbox" class="form-check-input" @onchange="ToggleSelectAll" />
-                                    </th>
-                                    <th>User #</th>
-                                    <th>Name</th>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var user in filteredUsers.Take(50))
-                                {
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" class="form-check-input"
-                                                   @onchange="@((e) => ToggleUserSelection(user.Id, (bool)e.Value!))" />
-                                        </td>
-                                        <td>#@user.Id</td>
-                                        <td>@user.Name</td>
-                                        <td>@user.Username</td>
-                                        <td>@user.Email</td>
-                                        <td>
-                                            <span class="badge @GetRoleBadgeClass(user.Role)">@user.Role</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge @(user.IsActive ? "bg-success" : "bg-secondary")">
-                                                @(user.IsActive ? "Active" : "Inactive")
-                                            </span>
-                                        </td>
-                                        <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-outline-primary" @onclick="@(() => EditUser(user))" id="admin-users-edit-btn-@user.Id" title="Edit User">
-                                                    <i class="oi oi-pencil"></i>
-                                                </button>
-                                                <button class="btn btn-outline-info" @onclick="@(() => ResetPassword(user.Id))" id="admin-users-reset-password-btn-@user.Id" title="Reset Password">
-                                                    <i class="oi oi-key"></i>
-                                                </button>
-                                                @if (user.IsActive)
-                                                {
-                                                    <button class="btn btn-outline-warning" @onclick="@(() => DeactivateUser(user.Id))" id="admin-users-deactivate-btn-@user.Id" title="Deactivate User">
-                                                        <i class="oi oi-ban"></i>
-                                                    </button>
-                                                }
-                                                else
-                                                {
-                                                    <button class="btn btn-outline-success" @onclick="@(() => ActivateUser(user.Id))" id="admin-users-activate-btn-@user.Id" title="Activate User">
-                                                        <i class="oi oi-circle-check"></i>
-                                                    </button>
-                                                }
-                                                @if (CanDeleteUser(user))
-                                                {
-                                                    <button class="btn btn-outline-danger" @onclick="@(() => DeleteUser(user.Id))" id="admin-users-delete-btn-@user.Id" title="Delete User">
-                                                        <i class="oi oi-trash"></i>
-                                                    </button>
-                                                }
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
 
-                    @if (filteredUsers.Count > 50)
-                    {
-                        <div class="text-center mt-3">
-                            <p class="text-muted">Showing first 50 users of @filteredUsers.Count total</p>
-                        </div>
-                    }
-                }
-                else
+            @if (filteredUsers?.Any() == true)
+            {
+                <table class="console-table">
+                    <thead>
+                        <tr>
+                            <th class="check">
+                                <input type="checkbox" class="check-box" @onchange="ToggleSelectAll" />
+                            </th>
+                            <th>@L["Users_UserColumnHeader"]</th>
+                            <th>@L["Users_NameColumnHeader"]</th>
+                            <th>@L["Users_UsernameColumnHeader"]</th>
+                            <th>@L["Users_EmailColumnHeader"]</th>
+                            <th>@L["Users_RoleColumnHeader"]</th>
+                            <th>@L["Users_StatusColumnHeader"]</th>
+                            <th class="num">@L["Users_CreatedColumnHeader"]</th>
+                            <th class="actions-col">@L["Users_ActionsColumnHeader"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in filteredUsers.Take(50))
+                        {
+                            <tr class="@(selectedUserIds.Contains(user.Id) ? "is-selected" : "")">
+                                <td class="check">
+                                    <input type="checkbox" class="check-box"
+                                           checked="@selectedUserIds.Contains(user.Id)"
+                                           @onchange="@((e) => ToggleUserSelection(user.Id, (bool)e.Value!))" />
+                                </td>
+                                <td class="mono console-table__id">#@user.Id</td>
+                                <td>@user.Name</td>
+                                <td>@user.Username</td>
+                                <td class="console-table__muted">@user.Email</td>
+                                <td>
+                                    <span class="badge @GetRoleBadgeClass(user.Role)">@user.Role</span>
+                                </td>
+                                <td>
+                                    <span class="status @(user.IsActive ? "is-active" : "is-inactive")">
+                                        <span class="status__dot"></span>@(user.IsActive ? L["Users_ActiveStatus"] : L["Users_InactiveStatus"])
+                                    </span>
+                                </td>
+                                <td class="num mono console-table__time">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                <td class="actions-col">
+                                    <div class="row-actions">
+                                        <button class="row-btn" @onclick="@(() => EditUser(user))" id="admin-users-edit-btn-@user.Id" title="@L["Users_EditUserTitle"]">
+                                            <i class="oi oi-pencil"></i>
+                                        </button>
+                                        <button class="row-btn" @onclick="@(() => ResetPassword(user.Id))" id="admin-users-reset-password-btn-@user.Id" title="@L["Users_ResetPasswordTitle"]">
+                                            <i class="oi oi-key"></i>
+                                        </button>
+                                        @if (user.IsActive)
+                                        {
+                                            <button class="row-btn" @onclick="@(() => DeactivateUser(user.Id))" id="admin-users-deactivate-btn-@user.Id" title="@L["Users_DeactivateUserTitle"]">
+                                                <i class="oi oi-ban"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="row-btn row-btn--ok" @onclick="@(() => ActivateUser(user.Id))" id="admin-users-activate-btn-@user.Id" title="@L["Users_ActivateUserTitle"]">
+                                                <i class="oi oi-circle-check"></i>
+                                            </button>
+                                        }
+                                        @if (CanDeleteUser(user))
+                                        {
+                                            <button class="row-btn row-btn--danger" @onclick="@(() => DeleteUser(user.Id))" id="admin-users-delete-btn-@user.Id" title="@L["Users_DeleteUserTitle"]">
+                                                <i class="oi oi-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                @if (filteredUsers.Count > 50)
                 {
-                    <div class="text-center p-4">
-                        <i class="oi oi-info text-muted fs-1"></i>
-                        <p class="text-muted mt-2">No users found matching your criteria</p>
+                    <div class="table-foot">
+                        <p>@L["Users_ShowingFirstMessage"] <span class="mono">50</span> @L["Users_OfTotalMessage"] <span class="mono">@filteredUsers.Count</span> @L["Users_TotalUsersText"]</p>
                     </div>
                 }
-            </div>
+            }
+            else
+            {
+                <div class="empty">
+                    <i class="oi oi-info"></i>
+                    <p>@L["Users_NoUsersFound"]</p>
+                    <span>@L["Users_NoUsersFiltersMessage"]</span>
+                </div>
+            }
         </div>
     }
 </div>
@@ -251,7 +235,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="admin-users-modal-title">Add New User</h5>
+                    <h5 class="modal-title" id="admin-users-modal-title">@L["Users_AddNewUserModalTitle"]</h5>
                     <button type="button" class="btn-close" @onclick="CloseCreateModal" id="admin-users-modal-close-btn" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -260,27 +244,27 @@
                         <ValidationSummary />
 
                         <div class="mb-3">
-                            <label class="form-label">Username *</label>
+                            <label class="form-label">@L["Users_UsernameLabel"] *</label>
                             <InputText class="form-control" @bind-Value="newUser.Username" id="admin-users-modal-username-input" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Email *</label>
+                            <label class="form-label">@L["Users_EmailLabel"] *</label>
                             <InputText class="form-control" @bind-Value="newUser.Email" type="email" id="admin-users-modal-email-input" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Full Name</label>
+                            <label class="form-label">@L["Users_FullNameLabel"]</label>
                             <InputText class="form-control" @bind-Value="newUser.FirstName" id="admin-users-modal-name-input" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Password *</label>
+                            <label class="form-label">@L["Users_PasswordLabel"] *</label>
                             <InputText class="form-control" @bind-Value="newUser.Password" type="password" id="admin-users-modal-password-input" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Role *</label>
+                            <label class="form-label">@L["Users_RoleLabel"] *</label>
                             <InputSelect class="form-select" @bind-Value="newUser.Role" id="admin-users-modal-role-select">
                                 <option value="Customer">Customer</option>
                                 <option value="Staff">Staff</option>
@@ -289,13 +273,13 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal" id="admin-users-modal-cancel-btn">Cancel</button>
+                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal" id="admin-users-modal-cancel-btn">@L["Users_CancelButton"]</button>
                             <button type="submit" class="btn btn-primary" disabled="@isCreatingUser" id="admin-users-modal-submit-btn">
                                 @if (isCreatingUser)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
                                 }
-                                Create User
+                                @L["Users_CreateUserButton"]
                             </button>
                         </div>
                     </EditForm>
@@ -313,7 +297,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="admin-users-edit-modal-title">Edit User</h5>
+                    <h5 class="modal-title" id="admin-users-edit-modal-title">@L["Users_EditUserModalTitle"]</h5>
                     <button type="button" class="btn-close" @onclick="CloseEditModal" id="admin-users-edit-modal-close-btn" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -322,35 +306,35 @@
                         <ValidationSummary />
 
                         <div class="mb-3">
-                            <label class="form-label">Username</label>
+                            <label class="form-label">@L["Users_UsernameLabel"]</label>
                             <InputText class="form-control" @bind-Value="editUser.Username" id="admin-users-edit-modal-username-input" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
+                            <label class="form-label">@L["Users_EmailLabel"]</label>
                             <InputText class="form-control" @bind-Value="editUser.Email" type="email" id="admin-users-edit-modal-email-input" />
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">First Name</label>
+                                <label class="form-label">@L["Users_FirstNameLabel"]</label>
                                 <InputText class="form-control" @bind-Value="editUser.FirstName" id="admin-users-edit-modal-firstname-input" />
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Last Name</label>
+                                <label class="form-label">@L["Users_LastNameLabel"]</label>
                                 <InputText class="form-control" @bind-Value="editUser.LastName" id="admin-users-edit-modal-lastname-input" />
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Phone Number</label>
+                            <label class="form-label">@L["Users_PhoneNumberLabel"]</label>
                             <InputText class="form-control" @bind-Value="editUser.PhoneNumber" id="admin-users-edit-modal-phone-input" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Role</label>
+                            <label class="form-label">@L["Users_RoleLabel"]</label>
                             <InputSelect class="form-select" @bind-Value="editUser.Role" id="admin-users-edit-modal-role-select">
-                                <option value="">Select Role</option>
+                                <option value="">@L["Users_SelectRoleOption"]</option>
                                 <option value="@UserRole.Customer">Customer</option>
                                 <option value="@UserRole.Bartender">Staff</option>
                                 <option value="@UserRole.Admin">Admin</option>
@@ -360,18 +344,18 @@
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" @bind="isActiveChecked" id="admin-users-edit-modal-active-checkbox" />
                             <label class="form-check-label" for="admin-users-edit-modal-active-checkbox">
-                                Active
+                                @L["Users_ActiveCheckboxLabel"]
                             </label>
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="CloseEditModal" id="admin-users-edit-modal-cancel-btn">Cancel</button>
+                            <button type="button" class="btn btn-secondary" @onclick="CloseEditModal" id="admin-users-edit-modal-cancel-btn">@L["Users_CancelButton"]</button>
                             <button type="submit" class="btn btn-primary" disabled="@isUpdatingUser" id="admin-users-edit-modal-submit-btn">
                                 @if (isUpdatingUser)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
                                 }
-                                Update User
+                                @L["Users_UpdateUserButton"]
                             </button>
                         </div>
                     </EditForm>

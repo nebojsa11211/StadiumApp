@@ -1,0 +1,6 @@
+- generic [active] [ref=f21e1]:
+  - generic [ref=f21e3]:
+    - status [ref=f21e4]:
+      - generic [ref=f21e5]: Checking authentication...
+    - paragraph [ref=f21e6]: Verifying authentication...
+  - generic [ref=f21e7]: Stadium viewer initialized with keyboard navigation support

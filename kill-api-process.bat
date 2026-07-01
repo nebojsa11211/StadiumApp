@@ -1,5 +1,5 @@
 @echo off
-echo Killing StadiumDrinkOrdering.API processes...
-taskkill /F /IM "StadiumDrinkOrdering.API.exe" 2>nul
-powershell -Command "Get-Process | Where-Object {$_.ProcessName -eq 'StadiumDrinkOrdering.API'} | Stop-Process -Force -ErrorAction SilentlyContinue" 2>nul
+rem Releases the locked StadiumDrinkOrdering.API.exe before a CLI build.
+rem Single taskkill by image name - no PowerShell spawn (that added ~0.5-1s per build).
+taskkill /F /IM "StadiumDrinkOrdering.API.exe" >nul 2>&1
 exit /b 0

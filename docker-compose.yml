@@ -1,4 +1,26 @@
 services:
+  # Local PostgreSQL database (for offline development / when Supabase is unreachable)
+  postgres:
+    image: postgres:16-alpine
+    container_name: stadium-postgres-local
+    environment:
+      - TZ=${TZ:-Europe/Zagreb}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=stadiumdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - stadium-pg-data:/var/lib/postgresql/data
+    networks:
+      - stadium-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d stadiumdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   # API Backend
   api:
     build:
@@ -8,7 +30,7 @@ services:
     environment:
       - TZ=${TZ:-Europe/Zagreb}
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
-      - ConnectionStrings__DefaultConnection=Host=aws-1-eu-north-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ylaccqjfrqzruhgbzpnw;Password=d!hZ5A9@t+e!Nn2;SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=300;Keepalive=30;Connection Idle Lifetime=300;Maximum Pool Size=50;Minimum Pool Size=5;Pooling=true;No Reset On Close=true;Include Error Detail=true
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=stadiumdb;Username=postgres;Password=postgres;Pooling=true;Command Timeout=60
       - UseSqliteFallback=false
       - JwtSettings__SecretKey=${JWT_SECRET_KEY}
       - JwtSettings__Issuer=${JWT_ISSUER:-StadiumDrinkOrdering}
@@ -26,6 +48,9 @@ services:
       - "9011:8080"
     volumes:
       - ./certificates:/https:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - stadium-network
     restart: unless-stopped
@@ -65,4 +90,9 @@ networks:
     driver: bridge
     name: stadium-network
 
-# No volumes needed - using PostgreSQL/Supabase (cloud database)
+# Volumes
+volumes:
+  # Reuses the volume created by the original standalone container so existing
+  # (migrated + seeded) data carries over to the compose-managed postgres service.
+  stadium-pg-data:
+    external: true

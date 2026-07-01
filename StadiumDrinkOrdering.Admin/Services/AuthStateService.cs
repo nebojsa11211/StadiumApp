@@ -192,12 +192,28 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
     {
         var isValid = await _tokenStorage.IsTokenValidAsync();
 
-        if (!isValid && _state.IsAuthenticated)
+        if (isValid)
+        {
+            // A valid token exists in storage. Make sure the in-memory state reflects
+            // that. This recovers from a transient/empty read during initialization
+            // (e.g. JSInterop/session not ready yet) that briefly produced an
+            // unauthenticated state and would otherwise bounce the user to /login.
+            if (!_state.IsAuthenticated)
+            {
+                var tokenInfo = await _tokenStorage.GetTokenInfoAsync();
+                if (tokenInfo?.Token != null)
+                {
+                    await UpdateAuthenticationStateFromToken(tokenInfo.Token);
+                    await InvokeStateChangeAsync();
+                }
+            }
+        }
+        else if (_state.IsAuthenticated)
         {
             await LogoutAsync();
         }
 
-        return isValid;
+        return _state.IsAuthenticated;
     }
 
     public bool HasRole(string role)

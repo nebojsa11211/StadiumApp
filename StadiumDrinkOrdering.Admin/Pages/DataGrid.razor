@@ -1,11 +1,13 @@
 @page "/datagrid"
 
-<PageTitle>Database Explorer</PageTitle>
+<PageTitle>@L["DataGrid_PageTitle"]</PageTitle>
+
+@inject IStringLocalizer<SharedResources> L
 
 <div class="database-explorer">
     <div class="header-section">
-        <h3><i class="oi oi-grid-three-up me-2"></i>Database Explorer</h3>
-        <p class="text-muted">Browse and manage database tables with advanced filtering, sorting, and export capabilities</p>
+        <h3><i class="oi oi-grid-three-up me-2"></i>@L["DataGrid_HeadingTitle"]</h3>
+        <p class="text-muted">@L["DataGrid_HeadingSubtitle"]</p>
     </div>
 
     <div class="container-fluid">
@@ -13,9 +15,9 @@
         {
             <div class="loading-container">
                 <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                    <span class="visually-hidden">@L["DataGrid_LoadingSpinner"]</span>
                 </div>
-                <p class="mt-3 text-muted">Connecting to database...</p>
+                <p class="mt-3 text-muted">@L["DataGrid_ConnectingMessage"]</p>
             </div>
         }
         else if (!string.IsNullOrEmpty(errorMessage))
@@ -23,9 +25,9 @@
             <div class="alert alert-danger d-flex align-items-center" role="alert">
                 <i class="oi oi-warning me-2"></i>
                 <div>
-                    <strong>Connection Error:</strong> @errorMessage
+                    <strong>@L["DataGrid_ConnectionErrorLabel"]</strong> @errorMessage
                     <button class="btn btn-sm btn-outline-danger ms-3" @onclick="RetryConnection" id="admin-datagrid-retry-btn">
-                        <i class="oi oi-reload"></i> Retry
+                        <i class="oi oi-reload"></i> @L["DataGrid_RetryButton"]
                     </button>
                 </div>
             </div>
@@ -36,15 +38,15 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">
-                            <i class="oi oi-list me-1"></i> Select Table:
+                            <i class="oi oi-list me-1"></i> @L["DataGrid_SelectTableLabel"]
                         </label>
                         <select class="form-select form-select-lg" @onchange="OnTableChanged" value="@selectedTable">
-                            <option value="">-- Choose a table to explore --</option>
+                            <option value="">@L["DataGrid_ChooseTableOption"]</option>
                             @foreach (var table in tables)
                             {
                                 <option value="@table.EntityName">
-                                    @table.Name 
-                                    <span class="text-muted">(@table.ColumnCount columns)</span>
+                                    @table.Name
+                                    <span class="text-muted">(@table.ColumnCount @L["DataGrid_ColumnsText"])</span>
                                 </option>
                             }
                         </select>
@@ -53,26 +55,26 @@
                     {
                         <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
                             <div class="btn-group">
-                                <button class="btn btn-outline-secondary" @onclick="RefreshData" title="Refresh Data" id="admin-datagrid-refresh-btn">
-                                    <i class="oi oi-reload"></i> Refresh
+                                <button class="btn btn-outline-secondary" @onclick="RefreshData" title="@L["DataGrid_RefreshTitle"]" id="admin-datagrid-refresh-btn">
+                                    <i class="oi oi-reload"></i> @L["DataGrid_RefreshButton"]
                                 </button>
-                                <button class="btn btn-success" @onclick="ExportToCsv" title="Export to CSV" id="admin-datagrid-export-btn">
-                                    <i class="oi oi-data-transfer-download"></i> Export CSV
+                                <button class="btn btn-success" @onclick="ExportToCsv" title="@L["DataGrid_ExportTitle"]" id="admin-datagrid-export-btn">
+                                    <i class="oi oi-data-transfer-download"></i> @L["DataGrid_ExportButton"]
                                 </button>
-                                <button class="btn btn-info" @onclick="ShowTableInfo" title="Table Information" id="admin-datagrid-table-info-btn">
-                                    <i class="oi oi-info"></i> Info
+                                <button class="btn btn-info" @onclick="ShowTableInfo" title="@L["DataGrid_TableInfoTitle"]" id="admin-datagrid-table-info-btn">
+                                    <i class="oi oi-info"></i> @L["DataGrid_TableInfoButton"]
                                 </button>
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-warning" @onclick="ShowGenerateModal" title="Generate Data" id="admin-datagrid-generate-btn">
-                                        <i class="oi oi-plus"></i> Generate
+                                    <button class="btn btn-warning" @onclick="ShowGenerateModal" title="@L["DataGrid_GenerateTitle"]" id="admin-datagrid-generate-btn">
+                                        <i class="oi oi-plus"></i> @L["DataGrid_GenerateButton"]
                                     </button>
-                                    <button class="btn btn-danger" @onclick="ShowDeleteModal" title="Delete All Data" id="admin-datagrid-delete-btn">
-                                        <i class="oi oi-trash"></i> Clear Table
+                                    <button class="btn btn-danger" @onclick="ShowDeleteModal" title="@L["DataGrid_DeleteTitle"]" id="admin-datagrid-delete-btn">
+                                        <i class="oi oi-trash"></i> @L["DataGrid_ClearTableButton"]
                                     </button>
                                 </div>
                             </div>
                             <div class="record-count">
-                                <span class="badge bg-primary">@totalCount Records</span>
+                                <span class="badge bg-primary">@totalCount @L["DataGrid_RecordsBadge"]</span>
                             </div>
                         </div>
                     }
@@ -85,7 +87,7 @@
                 {
                     <div class="table-info-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5><i class="oi oi-spreadsheet me-2"></i>Table Structure</h5>
+                            <h5><i class="oi oi-spreadsheet me-2"></i>@L["DataGrid_TableStructureHeading"]</h5>
                             <button class="btn btn-sm btn-outline-secondary" @onclick="() => showTableInfo = false" id="admin-datagrid-close-table-info-btn">
                                 <i class="oi oi-x"></i>
                             </button>
@@ -107,7 +109,7 @@
                                         }
                                         @if (column.IsNullable)
                                         {
-                                            <span class="text-muted ms-1">(nullable)</span>
+                                            <span class="text-muted ms-1">(@L["DataGrid_NullableText"])</span>
                                         }
                                     </div>
                                 </div>
@@ -121,23 +123,23 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="text-muted">
-                                    <i class="oi oi-filter"></i> 
+                                    <i class="oi oi-filter"></i>
                                     @if (filters.Any())
                                     {
-                                        <span>@filters.Count filter(s) applied</span>
+                                        <span>@filters.Count @L["DataGrid_FiltersAppliedCount"]</span>
                                         <button class="btn btn-sm btn-outline-warning ms-2" @onclick="ClearFilters" id="admin-datagrid-clear-filters-btn">
-                                            Clear All
+                                            @L["DataGrid_ClearAllButton"]
                                         </button>
                                     }
                                     else
                                     {
-                                        <span>No filters applied</span>
+                                        <span>@L["DataGrid_NoFiltersApplied"]</span>
                                     }
                                 </span>
                             </div>
                             <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" 
-                                       placeholder="Quick search..." 
+                                <input type="text" class="form-control form-control-sm"
+                                       placeholder="@L["DataGrid_QuickSearchPlaceholder"]"
                                        @oninput="OnQuickSearchChanged" />
                             </div>
                         </div>
@@ -165,9 +167,9 @@
                                                         }
                                                     }
                                                 </div>
-                                                <input type="text" 
-                                                       class="form-control form-control-sm filter-input" 
-                                                       placeholder="Filter..."
+                                                <input type="text"
+                                                       class="form-control form-control-sm filter-input"
+                                                       placeholder="@L["DataGrid_FilterPlaceholder"]"
                                                        value="@GetFilterValue(column.Name)"
                                                        @oninput="(e) => OnFilterChanged(column.Name, e.Value?.ToString())"
                                                        @onkeyup="@(async (e) => { if (e.Key == "Enter") await ApplyFilters(); })" />
@@ -182,9 +184,9 @@
                                     <tr>
                                         <td colspan="@columns.Count" class="text-center p-4">
                                             <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                <span class="visually-hidden">Loading data...</span>
+                                                <span class="visually-hidden">@L["DataGrid_LoadingDataSpinner"]</span>
                                             </div>
-                                            <p class="mt-2 text-muted">Fetching records...</p>
+                                            <p class="mt-2 text-muted">@L["DataGrid_FetchingRecords"]</p>
                                         </td>
                                     </tr>
                                 }
@@ -194,11 +196,11 @@
                                         <td colspan="@columns.Count" class="text-center p-4">
                                             <div class="no-data">
                                                 <i class="oi oi-inbox text-muted" style="font-size: 2rem;"></i>
-                                                <p class="mt-2 text-muted">No records found</p>
+                                                <p class="mt-2 text-muted">@L["DataGrid_NoRecordsFound"]</p>
                                                 @if (filters.Any())
                                                 {
                                                     <button class="btn btn-sm btn-outline-primary" @onclick="ClearFilters" id="admin-datagrid-clear-filters-empty-btn">
-                                                        Clear Filters
+                                                        @L["DataGrid_ClearFiltersButton"]
                                                     </button>
                                                 }
                                             </div>
@@ -217,20 +219,20 @@
                                                         var value = row.ContainsKey(column.Name) ? row[column.Name] : null;
                                                         if (value == null)
                                                         {
-                                                            <span class="null-value">null</span>
+                                                            <span class="null-value">@L["DataGrid_NullValue"]</span>
                                                         }
                                                         else if (value is bool boolValue)
                                                         {
                                                             if (boolValue)
                                                             {
                                                                 <span class="badge bg-success">
-                                                                    <i class="oi oi-check"></i> True
+                                                                    <i class="oi oi-check"></i> @L["DataGrid_TrueValue"]
                                                                 </span>
                                                             }
                                                             else
                                                             {
                                                                 <span class="badge bg-secondary">
-                                                                    <i class="oi oi-x"></i> False
+                                                                    <i class="oi oi-x"></i> @L["DataGrid_FalseValue"]
                                                                 </span>
                                                             }
                                                         }
@@ -262,7 +264,7 @@
                     {
                         <div class="pagination-container">
                             <div class="page-size-selector">
-                                <label class="me-2">Rows per page:</label>
+                                <label class="me-2">@L["DataGrid_RowsPerPageLabel"]</label>
                                 <select class="form-select form-select-sm" style="width: auto;" @onchange="OnPageSizeChanged" value="@pageSize">
                                     <option value="10">10</option>
                                     <option value="20">20</option>
@@ -275,7 +277,7 @@
                                 <ul class="pagination mb-0">
                                     <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                                         <button class="page-link" @onclick="() => GoToPage(1)" disabled="@(currentPage == 1)" id="admin-datagrid-first-page-btn">
-                                            <i class="oi oi-media-skip-backward"></i> First
+                                            <i class="oi oi-media-skip-backward"></i> @L["DataGrid_FirstPageButton"]
                                         </button>
                                     </li>
                                     <li class="page-item @(currentPage == 1 ? "disabled" : "")">
@@ -301,15 +303,15 @@
                                     </li>
                                     <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
                                         <button class="page-link" @onclick="() => GoToPage(totalPages)" disabled="@(currentPage == totalPages)" id="admin-datagrid-last-page-btn">
-                                            Last <i class="oi oi-media-skip-forward"></i>
+                                            @L["DataGrid_LastPageButton"] <i class="oi oi-media-skip-forward"></i>
                                         </button>
                                     </li>
                                 </ul>
                             </nav>
                             
                             <div class="page-info">
-                                <strong>Page @currentPage of @totalPages</strong>
-                                <span class="text-muted ms-2">(@totalCount total records)</span>
+                                <strong>@L["DataGrid_PageInfo", currentPage, totalPages]</strong>
+                                <span class="text-muted ms-2">@L["DataGrid_TotalRecords", totalCount]</span>
                             </div>
                         </div>
                     }
@@ -328,7 +330,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="oi oi-plus text-warning"></i>
-                        Generate Data for @selectedTable
+                        @L["DataGrid_GenerateDataModalTitle", selectedTable]
                     </h5>
                     <button type="button" class="btn-close" @onclick="HideGenerateModal" aria-label="Close" id="admin-datagrid-generate-modal-close-btn"></button>
                 </div>
@@ -352,39 +354,39 @@
                     else
                     {
                         <div class="form-group mb-3">
-                            <label for="recordCount" class="form-label">Number of records to generate:</label>
-                            <input type="number" class="form-control" id="recordCount" @bind="recordCount" 
-                                   min="1" max="1000" placeholder="Enter count (1-1000)"/>
+                            <label for="recordCount" class="form-label">@L["DataGrid_NumberOfRecordsLabel"]</label>
+                            <input type="number" class="form-control" id="recordCount" @bind="recordCount"
+                                   min="1" max="1000" placeholder="@L["DataGrid_RecordCountPlaceholder"]"/>
                             <div class="form-text">
-                                Generate up to 1000 sample records with realistic data for testing purposes.
+                                @L["DataGrid_GenerateSampleInfo"]
                             </div>
                         </div>
                         
                         <div class="alert alert-info">
                             <i class="oi oi-info"></i>
-                            <strong>About Generated Data:</strong>
+                            <strong>@L["DataGrid_AboutGeneratedData"]</strong>
                             <ul class="mb-0 mt-2">
-                                <li>Data will be created with realistic sample values</li>
-                                <li>All required relationships will be properly linked</li>
-                                <li>Generated data is safe for testing and development</li>
+                                <li>@L["DataGrid_GeneratedDataInfo1"]</li>
+                                <li>@L["DataGrid_GeneratedDataInfo2"]</li>
+                                <li>@L["DataGrid_GeneratedDataInfo3"]</li>
                             </ul>
                         </div>
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="HideGenerateModal" id="admin-datagrid-generate-modal-cancel-btn">Cancel</button>
+                    <button type="button" class="btn btn-secondary" @onclick="HideGenerateModal" id="admin-datagrid-generate-modal-cancel-btn">@L["DataGrid_CancelButton"]</button>
                     @if (string.IsNullOrEmpty(generateValidationMessage))
                     {
                         <button type="button" class="btn btn-warning" @onclick="GenerateData" disabled="@isGenerating" id="admin-datagrid-generate-modal-submit-btn">
                             @if (isGenerating)
                             {
                                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                <span>Generating...</span>
+                                <span>@L["DataGrid_GeneratingMessage"]</span>
                             }
                             else
                             {
                                 <i class="oi oi-plus"></i>
-                                <span>Generate @recordCount Records</span>
+                                <span>@L["DataGrid_GenerateRecordsButton", recordCount]</span>
                             }
                         </button>
                     }
@@ -403,7 +405,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="oi oi-warning text-danger"></i>
-                        Clear Table @selectedTable
+                        @L["DataGrid_ClearTableModalTitle", selectedTable]
                     </h5>
                     <button type="button" class="btn-close" @onclick="HideDeleteModal" aria-label="Close" id="admin-datagrid-delete-modal-close-btn"></button>
                 </div>
@@ -412,11 +414,11 @@
                     {
                         <div class="alert alert-danger" role="alert">
                             <i class="oi oi-warning"></i>
-                            <strong>Cannot Delete:</strong>
+                            <strong>@L["DataGrid_CannotDeleteLabel"]</strong>
                             <p>@deleteValidationMessage</p>
                             @if (deleteDependencies.Any())
                             {
-                                <p><strong>Dependencies found:</strong></p>
+                                <p><strong>@L["DataGrid_DependenciesFoundLabel"]</strong></p>
                                 <ul class="mb-0">
                                     @foreach (var dep in deleteDependencies)
                                     {
@@ -430,15 +432,15 @@
                     {
                         <div class="alert alert-danger">
                             <i class="oi oi-warning"></i>
-                            <strong>Warning: This action cannot be undone!</strong>
+                            <strong>@L["DataGrid_WarningText"]</strong>
                         </div>
-                        <p>You are about to delete <strong>ALL @totalCount records</strong> from the <strong>@selectedTable</strong> table.</p>
-                        <p>Type <strong>DELETE</strong> to confirm this action:</p>
-                        <input type="text" class="form-control" @bind="deleteConfirmation" placeholder="Type DELETE to confirm" />
+                        <p>@L["DataGrid_DeleteConfirmationMessage", totalCount, selectedTable]</p>
+                        <p>@L["DataGrid_TypeDeleteText"]</p>
+                        <input type="text" class="form-control" @bind="deleteConfirmation" placeholder="@L["DataGrid_DeleteConfirmPlaceholder"]" />
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="HideDeleteModal" id="admin-datagrid-delete-modal-cancel-btn">Cancel</button>
+                    <button type="button" class="btn btn-secondary" @onclick="HideDeleteModal" id="admin-datagrid-delete-modal-cancel-btn">@L["DataGrid_CancelButton"]</button>
                     @if (string.IsNullOrEmpty(deleteValidationMessage))
                     {
                         <button type="button" class="btn btn-danger" @onclick="DeleteAllData"
@@ -446,12 +448,12 @@
                             @if (isDeleting)
                             {
                                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                <span>Deleting...</span>
+                                <span>@L["DataGrid_DeletingMessage"]</span>
                             }
                             else
                             {
                                 <i class="oi oi-trash"></i>
-                                <span>Delete All Records</span>
+                                <span>@L["DataGrid_DeleteAllRecordsButton"]</span>
                             }
                         </button>
                     }

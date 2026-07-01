@@ -187,17 +187,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Check if user is already authenticated
-        if (AuthStateService.IsAuthenticated)
-        {
-            NavigateToReturnUrl();
-            return;
-        }
-
-        // Get return URL from query string
+        // Parse the return URL first so it is available for any redirect below
         var uri = new Uri(NavigationManager.Uri);
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
         returnUrl = query["returnUrl"];
+
+        // If already authenticated, go straight to the requested page
+        if (AuthStateService.IsAuthenticated)
+        {
+            NavigateToReturnUrl();
+        }
+
+        await Task.CompletedTask;
     }
 
     private async Task HandleLogin()
@@ -261,25 +262,42 @@
 
     private void NavigateToReturnUrl()
     {
-        var targetUrl = "/";
+        NavigationManager.NavigateTo(ResolveReturnUrl());
+    }
 
-        if (!string.IsNullOrEmpty(returnUrl))
+    // Returns the post-login destination, preserving the originally requested page.
+    // Absolute URLs are only honored when same-origin (prevents open-redirect); anything
+    // else (or a loop back to /login or /register) falls back to home.
+    private string ResolveReturnUrl()
+    {
+        if (string.IsNullOrEmpty(returnUrl))
+            return "/";
+
+        string decoded;
+        try
         {
-            try
-            {
-                targetUrl = Uri.UnescapeDataString(returnUrl);
-                // Ensure it's a relative URL for security
-                if (targetUrl.StartsWith("http"))
-                {
-                    targetUrl = "/";
-                }
-            }
-            catch
-            {
-                targetUrl = "/";
-            }
+            decoded = Uri.UnescapeDataString(returnUrl);
+        }
+        catch
+        {
+            return "/";
         }
 
-        NavigationManager.NavigateTo(targetUrl);
+        if (Uri.TryCreate(decoded, UriKind.Absolute, out var absolute))
+        {
+            var sameOrigin = Uri.Compare(absolute, new Uri(NavigationManager.BaseUri),
+                UriComponents.SchemeAndServer, UriFormat.Unescaped, StringComparison.OrdinalIgnoreCase) == 0;
+
+            if (!sameOrigin)
+                return "/";
+
+            decoded = absolute.PathAndQuery; // keep only the local path (e.g. /orders)
+        }
+
+        if (decoded.StartsWith("/login", StringComparison.OrdinalIgnoreCase) ||
+            decoded.StartsWith("/register", StringComparison.OrdinalIgnoreCase))
+            return "/";
+
+        return decoded;
     }
 }

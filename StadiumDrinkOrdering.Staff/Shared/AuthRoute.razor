@@ -52,7 +52,10 @@ else
 
     private void RedirectToLogin()
     {
-        var returnUrl = Uri.EscapeDataString(NavigationManager.Uri);
+        // Pass a relative return path (e.g. /orders) so login can send the user back to the
+        // page they actually requested instead of the home page.
+        var relativePath = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var returnUrl = Uri.EscapeDataString(relativePath);
         NavigationManager.NavigateTo($"/login?returnUrl={returnUrl}");
     }
 

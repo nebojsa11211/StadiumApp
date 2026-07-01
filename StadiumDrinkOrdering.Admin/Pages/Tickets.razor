@@ -1,148 +1,180 @@
 @page "/tickets"
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Tickets Management</PageTitle>
+<PageTitle>@L["Tickets_PageTitle"]</PageTitle>
 
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col">
-            <h1>Tickets Management</h1>
-            @if (selectedEventId.HasValue && events != null)
-            {
-                var selectedEvent = events.FirstOrDefault(e => e.Id == selectedEventId.Value);
-                if (selectedEvent != null)
-                {
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/events">Events</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">@selectedEvent.Name Tickets</li>
-                        </ol>
-                    </nav>
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> Showing tickets for: <strong>@selectedEvent.Name</strong> (@selectedEvent.Date?.ToString("MMM dd, yyyy"))
-                    </div>
-                }
-            }
+<div class="console" id="admin-tickets-main-container">
+    <!-- Page Header -->
+    <header class="console-head" id="admin-tickets-header">
+        <div class="console-head__title" id="admin-tickets-title-section">
+            <span class="eyebrow">@L["Tickets_Eyebrow"]</span>
+            <h1>@L["Tickets_Title"]</h1>
+            <p>@L["Tickets_Description"]</p>
         </div>
-    </div>
+    </header>
+
+    @if (selectedEventId.HasValue && events != null)
+    {
+        var selectedEvent = events.FirstOrDefault(e => e.Id == selectedEventId.Value);
+        if (selectedEvent != null)
+        {
+            <div class="console-alert console-alert--info" id="admin-tickets-event-banner">
+                <i class="bi bi-info-circle"></i>
+                <span>@L["Tickets_ShowingFor"] <strong>@selectedEvent.Name</strong> (@selectedEvent.Date?.ToString("MMM dd, yyyy")) &middot; <a href="/events" class="link-btn">@L["Tickets_BackToEvents"]</a></span>
+            </div>
+        }
+    }
 
     @if (isLoading)
     {
-        <div class="d-flex justify-content-center">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+        <div class="loading-state">
+            <span class="loading-spinner"></span>
+            <p>@L["Tickets_LoadingTickets"]</p>
         </div>
     }
     else if (!string.IsNullOrEmpty(errorMessage))
     {
-        <div class="alert alert-danger" role="alert">
+        <div class="console-alert console-alert--danger" role="alert">
             @errorMessage
         </div>
     }
     else
     {
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label class="form-label">Filter by Event</label>
-                <select class="form-select" @onchange="@(async (e) => await FilterByEvent(e.Value?.ToString()))" value="@(selectedEventId?.ToString() ?? "")">
-                    <option value="">All Events</option>
-                    @if (events != null)
-                    {
-                        @foreach (var evt in events)
-                        {
-                            <option value="@evt.Id" selected="@(selectedEventId == evt.Id)">@evt.Name - @evt.Date?.ToString("MMM dd, yyyy")</option>
-                        }
-                    }
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Filter by Status</label>
-                <select class="form-select" @onchange="@(async (e) => await FilterByStatus(e.Value?.ToString()))">
-                    <option value="">All Tickets</option>
-                    <option value="true">Active</option>
-                    <option value="false">Inactive</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Search</label>
-                <input type="text" class="form-control" placeholder="Search by ticket #, customer..." 
-                       @bind="searchTerm" @bind:event="oninput" @onkeyup="@(async () => await SearchTickets())" />
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button id="admin-tickets-reset-filters-btn" class="btn btn-secondary w-100" @onclick="ResetFilters">
-                    <i class="bi bi-arrow-clockwise"></i> Reset
+        <!-- Filters -->
+        <div class="panel filters-panel">
+            <div class="panel__head">
+                <h2 class="panel__title">@L["Tickets_FiltersPanelTitle"]</h2>
+                <button id="admin-tickets-reset-filters-btn" class="link-btn" @onclick="ResetFilters">
+                    <i class="bi bi-arrow-clockwise"></i> @L["Tickets_ResetButton"]
                 </button>
             </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-md-3">
-                                <h5>Total Tickets</h5>
-                                <p class="h3">@allTickets?.Count</p>
-                            </div>
-                            <div class="col-md-3">
-                                <h5>Active Tickets</h5>
-                                <p class="h3 text-success">@allTickets?.Count(t => t.IsActive)</p>
-                            </div>
-                            <div class="col-md-3">
-                                <h5>Total Revenue</h5>
-                                <p class="h3 text-primary">$@allTickets?.Sum(t => t.Price).ToString("F2")</p>
-                            </div>
-                            <div class="col-md-3">
-                                <h5>Unique Events</h5>
-                                <p class="h3">@allTickets?.Select(t => t.EventId).Distinct().Count()</p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="filters">
+                <div class="field field--grow">
+                    <label class="field__label">@L["Tickets_FilterByEventLabel"]</label>
+                    <select class="field__input" @onchange="@(async (e) => await FilterByEvent(e.Value?.ToString()))" value="@(selectedEventId?.ToString() ?? "")">
+                        <option value="">@L["Tickets_AllEventsOption"]</option>
+                        @if (events != null)
+                        {
+                            @foreach (var evt in events)
+                            {
+                                <option value="@evt.Id" selected="@(selectedEventId == evt.Id)">@evt.Name - @evt.Date?.ToString("MMM dd, yyyy")</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="field__label">@L["Tickets_FilterByStatusLabel"]</label>
+                    <select class="field__input" @onchange="@(async (e) => await FilterByStatus(e.Value?.ToString()))">
+                        <option value="">@L["Tickets_AllTicketsOption"]</option>
+                        <option value="true">@L["Tickets_ActiveOption"]</option>
+                        <option value="false">@L["Tickets_InactiveOption"]</option>
+                    </select>
+                </div>
+                <div class="field field--grow">
+                    <label class="field__label">@L["Tickets_SearchLabel"]</label>
+                    <input type="text" class="field__input" placeholder="@L["Tickets_SearchPlaceholder"]"
+                           @bind="searchTerm" @bind:event="oninput" @onkeyup="@(async () => await SearchTickets())" />
                 </div>
             </div>
         </div>
 
+        <!-- Key Metrics Cards -->
+        <section class="metrics">
+            <article class="metric" id="admin-tickets-total-card">
+                <div class="metric__head">
+                    <span class="metric__label">@L["Tickets_TotalTicketsLabel"]</span>
+                    <i class="bi bi-ticket-perforated metric__icon"></i>
+                </div>
+                <div class="metric__value mono">@allTickets?.Count</div>
+                <div class="metric__foot">
+                    <span class="metric__hint">@L["Tickets_AllTicketsRecordHint"]</span>
+                </div>
+            </article>
+
+            <article class="metric metric--accent" id="admin-tickets-active-card">
+                <div class="metric__head">
+                    <span class="metric__label">@L["Tickets_ActiveTicketsLabel"]</span>
+                    <i class="bi bi-check-circle metric__icon is-ok"></i>
+                </div>
+                <div class="metric__value mono">@allTickets?.Count(t => t.IsActive)</div>
+                <div class="metric__foot">
+                    <span class="metric__hint">@L["Tickets_CurrentlyValidHint"]</span>
+                </div>
+            </article>
+
+            <article class="metric" id="admin-tickets-revenue-card">
+                <div class="metric__head">
+                    <span class="metric__label">@L["Tickets_TotalRevenueLabel"]</span>
+                    <i class="bi bi-currency-dollar metric__icon"></i>
+                </div>
+                <div class="metric__value mono"><span class="metric__unit">$</span>@allTickets?.Sum(t => t.Price).ToString("F2")</div>
+                <div class="metric__foot">
+                    <span class="metric__hint">@L["Tickets_AcrossAllTicketsHint"]</span>
+                </div>
+            </article>
+
+            <article class="metric" id="admin-tickets-events-card">
+                <div class="metric__head">
+                    <span class="metric__label">@L["Tickets_UniqueEventsLabel"]</span>
+                    <i class="bi bi-calendar-event metric__icon"></i>
+                </div>
+                <div class="metric__value mono">@allTickets?.Select(t => t.EventId).Distinct().Count()</div>
+                <div class="metric__foot">
+                    <span class="metric__hint">@L["Tickets_EventsWithTicketsHint"]</span>
+                </div>
+            </article>
+        </section>
+
         @if (filteredTickets == null || !filteredTickets.Any())
         {
-            <div class="alert alert-info">
-                No tickets found matching the current filters.
+            <div class="panel">
+                <div class="empty">
+                    <i class="bi bi-ticket-perforated"></i>
+                    <p>@L["Tickets_NoTicketsFound"]</p>
+                    <span>@L["Tickets_NoTicketsFilters"]</span>
+                </div>
             </div>
         }
         else
         {
-            <div class="table-responsive">
-                <table class="table table-hover">
+            <!-- Tickets Table -->
+            <div class="panel">
+                <div class="panel__head">
+                    <h2 class="panel__title">@L["Tickets_TicketsPanelTitle"] <span class="panel__count mono">@filteredTickets.Count</span></h2>
+                </div>
+
+                <table class="console-table">
                     <thead>
                         <tr>
-                            <th>Ticket #</th>
-                            <th>Event</th>
-                            <th>Date</th>
-                            <th>Seat</th>
-                            <th>Customer</th>
-                            <th>Purchase Date</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>@L["Tickets_TicketNumberHeader"]</th>
+                            <th>@L["Tickets_EventHeader"]</th>
+                            <th>@L["Tickets_DateHeader"]</th>
+                            <th>@L["Tickets_SeatHeader"]</th>
+                            <th>@L["Tickets_CustomerHeader"]</th>
+                            <th>@L["Tickets_PurchaseDateHeader"]</th>
+                            <th class="num">@L["Tickets_PriceHeader"]</th>
+                            <th>@L["Tickets_StatusHeader"]</th>
+                            <th class="actions-col">@L["Tickets_ActionsHeader"]</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var ticket in filteredTickets)
                         {
                             <tr>
-                                <td><code>@ticket.TicketNumber</code></td>
+                                <td class="mono">@ticket.TicketNumber</td>
                                 <td>@ticket.EventName</td>
-                                <td>@ticket.EventDate?.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td class="mono">@ticket.EventDate?.ToString("MMM dd, yyyy HH:mm")</td>
                                 <td>
                                     @if (!string.IsNullOrEmpty(ticket.Section))
                                     {
                                         <span>@ticket.Section</span>
                                         @if (!string.IsNullOrEmpty(ticket.Row))
                                         {
-                                            <span> Row @ticket.Row</span>
+                                            <span> @L["Tickets_RowLabel"] @ticket.Row</span>
                                         }
                                         @if (!string.IsNullOrEmpty(ticket.SeatNumber))
                                         {
-                                            <span> Seat @ticket.SeatNumber</span>
+                                            <span> @L["Tickets_SeatLabel"] @ticket.SeatNumber</span>
                                         }
                                     }
                                 </td>
@@ -156,47 +188,43 @@
                                         <small class="text-muted">@ticket.CustomerEmail</small>
                                     }
                                 </td>
-                                <td>@ticket.PurchaseDate?.ToString("MMM dd, yyyy HH:mm")</td>
-                                <td>$@ticket.Price.ToString("F2")</td>
+                                <td class="mono">@ticket.PurchaseDate?.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td class="num mono">$@ticket.Price.ToString("F2")</td>
                                 <td>
                                     @if (ticket.IsActive)
                                     {
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="status is-active"><span class="status__dot"></span>@L["Tickets_ActiveStatus"]</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">Inactive</span>
+                                        <span class="status is-inactive"><span class="status__dot"></span>@L["Tickets_InactiveStatus"]</span>
                                     }
                                 </td>
-                                <td>
-                                    <div class="btn-group" role="group">
+                                <td class="actions-col">
+                                    <div class="row-actions">
                                         @if (ticket.OrderId.HasValue)
                                         {
-                                            <button id="admin-tickets-view-order-btn-@ticket.Id" class="btn btn-outline-primary btn-sm" @onclick="() => ViewOrder(ticket.OrderId.Value)"
-                                                    title="View Order">
-                                                <i class="bi bi-receipt me-1"></i>
-                                                <span>Order</span>
+                                            <button id="admin-tickets-view-order-btn-@ticket.Id" class="row-btn" @onclick="() => ViewOrder(ticket.OrderId.Value)"
+                                                    title="@L["Tickets_ViewOrderTitle"]">
+                                                <i class="bi bi-receipt"></i>
                                             </button>
                                         }
-                                        <button id="admin-tickets-validate-btn-@ticket.Id" class="btn btn-outline-info btn-sm" @onclick="() => ValidateTicket(ticket.TicketNumber)"
-                                                title="Validate Ticket">
-                                            <i class="bi bi-check-circle me-1"></i>
-                                            <span>Validate</span>
+                                        <button id="admin-tickets-validate-btn-@ticket.Id" class="row-btn" @onclick="() => ValidateTicket(ticket.TicketNumber)"
+                                                title="@L["Tickets_ValidateTicketTitle"]">
+                                            <i class="bi bi-check-circle"></i>
                                         </button>
                                         @if (ticket.IsActive)
                                         {
-                                            <button id="admin-tickets-deactivate-btn-@ticket.Id" class="btn btn-outline-warning btn-sm" @onclick="() => DeactivateTicket(ticket.Id)"
-                                                    title="Deactivate Ticket">
-                                                <i class="bi bi-x-circle me-1"></i>
-                                                <span>Deactivate</span>
+                                            <button id="admin-tickets-deactivate-btn-@ticket.Id" class="row-btn row-btn--danger" @onclick="() => DeactivateTicket(ticket.Id)"
+                                                    title="@L["Tickets_DeactivateTicketTitle"]">
+                                                <i class="bi bi-x-circle"></i>
                                             </button>
                                         }
                                         else
                                         {
-                                            <button id="admin-tickets-activate-btn-@ticket.Id" class="btn btn-outline-success btn-sm" @onclick="() => ActivateTicket(ticket.Id)"
-                                                    title="Activate Ticket">
-                                                <i class="bi bi-check-circle me-1"></i>
-                                                <span>Activate</span>
+                                            <button id="admin-tickets-activate-btn-@ticket.Id" class="row-btn row-btn--ok" @onclick="() => ActivateTicket(ticket.Id)"
+                                                    title="@L["Tickets_ActivateTicketTitle"]">
+                                                <i class="bi bi-check-circle"></i>
                                             </button>
                                         }
                                     </div>
@@ -209,4 +237,3 @@
         }
     }
 </div>
-

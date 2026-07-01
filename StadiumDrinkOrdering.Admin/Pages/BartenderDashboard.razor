@@ -1,7 +1,8 @@
 @page "/bartender"
 @using StadiumDrinkOrdering.Shared.Models
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Bartender Dashboard</PageTitle>
+<PageTitle>@L["Bartender_PageTitle"]</PageTitle>
     
     <!-- Animated gradient background -->
     <div class="stadium-bg-animation" id="bartender-bg-animation"></div>
@@ -12,16 +13,16 @@
     <div class="stadium-container" id="bartender-container">
         <div class="stadium-card" id="bartender-card">
             <div class="header" id="bartender-header">
-                <h1 id="bartender-title">ARENA 2025</h1>
-                <p class="subtitle" id="bartender-subtitle">Stadium Drink Ordering • Real-time Dashboard</p>
+                <h1 id="bartender-title">@L["Bartender_Title"]</h1>
+                <p class="subtitle" id="bartender-subtitle">@L["Bartender_Subtitle"]</p>
             </div>
             
             <div class="dashboard-grid" id="bartender-dashboard-grid">
                 <div class="stadium-section" id="bartender-stadium-section">
                     <div class="section-header" id="bartender-stadium-header">
-                        <h3 id="bartender-stadium-title">🏟️ Stadium Map</h3>
+                        <h3 id="bartender-stadium-title">@L["Bartender_StadiumMapTitle"]</h3>
                         <button class="btn-refresh" @onclick="RefreshData" id="bartender-refresh-btn">
-                            <span class="refresh-icon" id="bartender-refresh-icon">🔄</span> Refresh
+                            <span class="refresh-icon" id="bartender-refresh-icon">🔄</span> @L["Bartender_RefreshButton"]
                         </button>
                     </div>
                     <div class="stadium-content" id="bartender-stadium-content">
@@ -29,7 +30,7 @@
                         {
                             <div class="loading-container" id="bartender-stadium-loading">
                                 <div class="loading-spinner" id="bartender-stadium-spinner"></div>
-                                <p id="bartender-stadium-loading-text">Loading stadium layout...</p>
+                                <p id="bartender-stadium-loading-text">@L["Bartender_LoadingStadiumLayout"]</p>
                             </div>
                         }
                         else
@@ -38,23 +39,23 @@
                             <div class="legend" id="bartender-legend">
                                 <div class="legend-item" id="bartender-legend-available">
                                     <div class="legend-box available" id="bartender-legend-box-available"></div>
-                                    <span id="bartender-legend-text-available">Available</span>
+                                    <span id="bartender-legend-text-available">@L["Bartender_LegendAvailable"]</span>
                                 </div>
                                 <div class="legend-item" id="bartender-legend-pending">
                                     <div class="legend-box pending" id="bartender-legend-box-pending"></div>
-                                    <span id="bartender-legend-text-pending">Pending</span>
+                                    <span id="bartender-legend-text-pending">@L["Bartender_LegendPending"]</span>
                                 </div>
                                 <div class="legend-item" id="bartender-legend-accepted">
                                     <div class="legend-box accepted" id="bartender-legend-box-accepted"></div>
-                                    <span id="bartender-legend-text-accepted">Accepted</span>
+                                    <span id="bartender-legend-text-accepted">@L["Bartender_LegendAccepted"]</span>
                                 </div>
                                 <div class="legend-item" id="bartender-legend-preparing">
                                     <div class="legend-box preparing" id="bartender-legend-box-preparing"></div>
-                                    <span id="bartender-legend-text-preparing">Preparing</span>
+                                    <span id="bartender-legend-text-preparing">@L["Bartender_LegendPreparing"]</span>
                                 </div>
                                 <div class="legend-item" id="bartender-legend-ready">
                                     <div class="legend-box ready" id="bartender-legend-box-ready"></div>
-                                    <span id="bartender-legend-text-ready">Ready</span>
+                                    <span id="bartender-legend-text-ready">@L["Bartender_LegendReady"]</span>
                                 </div>
                             </div>
 
@@ -110,22 +111,22 @@
 
                                     <g id="bartender-north-stand">
                                         <rect x="150" y="50" width="500" height="120" class="stand" data-stand="north" rx="15" id="bartender-north-stand-rect"/>
-                                        <text x="400" y="115" class="stand-label" id="bartender-north-stand-label">NORTH</text>
+                                        <text x="400" y="115" class="stand-label" id="bartender-north-stand-label">@L["Bartender_StandNorth"]</text>
                                     </g>
-                                    
+
                                     <g id="bartender-south-stand">
                                         <rect x="150" y="430" width="500" height="120" class="stand" data-stand="south" rx="15" id="bartender-south-stand-rect"/>
-                                        <text x="400" y="495" class="stand-label" id="bartender-south-stand-label">SOUTH</text>
+                                        <text x="400" y="495" class="stand-label" id="bartender-south-stand-label">@L["Bartender_StandSouth"]</text>
                                     </g>
-                                    
+
                                     <g id="bartender-east-stand">
                                         <rect x="680" y="100" width="100" height="400" class="stand" data-stand="east" rx="15" id="bartender-east-stand-rect"/>
-                                        <text x="730" y="305" class="stand-label" transform="rotate(90 730 305)" id="bartender-east-stand-label">EAST</text>
+                                        <text x="730" y="305" class="stand-label" transform="rotate(90 730 305)" id="bartender-east-stand-label">@L["Bartender_StandEast"]</text>
                                     </g>
-                                    
+
                                     <g id="bartender-west-stand">
                                         <rect x="20" y="100" width="100" height="400" class="stand" data-stand="west" rx="15" id="bartender-west-stand-rect"/>
-                                        <text x="70" y="305" class="stand-label" transform="rotate(-90 70 305)" id="bartender-west-stand-label">WEST</text>
+                                        <text x="70" y="305" class="stand-label" transform="rotate(-90 70 305)" id="bartender-west-stand-label">@L["Bartender_StandWest"]</text>
                                     </g>
 
                                     @foreach (var section in stadiumLayout.Sections)
@@ -162,19 +163,19 @@
                 
                 <div class="orders-section" id="bartender-orders-section">
                     <div class="section-header" id="bartender-orders-header">
-                        <h3 id="bartender-orders-title">📋 Order Queue</h3>
+                        <h3 id="bartender-orders-title">@L["Bartender_OrderQueueTitle"]</h3>
                     </div>
                     <div class="orders-content" id="bartender-orders-content">
                         @if (pendingOrders == null)
                         {
                             <div class="loading-container" id="bartender-orders-loading">
                                 <div class="loading-spinner" id="bartender-orders-spinner"></div>
-                                <p id="bartender-orders-loading-text">Loading orders...</p>
+                                <p id="bartender-orders-loading-text">@L["Bartender_LoadingOrders"]</p>
                             </div>
                         }
                         else if (!pendingOrders.Any())
                         {
-                            <p class="no-orders" id="bartender-orders-empty">No pending orders</p>
+                            <p class="no-orders" id="bartender-orders-empty">@L["Bartender_NoPendingOrders"]</p>
                         }
                         else
                         {
@@ -198,7 +199,7 @@
                                             }
                                             @if (order.OrderItems.Count > 2)
                                             {
-                                                <div class="more-items" id="bartender-order-more-items-@order.Id">+@(order.OrderItems.Count - 2) more items</div>
+                                                <div class="more-items" id="bartender-order-more-items-@order.Id">@L["Bartender_MoreItems", order.OrderItems.Count - 2]</div>
                                             }
                                         </div>
                                     </div>
@@ -213,19 +214,19 @@
             <div class="stats" id="bartender-stats">
                 <div class="stat-item" id="bartender-stat-total-seats">
                     <div class="stat-value" id="bartender-stat-seats-value">@(stadiumLayout?.TotalSeats ?? 0)</div>
-                    <div class="stat-label" id="bartender-stat-seats-label">Total Seats</div>
+                    <div class="stat-label" id="bartender-stat-seats-label">@L["Bartender_TotalSeatsLabel"]</div>
                 </div>
                 <div class="stat-item" id="bartender-stat-pending-orders">
                     <div class="stat-value" id="bartender-stat-pending-value">@(pendingOrders?.Count ?? 0)</div>
-                    <div class="stat-label" id="bartender-stat-pending-label">Pending Orders</div>
+                    <div class="stat-label" id="bartender-stat-pending-label">@L["Bartender_PendingOrdersLabel"]</div>
                 </div>
                 <div class="stat-item" id="bartender-stat-active-orders">
                     <div class="stat-value" id="bartender-stat-active-value">@(activeOrders?.Count ?? 0)</div>
-                    <div class="stat-label" id="bartender-stat-active-label">Active Orders</div>
+                    <div class="stat-label" id="bartender-stat-active-label">@L["Bartender_ActiveOrdersLabel"]</div>
                 </div>
                 <div class="stat-item" id="bartender-stat-total-orders">
                     <div class="stat-value" id="bartender-stat-total-value">@(stadiumLayout?.ActiveOrders ?? 0)</div>
-                    <div class="stat-label" id="bartender-stat-total-label">Total Orders</div>
+                    <div class="stat-label" id="bartender-stat-total-label">@L["Bartender_TotalOrdersLabel"]</div>
                 </div>
             </div>
         </div>
@@ -243,13 +244,13 @@
                         <div class="modal-body" id="bartender-order-modal-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <h6 id="bartender-order-items-title">Order Items</h6>
+                                    <h6 id="bartender-order-items-title">@L["Bartender_OrderItemsTitle"]</h6>
                                     <table class="table table-sm" id="bartender-order-items-table">
                                         <thead>
                                             <tr>
-                                                <th>Item</th>
-                                                <th>Qty</th>
-                                                <th>Price</th>
+                                                <th>@L["Bartender_ItemHeader"]</th>
+                                                <th>@L["Bartender_QtyHeader"]</th>
+                                                <th>@L["Bartender_PriceHeader"]</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -266,14 +267,14 @@
                                     <p id="bartender-order-total"><strong>Total: $@selectedOrder.TotalAmount.ToString("F2")</strong></p>
                                 </div>
                                 <div class="col-md-6">
-                                    <h6 id="bartender-order-details-title">Order Details</h6>
-                                    <p id="bartender-order-ticket"><strong>Ticket:</strong> @selectedOrder.TicketNumber</p>
-                                    <p id="bartender-order-seat"><strong>Seat:</strong> @selectedOrder.SeatNumber</p>
-                                    <p id="bartender-order-status-display"><strong>Status:</strong> <span class="badge @GetStatusBadgeClass(selectedOrder.Status)" id="bartender-order-status-badge">@GetStatusText(selectedOrder.Status)</span></p>
-                                    <p id="bartender-order-created"><strong>Created:</strong> @selectedOrder.CreatedAt.ToString("g")</p>
+                                    <h6 id="bartender-order-details-title">@L["Bartender_OrderDetailsTitle"]</h6>
+                                    <p id="bartender-order-ticket"><strong>@L["Bartender_TicketLabel"]</strong> @selectedOrder.TicketNumber</p>
+                                    <p id="bartender-order-seat"><strong>@L["Bartender_SeatLabel"]</strong> @selectedOrder.SeatNumber</p>
+                                    <p id="bartender-order-status-display"><strong>@L["Bartender_StatusLabel"]</strong> <span class="badge @GetStatusBadgeClass(selectedOrder.Status)" id="bartender-order-status-badge">@GetStatusText(selectedOrder.Status)</span></p>
+                                    <p id="bartender-order-created"><strong>@L["Bartender_CreatedLabel"]</strong> @selectedOrder.CreatedAt.ToString("g")</p>
                                     @if (!string.IsNullOrEmpty(selectedOrder.CustomerNotes))
                                     {
-                                        <p id="bartender-order-notes"><strong>Notes:</strong> @selectedOrder.CustomerNotes</p>
+                                        <p id="bartender-order-notes"><strong>@L["Bartender_NotesLabel"]</strong> @selectedOrder.CustomerNotes</p>
                                     }
                                 </div>
                             </div>
@@ -281,37 +282,37 @@
                         <div class="modal-footer" id="bartender-order-modal-footer">
                             @if (selectedOrder.Status == OrderStatus.Pending)
                             {
-                                <button class="btn btn-success" 
+                                <button class="btn btn-success"
                                         @onclick="() => UpdateOrderStatus(selectedOrder.Id, OrderStatus.Accepted)"
                                         id="bartender-accept-order-@selectedOrder.Id-btn">
-                                    Accept Order
+                                    @L["Bartender_AcceptOrderButton"]
                                 </button>
                             }
                             else if (selectedOrder.Status == OrderStatus.Accepted)
                             {
-                                <button class="btn btn-warning" 
+                                <button class="btn btn-warning"
                                         @onclick="() => UpdateOrderStatus(selectedOrder.Id, OrderStatus.InPreparation)"
                                         id="bartender-start-preparation-@selectedOrder.Id-btn">
-                                    Start Preparation
+                                    @L["Bartender_StartPreparationButton"]
                                 </button>
                             }
                             else if (selectedOrder.Status == OrderStatus.InPreparation)
                             {
-                                <button class="btn btn-info" 
+                                <button class="btn btn-info"
                                         @onclick="() => UpdateOrderStatus(selectedOrder.Id, OrderStatus.Ready)"
                                         id="bartender-mark-ready-@selectedOrder.Id-btn">
-                                    Mark Ready
+                                    @L["Bartender_MarkReadyButton"]
                                 </button>
                             }
                             else if (selectedOrder.Status == OrderStatus.Ready)
                             {
-                                <button class="btn btn-primary" 
+                                <button class="btn btn-primary"
                                         @onclick="() => UpdateOrderStatus(selectedOrder.Id, OrderStatus.Delivered)"
                                         id="bartender-mark-delivered-@selectedOrder.Id-btn">
-                                    Mark Delivered
+                                    @L["Bartender_MarkDeliveredButton"]
                                 </button>
                             }
-                            <button type="button" class="btn btn-secondary" @onclick="CloseOrderDetails" id="bartender-close-modal-btn">Close</button>
+                            <button type="button" class="btn btn-secondary" @onclick="CloseOrderDetails" id="bartender-close-modal-btn">@L["Bartender_CloseButton"]</button>
                         </div>
                     </div>
                 </div>

@@ -45,7 +45,6 @@ public class DrinksController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<DrinkDto>> GetDrink(int id)
     {
-        return BadRequest();
         var drink = await _context.Drinks.FindAsync(id);
         if (drink == null)
         {

@@ -3,146 +3,115 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Analytics</PageTitle>
+<PageTitle>@L["Analytics_PageTitle"]</PageTitle>
 
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-0">
-                <i class="fas fa-chart-bar me-2"></i>Analytics Dashboard
-            </h2>
-            <p class="text-muted">Comprehensive overview of system performance, sales, and trends</p>
+<div class="console" id="admin-analytics-main-container">
+    <!-- Page Header -->
+    <header class="console-head" id="admin-analytics-header">
+        <div class="console-head__title" id="admin-analytics-title-section">
+            <span class="eyebrow">@L["Analytics_Eyebrow"]</span>
+            <h1>@L["Analytics_Title"]</h1>
+            <p>@L["Analytics_Subtitle"]</p>
         </div>
-    </div>
+        <div class="console-head__actions" id="admin-analytics-action-buttons">
+            <button class="icon-btn" @onclick="LoadAnalyticsData" disabled="@isLoading" id="admin-analytics-refresh-btn" title="@L["Analytics_RefreshTitle"]">
+                <i class="fas fa-sync-alt @(isLoading ? "spin" : "")"></i>
+            </button>
+        </div>
+    </header>
 
     @if (isLoading)
     {
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-2 text-muted">Loading analytics data...</p>
+        <div class="loading-state">
+            <span class="loading-spinner"></span>
+            <p>@L["Analytics_Loading"]</p>
         </div>
     }
     else if (errorMessage != null)
     {
-        <div class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            @errorMessage
-            <button type="button" class="btn btn-sm btn-outline-danger ms-2" @onclick="LoadAnalyticsData" id="admin-analytics-retry-btn">
-                <i class="fas fa-redo me-1"></i>Retry
+        <div class="console-alert console-alert--danger" role="alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>@errorMessage</span>
+            <button type="button" class="pill-btn pill-btn--danger" @onclick="LoadAnalyticsData" id="admin-analytics-retry-btn">
+                <i class="fas fa-redo"></i><span>@L["Analytics_RetryButton"]</span>
             </button>
         </div>
     }
     else
     {
         <!-- Placeholder for Future Analytics -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="alert alert-info" role="alert">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Analytics Dashboard</strong> - Advanced analytics features are currently in development.
-                    Use the quick actions below to access available analytics and reports.
-                </div>
-            </div>
+        <div class="console-alert console-alert--info" role="alert">
+            <i class="fas fa-info-circle"></i>
+            <span>
+                <strong>@L["Analytics_DashboardTitle"]</strong> &mdash; @L["Analytics_InfoMessage"]
+            </span>
         </div>
 
-        <!-- Available Events -->
-        @if (availableEvents?.Any() == true)
-        {
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-calendar me-2"></i>Available Events
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Event Name</th>
-                                            <th>Date</th>
-                                            <th>Location</th>
-                                            <th class="text-center">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var evt in availableEvents.Take(10))
+        <section class="board">
+            <!-- Available Events -->
+            @if (availableEvents?.Any() == true)
+            {
+                <div class="panel">
+                    <div class="panel__head">
+                        <h2 class="panel__title"><i class="fas fa-calendar"></i> @L["Analytics_AvailableEventsTitle"]</h2>
+                    </div>
+                    <table class="console-table">
+                        <thead>
+                            <tr>
+                                <th>@L["Analytics_EventNameHeader"]</th>
+                                <th>@L["Analytics_DateHeader"]</th>
+                                <th>@L["Analytics_LocationHeader"]</th>
+                                <th>@L["Analytics_StatusHeader"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var evt in availableEvents.Take(10))
+                            {
+                                <tr>
+                                    <td class="console-table__id">@evt.Name</td>
+                                    <td class="mono console-table__time">@(evt.Date?.ToString("MMM dd, yyyy") ?? @L["Analytics_TBDLabel"])</td>
+                                    <td>@evt.Location</td>
+                                    <td>
+                                        @if (evt.IsActive)
                                         {
-                                            <tr>
-                                                <td>@evt.Name</td>
-                                                <td>@(evt.Date?.ToString("MMM dd, yyyy") ?? "TBD")</td>
-                                                <td>@evt.Location</td>
-                                                <td class="text-center">
-                                                    @if (evt.IsActive)
-                                                    {
-                                                        <span class="badge bg-success">Active</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-secondary">Inactive</span>
-                                                    }
-                                                </td>
-                                            </tr>
+                                            <span class="status is-active"><span class="status__dot"></span>@L["Analytics_ActiveStatus"]</span>
                                         }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                                        else
+                                        {
+                                            <span class="status is-inactive"><span class="status__dot"></span>@L["Analytics_InactiveStatus"]</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-        }
+            }
 
-        <!-- Quick Actions -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-tools me-2"></i>Analytics & Reports
-                        </h5>
+            <!-- Quick Actions -->
+            <div class="rail">
+                <div class="panel">
+                    <div class="panel__head">
+                        <h2 class="panel__title"><i class="fas fa-tools"></i> @L["Analytics_ReportsTitle"]</h2>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <button class="btn btn-outline-success w-100" @onclick="NavigateToCustomerAnalytics" id="admin-analytics-customer-analytics-btn">
-                                    <i class="fas fa-users fa-2x d-block mb-2"></i>
-                                    <small>Customer Analytics</small>
-                                </button>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <button class="btn btn-outline-info w-100" @onclick="NavigateToEvents" id="admin-analytics-events-btn">
-                                    <i class="fas fa-calendar fa-2x d-block mb-2"></i>
-                                    <small>Event Management</small>
-                                </button>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <button class="btn btn-outline-warning w-100" @onclick="NavigateToOrders" id="admin-analytics-orders-btn">
-                                    <i class="fas fa-list fa-2x d-block mb-2"></i>
-                                    <small>Order Reports</small>
-                                </button>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <button class="btn btn-outline-secondary w-100" @onclick="NavigateToLogs" id="admin-analytics-logs-btn">
-                                    <i class="fas fa-chart-line fa-2x d-block mb-2"></i>
-                                    <small>System Logs</small>
-                                </button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="d-flex flex-wrap gap-2">
-                            <button class="btn btn-outline-primary" @onclick="LoadAnalyticsData" disabled="@isLoading" id="admin-analytics-refresh-btn">
-                                <i class="fas fa-sync-alt me-1"></i>Refresh Data
-                            </button>
-                        </div>
+                    <div class="actions">
+                        <button class="action" @onclick="NavigateToCustomerAnalytics" id="admin-analytics-customer-analytics-btn">
+                            <i class="fas fa-users"></i><span>@L["Analytics_CustomerAnalyticsButton"]</span><i class="fas fa-chevron-right action__go"></i>
+                        </button>
+                        <button class="action" @onclick="NavigateToEvents" id="admin-analytics-events-btn">
+                            <i class="fas fa-calendar"></i><span>@L["Analytics_EventManagementButton"]</span><i class="fas fa-chevron-right action__go"></i>
+                        </button>
+                        <button class="action" @onclick="NavigateToOrders" id="admin-analytics-orders-btn">
+                            <i class="fas fa-list"></i><span>@L["Analytics_OrderReportsButton"]</span><i class="fas fa-chevron-right action__go"></i>
+                        </button>
+                        <button class="action" @onclick="NavigateToLogs" id="admin-analytics-logs-btn">
+                            <i class="fas fa-chart-line"></i><span>@L["Analytics_SystemLogsButton"]</span><i class="fas fa-chevron-right action__go"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     }
 </div>

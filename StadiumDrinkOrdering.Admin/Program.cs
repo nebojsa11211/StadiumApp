@@ -17,11 +17,16 @@ using StadiumDrinkOrdering.Admin.Services.ErrorHandling;
 using StadiumDrinkOrdering.Shared.Services;
 using StadiumDrinkOrdering.Shared.Authentication.Extensions;
 using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
+using StadiumDrinkOrdering.Shared.Configuration;
 using System.Globalization;
 
 Console.WriteLine("=== ADMIN PROGRAM START ===");
 Console.WriteLine($"DOTNET_RUNNING_IN_CONTAINER: {Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER")}");
 Console.WriteLine($"ASPNETCORE_URLS: {Environment.GetEnvironmentVariable("ASPNETCORE_URLS")}");
+
+// Load the gitignored .env file (NoClobber) before building configuration, so ApiSettings__BaseUrl
+// and other variables can be configured there for local development.
+AppConfiguration.LoadDotEnvFile();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +44,10 @@ else
 {
     Console.WriteLine("💻 Local development mode - using default configuration");
 }
+
+// Single source of truth for the API endpoint (see AppConfiguration.ResolveApiBaseUrl).
+var apiBaseUrl = AppConfiguration.ResolveApiBaseUrl(builder.Configuration);
+Console.WriteLine($"🌐 API base URL: {apiBaseUrl}");
 
 // Add session state for authentication token bridge
 builder.Services.AddDistributedMemoryCache();
@@ -86,20 +95,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Register a single, centralized HttpClient for all API communication
 builder.Services.AddHttpClient("ApiClient", client =>
 {
-    var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-    string apiBaseUrl;
-    if (containerEnv == "true")
-    {
-        // Running in Docker container - use Docker networking (HTTPS in Docker)
-        apiBaseUrl = "https://api:8443/";
-    }
-    else
-    {
-        // Running locally - use configuration from appsettings
-        apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
-    }
-
-    client.BaseAddress = new Uri(apiBaseUrl);
+    client.BaseAddress = new Uri(apiBaseUrl + "/");
     client.Timeout = TimeSpan.FromSeconds(120); // Extended timeout for database operations
     client.DefaultRequestVersion = new Version(1, 1);
     client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
@@ -188,16 +184,7 @@ Console.WriteLine("   - EventService: Event management operations");
 Console.WriteLine("   - HttpService: Generic HTTP operations");
 Console.WriteLine("   - AdminApiService: Composite service (backward compatibility)");
 
-// Determine API base URL for authentication services
-string apiBaseUrl;
-if (containerEnv == "true")
-{
-    apiBaseUrl = "https://api:8443";
-}
-else
-{
-    apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
-}
+// API base URL for authentication services resolved once above (apiBaseUrl).
 
 // ✅ Add standardized shared authentication services with refresh token support
 // Note: SecureApiService is registered manually below due to custom constructor requirements
@@ -206,7 +193,12 @@ builder.Services.AddScoped<IAuthStateService>(provider => provider.GetRequiredSe
 builder.Services.AddScoped<IAuthenticationStateService>(provider => provider.GetRequiredService<AuthStateService>());
 // Use hybrid token storage for both client-side and server-side authentication
 builder.Services.AddScoped<ITokenStorageService, HybridTokenStorageService>();
-builder.Services.AddClientAuthentication(apiBaseUrl, "Admin", enableBackgroundRefresh: true);
+// Background refresh is DISABLED for Admin: this app stores only an access token (no
+// refresh token), so the shared BackgroundTokenRefreshService can never refresh - it just
+// reports "RequiresReauthentication" and CLEARS the still-valid token every minute, which
+// bounced the user between dashboard and /login. Token expiry is still handled by the
+// HybridTokenStorageService expiration timer (OnTokenExpired -> logout).
+builder.Services.AddClientAuthentication(apiBaseUrl, "Admin", enableBackgroundRefresh: false);
 
 // Note: AuthenticatedClient is configured by AddClientAuthentication() above with proper authentication handler
 // Configure SSL certificate bypass for development/container environments
@@ -288,16 +280,7 @@ Console.WriteLine("   - AdminNotificationService (Singleton): Real-time notifica
 // Configure StadiumSvgService with the same API base URL as AdminApiService
 builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
 {
-    string apiBaseUrl;
-    if (containerEnv == "true")
-    {
-        apiBaseUrl = "https://api:8443/";
-    }
-    else
-    {
-        apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "https://localhost:7010/";
-    }
-    client.BaseAddress = new Uri(apiBaseUrl);
+    client.BaseAddress = new Uri(apiBaseUrl + "/");
     client.Timeout = TimeSpan.FromSeconds(120); // Extended timeout for database operations
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {

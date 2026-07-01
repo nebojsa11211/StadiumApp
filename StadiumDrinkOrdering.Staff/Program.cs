@@ -5,7 +5,11 @@ using StadiumDrinkOrdering.Staff.Services;
 using StadiumDrinkOrdering.Shared.Services;
 using StadiumDrinkOrdering.Shared.Authentication.Extensions;
 using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
+using StadiumDrinkOrdering.Shared.Configuration;
 using System.Globalization;
+
+// Load the gitignored .env file (NoClobber) before building configuration.
+AppConfiguration.LoadDotEnvFile();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,11 +36,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 });
 
-// Determine API base URL
-var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-var apiBaseUrl = containerEnv == "true"
-    ? "https://api:8443"
-    : builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+// Single source of truth for the API endpoint (see AppConfiguration.ResolveApiBaseUrl).
+var apiBaseUrl = AppConfiguration.ResolveApiBaseUrl(builder.Configuration);
+Console.WriteLine($"🌐 API base URL: {apiBaseUrl}");
 
 // Configure HttpClient for legacy StaffApiService
 builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
@@ -50,10 +52,14 @@ builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
     return handler;
 });
 
-// ✅ Add standardized shared authentication services with refresh token support
-builder.Services.AddSharedAuthentication<AuthStateService, StaffTokenStorageService, StaffSecureApiService>(
-    "Staff",
-    apiBaseUrl);
+// ✅ Add standardized shared authentication services with refresh token support.
+// Registered explicitly (rather than via the 3-generic AddSharedAuthentication overload) because
+// StaffSecureApiService needs a string apiBaseUrl constructor argument and is registered through the
+// factory below. The generic overload's AddScoped<StaffSecureApiService>() registers it by
+// implementation type, which cannot supply that string and fails DI validation at startup.
+builder.Services.AddScoped<AuthStateService>();
+builder.Services.AddScoped<ITokenStorageService, StaffTokenStorageService>();
+builder.Services.AddClientAuthentication(apiBaseUrl, "Staff", enableBackgroundRefresh: true);
 
 // Note: Enhanced refresh token services will be implemented in future iterations
 

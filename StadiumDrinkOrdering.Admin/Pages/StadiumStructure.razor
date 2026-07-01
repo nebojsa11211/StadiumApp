@@ -2,179 +2,208 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Admin.Services
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Stadium Structure Management</PageTitle>
+<PageTitle>@L["Structure_PageTitle"]</PageTitle>
 
-<div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <h3 class="mb-0">🏟️ Stadium Structure Management</h3>
-        <a href="/admin/structure-help" class="btn btn-outline-info">
-            <i class="fas fa-question-circle me-2"></i>Import Guide & Samples
-        </a>
-    </div>
+<div class="console" id="admin-stadium-structure-main-container">
+    <!-- Page Header -->
+    <header class="console-head">
+        <div class="console-head__title">
+            <span class="eyebrow">@L["Structure_Eyebrow"]</span>
+            <h1>@L["Structure_Heading"]</h1>
+            <p>@L["Structure_Subtitle"]</p>
+        </div>
+        <div class="console-head__actions">
+            <a href="/admin/structure-help" class="pill-btn">
+                <i class="fas fa-question-circle"></i><span>@L["Structure_HelpLink"]</span>
+            </a>
+        </div>
+    </header>
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Import Structure</h5>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info mb-3">
-                        <div class="d-flex align-items-start">
-                            <i class="fas fa-info-circle me-2 mt-1"></i>
-                            <div>
-                                <strong>Quick Start:</strong>
-                                <ul class="mb-0 small mt-1">
-                                    <li>JSON file must contain stadium name and tribunes</li>
-                                    <li>Tribune codes: N, S, E, W (North, South, East, West)</li>
-                                    <li>Each sector needs rows and seatsPerRow values</li>
-                                </ul>
-                                <a href="/admin/structure-help" class="btn btn-sm btn-outline-primary mt-2">
-                                    <i class="fas fa-external-link-alt me-1"></i>View Complete Guide & Samples
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Select JSON file:</label>
-                        <InputFile OnChange="@HandleFileSelected" 
-                                  accept=".json" 
-                                  class="form-control" />
-                        @if (selectedFileName != null)
-                        {
-                            <div class="form-text text-success">Selected: @selectedFileName</div>
-                        }
-                    </div>
-                    
-                    @if (!string.IsNullOrEmpty(importError))
-                    {
-                        <div class="alert alert-danger">
-                            <strong>Import Error:</strong> @importError
-                        </div>
-                    }
-                    
-                    <div class="alert alert-warning">
-                        <strong>⚠️ Warning:</strong> Import will replace the existing stadium structure!
-                    </div>
-                    
-                    <button type="button" 
-                            class="btn btn-primary" 
-                            disabled="@(selectedFile == null || isImporting)"
-                            @onclick="ImportStructure"
-                            id="admin-stadium-import-btn">
-                        @if (isImporting)
-                        {
-                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            <text>Importing</text>
-                        }
-                        else
-                        {
-                            <i class="fas fa-upload me-2"></i>
-                            <text>Import Structure</text>
-                        }
-                    </button>
+    <!-- Import Structure -->
+    <div class="panel">
+        <div class="panel__head">
+            <h2 class="panel__title">@L["Structure_ImportTitle"]</h2>
+        </div>
+        <div class="panel__body">
+            <div class="console-alert console-alert--info">
+                <div>
+                    <strong>@L["Structure_QuickStart"]</strong>
+                    <ul class="mb-0 small mt-1">
+                        <li>@L["Structure_QsJsonFile"]</li>
+                        <li>@L["Structure_QsTribuneCode"]</li>
+                        <li>@L["Structure_QsSectorNeeds"]</li>
+                    </ul>
+                    <a href="/admin/structure-help" class="link-btn mt-2">
+                        <i class="fas fa-external-link-alt"></i> @L["Structure_ViewGuide"]
+                    </a>
                 </div>
             </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Current Structure</h5>
+
+            <div class="field" style="margin-bottom:1.25rem;">
+                <label class="field__label">@L["Structure_SelectFile"]</label>
+                <InputFile OnChange="@HandleFileSelected"
+                           accept=".json"
+                           class="field__input" />
+                @if (selectedFileName != null)
+                {
+                    <div class="form-text text-success">@L["Structure_SelectedPrefix"] @selectedFileName</div>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(importError))
+            {
+                <div class="console-alert console-alert--danger">
+                    <span><strong>@L["Structure_ImportErrorPrefix"]</strong> @importError</span>
                 </div>
-                <div class="card-body">
-                    @if (summary != null)
+            }
+
+            <div class="console-alert console-alert--info">
+                <span><strong>@L["Structure_ImportWarning"]</strong></span>
+            </div>
+
+            <button type="button"
+                    class="pill-btn pill-btn--primary"
+                    disabled="@(selectedFile == null || isImporting)"
+                    @onclick="ImportStructure"
+                    id="admin-stadium-import-btn">
+                @if (isImporting)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <text>@L["Structure_Importing"]</text>
+                }
+                else
+                {
+                    <i class="fas fa-upload"></i>
+                    <text>@L["Structure_ImportButton"]</text>
+                }
+            </button>
+        </div>
+    </div>
+
+    <!-- Current Structure -->
+    <div class="panel">
+        <div class="panel__head">
+            <h2 class="panel__title">@L["Structure_CurrentStructure"]</h2>
+        </div>
+        <div class="panel__body">
+            @if (summary != null)
+            {
+                <section class="metrics metrics--3">
+                    <article class="metric">
+                        <div class="metric__head">
+                            <span class="metric__label">@L["Structure_MetricTribunes"]</span>
+                            <i class="fas fa-layer-group metric__icon"></i>
+                        </div>
+                        <div class="metric__value mono">@summary.TotalTribunes</div>
+                    </article>
+                    <article class="metric">
+                        <div class="metric__head">
+                            <span class="metric__label">@L["Structure_MetricRings"]</span>
+                            <i class="fas fa-circle-notch metric__icon"></i>
+                        </div>
+                        <div class="metric__value mono">@summary.TotalRings</div>
+                    </article>
+                    <article class="metric">
+                        <div class="metric__head">
+                            <span class="metric__label">@L["Structure_MetricSectors"]</span>
+                            <i class="fas fa-th metric__icon"></i>
+                        </div>
+                        <div class="metric__value mono">@summary.TotalSectors</div>
+                    </article>
+                    <article class="metric">
+                        <div class="metric__head">
+                            <span class="metric__label">@L["Structure_MetricTotalSeats"]</span>
+                            <i class="fas fa-chair metric__icon"></i>
+                        </div>
+                        <div class="metric__value mono">@summary.TotalSeats</div>
+                    </article>
+                    <article class="metric metric--accent">
+                        <div class="metric__head">
+                            <span class="metric__label">@L["Structure_MetricAvailable"]</span>
+                            <i class="fas fa-check metric__icon is-ok"></i>
+                        </div>
+                        <div class="metric__value mono">@summary.AvailableSeats</div>
+                    </article>
+                    <article class="metric">
+                        <div class="metric__head">
+                            <span class="metric__label">@L["Structure_MetricOccupied"]</span>
+                            <i class="fas fa-user metric__icon"></i>
+                        </div>
+                        <div class="metric__value mono">@summary.OccupiedSeats</div>
+                    </article>
+                </section>
+            }
+            else if (isLoadingSummary)
+            {
+                <div class="loading-state">
+                    <span class="loading-spinner"></span>
+                    <p>@L["Structure_Loading"]</p>
+                </div>
+            }
+            else
+            {
+                <div class="empty">
+                    <i class="fas fa-stadium"></i>
+                    <p>@L["Structure_NoData"]</p>
+                    <span>@L["Structure_EmptyStateText"]</span>
+                </div>
+            }
+
+            <div class="console-head__actions" style="margin-top:1.5rem; flex-wrap:wrap;">
+                <button class="pill-btn pill-btn--danger"
+                        @onclick="ShowClearConfirmation"
+                        disabled="@(summary == null || summary.TotalSeats == 0)"
+                        id="admin-stadium-clear-btn">
+                    <i class="fas fa-trash"></i><span>@L["Structure_ClearButton"]</span>
+                </button>
+
+                <button class="pill-btn"
+                        @onclick="ExportStructure"
+                        disabled="@(summary == null || summary.TotalSeats == 0 || isExporting)"
+                        id="admin-stadium-export-btn">
+                    @if (isExporting)
                     {
-                        <div class="row">
-                            <div class="col-sm-6"><strong>Tribunes:</strong></div>
-                            <div class="col-sm-6">@summary.TotalTribunes</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6"><strong>Rings:</strong></div>
-                            <div class="col-sm-6">@summary.TotalRings</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6"><strong>Sectors:</strong></div>
-                            <div class="col-sm-6">@summary.TotalSectors</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6"><strong>Total Seats:</strong></div>
-                            <div class="col-sm-6"><span class="badge bg-primary">@summary.TotalSeats</span></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6"><strong>Available:</strong></div>
-                            <div class="col-sm-6"><span class="badge bg-success">@summary.AvailableSeats</span></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6"><strong>Occupied:</strong></div>
-                            <div class="col-sm-6"><span class="badge bg-warning">@summary.OccupiedSeats</span></div>
-                        </div>
-                    }
-                    else if (isLoadingSummary)
-                    {
-                        <div class="text-center">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        <text>@L["Structure_Exporting"]</text>
                     }
                     else
                     {
-                        <div class="text-muted">No structure data available</div>
+                        <i class="fas fa-download"></i><text>@L["Structure_ExportButton"]</text>
                     }
-                    
-                    <div class="mt-3">
-                        <button class="btn btn-outline-danger me-2" 
-                                @onclick="ShowClearConfirmation"
-                                disabled="@(summary == null || summary.TotalSeats == 0)"
-                                id="admin-stadium-clear-btn">
-                            <i class="fas fa-trash me-2"></i>Clear Structure
-                        </button>
-                        
-                        <button class="btn btn-outline-secondary me-2"
-                                @onclick="ExportStructure"
-                                disabled="@(summary == null || summary.TotalSeats == 0 || isExporting)"
-                                id="admin-stadium-export-btn">
-                            @if (isExporting)
-                            {
-                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                                <text>Exporting</text>
-                            }
-                            else
-                            {
-                                <i class="fas fa-download me-2"></i><text>Export JSON</text>
-                            }
-                        </button>
+                </button>
 
-                        <button class="btn btn-outline-info"
-                                @onclick="RefreshCache"
-                                disabled="@isRefreshingCache"
-                                id="admin-stadium-refresh-cache-btn"
-                                title="Refresh stadium layout cache to display updated data immediately">
-                            @if (isRefreshingCache)
-                            {
-                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                                <text>Refreshing</text>
-                            }
-                            else
-                            {
-                                <i class="fas fa-sync-alt me-2"></i><text>Refresh Cache</text>
-                            }
-                        </button>
-                    </div>
-                </div>
+                <button class="pill-btn"
+                        @onclick="RefreshCache"
+                        disabled="@isRefreshingCache"
+                        id="admin-stadium-refresh-cache-btn"
+                        title="@L["Structure_RefreshTooltip"]">
+                    @if (isRefreshingCache)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        <text>@L["Structure_Refreshing"]</text>
+                    }
+                    else
+                    {
+                        <i class="fas fa-sync-alt"></i><text>@L["Structure_RefreshButton"]</text>
+                    }
+                </button>
             </div>
         </div>
     </div>
 
     @if (importSuccess)
     {
-        <div class="alert alert-success alert-dismissible">
-            <h5>✅ Import Successful!</h5>
-            <p>Stadium structure has been imported successfully. @importMessage</p>
-            <button type="button" class="btn-close" @onclick="() => importSuccess = false" id="admin-stadium-success-close-btn"></button>
+        <div class="console-alert console-alert--success">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <strong>@L["Structure_ImportSuccessHeading"]</strong>
+                <span> @L["Structure_ImportSuccessText"] @importMessage</span>
+            </div>
+            <button type="button" class="icon-btn" style="margin-left:auto;" @onclick="() => importSuccess = false" id="admin-stadium-success-close-btn">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     }
 </div>
@@ -186,34 +215,36 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">⚠️ Confirm Deletion</h5>
+                    <h5 class="modal-title">@L["Structure_ConfirmDeleteTitle"]</h5>
                     <button type="button" class="btn-close" @onclick="HideClearConfirmation" id="admin-stadium-clear-modal-close-btn"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete the entire stadium structure?</p>
-                    <p class="text-danger"><strong>This action cannot be undone!</strong></p>
+                    <p>@L["Structure_ConfirmDeleteText"]</p>
+                    <p class="text-danger"><strong>@L["Structure_ConfirmCannotUndo"]</strong></p>
                     @if (summary != null)
                     {
-                        <div class="alert alert-info">
-                            This will remove <strong>@summary.TotalSeats seats</strong> across 
-                            <strong>@summary.TotalSectors sectors</strong> in 
-                            <strong>@summary.TotalTribunes tribunes</strong>.
+                        <div class="console-alert console-alert--info">
+                            <span>
+                                @L["Structure_ConfirmRemovePrefix"] <strong>@summary.TotalSeats @L["Structure_SeatsLabel"]</strong> @L["Structure_ConfirmRemoveMiddle"]
+                                <strong>@summary.TotalSectors @L["Structure_SectorsLabel"]</strong> @L["Structure_ConfirmRemoveEnd"]
+                                <strong>@summary.TotalTribunes @L["Structure_TribunesLabel"]</strong>.
+                            </span>
                         </div>
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="HideClearConfirmation" id="admin-stadium-clear-cancel-btn">
-                        Cancel
+                    <button type="button" class="pill-btn" @onclick="HideClearConfirmation" id="admin-stadium-clear-cancel-btn">
+                        <span>@L["Structure_CancelButton"]</span>
                     </button>
-                    <button type="button" class="btn btn-danger" @onclick="ClearStructure" disabled="@isClearing" id="admin-stadium-clear-confirm-btn">
+                    <button type="button" class="pill-btn pill-btn--danger" @onclick="ClearStructure" disabled="@isClearing" id="admin-stadium-clear-confirm-btn">
                         @if (isClearing)
                         {
                             <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            <text>Deleting</text>
+                            <text>@L["Structure_Deleting"]</text>
                         }
                         else
                         {
-                            <i class="fas fa-trash me-2"></i><text>Delete Structure</text>
+                            <i class="fas fa-trash"></i><text>@L["Structure_DeleteButton"]</text>
                         }
                     </button>
                 </div>
@@ -221,4 +252,3 @@
         </div>
     </div>
 }
-

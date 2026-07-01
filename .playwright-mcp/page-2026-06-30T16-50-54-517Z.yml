@@ -1,0 +1,6 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - status [ref=e4]:
+      - generic [ref=e5]: Loading...
+    - paragraph [ref=e6]: Initializing application...
+  - generic [ref=e7]: Stadium viewer initialized with keyboard navigation support

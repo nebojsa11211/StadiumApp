@@ -62,16 +62,33 @@
 
 ### 🚨 **MANDATORY CLEANUP RULE** 🚨
 
-**CRITICAL**: You MUST ALWAYS kill all running dotnet processes BEFORE and AFTER making ANY code changes, debugging sessions, or testing. This is NOT optional - it's MANDATORY for proper development workflow.
+**CRITICAL**: You MUST ALWAYS kill all running Stadium app processes BEFORE and AFTER making ANY code changes, debugging sessions, or testing. This is NOT optional - it's MANDATORY. **Every time you start the apps, you MUST kill them again before the next build/run.**
 
-**Required Cleanup Commands:**
-```bash
-# Kill all dotnet processes (MANDATORY before AND after ANY changes)
-taskkill //F //IM dotnet.exe
+> ⛔ **THE #1 CAUSE OF `MSB3027` / "file is locked by StadiumDrinkOrdering.API" IS A RUNNING APP THAT WASN'T KILLED.**
+> The apps run as their **own apphost exes** — `StadiumDrinkOrdering.API.exe`, `.Admin.exe`, `.Customer.exe`, `.Staff.exe` — **NOT** as `dotnet.exe`.
+> ❌ `taskkill /IM dotnet.exe` does **NOT** kill them and will NOT fix the lock.
+> ✅ You MUST kill them by their **app exe names** (below).
+
+**Required Cleanup Commands (USE THESE — kill by app exe name):**
+```powershell
+# Kill ALL Stadium app processes by their real exe names (MANDATORY before AND after ANY build/run)
+taskkill /F /IM StadiumDrinkOrdering.API.exe /IM StadiumDrinkOrdering.Admin.exe /IM StadiumDrinkOrdering.Customer.exe /IM StadiumDrinkOrdering.Staff.exe 2>$null
+
+# Equivalent PowerShell (no error if a process isn't running):
+Get-Process StadiumDrinkOrdering.API,StadiumDrinkOrdering.Admin,StadiumDrinkOrdering.Customer,StadiumDrinkOrdering.Staff -ErrorAction SilentlyContinue | Stop-Process -Force
 
 # Or use the automated cleanup script
 powershell -ExecutionPolicy Bypass -File "cleanup-for-vs-debug.ps1"
 ```
+
+**If you STILL get MSB3027 (find and kill whatever holds the port):**
+```powershell
+# Whatever process owns 7010 (API) / 7030 (Admin) — kill it
+Get-NetTCPConnection -LocalPort 7010,7030 -State Listen -ErrorAction SilentlyContinue |
+  Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force }
+```
+
+**Inside Visual Studio:** the csproj kill-before-build target is intentionally disabled in VS (it caused debugger "object disconnected" errors). So in VS you must **Stop debugging (Shift+F5) BEFORE Rebuild**, or run the cleanup command above first — otherwise the running exe keeps `StadiumDrinkOrdering.Shared.dll` / the apphost exe locked and the build fails with MSB3027.
 
 **⚠️ MANDATORY CLEANUP SITUATIONS:**
 - ✅ **BEFORE making any code changes** - Kill all processes first
@@ -130,10 +147,21 @@ cleanup-for-vs-debug.bat
 **Use Docker containers for production-like testing and deployment:**
 
 - **Start services:** `docker-compose up --build -d`
-- **Stop services:** `docker-compose down`
+- **Stop services:** `docker-compose stop` (keeps containers; use this for local VS dev — see warning below)
 - **View logs:** `docker-compose logs -f [service-name]`
 - **Restart service:** `docker-compose restart [service-name]`
 - **Rebuild after code changes:** `docker-compose up --build -d [service-name]`
+- **Tear down (DESTRUCTIVE):** `docker-compose down` — ⚠️ removes ALL containers **including the local dev database** `stadium-postgres-local` and `stadium-network`.
+
+> 🛑 **DO NOT run `docker-compose down` during local VS development.** The local dev database
+> (`postgres` service / `stadium-postgres-local`) lives in this same `docker-compose.yml`, so
+> `down` deletes it. Your locally-running API then fails with
+> `"The maximum number of retries (3) was exceeded ... NpgsqlRetryingExecutionStrategy"`.
+> Your DATA is safe (volume `stadium-pg-data` is `external: true`), only the container is gone.
+> - To **stop** containers without deleting the DB: `docker-compose stop`.
+> - To **recover** a deleted DB container (recreates + waits for healthy, reuses existing data):
+>   `.\ensure-localdb.ps1`  (or `docker-compose up -d postgres`).
+> - **Run `.\ensure-localdb.ps1` before starting local VS debugging** to guarantee the DB is up.
 
 🔒 **HTTPS-ONLY**: All Docker containers use HTTPS exclusively for both internal and external communication. All mapped ports (9010-9040) use HTTPS with SSL certificates.
 

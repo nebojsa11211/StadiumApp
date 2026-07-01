@@ -1,0 +1,196 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - complementary [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - generic [ref=f1e6]: 
+        - generic [ref=f1e7]:
+          - generic [ref=f1e8]: STADIUM
+          - generic [ref=f1e9]: ADMIN
+      - generic [ref=f1e10]:
+        - generic [ref=f1e11]: 23:07:21
+        - generic [ref=f1e12]: 30/06/26 HR
+      - navigation [ref=f1e13]:
+        - link " Dashboard" [ref=f1e14] [cursor=pointer]:
+          - /url: ""
+          - generic [ref=f1e15]: 
+          - generic [ref=f1e16]: Dashboard
+        - link " Narudžbe" [ref=f1e17] [cursor=pointer]:
+          - /url: orders
+          - generic [ref=f1e18]: 
+          - generic [ref=f1e19]: Narudžbe
+        - link " Pića" [ref=f1e20] [cursor=pointer]:
+          - /url: drinks
+          - generic [ref=f1e21]: 
+          - generic [ref=f1e22]: Pića
+        - link " Analitika" [ref=f1e23] [cursor=pointer]:
+          - /url: analytics
+          - generic [ref=f1e24]: 
+          - generic [ref=f1e25]: Analitika
+        - link " Korisnička analitika" [ref=f1e26] [cursor=pointer]:
+          - /url: customer-analytics
+          - generic [ref=f1e27]: 
+          - generic [ref=f1e28]: Korisnička analitika
+        - generic [ref=f1e29]: Upravljanje stadionom
+        - link " Događaji" [ref=f1e30] [cursor=pointer]:
+          - /url: events
+          - generic [ref=f1e31]: 
+          - generic [ref=f1e32]: Događaji
+        - link " Karte" [ref=f1e33] [cursor=pointer]:
+          - /url: tickets
+          - generic [ref=f1e34]: 
+          - generic [ref=f1e35]: Karte
+        - link "👁 Pregled" [ref=f1e36] [cursor=pointer]:
+          - /url: admin/stadium-overview
+          - generic [ref=f1e37]: 👁
+          - generic [ref=f1e38]: Pregled
+        - link " Alat za crtanje" [ref=f1e39] [cursor=pointer]:
+          - /url: admin/stadium-drawing-tool
+          - generic [ref=f1e40]: 
+          - generic [ref=f1e41]: Alat za crtanje
+        - generic [ref=f1e42]: Sustav
+        - link " Logs" [ref=f1e43] [cursor=pointer]:
+          - /url: logs
+          - generic [ref=f1e44]: 
+          - generic [ref=f1e45]: Logs
+        - link " Database" [ref=f1e46] [cursor=pointer]:
+          - /url: datagrid
+          - generic [ref=f1e47]: 
+          - generic [ref=f1e48]: Database
+        - link " Security" [ref=f1e49] [cursor=pointer]:
+          - /url: users
+          - generic [ref=f1e50]: 
+          - generic [ref=f1e51]: Security
+      - generic [ref=f1e52]:
+        - generic [ref=f1e53]:
+          - generic [ref=f1e54]: 
+          - generic [ref=f1e55]:
+            - generic [ref=f1e56]: Centralizirani Logging
+            - generic [ref=f1e57]: "Zadnja objava: 23:07"
+        - generic [ref=f1e58]:
+          - generic [ref=f1e59]: A
+          - generic [ref=f1e60]:
+            - button "Odjava" [ref=f1e61] [cursor=pointer]
+            - generic [ref=f1e62]: admin@stadium.com
+        - generic [ref=f1e63]:
+          - generic [ref=f1e64]: HR/EN
+          - generic [ref=f1e65]:
+            - button "HR" [ref=f1e66] [cursor=pointer]
+            - button "EN" [ref=f1e67] [cursor=pointer]
+    - main [ref=f1e68]:
+      - generic [ref=f1e69]:
+        - button "" [disabled] [ref=f1e70]:
+          - generic [ref=f1e71]: 
+        - generic [ref=f1e72]:
+          - generic [ref=f1e73]:
+            - generic [ref=f1e74]: Događaj 1 / 1
+            - generic [ref=f1e75]: Completed
+          - generic [ref=f1e77]:
+            - generic [ref=f1e78]: 
+            - heading "Championship Match" [level=2] [ref=f1e79]
+            - generic [ref=f1e80]: Sun, 05. Oct 2025. · 19:00
+        - generic [ref=f1e81]:
+          - combobox "Odaberi događaj" [ref=f1e82] [cursor=pointer]:
+            - option "Championship Match" [selected]
+          - button "" [disabled] [ref=f1e83]:
+            - generic [ref=f1e84]: 
+      - generic [ref=f1e85]:
+        - generic [ref=f1e86]:
+          - generic [ref=f1e87]:
+            - generic [ref=f1e88]:
+              - generic [ref=f1e89]: Prodane karte
+              - generic [ref=f1e90]: od 100 mjesta
+            - generic [ref=f1e92]: 
+          - generic [ref=f1e93]: "0"
+        - generic [ref=f1e94]:
+          - generic [ref=f1e95]:
+            - generic [ref=f1e96]:
+              - generic [ref=f1e97]: Ukupni prihod
+              - generic [ref=f1e98]: za ovaj događaj
+            - generic [ref=f1e100]: 
+          - generic [ref=f1e101]: 0€
+        - generic [ref=f1e102]:
+          - generic [ref=f1e103]:
+            - generic [ref=f1e104]:
+              - generic [ref=f1e105]: Aktivne narudžbe
+              - generic [ref=f1e106]: pića · u tijeku
+            - generic [ref=f1e108]: 
+          - generic [ref=f1e109]: "0"
+        - generic [ref=f1e110]:
+          - generic [ref=f1e111]:
+            - generic [ref=f1e112]:
+              - generic [ref=f1e113]: Zadovoljstvo korisnika
+              - generic [ref=f1e114]: (NPS) · uskoro
+            - generic [ref=f1e116]: 
+          - generic [ref=f1e117]: —
+      - generic [ref=f1e118]:
+        - heading "Pregled stadiona u stvarnom vremenu" [level=2] [ref=f1e121]
+        - generic [ref=f1e124]:
+          - heading "Nedavne narudžbe" [level=2] [ref=f1e126]
+          - table [ref=f1e127]:
+            - rowgroup [ref=f1e128]:
+              - row "ID Sjedalo Iznos Status" [ref=f1e129]:
+                - columnheader "ID" [ref=f1e130]
+                - columnheader "Sjedalo" [ref=f1e131]
+                - columnheader "Iznos" [ref=f1e132]
+                - columnheader "Status" [ref=f1e133]
+            - rowgroup [ref=f1e134]:
+              - row "Nema narudžbi za ovaj događaj" [ref=f1e135]:
+                - cell "Nema narudžbi za ovaj događaj" [ref=f1e136]
+          - link "Vidi sve narudžbe" [ref=f1e137] [cursor=pointer]:
+            - /url: orders
+      - generic [ref=f1e138]:
+        - generic [ref=f1e139]:
+          - generic [ref=f1e140]:
+            - heading "Centralizirani logs" [level=2] [ref=f1e141]
+            - link "View All Logs" [ref=f1e142] [cursor=pointer]:
+              - /url: logs
+          - list [ref=f1e143]:
+            - listitem [ref=f1e144]:
+              - generic [ref=f1e145]: 
+              - generic [ref=f1e146]:
+                - text: "[Upozorenje] ConnectionPool iscrpljen (referencing"
+                - link "CLAUDE.md" [ref=f1e147] [cursor=pointer]:
+                  - /url: "#"
+                - text: )
+            - listitem [ref=f1e148]:
+              - generic [ref=f1e149]: 
+              - generic [ref=f1e150]: "[Korisnik] @Bartender1 je preuzeo narudžbu #123"
+            - listitem [ref=f1e151]:
+              - generic [ref=f1e152]: 
+              - generic [ref=f1e153]: "[Karta] Karta validirana (A, RS 512)"
+            - listitem [ref=f1e154]:
+              - generic [ref=f1e155]: 
+              - generic [ref=f1e156]: "[Greška] API greška (Npgea), retry 1"
+        - generic [ref=f1e157]:
+          - heading "Zdravlje sustava & Brze akcije" [level=2] [ref=f1e159]
+          - generic [ref=f1e160]:
+            - generic [ref=f1e161]:
+              - generic [ref=f1e162]: CONNECTED
+              - generic [ref=f1e164]: Baza podataka (PostgreSQL)
+            - generic [ref=f1e165]:
+              - generic [ref=f1e166]: HEALTHY
+              - generic [ref=f1e168]: API Health
+            - generic [ref=f1e169]:
+              - generic [ref=f1e170]: ACTIVE
+              - generic [ref=f1e172]: Cache
+            - generic [ref=f1e173]:
+              - generic [ref=f1e174]: RUNNING
+              - generic [ref=f1e176]: Pozadinske usluge
+          - generic [ref=f1e177]:
+            - link " Nova narudžba" [ref=f1e178] [cursor=pointer]:
+              - /url: orders
+              - generic [ref=f1e179]: 
+              - text: Nova narudžba
+            - link " Dodaj Korisnika" [ref=f1e180] [cursor=pointer]:
+              - /url: users
+              - generic [ref=f1e181]: 
+              - text: Dodaj Korisnika
+            - link " Izvezi Izvještaj" [ref=f1e182] [cursor=pointer]:
+              - /url: analytics
+              - generic [ref=f1e183]: 
+              - text: Izvezi Izvještaj
+            - link " Vidi Zapisnike" [ref=f1e184] [cursor=pointer]:
+              - /url: logs
+              - generic [ref=f1e185]: 
+              - text: Vidi Zapisnike
+  - generic [ref=f1e186]: Stadium viewer initialized with keyboard navigation support

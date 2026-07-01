@@ -209,6 +209,28 @@ public partial class Dashboard : ComponentBase, IDisposable
         };
     }
 
+    private string GetHealthIconModifier()
+    {
+        return systemHealth.ToLower() switch
+        {
+            "healthy" => "is-ok",
+            "warning" => "is-warn",
+            "critical" => "is-crit",
+            _ => "is-neutral"
+        };
+    }
+
+    private string GetHealthDotModifier()
+    {
+        return systemHealth.ToLower() switch
+        {
+            "healthy" => "is-ok",
+            "warning" => "is-warn",
+            "critical" => "is-crit",
+            _ => "is-neutral"
+        };
+    }
+
     private string GetStatusBadgeClass(OrderStatus status)
     {
         return status switch
@@ -220,6 +242,21 @@ public partial class Dashboard : ComponentBase, IDisposable
             OrderStatus.Delivered => "bg-success",
             OrderStatus.Cancelled => "bg-danger",
             _ => "bg-secondary"
+        };
+    }
+
+    // Console status pill modifier (dot + label) for the redesigned orders table
+    private string GetStatusModifier(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "is-pending",
+            OrderStatus.Accepted => "is-accepted",
+            OrderStatus.InPreparation => "is-preparing",
+            OrderStatus.Ready => "is-ready",
+            OrderStatus.Delivered => "is-delivered",
+            OrderStatus.Cancelled => "is-cancelled",
+            _ => "is-neutral"
         };
     }
 

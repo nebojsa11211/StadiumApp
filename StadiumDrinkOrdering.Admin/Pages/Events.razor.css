@@ -1,0 +1,68 @@
+/* =============================================================================
+   Event Management — page-specific surfaces only.
+   Global Operations Console classes (console, panel, metric, pill-btn, status,
+   field, empty, loading-state, console-alert) live in admin-console.css and are
+   NOT redefined here. These rules only style the event-card internals.
+   ============================================================================= */
+
+.event-card {
+    margin-bottom: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-card .panel__body {
+    flex: 1;
+}
+
+/* Event metadata — label/value grid with mono telemetry values */
+.event-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 0.85rem;
+    margin: 0;
+}
+
+.event-meta dt {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-500);
+    white-space: nowrap;
+    align-self: center;
+}
+
+.event-meta dt .bi {
+    color: var(--stadium-gray-400);
+    margin-right: 0.15rem;
+}
+
+.event-meta dd {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--stadium-gray-900);
+    text-align: right;
+}
+
+.event-card__desc {
+    margin: 0.9rem 0 0;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--stadium-gray-100);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--stadium-gray-500);
+}
+
+.event-card__foot {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--stadium-gray-200);
+}
+
+.event-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}

@@ -21,8 +21,10 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <!-- Kill process before build - runs the batch file -->
-  <Target Name="KillProcessBeforeBuild" BeforeTargets="BeforeBuild;Build;Clean;Rebuild;CoreCompile">
+  <!-- Kill process before build - ONLY for command-line builds. NEVER inside Visual Studio:
+       force-killing the app during a VS build races the debugger and causes intermittent
+       "The object invoked has disconnected from its clients" launch failures. -->
+  <Target Name="KillProcessBeforeBuild" BeforeTargets="BeforeBuild;Build;Clean;Rebuild;CoreCompile" Condition="'$(BuildingInsideVisualStudio)' != 'true'">
     <Exec Command="$(ProjectDir)..\kill-customer-process.bat" ContinueOnError="true" IgnoreExitCode="true" />
   </Target>
 

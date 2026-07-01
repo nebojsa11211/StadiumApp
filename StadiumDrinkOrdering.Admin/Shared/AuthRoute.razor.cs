@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Components;
-using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
+using StadiumDrinkOrdering.Shared.Authentication.Models;
 
 namespace StadiumDrinkOrdering.Admin.Shared;
 
 public partial class AuthRoute : ComponentBase, IDisposable
 {
-    [Inject] private IAuthStateService AuthStateService { get; set; } = default!;
+    [Inject] private IAuthenticationStateService AuthStateService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     [Parameter] public RenderFragment ChildContent { get; set; } = default!;
@@ -14,42 +15,44 @@ public partial class AuthRoute : ComponentBase, IDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        // DO NOT call InitializeAsync here - it's already called in App.razor.cs
-        // This prevents multiple initialization calls that can cause loops
-
-        // Wait a moment to ensure App.razor has initialized authentication
-        await Task.Delay(50);
-
-        // Now it's safe to check authentication state
-        isChecking = false;
-
-        // Listen for authentication state changes BEFORE checking authentication
-        // This ensures we don't miss any state updates
+        // App.razor.cs already kicked off InitializeAsync(). Listen for later state
+        // changes (logout / token expiry) BEFORE deciding, so we don't miss any.
         AuthStateService.OnAuthenticationStateChanged += HandleAuthStateChanged;
 
-        // If not authenticated, redirect to login
-        if (!AuthStateService.IsAuthenticated)
+        // Decide based on the actual token, not just the in-memory flag. If the flag
+        // is already true we trust it; otherwise re-validate against the token store.
+        // This recovers from a transient init read (slow JSInterop/session) that would
+        // otherwise wrongly redirect an authenticated user to /login.
+        var isAuthenticated = AuthStateService.IsAuthenticated
+            || await AuthStateService.ValidateAuthenticationAsync();
+
+        isChecking = false;
+
+        if (!isAuthenticated)
         {
             RedirectToLogin();
         }
     }
 
-    private void HandleAuthStateChanged()
+    private void HandleAuthStateChanged(AuthenticationState state)
     {
         // If authentication state changes and user is no longer authenticated, redirect to login
-        if (!AuthStateService.IsAuthenticated)
+        if (!state.IsAuthenticated)
         {
             RedirectToLogin();
         }
         else
         {
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         }
     }
 
     private void RedirectToLogin()
     {
-        var returnUrl = Uri.EscapeDataString(NavigationManager.Uri);
+        // Pass a relative return path (e.g. /orders) so login can send the user back to the
+        // page they actually requested instead of the dashboard.
+        var relativePath = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var returnUrl = Uri.EscapeDataString(relativePath);
         NavigationManager.NavigateTo($"/login?returnUrl={returnUrl}");
     }
 

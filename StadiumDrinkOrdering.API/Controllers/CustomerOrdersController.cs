@@ -69,10 +69,20 @@ public class CustomerOrdersController : ControllerBase
             
             if (eventEntity == null)
             {
-                return BadRequest(new TicketOrderResultDto 
-                { 
-                    Success = false, 
-                    ErrorMessage = "Event not found" 
+                return BadRequest(new TicketOrderResultDto
+                {
+                    Success = false,
+                    ErrorMessage = "Event not found"
+                });
+            }
+
+            // Phase 1 gate: tickets/seats may only be purchased while the event is on sale.
+            if (!EventLifecycle.CanSellTickets(eventEntity.Status))
+            {
+                return BadRequest(new TicketOrderResultDto
+                {
+                    Success = false,
+                    ErrorMessage = "Tickets for this event are not currently on sale."
                 });
             }
 

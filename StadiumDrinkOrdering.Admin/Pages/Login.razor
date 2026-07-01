@@ -1,53 +1,57 @@
 @page "/login"
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Admin.Services
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Admin Login</PageTitle>
+<PageTitle>@L["Login_PageTitle"]</PageTitle>
 
-<div class="container mt-5" id="admin-login-container">
-    <div class="row justify-content-center" id="admin-login-row">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4" id="admin-login-col">
-            <div class="card" id="admin-login-card">
-                <div class="card-header" id="admin-login-header">
-                    <h3 class="text-center" id="admin-login-title">🏟️ Stadium Admin Login</h3>
-                </div>
-                <div class="card-body" id="admin-login-body">
+<div class="console" id="admin-login-container">
+    <div id="admin-login-row" style="display:flex; justify-content:center;">
+        <div id="admin-login-col" style="width:100%; max-width:420px; margin:3rem 0;">
+            <div class="panel" id="admin-login-card">
+                <div class="panel__body" id="admin-login-body">
+                    <div class="console-head__title" id="admin-login-header" style="text-align:center; margin-bottom:1.5rem;">
+                        <span class="eyebrow">@L["Login_StadiumAdmin"]</span>
+                        <h1 id="admin-login-title" style="font-size:1.5rem; margin-bottom:0.35rem;">@L["SignIn"]</h1>
+                        <p>@L["Login_OperationsConsoleAccess"]</p>
+                    </div>
+
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
-                        <div class="alert alert-danger" id="admin-login-error">
+                        <div class="console-alert console-alert--danger" id="admin-login-error">
                             @errorMessage
                         </div>
                     }
-                    
+
                     <form @onsubmit="HandleLogin" id="admin-login-form">
-                        <div class="mb-3" id="admin-login-email-group">
-                            <label class="form-label" for="admin-login-email-input">Email</label>
-                            <input type="email" class="form-control" @bind="email" required id="admin-login-email-input" />
+                        <div class="field" id="admin-login-email-group" style="margin-bottom:1rem;">
+                            <label class="field__label" for="admin-login-email-input">@L["Email"]</label>
+                            <input type="email" class="field__input" @bind="email" required id="admin-login-email-input" />
                         </div>
-                        
-                        <div class="mb-3" id="admin-login-password-group">
-                            <label class="form-label" for="admin-login-password-input">Password</label>
-                            <input type="password" class="form-control" @bind="password" required id="admin-login-password-input" />
+
+                        <div class="field" id="admin-login-password-group" style="margin-bottom:1.25rem;">
+                            <label class="field__label" for="admin-login-password-input">@L["Password"]</label>
+                            <input type="password" class="field__input" @bind="password" required id="admin-login-password-input" />
                         </div>
-                        
-                        <div class="d-grid" id="admin-login-button-group">
-                            <button type="submit" class="btn btn-primary" disabled="@isLoading" id="admin-login-submit-btn">
+
+                        <div id="admin-login-button-group">
+                            <button type="submit" class="pill-btn pill-btn--primary" style="width:100%; justify-content:center;" disabled="@isLoading" id="admin-login-submit-btn">
                                 @if (isLoading)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2" role="status" id="admin-login-spinner"></span>
-                                    <span id="admin-login-loading-text">Logging in...</span>
+                                    <span id="admin-login-loading-text">@L["Login_LoggingIn"]</span>
                                 }
                                 else
                                 {
-                                    <span id="admin-login-button-text">Login</span>
+                                    <span id="admin-login-button-text">@L["Login"]</span>
                                 }
                             </button>
                         </div>
                     </form>
-                    
-                    <div class="mt-3 text-center" id="admin-login-demo-info">
+
+                    <div id="admin-login-demo-info" style="margin-top:1.25rem; text-align:center;">
                         <small class="text-muted" id="admin-login-demo-text">
-                            Use admin@stadium.com/admin123 for demo purposes
+                            @L["Login_DemoCredentialsHint"]
                         </small>
                     </div>
                 </div>
@@ -55,4 +59,3 @@
         </div>
     </div>
 </div>
-

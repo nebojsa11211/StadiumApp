@@ -48,13 +48,17 @@ public class TicketAuthService : ITicketAuthService
                 };
             }
 
-            // Check if event is still valid
-            if (ticket.Event?.EventDate < DateTime.UtcNow.AddHours(-1)) // Allow 1 hour grace period
+            // Gate drink ordering on the event's lifecycle status (Phase 2 only: Active / InProgress).
+            // This is the authoritative source of truth — replaces ad-hoc EventDate math and blocks
+            // both future (not started) and past (ended/cancelled) events.
+            if (ticket.Event == null || !EventLifecycle.CanOrderDrinks(ticket.Event.Status))
             {
                 return new TicketAuthResult
                 {
                     IsSuccess = false,
-                    ErrorMessage = "This event has ended. Drink ordering is no longer available."
+                    ErrorMessage = ticket.Event != null
+                        ? EventLifecycle.OrderingBlockedReason(ticket.Event.Status)
+                        : "This ticket is not linked to a valid event."
                 };
             }
 
@@ -125,7 +129,11 @@ public class TicketAuthService : ITicketAuthService
     public async Task<bool> IsTicketValidForOrderingAsync(string qrCodeToken)
     {
         var session = await GetActiveSessionByTokenAsync(qrCodeToken);
-        return session != null && session.IsActive && session.ExpiresAt > DateTime.UtcNow;
+        return session != null
+            && session.IsActive
+            && session.ExpiresAt > DateTime.UtcNow
+            && session.Ticket?.Event != null
+            && EventLifecycle.CanOrderDrinks(session.Ticket.Event.Status);
     }
 
     public async Task<TicketSession?> GetTicketSessionAsync(string sessionId)

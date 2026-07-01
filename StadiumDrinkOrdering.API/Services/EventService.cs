@@ -13,10 +13,32 @@ public interface IEventService
     Task<bool> DeleteEventAsync(int id);
     Task<bool> ActivateEventAsync(int id);
     Task<bool> DeactivateEventAsync(int id);
+    Task<EventStatusTransitionResult> TransitionEventStatusAsync(int id, EventStatus newStatus);
     Task<EventAnalyticsResponse?> GetEventAnalyticsAsync(int id);
     Task<IEnumerable<Event>> GetActiveEventsAsync();
     Task<IEnumerable<Event>> GetUpcomingEventsAsync();
     Task<IEnumerable<Event>> GetPastEventsAsync();
+}
+
+/// <summary>
+/// Outcome of an attempted event status transition.
+/// </summary>
+public class EventStatusTransitionResult
+{
+    public bool Success { get; init; }
+    public bool NotFound { get; init; }
+    public string? ErrorMessage { get; init; }
+    public EventStatus? PreviousStatus { get; init; }
+    public EventStatus? NewStatus { get; init; }
+
+    public static EventStatusTransitionResult Ok(EventStatus from, EventStatus to) =>
+        new() { Success = true, PreviousStatus = from, NewStatus = to };
+
+    public static EventStatusTransitionResult Missing() =>
+        new() { Success = false, NotFound = true, ErrorMessage = "Event not found." };
+
+    public static EventStatusTransitionResult Invalid(string message, EventStatus from) =>
+        new() { Success = false, ErrorMessage = message, PreviousStatus = from };
 }
 
 public class EventService : IEventService
@@ -38,7 +60,7 @@ public class EventService : IEventService
             var sql = @"
                 SELECT
                     e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
-                    e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""CreatedAt"",
+                    e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
                     e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
                 FROM ""Events"" e
                 {0}
@@ -76,6 +98,11 @@ public class EventService : IEventService
     {
         eventItem.CreatedAt = DateTime.UtcNow;
         eventItem.UpdatedAt = DateTime.UtcNow;
+
+        // Initial lifecycle state derives from whether the event is published on creation:
+        // a published event is immediately on sale; an unpublished one stays in planning.
+        if (eventItem.Status == EventStatus.Planned)
+            eventItem.Status = eventItem.IsActive ? EventStatus.OnSale : EventStatus.Planned;
 
         _context.Events.Add(eventItem);
         await _context.SaveChangesAsync();
@@ -145,9 +172,12 @@ public class EventService : IEventService
             return false;
 
         eventItem.IsActive = true;
+        // Publishing an event in planning puts it on sale (Phase 1).
+        if (eventItem.Status == EventStatus.Planned)
+            eventItem.Status = EventStatus.OnSale;
         eventItem.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
-        
+
         _logger.LogInformation("Activated event: {EventName} (ID: {EventId})", eventItem.EventName, id);
         return true;
     }
@@ -159,11 +189,60 @@ public class EventService : IEventService
             return false;
 
         eventItem.IsActive = false;
+        // Unpublishing a not-yet-started, on-sale event returns it to planning (pulls it from sale).
+        if (eventItem.Status == EventStatus.OnSale)
+            eventItem.Status = EventStatus.Planned;
         eventItem.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
-        
+
         _logger.LogInformation("Deactivated event: {EventName} (ID: {EventId})", eventItem.EventName, id);
         return true;
+    }
+
+    public async Task<EventStatusTransitionResult> TransitionEventStatusAsync(int id, EventStatus newStatus)
+    {
+        var eventItem = await _context.Events.FindAsync(id);
+        if (eventItem == null)
+            return EventStatusTransitionResult.Missing();
+
+        var current = eventItem.Status;
+        if (!EventLifecycle.CanTransition(current, newStatus))
+        {
+            var allowed = string.Join(", ", EventLifecycle.AllowedNextStatuses(current));
+            var message = string.IsNullOrEmpty(allowed)
+                ? $"Event is in terminal state '{current}' and its status can no longer change."
+                : $"Cannot move event from '{current}' to '{newStatus}'. Allowed next states: {allowed}.";
+            _logger.LogWarning("Rejected status transition {From} -> {To} for event {EventId}", current, newStatus, id);
+            return EventStatusTransitionResult.Invalid(message, current);
+        }
+
+        eventItem.Status = newStatus;
+        eventItem.UpdatedAt = DateTime.UtcNow;
+
+        // Keep the published/visible flag consistent with the lifecycle: live & sellable states
+        // are visible; terminal states drop out of "active"/"upcoming" listings.
+        if (EventLifecycle.IsTerminal(newStatus))
+            eventItem.IsActive = false;
+        else if (newStatus is EventStatus.OnSale or EventStatus.Active or EventStatus.InProgress)
+            eventItem.IsActive = true;
+
+        // Phase 3 closure: invalidate all active ticket sessions so no new drink orders are possible.
+        if (EventLifecycle.IsTerminal(newStatus))
+        {
+            var activeSessions = await _context.TicketSessions
+                .Where(s => s.EventId == id && s.IsActive)
+                .ToListAsync();
+            foreach (var session in activeSessions)
+                session.IsActive = false;
+
+            if (activeSessions.Count > 0)
+                _logger.LogInformation("Invalidated {Count} active ticket session(s) while closing event {EventId}",
+                    activeSessions.Count, id);
+        }
+
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Event {EventId} status transition: {From} -> {To}", id, current, newStatus);
+        return EventStatusTransitionResult.Ok(current, newStatus);
     }
 
     public Task<EventAnalyticsResponse?> GetEventAnalyticsAsync(int id)
@@ -236,7 +315,7 @@ public class EventService : IEventService
         var sql = @"
             SELECT
                 e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
-                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""CreatedAt"",
+                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
                 e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
             FROM ""Events"" e
             WHERE e.""IsActive"" = true
@@ -255,7 +334,7 @@ public class EventService : IEventService
         var sql = @"
             SELECT
                 e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
-                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""CreatedAt"",
+                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
                 e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
             FROM ""Events"" e
             WHERE e.""IsActive"" = true AND e.""EventDate"" > {0}
@@ -274,7 +353,7 @@ public class EventService : IEventService
         var sql = @"
             SELECT
                 e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
-                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""CreatedAt"",
+                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
                 e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
             FROM ""Events"" e
             WHERE e.""EventDate"" < {0}

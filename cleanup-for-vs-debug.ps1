@@ -41,9 +41,11 @@ function Stop-ProcessSafely {
 # Kill all dotnet processes (includes both API and Admin)
 Stop-ProcessSafely -ProcessName "dotnet" -DisplayName "dotnet"
 
-# Also kill any Visual Studio processes that might be related
+# Kill the app apphost exes by name (these — NOT dotnet.exe — are what lock the build output)
 Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.API" -DisplayName "API"
 Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.Admin" -DisplayName "Admin"
+Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.Customer" -DisplayName "Customer"
+Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.Staff" -DisplayName "Staff"
 
 # Check for any remaining processes on key ports
 Write-Host ""

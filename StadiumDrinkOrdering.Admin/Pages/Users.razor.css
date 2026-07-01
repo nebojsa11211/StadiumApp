@@ -7,14 +7,6 @@
     to { transform: rotate(360deg); }
 }
 
-.fs-1 {
-    font-size: 2.5rem !important;
-}
-
-.opacity-75 {
-    opacity: 0.75;
-}
-
 /* ==== ADMIN USERS MODAL - PERFECT CENTERING ==== */
 #admin-users-modal {
     position: fixed !important;

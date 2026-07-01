@@ -298,6 +298,43 @@ public class EventController : ControllerBase
     }
 
     /// <summary>
+    /// Transition an event to a new lifecycle status (e.g. OnSale → Active → InProgress → Completed).
+    /// Validated against the allowed state machine; closing an event invalidates its ticket sessions.
+    /// </summary>
+    [HttpPost("{id}/status")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<EventDto>> TransitionStatus(int id, [FromBody] TransitionEventStatusRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _eventService.TransitionEventStatusAsync(id, request.NewStatus);
+            if (result.NotFound)
+            {
+                return NotFound($"Event with ID {id} not found");
+            }
+
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.ErrorMessage });
+            }
+
+            var updated = await _eventService.GetEventByIdAsync(id);
+            return Ok(MapEventToDto(updated!));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error transitioning status for event {EventId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
     /// Maps Event entity to EventDto
     /// </summary>
     private EventDto MapEventToDto(Event evt)
@@ -325,7 +362,12 @@ public class EventController : ControllerBase
             AvailableSeats = Math.Max(0, evt.TotalSeats - soldSeats),
             BasePrice = evt.BaseTicketPrice ?? 0m,
             IsActive = evt.IsActive,
-            CreatedAt = evt.CreatedAt
+            CreatedAt = evt.CreatedAt,
+            Status = evt.Status,
+            StatusName = evt.Status.ToString(),
+            Phase = EventLifecycle.PhaseOf(evt.Status),
+            CanSellTickets = EventLifecycle.CanSellTickets(evt.Status),
+            CanOrderDrinks = EventLifecycle.CanOrderDrinks(evt.Status)
         };
     }
 }

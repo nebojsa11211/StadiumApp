@@ -1,5 +1,6 @@
 @* @using StadiumDrinkOrdering.Admin.Components.Shared - Components removed *@
 @inherits LayoutComponentBase
+@inject IStringLocalizer<SharedResources> L
 
 <PageTitle>StadiumDrinkOrdering.Admin</PageTitle>
 
@@ -12,14 +13,14 @@
         <div class="top-row px-4" id="admin-layout-top-row">
             <div class="d-flex align-center justify-between w-full">
                 <div class="d-flex align-center gap-4">
-                    <h6 class="mb-0 text-primary">Admin Dashboard</h6>
+                    <h6 class="mb-0 text-primary">@L["MainLayout_AdminDashboard"]</h6>
                     <div class="server-time-container">
                         <div class="server-time-display">
                             <div class="time-icon">
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="time-content">
-                                <div class="time-label">Server Time</div>
+                                <div class="time-label">@L["MainLayout_ServerTime"]</div>
                                 <div class="time-value" id="server-time-value">@currentTime</div>
                             </div>
                             <div class="time-status-indicator online"></div>
@@ -36,11 +37,11 @@
                                 <small>👤 @AuthStateService.UserEmail</small>
                             </span>
                             <button class="btn btn-outline-secondary btn-sm" @onclick="HandleLogout" id="admin-layout-logout-btn">
-                                <i class="fas fa-sign-out-alt"></i> Logout
+                                <i class="fas fa-sign-out-alt"></i> @L["Logout"]
                             </button>
                         </div>
                     }
-                    <a href="https://docs.microsoft.com/aspnet/" target="_blank" id="admin-layout-about-link" class="btn-link">Help</a>
+                    <a href="https://docs.microsoft.com/aspnet/" target="_blank" id="admin-layout-about-link" class="btn-link">@L["Help"]</a>
                 </div>
             </div>
         </div>

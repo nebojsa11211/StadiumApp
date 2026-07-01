@@ -23,7 +23,14 @@ public class Event
     public int TotalSeats { get; set; }
     
     public bool IsActive { get; set; } = true;
-    
+
+    /// <summary>
+    /// Authoritative lifecycle state for the event. Drives what actions are permitted
+    /// (ticket sales, drink ordering, analytics). See <see cref="EventLifecycle"/>.
+    /// <c>IsActive</c> is kept as a separate "published/visible" flag.
+    /// </summary>
+    public EventStatus Status { get; set; } = EventStatus.Planned;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public DateTime? UpdatedAt { get; set; }

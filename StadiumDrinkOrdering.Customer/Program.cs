@@ -6,7 +6,11 @@ using StadiumDrinkOrdering.Customer.Services;
 using StadiumDrinkOrdering.Shared.Services;
 using StadiumDrinkOrdering.Shared.Authentication.Extensions;
 using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
+using StadiumDrinkOrdering.Shared.Configuration;
 using System.Globalization;
+
+// Load the gitignored .env file (NoClobber) before building configuration.
+AppConfiguration.LoadDotEnvFile();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,11 +38,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 });
 
-// Determine API base URL
-var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-var apiBaseUrl = containerEnv == "true"
-    ? "https://api:8443"
-    : builder.Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+// Single source of truth for the API endpoint (see AppConfiguration.ResolveApiBaseUrl).
+var apiBaseUrl = AppConfiguration.ResolveApiBaseUrl(builder.Configuration);
+Console.WriteLine($"🌐 API base URL: {apiBaseUrl}");
 
 // Add HTTP client for legacy ApiService
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>

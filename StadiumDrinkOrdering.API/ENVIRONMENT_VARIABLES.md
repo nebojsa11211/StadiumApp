@@ -23,11 +23,22 @@ All sensitive configuration has been moved from hardcoded values to environment 
 | `DB_USERNAME` | Database username | No | `postgres.your-project` |
 | `DB_PASSWORD` | Database password | No | `your-secure-password` |
 
-**Connection String Priority:**
-1. `ConnectionStrings__DefaultConnection` (if set)
-2. Individual DB_* variables (if DB_HOST, DB_USERNAME, DB_PASSWORD are all set)
-3. Configuration file with placeholder substitution
-4. Development fallback (SQLite)
+**Database selection (current behaviour):**
+
+The API talks to one of **two** databases, chosen by `Database:Provider`:
+
+| `Database:Provider` | Database used | Connection string source |
+|---------------------|---------------|--------------------------|
+| `LocalPostgres` (default) | Local Postgres on `localhost:5432` | `ConnectionStrings:LocalPostgres` in `appsettings.json` (no secret) |
+| `Supabase` | Supabase cloud Postgres | `ConnectionStrings:Supabase`, supplied by the gitignored `.env` as `ConnectionStrings__Supabase` |
+
+**Precedence:**
+1. A full `ConnectionStrings__DefaultConnection` (e.g. set by `docker-compose.yml`, production, or CI) **always wins** and bypasses the provider switch.
+2. Otherwise the connection string named by `Database:Provider` is used.
+
+**How to switch locally:** change `Database:Provider` in `appsettings.Development.json`, **or** set `Database__Provider=Supabase` in `.env`. The Supabase connection string (with its password) must be present in `.env` as `ConnectionStrings__Supabase`.
+
+> Note: there is **no SQLite fallback** — this EF Core model is PostgreSQL-only. Local Postgres connection strings must include `SSL Mode=Disable` (the local container has no TLS; without it Npgsql defaults to `Prefer` and the connection times out).
 
 ### JWT Authentication
 

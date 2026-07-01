@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -364,5 +364,2646 @@
   </data>
   <data name="SetupStep4" xml:space="preserve">
     <value>Pratite performanse i zadovoljstvo kupaca</value>
+  </data>
+
+  <!-- Dashboard Sidebar Navigation -->
+  <data name="Nav_Dashboard" xml:space="preserve">
+    <value>Nadzorna ploča</value>
+  </data>
+  <data name="Nav_Orders" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="Nav_Drinks" xml:space="preserve">
+    <value>Pića</value>
+  </data>
+  <data name="Nav_Analytics" xml:space="preserve">
+    <value>Analitika</value>
+  </data>
+  <data name="Nav_CustomerAnalytics" xml:space="preserve">
+    <value>Korisnička analitika</value>
+  </data>
+  <data name="Nav_GroupStadium" xml:space="preserve">
+    <value>Upravljanje stadionom</value>
+  </data>
+  <data name="Nav_Events" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="Nav_Tickets" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="Nav_Overview" xml:space="preserve">
+    <value>Pregled</value>
+  </data>
+  <data name="Nav_DrawingTool" xml:space="preserve">
+    <value>Alat za crtanje</value>
+  </data>
+  <data name="Nav_GroupSystem" xml:space="preserve">
+    <value>Sustav</value>
+  </data>
+  <data name="Nav_Logs" xml:space="preserve">
+    <value>Zapisi</value>
+  </data>
+  <data name="Nav_Database" xml:space="preserve">
+    <value>Baza podataka</value>
+  </data>
+  <data name="Nav_Security" xml:space="preserve">
+    <value>Sigurnost</value>
+  </data>
+  <data name="Sidebar_LoggingTitle" xml:space="preserve">
+    <value>Centralizirani Logging</value>
+  </data>
+  <data name="Sidebar_LastPublished" xml:space="preserve">
+    <value>Zadnja objava:</value>
+  </data>
+
+  <!-- AUTO-GENERATED PAGE LOCALIZATION KEYS -->
+  <data name="Drawing_PageTitle" xml:space="preserve">
+    <value>Alat za crtanje stadiona - Admin</value>
+  </data>
+  <data name="Drawing_MainTitle" xml:space="preserve">
+    <value>🎨 Alat za crtanje stadiona</value>
+  </data>
+  <data name="Drawing_Subtitle" xml:space="preserve">
+    <value>Crtajte slojeve preko slike stadiona za stvaranje preklapanja zona, napomena i prilagođenih rasporeda.</value>
+  </data>
+  <data name="Drawing_ImageTitle" xml:space="preserve">
+    <value>📷 Slika stadiona</value>
+  </data>
+  <data name="Drawing_UploadHint" xml:space="preserve">
+    <value>Učitajte sliku stadiona da biste počeli s crtanjem</value>
+  </data>
+  <data name="Drawing_BlueprintLoaded" xml:space="preserve">
+    <value>✅ Plan stadiona učitan</value>
+  </data>
+  <data name="Drawing_ClearBtn" xml:space="preserve">
+    <value>Očisti</value>
+  </data>
+  <data name="Drawing_ReplaceHint" xml:space="preserve">
+    <value>Ako je potrebno, učitajte drugačiju sliku</value>
+  </data>
+  <data name="Drawing_ToolsTitle" xml:space="preserve">
+    <value>🖌️ Alati za crtanje</value>
+  </data>
+  <data name="Drawing_SelectBtn" xml:space="preserve">
+    <value>👆 Odaberite/Premjestite</value>
+  </data>
+  <data name="Drawing_SectorTitle" xml:space="preserve">
+    <value>🎯 Alati za sektore</value>
+  </data>
+  <data name="Drawing_CreateSectorBtn" xml:space="preserve">
+    <value>➕ Napravite sektor</value>
+  </data>
+  <data name="Drawing_RectangleShape" xml:space="preserve">
+    <value>◻️ Pravokutnik</value>
+  </data>
+  <data name="Drawing_TriangleShape" xml:space="preserve">
+    <value>🔺 Trokut (3 klikanja)</value>
+  </data>
+  <data name="Drawing_RhombusShape" xml:space="preserve">
+    <value>🔷 Romb (4 klikanja)</value>
+  </data>
+  <data name="Drawing_PolygonShape" xml:space="preserve">
+    <value>⬡ Prilagođeni poligon (više klikanja)</value>
+  </data>
+  <data name="Drawing_CircularShape" xml:space="preserve">
+    <value>🍕 Kružni sektor (Uskoro)</value>
+  </data>
+  <data name="Drawing_ColorLabel" xml:space="preserve">
+    <value>Boja</value>
+  </data>
+  <data name="Drawing_LineWidthLabel" xml:space="preserve">
+    <value>Debljina linije: {0} px</value>
+  </data>
+  <data name="Drawing_OpacityLabel" xml:space="preserve">
+    <value>Neprozirnost: {0}%</value>
+  </data>
+  <data name="Drawing_ClearLayerBtn" xml:space="preserve">
+    <value>🗑️ Očisti trenutni sloj</value>
+  </data>
+  <data name="Drawing_ExportDrawingBtn" xml:space="preserve">
+    <value>💾 Izvezi crtež</value>
+  </data>
+  <data name="Drawing_ExportJsonBtn" xml:space="preserve">
+    <value>📄 Izvezi JSON</value>
+  </data>
+  <data name="Drawing_SaveSectorsBtn" xml:space="preserve">
+    <value>💾 Spremi raspored sektora</value>
+  </data>
+  <data name="Drawing_CurrentTool" xml:space="preserve">
+    <value>Trenutni alat</value>
+  </data>
+  <data name="Drawing_CurrentLayer" xml:space="preserve">
+    <value>Trenutni sloj</value>
+  </data>
+  <data name="Drawing_UnsavedChangesTitle" xml:space="preserve">
+    <value>⚠️ Nespremljene promjene</value>
+  </data>
+  <data name="Drawing_UnsavedChangesMsg" xml:space="preserve">
+    <value>Pozicija ili veličina sektora je promijenjena</value>
+  </data>
+  <data name="Drawing_SaveBtn" xml:space="preserve">
+    <value>💾 Spremi promjene</value>
+  </data>
+  <data name="Drawing_DiscardBtn" xml:space="preserve">
+    <value>❌ Odbaci</value>
+  </data>
+  <data name="Drawing_RectangleInstructions" xml:space="preserve">
+    <value>Kliknite i povucite da definirate granice pravokutnog sektora</value>
+  </data>
+  <data name="Drawing_TriangleInstructions" xml:space="preserve">
+    <value>Kliknite 3 točke da biste napravili trokutni sektor (automatski se dovršava)</value>
+  </data>
+  <data name="Drawing_RhombusInstructions" xml:space="preserve">
+    <value>Kliknite 4 točke da biste napravili sektor romba</value>
+  </data>
+  <data name="Drawing_PolygonInstructions" xml:space="preserve">
+    <value>Kliknite više točaka da biste napravili prilagođeni poligon. Dvostruko kliknite da završite (min 3 točke)</value>
+  </data>
+  <data name="Drawing_DefaultInstructions" xml:space="preserve">
+    <value>Odaberite vrstu oblika iz padajućeg izbornika gore</value>
+  </data>
+  <data name="NavMenu_NavigationMenuTitle" xml:space="preserve">
+    <value>Navigacijski izbornik</value>
+  </data>
+  <data name="NavMenu_Dashboard" xml:space="preserve">
+    <value>Nadzorna ploča</value>
+  </data>
+  <data name="NavMenu_Orders" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="NavMenu_Drinks" xml:space="preserve">
+    <value>Pića</value>
+  </data>
+  <data name="NavMenu_Analytics" xml:space="preserve">
+    <value>Analitika</value>
+  </data>
+  <data name="NavMenu_CustomerAnalytics" xml:space="preserve">
+    <value>Analitika kupaca</value>
+  </data>
+  <data name="NavMenu_Events" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="NavMenu_Tickets" xml:space="preserve">
+    <value>Ulaznice</value>
+  </data>
+  <data name="NavMenu_BartenderDashboard" xml:space="preserve">
+    <value>Nadzorna ploča barista</value>
+  </data>
+  <data name="NavMenu_StadiumManagement" xml:space="preserve">
+    <value>UPRAVLJANJE STADIONOM</value>
+  </data>
+  <data name="NavMenu_StructureManagement" xml:space="preserve">
+    <value>Upravljanje strukturom</value>
+  </data>
+  <data name="NavMenu_StadiumOverview" xml:space="preserve">
+    <value>Pregled stadiona</value>
+  </data>
+  <data name="NavMenu_ImportGuide" xml:space="preserve">
+    <value>Vodič za uvoz</value>
+  </data>
+  <data name="NavMenu_DrawingTool" xml:space="preserve">
+    <value>Alat za crtanje</value>
+  </data>
+  <data name="NavMenu_SystemManagement" xml:space="preserve">
+    <value>UPRAVLJANJE SUSTAVOM</value>
+  </data>
+  <data name="NavMenu_UserManagement" xml:space="preserve">
+    <value>Upravljanje korisnicima</value>
+  </data>
+  <data name="NavMenu_SystemLogs" xml:space="preserve">
+    <value>Sustav evidencije</value>
+  </data>
+  <data name="NavMenu_DatabaseExplorer" xml:space="preserve">
+    <value>Istraživač baze podataka</value>
+  </data>
+  <data name="MainLayout_AdminDashboard" xml:space="preserve">
+    <value>Administratorska nadzorna ploča</value>
+  </data>
+  <data name="MainLayout_ServerTime" xml:space="preserve">
+    <value>Vrijeme poslužitelja</value>
+  </data>
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Prijava administratora</value>
+  </data>
+  <data name="Login_StadiumAdmin" xml:space="preserve">
+    <value>Stadion admin</value>
+  </data>
+  <data name="Login_OperationsConsoleAccess" xml:space="preserve">
+    <value>Pristup konzoli operacija</value>
+  </data>
+  <data name="Login_LoggingIn" xml:space="preserve">
+    <value>Prijava u tijeku...</value>
+  </data>
+  <data name="Login_DemoCredentialsHint" xml:space="preserve">
+    <value>Koristite admin@stadium.com/admin123 u demonstracijske svrhe</value>
+  </data>
+  <data name="SectorEdit_CreateNewTitle" xml:space="preserve">
+    <value>Kreiraj novi sektor</value>
+  </data>
+  <data name="SectorEdit_EditSectorTitle" xml:space="preserve">
+    <value>Uredi sektor: {0}</value>
+  </data>
+  <data name="SectorEdit_SectorCodeLabel" xml:space="preserve">
+    <value>Kod sektora *</value>
+  </data>
+  <data name="SectorEdit_SectorCodePlaceholder" xml:space="preserve">
+    <value>npr. A1, VIP1</value>
+  </data>
+  <data name="SectorEdit_SectorCodeHint" xml:space="preserve">
+    <value>Jedinstveni identifikator</value>
+  </data>
+  <data name="SectorEdit_SectorNameLabel" xml:space="preserve">
+    <value>Naziv sektora *</value>
+  </data>
+  <data name="SectorEdit_SectorNamePlaceholder" xml:space="preserve">
+    <value>npr. Tribina A1, VIP sektor</value>
+  </data>
+  <data name="SectorEdit_SectorNameHint" xml:space="preserve">
+    <value>Naziv koji se prikazuje kupcima</value>
+  </data>
+  <data name="SectorEdit_SeatingModeLabel" xml:space="preserve">
+    <value>Način raspoređivanja sedišta</value>
+  </data>
+  <data name="SectorEdit_UniformModeLabel" xml:space="preserve">
+    <value>Ujednačeno (ista sedišta po redu)</value>
+  </data>
+  <data name="SectorEdit_UniformModeHint" xml:space="preserve">
+    <value>Svi redovi će imati isti broj sedišta</value>
+  </data>
+  <data name="SectorEdit_VariableModeLabel" xml:space="preserve">
+    <value>Promjenjivo (različita sedišta po redu)</value>
+  </data>
+  <data name="SectorEdit_VariableModeHint" xml:space="preserve">
+    <value>Definirajte različite brojeve sedišta za rasponе redova</value>
+  </data>
+  <data name="SectorEdit_RowsLabel" xml:space="preserve">
+    <value>Broj redova *</value>
+  </data>
+  <data name="SectorEdit_RowsHint" xml:space="preserve">
+    <value>1-100 redova</value>
+  </data>
+  <data name="SectorEdit_SeatsPerRowLabel" xml:space="preserve">
+    <value>Sedišta po redu *</value>
+  </data>
+  <data name="SectorEdit_SeatsPerRowHint" xml:space="preserve">
+    <value>1-200 sedišta</value>
+  </data>
+  <data name="SectorEdit_TotalSeatsLabel" xml:space="preserve">
+    <value>Ukupno sedišta</value>
+  </data>
+  <data name="SectorEdit_TotalSeatsCalcAuto" xml:space="preserve">
+    <value>Izračunato automatski</value>
+  </data>
+  <data name="SectorEdit_TotalSeatsCalcVariable" xml:space="preserve">
+    <value>Izračunato iz obrazaca redova ispod</value>
+  </data>
+  <data name="SectorEdit_RowPatternsLabel" xml:space="preserve">
+    <value>Obrasci redova</value>
+  </data>
+  <data name="SectorEdit_TableFromRow" xml:space="preserve">
+    <value>Od reda</value>
+  </data>
+  <data name="SectorEdit_TableToRow" xml:space="preserve">
+    <value>Do reda</value>
+  </data>
+  <data name="SectorEdit_TableSeatsPerRow" xml:space="preserve">
+    <value>Sedišta/Red</value>
+  </data>
+  <data name="SectorEdit_TableSubtotal" xml:space="preserve">
+    <value>Međusuma</value>
+  </data>
+  <data name="SectorEdit_TableAction" xml:space="preserve">
+    <value>Radnja</value>
+  </data>
+  <data name="SectorEdit_TableSeatUnit" xml:space="preserve">
+    <value>sedišta</value>
+  </data>
+  <data name="SectorEdit_NoRowPatterns" xml:space="preserve">
+    <value>Nema definiranih obrazaca redova. Kliknite "Dodaj raspon redova" za početak.</value>
+  </data>
+  <data name="SectorEdit_AddRowPattern" xml:space="preserve">
+    <value>Dodaj raspon redova</value>
+  </data>
+  <data name="SectorEdit_SectorTypeLabel" xml:space="preserve">
+    <value>Vrsta sektora</value>
+  </data>
+  <data name="SectorEdit_TypeStandard" xml:space="preserve">
+    <value>Standardno</value>
+  </data>
+  <data name="SectorEdit_TypeVip" xml:space="preserve">
+    <value>VIP</value>
+  </data>
+  <data name="SectorEdit_TypeWheelchair" xml:space="preserve">
+    <value>Pristupačno invalidskim kolicima</value>
+  </data>
+  <data name="SectorEdit_TypePremium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="SectorEdit_TypeFamily" xml:space="preserve">
+    <value>Obiteljski sektor</value>
+  </data>
+  <data name="SectorEdit_SectorTypeHint" xml:space="preserve">
+    <value>Klasifikacija za određivanje cijene i pristupa</value>
+  </data>
+  <data name="SectorEdit_DisplayColorLabel" xml:space="preserve">
+    <value>Boja prikaza</value>
+  </data>
+  <data name="SectorEdit_DisplayColorTooltip" xml:space="preserve">
+    <value>Odaberite boju sektora</value>
+  </data>
+  <data name="SectorEdit_ColorPlaceholder" xml:space="preserve">
+    <value>#007bff</value>
+  </data>
+  <data name="SectorEdit_DisplayColorHint" xml:space="preserve">
+    <value>Vizualna boja na karti stadiona</value>
+  </data>
+  <data name="SectorEdit_PositionSizeLabel" xml:space="preserve">
+    <value>Položaj i veličina</value>
+  </data>
+  <data name="SectorEdit_PositionLeft" xml:space="preserve">
+    <value>Lijevo</value>
+  </data>
+  <data name="SectorEdit_PositionTop" xml:space="preserve">
+    <value>Gore</value>
+  </data>
+  <data name="SectorEdit_PositionWidth" xml:space="preserve">
+    <value>Širina</value>
+  </data>
+  <data name="SectorEdit_PositionHeight" xml:space="preserve">
+    <value>Visina</value>
+  </data>
+  <data name="SectorEdit_PositionAdjustHint" xml:space="preserve">
+    <value>Koristite alat Odaberi/Pomakni na platnu za prilagodbu položaja</value>
+  </data>
+  <data name="SectorEdit_CreatedLabel" xml:space="preserve">
+    <value>Kreirano</value>
+  </data>
+  <data name="SectorEdit_ModifiedLabel" xml:space="preserve">
+    <value>Izmijenjeno</value>
+  </data>
+  <data name="SectorEdit_DeleteButton" xml:space="preserve">
+    <value>Obriši sektor</value>
+  </data>
+  <data name="SectorEdit_PreviewButton" xml:space="preserve">
+    <value>Pregledaj sektor</value>
+  </data>
+  <data name="SectorEdit_PreviewHiddenButton" xml:space="preserve">
+    <value>Sakrij pregled</value>
+  </data>
+  <data name="SectorEdit_CancelButton" xml:space="preserve">
+    <value>Otkaži</value>
+  </data>
+  <data name="SectorEdit_SaveButton" xml:space="preserve">
+    <value>Spremi sektor</value>
+  </data>
+  <data name="SectorEdit_PreviewTitle" xml:space="preserve">
+    <value>Pregled sektora: {0}</value>
+  </data>
+  <data name="SectorEdit_PreviewInfo" xml:space="preserve">
+    <value>Informacije o sektoru: {0}</value>
+  </data>
+  <data name="SectorEdit_PreviewField" xml:space="preserve">
+    <value>⬇️ POLJE / POZORNICA ⬇️</value>
+  </data>
+  <data name="SectorEdit_PreviewRow" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="SectorEdit_PreviewSeats" xml:space="preserve">
+    <value>sedišta</value>
+  </data>
+  <data name="SectorEdit_PreviewSeatTooltip" xml:space="preserve">
+    <value>Red {0}, Sjedište {1}</value>
+  </data>
+  <data name="SectorEdit_PreviewLegend" xml:space="preserve">
+    <value>Legenda</value>
+  </data>
+  <data name="SectorEdit_PreviewSeatType" xml:space="preserve">
+    <value>{0} Sjedište</value>
+  </data>
+  <data name="SectorEdit_PreviewClose" xml:space="preserve">
+    <value>Zatvori pregled</value>
+  </data>
+  <data name="SectorEdit_ErrorCodeRequired" xml:space="preserve">
+    <value>Kod sektora je obavezan</value>
+  </data>
+  <data name="SectorEdit_ErrorCodeExists" xml:space="preserve">
+    <value>Kod sektora već postoji</value>
+  </data>
+  <data name="SectorEdit_ErrorNameRequired" xml:space="preserve">
+    <value>Naziv sektora je obavezan</value>
+  </data>
+  <data name="SectorEdit_ErrorRowsRange" xml:space="preserve">
+    <value>Redovi moraju biti između 1 i 100</value>
+  </data>
+  <data name="SectorEdit_ErrorSeatsRange" xml:space="preserve">
+    <value>Sedišta po redu moraju biti između 1 i 200</value>
+  </data>
+  <data name="SectorDetail_Loading" xml:space="preserve">
+    <value>Učitavanje detalja sektora...</value>
+  </data>
+  <data name="SectorDetail_TotalSeatsLabel" xml:space="preserve">
+    <value>Ukupno sedišta</value>
+  </data>
+  <data name="SectorDetail_ActiveLabel" xml:space="preserve">
+    <value>Aktivna</value>
+  </data>
+  <data name="SectorDetail_InactiveLabel" xml:space="preserve">
+    <value>Neaktivna</value>
+  </data>
+  <data name="SectorDetail_NoSeats" xml:space="preserve">
+    <value>Nije pronađeno sedišta za ovaj sektor.</value>
+  </data>
+  <data name="SectorDetail_SeatTooltip" xml:space="preserve">
+    <value>Red {0}, Sjedište {1}</value>
+  </data>
+  <data name="StructHelp_PageTitle" xml:space="preserve">
+    <value>Vodič za uvoz strukture stadiona</value>
+  </data>
+  <data name="StructHelp_MainTitle" xml:space="preserve">
+    <value>📚 Vodič za uvoz strukture stadiona</value>
+  </data>
+  <data name="StructHelp_BackButton" xml:space="preserve">
+    <value>Nazad na upravljanje strukturom</value>
+  </data>
+  <data name="StructHelp_QuickNav" xml:space="preserve">
+    <value>📖 Brza navigacija</value>
+  </data>
+  <data name="StructHelp_NavOverview" xml:space="preserve">
+    <value>Pregled</value>
+  </data>
+  <data name="StructHelp_NavJsonStructure" xml:space="preserve">
+    <value>JSON struktura</value>
+  </data>
+  <data name="StructHelp_NavSamples" xml:space="preserve">
+    <value>Primjeri datoteka</value>
+  </data>
+  <data name="StructHelp_NavValidation" xml:space="preserve">
+    <value>Validacija</value>
+  </data>
+  <data name="StructHelp_HierarchyTitle" xml:space="preserve">
+    <value>🏟️ Hijerarhija strukture stadiona</value>
+  </data>
+  <data name="StructHelp_KeyConcepts" xml:space="preserve">
+    <value>📝 Ključni koncepti:</value>
+  </data>
+  <data name="StructHelp_ConceptStadium" xml:space="preserve">
+    <value>Stadion</value>
+  </data>
+  <data name="StructHelp_ConceptStadiumDesc" xml:space="preserve">
+    <value>Korijen kontejnera s imenom i opisom</value>
+  </data>
+  <data name="StructHelp_ConceptTribunes" xml:space="preserve">
+    <value>Tribune</value>
+  </data>
+  <data name="StructHelp_ConceptTribunesDesc" xml:space="preserve">
+    <value>4 smjera (N, J, I, Z)</value>
+  </data>
+  <data name="StructHelp_ConceptRings" xml:space="preserve">
+    <value>Prstenovi</value>
+  </data>
+  <data name="StructHelp_ConceptRingsDesc" xml:space="preserve">
+    <value>Vertikalne razine (1-5)</value>
+  </data>
+  <data name="StructHelp_ConceptSectors" xml:space="preserve">
+    <value>Sektori</value>
+  </data>
+  <data name="StructHelp_ConceptSectorsDesc" xml:space="preserve">
+    <value>Područja sjeda u prstenovima</value>
+  </data>
+  <data name="StructHelp_ConceptSeats" xml:space="preserve">
+    <value>Sjedala</value>
+  </data>
+  <data name="StructHelp_ConceptSeatsDesc" xml:space="preserve">
+    <value>Automatski generirano na osnovu redaka × sjedala po redu</value>
+  </data>
+  <data name="StructHelp_JsonStructureTitle" xml:space="preserve">
+    <value>📋 Potpuna JSON struktura</value>
+  </data>
+  <data name="StructHelp_CopyButton" xml:space="preserve">
+    <value>Kopiraj predložak</value>
+  </data>
+  <data name="StructHelp_FieldDescTitle" xml:space="preserve">
+    <value>📋 Opis polja</value>
+  </data>
+  <data name="StructHelp_TableField" xml:space="preserve">
+    <value>Polje</value>
+  </data>
+  <data name="StructHelp_TableType" xml:space="preserve">
+    <value>Tip</value>
+  </data>
+  <data name="StructHelp_TableRequired" xml:space="preserve">
+    <value>Obavezno</value>
+  </data>
+  <data name="StructHelp_TableConstraints" xml:space="preserve">
+    <value>Ograničenja</value>
+  </data>
+  <data name="StructHelp_TableDescription" xml:space="preserve">
+    <value>Opis</value>
+  </data>
+  <data name="StructHelp_Yes" xml:space="preserve">
+    <value>Da</value>
+  </data>
+  <data name="StructHelp_No" xml:space="preserve">
+    <value>Ne</value>
+  </data>
+  <data name="StructHelp_NameDesc" xml:space="preserve">
+    <value>Prikazni naziv stadiona</value>
+  </data>
+  <data name="StructHelp_DescriptionDesc" xml:space="preserve">
+    <value>Opis stadiona</value>
+  </data>
+  <data name="StructHelp_TribuneCodeDesc" xml:space="preserve">
+    <value>Kod smjera tribune</value>
+  </data>
+  <data name="StructHelp_RingNumberDesc" xml:space="preserve">
+    <value>Razina prstena (1=razina boravka)</value>
+  </data>
+  <data name="StructHelp_SectorCodeDesc" xml:space="preserve">
+    <value>Identifikator sektora</value>
+  </data>
+  <data name="StructHelp_RowsDesc" xml:space="preserve">
+    <value>Broj redaka u sektoru</value>
+  </data>
+  <data name="StructHelp_SeatsPerRowDesc" xml:space="preserve">
+    <value>Sjedala po redu</value>
+  </data>
+  <data name="StructHelp_SamplesTitle" xml:space="preserve">
+    <value>📁 Primjeri datoteka za uvoz</value>
+  </data>
+  <data name="StructHelp_MinimalStadium" xml:space="preserve">
+    <value>🏟️ Minimalan stadion</value>
+  </data>
+  <data name="StructHelp_MinimalStadiumDesc" xml:space="preserve">
+    <value>Osnovna struktura s jednom tribunom (200 sjedala)</value>
+  </data>
+  <data name="StructHelp_StandardStadium" xml:space="preserve">
+    <value>🏟️ Standardan stadion</value>
+  </data>
+  <data name="StructHelp_StandardStadiumDesc" xml:space="preserve">
+    <value>Struktura s četiri tribune i više sektora (20.000 sjedala)</value>
+  </data>
+  <data name="StructHelp_ComplexStadium" xml:space="preserve">
+    <value>🏟️ Kompleksan stadion</value>
+  </data>
+  <data name="StructHelp_ComplexStadiumDesc" xml:space="preserve">
+    <value>Stadion s više prstenova i VIP sekcijama (80.000 sjedala)</value>
+  </data>
+  <data name="StructHelp_DownloadSample" xml:space="preserve">
+    <value>Preuzmi primjer</value>
+  </data>
+  <data name="StructHelp_ValidationTitle" xml:space="preserve">
+    <value>✅ Pravila validacije i rukovanje greškama</value>
+  </data>
+  <data name="StructHelp_RequiredFields" xml:space="preserve">
+    <value>✅ Obavezna polja</value>
+  </data>
+  <data name="StructHelp_ReqFieldName" xml:space="preserve">
+    <value>Naziv stadiona (3-100 znakova)</value>
+  </data>
+  <data name="StructHelp_ReqFieldTribunes" xml:space="preserve">
+    <value>Najmanje jedna tribuna</value>
+  </data>
+  <data name="StructHelp_ReqFieldTribuneCode" xml:space="preserve">
+    <value>Mora biti N, J, I ili Z</value>
+  </data>
+  <data name="StructHelp_ReqFieldRings" xml:space="preserve">
+    <value>Najmanje jedan prsten po tribuni</value>
+  </data>
+  <data name="StructHelp_ReqFieldRingNumber" xml:space="preserve">
+    <value>Cijeli broj 1-5</value>
+  </data>
+  <data name="StructHelp_ReqFieldSectors" xml:space="preserve">
+    <value>Najmanje jedan sektor po prstenu</value>
+  </data>
+  <data name="StructHelp_ReqFieldRowsSeats" xml:space="preserve">
+    <value>Oba obavezna</value>
+  </data>
+  <data name="StructHelp_ValidationRules" xml:space="preserve">
+    <value>⚠️ Pravila validacije</value>
+  </data>
+  <data name="StructHelp_RuleUniqueTribunes" xml:space="preserve">
+    <value>Kodovi tribuna moraju biti jedinstveni (ne možete imati dvije "N" tribune)</value>
+  </data>
+  <data name="StructHelp_RuleUniqueSectors" xml:space="preserve">
+    <value>Kodovi sektora moraju biti jedinstveni na čitavom stadionu</value>
+  </data>
+  <data name="StructHelp_RuleSequential" xml:space="preserve">
+    <value>Brojevi prstenova trebaju biti uzastopni (1, 2, 3, a ne 1, 3, 5)</value>
+  </data>
+  <data name="StructHelp_RuleMax" xml:space="preserve">
+    <value>Maksimalno 4 tribune, 5 prstenova po tribuni</value>
+  </data>
+  <data name="StructHelp_RuleRowsSeats" xml:space="preserve">
+    <value>Redci: 1-100, Sjedala po redu: 1-100</value>
+  </data>
+  <data name="StructHelp_RuleFileSize" xml:space="preserve">
+    <value>Ograničenje veličine datoteke: 10 MB</value>
+  </data>
+  <data name="StructHelp_CommonErrors" xml:space="preserve">
+    <value>❌ Česte greške i rješenja</value>
+  </data>
+  <data name="StructHelp_ErrorMessage" xml:space="preserve">
+    <value>Poruka greške</value>
+  </data>
+  <data name="StructHelp_Cause" xml:space="preserve">
+    <value>Uzrok</value>
+  </data>
+  <data name="StructHelp_Solution" xml:space="preserve">
+    <value>Rješenje</value>
+  </data>
+  <data name="StructHelp_ErrorNameRequired" xml:space="preserve">
+    <value>"Naziv stadiona je obavezan"</value>
+  </data>
+  <data name="StructHelp_CauseNameRequired" xml:space="preserve">
+    <value>Nedostaje ili je prazno polje s nazivom</value>
+  </data>
+  <data name="StructHelp_SolutionNameRequired" xml:space="preserve">
+    <value>Dodajte "name": "Vaš stadion"</value>
+  </data>
+  <data name="StructHelp_ErrorInvalidCode" xml:space="preserve">
+    <value>"Nevaljani kod tribune"</value>
+  </data>
+  <data name="StructHelp_CauseInvalidCode" xml:space="preserve">
+    <value>Korištenje kodova osim N, J, I, Z</value>
+  </data>
+  <data name="StructHelp_SolutionInvalidCode" xml:space="preserve">
+    <value>Promijenite na valjani kod (N, J, I ili Z)</value>
+  </data>
+  <data name="StructHelp_ErrorDuplicate" xml:space="preserve">
+    <value>"Dvostruki kod sektora"</value>
+  </data>
+  <data name="StructHelp_CauseDuplicate" xml:space="preserve">
+    <value>Isti kod sektora korišten dva puta</value>
+  </data>
+  <data name="StructHelp_SolutionDuplicate" xml:space="preserve">
+    <value>Učinite sve kodove sektora jedinstvenim</value>
+  </data>
+  <data name="StructHelp_ErrorInvalidJson" xml:space="preserve">
+    <value>"Nevaljani JSON format"</value>
+  </data>
+  <data name="StructHelp_CauseInvalidJson" xml:space="preserve">
+    <value>Sintaksne greške u JSON-u</value>
+  </data>
+  <data name="StructHelp_SolutionInvalidJson" xml:space="preserve">
+    <value>Validirajte s JSON validatorom</value>
+  </data>
+  <data name="StructHelp_ErrorTooLarge" xml:space="preserve">
+    <value>"Datoteka je prevelika"</value>
+  </data>
+  <data name="StructHelp_CauseTooLarge" xml:space="preserve">
+    <value>Datoteka &gt; 10 MB</value>
+  </data>
+  <data name="StructHelp_SolutionTooLarge" xml:space="preserve">
+    <value>Smanjite sektore ili podijelite uvoz</value>
+  </data>
+  <data name="StructHelp_ValidatorTitle" xml:space="preserve">
+    <value>🔍 Alat za validaciju JSON-a</value>
+  </data>
+  <data name="StructHelp_PasteJson" xml:space="preserve">
+    <value>📝 Zalijepite vaš JSON:</value>
+  </data>
+  <data name="StructHelp_JsonPlaceholder" xml:space="preserve">
+    <value>Ovdje zalijepite vaš JSON strukturu stadiona...</value>
+  </data>
+  <data name="StructHelp_ValidateButton" xml:space="preserve">
+    <value>Validiraj JSON</value>
+  </data>
+  <data name="StructHelp_ClearButton" xml:space="preserve">
+    <value>Obriši</value>
+  </data>
+  <data name="StructHelp_ValidationResults" xml:space="preserve">
+    <value>📊 Rezultati validacije:</value>
+  </data>
+  <data name="StructHelp_ValidJson" xml:space="preserve">
+    <value>✅ Valjana JSON struktura!</value>
+  </data>
+  <data name="StructHelp_ValidationFailedHeading" xml:space="preserve">
+    <value>❌ Validacija nije uspjela</value>
+  </data>
+  <data name="StructHelp_PreviewHeading" xml:space="preserve">
+    <value>📊 Pregled strukture:</value>
+  </data>
+  <data name="StructHelp_StadiumLabel" xml:space="preserve">
+    <value>Stadion</value>
+  </data>
+  <data name="StructHelp_TribunesLabel" xml:space="preserve">
+    <value>Tribune</value>
+  </data>
+  <data name="StructHelp_EstimatedSeatsLabel" xml:space="preserve">
+    <value>Procijenjeno sjedala</value>
+  </data>
+  <data name="StructHelp_EmptyValidatorState" xml:space="preserve">
+    <value>Zalijepite JSON i kliknite Validiraj kako bi vidjeli rezultate</value>
+  </data>
+  <data name="Structure_PageTitle" xml:space="preserve">
+    <value>Upravljanje strukturom stadiona</value>
+  </data>
+  <data name="Structure_Eyebrow" xml:space="preserve">
+    <value>Stadion</value>
+  </data>
+  <data name="Structure_Heading" xml:space="preserve">
+    <value>Upravljanje strukturom stadiona</value>
+  </data>
+  <data name="Structure_Subtitle" xml:space="preserve">
+    <value>Uvozite, izvozite i pregledajte strukturu sjeda stadiona</value>
+  </data>
+  <data name="Structure_HelpLink" xml:space="preserve">
+    <value>Vodič za uvoz i primjeri</value>
+  </data>
+  <data name="Structure_ImportTitle" xml:space="preserve">
+    <value>Uvezi strukturu</value>
+  </data>
+  <data name="Structure_QuickStart" xml:space="preserve">
+    <value>Brzi početak:</value>
+  </data>
+  <data name="Structure_QsJsonFile" xml:space="preserve">
+    <value>JSON datoteka mora sadržavati naziv stadiona i tribune</value>
+  </data>
+  <data name="Structure_QsTribuneCode" xml:space="preserve">
+    <value>Kodovi tribuna: N, J, I, Z (Sjever, Jug, Istok, Zapad)</value>
+  </data>
+  <data name="Structure_QsSectorNeeds" xml:space="preserve">
+    <value>Svaki sektor trebá redake i vrijednosti seatsPerRow</value>
+  </data>
+  <data name="Structure_ViewGuide" xml:space="preserve">
+    <value>Vidi kompletan vodič i primjere</value>
+  </data>
+  <data name="Structure_SelectFile" xml:space="preserve">
+    <value>Odaberite JSON datoteku</value>
+  </data>
+  <data name="Structure_SelectedPrefix" xml:space="preserve">
+    <value>Odabrano:</value>
+  </data>
+  <data name="Structure_ImportErrorPrefix" xml:space="preserve">
+    <value>Greška pri uvozu:</value>
+  </data>
+  <data name="Structure_ImportWarning" xml:space="preserve">
+    <value>Upozorenje: Uvoz će zamijeniti postojeću strukturu stadiona!</value>
+  </data>
+  <data name="Structure_Importing" xml:space="preserve">
+    <value>Uvozim</value>
+  </data>
+  <data name="Structure_ImportButton" xml:space="preserve">
+    <value>Uvezi strukturu</value>
+  </data>
+  <data name="Structure_CurrentStructure" xml:space="preserve">
+    <value>Trenutna struktura</value>
+  </data>
+  <data name="Structure_MetricTribunes" xml:space="preserve">
+    <value>Tribune</value>
+  </data>
+  <data name="Structure_MetricRings" xml:space="preserve">
+    <value>Prstenovi</value>
+  </data>
+  <data name="Structure_MetricSectors" xml:space="preserve">
+    <value>Sektori</value>
+  </data>
+  <data name="Structure_MetricTotalSeats" xml:space="preserve">
+    <value>Ukupno sjedala</value>
+  </data>
+  <data name="Structure_MetricAvailable" xml:space="preserve">
+    <value>Dostupno</value>
+  </data>
+  <data name="Structure_MetricOccupied" xml:space="preserve">
+    <value>Zauzeto</value>
+  </data>
+  <data name="Structure_Loading" xml:space="preserve">
+    <value>Učitavam strukturu...</value>
+  </data>
+  <data name="Structure_NoData" xml:space="preserve">
+    <value>Nema dostupnih podataka o strukturi</value>
+  </data>
+  <data name="Structure_EmptyStateText" xml:space="preserve">
+    <value>Uvezite strukturu stadiona kako bi počeli.</value>
+  </data>
+  <data name="Structure_ClearButton" xml:space="preserve">
+    <value>Obriši strukturu</value>
+  </data>
+  <data name="Structure_ExportButton" xml:space="preserve">
+    <value>Izvezi JSON</value>
+  </data>
+  <data name="Structure_Exporting" xml:space="preserve">
+    <value>Izvozim</value>
+  </data>
+  <data name="Structure_RefreshButton" xml:space="preserve">
+    <value>Osvježi cache</value>
+  </data>
+  <data name="Structure_Refreshing" xml:space="preserve">
+    <value>Osvježavam</value>
+  </data>
+  <data name="Structure_RefreshTooltip" xml:space="preserve">
+    <value>Osvježite cache rasporeda stadiona kako bi odmah prikazali ažurirane podatke</value>
+  </data>
+  <data name="Structure_ImportSuccessHeading" xml:space="preserve">
+    <value>Uvoz je uspio!</value>
+  </data>
+  <data name="Structure_ImportSuccessText" xml:space="preserve">
+    <value>Struktura stadiona je uspješno uvezena.</value>
+  </data>
+  <data name="Structure_ConfirmDeleteTitle" xml:space="preserve">
+    <value>Potvrdite brisanje</value>
+  </data>
+  <data name="Structure_ConfirmDeleteText" xml:space="preserve">
+    <value>Jeste li sigurni da želite obrisati cijelu strukturu stadiona?</value>
+  </data>
+  <data name="Structure_ConfirmCannotUndo" xml:space="preserve">
+    <value>Ova akcija se ne može poništiti!</value>
+  </data>
+  <data name="Structure_ConfirmRemovePrefix" xml:space="preserve">
+    <value>Ovo će obrisati</value>
+  </data>
+  <data name="Structure_SeatsLabel" xml:space="preserve">
+    <value>sjedala</value>
+  </data>
+  <data name="Structure_ConfirmRemoveMiddle" xml:space="preserve">
+    <value>preko</value>
+  </data>
+  <data name="Structure_SectorsLabel" xml:space="preserve">
+    <value>sektora</value>
+  </data>
+  <data name="Structure_ConfirmRemoveEnd" xml:space="preserve">
+    <value>u</value>
+  </data>
+  <data name="Structure_TribunesLabel" xml:space="preserve">
+    <value>tribuna</value>
+  </data>
+  <data name="Structure_CancelButton" xml:space="preserve">
+    <value>Otkaži</value>
+  </data>
+  <data name="Structure_Deleting" xml:space="preserve">
+    <value>Brišem</value>
+  </data>
+  <data name="Structure_DeleteButton" xml:space="preserve">
+    <value>Obriši strukturu</value>
+  </data>
+  <data name="DataGrid_PageTitle" xml:space="preserve">
+    <value>Pregledar baze podataka</value>
+  </data>
+  <data name="DataGrid_HeadingTitle" xml:space="preserve">
+    <value>Pregledar baze podataka</value>
+  </data>
+  <data name="DataGrid_HeadingSubtitle" xml:space="preserve">
+    <value>Pregledavajte i upravljajte tablicama baze podataka s naprednim filtriranjem, sortiranjem i mogućnostima izvoza</value>
+  </data>
+  <data name="DataGrid_LoadingSpinner" xml:space="preserve">
+    <value>Učitavanje...</value>
+  </data>
+  <data name="DataGrid_ConnectingMessage" xml:space="preserve">
+    <value>Povezivanje s bazom podataka...</value>
+  </data>
+  <data name="DataGrid_ConnectionErrorLabel" xml:space="preserve">
+    <value>Greška povezivanja:</value>
+  </data>
+  <data name="DataGrid_RetryButton" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="DataGrid_SelectTableLabel" xml:space="preserve">
+    <value>Odaberi tablicu:</value>
+  </data>
+  <data name="DataGrid_ChooseTableOption" xml:space="preserve">
+    <value>-- Odaberi tablicu za pregled --</value>
+  </data>
+  <data name="DataGrid_ColumnsText" xml:space="preserve">
+    <value>stupaca</value>
+  </data>
+  <data name="DataGrid_RefreshButton" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  <data name="DataGrid_RefreshTitle" xml:space="preserve">
+    <value>Osvježi podatke</value>
+  </data>
+  <data name="DataGrid_ExportButton" xml:space="preserve">
+    <value>Izvezi CSV</value>
+  </data>
+  <data name="DataGrid_ExportTitle" xml:space="preserve">
+    <value>Izvezi u CSV</value>
+  </data>
+  <data name="DataGrid_TableInfoButton" xml:space="preserve">
+    <value>Informacije</value>
+  </data>
+  <data name="DataGrid_TableInfoTitle" xml:space="preserve">
+    <value>Informacije o tablici</value>
+  </data>
+  <data name="DataGrid_GenerateButton" xml:space="preserve">
+    <value>Generiraj</value>
+  </data>
+  <data name="DataGrid_GenerateTitle" xml:space="preserve">
+    <value>Generiraj podatke</value>
+  </data>
+  <data name="DataGrid_ClearTableButton" xml:space="preserve">
+    <value>Očisti tablicu</value>
+  </data>
+  <data name="DataGrid_DeleteTitle" xml:space="preserve">
+    <value>Obriši sve podatke</value>
+  </data>
+  <data name="DataGrid_RecordsBadge" xml:space="preserve">
+    <value>Zapisa</value>
+  </data>
+  <data name="DataGrid_TableStructureHeading" xml:space="preserve">
+    <value>Struktura tablice</value>
+  </data>
+  <data name="DataGrid_NullableText" xml:space="preserve">
+    <value>dopušta null</value>
+  </data>
+  <data name="DataGrid_FiltersAppliedCount" xml:space="preserve">
+    <value>primijenjenih filtara</value>
+  </data>
+  <data name="DataGrid_ClearAllButton" xml:space="preserve">
+    <value>Očisti sve</value>
+  </data>
+  <data name="DataGrid_NoFiltersApplied" xml:space="preserve">
+    <value>Nema primijenjenih filtara</value>
+  </data>
+  <data name="DataGrid_QuickSearchPlaceholder" xml:space="preserve">
+    <value>Brza pretraga...</value>
+  </data>
+  <data name="DataGrid_FilterPlaceholder" xml:space="preserve">
+    <value>Filtriraj...</value>
+  </data>
+  <data name="DataGrid_LoadingDataSpinner" xml:space="preserve">
+    <value>Učitavanje podataka...</value>
+  </data>
+  <data name="DataGrid_FetchingRecords" xml:space="preserve">
+    <value>Dohvaćanje zapisa...</value>
+  </data>
+  <data name="DataGrid_NoRecordsFound" xml:space="preserve">
+    <value>Nema pronađenih zapisa</value>
+  </data>
+  <data name="DataGrid_ClearFiltersButton" xml:space="preserve">
+    <value>Očisti filtere</value>
+  </data>
+  <data name="DataGrid_NullValue" xml:space="preserve">
+    <value>null</value>
+  </data>
+  <data name="DataGrid_TrueValue" xml:space="preserve">
+    <value>Istinito</value>
+  </data>
+  <data name="DataGrid_FalseValue" xml:space="preserve">
+    <value>Lažno</value>
+  </data>
+  <data name="DataGrid_RowsPerPageLabel" xml:space="preserve">
+    <value>Zapisa po stranici:</value>
+  </data>
+  <data name="DataGrid_FirstPageButton" xml:space="preserve">
+    <value>Prva</value>
+  </data>
+  <data name="DataGrid_LastPageButton" xml:space="preserve">
+    <value>Zadnja</value>
+  </data>
+  <data name="DataGrid_PageInfo" xml:space="preserve">
+    <value>Stranica {0} od {1}</value>
+  </data>
+  <data name="DataGrid_TotalRecords" xml:space="preserve">
+    <value>({0} ukupno zapisa)</value>
+  </data>
+  <data name="DataGrid_GenerateDataModalTitle" xml:space="preserve">
+    <value>Generiraj podatke za {0}</value>
+  </data>
+  <data name="DataGrid_NumberOfRecordsLabel" xml:space="preserve">
+    <value>Broj zapisa za generiranje:</value>
+  </data>
+  <data name="DataGrid_RecordCountPlaceholder" xml:space="preserve">
+    <value>Unesite broj (1-1000)</value>
+  </data>
+  <data name="DataGrid_GenerateSampleInfo" xml:space="preserve">
+    <value>Generiraj do 1000 uzoraka zapisa s realističnim podacima u svrhe testiranja.</value>
+  </data>
+  <data name="DataGrid_AboutGeneratedData" xml:space="preserve">
+    <value>O generiranim podacima:</value>
+  </data>
+  <data name="DataGrid_GeneratedDataInfo1" xml:space="preserve">
+    <value>Podaci će biti kreirani s realističnim primjerima vrijednosti</value>
+  </data>
+  <data name="DataGrid_GeneratedDataInfo2" xml:space="preserve">
+    <value>Sve potrebne relacije bit će pravilno povezane</value>
+  </data>
+  <data name="DataGrid_GeneratedDataInfo3" xml:space="preserve">
+    <value>Generirani podaci su sigurni za testiranje i razvoj</value>
+  </data>
+  <data name="DataGrid_CancelButton" xml:space="preserve">
+    <value>Otkaži</value>
+  </data>
+  <data name="DataGrid_GeneratingMessage" xml:space="preserve">
+    <value>Generiranje...</value>
+  </data>
+  <data name="DataGrid_GenerateRecordsButton" xml:space="preserve">
+    <value>Generiraj {0} zapisa</value>
+  </data>
+  <data name="DataGrid_ClearTableModalTitle" xml:space="preserve">
+    <value>Očisti tablicu {0}</value>
+  </data>
+  <data name="DataGrid_CannotDeleteLabel" xml:space="preserve">
+    <value>Nije moguće obrisati:</value>
+  </data>
+  <data name="DataGrid_DependenciesFoundLabel" xml:space="preserve">
+    <value>Pronađene ovisnosti:</value>
+  </data>
+  <data name="DataGrid_WarningText" xml:space="preserve">
+    <value>Upozorenje: Ova radnja se ne može poništiti!</value>
+  </data>
+  <data name="DataGrid_DeleteConfirmationMessage" xml:space="preserve">
+    <value>Spremni ste obrisati SVE {0} zapisa iz tablice {1}.</value>
+  </data>
+  <data name="DataGrid_TypeDeleteText" xml:space="preserve">
+    <value>Upišite DELETE za potvrdu ove radnje:</value>
+  </data>
+  <data name="DataGrid_DeleteConfirmPlaceholder" xml:space="preserve">
+    <value>Upišite DELETE za potvrdu</value>
+  </data>
+  <data name="DataGrid_DeletingMessage" xml:space="preserve">
+    <value>Brisanje...</value>
+  </data>
+  <data name="DataGrid_DeleteAllRecordsButton" xml:space="preserve">
+    <value>Obriši sve zapise</value>
+  </data>
+  <data name="Logs_PageTitle" xml:space="preserve">
+    <value>Sustavni zapisnici</value>
+  </data>
+  <data name="Logs_EyebrowText" xml:space="preserve">
+    <value>ZAPISNICI</value>
+  </data>
+  <data name="Logs_MainHeading" xml:space="preserve">
+    <value>Sustavni zapisnici</value>
+  </data>
+  <data name="Logs_Description" xml:space="preserve">
+    <value>Prati sustavnu aktivnost, greške i revizijske događaje u svim aplikacijama</value>
+  </data>
+  <data name="Logs_ConsoleToggleLabel" xml:space="preserve">
+    <value>Konzola → Sustavni zapisnici</value>
+  </data>
+  <data name="Logs_RefreshButton" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  <data name="Logs_ClearAllButton" xml:space="preserve">
+    <value>Očisti sve zapisnike</value>
+  </data>
+  <data name="Logs_LoadingMessage" xml:space="preserve">
+    <value>Učitavanje zapisnika...</value>
+  </data>
+  <data name="Logs_TotalLogsLabel" xml:space="preserve">
+    <value>Ukupno zapisnika</value>
+  </data>
+  <data name="Logs_TotalLogsHint" xml:space="preserve">
+    <value>Svi zabilježeni događaji</value>
+  </data>
+  <data name="Logs_ErrorsLabel" xml:space="preserve">
+    <value>Greške</value>
+  </data>
+  <data name="Logs_ErrorsHint" xml:space="preserve">
+    <value>Zahtijeva pažnju</value>
+  </data>
+  <data name="Logs_WarningsLabel" xml:space="preserve">
+    <value>Upozorenja</value>
+  </data>
+  <data name="Logs_WarningsHint" xml:space="preserve">
+    <value>Mogući problemi</value>
+  </data>
+  <data name="Logs_InfoLabel" xml:space="preserve">
+    <value>Informacije</value>
+  </data>
+  <data name="Logs_InfoHint" xml:space="preserve">
+    <value>Rutinska aktivnost</value>
+  </data>
+  <data name="Logs_FiltersPanelTitle" xml:space="preserve">
+    <value>Filtri</value>
+  </data>
+  <data name="Logs_TimeRangeLabel" xml:space="preserve">
+    <value>Vremenski raspon</value>
+  </data>
+  <data name="Logs_Last24HoursButton" xml:space="preserve">
+    <value>Posljednjih 24 sata</value>
+  </data>
+  <data name="Logs_TodayButton" xml:space="preserve">
+    <value>Danas</value>
+  </data>
+  <data name="Logs_Last7DaysButton" xml:space="preserve">
+    <value>Posljednjih 7 dana</value>
+  </data>
+  <data name="Logs_Last30DaysButton" xml:space="preserve">
+    <value>Posljednjih 30 dana</value>
+  </data>
+  <data name="Logs_AllTimeButton" xml:space="preserve">
+    <value>Sva vremena</value>
+  </data>
+  <data name="Logs_CustomRangeButton" xml:space="preserve">
+    <value>Prilagođeni raspon</value>
+  </data>
+  <data name="Logs_FromDateLabel" xml:space="preserve">
+    <value>Od datuma</value>
+  </data>
+  <data name="Logs_ToDateLabel" xml:space="preserve">
+    <value>Do datuma</value>
+  </data>
+  <data name="Logs_ApplyButton" xml:space="preserve">
+    <value>Primijeni</value>
+  </data>
+  <data name="Logs_CurrentFilterLabel" xml:space="preserve">
+    <value>Trenutni filtar:</value>
+  </data>
+  <data name="Logs_LogsFoundCount" xml:space="preserve">
+    <value>pronađenih zapisnika</value>
+  </data>
+  <data name="Logs_FilterByLevelLabel" xml:space="preserve">
+    <value>Filtriraj po razini</value>
+  </data>
+  <data name="Logs_ErrorsFilterButton" xml:space="preserve">
+    <value>Greške</value>
+  </data>
+  <data name="Logs_WarningsFilterButton" xml:space="preserve">
+    <value>Upozorenja</value>
+  </data>
+  <data name="Logs_InfoFilterButton" xml:space="preserve">
+    <value>Informacije</value>
+  </data>
+  <data name="Logs_AllLevelsButton" xml:space="preserve">
+    <value>Sve razine</value>
+  </data>
+  <data name="Logs_LogsPanelTitle" xml:space="preserve">
+    <value>Zapisnici</value>
+  </data>
+  <data name="Logs_TimeHeader" xml:space="preserve">
+    <value>Vrijeme</value>
+  </data>
+  <data name="Logs_LevelHeader" xml:space="preserve">
+    <value>Razina</value>
+  </data>
+  <data name="Logs_ActionHeader" xml:space="preserve">
+    <value>Radnja</value>
+  </data>
+  <data name="Logs_UserHeader" xml:space="preserve">
+    <value>Korisnik</value>
+  </data>
+  <data name="Logs_SourceHeader" xml:space="preserve">
+    <value>Izvor</value>
+  </data>
+  <data name="Logs_MessageHeader" xml:space="preserve">
+    <value>Poruka</value>
+  </data>
+  <data name="Logs_ShowingFirst50" xml:space="preserve">
+    <value>Prikazujem prvih 50 od {0} zapisnika. Koristite filtere da suzite rezultate.</value>
+  </data>
+  <data name="Logs_NoLogsFound" xml:space="preserve">
+    <value>Nema pronađenih zapisnika</value>
+  </data>
+  <data name="Logs_NoLogsDescription" xml:space="preserve">
+    <value>Nema stavki zapisnika koje odgovaraju vašim trenutnim filtrima.</value>
+  </data>
+  <data name="Users_PageTitle" xml:space="preserve">
+    <value>Upravljanje korisnicima - Stadium Admin</value>
+  </data>
+  <data name="Users_EyebrowLabel" xml:space="preserve">
+    <value>Korisnici</value>
+  </data>
+  <data name="Users_MainTitle" xml:space="preserve">
+    <value>Upravljanje korisnicima</value>
+  </data>
+  <data name="Users_Subtitle" xml:space="preserve">
+    <value>Upravljajte sustavskim korisnicima i njihovim ulogama</value>
+  </data>
+  <data name="Users_AddUserButtonText" xml:space="preserve">
+    <value>Dodaj korisnika</value>
+  </data>
+  <data name="Users_CreateSampleUsersButtonText" xml:space="preserve">
+    <value>Kreiraj 20 primjer korisnika</value>
+  </data>
+  <data name="Users_RefreshButtonTooltip" xml:space="preserve">
+    <value>Osvježi podatke</value>
+  </data>
+  <data name="Users_TotalUsersLabel" xml:space="preserve">
+    <value>Ukupno korisnika</value>
+  </data>
+  <data name="Users_TotalUsersHint" xml:space="preserve">
+    <value>Svi registrirani korisnici</value>
+  </data>
+  <data name="Users_ActiveUsersLabel" xml:space="preserve">
+    <value>Aktivni korisnici</value>
+  </data>
+  <data name="Users_ActiveUsersHint" xml:space="preserve">
+    <value>Trenutno omogućeni računi</value>
+  </data>
+  <data name="Users_NewThisMonthLabel" xml:space="preserve">
+    <value>Novo ovaj mjesec</value>
+  </data>
+  <data name="Users_NewThisMonthHint" xml:space="preserve">
+    <value>Registrirani od 1. dana</value>
+  </data>
+  <data name="Users_AdminUsersLabel" xml:space="preserve">
+    <value>Admin korisnici</value>
+  </data>
+  <data name="Users_AdminUsersHint" xml:space="preserve">
+    <value>Privilegirani računi</value>
+  </data>
+  <data name="Users_FiltersTitle" xml:space="preserve">
+    <value>Filtri</value>
+  </data>
+  <data name="Users_ClearFiltersButton" xml:space="preserve">
+    <value>Očisti</value>
+  </data>
+  <data name="Users_RoleFilterLabel" xml:space="preserve">
+    <value>Filter uloge</value>
+  </data>
+  <data name="Users_AllRolesOption" xml:space="preserve">
+    <value>Sve uloge</value>
+  </data>
+  <data name="Users_StatusFilterLabel" xml:space="preserve">
+    <value>Filter stanja</value>
+  </data>
+  <data name="Users_AllStatusesOption" xml:space="preserve">
+    <value>Sva stanja</value>
+  </data>
+  <data name="Users_ActiveStatusOption" xml:space="preserve">
+    <value>Aktivno</value>
+  </data>
+  <data name="Users_InactiveStatusOption" xml:space="preserve">
+    <value>Neaktivno</value>
+  </data>
+  <data name="Users_SearchUsersLabel" xml:space="preserve">
+    <value>Pretraži korisnike</value>
+  </data>
+  <data name="Users_SearchUsersPlaceholder" xml:space="preserve">
+    <value>Pretraži po imenu, korisničkom imenu ili e-pošti</value>
+  </data>
+  <data name="Users_LoadingMessage" xml:space="preserve">
+    <value>Učitavanje korisnika...</value>
+  </data>
+  <data name="Users_UsersTableTitle" xml:space="preserve">
+    <value>Korisnici</value>
+  </data>
+  <data name="Users_ActivateButtonText" xml:space="preserve">
+    <value>Aktiviraj ({0})</value>
+  </data>
+  <data name="Users_DeactivateButtonText" xml:space="preserve">
+    <value>Deaktiviraj</value>
+  </data>
+  <data name="Users_UserColumnHeader" xml:space="preserve">
+    <value>Korisnik</value>
+  </data>
+  <data name="Users_NameColumnHeader" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="Users_UsernameColumnHeader" xml:space="preserve">
+    <value>Korisničko ime</value>
+  </data>
+  <data name="Users_EmailColumnHeader" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="Users_RoleColumnHeader" xml:space="preserve">
+    <value>Uloga</value>
+  </data>
+  <data name="Users_StatusColumnHeader" xml:space="preserve">
+    <value>Stanje</value>
+  </data>
+  <data name="Users_CreatedColumnHeader" xml:space="preserve">
+    <value>Kreirano</value>
+  </data>
+  <data name="Users_ActionsColumnHeader" xml:space="preserve">
+    <value>Akcije</value>
+  </data>
+  <data name="Users_ActiveStatus" xml:space="preserve">
+    <value>Aktivno</value>
+  </data>
+  <data name="Users_InactiveStatus" xml:space="preserve">
+    <value>Neaktivno</value>
+  </data>
+  <data name="Users_EditUserTitle" xml:space="preserve">
+    <value>Uredi korisnika</value>
+  </data>
+  <data name="Users_ResetPasswordTitle" xml:space="preserve">
+    <value>Resetiraj lozinku</value>
+  </data>
+  <data name="Users_DeactivateUserTitle" xml:space="preserve">
+    <value>Deaktiviraj korisnika</value>
+  </data>
+  <data name="Users_ActivateUserTitle" xml:space="preserve">
+    <value>Aktiviraj korisnika</value>
+  </data>
+  <data name="Users_DeleteUserTitle" xml:space="preserve">
+    <value>Izbriši korisnika</value>
+  </data>
+  <data name="Users_ShowingFirstMessage" xml:space="preserve">
+    <value>Prikazujem prvih 50 od</value>
+  </data>
+  <data name="Users_OfTotalMessage" xml:space="preserve">
+    <value>od</value>
+  </data>
+  <data name="Users_TotalUsersText" xml:space="preserve">
+    <value>ukupno korisnika</value>
+  </data>
+  <data name="Users_NoUsersFound" xml:space="preserve">
+    <value>Nisu pronađeni korisnici</value>
+  </data>
+  <data name="Users_NoUsersFiltersMessage" xml:space="preserve">
+    <value>Nema korisnika koji se podudaraju s vašim filtrima.</value>
+  </data>
+  <data name="Users_AddNewUserModalTitle" xml:space="preserve">
+    <value>Dodaj novog korisnika</value>
+  </data>
+  <data name="Users_UsernameLabel" xml:space="preserve">
+    <value>Korisničko ime</value>
+  </data>
+  <data name="Users_EmailLabel" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="Users_FullNameLabel" xml:space="preserve">
+    <value>Puno ime</value>
+  </data>
+  <data name="Users_PasswordLabel" xml:space="preserve">
+    <value>Lozinka</value>
+  </data>
+  <data name="Users_RoleLabel" xml:space="preserve">
+    <value>Uloga</value>
+  </data>
+  <data name="Users_CancelButton" xml:space="preserve">
+    <value>Otkaži</value>
+  </data>
+  <data name="Users_CreateUserButton" xml:space="preserve">
+    <value>Kreiraj korisnika</value>
+  </data>
+  <data name="Users_EditUserModalTitle" xml:space="preserve">
+    <value>Uredi korisnika</value>
+  </data>
+  <data name="Users_FirstNameLabel" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="Users_LastNameLabel" xml:space="preserve">
+    <value>Prezime</value>
+  </data>
+  <data name="Users_PhoneNumberLabel" xml:space="preserve">
+    <value>Telefonski broj</value>
+  </data>
+  <data name="Users_SelectRoleOption" xml:space="preserve">
+    <value>Odaberite uloga</value>
+  </data>
+  <data name="Users_ActiveCheckboxLabel" xml:space="preserve">
+    <value>Aktivno</value>
+  </data>
+  <data name="Users_UpdateUserButton" xml:space="preserve">
+    <value>Ažuriraj korisnika</value>
+  </data>
+  <data name="Drinks_PageTitle" xml:space="preserve">
+    <value>Upravljanje pićima</value>
+  </data>
+  <data name="Drinks_EyebrowLabel" xml:space="preserve">
+    <value>Pića</value>
+  </data>
+  <data name="Drinks_MainTitle" xml:space="preserve">
+    <value>Upravljanje pićima</value>
+  </data>
+  <data name="Drinks_Subtitle" xml:space="preserve">
+    <value>Upravljajte vašim katalogom pića, razinama zaliha i dostupnošću</value>
+  </data>
+  <data name="Drinks_AddNewDrinkButton" xml:space="preserve">
+    <value>Dodaj novo piće</value>
+  </data>
+  <data name="Drinks_LoadingMessage" xml:space="preserve">
+    <value>Učitavanje pića...</value>
+  </data>
+  <data name="Drinks_ErrorLoadingTitle" xml:space="preserve">
+    <value>Greška pri učitavanju pića</value>
+  </data>
+  <data name="Drinks_RetryButton" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="Drinks_NoDrinksFound" xml:space="preserve">
+    <value>Nisu pronađena pića</value>
+  </data>
+  <data name="Drinks_StartByAddingMessage" xml:space="preserve">
+    <value>Počnite dodavanjem vašeg prvog pića na izbornik.</value>
+  </data>
+  <data name="Drinks_AddFirstDrinkButton" xml:space="preserve">
+    <value>Dodaj prvo piće</value>
+  </data>
+  <data name="Drinks_TotalDrinksLabel" xml:space="preserve">
+    <value>Ukupna pića</value>
+  </data>
+  <data name="Drinks_InCatalogHint" xml:space="preserve">
+    <value>U katalogu</value>
+  </data>
+  <data name="Drinks_AvailableLabel" xml:space="preserve">
+    <value>Dostupna</value>
+  </data>
+  <data name="Drinks_OrderableNowHint" xml:space="preserve">
+    <value>Moguće naručiti sada</value>
+  </data>
+  <data name="Drinks_LowStockLabel" xml:space="preserve">
+    <value>Niska zaliha</value>
+  </data>
+  <data name="Drinks_BelowUnitsHint" xml:space="preserve">
+    <value>Ispod 10 jedinica</value>
+  </data>
+  <data name="Drinks_CategoriesLabel" xml:space="preserve">
+    <value>Kategorije</value>
+  </data>
+  <data name="Drinks_DistinctTypesHint" xml:space="preserve">
+    <value>Različite vrste</value>
+  </data>
+  <data name="Drinks_FilterDrinksTitle" xml:space="preserve">
+    <value>Filtriraj pića</value>
+  </data>
+  <data name="Drinks_CategoryLabel" xml:space="preserve">
+    <value>Kategorija</value>
+  </data>
+  <data name="Drinks_AllCategoriesOption" xml:space="preserve">
+    <value>Sve kategorije</value>
+  </data>
+  <data name="Drinks_AvailabilityLabel" xml:space="preserve">
+    <value>Dostupnost</value>
+  </data>
+  <data name="Drinks_AllDrinksOption" xml:space="preserve">
+    <value>Sva pića</value>
+  </data>
+  <data name="Drinks_AvailableOnlyOption" xml:space="preserve">
+    <value>Samo dostupna</value>
+  </data>
+  <data name="Drinks_UnavailableOnlyOption" xml:space="preserve">
+    <value>Samo nedostupna</value>
+  </data>
+  <data name="Drinks_LowStockOption" xml:space="preserve">
+    <value>Niska zaliha (&lt; 10)</value>
+  </data>
+  <data name="Drinks_SearchLabel" xml:space="preserve">
+    <value>Pretraži</value>
+  </data>
+  <data name="Drinks_SearchPlaceholder" xml:space="preserve">
+    <value>Pretraži pića...</value>
+  </data>
+  <data name="Drinks_DrinksTableTitle" xml:space="preserve">
+    <value>Pića</value>
+  </data>
+  <data name="Drinks_DrinkColumnHeader" xml:space="preserve">
+    <value>Piće</value>
+  </data>
+  <data name="Drinks_CategoryColumnHeader" xml:space="preserve">
+    <value>Kategorija</value>
+  </data>
+  <data name="Drinks_DescriptionColumnHeader" xml:space="preserve">
+    <value>Opis</value>
+  </data>
+  <data name="Drinks_PriceColumnHeader" xml:space="preserve">
+    <value>Cijena</value>
+  </data>
+  <data name="Drinks_StockColumnHeader" xml:space="preserve">
+    <value>Zaliha</value>
+  </data>
+  <data name="Drinks_StatusColumnHeader" xml:space="preserve">
+    <value>Stanje</value>
+  </data>
+  <data name="Drinks_ActionsColumnHeader" xml:space="preserve">
+    <value>Akcije</value>
+  </data>
+  <data name="Drinks_UnavailableStatus" xml:space="preserve">
+    <value>Nedostupno</value>
+  </data>
+  <data name="Drinks_LowStockStatus" xml:space="preserve">
+    <value>Niska zaliha</value>
+  </data>
+  <data name="Drinks_AvailableStatus" xml:space="preserve">
+    <value>Dostupno</value>
+  </data>
+  <data name="Drinks_EditButton" xml:space="preserve">
+    <value>Uredi</value>
+  </data>
+  <data name="Drinks_DisableButton" xml:space="preserve">
+    <value>Onemogući</value>
+  </data>
+  <data name="Drinks_EnableButton" xml:space="preserve">
+    <value>Omogući</value>
+  </data>
+  <data name="Drinks_DeleteButton" xml:space="preserve">
+    <value>Izbriši</value>
+  </data>
+  <data name="Drinks_AddNewDrinkModalTitle" xml:space="preserve">
+    <value>Dodaj novo piće</value>
+  </data>
+  <data name="Drinks_EditDrinkModalTitle" xml:space="preserve">
+    <value>Uredi piće</value>
+  </data>
+  <data name="Drinks_NameLabel" xml:space="preserve">
+    <value>Naziv</value>
+  </data>
+  <data name="Drinks_DescriptionLabel" xml:space="preserve">
+    <value>Opis</value>
+  </data>
+  <data name="Drinks_PriceLabel" xml:space="preserve">
+    <value>Cijena ($)</value>
+  </data>
+  <data name="Drinks_StockQuantityLabel" xml:space="preserve">
+    <value>Količina zalihe</value>
+  </data>
+  <data name="Drinks_CategoryModalLabel" xml:space="preserve">
+    <value>Kategorija</value>
+  </data>
+  <data name="Drinks_ImageUrlLabel" xml:space="preserve">
+    <value>URL slike</value>
+  </data>
+  <data name="Drinks_ImageUrlPlaceholder" xml:space="preserve">
+    <value>https://primjer.com/slika.jpg</value>
+  </data>
+  <data name="Drinks_AvailableForOrderingLabel" xml:space="preserve">
+    <value>Dostupno za naručivanje</value>
+  </data>
+  <data name="Drinks_CancelButton" xml:space="preserve">
+    <value>Otkaži</value>
+  </data>
+  <data name="Drinks_CreateDrinkButton" xml:space="preserve">
+    <value>Kreiraj piće</value>
+  </data>
+  <data name="Drinks_SaveChangesButton" xml:space="preserve">
+    <value>Spremi izmjene</value>
+  </data>
+  <data name="Bartender_PageTitle" xml:space="preserve">
+    <value>Nadzorna ploča barista</value>
+  </data>
+  <data name="Bartender_Title" xml:space="preserve">
+    <value>ARENA 2025</value>
+  </data>
+  <data name="Bartender_Subtitle" xml:space="preserve">
+    <value>Naručivanje pića na stadionu • Nadzorna ploča u stvarnom vremenu</value>
+  </data>
+  <data name="Bartender_StadiumMapTitle" xml:space="preserve">
+    <value>🏟️ Mapa stadiuma</value>
+  </data>
+  <data name="Bartender_RefreshButton" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  <data name="Bartender_LoadingStadiumLayout" xml:space="preserve">
+    <value>Učitavanje rasporeda stadiuma...</value>
+  </data>
+  <data name="Bartender_LegendAvailable" xml:space="preserve">
+    <value>Dostupno</value>
+  </data>
+  <data name="Bartender_LegendPending" xml:space="preserve">
+    <value>Na čekanju</value>
+  </data>
+  <data name="Bartender_LegendAccepted" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="Bartender_LegendPreparing" xml:space="preserve">
+    <value>U pripremi</value>
+  </data>
+  <data name="Bartender_LegendReady" xml:space="preserve">
+    <value>Spremno</value>
+  </data>
+  <data name="Bartender_StandNorth" xml:space="preserve">
+    <value>SJEVER</value>
+  </data>
+  <data name="Bartender_StandSouth" xml:space="preserve">
+    <value>JUG</value>
+  </data>
+  <data name="Bartender_StandEast" xml:space="preserve">
+    <value>ISTOK</value>
+  </data>
+  <data name="Bartender_StandWest" xml:space="preserve">
+    <value>ZAPAD</value>
+  </data>
+  <data name="Bartender_OrderQueueTitle" xml:space="preserve">
+    <value>📋 Red čekanja za narudžbe</value>
+  </data>
+  <data name="Bartender_LoadingOrders" xml:space="preserve">
+    <value>Učitavanje narudžbi...</value>
+  </data>
+  <data name="Bartender_NoPendingOrders" xml:space="preserve">
+    <value>Nema narudžbi na čekanju</value>
+  </data>
+  <data name="Bartender_MoreItems" xml:space="preserve">
+    <value>+{0} više artikala</value>
+  </data>
+  <data name="Bartender_TotalSeatsLabel" xml:space="preserve">
+    <value>Ukupno mjesta</value>
+  </data>
+  <data name="Bartender_PendingOrdersLabel" xml:space="preserve">
+    <value>Narudžbe na čekanju</value>
+  </data>
+  <data name="Bartender_ActiveOrdersLabel" xml:space="preserve">
+    <value>Aktivne narudžbe</value>
+  </data>
+  <data name="Bartender_TotalOrdersLabel" xml:space="preserve">
+    <value>Ukupno narudžbi</value>
+  </data>
+  <data name="Bartender_ItemHeader" xml:space="preserve">
+    <value>Artikal</value>
+  </data>
+  <data name="Bartender_QtyHeader" xml:space="preserve">
+    <value>Količina</value>
+  </data>
+  <data name="Bartender_PriceHeader" xml:space="preserve">
+    <value>Cijena</value>
+  </data>
+  <data name="Bartender_OrderItemsTitle" xml:space="preserve">
+    <value>Artikli u narudžbi</value>
+  </data>
+  <data name="Bartender_OrderDetailsTitle" xml:space="preserve">
+    <value>Detalji narudžbe</value>
+  </data>
+  <data name="Bartender_TicketLabel" xml:space="preserve">
+    <value>Karta:</value>
+  </data>
+  <data name="Bartender_SeatLabel" xml:space="preserve">
+    <value>Mjesto:</value>
+  </data>
+  <data name="Bartender_StatusLabel" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="Bartender_CreatedLabel" xml:space="preserve">
+    <value>Kreirano:</value>
+  </data>
+  <data name="Bartender_NotesLabel" xml:space="preserve">
+    <value>Napomene:</value>
+  </data>
+  <data name="Bartender_AcceptOrderButton" xml:space="preserve">
+    <value>Prihvati narudžbu</value>
+  </data>
+  <data name="Bartender_StartPreparationButton" xml:space="preserve">
+    <value>Započni pripremu</value>
+  </data>
+  <data name="Bartender_MarkReadyButton" xml:space="preserve">
+    <value>Označi kao spremno</value>
+  </data>
+  <data name="Bartender_MarkDeliveredButton" xml:space="preserve">
+    <value>Označi kao dostavljeno</value>
+  </data>
+  <data name="Bartender_CloseButton" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Tickets_PageTitle" xml:space="preserve">
+    <value>Upravljanje kartama</value>
+  </data>
+  <data name="Tickets_Eyebrow" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="Tickets_Title" xml:space="preserve">
+    <value>Upravljanje kartama</value>
+  </data>
+  <data name="Tickets_Description" xml:space="preserve">
+    <value>Pregledaj, validiraj i upravljaj svim stadionskim kartama</value>
+  </data>
+  <data name="Tickets_ShowingFor" xml:space="preserve">
+    <value>Prikazuje se karte za:</value>
+  </data>
+  <data name="Tickets_BackToEvents" xml:space="preserve">
+    <value>Natrag na događaje</value>
+  </data>
+  <data name="Tickets_LoadingTickets" xml:space="preserve">
+    <value>Učitavanje karata...</value>
+  </data>
+  <data name="Tickets_FiltersPanelTitle" xml:space="preserve">
+    <value>Filtri</value>
+  </data>
+  <data name="Tickets_ResetButton" xml:space="preserve">
+    <value>Resetiraj</value>
+  </data>
+  <data name="Tickets_FilterByEventLabel" xml:space="preserve">
+    <value>Filtriraj po gebeurtenaju</value>
+  </data>
+  <data name="Tickets_AllEventsOption" xml:space="preserve">
+    <value>Svi događaji</value>
+  </data>
+  <data name="Tickets_FilterByStatusLabel" xml:space="preserve">
+    <value>Filtriraj po statusu</value>
+  </data>
+  <data name="Tickets_AllTicketsOption" xml:space="preserve">
+    <value>Sve karte</value>
+  </data>
+  <data name="Tickets_ActiveOption" xml:space="preserve">
+    <value>Aktivne</value>
+  </data>
+  <data name="Tickets_InactiveOption" xml:space="preserve">
+    <value>Neaktivne</value>
+  </data>
+  <data name="Tickets_SearchLabel" xml:space="preserve">
+    <value>Pretraživanje</value>
+  </data>
+  <data name="Tickets_SearchPlaceholder" xml:space="preserve">
+    <value>Pretraživanje po broju karte, kupcu...</value>
+  </data>
+  <data name="Tickets_TotalTicketsLabel" xml:space="preserve">
+    <value>Ukupno karata</value>
+  </data>
+  <data name="Tickets_AllTicketsRecordHint" xml:space="preserve">
+    <value>Sve karte u evidenciji</value>
+  </data>
+  <data name="Tickets_ActiveTicketsLabel" xml:space="preserve">
+    <value>Aktivne karte</value>
+  </data>
+  <data name="Tickets_CurrentlyValidHint" xml:space="preserve">
+    <value>Trenutno valjane</value>
+  </data>
+  <data name="Tickets_TotalRevenueLabel" xml:space="preserve">
+    <value>Ukupan prihod</value>
+  </data>
+  <data name="Tickets_AcrossAllTicketsHint" xml:space="preserve">
+    <value>Ukupno od svih karata</value>
+  </data>
+  <data name="Tickets_UniqueEventsLabel" xml:space="preserve">
+    <value>Jedinstveni događaji</value>
+  </data>
+  <data name="Tickets_EventsWithTicketsHint" xml:space="preserve">
+    <value>Događaji sa kartama</value>
+  </data>
+  <data name="Tickets_NoTicketsFound" xml:space="preserve">
+    <value>Nema pronađenih karata</value>
+  </data>
+  <data name="Tickets_NoTicketsFilters" xml:space="preserve">
+    <value>Nema karata koje odgovaraju trenutnim filtrima.</value>
+  </data>
+  <data name="Tickets_TicketsPanelTitle" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="Tickets_TicketNumberHeader" xml:space="preserve">
+    <value>Broj karte</value>
+  </data>
+  <data name="Tickets_EventHeader" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="Tickets_DateHeader" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Tickets_SeatHeader" xml:space="preserve">
+    <value>Mjesto</value>
+  </data>
+  <data name="Tickets_CustomerHeader" xml:space="preserve">
+    <value>Kupac</value>
+  </data>
+  <data name="Tickets_PurchaseDateHeader" xml:space="preserve">
+    <value>Datum kupnje</value>
+  </data>
+  <data name="Tickets_PriceHeader" xml:space="preserve">
+    <value>Cijena</value>
+  </data>
+  <data name="Tickets_StatusHeader" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Tickets_ActionsHeader" xml:space="preserve">
+    <value>Akcije</value>
+  </data>
+  <data name="Tickets_RowLabel" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Tickets_SeatLabel" xml:space="preserve">
+    <value>Mjesto</value>
+  </data>
+  <data name="Tickets_ActiveStatus" xml:space="preserve">
+    <value>Aktivna</value>
+  </data>
+  <data name="Tickets_InactiveStatus" xml:space="preserve">
+    <value>Neaktivna</value>
+  </data>
+  <data name="Tickets_ViewOrderTitle" xml:space="preserve">
+    <value>Prikaži narudžbu</value>
+  </data>
+  <data name="Tickets_ValidateTicketTitle" xml:space="preserve">
+    <value>Validiraj kartu</value>
+  </data>
+  <data name="Tickets_DeactivateTicketTitle" xml:space="preserve">
+    <value>Deaktiviraj kartu</value>
+  </data>
+  <data name="Tickets_ActivateTicketTitle" xml:space="preserve">
+    <value>Aktiviraj kartu</value>
+  </data>
+  <data name="Events_PageTitle" xml:space="preserve">
+    <value>Upravljanje događajima</value>
+  </data>
+  <data name="Events_Eyebrow" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="Events_Title" xml:space="preserve">
+    <value>Upravljanje događajima</value>
+  </data>
+  <data name="Events_Subtitle" xml:space="preserve">
+    <value>Kreirajte, aktivirajte i upravljajte stadijonskim događajima</value>
+  </data>
+  <data name="Events_CreateButton" xml:space="preserve">
+    <value>Kreiraj novi događaj</value>
+  </data>
+  <data name="Events_Loading" xml:space="preserve">
+    <value>Učitavanje događaja...</value>
+  </data>
+  <data name="Events_ErrorTitle" xml:space="preserve">
+    <value>Greška pri učitavanju događaja</value>
+  </data>
+  <data name="Events_RetryButton" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="Events_NoEventsFound" xml:space="preserve">
+    <value>Nema pronađenih događaja</value>
+  </data>
+  <data name="Events_EmptyMessage" xml:space="preserve">
+    <value>Započnite kreiranjem vašeg prvog događaja.</value>
+  </data>
+  <data name="Events_CreateFirstButton" xml:space="preserve">
+    <value>Kreiraj prvi događaj</value>
+  </data>
+  <data name="Events_TotalEventsLabel" xml:space="preserve">
+    <value>Ukupno događaja</value>
+  </data>
+  <data name="Events_TotalEventsHint" xml:space="preserve">
+    <value>Svi događaji u evidenciji</value>
+  </data>
+  <data name="Events_OnSaleLabel" xml:space="preserve">
+    <value>Na prodaji</value>
+  </data>
+  <data name="Events_OnSaleHint" xml:space="preserve">
+    <value>Trenutno dostupni za prodaju karata</value>
+  </data>
+  <data name="Events_TotalCapacityLabel" xml:space="preserve">
+    <value>Ukupni kapacitet</value>
+  </data>
+  <data name="Events_TotalCapacityHint" xml:space="preserve">
+    <value>Mjesta na svim događajima</value>
+  </data>
+  <data name="Events_PanelTitle" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="Events_DateLabel" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Events_LocationLabel" xml:space="preserve">
+    <value>Lokacija</value>
+  </data>
+  <data name="Events_CapacityLabel" xml:space="preserve">
+    <value>Kapacitet</value>
+  </data>
+  <data name="Events_SeatsLabel" xml:space="preserve">
+    <value>mjesta</value>
+  </data>
+  <data name="Events_BasePriceLabel" xml:space="preserve">
+    <value>Bazna cijena</value>
+  </data>
+  <data name="Events_PhaseLabel" xml:space="preserve">
+    <value>Faza</value>
+  </data>
+  <data name="Events_SellingStatus" xml:space="preserve">
+    <value>Prodaja</value>
+  </data>
+  <data name="Events_OrdersStatus" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="Events_EditButton" xml:space="preserve">
+    <value>Uredi</value>
+  </data>
+  <data name="Events_DeleteButton" xml:space="preserve">
+    <value>Obriši</value>
+  </data>
+  <data name="Events_CreateModalTitle" xml:space="preserve">
+    <value>Kreiraj novi događaj</value>
+  </data>
+  <data name="Events_EditModalTitle" xml:space="preserve">
+    <value>Uredi događaj</value>
+  </data>
+  <data name="Events_EventNameLabel" xml:space="preserve">
+    <value>Naziv događaja *</value>
+  </data>
+  <data name="Events_LocationFieldLabel" xml:space="preserve">
+    <value>Lokacija *</value>
+  </data>
+  <data name="Events_DescriptionFieldLabel" xml:space="preserve">
+    <value>Opis</value>
+  </data>
+  <data name="Events_DateTimeLabel" xml:space="preserve">
+    <value>Datum i vrijeme događaja *</value>
+  </data>
+  <data name="Events_CapacityFieldLabel" xml:space="preserve">
+    <value>Kapacitet *</value>
+  </data>
+  <data name="Events_BasePriceFieldLabel" xml:space="preserve">
+    <value>Bazna cijena *</value>
+  </data>
+  <data name="Events_StatusFieldLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Events_ActiveLabel" xml:space="preserve">
+    <value>Aktivno (dostupno za prodaju karata)</value>
+  </data>
+  <data name="Events_CancelButton" xml:space="preserve">
+    <value>Otkaži</value>
+  </data>
+  <data name="Events_CreateEventButton" xml:space="preserve">
+    <value>Kreiraj događaj</value>
+  </data>
+  <data name="Events_SaveChangesButton" xml:space="preserve">
+    <value>Spremi izmjene</value>
+  </data>
+  <data name="Orders_PageTitle" xml:space="preserve">
+    <value>Upravljanje narudžbama - Stadion Admin</value>
+  </data>
+  <data name="Orders_Eyebrow" xml:space="preserve">
+    <value>Operacije</value>
+  </data>
+  <data name="Orders_Title" xml:space="preserve">
+    <value>Upravljanje narudžbama</value>
+  </data>
+  <data name="Orders_Subtitle" xml:space="preserve">
+    <value>Upravljajte i pratite sve narudžbe pića na stadionu</value>
+  </data>
+  <data name="Orders_NewButton" xml:space="preserve">
+    <value>Nova narudžba</value>
+  </data>
+  <data name="Orders_RefreshTitle" xml:space="preserve">
+    <value>Osvježi podatke</value>
+  </data>
+  <data name="Orders_TotalLabel" xml:space="preserve">
+    <value>Ukupno narudžbi</value>
+  </data>
+  <data name="Orders_TotalHint" xml:space="preserve">
+    <value>Sve narudžbe u evidenciji</value>
+  </data>
+  <data name="Orders_PendingLabel" xml:space="preserve">
+    <value>Narudžbe na čekanju</value>
+  </data>
+  <data name="Orders_PendingHint" xml:space="preserve">
+    <value>Čekaju na prihvaćanje</value>
+  </data>
+  <data name="Orders_CompletedLabel" xml:space="preserve">
+    <value>Završene danas</value>
+  </data>
+  <data name="Orders_CompletedHint" xml:space="preserve">
+    <value>Dostavljene od ponoći</value>
+  </data>
+  <data name="Orders_RevenueLabel" xml:space="preserve">
+    <value>Prihod danas</value>
+  </data>
+  <data name="Orders_RevenueHint" xml:space="preserve">
+    <value>Dostavljene narudžbe</value>
+  </data>
+  <data name="Orders_FiltersTitle" xml:space="preserve">
+    <value>Filtri</value>
+  </data>
+  <data name="Orders_ClearButton" xml:space="preserve">
+    <value>Očisti</value>
+  </data>
+  <data name="Orders_StatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Orders_AllStatusesOption" xml:space="preserve">
+    <value>Svi statusi</value>
+  </data>
+  <data name="Orders_PendingOption" xml:space="preserve">
+    <value>Na čekanju</value>
+  </data>
+  <data name="Orders_AcceptedOption" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="Orders_InPreparationOption" xml:space="preserve">
+    <value>U pripremi</value>
+  </data>
+  <data name="Orders_ReadyOption" xml:space="preserve">
+    <value>Spremno</value>
+  </data>
+  <data name="Orders_OutForDeliveryOption" xml:space="preserve">
+    <value>U isporici</value>
+  </data>
+  <data name="Orders_DeliveredOption" xml:space="preserve">
+    <value>Dostavljeno</value>
+  </data>
+  <data name="Orders_CancelledOption" xml:space="preserve">
+    <value>Otkazano</value>
+  </data>
+  <data name="Orders_CustomerSearchLabel" xml:space="preserve">
+    <value>Pretraživanje kupca</value>
+  </data>
+  <data name="Orders_SearchPlaceholder" xml:space="preserve">
+    <value>Pretraži po imenu kupca</value>
+  </data>
+  <data name="Orders_FromDateLabel" xml:space="preserve">
+    <value>Od datuma</value>
+  </data>
+  <data name="Orders_ToDateLabel" xml:space="preserve">
+    <value>Do datuma</value>
+  </data>
+  <data name="Orders_Loading" xml:space="preserve">
+    <value>Učitavanje narudžbi...</value>
+  </data>
+  <data name="Orders_PanelTitle" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="Orders_AcceptButtonText" xml:space="preserve">
+    <value>Prihvati ({0})</value>
+  </data>
+  <data name="Orders_CancelBulkButton" xml:space="preserve">
+    <value>Otkaži</value>
+  </data>
+  <data name="Orders_OrderHeader" xml:space="preserve">
+    <value>Narudžba</value>
+  </data>
+  <data name="Orders_CustomerHeader" xml:space="preserve">
+    <value>Kupac</value>
+  </data>
+  <data name="Orders_ItemsHeader" xml:space="preserve">
+    <value>Stavke</value>
+  </data>
+  <data name="Orders_TotalHeader" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="Orders_StatusHeader" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Orders_CreatedHeader" xml:space="preserve">
+    <value>Kreirano</value>
+  </data>
+  <data name="Orders_ActionsHeader" xml:space="preserve">
+    <value>Akcije</value>
+  </data>
+  <data name="Orders_ItemsSuffix" xml:space="preserve">
+    <value>stavke</value>
+  </data>
+  <data name="Orders_ViewTitle" xml:space="preserve">
+    <value>Prikaži narudžbu</value>
+  </data>
+  <data name="Orders_AcceptTitle" xml:space="preserve">
+    <value>Prihvati narudžbu</value>
+  </data>
+  <data name="Orders_AdvanceTitle" xml:space="preserve">
+    <value>Napreduj status</value>
+  </data>
+  <data name="Orders_ShowingMessage" xml:space="preserve">
+    <value>Prikazujem prvih 50 od {0} ukupnih narudžbi</value>
+  </data>
+  <data name="Orders_LoadMoreButton" xml:space="preserve">
+    <value>Učitaj više</value>
+  </data>
+  <data name="Orders_NoOrdersFound" xml:space="preserve">
+    <value>Nema pronađenih narudžbi</value>
+  </data>
+  <data name="Orders_NoOrdersMessage" xml:space="preserve">
+    <value>Nema narudžbi koje se podudaraju s vašim trenutnim filtrima.</value>
+  </data>
+  <data name="Analytics_PageTitle" xml:space="preserve">
+    <value>Analitika</value>
+  </data>
+  <data name="Analytics_Eyebrow" xml:space="preserve">
+    <value>Analitika</value>
+  </data>
+  <data name="Analytics_Title" xml:space="preserve">
+    <value>Nadzorna ploča analitike</value>
+  </data>
+  <data name="Analytics_Subtitle" xml:space="preserve">
+    <value>Sveobuhvatan pregled sustava, prodaje i trendova</value>
+  </data>
+  <data name="Analytics_RefreshTitle" xml:space="preserve">
+    <value>Osvježi podatke</value>
+  </data>
+  <data name="Analytics_Loading" xml:space="preserve">
+    <value>Učitavanje podataka analitike...</value>
+  </data>
+  <data name="Analytics_RetryButton" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="Analytics_DashboardTitle" xml:space="preserve">
+    <value>Nadzorna ploča analitike</value>
+  </data>
+  <data name="Analytics_InfoMessage" xml:space="preserve">
+    <value>Napredne analitičke značajke su trenutno u razvoju. Koristite brze akcije ispod za pristup dostupnoj analitici i izvještajima.</value>
+  </data>
+  <data name="Analytics_AvailableEventsTitle" xml:space="preserve">
+    <value>Dostupni događaji</value>
+  </data>
+  <data name="Analytics_EventNameHeader" xml:space="preserve">
+    <value>Naziv događaja</value>
+  </data>
+  <data name="Analytics_DateHeader" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Analytics_LocationHeader" xml:space="preserve">
+    <value>Lokacija</value>
+  </data>
+  <data name="Analytics_StatusHeader" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Analytics_TBDLabel" xml:space="preserve">
+    <value>Trebadoo</value>
+  </data>
+  <data name="Analytics_ActiveStatus" xml:space="preserve">
+    <value>Aktivno</value>
+  </data>
+  <data name="Analytics_InactiveStatus" xml:space="preserve">
+    <value>Neaktivno</value>
+  </data>
+  <data name="Analytics_ReportsTitle" xml:space="preserve">
+    <value>Analitika i izvještaji</value>
+  </data>
+  <data name="Analytics_CustomerAnalyticsButton" xml:space="preserve">
+    <value>Analitika kupaca</value>
+  </data>
+  <data name="Analytics_EventManagementButton" xml:space="preserve">
+    <value>Upravljanje događajima</value>
+  </data>
+  <data name="Analytics_OrderReportsButton" xml:space="preserve">
+    <value>Izvještaji o narudžbama</value>
+  </data>
+  <data name="Analytics_SystemLogsButton" xml:space="preserve">
+    <value>Sustavski zapisnici</value>
+  </data>
+  <data name="CustAnalytics_PageTitle" xml:space="preserve">
+    <value>Analitika Kupaca</value>
+  </data>
+  <data name="CustAnalytics_Eyebrow" xml:space="preserve">
+    <value>Analitika</value>
+  </data>
+  <data name="CustAnalytics_Title" xml:space="preserve">
+    <value>Analitika Kupaca</value>
+  </data>
+  <data name="CustAnalytics_Subtitle" xml:space="preserve">
+    <value>Pregledajte i analizirajte ponašanje kupaca pri kupnji i obrasce trošenja</value>
+  </data>
+  <data name="CustAnalytics_ExportCSV" xml:space="preserve">
+    <value>Izvezi CSV</value>
+  </data>
+  <data name="CustAnalytics_Loading" xml:space="preserve">
+    <value>Učitavanje analitike kupaca…</value>
+  </data>
+  <data name="CustAnalytics_Retry" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="CustAnalytics_TotalCustomers" xml:space="preserve">
+    <value>Ukupno Kupaca</value>
+  </data>
+  <data name="CustAnalytics_AllTimeRegistered" xml:space="preserve">
+    <value>Svi registrirani kupci do sada</value>
+  </data>
+  <data name="CustAnalytics_TotalRevenue" xml:space="preserve">
+    <value>Ukupni Prihod</value>
+  </data>
+  <data name="CustAnalytics_TicketsDrinksCombined" xml:space="preserve">
+    <value>Karte i pića zajedno</value>
+  </data>
+  <data name="CustAnalytics_AvgCustomerValue" xml:space="preserve">
+    <value>Prosječna Vrijednost Kupca</value>
+  </data>
+  <data name="CustAnalytics_RevenuePerCustomer" xml:space="preserve">
+    <value>Prihod po kupcu</value>
+  </data>
+  <data name="CustAnalytics_ActiveLast30" xml:space="preserve">
+    <value>Aktivni Zadnjih 30 Dana</value>
+  </data>
+  <data name="CustAnalytics_RecentlyEngaged" xml:space="preserve">
+    <value>Nedavno uključeni kupci</value>
+  </data>
+  <data name="CustAnalytics_FiltersSearch" xml:space="preserve">
+    <value>Filtri &amp; Pretraga</value>
+  </data>
+  <data name="CustAnalytics_ToggleFilters" xml:space="preserve">
+    <value>Prikaži/Sakrij filtre</value>
+  </data>
+  <data name="CustAnalytics_SearchCustomer" xml:space="preserve">
+    <value>Pretraži Kupca</value>
+  </data>
+  <data name="CustAnalytics_SearchPlaceholder" xml:space="preserve">
+    <value>Pretraži po imenu ili e-mailu…</value>
+  </data>
+  <data name="CustAnalytics_MinSpent" xml:space="preserve">
+    <value>Min Potrošeno (€)</value>
+  </data>
+  <data name="CustAnalytics_MaxSpent" xml:space="preserve">
+    <value>Maks Potrošeno (€)</value>
+  </data>
+  <data name="CustAnalytics_SortBy" xml:space="preserve">
+    <value>Sortiraj po</value>
+  </data>
+  <data name="CustAnalytics_Sort_TotalSpent" xml:space="preserve">
+    <value>Ukupno Potrošeno</value>
+  </data>
+  <data name="CustAnalytics_Sort_CustomerName" xml:space="preserve">
+    <value>Ime Kupca</value>
+  </data>
+  <data name="CustAnalytics_Sort_TicketsPurchased" xml:space="preserve">
+    <value>Kupljene Karte</value>
+  </data>
+  <data name="CustAnalytics_Sort_LastPurchase" xml:space="preserve">
+    <value>Zadnja Kupnja</value>
+  </data>
+  <data name="CustAnalytics_Order" xml:space="preserve">
+    <value>Redoslijed</value>
+  </data>
+  <data name="CustAnalytics_Descending" xml:space="preserve">
+    <value>Silazno</value>
+  </data>
+  <data name="CustAnalytics_Ascending" xml:space="preserve">
+    <value>Uzlazno</value>
+  </data>
+  <data name="CustAnalytics_RefineList" xml:space="preserve">
+    <value>Pročistite listu kupaca koristeći filtre gore.</value>
+  </data>
+  <data name="CustAnalytics_ApplyFilters" xml:space="preserve">
+    <value>Primijeni Filtre</value>
+  </data>
+  <data name="CustAnalytics_Clear" xml:space="preserve">
+    <value>Očisti</value>
+  </data>
+  <data name="CustAnalytics_CustomerList" xml:space="preserve">
+    <value>Lista Kupaca</value>
+  </data>
+  <data name="CustAnalytics_Total" xml:space="preserve">
+    <value>ukupno</value>
+  </data>
+  <data name="CustAnalytics_Show" xml:space="preserve">
+    <value>Prikaži</value>
+  </data>
+  <data name="CustAnalytics_HeaderCustomer" xml:space="preserve">
+    <value>Kupac</value>
+  </data>
+  <data name="CustAnalytics_HeaderTotalSpent" xml:space="preserve">
+    <value>Ukupno Potrošeno</value>
+  </data>
+  <data name="CustAnalytics_HeaderTickets" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="CustAnalytics_HeaderEvents" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="CustAnalytics_HeaderAvgTransaction" xml:space="preserve">
+    <value>Prosj./Transakcija</value>
+  </data>
+  <data name="CustAnalytics_HeaderLastPurchase" xml:space="preserve">
+    <value>Zadnja Kupnja</value>
+  </data>
+  <data name="CustAnalytics_HeaderActions" xml:space="preserve">
+    <value>Akcije</value>
+  </data>
+  <data name="CustAnalytics_ViewDetails" xml:space="preserve">
+    <value>Pogledaj detalje</value>
+  </data>
+  <data name="CustAnalytics_ShowingResults" xml:space="preserve">
+    <value>Prikazivanje {0} do {1} od {2} kupaca</value>
+  </data>
+  <data name="CustAnalytics_PreviousPage" xml:space="preserve">
+    <value>Prethodna stranica</value>
+  </data>
+  <data name="CustAnalytics_NextPage" xml:space="preserve">
+    <value>Sljedeća stranica</value>
+  </data>
+  <data name="CustAnalytics_NoCustomersFound" xml:space="preserve">
+    <value>Nema kupaca koji odgovaraju vašim kriterijima</value>
+  </data>
+  <data name="CustAnalytics_AdjustFilters" xml:space="preserve">
+    <value>Pokušajte prilagoditi ili očistiti filtre.</value>
+  </data>
+  <data name="CustAnalytics_ClearFilters" xml:space="preserve">
+    <value>Očisti Filtre</value>
+  </data>
+  <data name="Dash_PageTitle" xml:space="preserve">
+    <value>Admin Nadzorna Ploča Stadiona</value>
+  </data>
+  <data name="Dash_Eyebrow" xml:space="preserve">
+    <value>Operacije</value>
+  </data>
+  <data name="Dash_Title" xml:space="preserve">
+    <value>Nadzorna Ploča Utakmica</value>
+  </data>
+  <data name="Dash_Subtitle" xml:space="preserve">
+    <value>Operacije pića u stadionu uživo</value>
+  </data>
+  <data name="Dash_AutoRefreshing" xml:space="preserve">
+    <value>Automatski se osvježava svakih 30 sekundi</value>
+  </data>
+  <data name="Dash_Syncing" xml:space="preserve">
+    <value>SINHRONIZACIJA</value>
+  </data>
+  <data name="Dash_Live" xml:space="preserve">
+    <value>UŽIVO</value>
+  </data>
+  <data name="Dash_RefreshData" xml:space="preserve">
+    <value>Osvježi podatke</value>
+  </data>
+  <data name="Dash_ToggleTheme" xml:space="preserve">
+    <value>Promijeni temu</value>
+  </data>
+  <data name="Dash_LoadingProgress" xml:space="preserve">
+    <value>Napredak učitavanja nadzorne ploče</value>
+  </data>
+  <data name="Dash_Updated" xml:space="preserve">
+    <value>Ažurirano</value>
+  </data>
+  <data name="Dash_AutoRefreshOn" xml:space="preserve">
+    <value>automatsko osvježavanje uključeno</value>
+  </data>
+  <data name="Dash_LoadingStatus" xml:space="preserve">
+    <value>Stanje učitavanja nadzorne ploče</value>
+  </data>
+  <data name="Dash_LoadingMetrics" xml:space="preserve">
+    <value>Učitavanje podataka metrika</value>
+  </data>
+  <data name="Dash_TotalOrders" xml:space="preserve">
+    <value>Ukupne Narudžbe</value>
+  </data>
+  <data name="Dash_VsYesterday" xml:space="preserve">
+    <value>u odnosu na yesterday</value>
+  </data>
+  <data name="Dash_ActiveOrders" xml:space="preserve">
+    <value>Aktivne Narudžbe</value>
+  </data>
+  <data name="Dash_InQueue" xml:space="preserve">
+    <value>U redu čekanja sad</value>
+  </data>
+  <data name="Dash_TodaysRevenue" xml:space="preserve">
+    <value>Danas Prihod</value>
+  </data>
+  <data name="Dash_SystemHealth" xml:space="preserve">
+    <value>Zdravlje Sustava</value>
+  </data>
+  <data name="Dash_LoadingOrdersSystem" xml:space="preserve">
+    <value>Učitavanje narudžbi i sistemskih podataka</value>
+  </data>
+  <data name="Dash_RecentOrders" xml:space="preserve">
+    <value>Nedavne Narudžbe</value>
+  </data>
+  <data name="Dash_ViewAll" xml:space="preserve">
+    <value>Pogledaj sve</value>
+  </data>
+  <data name="Dash_HeaderOrder" xml:space="preserve">
+    <value>Narudžba</value>
+  </data>
+  <data name="Dash_HeaderCustomer" xml:space="preserve">
+    <value>Kupac</value>
+  </data>
+  <data name="Dash_HeaderAmount" xml:space="preserve">
+    <value>Iznos</value>
+  </data>
+  <data name="Dash_HeaderStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Dash_HeaderTime" xml:space="preserve">
+    <value>Vrijeme</value>
+  </data>
+  <data name="Dash_NoOrdersToday" xml:space="preserve">
+    <value>Nema narudžbi prije</value>
+  </data>
+  <data name="Dash_OrdersAppearHere" xml:space="preserve">
+    <value>Nove narudžbe će se pojaviti ovdje kako stižu.</value>
+  </data>
+  <data name="Dash_QuickActions" xml:space="preserve">
+    <value>Brze Akcije</value>
+  </data>
+  <data name="Dash_NewOrder" xml:space="preserve">
+    <value>Nova Narudžba</value>
+  </data>
+  <data name="Dash_AddUser" xml:space="preserve">
+    <value>Dodaj Korisnika</value>
+  </data>
+  <data name="Dash_ExportReports" xml:space="preserve">
+    <value>Izvezi Izvještaje</value>
+  </data>
+  <data name="Dash_ViewLogs" xml:space="preserve">
+    <value>Pregledaj Logove</value>
+  </data>
+  <data name="Dash_SystemStatus" xml:space="preserve">
+    <value>Status Sustava</value>
+  </data>
+  <data name="Dash_Database" xml:space="preserve">
+    <value>Baza Podataka</value>
+  </data>
+  <data name="Dash_Connected" xml:space="preserve">
+    <value>Spojena</value>
+  </data>
+  <data name="Dash_APIHealth" xml:space="preserve">
+    <value>API Zdravlje</value>
+  </data>
+  <data name="Dash_Healthy" xml:space="preserve">
+    <value>Zdravo</value>
+  </data>
+  <data name="Dash_Cache" xml:space="preserve">
+    <value>Cache</value>
+  </data>
+  <data name="Dash_Active" xml:space="preserve">
+    <value>Aktivno</value>
+  </data>
+  <data name="Dash_BackgroundServices" xml:space="preserve">
+    <value>Pozadinske Usluge</value>
+  </data>
+  <data name="Dash_Running" xml:space="preserve">
+    <value>Pokrenut</value>
+  </data>
+  <data name="Index_PageTitle" xml:space="preserve">
+    <value>Admin Nadzorna Ploča Stadiona</value>
+  </data>
+  <data name="Index_LoadingEvents" xml:space="preserve">
+    <value>Učitavanje događaja…</value>
+  </data>
+  <data name="Index_PreviousEvent" xml:space="preserve">
+    <value>Prethodni događaj</value>
+  </data>
+  <data name="Index_EventPosition" xml:space="preserve">
+    <value>Događaj {0} / {1}</value>
+  </data>
+  <data name="Index_ReturnToCurrent" xml:space="preserve">
+    <value>Vrati se na trenutni događaj</value>
+  </data>
+  <data name="Index_Current" xml:space="preserve">
+    <value>Trenutni</value>
+  </data>
+  <data name="Index_SelectEvent" xml:space="preserve">
+    <value>Odaberi događaj</value>
+  </data>
+  <data name="Index_NextEvent" xml:space="preserve">
+    <value>Sljedeći događaj</value>
+  </data>
+  <data name="Index_NoEvents" xml:space="preserve">
+    <value>Nema događaja. Kreirajte događaj da pratite operacije utakmica.</value>
+  </data>
+  <data name="Index_CreateEvent" xml:space="preserve">
+    <value>Kreiraj Događaj</value>
+  </data>
+  <data name="Index_TicketsSold" xml:space="preserve">
+    <value>Prodane Karte</value>
+  </data>
+  <data name="Index_OfSeats" xml:space="preserve">
+    <value>od {0} mjesta</value>
+  </data>
+  <data name="Index_TotalRevenue" xml:space="preserve">
+    <value>Ukupni Prihod</value>
+  </data>
+  <data name="Index_ForThisEvent" xml:space="preserve">
+    <value>za ovaj događaj</value>
+  </data>
+  <data name="Index_ActiveOrders" xml:space="preserve">
+    <value>Aktivne Narudžbe</value>
+  </data>
+  <data name="Index_DrinksInProgress" xml:space="preserve">
+    <value>pića · u tijeku</value>
+  </data>
+  <data name="Index_UserSatisfaction" xml:space="preserve">
+    <value>Zadovoljstvo Korisnika</value>
+  </data>
+  <data name="Index_NPSComingSoon" xml:space="preserve">
+    <value>(NPS) · uskoro</value>
+  </data>
+  <data name="Index_StadiumOverview" xml:space="preserve">
+    <value>Pregled Stadiona u Stvarnom Vremenu</value>
+  </data>
+  <data name="Index_RecentOrders" xml:space="preserve">
+    <value>Nedavne Narudžbe</value>
+  </data>
+  <data name="Index_HeaderID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Index_HeaderSeat" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="Index_HeaderAmount" xml:space="preserve">
+    <value>Iznos</value>
+  </data>
+  <data name="Index_HeaderStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Index_SelectEventPrompt" xml:space="preserve">
+    <value>Odaberite događaj</value>
+  </data>
+  <data name="Index_NoOrdersThisEvent" xml:space="preserve">
+    <value>Nema narudžbi za ovaj događaj</value>
+  </data>
+  <data name="Index_ViewAllOrders" xml:space="preserve">
+    <value>Vidi sve narudžbe</value>
+  </data>
+  <data name="Index_CentralizedLogs" xml:space="preserve">
+    <value>Centralizirani Logovi</value>
+  </data>
+  <data name="Index_ViewAllLogs" xml:space="preserve">
+    <value>Vidi sve Logove</value>
+  </data>
+  <data name="Index_SystemHealthQuickActions" xml:space="preserve">
+    <value>Zdravlje Sustava &amp; Brze Akcije</value>
+  </data>
+  <data name="Index_Connected" xml:space="preserve">
+    <value>SPOJENA</value>
+  </data>
+  <data name="Index_Database" xml:space="preserve">
+    <value>Baza Podataka (PostgreSQL)</value>
+  </data>
+  <data name="Index_Healthy" xml:space="preserve">
+    <value>ZDRAVO</value>
+  </data>
+  <data name="Index_APIHealth" xml:space="preserve">
+    <value>API Zdravlje</value>
+  </data>
+  <data name="Index_Active" xml:space="preserve">
+    <value>AKTIVNO</value>
+  </data>
+  <data name="Index_Cache" xml:space="preserve">
+    <value>Cache</value>
+  </data>
+  <data name="Index_Running" xml:space="preserve">
+    <value>POKRENUTO</value>
+  </data>
+  <data name="Index_BackgroundServices" xml:space="preserve">
+    <value>Pozadinske Usluge</value>
+  </data>
+  <data name="Index_NewOrder" xml:space="preserve">
+    <value>Nova Narudžba</value>
+  </data>
+  <data name="Index_AddUser" xml:space="preserve">
+    <value>Dodaj Korisnika</value>
+  </data>
+  <data name="Index_ExportReport" xml:space="preserve">
+    <value>Izvezi Izvještaj</value>
+  </data>
+  <data name="Index_ViewLogs" xml:space="preserve">
+    <value>Vidi Logove</value>
+  </data>
+  <data name="Overview_Title" xml:space="preserve">
+    <value>Centar operacija stadiona</value>
+  </data>
+  <data name="Overview_Subtitle" xml:space="preserve">
+    <value>Kontrolna ploča za upravljanje stadionom u stvarnom vremenu</value>
+  </data>
+  <data name="Overview_Loading" xml:space="preserve">
+    <value>Učitavanje...</value>
+  </data>
+  <data name="Overview_SystemOnline" xml:space="preserve">
+    <value>Sustav je pokrenut</value>
+  </data>
+  <data name="Overview_SelectEvent" xml:space="preserve">
+    <value>Odaberite događaj:</value>
+  </data>
+  <data name="Overview_NoEventSelected" xml:space="preserve">
+    <value>-- Nema odabranog događaja --</value>
+  </data>
+  <data name="Overview_LoadingStadiumLayout" xml:space="preserve">
+    <value>Učitavanje rasporeda stadiona...</value>
+  </data>
+  <data name="Overview_StadiumLayoutAlt" xml:space="preserve">
+    <value>Raspored stadiona</value>
+  </data>
+  <data name="Overview_NoSectorOverlaysTitle" xml:space="preserve">
+    <value>Nema konfiguriranih slika sektora</value>
+  </data>
+  <data name="Overview_NoSectorOverlaysMessage" xml:space="preserve">
+    <value>Koristite alat za crtanje stadiona kako biste kreirali slike sektora</value>
+  </data>
+  <data name="Overview_OpenDrawingToolBtn" xml:space="preserve">
+    <value>Otvori alat za crtanje</value>
+  </data>
+  <data name="Overview_OccupancyLegend" xml:space="preserve">
+    <value>Legenda zaposlenosti</value>
+  </data>
+  <data name="Overview_AvailableLabel" xml:space="preserve">
+    <value>Dostupno (0-49%)</value>
+  </data>
+  <data name="Overview_PartialLabel" xml:space="preserve">
+    <value>Djelomično (50-89%)</value>
+  </data>
+  <data name="Overview_FullLabel" xml:space="preserve">
+    <value>Popunjeno (90-100%)</value>
+  </data>
+  <data name="Overview_VipLabel" xml:space="preserve">
+    <value>VIP sektor</value>
+  </data>
+  <data name="InfoPanel_Title" xml:space="preserve">
+    <value>Centar obavještavanja stadiona</value>
+  </data>
+  <data name="InfoPanel_Subtitle" xml:space="preserve">
+    <value>Analitika u stvarnom vremenu i operativni uvidi</value>
+  </data>
+  <data name="InfoPanel_ExpandAnalytics" xml:space="preserve">
+    <value>Proširite analitiku</value>
+  </data>
+  <data name="InfoPanel_MinimizePanel" xml:space="preserve">
+    <value>Minimiziraj ploču</value>
+  </data>
+  <data name="InfoPanel_TotalCapacity" xml:space="preserve">
+    <value>Ukupan kapacitet</value>
+  </data>
+  <data name="InfoPanel_ActiveSectors" xml:space="preserve">
+    <value>Aktivni sektori</value>
+  </data>
+  <data name="InfoPanel_StadiumStructure" xml:space="preserve">
+    <value>Struktura stadiona</value>
+  </data>
+  <data name="InfoPanel_Tribunes" xml:space="preserve">
+    <value>Tribine</value>
+  </data>
+  <data name="InfoPanel_Rings" xml:space="preserve">
+    <value>Razine</value>
+  </data>
+  <data name="InfoPanel_LiveOccupancy" xml:space="preserve">
+    <value>Analitika zaposlenosti u stvarnom vremenu</value>
+  </data>
+  <data name="InfoPanel_Occupied" xml:space="preserve">
+    <value>Zauzeto</value>
+  </data>
+  <data name="InfoPanel_AvailableSeats" xml:space="preserve">
+    <value>Dostupna mjesta</value>
+  </data>
+  <data name="InfoPanel_OccupiedSeats" xml:space="preserve">
+    <value>Zauzeta mjesta</value>
+  </data>
+  <data name="InfoPanel_AnalyzingData" xml:space="preserve">
+    <value>Analiza podataka stadiona</value>
+  </data>
+  <data name="InfoPanel_GatheringInsights" xml:space="preserve">
+    <value>Prikupljanje uvida u stvarnom vremenu...</value>
+  </data>
+  <data name="InfoPanel_NoDataAvailable" xml:space="preserve">
+    <value>Nema dostupnih podataka stadiona</value>
+  </data>
+  <data name="InfoPanel_ImportStructureMessage" xml:space="preserve">
+    <value>Uvezite strukturu stadiona kako biste počeli s analitikom</value>
+  </data>
+  <data name="InfoPanel_ImportStructureBtn" xml:space="preserve">
+    <value>Uvezi strukturu</value>
+  </data>
+  <data name="SvgRender_LoadingHidden" xml:space="preserve">
+    <value>Učitavanje rasporeda stadiona...</value>
+  </data>
+  <data name="SvgRender_LoadingText" xml:space="preserve">
+    <value>Učitavanje dinamičkog rasporeda stadiona...</value>
   </data>
 </root>

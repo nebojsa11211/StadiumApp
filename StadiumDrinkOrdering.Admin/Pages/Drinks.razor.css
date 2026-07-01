@@ -1,0 +1,65 @@
+/* =============================================================================
+   Drink Management — page-specific helpers
+   Structural styling layers on top of the global Operations Console system
+   (admin-console.css). Only bits with no console equivalent live here:
+   catalog thumbnail, truncated description cell, labeled row buttons.
+   ============================================================================= */
+
+/* Drink name + thumbnail in the first table cell */
+.drink-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.drink-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 7px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--stadium-gray-200, #e9ecef);
+}
+
+.drink-thumb--ph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--stadium-gray-100, #f1f3f5);
+    font-size: 1.05rem;
+}
+
+.drink-name {
+    color: var(--stadium-gray-900, #111);
+    font-weight: 500;
+}
+
+/* Truncated description cell so the table stays scannable */
+.drink-desc {
+    color: var(--stadium-gray-500, #868e96);
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Row action buttons that carry a text label (Edit / Disable / Delete).
+   Extends the global .row-btn (icon-only) to allow an inline label. */
+.row-btn--label {
+    width: auto;
+    gap: 0.35rem;
+    padding: 0 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Inline checkbox + label row inside the modal */
+.drink-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--stadium-gray-700, #495057);
+    cursor: pointer;
+}

@@ -1,0 +1,94 @@
+- generic [ref=f3e9]:
+  - generic [ref=f3e10]:
+    - link "Stadium Operations Console" [ref=f3e13] [cursor=pointer]:
+      - /url: ""
+      - generic [ref=f3e15]:
+        - generic [ref=f3e16]: Stadium
+        - generic [ref=f3e17]: Operations Console
+    - navigation [ref=f3e19]:
+      - link "Nadzorna ploča" [ref=f3e21] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f3e22]: 
+        - text: Nadzorna ploča
+      - link "Narudžbe" [ref=f3e24] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f3e25]: 
+        - text: Narudžbe
+      - link "Pića" [ref=f3e27] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f3e28]: 
+        - text: Pića
+      - link "Analitika" [ref=f3e30] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f3e31]: 
+        - text: Analitika
+      - link "Analitika kupaca" [ref=f3e33] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f3e34]: 
+        - text: Analitika kupaca
+      - link "Događaji" [ref=f3e36] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f3e37]: 
+        - text: Događaji
+      - link "Ulaznice" [ref=f3e39] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f3e40]: 
+        - text: Ulaznice
+      - link "Nadzorna ploča barista" [ref=f3e42] [cursor=pointer]:
+        - /url: bartender
+        - generic [ref=f3e43]: 
+        - text: Nadzorna ploča barista
+      - generic [ref=f3e46]: UPRAVLJANJE STADIONOM
+      - link "Upravljanje strukturom" [ref=f3e48] [cursor=pointer]:
+        - /url: admin/stadium-structure
+        - generic [ref=f3e49]: 
+        - text: Upravljanje strukturom
+      - link "Pregled stadiona" [ref=f3e51] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f3e52]: 
+        - text: Pregled stadiona
+      - link "Vodič za uvoz" [ref=f3e54] [cursor=pointer]:
+        - /url: admin/structure-help
+      - link "Alat za crtanje" [ref=f3e56] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f3e57]: 
+        - text: Alat za crtanje
+      - generic [ref=f3e60]: UPRAVLJANJE SUSTAVOM
+      - link "Upravljanje korisnicima" [ref=f3e62] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f3e63]: 
+        - text: Upravljanje korisnicima
+      - link "Sustav evidencije" [ref=f3e65] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f3e66]: 
+        - text: Sustav evidencije
+      - link "Istraživač baze podataka" [ref=f3e68] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f3e69]: 
+        - text: Istraživač baze podataka
+  - main [ref=f3e70]:
+    - generic [ref=f3e72]:
+      - heading "Administratorska nadzorna ploča" [level=6] [ref=f3e74]
+      - generic [ref=f3e78]:
+        - combobox [ref=f3e80]:
+          - option "Hrvatski" [selected]
+          - option "English"
+        - link "Help" [ref=f3e81] [cursor=pointer]:
+          - /url: https://docs.microsoft.com/aspnet/
+    - article [ref=f3e82]:
+      - generic [ref=f3e87]:
+        - generic [ref=f3e88]:
+          - generic [ref=f3e89]: Stadion admin
+          - heading "Prijavite se" [level=1] [ref=f3e90]
+          - paragraph [ref=f3e91]: Pristup konzoli operacija
+        - generic [ref=f3e92]:
+          - generic [ref=f3e93]:
+            - generic [ref=f3e94]: E-pošta
+            - textbox "E-pošta" [ref=f3e95]: admin@stadium.com
+          - generic [ref=f3e96]:
+            - generic [ref=f3e97]: Lozinka
+            - textbox "Lozinka" [ref=f3e98]: admin123
+          - button "Prijava u tijeku..." [disabled] [ref=f3e103]:
+            - status [ref=f3e104]
+            - generic [ref=f3e105]: Prijava u tijeku...
+        - generic [ref=f3e102]: Koristite admin@stadium.com/admin123 u demonstracijske svrhe

@@ -1,333 +1,178 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
+using StadiumDrinkOrdering.Admin.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
-using StadiumDrinkOrdering.Admin.Services;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
 
-public partial class Index : ComponentBase, IDisposable
+public partial class Index : ComponentBase
 {
     [Inject] private IAdminApiService AdminApiService { get; set; } = default!;
-    [Inject] private NavigationManager Navigation { get; set; } = default!;
-    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
-    private bool isLoading = false;
-    private DateTime? lastUpdated;
-    private System.Timers.Timer? autoRefreshTimer;
-    private string loadingMessage = "Initializing dashboard...";
+    private bool _loading = true;
 
-    // Countdown circle state
-    private System.Timers.Timer? countdownTimer;
-    private int countdownSeconds = 30;
-    private int remainingSeconds = 30;
+    // Event scoping — the whole dashboard is scoped to one selected event.
+    private List<EventDto> _events = new();
+    private EventDto? _selectedEvent;
+    private List<OrderDto> _allOrders = new();
 
-    // Progressive loading states
-    private bool isLoadingMetrics = false;
-    private bool isLoadingOrders = false;
-    private bool isLoadingSystemStatus = false;
-    private int loadingProgress = 0; // 0-100 for progress indication
-
-    // Dashboard data
-    private int totalOrders = 0;
-    private int activeOrders = 0;
-    private decimal todaysRevenue = 0;
-    private string systemHealth = "Healthy";
-    private string systemLoad = "Normal load";
-    private decimal ordersTrend = 0;
-    private decimal revenueTrend = 0;
-    private List<OrderDto>? recentOrders;
-
-    private bool hasLoadedData = false;
+    // Scoped metrics
+    private int _ticketsSold;
+    private decimal _eventRevenue;
+    private int _activeDrinkOrders;
+    private List<OrderDto> _recentOrders = new();
 
     protected override async Task OnInitializedAsync()
     {
-        // Don't block page rendering - load data after render
-        await Task.CompletedTask;
+        await LoadAsync();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task LoadAsync()
     {
-        if (firstRender && !hasLoadedData)
-        {
-            hasLoadedData = true;
-            await LoadDashboardData();
-            SetupAutoRefresh();
-            SetupCountdownTimer();
-        }
-    }
-
-    private async Task LoadDashboardData()
-    {
-        isLoading = true;
-        loadingProgress = 0;
-        loadingMessage = "Initializing dashboard...";
-        StateHasChanged();
-
+        _loading = true;
         try
         {
-            // Stage 1: Load core metrics (0-40% progress)
-            await LoadMetricsData();
+            var events = await AdminApiService.GetEventsAsync();
+            _events = (events ?? Enumerable.Empty<EventDto>())
+                .OrderBy(e => e.Date ?? DateTime.MaxValue)
+                .ThenBy(e => e.Id)
+                .ToList();
 
-            // Stage 2: Load order data (40-80% progress)
-            await LoadOrdersData();
+            // Preserve the user's selection across reloads; otherwise pick the default.
+            if (_selectedEvent != null && _events.Any(e => e.Id == _selectedEvent.Id))
+                _selectedEvent = _events.First(e => e.Id == _selectedEvent.Id);
+            else
+                _selectedEvent = PickDefaultEvent(_events);
 
-            // Stage 3: Load system status (80-100% progress)
-            await LoadSystemStatus();
-
-            lastUpdated = DateTime.Now;
-            loadingMessage = "Dashboard loaded successfully";
-            loadingProgress = 100;
-        }
-        catch (Exception ex)
-        {
-            loadingMessage = "Failed to load dashboard data";
-            await JSRuntime.InvokeVoidAsync("console.error", "Failed to load dashboard data:", ex.Message);
-        }
-        finally
-        {
-            isLoading = false;
-            isLoadingMetrics = false;
-            isLoadingOrders = false;
-            isLoadingSystemStatus = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task LoadMetricsData()
-    {
-        isLoadingMetrics = true;
-        loadingMessage = "Loading key metrics...";
-        loadingProgress = 10;
-        StateHasChanged();
-
-        // Simulate network delay for better UX feedback
-        await Task.Delay(300);
-
-        try
-        {
             var orders = await AdminApiService.GetOrdersAsync();
-            if (orders != null)
-            {
-                totalOrders = orders.Count();
-                activeOrders = orders.Count(o => o.Status == OrderStatus.Pending || o.Status == OrderStatus.InPreparation);
-                todaysRevenue = orders.Where(o => o.CreatedAt.Date == DateTime.Today).Sum(o => o.TotalAmount);
+            _allOrders = orders?.ToList() ?? new List<OrderDto>();
 
-                // Mock trend data
-                ordersTrend = 15.2m;
-                revenueTrend = 8.7m;
+            ApplyEventScope();
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// Default event on first load: a live event, else the next upcoming, else the most recent past.
+    /// "Live" is driven by the lifecycle phase (Active/InProgress), not timestamps.
+    /// </summary>
+    private static EventDto? PickDefaultEvent(List<EventDto> ordered)
+    {
+        if (ordered.Count == 0)
+            return null;
+
+        var live = ordered.FirstOrDefault(e => e.Phase == EventPhase.Active);
+        if (live != null)
+            return live;
+
+        var now = DateTime.Now;
+        var next = ordered.FirstOrDefault(e => (e.Date ?? DateTime.MaxValue) >= now);
+        if (next != null)
+            return next;
+
+        return ordered[^1]; // most recent past (list is ordered ascending by date)
+    }
+
+    /// <summary>Recomputes all scoped metrics for the selected event from the loaded order set.</summary>
+    private void ApplyEventScope()
+    {
+        var scoped = _selectedEvent == null
+            ? _allOrders
+            : _allOrders.Where(o => o.EventId == _selectedEvent.Id).ToList();
+
+        _activeDrinkOrders = scoped.Count(o =>
+            o.Status == OrderStatus.Pending ||
+            o.Status == OrderStatus.Accepted ||
+            o.Status == OrderStatus.InPreparation ||
+            o.Status == OrderStatus.OutForDelivery);
+
+        _eventRevenue = scoped.Sum(o => o.TotalAmount);
+        _recentOrders = scoped.OrderByDescending(o => o.CreatedAt).Take(5).ToList();
+        _ticketsSold = _selectedEvent == null
+            ? 0
+            : Math.Max(0, _selectedEvent.Capacity - _selectedEvent.AvailableSeats);
+    }
+
+    // ----- Event navigation (re-filters already-loaded orders, no network) -----
+    private bool HasEvents => _events.Count > 0;
+    private int SelectedIndex => _selectedEvent == null ? -1 : _events.FindIndex(e => e.Id == _selectedEvent.Id);
+    private bool CanGoPrev => SelectedIndex > 0;
+    private bool CanGoNext => SelectedIndex >= 0 && SelectedIndex < _events.Count - 1;
+    private bool IsOnDefaultEvent => _selectedEvent != null && PickDefaultEvent(_events)?.Id == _selectedEvent.Id;
+
+    private void SelectPrevEvent()
+    {
+        if (CanGoPrev)
+        {
+            _selectedEvent = _events[SelectedIndex - 1];
+            ApplyEventScope();
+        }
+    }
+
+    private void SelectNextEvent()
+    {
+        if (CanGoNext)
+        {
+            _selectedEvent = _events[SelectedIndex + 1];
+            ApplyEventScope();
+        }
+    }
+
+    private void OnSelectEvent(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var id))
+        {
+            var match = _events.FirstOrDefault(x => x.Id == id);
+            if (match != null)
+            {
+                _selectedEvent = match;
+                ApplyEventScope();
             }
-
-            loadingProgress = 40;
-            loadingMessage = "Metrics loaded";
-        }
-        finally
-        {
-            isLoadingMetrics = false;
-            StateHasChanged();
         }
     }
 
-    private async Task LoadOrdersData()
+    private void GoToCurrentEvent()
     {
-        isLoadingOrders = true;
-        loadingMessage = "Loading recent orders...";
-        loadingProgress = 50;
-        StateHasChanged();
-
-        // Simulate network delay for better UX feedback
-        await Task.Delay(400);
-
-        try
+        var def = PickDefaultEvent(_events);
+        if (def != null)
         {
-            var orders = await AdminApiService.GetOrdersAsync();
-            if (orders != null)
-            {
-                recentOrders = orders.OrderByDescending(o => o.CreatedAt).Take(10).ToList();
-            }
-
-            loadingProgress = 80;
-            loadingMessage = "Orders loaded";
-        }
-        finally
-        {
-            isLoadingOrders = false;
-            StateHasChanged();
+            _selectedEvent = def;
+            ApplyEventScope();
         }
     }
 
-    private async Task LoadSystemStatus()
+    private static string GetPhaseModifier(EventPhase phase) => phase switch
     {
-        isLoadingSystemStatus = true;
-        loadingMessage = "Checking system status...";
-        loadingProgress = 85;
-        StateHasChanged();
+        EventPhase.Active => "live",
+        EventPhase.Future => "future",
+        _ => "past"
+    };
 
-        // Simulate network delay for better UX feedback
-        await Task.Delay(200);
-
-        try
-        {
-            // Mock system health check
-            systemHealth = "Healthy";
-            systemLoad = "Normal load";
-
-            loadingProgress = 95;
-            loadingMessage = "System status updated";
-        }
-        finally
-        {
-            isLoadingSystemStatus = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task RefreshData()
+    private static string StatusLabel(OrderStatus status) => status switch
     {
-        // Stop countdown during manual refresh
-        StopCountdown();
+        OrderStatus.Pending => "Na čekanju",
+        OrderStatus.Accepted => "Prihvaćeno",
+        OrderStatus.InPreparation => "U pripremi",
+        OrderStatus.Ready => "Spremno",
+        OrderStatus.OutForDelivery => "U dostavi",
+        OrderStatus.Delivered => "Dostavljeno",
+        OrderStatus.Cancelled => "Otkazano",
+        _ => status.ToString()
+    };
 
-        await LoadDashboardData();
-
-        // Restart countdown after refresh
-        RestartCountdown();
-    }
-
-    private async Task ToggleTheme()
+    private static string StatusClass(OrderStatus status) => status switch
     {
-        await JSRuntime.InvokeVoidAsync("toggleTheme");
-    }
-
-    private void SetupAutoRefresh()
-    {
-        autoRefreshTimer = new System.Timers.Timer(30000); // 30 seconds
-        autoRefreshTimer.Elapsed += async (sender, e) =>
-        {
-            await InvokeAsync(async () =>
-            {
-                // Auto-refresh also resets countdown
-                RestartCountdown();
-                await LoadDashboardData();
-            });
-        };
-        autoRefreshTimer.Start();
-    }
-
-    private void SetupCountdownTimer()
-    {
-        countdownTimer = new System.Timers.Timer(1000); // 1 second intervals
-        countdownTimer.Elapsed += async (sender, e) =>
-        {
-            await InvokeAsync(() =>
-            {
-                remainingSeconds--;
-                if (remainingSeconds <= 0)
-                {
-                    remainingSeconds = countdownSeconds; // Reset
-                }
-                StateHasChanged();
-            });
-        };
-        countdownTimer.Start();
-    }
-
-    private void StopCountdown()
-    {
-        countdownTimer?.Stop();
-        try
-        {
-            JSRuntime.InvokeVoidAsync("adminCountdown.pause");
-        }
-        catch
-        {
-            // Ignore JS interop errors during shutdown
-        }
-    }
-
-    private void RestartCountdown()
-    {
-        remainingSeconds = countdownSeconds;
-        countdownTimer?.Start();
-        StateHasChanged();
-        try
-        {
-            JSRuntime.InvokeVoidAsync("adminCountdown.restart");
-        }
-        catch
-        {
-            // Ignore JS interop errors during shutdown
-        }
-    }
-
-    private string GetCountdownState()
-    {
-        if (isLoading) return "countdown-paused";
-        if (remainingSeconds <= 5) return "countdown-danger";
-        if (remainingSeconds <= 10) return "countdown-warning";
-        return "countdown-active";
-    }
-
-    private string GetHealthCardClass()
-    {
-        return systemHealth.ToLower() switch
-        {
-            "healthy" => "bg-success",
-            "warning" => "bg-warning",
-            "critical" => "bg-danger",
-            _ => "bg-secondary"
-        };
-    }
-
-    private string GetHealthIcon()
-    {
-        return systemHealth.ToLower() switch
-        {
-            "healthy" => "oi oi-circle-check",
-            "warning" => "oi oi-warning",
-            "critical" => "oi oi-circle-x",
-            _ => "oi oi-question-mark"
-        };
-    }
-
-    private string GetStatusBadgeClass(OrderStatus status)
-    {
-        return status switch
-        {
-            OrderStatus.Pending => "bg-warning",
-            OrderStatus.Accepted => "bg-primary",
-            OrderStatus.InPreparation => "bg-info",
-            OrderStatus.Ready => "bg-success",
-            OrderStatus.Delivered => "bg-success",
-            OrderStatus.Cancelled => "bg-danger",
-            _ => "bg-secondary"
-        };
-    }
-
-    // Navigation methods
-    private void NavigateToOrders() => Navigation.NavigateTo("/orders");
-    private void NavigateToUsers() => Navigation.NavigateTo("/users");
-    private void NavigateToReports() => Navigation.NavigateTo("/reports");
-    private void NavigateToLogs() => Navigation.NavigateTo("/logs");
-    private void NavigateToOrder(int orderId) => Navigation.NavigateTo($"/orders/{orderId}");
-
-    public void Dispose()
-    {
-        try
-        {
-            autoRefreshTimer?.Stop();
-            autoRefreshTimer?.Dispose();
-            countdownTimer?.Stop();
-            countdownTimer?.Dispose();
-        }
-        catch (ObjectDisposedException)
-        {
-            // Timers may already be disposed, safe to ignore
-            // This happens during normal application shutdown
-        }
-        catch (Exception)
-        {
-            // Any other disposal exceptions should be ignored
-            // This prevents disposal issues from propagating
-        }
-    }
+        OrderStatus.Pending => "is-pending",
+        OrderStatus.Accepted => "is-accepted",
+        OrderStatus.InPreparation => "is-prep",
+        OrderStatus.Ready => "is-ready",
+        OrderStatus.OutForDelivery => "is-accepted",
+        OrderStatus.Delivered => "is-done",
+        OrderStatus.Cancelled => "is-cancelled",
+        _ => "is-prep"
+    };
 }

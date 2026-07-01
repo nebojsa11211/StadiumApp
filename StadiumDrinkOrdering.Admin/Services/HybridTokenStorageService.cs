@@ -3,6 +3,7 @@ using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using StadiumDrinkOrdering.Shared.Authentication.Models;
 using StadiumDrinkOrdering.Shared.Authentication.Constants;
 using StadiumDrinkOrdering.Shared.Authentication.Utilities;
+using System.Globalization;
 using System.Text.Json;
 
 namespace StadiumDrinkOrdering.Admin.Services;
@@ -206,9 +207,16 @@ public class HybridTokenStorageService : ITokenStorageService, IDisposable
             }
 
             DateTime? expiresAt = null;
-            if (DateTime.TryParse(expirationStr, out var parsedDate))
+            if (DateTime.TryParse(expirationStr, CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind, out var parsedDate))
             {
-                expiresAt = parsedDate;
+                // The expiration is compared against DateTime.UtcNow, so it MUST be UTC.
+                // A round-tripped "O" string can come back as Local (had an offset) or
+                // Unspecified (no offset, but it was stored from a UTC value). Normalize
+                // both to UTC so a valid token is never intermittently treated as expired.
+                expiresAt = parsedDate.Kind == DateTimeKind.Unspecified
+                    ? DateTime.SpecifyKind(parsedDate, DateTimeKind.Utc)
+                    : parsedDate.ToUniversalTime();
             }
             else
             {

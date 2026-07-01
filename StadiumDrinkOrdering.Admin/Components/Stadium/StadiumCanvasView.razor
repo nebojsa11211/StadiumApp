@@ -1,0 +1,110 @@
+@using System.Text.Json
+@using System.Net.Http.Json
+@inject IJSRuntime JSRuntime
+@inject HttpClient HttpClient
+@inject IConfiguration Configuration
+@inject ILogger<StadiumCanvasView> Logger
+
+@* Read-only embed of the stadium drawing canvas (the admin-drawing-tool-canvas-container part). *@
+<div id="admin-drawing-tool-canvas-container" class="position-relative" style="width: 100%; border: 2px solid #dee2e6; background: #f8f9fa; overflow: hidden;">
+    @* Canvas keeps its 1170x898 drawing resolution but scales responsively to the container width. *@
+    <canvas id="admin-drawing-tool-canvas"
+            width="1170"
+            height="898"
+            style="display: block; width: 100%; height: auto; pointer-events: none;">
+    </canvas>
+</div>
+
+@code {
+    private string backgroundImageUrl = "/images/stadium-blueprint.png";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        try
+        {
+            // Wait for the globally-loaded drawing-canvas.js to be ready (retry mechanism)
+            int maxRetries = 10;
+            int retryCount = 0;
+            bool initialized = false;
+            var dotNetReference = DotNetObjectReference.Create(this);
+
+            while (!initialized && retryCount < maxRetries)
+            {
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("initializeDrawingCanvas", "admin-drawing-tool-canvas", dotNetReference);
+                    initialized = true;
+                }
+                catch (JSException ex) when (ex.Message.Contains("undefined"))
+                {
+                    retryCount++;
+                    Logger.LogWarning("Drawing canvas JS not ready yet, retry {RetryCount}/{MaxRetries}", retryCount, maxRetries);
+                    await Task.Delay(500);
+                }
+            }
+
+            if (!initialized)
+            {
+                Logger.LogError("Failed to initialize stadium canvas view after {MaxRetries} retries", maxRetries);
+                return;
+            }
+
+            // Read-only: no active tool, pointer-events disabled on the canvas
+            await JSRuntime.InvokeVoidAsync("setDrawingTool", "");
+
+            if (!string.IsNullOrEmpty(backgroundImageUrl))
+            {
+                await JSRuntime.InvokeVoidAsync("setBackgroundImage", backgroundImageUrl);
+            }
+
+            await LoadAndDrawSectorOverlays();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initializing stadium canvas view");
+        }
+    }
+
+    private async Task LoadAndDrawSectorOverlays()
+    {
+        try
+        {
+            var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+            var response = await HttpClient.GetAsync($"{apiBaseUrl}/api/StadiumSectorOverlay");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Logger.LogWarning("Failed to load sectors for canvas view: {StatusCode}", response.StatusCode);
+                await JSRuntime.InvokeVoidAsync("clearSectorOverlays");
+                return;
+            }
+
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            var dbSectors = await response.Content.ReadFromJsonAsync<List<StadiumDrinkOrdering.Shared.Models.StadiumSectorOverlay>>(jsonOptions);
+
+            if (dbSectors != null && dbSectors.Any())
+            {
+                // drawSectorOverlays reads PascalCase properties (overlay.LeftPercent, overlay.ShapeType, ...),
+                // so serialize with default options to keep PascalCase property names.
+                var overlaysJson = JsonSerializer.Serialize(dbSectors);
+                await JSRuntime.InvokeVoidAsync("drawSectorOverlays", overlaysJson);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("clearSectorOverlays");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading/drawing sector overlays for canvas view");
+        }
+    }
+}

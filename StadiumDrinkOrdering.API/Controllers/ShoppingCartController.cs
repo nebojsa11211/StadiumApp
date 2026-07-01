@@ -91,6 +91,20 @@ public class ShoppingCartController : ControllerBase
                 return BadRequest("Session ID is required");
             }
 
+            // Phase 1 gate: seats may only be reserved while the event is on sale.
+            var eventStatus = await _context.Events
+                .Where(e => e.Id == request.EventId)
+                .Select(e => (EventStatus?)e.Status)
+                .FirstOrDefaultAsync();
+            if (eventStatus == null)
+            {
+                return NotFound("Event not found");
+            }
+            if (!EventLifecycle.CanSellTickets(eventStatus.Value))
+            {
+                return Conflict("Tickets for this event are not currently on sale.");
+            }
+
             var success = await _cartService.AddSeatToCartAsync(
                 request.SessionId,
                 request.EventId,

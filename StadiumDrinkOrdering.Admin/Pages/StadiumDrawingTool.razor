@@ -10,14 +10,15 @@
 @inject NavigationManager NavigationManager
 @inject IConfiguration Configuration
 @inject ILogger<StadiumDrawingTool> Logger
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Stadium Drawing Tool - Admin</PageTitle>
+<PageTitle>@L["Drawing_PageTitle"]</PageTitle>
 
 <div id="admin-drawing-tool-main-container" class="container-fluid">
     <div class="row mb-3">
         <div class="col-12">
-            <h1 id="admin-drawing-tool-title" class="mb-3">🎨 Stadium Drawing Tool</h1>
-            <p class="text-muted">Draw layers over your stadium picture to create zone overlays, annotations, and custom layouts.</p>
+            <h1 id="admin-drawing-tool-title" class="mb-3">@L["Drawing_MainTitle"]</h1>
+            <p class="text-muted">@L["Drawing_Subtitle"]</p>
         </div>
     </div>
 
@@ -27,25 +28,25 @@
             <!-- Image Upload Section -->
             <div id="admin-drawing-tool-upload-card" class="card mb-3">
                 <div class="card-header" id="admin-drawing-tool-upload-header">
-                    <h5 class="mb-0" id="admin-drawing-tool-upload-title">📷 Stadium Image</h5>
+                    <h5 class="mb-0" id="admin-drawing-tool-upload-title">@L["Drawing_ImageTitle"]</h5>
                 </div>
                 <div class="card-body" id="admin-drawing-tool-upload-body">
                     @if (string.IsNullOrEmpty(backgroundImageUrl))
                     {
                         <InputFile id="admin-drawing-tool-upload-input" OnChange="HandleImageUpload" accept="image/*" class="form-control mb-2" />
-                        <small class="text-muted" id="admin-drawing-tool-upload-hint">Upload a stadium picture to start drawing</small>
+                        <small class="text-muted" id="admin-drawing-tool-upload-hint">@L["Drawing_UploadHint"]</small>
                     }
                     else
                     {
                         <div class="mb-2" id="admin-drawing-tool-image-loaded">
                             <div class="d-flex justify-content-between align-items-center mb-2" id="admin-drawing-tool-image-status">
-                                <span class="text-success" id="admin-drawing-tool-image-loaded-text">✅ Stadium blueprint loaded</span>
+                                <span class="text-success" id="admin-drawing-tool-image-loaded-text">@L["Drawing_BlueprintLoaded"]</span>
                                 <button id="admin-drawing-tool-clear-image-btn" @onclick="ClearImage" class="btn btn-sm btn-danger">
-                                    Clear
+                                    @L["Drawing_ClearBtn"]
                                 </button>
                             </div>
                             <InputFile id="admin-drawing-tool-replace-input" OnChange="HandleImageUpload" accept="image/*" class="form-control" />
-                            <small class="text-muted" id="admin-drawing-tool-replace-hint">Upload a different image if needed</small>
+                            <small class="text-muted" id="admin-drawing-tool-replace-hint">@L["Drawing_ReplaceHint"]</small>
                         </div>
                     }
                 </div>
@@ -54,62 +55,62 @@
             <!-- Drawing Tools Section -->
             <div id="admin-drawing-tool-tools-card" class="card mb-3">
                 <div class="card-header" id="admin-drawing-tool-tools-header">
-                    <h5 class="mb-0" id="admin-drawing-tool-tools-title">🖌️ Drawing Tools</h5>
+                    <h5 class="mb-0" id="admin-drawing-tool-tools-title">@L["Drawing_ToolsTitle"]</h5>
                 </div>
                 <div class="card-body" id="admin-drawing-tool-tools-body">
                     <div class="btn-group-vertical w-100 mb-3" role="group" id="admin-drawing-tool-buttons">
                         <button id="admin-drawing-tool-select-btn"
                                 @onclick="() => SetTool(DrawingTool.Select)"
                                 class="btn @(currentTool == DrawingTool.Select ? "btn-success" : "btn-outline-success")">
-                            👆 Select/Move
+                            @L["Drawing_SelectBtn"]
                         </button>
                     </div>
 
                     <!-- Sector Management Section -->
                     <div class="mt-3 pt-3 border-top" id="admin-drawing-tool-sector-section">
-                        <h6 class="text-muted mb-2" id="admin-drawing-tool-sector-title">🎯 Sector Tools</h6>
+                        <h6 class="text-muted mb-2" id="admin-drawing-tool-sector-title">@L["Drawing_SectorTitle"]</h6>
                         <div class="btn-group w-100 mb-2" role="group" id="admin-drawing-tool-sector-dropdown">
                             <button id="admin-drawing-tool-shape-dropdown-toggle"
                                     type="button"
                                     class="btn @(currentTool == DrawingTool.CreateSector ? "btn-primary" : "btn-outline-primary") dropdown-toggle w-100"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false">
-                                ➕ Create Sector (@currentShapeMode)
+                                @L["Drawing_CreateSectorBtn"] (@currentShapeMode)
                             </button>
                             <ul class="dropdown-menu w-100" id="admin-drawing-tool-shape-dropdown-menu">
                                 <li>
                                     <a class="dropdown-item @(currentShapeMode == "Rectangle" ? "active" : "")"
                                        id="admin-drawing-tool-rectangle-shape-option"
                                        @onclick='() => SetShapeMode("Rectangle")'>
-                                        ◻️ Rectangle
+                                        @L["Drawing_RectangleShape"]
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item @(currentShapeMode == "Triangle" ? "active" : "")"
                                        id="admin-drawing-tool-triangle-shape-option"
                                        @onclick='() => SetShapeMode("Triangle")'>
-                                        🔺 Triangle (3 clicks)
+                                        @L["Drawing_TriangleShape"]
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item @(currentShapeMode == "Rhombus" ? "active" : "")"
                                        id="admin-drawing-tool-rhombus-shape-option"
                                        @onclick='() => SetShapeMode("Rhombus")'>
-                                        🔷 Rhombus (4 clicks)
+                                        @L["Drawing_RhombusShape"]
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item @(currentShapeMode == "Polygon" ? "active" : "")"
                                        id="admin-drawing-tool-polygon-shape-option"
                                        @onclick='() => SetShapeMode("Polygon")'>
-                                        ⬡ Custom Polygon (multi-click)
+                                        @L["Drawing_PolygonShape"]
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item disabled text-muted"
                                        id="admin-drawing-tool-circular-sector-shape-option">
-                                        🍕 Circular Sector (Coming Soon)
+                                        @L["Drawing_CircularShape"]
                                     </a>
                                 </li>
                             </ul>
@@ -121,7 +122,7 @@
 
                     <!-- Color Picker -->
                     <div class="mb-3" id="admin-drawing-tool-color-picker">
-                        <label for="admin-drawing-tool-color-input" class="form-label" id="admin-drawing-tool-color-label">Color</label>
+                        <label for="admin-drawing-tool-color-input" class="form-label" id="admin-drawing-tool-color-label">@L["Drawing_ColorLabel"]</label>
                         <input id="admin-drawing-tool-color-input"
                                type="color"
                                @bind="currentColor"
@@ -132,7 +133,7 @@
 
                     <!-- Line Width -->
                     <div class="mb-3" id="admin-drawing-tool-line-width">
-                        <label for="admin-drawing-tool-width-input" class="form-label" id="admin-drawing-tool-width-label">Line Width: @lineWidth px</label>
+                        <label for="admin-drawing-tool-width-input" class="form-label" id="admin-drawing-tool-width-label">@L["Drawing_LineWidthLabel", lineWidth]</label>
                         <input id="admin-drawing-tool-width-input"
                                type="range"
                                @bind="lineWidth"
@@ -145,7 +146,7 @@
 
                     <!-- Opacity -->
                     <div class="mb-3" id="admin-drawing-tool-opacity">
-                        <label for="admin-drawing-tool-opacity-input" class="form-label" id="admin-drawing-tool-opacity-label">Opacity: @((opacity * 100).ToString("F0"))%</label>
+                        <label for="admin-drawing-tool-opacity-input" class="form-label" id="admin-drawing-tool-opacity-label">@L["Drawing_OpacityLabel", ((opacity * 100).ToString("F0"))]</label>
                         <input id="admin-drawing-tool-opacity-input"
                                type="range"
                                @bind="opacity"
@@ -163,16 +164,16 @@
             <div id="admin-drawing-tool-actions-card" class="card">
                 <div class="card-body" id="admin-drawing-tool-actions-body">
                     <button id="admin-drawing-tool-clear-layer-btn" @onclick="ClearCurrentLayer" class="btn btn-warning w-100 mb-2">
-                        🗑️ Clear Current Layer
+                        @L["Drawing_ClearLayerBtn"]
                     </button>
                     <button id="admin-drawing-tool-export-btn" @onclick="ExportDrawing" class="btn btn-success w-100 mb-2">
-                        💾 Export Drawing
+                        @L["Drawing_ExportDrawingBtn"]
                     </button>
                     <button id="admin-drawing-tool-export-json-btn" @onclick="ExportJSON" class="btn btn-info w-100 mb-2">
-                        📄 Export JSON
+                        @L["Drawing_ExportJsonBtn"]
                     </button>
                     <button id="admin-drawing-tool-save-sectors-btn" @onclick="SaveSectors" class="btn btn-primary w-100">
-                        💾 Save Sector Layout
+                        @L["Drawing_SaveSectorsBtn"]
                     </button>
                 </div>
             </div>
@@ -190,7 +191,7 @@
                         </canvas>
                     </div>
                     <div class="mt-2 text-muted text-center" id="admin-drawing-tool-status">
-                        <small id="admin-drawing-tool-status-text">Current Tool: <strong>@currentTool.ToString()</strong> | Current Layer: <strong>@GetCurrentLayerName()</strong></small>
+                        <small id="admin-drawing-tool-status-text">@L["Drawing_CurrentTool"]: <strong>@currentTool.ToString()</strong> | @L["Drawing_CurrentLayer"]: <strong>@GetCurrentLayerName()</strong></small>
                     </div>
 
                     @* Save Position/Size Changes Button (appears when sector is modified) *@
@@ -198,18 +199,18 @@
                     {
                         <div class="alert alert-warning mt-3 d-flex justify-content-between align-items-center" role="alert" id="admin-drawing-tool-unsaved-alert">
                             <span id="admin-drawing-tool-unsaved-message">
-                                <strong id="admin-drawing-tool-unsaved-title">⚠️ Unsaved Changes</strong> - Sector position or size has been modified
+                                <strong id="admin-drawing-tool-unsaved-title">@L["Drawing_UnsavedChangesTitle"]</strong> - @L["Drawing_UnsavedChangesMsg"]
                             </span>
                             <div id="admin-drawing-tool-unsaved-actions">
                                 <button id="admin-drawing-tool-save-position-btn"
                                         @onclick="SaveSectorPositionChanges"
                                         class="btn btn-success btn-sm me-2">
-                                    💾 Save Changes
+                                    @L["Drawing_SaveBtn"]
                                 </button>
                                 <button id="admin-drawing-tool-discard-position-btn"
                                         @onclick="DiscardSectorChanges"
                                         class="btn btn-secondary btn-sm">
-                                    ❌ Discard
+                                    @L["Drawing_DiscardBtn"]
                                 </button>
                             </div>
                         </div>
@@ -1123,11 +1124,11 @@
     {
         return currentShapeMode switch
         {
-            "Rectangle" => "Click and drag to define rectangular sector boundaries",
-            "Triangle" => "Click 3 points to create a triangle sector (auto-completes)",
-            "Rhombus" => "Click 4 points to create a rhombus sector",
-            "Polygon" => "Click multiple points to create custom polygon. Double-click to finish (min 3 points)",
-            _ => "Select a shape type from the dropdown above"
+            "Rectangle" => L["Drawing_RectangleInstructions"],
+            "Triangle" => L["Drawing_TriangleInstructions"],
+            "Rhombus" => L["Drawing_RhombusInstructions"],
+            "Polygon" => L["Drawing_PolygonInstructions"],
+            _ => L["Drawing_DefaultInstructions"]
         };
     }
 

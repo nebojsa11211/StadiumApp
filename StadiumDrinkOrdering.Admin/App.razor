@@ -15,7 +15,7 @@ else
         <Found Context="routeData">
             @if (IsLoginPage(routeData.PageType))
             {
-                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(LoginLayout)" />
             }
             else
             {

@@ -193,7 +193,9 @@ public class StadiumStructureService : IStadiumStructureService
         {
             // Delete in order due to foreign key constraints
             // Use AsNoTracking() since we're just deleting these entities
-            var seats = await _context.StadiumSeatsNew.AsNoTracking().ToListAsync();
+            // IMPORTANT: only remove hierarchy-owned seats (SectorId set). Seats owned by a
+            // drawing-tool overlay (SectorId null) are managed by the overlay and must survive.
+            var seats = await _context.StadiumSeatsNew.AsNoTracking().Where(s => s.SectorId != null).ToListAsync();
             _context.StadiumSeatsNew.RemoveRange(seats);
 
             var sectors = await _context.Sectors.AsNoTracking().ToListAsync();

@@ -533,39 +533,55 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                 // Check if admin user exists or needs to be created/updated. Only in Development.
                 if (environment.IsDevelopment())
                 {
-                    var adminUser = await context.Users.FirstOrDefaultAsync(u => u.Email == "admin@stadium.com", cancellationToken);
-                
+                    const string adminEmail = "nebojsa.medancic+adminStadion@gmail.com";
+                    const string adminUsername = "nebojsa.medancic+adminStadion@gmail.com";
+                    const string adminPassword = "Admin123!";
+
+                    // Match either the new email or the legacy "admin@stadium.com" so an existing
+                    // admin record is migrated in place instead of leaving a duplicate behind.
+                    var adminUser = await context.Users.FirstOrDefaultAsync(
+                        u => u.Email == adminEmail || u.Email == "admin@stadium.com", cancellationToken);
+
                     if (adminUser == null)
                     {
                         logger.LogInformation("No admin user found, creating default admin user...");
                         adminUser = new StadiumDrinkOrdering.Shared.Models.User
                         {
-                            Username = "admin",
-                            Email = "admin@stadium.com",
-                            PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                            Username = adminUsername,
+                            Email = adminEmail,
+                            PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
                             Role = StadiumDrinkOrdering.Shared.Models.UserRole.Admin,
                             CreatedAt = DateTime.UtcNow
                         };
                         context.Users.Add(adminUser);
                         await context.SaveChangesAsync(cancellationToken);
-                        logger.LogInformation("Default admin user created successfully: admin@stadium.com / admin123");
+                        logger.LogInformation("Default admin user created successfully: {AdminEmail}", adminEmail);
                     }
                     else
                     {
                         // Admin user exists - only update if necessary (don't regenerate password hash every time)
                         logger.LogInformation("Admin user found, checking if updates are needed...");
-                        
+
                         var needsUpdate = false;
-                        
-                        // Only update username if it's different
-                        if (adminUser.Username != "admin")
+
+                        // Migrate the email (e.g. from the legacy admin@stadium.com) if different
+                        if (adminUser.Email != adminEmail)
                         {
-                            logger.LogInformation("Updating admin username from '{OldUsername}' to 'admin'", adminUser.Username);
-                            adminUser.Username = "admin";
+                            logger.LogInformation("Updating admin email from '{OldEmail}' to '{NewEmail}'", adminUser.Email, adminEmail);
+                            adminUser.Email = adminEmail;
+                            context.Entry(adminUser).Property(u => u.Email).IsModified = true;
+                            needsUpdate = true;
+                        }
+
+                        // Only update username if it's different
+                        if (adminUser.Username != adminUsername)
+                        {
+                            logger.LogInformation("Updating admin username from '{OldUsername}' to '{NewUsername}'", adminUser.Username, adminUsername);
+                            adminUser.Username = adminUsername;
                             context.Entry(adminUser).Property(u => u.Username).IsModified = true;
                             needsUpdate = true;
                         }
-                        
+
                         // Only update role if it's different
                         if (adminUser.Role != StadiumDrinkOrdering.Shared.Models.UserRole.Admin)
                         {
@@ -573,8 +589,8 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                             adminUser.Role = StadiumDrinkOrdering.Shared.Models.UserRole.Admin;
                             needsUpdate = true;
                         }
-                        
-                        // Verify password hash is valid and works with "admin123"
+
+                        // Verify password hash is valid and works with the configured admin password
                         bool passwordNeedsReset = false;
 
                         if (string.IsNullOrEmpty(adminUser.PasswordHash))
@@ -591,13 +607,13 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                         }
                         else
                         {
-                            // Verify the hash actually works with "admin123"
+                            // Verify the hash actually works with the configured admin password
                             try
                             {
-                                bool passwordValid = BCrypt.Net.BCrypt.Verify("admin123", adminUser.PasswordHash);
+                                bool passwordValid = BCrypt.Net.BCrypt.Verify(adminPassword, adminUser.PasswordHash);
                                 if (!passwordValid)
                                 {
-                                    logger.LogWarning("Admin password hash exists but doesn't verify with 'admin123', regenerating...");
+                                    logger.LogWarning("Admin password hash exists but doesn't verify with the configured password, regenerating...");
                                     passwordNeedsReset = true;
                                 }
                                 else
@@ -614,15 +630,15 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
 
                         if (passwordNeedsReset)
                         {
-                            adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
+                            adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword);
                             needsUpdate = true;
                             logger.LogInformation("Admin password hash regenerated successfully");
                         }
-                        
+
                         if (needsUpdate)
                         {
                             await context.SaveChangesAsync(cancellationToken);
-                            logger.LogInformation("Admin user updated successfully: admin@stadium.com / admin123");
+                            logger.LogInformation("Admin user updated successfully: {AdminEmail}", adminEmail);
                         }
                         else
                         {

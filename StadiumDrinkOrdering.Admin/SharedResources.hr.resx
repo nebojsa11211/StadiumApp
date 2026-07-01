@@ -397,6 +397,9 @@
   <data name="Nav_DrawingTool" xml:space="preserve">
     <value>Alat za crtanje</value>
   </data>
+  <data name="Nav_StadiumInfo" xml:space="preserve">
+    <value>Informacije o stadionu</value>
+  </data>
   <data name="Nav_GroupSystem" xml:space="preserve">
     <value>Sustav</value>
   </data>
@@ -522,65 +525,107 @@
   <data name="Drawing_DefaultInstructions" xml:space="preserve">
     <value>Odaberite vrstu oblika iz padajućeg izbornika gore</value>
   </data>
-  <data name="NavMenu_NavigationMenuTitle" xml:space="preserve">
-    <value>Navigacijski izbornik</value>
+  <data name="StadiumInfo_PageTitle" xml:space="preserve">
+    <value>Informacije o stadionu</value>
   </data>
-  <data name="NavMenu_Dashboard" xml:space="preserve">
-    <value>Nadzorna ploča</value>
+  <data name="StadiumInfo_Heading" xml:space="preserve">
+    <value>Informacije o stadionu</value>
   </data>
-  <data name="NavMenu_Orders" xml:space="preserve">
-    <value>Narudžbe</value>
+  <data name="StadiumInfo_Subtitle" xml:space="preserve">
+    <value>Pregled sektora stadiona i kapaciteta sjedala</value>
   </data>
-  <data name="NavMenu_Drinks" xml:space="preserve">
-    <value>Pića</value>
+  <data name="StadiumInfo_Loading" xml:space="preserve">
+    <value>Učitavanje informacija o stadionu...</value>
   </data>
-  <data name="NavMenu_Analytics" xml:space="preserve">
-    <value>Analitika</value>
+  <data name="StadiumInfo_Error" xml:space="preserve">
+    <value>Učitavanje informacija o stadionu nije uspjelo.</value>
   </data>
-  <data name="NavMenu_CustomerAnalytics" xml:space="preserve">
-    <value>Analitika kupaca</value>
+  <data name="StadiumInfo_Retry" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
   </data>
-  <data name="NavMenu_Events" xml:space="preserve">
-    <value>Događaji</value>
+  <data name="StadiumInfo_Empty" xml:space="preserve">
+    <value>Još nije definiran nijedan sektor. Koristite Alat za crtanje za izradu sektora.</value>
   </data>
-  <data name="NavMenu_Tickets" xml:space="preserve">
-    <value>Ulaznice</value>
+  <data name="StadiumInfo_TotalSectors" xml:space="preserve">
+    <value>Ukupno sektora</value>
   </data>
-  <data name="NavMenu_BartenderDashboard" xml:space="preserve">
-    <value>Nadzorna ploča barista</value>
+  <data name="StadiumInfo_TotalSeats" xml:space="preserve">
+    <value>Ukupno sjedala</value>
   </data>
-  <data name="NavMenu_StadiumManagement" xml:space="preserve">
-    <value>UPRAVLJANJE STADIONOM</value>
+  <data name="StadiumInfo_TypeBreakdownTitle" xml:space="preserve">
+    <value>Raščlamba po vrsti</value>
   </data>
-  <data name="NavMenu_StructureManagement" xml:space="preserve">
-    <value>Upravljanje strukturom</value>
+  <data name="StadiumInfo_SectorListTitle" xml:space="preserve">
+    <value>Sektori</value>
   </data>
-  <data name="NavMenu_StadiumOverview" xml:space="preserve">
-    <value>Pregled stadiona</value>
+  <data name="StadiumInfo_ColCode" xml:space="preserve">
+    <value>Šifra</value>
   </data>
-  <data name="NavMenu_ImportGuide" xml:space="preserve">
-    <value>Vodič za uvoz</value>
+  <data name="StadiumInfo_ColName" xml:space="preserve">
+    <value>Naziv</value>
   </data>
-  <data name="NavMenu_DrawingTool" xml:space="preserve">
-    <value>Alat za crtanje</value>
+  <data name="StadiumInfo_ColType" xml:space="preserve">
+    <value>Vrsta</value>
   </data>
-  <data name="NavMenu_SystemManagement" xml:space="preserve">
-    <value>UPRAVLJANJE SUSTAVOM</value>
+  <data name="StadiumInfo_ColRows" xml:space="preserve">
+    <value>Redovi</value>
   </data>
-  <data name="NavMenu_UserManagement" xml:space="preserve">
-    <value>Upravljanje korisnicima</value>
+  <data name="StadiumInfo_ColSeatsPerRow" xml:space="preserve">
+    <value>Sjedala / red</value>
   </data>
-  <data name="NavMenu_SystemLogs" xml:space="preserve">
-    <value>Sustav evidencije</value>
+  <data name="StadiumInfo_ColTotalSeats" xml:space="preserve">
+    <value>Ukupno sjedala</value>
   </data>
-  <data name="NavMenu_DatabaseExplorer" xml:space="preserve">
-    <value>Istraživač baze podataka</value>
+  <data name="StadiumInfo_RowDetailTitle" xml:space="preserve">
+    <value>Redovi u {0}</value>
   </data>
-  <data name="MainLayout_AdminDashboard" xml:space="preserve">
-    <value>Administratorska nadzorna ploča</value>
+  <data name="StadiumInfo_ColRow" xml:space="preserve">
+    <value>Red</value>
   </data>
-  <data name="MainLayout_ServerTime" xml:space="preserve">
-    <value>Vrijeme poslužitelja</value>
+  <data name="StadiumInfo_ColSeats" xml:space="preserve">
+    <value>Sjedala</value>
+  </data>
+  <data name="StadiumInfo_CollapseAllRows" xml:space="preserve">
+    <value>Sažmi sve redove</value>
+  </data>
+  <data name="StadiumInfo_NoRows" xml:space="preserve">
+    <value>Ovaj sektor nema konfiguriranih redova.</value>
+  </data>
+  <data name="StadiumInfo_RowSeatsAria" xml:space="preserve">
+    <value>{0} red {1} sjedala</value>
+  </data>
+  <data name="StadiumInfo_SeatsShownOf" xml:space="preserve">
+    <value>Prikazano {0} od {1}</value>
+  </data>
+  <data name="StadiumInfo_SourcePersisted" xml:space="preserve">
+    <value>Iz baze</value>
+  </data>
+  <data name="StadiumInfo_SourcePersistedHint" xml:space="preserve">
+    <value>Stvarna sjedala iz baze za povezani sektor "{0}"</value>
+  </data>
+  <data name="StadiumInfo_SourceDerived" xml:space="preserve">
+    <value>Izračunato</value>
+  </data>
+  <data name="StadiumInfo_SourceDerivedHint" xml:space="preserve">
+    <value>Nema pohranjenih sjedala povezanih s ovim sektorom — prikazan je izračunati raspored.</value>
+  </data>
+  <data name="StadiumInfo_CheckingSeats" xml:space="preserve">
+    <value>Provjera sjedala…</value>
+  </data>
+  <data name="StadiumInfo_LoadingSeats" xml:space="preserve">
+    <value>Učitavanje sjedala…</value>
+  </data>
+  <data name="StadiumInfo_Available" xml:space="preserve">
+    <value>dostupno</value>
+  </data>
+  <data name="StadiumInfo_Unavailable" xml:space="preserve">
+    <value>nedostupno</value>
+  </data>
+  <data name="StadiumInfo_NoPersistedRowSeats" xml:space="preserve">
+    <value>Nema pohranjenih sjedala za ovaj red.</value>
+  </data>
+  <data name="StadiumInfo_CountMismatch" xml:space="preserve">
+    <value>Raspored definira {0} sjedala; {1} pohranjeno u bazi.</value>
   </data>
   <data name="Login_PageTitle" xml:space="preserve">
     <value>Prijava administratora</value>

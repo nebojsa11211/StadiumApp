@@ -17,7 +17,10 @@ public partial class Login
     private string password = "";
     private string? errorMessage;
     private bool isLoading;
+    private bool showPassword;
     private string? returnUrl;
+
+    private void TogglePasswordVisibility() => showPassword = !showPassword;
 
     protected override async Task OnInitializedAsync()
     {

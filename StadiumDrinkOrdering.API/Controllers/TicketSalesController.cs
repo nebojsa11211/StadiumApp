@@ -118,7 +118,7 @@ public class TicketSalesController : ControllerBase
                 seat => new SeatStatusDto
                 {
                     StadiumSeatId = seat.Id,
-                    SectorId = seat.SectorId,
+                    SectorId = seat.SectorId ?? 0,
                     RowNumber = seat.RowNumber,
                     SeatNumber = seat.SeatNumber,
                     Status = "Sold",

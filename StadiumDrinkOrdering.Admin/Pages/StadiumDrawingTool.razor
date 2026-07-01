@@ -40,8 +40,8 @@
                     {
                         <div class="mb-2" id="admin-drawing-tool-image-loaded">
                             <div class="d-flex justify-content-between align-items-center mb-2" id="admin-drawing-tool-image-status">
-                                <span class="text-success" id="admin-drawing-tool-image-loaded-text">@L["Drawing_BlueprintLoaded"]</span>
-                                <button id="admin-drawing-tool-clear-image-btn" @onclick="ClearImage" class="btn btn-sm btn-danger">
+                                <span class="text-muted" id="admin-drawing-tool-image-loaded-text">@L["Drawing_BlueprintLoaded"]</span>
+                                <button id="admin-drawing-tool-clear-image-btn" @onclick="ClearImage" class="btn btn-sm btn-outline-secondary">
                                     @L["Drawing_ClearBtn"]
                                 </button>
                             </div>
@@ -61,7 +61,7 @@
                     <div class="btn-group-vertical w-100 mb-3" role="group" id="admin-drawing-tool-buttons">
                         <button id="admin-drawing-tool-select-btn"
                                 @onclick="() => SetTool(DrawingTool.Select)"
-                                class="btn @(currentTool == DrawingTool.Select ? "btn-success" : "btn-outline-success")">
+                                class="btn @(currentTool == DrawingTool.Select ? "btn-dark" : "btn-outline-secondary")">
                             @L["Drawing_SelectBtn"]
                         </button>
                     </div>
@@ -72,7 +72,7 @@
                         <div class="btn-group w-100 mb-2" role="group" id="admin-drawing-tool-sector-dropdown">
                             <button id="admin-drawing-tool-shape-dropdown-toggle"
                                     type="button"
-                                    class="btn @(currentTool == DrawingTool.CreateSector ? "btn-primary" : "btn-outline-primary") dropdown-toggle w-100"
+                                    class="btn @(currentTool == DrawingTool.CreateSector ? "btn-dark" : "btn-outline-secondary") dropdown-toggle w-100"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false">
                                 @L["Drawing_CreateSectorBtn"] (@currentShapeMode)
@@ -163,16 +163,16 @@
             <!-- Actions -->
             <div id="admin-drawing-tool-actions-card" class="card">
                 <div class="card-body" id="admin-drawing-tool-actions-body">
-                    <button id="admin-drawing-tool-clear-layer-btn" @onclick="ClearCurrentLayer" class="btn btn-warning w-100 mb-2">
+                    <button id="admin-drawing-tool-clear-layer-btn" @onclick="ClearCurrentLayer" class="btn btn-outline-secondary w-100 mb-2">
                         @L["Drawing_ClearLayerBtn"]
                     </button>
-                    <button id="admin-drawing-tool-export-btn" @onclick="ExportDrawing" class="btn btn-success w-100 mb-2">
+                    <button id="admin-drawing-tool-export-btn" @onclick="ExportDrawing" class="btn btn-outline-secondary w-100 mb-2">
                         @L["Drawing_ExportDrawingBtn"]
                     </button>
-                    <button id="admin-drawing-tool-export-json-btn" @onclick="ExportJSON" class="btn btn-info w-100 mb-2">
+                    <button id="admin-drawing-tool-export-json-btn" @onclick="ExportJSON" class="btn btn-outline-secondary w-100 mb-2">
                         @L["Drawing_ExportJsonBtn"]
                     </button>
-                    <button id="admin-drawing-tool-save-sectors-btn" @onclick="SaveSectors" class="btn btn-primary w-100">
+                    <button id="admin-drawing-tool-save-sectors-btn" @onclick="SaveSectors" class="btn btn-dark w-100">
                         @L["Drawing_SaveSectorsBtn"]
                     </button>
                 </div>

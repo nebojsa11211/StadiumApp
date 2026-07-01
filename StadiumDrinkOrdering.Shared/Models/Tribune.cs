@@ -77,23 +77,28 @@ public class Sector
 public class StadiumSeatNew
 {
     public int Id { get; set; }
-    public int SectorId { get; set; }
-    
+
+    // A seat belongs to EITHER a hierarchy Sector (legacy JSON import) OR a drawing-tool
+    // sector overlay (the source of truth going forward). Both are optional.
+    public int? SectorId { get; set; }
+    public int? StadiumSectorOverlayId { get; set; }
+
     [Required]
     public int RowNumber { get; set; }
-    
+
     [Required]
     public int SeatNumber { get; set; }
-    
+
     [Required]
-    [StringLength(20)]
+    [StringLength(60)]
     public string UniqueCode { get; set; } = string.Empty;
-    
+
     public bool IsAvailable { get; set; } = true;
-    
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    
+
     // Navigation properties
     public virtual Sector? Sector { get; set; }
+    public virtual StadiumSectorOverlay? StadiumSectorOverlay { get; set; }
 }

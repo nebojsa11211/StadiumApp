@@ -1,0 +1,18 @@
+.login-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-shell__lang {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 1.25rem;
+}
+
+.login-shell__main {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}

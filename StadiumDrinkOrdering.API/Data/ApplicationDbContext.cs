@@ -364,11 +364,19 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.SectorId, e.RowNumber, e.SeatNumber }).IsUnique();
             entity.HasIndex(e => e.UniqueCode).IsUnique();
-            entity.Property(e => e.UniqueCode).HasMaxLength(20);
+            entity.HasIndex(e => new { e.StadiumSectorOverlayId, e.RowNumber, e.SeatNumber });
+            entity.Property(e => e.UniqueCode).HasMaxLength(60);
 
+            // Legacy hierarchy sector (optional now that overlays own seats too)
             entity.HasOne(e => e.Sector)
                 .WithMany(s => s.Seats)
                 .HasForeignKey(e => e.SectorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Drawing-tool sector overlay ownership (source of truth)
+            entity.HasOne(e => e.StadiumSectorOverlay)
+                .WithMany()
+                .HasForeignKey(e => e.StadiumSectorOverlayId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -548,9 +556,9 @@ public class ApplicationDbContext : DbContext
             new User
             {
                 Id = 1,
-                Username = "admin",
-                Email = "admin@stadium.com",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                Username = "nebojsa.medancic+adminStadion@gmail.com",
+                Email = "nebojsa.medancic+adminStadion@gmail.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
                 Role = UserRole.Admin,
                 CreatedAt = DateTime.UtcNow
             }

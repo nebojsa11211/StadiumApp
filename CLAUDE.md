@@ -311,8 +311,8 @@ builder.Services.AddClientAuthentication(apiBaseUrl, "Admin", enableBackgroundRe
 4. **Return URL Support**: Users redirected to intended page after login
 
 **Default Admin Credentials:**
-- **Email**: `admin@stadium.com`
-- **Password**: `admin123`
+- **Email**: `nebojsa.medancic+adminStadion@gmail.com`
+- **Password**: `Admin123!`
 
 #### Rate Limiting & Brute Force Protection
 **API Protection Configuration:**

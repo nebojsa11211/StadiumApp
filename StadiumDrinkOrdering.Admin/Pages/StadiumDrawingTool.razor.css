@@ -1,0 +1,30 @@
+/* Minimalistic sidebar styling for the stadium drawing tool */
+
+#admin-drawing-tool-sidebar .card {
+    border: 1px solid #e9ecef;
+    box-shadow: none;
+}
+
+/* Flat, borderless headers instead of Bootstrap's grey fill */
+#admin-drawing-tool-sidebar .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid #f1f3f5;
+    padding-top: 0.75rem;
+    padding-bottom: 0.5rem;
+}
+
+#admin-drawing-tool-sidebar .card-header h5 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6c757d;
+}
+
+/* Subtle section sub-titles */
+#admin-drawing-tool-sidebar h6 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}

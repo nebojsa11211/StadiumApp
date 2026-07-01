@@ -323,6 +323,9 @@
   <data name="Nav_DrawingTool" xml:space="preserve">
     <value>Drawing Tool</value>
   </data>
+  <data name="Nav_StadiumInfo" xml:space="preserve">
+    <value>Stadium Info</value>
+  </data>
   <data name="Nav_GroupSystem" xml:space="preserve">
     <value>System</value>
   </data>
@@ -448,65 +451,107 @@
   <data name="Drawing_DefaultInstructions" xml:space="preserve">
     <value>Select a shape type from the dropdown above</value>
   </data>
-  <data name="NavMenu_NavigationMenuTitle" xml:space="preserve">
-    <value>Navigation menu</value>
+  <data name="StadiumInfo_PageTitle" xml:space="preserve">
+    <value>Stadium Info</value>
   </data>
-  <data name="NavMenu_Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="StadiumInfo_Heading" xml:space="preserve">
+    <value>Stadium Info</value>
   </data>
-  <data name="NavMenu_Orders" xml:space="preserve">
-    <value>Orders</value>
+  <data name="StadiumInfo_Subtitle" xml:space="preserve">
+    <value>Overview of stadium sectors and seating capacity</value>
   </data>
-  <data name="NavMenu_Drinks" xml:space="preserve">
-    <value>Drinks</value>
+  <data name="StadiumInfo_Loading" xml:space="preserve">
+    <value>Loading stadium info...</value>
   </data>
-  <data name="NavMenu_Analytics" xml:space="preserve">
-    <value>Analytics</value>
+  <data name="StadiumInfo_Error" xml:space="preserve">
+    <value>Failed to load stadium info.</value>
   </data>
-  <data name="NavMenu_CustomerAnalytics" xml:space="preserve">
-    <value>Customer Analytics</value>
+  <data name="StadiumInfo_Retry" xml:space="preserve">
+    <value>Retry</value>
   </data>
-  <data name="NavMenu_Events" xml:space="preserve">
-    <value>Events</value>
+  <data name="StadiumInfo_Empty" xml:space="preserve">
+    <value>No sectors have been defined yet. Use the Drawing Tool to create sectors.</value>
   </data>
-  <data name="NavMenu_Tickets" xml:space="preserve">
-    <value>Tickets</value>
+  <data name="StadiumInfo_TotalSectors" xml:space="preserve">
+    <value>Total Sectors</value>
   </data>
-  <data name="NavMenu_BartenderDashboard" xml:space="preserve">
-    <value>Bartender Dashboard</value>
+  <data name="StadiumInfo_TotalSeats" xml:space="preserve">
+    <value>Total Seats</value>
   </data>
-  <data name="NavMenu_StadiumManagement" xml:space="preserve">
-    <value>STADIUM MANAGEMENT</value>
+  <data name="StadiumInfo_TypeBreakdownTitle" xml:space="preserve">
+    <value>Breakdown by Type</value>
   </data>
-  <data name="NavMenu_StructureManagement" xml:space="preserve">
-    <value>Structure Management</value>
+  <data name="StadiumInfo_SectorListTitle" xml:space="preserve">
+    <value>Sectors</value>
   </data>
-  <data name="NavMenu_StadiumOverview" xml:space="preserve">
-    <value>Stadium Overview</value>
+  <data name="StadiumInfo_ColCode" xml:space="preserve">
+    <value>Code</value>
   </data>
-  <data name="NavMenu_ImportGuide" xml:space="preserve">
-    <value>Import Guide</value>
+  <data name="StadiumInfo_ColName" xml:space="preserve">
+    <value>Name</value>
   </data>
-  <data name="NavMenu_DrawingTool" xml:space="preserve">
-    <value>Drawing Tool</value>
+  <data name="StadiumInfo_ColType" xml:space="preserve">
+    <value>Type</value>
   </data>
-  <data name="NavMenu_SystemManagement" xml:space="preserve">
-    <value>SYSTEM MANAGEMENT</value>
+  <data name="StadiumInfo_ColRows" xml:space="preserve">
+    <value>Rows</value>
   </data>
-  <data name="NavMenu_UserManagement" xml:space="preserve">
-    <value>User Management</value>
+  <data name="StadiumInfo_ColSeatsPerRow" xml:space="preserve">
+    <value>Seats / Row</value>
   </data>
-  <data name="NavMenu_SystemLogs" xml:space="preserve">
-    <value>System Logs</value>
+  <data name="StadiumInfo_ColTotalSeats" xml:space="preserve">
+    <value>Total Seats</value>
   </data>
-  <data name="NavMenu_DatabaseExplorer" xml:space="preserve">
-    <value>Database Explorer</value>
+  <data name="StadiumInfo_RowDetailTitle" xml:space="preserve">
+    <value>Rows in {0}</value>
   </data>
-  <data name="MainLayout_AdminDashboard" xml:space="preserve">
-    <value>Admin Dashboard</value>
+  <data name="StadiumInfo_ColRow" xml:space="preserve">
+    <value>Row</value>
   </data>
-  <data name="MainLayout_ServerTime" xml:space="preserve">
-    <value>Server Time</value>
+  <data name="StadiumInfo_ColSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="StadiumInfo_CollapseAllRows" xml:space="preserve">
+    <value>Collapse all rows</value>
+  </data>
+  <data name="StadiumInfo_NoRows" xml:space="preserve">
+    <value>This sector has no rows configured.</value>
+  </data>
+  <data name="StadiumInfo_RowSeatsAria" xml:space="preserve">
+    <value>{0} row {1} seats</value>
+  </data>
+  <data name="StadiumInfo_SeatsShownOf" xml:space="preserve">
+    <value>Showing {0} of {1}</value>
+  </data>
+  <data name="StadiumInfo_SourcePersisted" xml:space="preserve">
+    <value>Persisted</value>
+  </data>
+  <data name="StadiumInfo_SourcePersistedHint" xml:space="preserve">
+    <value>Actual database seats from matched sector "{0}"</value>
+  </data>
+  <data name="StadiumInfo_SourceDerived" xml:space="preserve">
+    <value>Derived</value>
+  </data>
+  <data name="StadiumInfo_SourceDerivedHint" xml:space="preserve">
+    <value>No persisted seat records are linked to this sector — showing the computed layout.</value>
+  </data>
+  <data name="StadiumInfo_CheckingSeats" xml:space="preserve">
+    <value>Checking seats…</value>
+  </data>
+  <data name="StadiumInfo_LoadingSeats" xml:space="preserve">
+    <value>Loading seats…</value>
+  </data>
+  <data name="StadiumInfo_Available" xml:space="preserve">
+    <value>available</value>
+  </data>
+  <data name="StadiumInfo_Unavailable" xml:space="preserve">
+    <value>unavailable</value>
+  </data>
+  <data name="StadiumInfo_NoPersistedRowSeats" xml:space="preserve">
+    <value>No persisted seats found for this row.</value>
+  </data>
+  <data name="StadiumInfo_CountMismatch" xml:space="preserve">
+    <value>Layout defines {0} seats; {1} persisted in database.</value>
   </data>
   <data name="Login_PageTitle" xml:space="preserve">
     <value>Admin Login</value>

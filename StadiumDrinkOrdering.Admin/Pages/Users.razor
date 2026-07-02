@@ -89,9 +89,9 @@
                 <label class="field__label">@L["Users_RoleFilterLabel"]</label>
                 <select class="field__input" @bind="selectedRole" @bind:after="FilterUsers" id="admin-users-role-filter">
                     <option value="">@L["Users_AllRolesOption"]</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Staff">Staff</option>
-                    <option value="Customer">Customer</option>
+                    <option value="Admin">@L["Users_RoleAdmin"]</option>
+                    <option value="Staff">@L["Users_RoleStaff"]</option>
+                    <option value="Customer">@L["Users_RoleCustomer"]</option>
                 </select>
             </div>
             <div class="field">
@@ -266,9 +266,9 @@
                         <div class="mb-3">
                             <label class="form-label">@L["Users_RoleLabel"] *</label>
                             <InputSelect class="form-select" @bind-Value="newUser.Role" id="admin-users-modal-role-select">
-                                <option value="Customer">Customer</option>
-                                <option value="Staff">Staff</option>
-                                <option value="Admin">Admin</option>
+                                <option value="Customer">@L["Users_RoleCustomer"]</option>
+                                <option value="Staff">@L["Users_RoleStaff"]</option>
+                                <option value="Admin">@L["Users_RoleAdmin"]</option>
                             </InputSelect>
                         </div>
 
@@ -335,9 +335,9 @@
                             <label class="form-label">@L["Users_RoleLabel"]</label>
                             <InputSelect class="form-select" @bind-Value="editUser.Role" id="admin-users-edit-modal-role-select">
                                 <option value="">@L["Users_SelectRoleOption"]</option>
-                                <option value="@UserRole.Customer">Customer</option>
-                                <option value="@UserRole.Bartender">Staff</option>
-                                <option value="@UserRole.Admin">Admin</option>
+                                <option value="@UserRole.Customer">@L["Users_RoleCustomer"]</option>
+                                <option value="@UserRole.Bartender">@L["Users_RoleStaff"]</option>
+                                <option value="@UserRole.Admin">@L["Users_RoleAdmin"]</option>
                             </InputSelect>
                         </div>
 

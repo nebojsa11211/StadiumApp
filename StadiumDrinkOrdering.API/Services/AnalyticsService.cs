@@ -331,8 +331,10 @@ public class AnalyticsService : IAnalyticsService
                 .Where(o => o.EventId == eventId)
                 .ToListAsync();
 
+            // A ticket counts as sold/occupying its seat unless it has been cancelled
+            // (aligns with TicketStatuses.CountsAsSold; string comparison kept EF-translatable).
             var tickets = await _context.Tickets
-                .Where(t => t.EventId == eventId && !string.IsNullOrEmpty(t.CustomerName))
+                .Where(t => t.EventId == eventId && t.Status != TicketStatuses.Cancelled)
                 .ToListAsync();
 
             var existingAnalytics = await _context.EventAnalytics.FirstOrDefaultAsync(ea => ea.EventId == eventId);

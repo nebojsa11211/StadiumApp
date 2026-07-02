@@ -42,7 +42,18 @@ public class Event
     public string? ImageUrl { get; set; }
     
     public decimal? BaseTicketPrice { get; set; }
-    
+
+    /// <summary>
+    /// Identifier of this event in the external ticketing system, if it originated there.
+    /// Unique (nullable) so external events map 1:1 and ingestion is idempotent.
+    /// </summary>
+    [StringLength(100)]
+    public string? ExternalEventId { get; set; }
+
+    /// <summary>Name of the system that created this event (e.g. "TicketingSimulator"), if external.</summary>
+    [StringLength(100)]
+    public string? SourceSystem { get; set; }
+
     // Navigation properties
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();

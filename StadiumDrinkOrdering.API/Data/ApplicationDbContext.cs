@@ -55,6 +55,9 @@ public class ApplicationDbContext : DbContext
     // JWT Refresh Token entities
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
+    // External integration (ticketing webhook idempotency ledger)
+    public DbSet<IntegrationInboxEntry> IntegrationInboxEntries { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -187,6 +190,9 @@ public class ApplicationDbContext : DbContext
                 .WithMany(s => s.Tickets)
                 .HasForeignKey(e => e.SeatId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Unique mapping to the external ticketing system (NULLs distinct in PostgreSQL).
+            entity.HasIndex(e => e.ExternalTicketId).IsUnique();
         });
 
         // StadiumSeat configuration
@@ -202,6 +208,9 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.EventName);
             entity.Property(e => e.BaseTicketPrice).HasPrecision(10, 2);
+            // Unique mapping to the external ticketing system (PostgreSQL treats NULLs as
+            // distinct, so internally-created events without an external id are unaffected).
+            entity.HasIndex(e => e.ExternalEventId).IsUnique();
         });
 
         // StadiumSection configuration
@@ -543,6 +552,19 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // IntegrationInboxEntry configuration (webhook idempotency ledger)
+        modelBuilder.Entity<IntegrationInboxEntry>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.IdempotencyKey).IsUnique();
+            entity.HasIndex(e => e.ReceivedAt);
+            entity.Property(e => e.IdempotencyKey).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.EventType).HasMaxLength(50);
+            entity.Property(e => e.SourceSystem).HasMaxLength(100);
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Notes).HasMaxLength(500);
         });
 
         // Seed data

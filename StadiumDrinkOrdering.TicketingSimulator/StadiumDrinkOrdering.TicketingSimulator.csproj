@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-StadiumDrinkOrdering.TicketingSimulator-20260702-000005</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StadiumDrinkOrdering.Shared\StadiumDrinkOrdering.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

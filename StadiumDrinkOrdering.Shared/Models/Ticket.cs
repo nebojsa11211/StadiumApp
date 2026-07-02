@@ -61,9 +61,20 @@ public class Ticket
     public DateTime? EventDate { get; set; }
     
     public bool IsActive { get; set; } = true;
-    
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
+
+    /// <summary>
+    /// Identifier of this ticket in the external ticketing system, if it originated there.
+    /// Unique (nullable) so external sales map 1:1 and ingestion is idempotent.
+    /// </summary>
+    [StringLength(100)]
+    public string? ExternalTicketId { get; set; }
+
+    /// <summary>Name of the system that created this ticket (e.g. "TicketingSimulator"), if external.</summary>
+    [StringLength(100)]
+    public string? SourceSystem { get; set; }
+
     // Navigation properties
     public virtual Event Event { get; set; } = null!;
     public virtual Seat Seat { get; set; } = null!;

@@ -1,189 +1,127 @@
 @page "/admin/stadium-overview"
-@using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Shared.DTOs
-@using System.Globalization
-@using System.Text.Json
-@using StadiumDrinkOrdering.Admin.Components.Stadium
+@using StadiumDrinkOrdering.Shared.DTOs.Integration
 @inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Stadium Operations Center - Admin</PageTitle>
+<PageTitle>@L["Overview_PageTitle"]</PageTitle>
 
-<div class="stadium-overview-wrapper" role="main" aria-labelledby="stadium-overview-title">
-    <header class="stadium-overview-header">
-        <div class="header-content">
-            <div class="header-icon">
-                <i class="bi bi-building" aria-hidden="true"></i>
+<div class="ops-wrapper" id="admin-overview-wrapper" role="main">
+    <header class="ops-header" id="admin-overview-header">
+        <div class="ops-header-title">
+            <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+            <div>
+                <h1 id="admin-overview-title">@L["Overview_Title"]</h1>
+                <p class="ops-subtitle">@L["Overview_Subtitle"]</p>
             </div>
-            <div class="header-info">
-                <h1 id="stadium-overview-title" class="overview-title">@L["Overview_Title"]</h1>
-                <p class="overview-subtitle">@L["Overview_Subtitle"]</p>
-            </div>
-            <div class="header-status">
-                <div class="status-indicator @(isLoading ? "loading" : "online")">
-                    <div class="status-dot" aria-hidden="true"></div>
-                    <span class="status-text">@(isLoading ? L["Overview_Loading"] : L["Overview_SystemOnline"])</span>
-                </div>
-            </div>
+        </div>
+        <div class="ops-live-pill @(IsLive ? "live" : "offline")" id="admin-overview-live-pill" title="@L["Overview_ConnectionStatusTooltip"]">
+            <span class="dot"></span>
+            <span>@(IsLive ? L["Overview_Live"] : L["Overview_Offline"])</span>
+            @if (lastUpdate != null)
+            {
+                <span class="ops-last-update">· @L["Overview_Updated"] @lastUpdate.Value.ToString("HH:mm:ss")</span>
+            }
         </div>
     </header>
 
     @if (errorMessage != null)
     {
-        <div class="alert alert-danger" role="alert">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            @errorMessage
+        <div class="alert alert-danger" id="admin-overview-error" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @errorMessage
         </div>
     }
 
-    @* Event Selection *@
-    @if (events != null && events.Any())
-    {
-        <div id="admin-stadium-overview-event-selector" class="card mb-4">
-            <div id="admin-stadium-overview-event-card-body" class="card-body">
-                <label for="admin-stadium-overview-event-select" class="form-label fw-bold">@L["Overview_SelectEvent"]</label>
-                <select id="admin-stadium-overview-event-select" class="form-select" @bind="selectedEventId" @bind:after="OnEventChanged">
-                    <option value="0">@L["Overview_NoEventSelected"]</option>
+    <div class="card ops-controls" id="admin-overview-controls">
+        <div class="card-body ops-controls-body">
+            <div class="ops-field">
+                <label for="admin-overview-event-select" class="form-label">@L["Overview_EventLabel"]</label>
+                <select id="admin-overview-event-select" class="form-select" @bind="SelectedEventId" @bind:after="OnEventChanged">
+                    <option value="0">@L["Overview_SelectEventOption"]</option>
                     @foreach (var evt in events)
                     {
-                        <option value="@evt.Id">@evt.EventName (@evt.EventDate.ToString("dd MMM yyyy"))</option>
+                        <option value="@evt.Id">@evt.Name@(evt.Date != null ? $" ({evt.Date.Value:dd MMM yyyy})" : "")</option>
                     }
                 </select>
             </div>
+            <div class="ops-field ops-field-sm">
+                <label for="admin-overview-liters" class="form-label">@L["Overview_BeerPerAttendeeLabel"]</label>
+                <input id="admin-overview-liters" type="number" step="0.1" min="0" class="form-control"
+                       @bind="LitersPerAttendee" @bind:event="oninput" />
+            </div>
+            <div class="ops-field ops-field-sm">
+                <label for="admin-overview-staff-ratio" class="form-label">@L["Overview_AttendeesPerStaffLabel"]</label>
+                <input id="admin-overview-staff-ratio" type="number" step="1" min="1" class="form-control"
+                       @bind="AttendeesPerStaff" @bind:event="oninput" />
+            </div>
         </div>
-    }
+    </div>
 
     @if (isLoading)
     {
-        <div id="admin-stadium-overview-loading" class="stadium-loading">
-            <div id="admin-stadium-overview-loading-spinner" class="loading-spinner"></div>
-            <p id="admin-stadium-overview-loading-text">@L["Overview_LoadingStadiumLayout"]</p>
+        <div class="ops-loading" id="admin-overview-loading">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span>@L["Loading"]</span>
+        </div>
+    }
+    else if (SelectedEventId == 0)
+    {
+        <div class="ops-empty" id="admin-overview-empty">
+            <i class="bi bi-arrow-up-circle"></i>
+            <p>@L["Overview_EmptyPrompt"]</p>
         </div>
     }
     else
     {
-        @* Stadium Image with SVG Overlays - ALWAYS RENDER *@
-        <div id="admin-stadium-overview-image-container" class="stadium-image-container">
-            <img id="admin-stadium-overview-blueprint-img"
-                 src="/images/stadium-blueprint.png"
-                 alt="@L["Overview_StadiumLayoutAlt"]"
-                 class="stadium-blueprint-img" />
-
-            @* SVG Sector Overlays - CONDITIONALLY RENDER *@
-            @if (sectorOverlays != null && sectorOverlays.Any())
-            {
-                <svg id="admin-stadium-overview-svg-overlay"
-                     class="sector-overlays-svg"
-                     width="1170"
-                     height="898"
-                     viewBox="0 0 1170 898"
-                     preserveAspectRatio="xMidYMid meet"
-                     xmlns="http://www.w3.org/2000/svg"
-                     role="img"
-                     aria-label="Stadium sector overlay map">
-
-                    @* Define filter effects for hover/focus *@
-                    <defs>
-                        <filter id="sector-glow" x="-50%" y="-50%" width="200%" height="200%">
-                            <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
-                            <feOffset dx="0" dy="0" result="offsetblur"/>
-                            <feComponentTransfer>
-                                <feFuncA type="linear" slope="0.8"/>
-                            </feComponentTransfer>
-                            <feMerge>
-                                <feMergeNode/>
-                                <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                        </filter>
-                    </defs>
-
-                    @* Render each sector as SVG path *@
-                    @foreach (var overlay in sectorOverlays)
-                    {
-                        var occupancyClass = GetSectorOccupancyClass(overlay.SectorCode);
-                        var sectorType = overlay.Type?.ToLower() ?? "standard";
-                        var svgPath = GenerateSvgPath(overlay);
-                        var labelCenter = CalculateLabelCenter(overlay);
-
-                        @if (!string.IsNullOrEmpty(svgPath))
-                        {
-                            <g id="admin-stadium-overview-sector-group-@overlay.SectorCode"
-                               class="sector-group @occupancyClass @sectorType"
-                               role="button"
-                               tabindex="0"
-                               aria-label="@overlay.Name - Click to view sector details"
-                               @onclick="() => OpenSectorModal(overlay.SectorCode)"
-                               @onkeydown="(e) => HandleSectorKeyDown(e, overlay.SectorCode)">
-
-                                @* Sector shape path *@
-                                <path id="admin-stadium-overview-sector-path-@overlay.SectorCode"
-                                      class="sector-path @occupancyClass @sectorType"
-                                      d="@svgPath"
-                                      vector-effect="non-scaling-stroke" />
-
-                                @* Sector label text *@
-                                <text id="admin-stadium-overview-sector-label-@overlay.SectorCode"
-                                      class="sector-label-text"
-                                      x="@labelCenter.X"
-                                      y="@labelCenter.Y"
-                                      text-anchor="middle"
-                                      dominant-baseline="middle"
-                                      pointer-events="none">
-                                    @overlay.SectorCode
-                                </text>
-                            </g>
-                        }
-                    }
-                </svg>
-            }
-            else
-            {
-                @* No Sectors Message - Positioned on Image *@
-                <div id="admin-stadium-overview-no-sectors-overlay" class="no-sectors-overlay">
-                    <div class="no-sectors-content">
-                        <i class="bi bi-info-circle-fill fs-1 mb-3"></i>
-                        <h4>@L["Overview_NoSectorOverlaysTitle"]</h4>
-                        <p class="text-muted">@L["Overview_NoSectorOverlaysMessage"]</p>
-                        <a href="/admin/stadium-drawing-tool" class="btn btn-primary mt-3">
-                            <i class="bi bi-pencil-square"></i> @L["Overview_OpenDrawingToolBtn"]
-                        </a>
-                    </div>
-                </div>
-            }
-        </div>
-
-        @* Legend - ALWAYS SHOW *@
-        <div id="admin-stadium-overview-legend" class="card mt-4">
-            <div id="admin-stadium-overview-legend-body" class="card-body">
-                <h5 id="admin-stadium-overview-legend-title" class="card-title">@L["Overview_OccupancyLegend"]</h5>
-                <div id="admin-stadium-overview-legend-items" class="d-flex gap-4 flex-wrap">
-                    <div id="admin-stadium-overview-legend-available" class="d-flex align-items-center gap-2">
-                        <div style="width: 24px; height: 24px; background: rgba(34, 197, 94, 0.3); border: 2px solid #22c55e; border-radius: 4px;"></div>
-                        <span>@L["Overview_AvailableLabel"]</span>
-                    </div>
-                    <div id="admin-stadium-overview-legend-partial" class="d-flex align-items-center gap-2">
-                        <div style="width: 24px; height: 24px; background: rgba(245, 158, 11, 0.3); border: 2px solid #f59e0b; border-radius: 4px;"></div>
-                        <span>@L["Overview_PartialLabel"]</span>
-                    </div>
-                    <div id="admin-stadium-overview-legend-full" class="d-flex align-items-center gap-2">
-                        <div style="width: 24px; height: 24px; background: rgba(239, 68, 68, 0.3); border: 2px solid #ef4444; border-radius: 4px;"></div>
-                        <span>@L["Overview_FullLabel"]</span>
-                    </div>
-                    <div id="admin-stadium-overview-legend-vip" class="d-flex align-items-center gap-2">
-                        <div style="width: 24px; height: 24px; background: rgba(139, 92, 246, 0.3); border: 2px solid #8b5cf6; border-radius: 4px;"></div>
-                        <span>@L["Overview_VipLabel"]</span>
-                    </div>
-                </div>
+        @* KPI summary cards *@
+        <div class="ops-kpis" id="admin-overview-kpis">
+            <div class="ops-kpi" id="admin-overview-kpi-attendance">
+                <div class="ops-kpi-label">@L["Overview_KpiAttendance"]</div>
+                <div class="ops-kpi-value">@TotalSold.ToString("N0") <span class="ops-kpi-sub">/ @TotalCapacity.ToString("N0")</span></div>
+                <div class="ops-progress"><div class="ops-progress-bar @OccupancyClass(OverallOccupancy)" style="width:@(OverallOccupancy)%"></div></div>
+                <div class="ops-kpi-foot">@OverallOccupancy.ToString("0.0")@L["Overview_PercentFull"]</div>
+            </div>
+            <div class="ops-kpi" id="admin-overview-kpi-beer">
+                <div class="ops-kpi-label">@L["Overview_KpiBeer"]</div>
+                <div class="ops-kpi-value">@BeerLiters.ToString("N0") <span class="ops-kpi-sub">L</span></div>
+                <div class="ops-kpi-foot">≈ @BeerServings.ToString("N0") @L["Overview_Servings"] (@ServingLiters L)</div>
+            </div>
+            <div class="ops-kpi" id="admin-overview-kpi-staff">
+                <div class="ops-kpi-label">@L["Overview_KpiStaff"]</div>
+                <div class="ops-kpi-value">@RecommendedStaff.ToString("N0")</div>
+                <div class="ops-kpi-foot">@L["Overview_StaffRatio", AttendeesPerStaff]</div>
             </div>
         </div>
-    }
 
-    @* Sector Detail Modal *@
-    @if (showSectorModal && selectedSectorSeats != null)
-    {
-        <SectorDetailModal
-            SectorCode="@selectedSectorCode"
-            SectorName="@selectedSectorName"
-            Seats="@selectedSectorSeats"
-            OnClose="CloseSectorModal" />
+        @if (Sectors.Any())
+        {
+            <h2 class="ops-section-title">@L["Overview_SectorBreakdown"]</h2>
+            <div class="ops-sectors" id="admin-overview-sectors">
+                @foreach (var s in Sectors)
+                {
+                    var occ = OccupancyOf(s);
+                    <div class="ops-sector-card @OccupancyClass(occ)" id="admin-overview-sector-@s.SectionCode">
+                        <div class="ops-sector-head">
+                            <span class="ops-sector-code" title="@s.SectionName">@s.SectionCode</span>
+                            <span class="ops-sector-occ">@occ.ToString("0")%</span>
+                        </div>
+                        <div class="ops-progress"><div class="ops-progress-bar @OccupancyClass(occ)" style="width:@(occ)%"></div></div>
+                        <div class="ops-sector-stats">
+                            <span><strong>@s.Sold.ToString("N0")</strong> / @s.Capacity.ToString("N0") @L["Overview_Seats"]</span>
+                        </div>
+                        <div class="ops-sector-plan">
+                            <span title="@L["Overview_SectorBeerTooltip"]"><i class="bi bi-cup-straw"></i> @SectorBeer(s).ToString("N0") L</span>
+                            <span title="@L["Overview_SectorStaffTooltip"]"><i class="bi bi-person-badge"></i> @SectorStaff(s) @L["Overview_Staff"]</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="ops-empty" id="admin-overview-no-sectors">
+                <i class="bi bi-info-circle"></i>
+                <p>@L["Overview_NoSectors"]</p>
+            </div>
+        }
     }
 </div>

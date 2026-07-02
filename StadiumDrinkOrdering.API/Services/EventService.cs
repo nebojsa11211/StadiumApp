@@ -61,7 +61,8 @@ public class EventService : IEventService
                 SELECT
                     e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
                     e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
-                    e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
+                    e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
+                e.""ExternalEventId"", e.""SourceSystem""
                 FROM ""Events"" e
                 {0}
                 ORDER BY e.""EventDate""";
@@ -316,7 +317,8 @@ public class EventService : IEventService
             SELECT
                 e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
                 e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
-                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
+                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
+                e.""ExternalEventId"", e.""SourceSystem""
             FROM ""Events"" e
             WHERE e.""IsActive"" = true
             ORDER BY e.""EventDate""";
@@ -335,7 +337,8 @@ public class EventService : IEventService
             SELECT
                 e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
                 e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
-                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
+                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
+                e.""ExternalEventId"", e.""SourceSystem""
             FROM ""Events"" e
             WHERE e.""IsActive"" = true AND e.""EventDate"" > {0}
             ORDER BY e.""EventDate""";
@@ -354,7 +357,8 @@ public class EventService : IEventService
             SELECT
                 e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
                 e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
-                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice""
+                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
+                e.""ExternalEventId"", e.""SourceSystem""
             FROM ""Events"" e
             WHERE e.""EventDate"" < {0}
             ORDER BY e.""EventDate"" DESC";

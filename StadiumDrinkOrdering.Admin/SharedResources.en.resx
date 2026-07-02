@@ -2212,6 +2212,9 @@
   <data name="Events_EditButton" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="Events_LiveOccupancyButton" xml:space="preserve">
+    <value>Live occupancy</value>
+  </data>
   <data name="Events_DeleteButton" xml:space="preserve">
     <value>Delete</value>
   </data>
@@ -2976,5 +2979,110 @@
   </data>
   <data name="SvgRender_LoadingText" xml:space="preserve">
     <value>Loading dynamic stadium layout...</value>
+  </data>
+  <data name="Overview_PageTitle" xml:space="preserve">
+    <value>Stadium Operations Center - Admin</value>
+  </data>
+  <data name="Overview_Title" xml:space="preserve">
+    <value>Stadium Operations Center</value>
+  </data>
+  <data name="Overview_Subtitle" xml:space="preserve">
+    <value>Live ticket sales &amp; capacity planning</value>
+  </data>
+  <data name="Overview_ConnectionStatusTooltip" xml:space="preserve">
+    <value>Real-time connection status</value>
+  </data>
+  <data name="Overview_Live" xml:space="preserve">
+    <value>LIVE</value>
+  </data>
+  <data name="Overview_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Overview_Updated" xml:space="preserve">
+    <value>updated</value>
+  </data>
+  <data name="Overview_EventLabel" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="Overview_SelectEventOption" xml:space="preserve">
+    <value>— Select an event —</value>
+  </data>
+  <data name="Overview_BeerPerAttendeeLabel" xml:space="preserve">
+    <value>Beer L / attendee</value>
+  </data>
+  <data name="Overview_AttendeesPerStaffLabel" xml:space="preserve">
+    <value>Attendees / staff</value>
+  </data>
+  <data name="Overview_EmptyPrompt" xml:space="preserve">
+    <value>Select an event to view live occupancy and capacity planning.</value>
+  </data>
+  <data name="Overview_KpiAttendance" xml:space="preserve">
+    <value>Attendance (tickets sold)</value>
+  </data>
+  <data name="Overview_PercentFull" xml:space="preserve">
+    <value>% full</value>
+  </data>
+  <data name="Overview_KpiBeer" xml:space="preserve">
+    <value>Estimated beer needed</value>
+  </data>
+  <data name="Overview_Servings" xml:space="preserve">
+    <value>servings</value>
+  </data>
+  <data name="Overview_KpiStaff" xml:space="preserve">
+    <value>Recommended bar staff</value>
+  </data>
+  <data name="Overview_StaffRatio" xml:space="preserve">
+    <value>at 1 per {0} attendees</value>
+  </data>
+  <data name="Overview_SectorBreakdown" xml:space="preserve">
+    <value>Per-sector breakdown</value>
+  </data>
+  <data name="Overview_Seats" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="Overview_SectorBeerTooltip" xml:space="preserve">
+    <value>Estimated beer for this sector</value>
+  </data>
+  <data name="Overview_SectorStaffTooltip" xml:space="preserve">
+    <value>Recommended staff for this sector</value>
+  </data>
+  <data name="Overview_Staff" xml:space="preserve">
+    <value>staff</value>
+  </data>
+  <data name="Overview_NoSectors" xml:space="preserve">
+    <value>No stadium sections found. Import a stadium structure first.</value>
+  </data>
+  <data name="Users_RoleAdmin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="Users_RoleStaff" xml:space="preserve">
+    <value>Staff</value>
+  </data>
+  <data name="Users_RoleCustomer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="Index_LogLabelWarning" xml:space="preserve">
+    <value>[Warning]</value>
+  </data>
+  <data name="Index_LogLabelUser" xml:space="preserve">
+    <value>[User]</value>
+  </data>
+  <data name="Index_LogLabelTicket" xml:space="preserve">
+    <value>[Ticket]</value>
+  </data>
+  <data name="Index_LogLabelError" xml:space="preserve">
+    <value>[Error]</value>
+  </data>
+  <data name="Index_LogMsgConnPool" xml:space="preserve">
+    <value>ConnectionPool exhausted (referencing</value>
+  </data>
+  <data name="Index_LogMsgOrderTaken" xml:space="preserve">
+    <value>@Bartender1 took order #123</value>
+  </data>
+  <data name="Index_LogMsgTicketValidated" xml:space="preserve">
+    <value>Ticket validated (A, RS 512)</value>
+  </data>
+  <data name="Index_LogMsgApiError" xml:space="preserve">
+    <value>API error (Npgea), retry 1</value>
   </data>
 </root>

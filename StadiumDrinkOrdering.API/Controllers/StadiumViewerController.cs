@@ -145,11 +145,17 @@ public class StadiumViewerController : ControllerBase
 
             foreach (var section in sections)
             {
+                // Report the section's DECLARED capacity (rows × seatsPerRow) so the number is
+                // stable and matches ingestion / live SignalR updates. Actual Seat rows are created
+                // on demand (sparse), so section.Seats.Count is only a fallback for unconfigured sections.
+                var declaredCapacity = section.TotalRows * section.SeatsPerRow;
+                var totalSeats = declaredCapacity > 0 ? declaredCapacity : section.Seats.Count;
+
                 var sectorSummary = new SeatStatusSummaryDto
                 {
                     SectorId = section.SectionCode,
-                    TotalSeats = section.Seats.Count,
-                    SoldSeats = tickets.Count(t => section.Seats.Any(s => s.Id == t.SeatId) && t.Status == "sold"),
+                    TotalSeats = totalSeats,
+                    SoldSeats = tickets.Count(t => section.Seats.Any(s => s.Id == t.SeatId) && TicketStatuses.CountsAsSold(t.Status)),
                     HeldSeats = reservations.Count(r => section.Seats.Any(s => s.SeatCode == r.SeatCode)),
                     BlockedSeats = section.Seats.Count(s => !s.IsAccessible),
                     FreeSeats = 0
@@ -206,9 +212,9 @@ public class StadiumViewerController : ControllerBase
                 string status = "free";
                 DateTime? reservedUntil = null;
 
-                if (tickets.TryGetValue(seat.Id, out var ticketStatus))
+                if (tickets.TryGetValue(seat.Id, out var ticketStatus) && TicketStatuses.CountsAsSold(ticketStatus))
                 {
-                    status = ticketStatus == "Paid" ? "sold" : "held";
+                    status = "sold";
                 }
                 else if (reservations.TryGetValue(seat.SeatCode, out var expiresAt))
                 {

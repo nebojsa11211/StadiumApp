@@ -144,6 +144,9 @@
                                         <button class="pill-btn" @onclick="() => ShowEditEventModal(evt)" id="admin-event-edit-btn-@evt.Id">
                                             <i class="bi bi-pencil"></i><span>@L["Events_EditButton"]</span>
                                         </button>
+                                        <a class="pill-btn" href="admin/stadium-overview?eventId=@evt.Id" id="admin-event-occupancy-btn-@evt.Id">
+                                            <i class="bi bi-graph-up-arrow"></i><span>@L["Events_LiveOccupancyButton"]</span>
+                                        </a>
                                         @foreach (var target in EventLifecycle.AllowedNextStatuses(evt.Status))
                                         {
                                             var meta = TransitionMeta(target);

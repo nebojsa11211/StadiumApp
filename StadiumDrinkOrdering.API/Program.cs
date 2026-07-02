@@ -292,6 +292,7 @@ builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IStadiumStructureService, StadiumStructureService>();
 builder.Services.AddScoped<ISeatMappingService, SeatMappingService>();
+builder.Services.AddScoped<ITicketIngestionService, TicketIngestionService>();
 builder.Services.AddScoped<ILoggingService, LoggingService>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<ITicketAuthService, TicketAuthService>();

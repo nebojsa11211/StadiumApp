@@ -901,7 +901,7 @@
     <value>Tribune</value>
   </data>
   <data name="StructHelp_ConceptTribunesDesc" xml:space="preserve">
-    <value>4 smjera (N, J, I, Z)</value>
+    <value>4 smjera (N, S, E, W)</value>
   </data>
   <data name="StructHelp_ConceptRings" xml:space="preserve">
     <value>Prstenovi</value>
@@ -1009,7 +1009,7 @@
     <value>Najmanje jedna tribuna</value>
   </data>
   <data name="StructHelp_ReqFieldTribuneCode" xml:space="preserve">
-    <value>Mora biti N, J, I ili Z</value>
+    <value>Mora biti N, S, E ili W</value>
   </data>
   <data name="StructHelp_ReqFieldRings" xml:space="preserve">
     <value>Najmanje jedan prsten po tribuni</value>
@@ -1069,7 +1069,7 @@
     <value>"Nevaljani kod tribune"</value>
   </data>
   <data name="StructHelp_CauseInvalidCode" xml:space="preserve">
-    <value>Korištenje kodova osim N, J, I, Z</value>
+    <value>Korištenje kodova osim N, S, E, W</value>
   </data>
   <data name="StructHelp_SolutionInvalidCode" xml:space="preserve">
     <value>Promijenite na valjani kod (N, J, I ili Z)</value>
@@ -1165,7 +1165,7 @@
     <value>JSON datoteka mora sadržavati naziv stadiona i tribune</value>
   </data>
   <data name="Structure_QsTribuneCode" xml:space="preserve">
-    <value>Kodovi tribuna: N, J, I, Z (Sjever, Jug, Istok, Zapad)</value>
+    <value>Kodovi tribuna: N, S, E, W (Sjever, Jug, Istok, Zapad)</value>
   </data>
   <data name="Structure_QsSectorNeeds" xml:space="preserve">
     <value>Svaki sektor trebá redake i vrijednosti seatsPerRow</value>
@@ -2176,7 +2176,7 @@
     <value>Cijena</value>
   </data>
   <data name="Tickets_StatusHeader" xml:space="preserve">
-    <value>Status</value>
+    <value>Stanje</value>
   </data>
   <data name="Tickets_ActionsHeader" xml:space="preserve">
     <value>Akcije</value>
@@ -2286,6 +2286,9 @@
   <data name="Events_EditButton" xml:space="preserve">
     <value>Uredi</value>
   </data>
+  <data name="Events_LiveOccupancyButton" xml:space="preserve">
+    <value>Popunjenost uživo</value>
+  </data>
   <data name="Events_DeleteButton" xml:space="preserve">
     <value>Obriši</value>
   </data>
@@ -2377,7 +2380,7 @@
     <value>Očisti</value>
   </data>
   <data name="Orders_StatusLabel" xml:space="preserve">
-    <value>Status</value>
+    <value>Stanje</value>
   </data>
   <data name="Orders_AllStatusesOption" xml:space="preserve">
     <value>Svi statusi</value>
@@ -2440,7 +2443,7 @@
     <value>Ukupno</value>
   </data>
   <data name="Orders_StatusHeader" xml:space="preserve">
-    <value>Status</value>
+    <value>Stanje</value>
   </data>
   <data name="Orders_CreatedHeader" xml:space="preserve">
     <value>Kreirano</value>
@@ -2515,7 +2518,7 @@
     <value>Status</value>
   </data>
   <data name="Analytics_TBDLabel" xml:space="preserve">
-    <value>Trebadoo</value>
+    <value>Naknadno</value>
   </data>
   <data name="Analytics_ActiveStatus" xml:space="preserve">
     <value>Aktivno</value>
@@ -2731,7 +2734,7 @@
     <value>Ukupne Narudžbe</value>
   </data>
   <data name="Dash_VsYesterday" xml:space="preserve">
-    <value>u odnosu na yesterday</value>
+    <value>u odnosu na jučer</value>
   </data>
   <data name="Dash_ActiveOrders" xml:space="preserve">
     <value>Aktivne Narudžbe</value>
@@ -2923,7 +2926,7 @@
     <value>AKTIVNO</value>
   </data>
   <data name="Index_Cache" xml:space="preserve">
-    <value>Cache</value>
+    <value>Predmemorija</value>
   </data>
   <data name="Index_Running" xml:space="preserve">
     <value>POKRENUTO</value>
@@ -3050,5 +3053,110 @@
   </data>
   <data name="SvgRender_LoadingText" xml:space="preserve">
     <value>Učitavanje dinamičkog rasporeda stadiona...</value>
+  </data>
+  <data name="Overview_PageTitle" xml:space="preserve">
+    <value>Operativni centar stadiona - Administracija</value>
+  </data>
+  <data name="Overview_Title" xml:space="preserve">
+    <value>Operativni centar stadiona</value>
+  </data>
+  <data name="Overview_Subtitle" xml:space="preserve">
+    <value>Prodaja ulaznica uživo i planiranje kapaciteta</value>
+  </data>
+  <data name="Overview_ConnectionStatusTooltip" xml:space="preserve">
+    <value>Status veze u stvarnom vremenu</value>
+  </data>
+  <data name="Overview_Live" xml:space="preserve">
+    <value>UŽIVO</value>
+  </data>
+  <data name="Overview_Offline" xml:space="preserve">
+    <value>Nedostupno</value>
+  </data>
+  <data name="Overview_Updated" xml:space="preserve">
+    <value>ažurirano</value>
+  </data>
+  <data name="Overview_EventLabel" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="Overview_SelectEventOption" xml:space="preserve">
+    <value>— Odaberite događaj —</value>
+  </data>
+  <data name="Overview_BeerPerAttendeeLabel" xml:space="preserve">
+    <value>Piva L / posjetitelju</value>
+  </data>
+  <data name="Overview_AttendeesPerStaffLabel" xml:space="preserve">
+    <value>Posjetitelja / osoblju</value>
+  </data>
+  <data name="Overview_EmptyPrompt" xml:space="preserve">
+    <value>Odaberite događaj za prikaz popunjenosti uživo i planiranja kapaciteta.</value>
+  </data>
+  <data name="Overview_KpiAttendance" xml:space="preserve">
+    <value>Posjećenost (prodane ulaznice)</value>
+  </data>
+  <data name="Overview_PercentFull" xml:space="preserve">
+    <value>% popunjeno</value>
+  </data>
+  <data name="Overview_KpiBeer" xml:space="preserve">
+    <value>Procijenjena potrebna količina piva</value>
+  </data>
+  <data name="Overview_Servings" xml:space="preserve">
+    <value>porcija</value>
+  </data>
+  <data name="Overview_KpiStaff" xml:space="preserve">
+    <value>Preporučeno osoblje šanka</value>
+  </data>
+  <data name="Overview_StaffRatio" xml:space="preserve">
+    <value>1 na {0} posjetitelja</value>
+  </data>
+  <data name="Overview_SectorBreakdown" xml:space="preserve">
+    <value>Razrada po sektorima</value>
+  </data>
+  <data name="Overview_Seats" xml:space="preserve">
+    <value>sjedala</value>
+  </data>
+  <data name="Overview_SectorBeerTooltip" xml:space="preserve">
+    <value>Procijenjena količina piva za ovaj sektor</value>
+  </data>
+  <data name="Overview_SectorStaffTooltip" xml:space="preserve">
+    <value>Preporučeno osoblje za ovaj sektor</value>
+  </data>
+  <data name="Overview_Staff" xml:space="preserve">
+    <value>osoblje</value>
+  </data>
+  <data name="Overview_NoSectors" xml:space="preserve">
+    <value>Nema pronađenih sektora stadiona. Najprije uvezite strukturu stadiona.</value>
+  </data>
+  <data name="Users_RoleAdmin" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="Users_RoleStaff" xml:space="preserve">
+    <value>Osoblje</value>
+  </data>
+  <data name="Users_RoleCustomer" xml:space="preserve">
+    <value>Kupac</value>
+  </data>
+  <data name="Index_LogLabelWarning" xml:space="preserve">
+    <value>[Upozorenje]</value>
+  </data>
+  <data name="Index_LogLabelUser" xml:space="preserve">
+    <value>[Korisnik]</value>
+  </data>
+  <data name="Index_LogLabelTicket" xml:space="preserve">
+    <value>[Karta]</value>
+  </data>
+  <data name="Index_LogLabelError" xml:space="preserve">
+    <value>[Greška]</value>
+  </data>
+  <data name="Index_LogMsgConnPool" xml:space="preserve">
+    <value>ConnectionPool iscrpljen (referencira</value>
+  </data>
+  <data name="Index_LogMsgOrderTaken" xml:space="preserve">
+    <value>@Bartender1 je preuzeo narudžbu #123</value>
+  </data>
+  <data name="Index_LogMsgTicketValidated" xml:space="preserve">
+    <value>Karta validirana (A, RS 512)</value>
+  </data>
+  <data name="Index_LogMsgApiError" xml:space="preserve">
+    <value>API greška (Npgea), retry 1</value>
   </data>
 </root>

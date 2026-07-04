@@ -13,6 +13,8 @@ public partial class Events : ComponentBase
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
     private List<EventDto>? events;
+    private List<SeasonDto>? seasons;
+    private string seasonFilterValue = ""; // "" = all, "none" = no season, else season id
     private EventDto? editingEvent;
     private bool showEventModal = false;
     private bool isSaving = false;
@@ -26,6 +28,30 @@ public partial class Events : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await LoadEvents();
+        await LoadSeasons();
+    }
+
+    private async Task LoadSeasons()
+    {
+        try
+        {
+            seasons = await ApiService.GetAsync<List<SeasonDto>>("seasons") ?? new List<SeasonDto>();
+        }
+        catch
+        {
+            seasons = new List<SeasonDto>();
+        }
+    }
+
+    private IEnumerable<EventDto> FilteredEvents
+    {
+        get
+        {
+            if (events == null) return Enumerable.Empty<EventDto>();
+            if (seasonFilterValue == "") return events;
+            if (seasonFilterValue == "none") return events.Where(e => e.SeasonId == null);
+            return int.TryParse(seasonFilterValue, out var id) ? events.Where(e => e.SeasonId == id) : events;
+        }
     }
 
     private async Task LoadEvents()
@@ -61,9 +87,11 @@ public partial class Events : ComponentBase
         eventForm = new EventFormModel
         {
             Date = DateTime.Now.AddDays(30),
+            EndDate = DateTime.Now.AddDays(30).AddHours(2),
             IsActive = true,
             Capacity = 50000,
-            BasePrice = 50
+            BasePrice = 50,
+            SeasonId = seasons?.FirstOrDefault(s => s.IsCurrent)?.Id
         };
         showEventModal = true;
     }
@@ -76,10 +104,12 @@ public partial class Events : ComponentBase
             Name = evt.Name,
             Description = evt.Description,
             Date = evt.Date ?? DateTime.Now,
+            EndDate = evt.EndDate ?? (evt.Date ?? DateTime.Now).AddHours(2),
             Location = evt.Location ?? "",
             Capacity = evt.Capacity,
             BasePrice = evt.BasePrice,
-            IsActive = evt.IsActive
+            IsActive = evt.IsActive,
+            SeasonId = evt.SeasonId
         };
         showEventModal = true;
     }
@@ -102,6 +132,12 @@ public partial class Events : ComponentBase
             return;
         }
 
+        if (eventForm.EndDate <= eventForm.Date)
+        {
+            ShowAlert("The event end time must be after the start time", "danger");
+            return;
+        }
+
         isSaving = true;
         try
         {
@@ -113,16 +149,19 @@ public partial class Events : ComponentBase
                     Name = eventForm.Name.Trim(),
                     Description = string.IsNullOrWhiteSpace(eventForm.Description) ? null : eventForm.Description.Trim(),
                     Date = eventForm.Date,
+                    EndDate = eventForm.EndDate,
                     Location = eventForm.Location.Trim(),
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
-                    IsActive = eventForm.IsActive
+                    IsActive = eventForm.IsActive,
+                    SeasonId = eventForm.SeasonId
                 };
 
                 var response = await ApiService.Http.PostAsync<EventDto>("events", createDto);
                 if (response != null)
                 {
                     await LoadEvents();
+                    await LoadSeasons();
                     HideEventModal();
                     ShowAlert($"Event '{response.Name}' created successfully", "success");
                 }
@@ -139,16 +178,19 @@ public partial class Events : ComponentBase
                     Name = eventForm.Name.Trim(),
                     Description = string.IsNullOrWhiteSpace(eventForm.Description) ? null : eventForm.Description.Trim(),
                     Date = eventForm.Date,
+                    EndDate = eventForm.EndDate,
                     Location = eventForm.Location.Trim(),
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
-                    IsActive = eventForm.IsActive
+                    IsActive = eventForm.IsActive,
+                    SeasonId = eventForm.SeasonId
                 };
 
                 var response = await ApiService.Http.PostAsync<EventDto>($"events/{editingEvent.Id}", updateDto);
                 if (response != null)
                 {
                     await LoadEvents();
+                    await LoadSeasons();
                     HideEventModal();
                     ShowAlert($"Event '{eventForm.Name}' updated successfully", "success");
                 }
@@ -304,9 +346,11 @@ public partial class Events : ComponentBase
         public string Name { get; set; } = "";
         public string? Description { get; set; }
         public DateTime Date { get; set; } = DateTime.Now.AddDays(30);
+        public DateTime EndDate { get; set; } = DateTime.Now.AddDays(30).AddHours(2);
         public string Location { get; set; } = "";
         public int Capacity { get; set; }
         public decimal BasePrice { get; set; }
         public bool IsActive { get; set; } = true;
+        public int? SeasonId { get; set; }
     }
 }

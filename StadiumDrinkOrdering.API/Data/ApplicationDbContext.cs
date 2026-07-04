@@ -20,6 +20,8 @@ public class ApplicationDbContext : DbContext
     
     // New Event Management entities
     public DbSet<Event> Events { get; set; }
+    public DbSet<Season> Seasons { get; set; }
+    public DbSet<SeasonTicket> SeasonTickets { get; set; }
     public DbSet<StadiumSection> StadiumSections { get; set; }
     public DbSet<Seat> Seats { get; set; }
     public DbSet<EventStaffAssignment> EventStaffAssignments { get; set; }
@@ -193,6 +195,12 @@ public class ApplicationDbContext : DbContext
 
             // Unique mapping to the external ticketing system (NULLs distinct in PostgreSQL).
             entity.HasIndex(e => e.ExternalTicketId).IsUnique();
+
+            // Season-pass–derived tickets link back to the pass that generated them.
+            entity.HasOne(e => e.SeasonTicket)
+                .WithMany(st => st.DerivedTickets)
+                .HasForeignKey(e => e.SeasonTicketId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // StadiumSeat configuration
@@ -211,6 +219,41 @@ public class ApplicationDbContext : DbContext
             // Unique mapping to the external ticketing system (PostgreSQL treats NULLs as
             // distinct, so internally-created events without an external id are unaffected).
             entity.HasIndex(e => e.ExternalEventId).IsUnique();
+
+            // Optional link to the season this event belongs to.
+            entity.HasOne(e => e.Season)
+                .WithMany(s => s.Events)
+                .HasForeignKey(e => e.SeasonId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Season configuration
+        modelBuilder.Entity<Season>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Name).IsUnique();
+            // Unique mapping to the external ticketing system (NULLs distinct in PostgreSQL).
+            entity.HasIndex(e => e.ExternalSeasonId).IsUnique();
+        });
+
+        // SeasonTicket (annual pass) configuration
+        modelBuilder.Entity<SeasonTicket>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Price).HasPrecision(10, 2);
+            entity.HasIndex(e => e.HolderEmail);
+            // Unique mapping to the external ticketing system (NULLs distinct in PostgreSQL).
+            entity.HasIndex(e => e.ExternalSeasonTicketId).IsUnique();
+
+            entity.HasOne(e => e.Season)
+                .WithMany(s => s.SeasonTickets)
+                .HasForeignKey(e => e.SeasonId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Seat)
+                .WithMany()
+                .HasForeignKey(e => e.SeatId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // StadiumSection configuration

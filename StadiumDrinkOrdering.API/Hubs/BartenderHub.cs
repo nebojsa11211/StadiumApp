@@ -106,7 +106,7 @@ public class BartenderHub : Hub
     {
         var section = ExtractSectionFromSeat(seatNumber);
 
-        var statusUpdate = new
+        var statusUpdate = new OrderStatusChangedNotification
         {
             OrderId = orderId,
             Status = newStatus,

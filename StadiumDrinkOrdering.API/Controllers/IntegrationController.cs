@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs.Integration;
+using StadiumDrinkOrdering.Shared.Models;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
@@ -102,6 +103,92 @@ public class IntegrationController : ControllerBase
             .ToList();
 
         return Ok(sections);
+    }
+
+    /// <summary>
+    /// Lists events that originated from an external ticketing system (they carry an
+    /// <c>ExternalEventId</c>), newest first, with their current sold/capacity totals. Lets
+    /// the external system/simulator show already-created events and resume selling into one.
+    /// </summary>
+    [HttpGet("events")]
+    public async Task<ActionResult<List<ExternalEventSummaryDto>>> GetEvents(CancellationToken ct)
+    {
+        var events = await _context.Events
+            .AsNoTracking()
+            .Where(e => e.ExternalEventId != null)
+            .OrderByDescending(e => e.CreatedAt)
+            .Select(e => new ExternalEventSummaryDto
+            {
+                EventId = e.Id,
+                ExternalEventId = e.ExternalEventId!,
+                EventName = e.EventName,
+                EventType = e.EventType,
+                EventDate = e.EventDate,
+                EventEndDate = e.EventEndDate,
+                SourceSystem = e.SourceSystem,
+                BaseTicketPrice = e.BaseTicketPrice,
+                TotalSeats = e.TotalSeats,
+                TotalSold = _context.Tickets.Count(t => t.EventId == e.Id && t.Status != TicketStatuses.Cancelled)
+            })
+            .ToListAsync(ct);
+
+        return Ok(events);
+    }
+
+    /// <summary>
+    /// Lists seasons known to our side (newest first) so the external system/simulator can link
+    /// events to a season and sell season tickets into one, and resume after a reload.
+    /// </summary>
+    [HttpGet("seasons")]
+    public async Task<ActionResult<List<ExternalSeasonSummaryDto>>> GetSeasons(CancellationToken ct)
+    {
+        var seasons = await _context.Seasons
+            .AsNoTracking()
+            .OrderByDescending(s => s.StartDate)
+            .Select(s => new ExternalSeasonSummaryDto
+            {
+                SeasonId = s.Id,
+                ExternalSeasonId = s.ExternalSeasonId,
+                Name = s.Name,
+                StartDate = s.StartDate,
+                EndDate = s.EndDate,
+                IsCurrent = s.IsCurrent,
+                SourceSystem = s.SourceSystem,
+                EventCount = _context.Events.Count(e => e.SeasonId == s.Id),
+                SeasonTicketCount = _context.SeasonTickets.Count(st => st.SeasonId == s.Id && st.Status != TicketStatuses.Cancelled)
+            })
+            .ToListAsync(ct);
+
+        return Ok(seasons);
+    }
+
+    /// <summary>
+    /// Returns the section + external id of every non-cancelled, externally-sold ticket for an
+    /// event, so the simulator can rebuild its local per-sector state when resuming that event.
+    /// </summary>
+    [HttpGet("events/{externalEventId}/tickets")]
+    public async Task<ActionResult<List<ExternalTicketRefDto>>> GetEventTickets(string externalEventId, CancellationToken ct)
+    {
+        var evt = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.ExternalEventId == externalEventId, ct);
+        if (evt == null)
+            return NotFound(new { message = $"No event mapped to external id '{externalEventId}'" });
+
+        var tickets = await _context.Tickets
+            .AsNoTracking()
+            .Where(t => t.EventId == evt.Id
+                        && t.Status != TicketStatuses.Cancelled
+                        && t.ExternalTicketId != null
+                        && t.Section != null)
+            .Select(t => new ExternalTicketRefDto
+            {
+                SectionCode = t.Section!,
+                ExternalTicketId = t.ExternalTicketId!
+            })
+            .ToListAsync(ct);
+
+        return Ok(tickets);
     }
 
     /// <summary>

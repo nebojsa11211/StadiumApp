@@ -14,17 +14,20 @@ public class CustomerTicketingController : ControllerBase
     private readonly ApplicationDbContext _context;
     private readonly IEventService _eventService;
     private readonly ISeatMappingService _seatMappingService;
+    private readonly IOverlaySeatService _overlaySeats;
     private readonly ILogger<CustomerTicketingController> _logger;
 
     public CustomerTicketingController(
-        ApplicationDbContext context, 
+        ApplicationDbContext context,
         IEventService eventService,
         ISeatMappingService seatMappingService,
+        IOverlaySeatService overlaySeats,
         ILogger<CustomerTicketingController> logger)
     {
         _context = context;
         _eventService = eventService;
         _seatMappingService = seatMappingService;
+        _overlaySeats = overlaySeats;
         _logger = logger;
     }
 
@@ -76,8 +79,9 @@ public class CustomerTicketingController : ControllerBase
             
             foreach (var evt in events)
             {
-                // Get ticket count and availability
-                var totalTickets = await _context.Tickets.CountAsync(t => t.EventId == evt.Id);
+                // Get ticket count and availability. "Sold" = any non-cancelled ticket (incl. season
+                // passes' derived tickets), funnelled through TicketStatuses.CountsAsSold.
+                var totalTickets = await _context.Tickets.CountAsync(t => t.EventId == evt.Id && t.Status != TicketStatuses.Cancelled);
                 var availableSeats = evt.TotalSeats - totalTickets;
                 
                 eventDtos.Add(new CustomerEventDto
@@ -148,7 +152,10 @@ public class CustomerTicketingController : ControllerBase
     }
 
     /// <summary>
-    /// Get seat availability for a specific section in an event
+    /// Get seat availability for a specific section in an event. <paramref name="sectionId"/> is a
+    /// real-stadium overlay sector id (StadiumSectorOverlay.Id). Seats occupied by any non-cancelled
+    /// ticket — including a season pass's derived tickets — are excluded, so season-held seats can't
+    /// be picked.
     /// </summary>
     [HttpGet("events/{eventId}/sections/{sectionId}/availability")]
     public async Task<ActionResult<SectionAvailabilityDto>> GetSectionAvailability(int eventId, int sectionId)
@@ -163,97 +170,73 @@ public class CustomerTicketingController : ControllerBase
                 return NotFound("Event not found");
             }
 
-            // Get section details
-            var section = await _context.Sectors
-                .Include(s => s.Ring)
-                .ThenInclude(r => r.Tribune)
-                .FirstOrDefaultAsync(s => s.Id == sectionId);
-
-            if (section == null)
+            var overlay = await _overlaySeats.GetOverlayAsync(sectionId);
+            if (overlay == null)
             {
                 return NotFound("Section not found");
             }
 
-            // OPTIMIZED: Use batch operation for sold tickets 
-            var soldTicketsDict = await _seatMappingService.GetSoldTicketsForMultipleSectorsAsync(new List<int> { sectionId }, eventId);
-            var soldTickets = soldTicketsDict.ContainsKey(sectionId) ? soldTicketsDict[sectionId] : new List<Ticket>();
+            var basePrice = evt.BaseTicketPrice ?? 50.00m;
+            var seatPrice = CalculateOverlaySeatPrice(basePrice, overlay.Type);
 
-            // Get sold seat positions more efficiently
-            var soldSeatPositions = new HashSet<(int row, int seat)>();
-            foreach (var ticket in soldTickets)
-            {
-                // Parse seat code to get position
-                var parts = ticket.Seat.SeatCode.Split('-');
-                if (parts.Length >= 4)
+            var available = await _overlaySeats.GetAvailableSeatsAsync(eventId, sectionId);
+            var availableSeats = available
+                .Select(s => new CustomerSeatDto
                 {
-                    if (int.TryParse(parts[2].Substring(1), out int row) && int.TryParse(parts[3].Substring(1), out int seatNum))
-                    {
-                        soldSeatPositions.Add((row, seatNum));
-                    }
-                }
-            }
-
-            var availableSeats = new List<CustomerSeatDto>();
-            
-            // Generate available seats efficiently
-            for (int row = section.StartRow; row < section.StartRow + section.TotalRows; row++)
-            {
-                for (int seat = section.StartSeat; seat < section.StartSeat + section.SeatsPerRow; seat++)
-                {
-                    if (!soldSeatPositions.Contains((row, seat)))
-                    {
-                        availableSeats.Add(new CustomerSeatDto
-                        {
-                            SectorId = sectionId,
-                            RowNumber = row,
-                            SeatNumber = seat,
-                            Price = CalculateSeatPrice(evt.BaseTicketPrice ?? 50.00m, section.Ring.Tribune.Code),
-                            SeatCode = $"{section.Ring.Tribune.Code}{section.Ring.Number}-{section.Code}-R{row}-S{seat}"
-                        });
-                    }
-                }
-            }
+                    SectorId = sectionId,
+                    RowNumber = s.RowNumber,
+                    SeatNumber = s.SeatNumber,
+                    Price = seatPrice,
+                    SeatCode = s.SeatCode
+                })
+                .ToList();
 
             return Ok(new SectionAvailabilityDto
             {
                 EventId = eventId,
                 SectionId = sectionId,
-                SectionName = section.Name,
-                TribuneName = section.Ring.Tribune.Name,
-                RingName = section.Ring.Name,
-                TotalSeats = section.TotalRows * section.SeatsPerRow,
+                SectionName = overlay.Name,
+                TribuneName = overlay.SectorCode,
+                RingName = overlay.Type,
+                TotalSeats = overlay.TotalSeats,
                 AvailableSeats = availableSeats
             });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving section availability for section {SectionId}, event {EventId}", sectionId, eventId);
+            _logger.LogError(ex, "Error retrieving section availability for overlay {SectionId}, event {EventId}", sectionId, eventId);
             return StatusCode(500, "Internal server error");
         }
     }
 
     private async Task<Dictionary<string, SectionAvailabilityInfo>> GetSectionAvailabilityForEvent(int eventId)
     {
-        // OPTIMIZED: Use the new batch summary method instead of individual queries
-        var availabilitySummary = await _seatMappingService.GetSectionAvailabilitySummaryAsync(eventId);
-        
+        // Real stadium = the drawing-tool overlay sectors. Sold counts include season-pass seats.
+        var summaries = await _overlaySeats.GetSectionSummariesAsync(eventId);
+
         var result = new Dictionary<string, SectionAvailabilityInfo>();
-        
-        foreach (var summary in availabilitySummary.Values)
+        foreach (var summary in summaries.Values)
         {
-            var sectionKey = $"{summary.TribuneName.Substring(0,1)}-{summary.SectorName}";
-            result[sectionKey] = new SectionAvailabilityInfo
+            result[summary.Code] = new SectionAvailabilityInfo
             {
-                SectionId = summary.SectorId,
-                SectionName = summary.SectorName,
+                SectionId = summary.OverlayId,
+                SectionName = summary.Name,
                 TotalSeats = summary.TotalSeats,
                 AvailableSeats = summary.AvailableSeats,
-                BasePrice = CalculateSeatPrice(50.00m, summary.TribuneName.Substring(0,1)) // Extract tribune code from name
+                BasePrice = CalculateOverlaySeatPrice(50.00m, summary.Type)
             };
         }
 
         return result;
     }
+
+    private static decimal CalculateOverlaySeatPrice(decimal basePrice, string? sectorType) => (sectorType?.ToLowerInvariant()) switch
+    {
+        "vip" => basePrice * 2.0m,
+        "premium" => basePrice * 1.5m,
+        "family" => basePrice * 1.2m,
+        _ => basePrice
+    };
 
     private Task<List<PricingTierDto>> GetPricingTiers(int eventId)
     {

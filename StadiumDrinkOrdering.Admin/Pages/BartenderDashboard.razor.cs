@@ -85,14 +85,14 @@ public partial class BartenderDashboard : ComponentBase, IDisposable
         StateHasChanged();
     }
 
-    private void OnOrderStatusChanged(int orderId, OrderStatus newStatus, string seatNumber)
+    private void OnOrderStatusChanged(OrderStatusChangedNotification n)
     {
-        var order = pendingOrders.FirstOrDefault(o => o.Id == orderId) ?? 
-                   activeOrders.FirstOrDefault(o => o.Id == orderId);
-        
+        var order = pendingOrders.FirstOrDefault(o => o.Id == n.OrderId) ??
+                   activeOrders.FirstOrDefault(o => o.Id == n.OrderId);
+
         if (order != null)
         {
-            order.Status = newStatus;
+            order.Status = n.Status;
             UpdateOrderInList(order);
             StateHasChanged();
         }

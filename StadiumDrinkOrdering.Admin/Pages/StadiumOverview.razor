@@ -78,7 +78,16 @@
                 <div class="ops-kpi-label">@L["Overview_KpiAttendance"]</div>
                 <div class="ops-kpi-value">@TotalSold.ToString("N0") <span class="ops-kpi-sub">/ @TotalCapacity.ToString("N0")</span></div>
                 <div class="ops-progress"><div class="ops-progress-bar @OccupancyClass(OverallOccupancy)" style="width:@(OverallOccupancy)%"></div></div>
-                <div class="ops-kpi-foot">@OverallOccupancy.ToString("0.0")@L["Overview_PercentFull"]</div>
+                <div class="ops-kpi-foot">
+                    @OverallOccupancy.ToString("0.0")@L["Overview_PercentFull"]
+                    @if (TotalSeasonSold > 0)
+                    {
+                        <span id="admin-overview-total-season" title="Season passes included in the sold total"
+                              style="display:inline-flex;align-items:center;gap:.25rem;margin-left:.5rem;padding:.05rem .45rem;border-radius:999px;background:#ede9fe;color:#6d28d9;font-weight:600;font-size:.75rem;">
+                            <i class="bi bi-person-badge"></i> @TotalSeasonSold.ToString("N0") season
+                        </span>
+                    }
+                </div>
             </div>
             <div class="ops-kpi" id="admin-overview-kpi-beer">
                 <div class="ops-kpi-label">@L["Overview_KpiBeer"]</div>
@@ -107,6 +116,13 @@
                         <div class="ops-progress"><div class="ops-progress-bar @OccupancyClass(occ)" style="width:@(occ)%"></div></div>
                         <div class="ops-sector-stats">
                             <span><strong>@s.Sold.ToString("N0")</strong> / @s.Capacity.ToString("N0") @L["Overview_Seats"]</span>
+                            @if (s.SeasonSold > 0)
+                            {
+                                <span id="admin-overview-sector-season-@s.SectionCode" title="Seats held by season passes"
+                                      style="display:inline-flex;align-items:center;gap:.25rem;margin-left:.4rem;padding:.05rem .4rem;border-radius:999px;background:#ede9fe;color:#6d28d9;font-weight:600;font-size:.72rem;">
+                                    <i class="bi bi-person-badge"></i> @s.SeasonSold.ToString("N0") season
+                                </span>
+                            }
                         </div>
                         <div class="ops-sector-plan">
                             <span title="@L["Overview_SectorBeerTooltip"]"><i class="bi bi-cup-straw"></i> @SectorBeer(s).ToString("N0") L</span>

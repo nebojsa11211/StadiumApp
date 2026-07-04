@@ -13,6 +13,12 @@ public static class TicketingEventTypes
     public const string EventUpdated = "EventUpdated";
     public const string TicketSold = "TicketSold";
     public const string TicketRefunded = "TicketRefunded";
+
+    // Season / season-ticket (annual pass) events.
+    public const string SeasonCreated = "SeasonCreated";
+    public const string SeasonUpdated = "SeasonUpdated";
+    public const string SeasonTicketSold = "SeasonTicketSold";
+    public const string SeasonTicketRefunded = "SeasonTicketRefunded";
 }
 
 /// <summary>
@@ -37,6 +43,12 @@ public class TicketingWebhookEnvelope
 
     /// <summary>Populated for TicketSold / TicketRefunded.</summary>
     public ExternalTicketDto? Ticket { get; set; }
+
+    /// <summary>Populated for SeasonCreated / SeasonUpdated.</summary>
+    public ExternalSeasonDto? Season { get; set; }
+
+    /// <summary>Populated for SeasonTicketSold / SeasonTicketRefunded.</summary>
+    public ExternalSeasonTicketDto? SeasonTicket { get; set; }
 }
 
 /// <summary>An event as defined by the external ticketing system.</summary>
@@ -46,9 +58,43 @@ public class ExternalEventDto
     public string EventName { get; set; } = string.Empty;
     public string EventType { get; set; } = "Football";
     public DateTime EventDate { get; set; }
+    /// <summary>End of the event window, if the external system supplies one.</summary>
+    public DateTime? EventEndDate { get; set; }
     public int TotalSeats { get; set; }
     public decimal? BaseTicketPrice { get; set; }
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Links this event to a season (by the external season id). When set, existing season
+    /// tickets for that season are extended to cover this event (a derived access ticket is
+    /// generated for each pass's seat).
+    /// </summary>
+    public string? ExternalSeasonId { get; set; }
+}
+
+/// <summary>A season (e.g. "2026/2027") as defined by the external ticketing system.</summary>
+public class ExternalSeasonDto
+{
+    public string ExternalSeasonId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public bool IsCurrent { get; set; }
+}
+
+/// <summary>A season-ticket (annual pass) sale/refund from the external ticketing system.</summary>
+public class ExternalSeasonTicketDto
+{
+    public string ExternalSeasonTicketId { get; set; } = string.Empty;
+    public string ExternalSeasonId { get; set; } = string.Empty;
+
+    /// <summary>Maps to <c>StadiumSection.SectionCode</c> on our side; the pass's seat is held here.</summary>
+    public string SectionCode { get; set; } = string.Empty;
+
+    public decimal Price { get; set; }
+    public string? HolderName { get; set; }
+    public string? HolderEmail { get; set; }
+    public DateTime SoldAt { get; set; }
 }
 
 /// <summary>A single ticket sale/refund from the external ticketing system.</summary>
@@ -81,6 +127,13 @@ public class TicketingWebhookResult
 
     public int TotalSoldForEvent { get; set; }
     public int SoldInSection { get; set; }
+
+    // Season / season-ticket outcomes.
+    public int? SeasonId { get; set; }
+    public int? SeasonTicketId { get; set; }
+
+    /// <summary>Number of per-event access tickets generated/cancelled for a season-ticket operation.</summary>
+    public int DerivedTicketsAffected { get; set; }
 }
 
 /// <summary>
@@ -93,6 +146,10 @@ public class EventSalesSnapshotDto
     public int EventId { get; set; }
     public int TotalSold { get; set; }
     public int TotalSeats { get; set; }
+
+    /// <summary>Of <see cref="TotalSold"/>, how many are held by season passes (subset of sold).</summary>
+    public int TotalSeasonSold { get; set; }
+
     public DateTime GeneratedAt { get; set; }
     public List<SectorSalesDto> Sectors { get; set; } = new();
 }
@@ -103,6 +160,54 @@ public class SectorSalesDto
     public string SectionName { get; set; } = string.Empty;
     public int Capacity { get; set; }
     public int Sold { get; set; }
+
+    /// <summary>Of <see cref="Sold"/>, how many are held by season passes (subset of sold).</summary>
+    public int SeasonSold { get; set; }
+}
+
+/// <summary>
+/// Summary of an externally-originated event, so the external system/simulator can list the
+/// events it has already created and resume selling into one (e.g. after a page reload).
+/// </summary>
+public class ExternalEventSummaryDto
+{
+    public int EventId { get; set; }
+    public string ExternalEventId { get; set; } = string.Empty;
+    public string EventName { get; set; } = string.Empty;
+    public string EventType { get; set; } = string.Empty;
+    public DateTime EventDate { get; set; }
+    public DateTime? EventEndDate { get; set; }
+    public string? SourceSystem { get; set; }
+    public decimal? BaseTicketPrice { get; set; }
+    public int TotalSold { get; set; }
+    public int TotalSeats { get; set; }
+}
+
+/// <summary>
+/// Summary of a season known to our side, so the external system/simulator can list seasons,
+/// link events to them, and sell season tickets into one.
+/// </summary>
+public class ExternalSeasonSummaryDto
+{
+    public int SeasonId { get; set; }
+    public string? ExternalSeasonId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public bool IsCurrent { get; set; }
+    public int EventCount { get; set; }
+    public int SeasonTicketCount { get; set; }
+    public string? SourceSystem { get; set; }
+}
+
+/// <summary>
+/// Minimal reference to a sold external ticket (section + external id), used by the
+/// simulator to rebuild its local per-sector state when resuming an existing event.
+/// </summary>
+public class ExternalTicketRefDto
+{
+    public string SectionCode { get; set; } = string.Empty;
+    public string ExternalTicketId { get; set; } = string.Empty;
 }
 
 /// <summary>

@@ -32,6 +32,19 @@ public class SimulatorApiClient
         => await _http.GetFromJsonAsync<List<StadiumSectionInfoDto>>("api/integration/ticketing/sections", Json)
            ?? new List<StadiumSectionInfoDto>();
 
+    public async Task<List<ExternalEventSummaryDto>> GetEventsAsync()
+        => await _http.GetFromJsonAsync<List<ExternalEventSummaryDto>>("api/integration/ticketing/events", Json)
+           ?? new List<ExternalEventSummaryDto>();
+
+    public async Task<List<ExternalSeasonSummaryDto>> GetSeasonsAsync()
+        => await _http.GetFromJsonAsync<List<ExternalSeasonSummaryDto>>("api/integration/ticketing/seasons", Json)
+           ?? new List<ExternalSeasonSummaryDto>();
+
+    public async Task<List<ExternalTicketRefDto>> GetEventTicketsAsync(string externalEventId)
+        => await _http.GetFromJsonAsync<List<ExternalTicketRefDto>>(
+               $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/tickets", Json)
+           ?? new List<ExternalTicketRefDto>();
+
     public async Task<EventSalesSnapshotDto?> GetSnapshotAsync(string externalEventId)
     {
         var resp = await _http.GetAsync($"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/snapshot");

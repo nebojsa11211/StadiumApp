@@ -7,6 +7,7 @@ namespace StadiumDrinkOrdering.API.Services;
 public interface IEventService
 {
     Task<IEnumerable<Event>> GetEventsAsync(bool activeOnly = false);
+    Task<Dictionary<int, int>> GetSoldSeatCountsAsync(IEnumerable<int> eventIds);
     Task<Event?> GetEventByIdAsync(int id);
     Task<Event> CreateEventAsync(Event eventItem);
     Task<Event?> UpdateEventAsync(int id, Event eventItem);
@@ -59,10 +60,10 @@ public class EventService : IEventService
             // Use raw SQL for much better performance
             var sql = @"
                 SELECT
-                    e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
+                    e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"", e.""EventEndDate"",
                     e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
                     e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
-                e.""ExternalEventId"", e.""SourceSystem""
+                e.""ExternalEventId"", e.""SourceSystem"", e.""SeasonId""
                 FROM ""Events"" e
                 {0}
                 ORDER BY e.""EventDate""";
@@ -84,6 +85,28 @@ public class EventService : IEventService
         }
     }
 
+    /// <summary>
+    /// Returns sold-seat counts keyed by event id for the given events. Because
+    /// <see cref="GetEventsAsync"/> uses raw SQL and does not load the Tickets navigation,
+    /// list endpoints must fetch sold counts separately. "Sold" funnels through
+    /// <see cref="TicketStatuses.CountsAsSold"/> (any non-cancelled ticket occupies a seat).
+    /// Events with no sold tickets are simply absent from the dictionary.
+    /// </summary>
+    public async Task<Dictionary<int, int>> GetSoldSeatCountsAsync(IEnumerable<int> eventIds)
+    {
+        var ids = eventIds.Distinct().ToList();
+        if (ids.Count == 0)
+            return new Dictionary<int, int>();
+
+        return await _context.Tickets
+            .AsNoTracking()
+            .Where(t => ids.Contains(t.EventId)
+                        && t.Status != TicketStatuses.Cancelled)
+            .GroupBy(t => t.EventId)
+            .Select(g => new { EventId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.EventId, x => x.Count);
+    }
+
     public async Task<Event?> GetEventByIdAsync(int id)
     {
         return await _context.Events
@@ -91,6 +114,7 @@ public class EventService : IEventService
             .Include(e => e.Orders)
             .Include(e => e.StaffAssignments)
                 .ThenInclude(sa => sa.Staff)
+            .Include(e => e.Season)
             // Temporarily removed .Include(e => e.Analytics) due to database schema mismatch
             .FirstOrDefaultAsync(e => e.Id == id);
     }
@@ -134,11 +158,13 @@ public class EventService : IEventService
         existingEvent.EventName = eventItem.EventName;
         existingEvent.EventType = eventItem.EventType;
         existingEvent.EventDate = eventItem.EventDate;
+        existingEvent.EventEndDate = eventItem.EventEndDate;
         existingEvent.VenueId = eventItem.VenueId;
         existingEvent.TotalSeats = eventItem.TotalSeats;
         existingEvent.Description = eventItem.Description;
         existingEvent.ImageUrl = eventItem.ImageUrl;
         existingEvent.BaseTicketPrice = eventItem.BaseTicketPrice;
+        existingEvent.SeasonId = eventItem.SeasonId;
         existingEvent.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
@@ -152,17 +178,62 @@ public class EventService : IEventService
         if (eventItem == null)
             return false;
 
-        // Check if event has tickets sold
-        var hasTickets = await _context.Tickets.AnyAsync(t => t.EventId == id);
-        if (hasTickets)
+        // Force delete: remove the event together with all its tickets and their dependent
+        // sessions. Tickets/TicketSessions/OrderSessions hold Restrict FKs into Event/Ticket,
+        // and Orders reference them through optional (client-set-null) shadow FKs, so we clear
+        // everything explicitly inside a transaction before removing the event itself. The
+        // remaining Event references cascade (EventStaffAssignment, EventAnalytics, CartItem,
+        // SeatReservation) or are set null (Order, Notification) per the model's configured
+        // delete behaviors.
+        //
+        // The context uses a retrying execution strategy (EnableRetryOnFailure), which forbids
+        // a manually-started transaction unless the whole unit runs inside the strategy.
+        var strategy = _context.Database.CreateExecutionStrategy();
+        var ticketCount = await strategy.ExecuteAsync(async () =>
         {
-            _logger.LogWarning("Cannot delete event {EventId} - tickets have been sold", id);
-            return false;
-        }
+            await using var transaction = await _context.Database.BeginTransactionAsync();
 
-        _context.Events.Remove(eventItem);
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Deleted event: {EventName} (ID: {EventId})", eventItem.EventName, id);
+            var ticketIds = await _context.Tickets
+                .Where(t => t.EventId == id)
+                .Select(t => t.Id)
+                .ToListAsync();
+
+            // TicketSessions restrict on both Event and Ticket. Including Orders lets EF null
+            // the optional Order -> TicketSession shadow FK on the tracked orders.
+            var ticketSessions = await _context.TicketSessions
+                .Include(ts => ts.Orders)
+                .Where(ts => ts.EventId == id || ticketIds.Contains(ts.TicketId))
+                .ToListAsync();
+            _context.TicketSessions.RemoveRange(ticketSessions);
+
+            if (ticketIds.Count > 0)
+            {
+                // OrderSessions restrict on Ticket (required FK) — must go before the tickets.
+                var orderSessions = await _context.OrderSessions
+                    .Where(os => ticketIds.Contains(os.TicketId))
+                    .ToListAsync();
+                _context.OrderSessions.RemoveRange(orderSessions);
+
+                // Including Orders lets EF null the optional Order -> Ticket shadow FK.
+                var tickets = await _context.Tickets
+                    .Include(t => t.Orders)
+                    .Where(t => t.EventId == id)
+                    .ToListAsync();
+                _context.Tickets.RemoveRange(tickets);
+            }
+
+            await _context.SaveChangesAsync();
+
+            _context.Events.Remove(eventItem);
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            return ticketIds.Count;
+        });
+
+        _logger.LogInformation(
+            "Force-deleted event {EventName} (ID: {EventId}) and {TicketCount} ticket(s)",
+            eventItem.EventName, id, ticketCount);
         return true;
     }
 
@@ -215,6 +286,24 @@ public class EventService : IEventService
                 : $"Cannot move event from '{current}' to '{newStatus}'. Allowed next states: {allowed}.";
             _logger.LogWarning("Rejected status transition {From} -> {To} for event {EventId}", current, newStatus, id);
             return EventStatusTransitionResult.Invalid(message, current);
+        }
+
+        // Single-live-event invariant: only one event may occupy the Active phase (Active/InProgress)
+        // at a time. Block promoting this event into that phase while a different event is already live.
+        if (EventLifecycle.PhaseOf(newStatus) == EventPhase.Active &&
+            EventLifecycle.PhaseOf(current) != EventPhase.Active)
+        {
+            var live = await _context.Events
+                .FirstOrDefaultAsync(e => e.Id != id &&
+                    (e.Status == EventStatus.Active || e.Status == EventStatus.InProgress));
+            if (live != null)
+            {
+                var message = $"Cannot make event '{eventItem.EventName}' live: event '{live.EventName}' " +
+                    $"(ID: {live.Id}) is already in progress. Complete or cancel it first.";
+                _logger.LogWarning("Rejected status transition {From} -> {To} for event {EventId}: " +
+                    "event {LiveEventId} is already live", current, newStatus, id, live.Id);
+                return EventStatusTransitionResult.Invalid(message, current);
+            }
         }
 
         eventItem.Status = newStatus;
@@ -315,10 +404,10 @@ public class EventService : IEventService
         // Use raw SQL for better performance
         var sql = @"
             SELECT
-                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
+                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"", e.""EventEndDate"",
                 e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
                 e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
-                e.""ExternalEventId"", e.""SourceSystem""
+                e.""ExternalEventId"", e.""SourceSystem"", e.""SeasonId""
             FROM ""Events"" e
             WHERE e.""IsActive"" = true
             ORDER BY e.""EventDate""";
@@ -335,10 +424,10 @@ public class EventService : IEventService
         // Use raw SQL for better performance
         var sql = @"
             SELECT
-                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
+                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"", e.""EventEndDate"",
                 e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
                 e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
-                e.""ExternalEventId"", e.""SourceSystem""
+                e.""ExternalEventId"", e.""SourceSystem"", e.""SeasonId""
             FROM ""Events"" e
             WHERE e.""IsActive"" = true AND e.""EventDate"" > {0}
             ORDER BY e.""EventDate""";
@@ -355,10 +444,10 @@ public class EventService : IEventService
         // Use raw SQL for better performance
         var sql = @"
             SELECT
-                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"",
+                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"", e.""EventEndDate"",
                 e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
                 e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
-                e.""ExternalEventId"", e.""SourceSystem""
+                e.""ExternalEventId"", e.""SourceSystem"", e.""SeasonId""
             FROM ""Events"" e
             WHERE e.""EventDate"" < {0}
             ORDER BY e.""EventDate"" DESC";

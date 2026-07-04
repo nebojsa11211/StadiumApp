@@ -8,16 +8,19 @@ public class ShoppingCartService : IShoppingCartService
 {
     private readonly ApplicationDbContext _context;
     private readonly ISeatMappingService _seatMappingService;
+    private readonly IOverlaySeatService _overlaySeats;
     private readonly ILogger<ShoppingCartService> _logger;
     private const int RESERVATION_MINUTES = 15;
 
     public ShoppingCartService(
-        ApplicationDbContext context, 
+        ApplicationDbContext context,
         ISeatMappingService seatMappingService,
+        IOverlaySeatService overlaySeats,
         ILogger<ShoppingCartService> logger)
     {
         _context = context;
         _seatMappingService = seatMappingService;
+        _overlaySeats = overlaySeats;
         _logger = logger;
     }
 
@@ -281,15 +284,11 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<bool> IsSeatAvailableAsync(int eventId, int sectorId, int rowNumber, int seatNumber)
     {
-        // Check if seat is already sold (has a ticket)
-        var seatCode = GenerateSeatCode(sectorId, rowNumber, seatNumber);
-        var isTicketSold = await _context.Tickets
-            .AnyAsync(t => t.EventId == eventId && 
-                          (t.SeatNumber == seatNumber.ToString() && 
-                           t.Row == rowNumber.ToString() && 
-                           t.Section.Contains(sectorId.ToString())));
-
-        if (isTicketSold) return false;
+        // "sold" is resolved against the real overlay stadium: any non-cancelled ticket occupying
+        // this seat for the event — including a season pass's derived ticket — makes it unavailable.
+        // (sectorId is the overlay sector id, StadiumSectorOverlay.Id.)
+        if (await _overlaySeats.IsSeatSoldAsync(eventId, sectorId, rowNumber, seatNumber))
+            return false;
 
         // Check if seat is currently reserved by another session
         var isReserved = await _context.SeatReservations

@@ -43,6 +43,7 @@ public partial class StadiumOverview : ComponentBase, IDisposable
 
     private int TotalCapacity => Sectors.Sum(s => s.Capacity);
     private int TotalSold => Sectors.Sum(s => s.Sold);
+    private int TotalSeasonSold => Sectors.Sum(s => s.SeasonSold);
     private decimal OverallOccupancy => TotalCapacity > 0
         ? Math.Round((decimal)TotalSold / TotalCapacity * 100, 1)
         : 0;

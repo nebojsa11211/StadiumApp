@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -293,78 +293,34 @@
   </data>
   
   <!-- Card Titles -->
-  <data name="OrderManagement" xml:space="preserve">
-    <value>Upravljanje Narudžbama</value>
-  </data>
-  <data name="DrinkCatalog" xml:space="preserve">
-    <value>Katalog Pića</value>
-  </data>
-  <data name="Analytics" xml:space="preserve">
-    <value>Analitika</value>
-  </data>
-  <data name="UserManagement" xml:space="preserve">
-    <value>Upravljanje Korisnicima</value>
-  </data>
-  <data name="BartenderDashboard" xml:space="preserve">
-    <value>Šankerska Ploča</value>
-  </data>
-  <data name="EventsManagement" xml:space="preserve">
-    <value>Upravljanje Događajima</value>
-  </data>
+  
+  
+  
+  
+  
+  
   
   <!-- Card Descriptions -->
-  <data name="OrderManagementDesc" xml:space="preserve">
-    <value>Pregledajte, obrađujte i pratite narudžbe kupaca u stvarnom vremenu.</value>
-  </data>
-  <data name="DrinkCatalogDesc" xml:space="preserve">
-    <value>Upravljajte pićima, cijenama, razinama zaliha i dostupnošću.</value>
-  </data>
-  <data name="AnalyticsDesc" xml:space="preserve">
-    <value>Pregledajte izvještaje o prodaji, popularne stavke i metrike performansi.</value>
-  </data>
-  <data name="UserManagementDesc" xml:space="preserve">
-    <value>Kreirajte, uredite i upravljajte korisničkim računima s kontrolom pristupa na temelju uloga.</value>
-  </data>
-  <data name="BartenderDashboardDesc" xml:space="preserve">
-    <value>Pratite šankerske operacije, red narudžbi i aktivnosti stadiona u stvarnom vremenu.</value>
-  </data>
-  <data name="EventsManagementDesc" xml:space="preserve">
-    <value>Kreirajte i upravljajte stadionskim događajima, rasporedom i konfiguracijama specifičnim za događaje.</value>
-  </data>
+  
+  
+  
+  
+  
+  
   
   <!-- Buttons -->
-  <data name="ViewOrders" xml:space="preserve">
-    <value>Pregled Narudžbi</value>
-  </data>
-  <data name="ManageDrinksBtn" xml:space="preserve">
-    <value>Upravljaj Pićima</value>
-  </data>
-  <data name="ViewDashboard" xml:space="preserve">
-    <value>Pregled Ploče</value>
-  </data>
-  <data name="ManageEvents" xml:space="preserve">
-    <value>Upravljaj Događajima</value>
-  </data>
-  <data name="ManageUsers" xml:space="preserve">
-    <value>Upravljaj Korisnicima</value>
-  </data>
+  
+  
+  
+  
+  
   
   <!-- Setup Guide -->
-  <data name="QuickSetupGuide" xml:space="preserve">
-    <value>Brzi Vodič za Postavljanje</value>
-  </data>
-  <data name="SetupStep1" xml:space="preserve">
-    <value>Dodajte pića u svoj katalog s cijenama i opisima</value>
-  </data>
-  <data name="SetupStep2" xml:space="preserve">
-    <value>Pratite dolazne narudžbe od kupaca</value>
-  </data>
-  <data name="SetupStep3" xml:space="preserve">
-    <value>Obrađujte narudžbe kroz pripremu do dostave</value>
-  </data>
-  <data name="SetupStep4" xml:space="preserve">
-    <value>Pratite performanse i zadovoljstvo kupaca</value>
-  </data>
+  
+  
+  
+  
+  
 
   <!-- Dashboard Sidebar Navigation -->
   <data name="Nav_Dashboard" xml:space="preserve">
@@ -384,6 +340,9 @@
   </data>
   <data name="Nav_GroupStadium" xml:space="preserve">
     <value>Upravljanje stadionom</value>
+  </data>
+  <data name="Nav_Seasons" xml:space="preserve">
+    <value>Sezone</value>
   </data>
   <data name="Nav_Events" xml:space="preserve">
     <value>Događaji</value>
@@ -1072,7 +1031,7 @@
     <value>Korištenje kodova osim N, S, E, W</value>
   </data>
   <data name="StructHelp_SolutionInvalidCode" xml:space="preserve">
-    <value>Promijenite na valjani kod (N, J, I ili Z)</value>
+    <value>Promijenite na valjani kod (N, S, E ili W)</value>
   </data>
   <data name="StructHelp_ErrorDuplicate" xml:space="preserve">
     <value>"Dvostruki kod sektora"</value>
@@ -2251,10 +2210,10 @@
     <value>Trenutno dostupni za prodaju karata</value>
   </data>
   <data name="Events_TotalCapacityLabel" xml:space="preserve">
-    <value>Ukupni kapacitet</value>
+    <value>Kapacitet stadiona</value>
   </data>
   <data name="Events_TotalCapacityHint" xml:space="preserve">
-    <value>Mjesta na svim događajima</value>
+    <value>Najviše mjesta po događaju</value>
   </data>
   <data name="Events_PanelTitle" xml:space="preserve">
     <value>Događaji</value>
@@ -2309,6 +2268,15 @@
   </data>
   <data name="Events_DateTimeLabel" xml:space="preserve">
     <value>Datum i vrijeme događaja *</value>
+  </data>
+  <data name="Events_StartDateTimeLabel" xml:space="preserve">
+    <value>Početak (datum i vrijeme) *</value>
+  </data>
+  <data name="Events_EndDateTimeLabel" xml:space="preserve">
+    <value>Kraj (datum i vrijeme) *</value>
+  </data>
+  <data name="Events_EndAfterStartValidation" xml:space="preserve">
+    <value>Vrijeme završetka mora biti nakon vremena početka.</value>
   </data>
   <data name="Events_CapacityFieldLabel" xml:space="preserve">
     <value>Kapacitet *</value>
@@ -2853,6 +2821,18 @@
   <data name="Index_TicketsSold" xml:space="preserve">
     <value>Prodane Karte</value>
   </data>
+  <data name="Index_SeasonPasses" xml:space="preserve">
+    <value>Sezonske Ulaznice</value>
+  </data>
+  <data name="Index_NoSeason" xml:space="preserve">
+    <value>Bez sezone</value>
+  </data>
+  <data name="Index_CurrentSeason" xml:space="preserve">
+    <value>Trenutna sezona</value>
+  </data>
+  <data name="Index_ViewingOtherSeason" xml:space="preserve">
+    <value>Pregledavate događaj iz sezone {0}, ne trenutne sezone.</value>
+  </data>
   <data name="Index_OfSeats" xml:space="preserve">
     <value>od {0} mjesta</value>
   </data>
@@ -3057,12 +3037,6 @@
   <data name="Overview_PageTitle" xml:space="preserve">
     <value>Operativni centar stadiona - Administracija</value>
   </data>
-  <data name="Overview_Title" xml:space="preserve">
-    <value>Operativni centar stadiona</value>
-  </data>
-  <data name="Overview_Subtitle" xml:space="preserve">
-    <value>Prodaja ulaznica uživo i planiranje kapaciteta</value>
-  </data>
   <data name="Overview_ConnectionStatusTooltip" xml:space="preserve">
     <value>Status veze u stvarnom vremenu</value>
   </data>
@@ -3159,4 +3133,60 @@
   <data name="Index_LogMsgApiError" xml:space="preserve">
     <value>API greška (Npgea), retry 1</value>
   </data>
+<data name="Seasons_PageTitle" xml:space="preserve"><value>Sezone</value></data>
+<data name="Seasons_Eyebrow" xml:space="preserve"><value>Stadion</value></data>
+<data name="Seasons_Title" xml:space="preserve"><value>Sezone</value></data>
+<data name="Seasons_Intro" xml:space="preserve"><value>Grupirajte utakmice u sezone (npr. 2026/2027) i prodavajte sezonske ulaznice za njih.</value></data>
+<data name="Seasons_NewSeason" xml:space="preserve"><value>Nova sezona</value></data>
+<data name="Seasons_Loading" xml:space="preserve"><value>Učitavanje sezona…</value></data>
+<data name="Seasons_LoadFailedTitle" xml:space="preserve"><value>Učitavanje sezona nije uspjelo</value></data>
+<data name="Seasons_Retry" xml:space="preserve"><value>Pokušaj ponovno</value></data>
+<data name="Seasons_NoneTitle" xml:space="preserve"><value>Još nema sezona</value></data>
+<data name="Seasons_NoneDesc" xml:space="preserve"><value>Kreirajte sezonu za grupiranje utakmica i omogućavanje sezonskih ulaznica.</value></data>
+<data name="Seasons_CreateFirst" xml:space="preserve"><value>Kreiraj prvu sezonu</value></data>
+<data name="Seasons_AllSeasons" xml:space="preserve"><value>Sve sezone</value></data>
+<data name="Seasons_ColSeason" xml:space="preserve"><value>Sezona</value></data>
+<data name="Seasons_ColWindow" xml:space="preserve"><value>Razdoblje</value></data>
+<data name="Seasons_ColCurrent" xml:space="preserve"><value>Trenutna</value></data>
+<data name="Seasons_ColEvents" xml:space="preserve"><value>Događaji</value></data>
+<data name="Seasons_ColPasses" xml:space="preserve"><value>Ulaznice</value></data>
+<data name="Seasons_ColActions" xml:space="preserve"><value>Radnje</value></data>
+<data name="Seasons_CurrentBadge" xml:space="preserve"><value>Trenutna</value></data>
+<data name="Seasons_PassesBtn" xml:space="preserve"><value>Ulaznice ({0})</value></data>
+<data name="Seasons_SetCurrent" xml:space="preserve"><value>Postavi kao trenutnu</value></data>
+<data name="Seasons_Edit" xml:space="preserve"><value>Uredi</value></data>
+<data name="Seasons_Delete" xml:space="preserve"><value>Obriši</value></data>
+<data name="Seasons_PassesModalTitle" xml:space="preserve"><value>Sezonske ulaznice — {0}</value></data>
+<data name="Seasons_LoadingPasses" xml:space="preserve"><value>Učitavanje ulaznica…</value></data>
+<data name="Seasons_NoPasses" xml:space="preserve"><value>Nema aktivnih sezonskih ulaznica za ovu sezonu.</value></data>
+<data name="Seasons_PassesSummary" xml:space="preserve"><value>{0} ulaznica u {1} sektora.</value></data>
+<data name="Seasons_ColSector" xml:space="preserve"><value>Sektor</value></data>
+<data name="Seasons_ColSeat" xml:space="preserve"><value>Sjedalo</value></data>
+<data name="Seasons_ColHolder" xml:space="preserve"><value>Vlasnik</value></data>
+<data name="Seasons_ColPurchased" xml:space="preserve"><value>Kupljeno</value></data>
+<data name="Seasons_ColSource" xml:space="preserve"><value>Izvor</value></data>
+<data name="Seasons_SeatsCount" xml:space="preserve"><value>{0} sjedala</value></data>
+<data name="Seasons_RowSeat" xml:space="preserve"><value>Red {0}, Sjedalo {1}</value></data>
+<data name="Seasons_Close" xml:space="preserve"><value>Zatvori</value></data>
+<data name="Seasons_ModalNewTitle" xml:space="preserve"><value>Nova sezona</value></data>
+<data name="Seasons_ModalEditTitle" xml:space="preserve"><value>Uredi sezonu</value></data>
+<data name="Seasons_FormName" xml:space="preserve"><value>Naziv sezone</value></data>
+<data name="Seasons_FormStarts" xml:space="preserve"><value>Počinje</value></data>
+<data name="Seasons_FormEnds" xml:space="preserve"><value>Završava</value></data>
+<data name="Seasons_EndAfterStart" xml:space="preserve"><value>Datum završetka mora biti nakon datuma početka.</value></data>
+<data name="Seasons_FormCurrent" xml:space="preserve"><value>Trenutna sezona (zadano za nove događaje i sezonske ulaznice)</value></data>
+<data name="Seasons_Cancel" xml:space="preserve"><value>Odustani</value></data>
+<data name="Seasons_CreateSeason" xml:space="preserve"><value>Kreiraj sezonu</value></data>
+<data name="Seasons_SaveChanges" xml:space="preserve"><value>Spremi promjene</value></data>
+<data name="Seasons_ValidationNameEnd" xml:space="preserve"><value>Sezona treba naziv i datum završetka nakon datuma početka.</value></data>
+<data name="Seasons_CreatedMsg" xml:space="preserve"><value>Sezona '{0}' je kreirana.</value></data>
+<data name="Seasons_CreateFailed" xml:space="preserve"><value>Kreiranje sezone nije uspjelo.</value></data>
+<data name="Seasons_UpdatedMsg" xml:space="preserve"><value>Sezona '{0}' je ažurirana.</value></data>
+<data name="Seasons_UpdateFailed" xml:space="preserve"><value>Ažuriranje sezone nije uspjelo.</value></data>
+<data name="Seasons_LoadPassesFailed" xml:space="preserve"><value>Učitavanje ulaznica nije uspjelo: {0}</value></data>
+<data name="Seasons_SetCurrentMsg" xml:space="preserve"><value>'{0}' je sada trenutna sezona.</value></data>
+<data name="Seasons_SetCurrentFailed" xml:space="preserve"><value>Postavljanje trenutne sezone nije uspjelo.</value></data>
+<data name="Seasons_DeleteConfirm" xml:space="preserve"><value>Obrisati sezonu '{0}'? Povezani događaji bit će odvojeni.</value></data>
+<data name="Seasons_DeletedMsg" xml:space="preserve"><value>Sezona '{0}' je obrisana.</value></data>
+<data name="Seasons_DeleteFailed" xml:space="preserve"><value>Brisanje sezone nije uspjelo.</value></data>
 </root>

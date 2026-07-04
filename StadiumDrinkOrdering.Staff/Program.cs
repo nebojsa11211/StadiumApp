@@ -92,8 +92,9 @@ builder.Services.AddScoped<ISignalRService, SignalRService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // Register legacy interfaces for backward compatibility
-builder.Services.AddScoped<IAuthStateService>(provider =>
-    (IAuthStateService)provider.GetRequiredService<IAuthenticationStateService>());
+// AuthStateService implements both IAuthenticationStateService and IAuthStateService
+builder.Services.AddScoped<IAuthenticationStateService>(provider => provider.GetRequiredService<AuthStateService>());
+builder.Services.AddScoped<IAuthStateService>(provider => provider.GetRequiredService<AuthStateService>());
 
 // Add centralized logging client
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Staff");

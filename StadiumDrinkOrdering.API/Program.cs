@@ -16,6 +16,7 @@ using StadiumDrinkOrdering.Shared.Services;
 using AspNetCoreRateLimit;
 using Microsoft.Extensions.Options;
 using System.Text;
+using System.Diagnostics;
 using Npgsql;
 
 // Load variables from the gitignored .env file (if present) BEFORE the configuration builder is
@@ -136,6 +137,25 @@ else
 var maskedConnection = System.Text.RegularExpressions.Regex.Replace(
     connectionString, @"(?i)(Password\s*=)[^;]*", "$1***");
 Console.WriteLine($"Using PostgreSQL connection: {maskedConnection}");
+
+// ================================================================================================
+// LOCAL DEV DATABASE CONTAINER AUTO-START  (the "F5 always brings up the DB" guarantee)
+// ================================================================================================
+// The MSBuild EnsureLocalDbBeforeBuild target only runs when Visual Studio actually BUILDS. When
+// the project is already up to date, pressing F5 SKIPS the build, the target never fires, and the
+// local Postgres container stays down -> the API dies with the NpgsqlRetryingExecutionStrategy
+// "maximum number of retries (3) was exceeded" error. Doing it here in Program.cs runs on EVERY
+// launch (F5 or dotnet run), so the container (stadium-postgres-local) is always started/recreated
+// before we try to connect. Skipped inside Docker and when not targeting the local DB.
+var runningInContainer = string.Equals(
+    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"), "true",
+    StringComparison.OrdinalIgnoreCase);
+var usesLocalDb = connectionString.Contains("localhost", StringComparison.OrdinalIgnoreCase)
+    || connectionString.Contains("127.0.0.1");
+if (builder.Environment.IsDevelopment() && !runningInContainer && usesLocalDb)
+{
+    EnsureLocalDbContainerRunning(builder.Environment.ContentRootPath);
+}
 
 // Configure Health Checks
 builder.Services.AddHealthChecks()
@@ -290,8 +310,10 @@ builder.Services.AddScoped<IOrderSessionService, OrderSessionService>();
 builder.Services.AddScoped<IDemoDataService, DemoDataService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ISeasonService, SeasonService>();
 builder.Services.AddScoped<IStadiumStructureService, StadiumStructureService>();
 builder.Services.AddScoped<ISeatMappingService, SeatMappingService>();
+builder.Services.AddScoped<IOverlaySeatService, OverlaySeatService>();
 builder.Services.AddScoped<ITicketIngestionService, TicketIngestionService>();
 builder.Services.AddScoped<ILoggingService, LoggingService>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
@@ -437,6 +459,64 @@ _ = Task.Run(async () =>
     }
 });
 
+
+// Runs ensure-localdb.ps1 to guarantee the local Postgres dev container is up before the API tries
+// to connect. Invoked on every local (non-container) launch that targets the local DB. Failures are
+// swallowed - the DB-init retry loop below surfaces a clear error if the DB is genuinely unreachable.
+static void EnsureLocalDbContainerRunning(string contentRootPath)
+{
+    try
+    {
+        // Walk up from the content root (the API project dir under VS/dotnet run) to the repo root
+        // that holds ensure-localdb.ps1.
+        string? scriptPath = null;
+        for (var dir = new DirectoryInfo(contentRootPath); dir != null; dir = dir.Parent)
+        {
+            var candidate = Path.Combine(dir.FullName, "ensure-localdb.ps1");
+            if (File.Exists(candidate)) { scriptPath = candidate; break; }
+        }
+
+        if (scriptPath is null)
+        {
+            Console.WriteLine("⚠ ensure-localdb.ps1 not found; skipping local DB container auto-start.");
+            return;
+        }
+
+        Console.WriteLine("Ensuring local dev database container (stadium-postgres-local) is running...");
+        var psi = new ProcessStartInfo
+        {
+            FileName = "powershell",
+            Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\"",
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+
+        using var proc = Process.Start(psi);
+        if (proc is null)
+        {
+            Console.WriteLine("⚠ Could not start powershell to run ensure-localdb.ps1.");
+            return;
+        }
+
+        proc.OutputDataReceived += (_, e) => { if (e.Data != null) Console.WriteLine(e.Data); };
+        proc.ErrorDataReceived += (_, e) => { if (e.Data != null) Console.WriteLine(e.Data); };
+        proc.BeginOutputReadLine();
+        proc.BeginErrorReadLine();
+
+        if (!proc.WaitForExit(60000))
+        {
+            Console.WriteLine("⚠ ensure-localdb.ps1 timed out after 60s; continuing startup.");
+            try { proc.Kill(entireProcessTree: true); } catch { /* best effort */ }
+        }
+    }
+    catch (Exception ex)
+    {
+        // Never block API startup because Docker/PowerShell is unavailable.
+        Console.WriteLine($"⚠ Local DB container auto-start failed: {ex.Message}");
+    }
+}
 
 // Database initialization method - FIXED VERSION
 static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger logger, IWebHostEnvironment environment)

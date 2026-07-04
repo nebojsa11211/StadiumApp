@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -313,6 +313,9 @@
   </data>
   <data name="Nav_Events" xml:space="preserve">
     <value>Events</value>
+  </data>
+  <data name="Nav_Seasons" xml:space="preserve">
+    <value>Seasons</value>
   </data>
   <data name="Nav_Tickets" xml:space="preserve">
     <value>Tickets</value>
@@ -2177,10 +2180,10 @@
     <value>Currently available for ticket sales</value>
   </data>
   <data name="Events_TotalCapacityLabel" xml:space="preserve">
-    <value>Total Capacity</value>
+    <value>Venue Capacity</value>
   </data>
   <data name="Events_TotalCapacityHint" xml:space="preserve">
-    <value>Seats across all events</value>
+    <value>Max seats per event</value>
   </data>
   <data name="Events_PanelTitle" xml:space="preserve">
     <value>Events</value>
@@ -2235,6 +2238,15 @@
   </data>
   <data name="Events_DateTimeLabel" xml:space="preserve">
     <value>Event Date &amp; Time *</value>
+  </data>
+  <data name="Events_StartDateTimeLabel" xml:space="preserve">
+    <value>Start Date &amp; Time *</value>
+  </data>
+  <data name="Events_EndDateTimeLabel" xml:space="preserve">
+    <value>End Date &amp; Time *</value>
+  </data>
+  <data name="Events_EndAfterStartValidation" xml:space="preserve">
+    <value>The end time must be after the start time.</value>
   </data>
   <data name="Events_CapacityFieldLabel" xml:space="preserve">
     <value>Capacity *</value>
@@ -2779,6 +2791,18 @@
   <data name="Index_TicketsSold" xml:space="preserve">
     <value>Tickets Sold</value>
   </data>
+  <data name="Index_SeasonPasses" xml:space="preserve">
+    <value>Season Passes</value>
+  </data>
+  <data name="Index_NoSeason" xml:space="preserve">
+    <value>No season</value>
+  </data>
+  <data name="Index_CurrentSeason" xml:space="preserve">
+    <value>Current season</value>
+  </data>
+  <data name="Index_ViewingOtherSeason" xml:space="preserve">
+    <value>You're viewing an event from {0}, not the current season.</value>
+  </data>
   <data name="Index_OfSeats" xml:space="preserve">
     <value>of {0} seats</value>
   </data>
@@ -2983,12 +3007,6 @@
   <data name="Overview_PageTitle" xml:space="preserve">
     <value>Stadium Operations Center - Admin</value>
   </data>
-  <data name="Overview_Title" xml:space="preserve">
-    <value>Stadium Operations Center</value>
-  </data>
-  <data name="Overview_Subtitle" xml:space="preserve">
-    <value>Live ticket sales &amp; capacity planning</value>
-  </data>
   <data name="Overview_ConnectionStatusTooltip" xml:space="preserve">
     <value>Real-time connection status</value>
   </data>
@@ -3085,4 +3103,60 @@
   <data name="Index_LogMsgApiError" xml:space="preserve">
     <value>API error (Npgea), retry 1</value>
   </data>
+<data name="Seasons_PageTitle" xml:space="preserve"><value>Seasons</value></data>
+<data name="Seasons_Eyebrow" xml:space="preserve"><value>Stadium</value></data>
+<data name="Seasons_Title" xml:space="preserve"><value>Seasons</value></data>
+<data name="Seasons_Intro" xml:space="preserve"><value>Group matches into seasons (e.g. 2026/2027) and sell season tickets against them.</value></data>
+<data name="Seasons_NewSeason" xml:space="preserve"><value>New season</value></data>
+<data name="Seasons_Loading" xml:space="preserve"><value>Loading seasons…</value></data>
+<data name="Seasons_LoadFailedTitle" xml:space="preserve"><value>Could not load seasons</value></data>
+<data name="Seasons_Retry" xml:space="preserve"><value>Retry</value></data>
+<data name="Seasons_NoneTitle" xml:space="preserve"><value>No seasons yet</value></data>
+<data name="Seasons_NoneDesc" xml:space="preserve"><value>Create a season to group matches and enable season tickets.</value></data>
+<data name="Seasons_CreateFirst" xml:space="preserve"><value>Create first season</value></data>
+<data name="Seasons_AllSeasons" xml:space="preserve"><value>All seasons</value></data>
+<data name="Seasons_ColSeason" xml:space="preserve"><value>Season</value></data>
+<data name="Seasons_ColWindow" xml:space="preserve"><value>Window</value></data>
+<data name="Seasons_ColCurrent" xml:space="preserve"><value>Current</value></data>
+<data name="Seasons_ColEvents" xml:space="preserve"><value>Events</value></data>
+<data name="Seasons_ColPasses" xml:space="preserve"><value>Passes</value></data>
+<data name="Seasons_ColActions" xml:space="preserve"><value>Actions</value></data>
+<data name="Seasons_CurrentBadge" xml:space="preserve"><value>Current</value></data>
+<data name="Seasons_PassesBtn" xml:space="preserve"><value>Passes ({0})</value></data>
+<data name="Seasons_SetCurrent" xml:space="preserve"><value>Set current</value></data>
+<data name="Seasons_Edit" xml:space="preserve"><value>Edit</value></data>
+<data name="Seasons_Delete" xml:space="preserve"><value>Delete</value></data>
+<data name="Seasons_PassesModalTitle" xml:space="preserve"><value>Season passes — {0}</value></data>
+<data name="Seasons_LoadingPasses" xml:space="preserve"><value>Loading passes…</value></data>
+<data name="Seasons_NoPasses" xml:space="preserve"><value>No active season passes for this season.</value></data>
+<data name="Seasons_PassesSummary" xml:space="preserve"><value>{0} pass(es) across {1} sector(s).</value></data>
+<data name="Seasons_ColSector" xml:space="preserve"><value>Sector</value></data>
+<data name="Seasons_ColSeat" xml:space="preserve"><value>Seat</value></data>
+<data name="Seasons_ColHolder" xml:space="preserve"><value>Holder</value></data>
+<data name="Seasons_ColPurchased" xml:space="preserve"><value>Purchased</value></data>
+<data name="Seasons_ColSource" xml:space="preserve"><value>Source</value></data>
+<data name="Seasons_SeatsCount" xml:space="preserve"><value>{0} seat(s)</value></data>
+<data name="Seasons_RowSeat" xml:space="preserve"><value>Row {0}, Seat {1}</value></data>
+<data name="Seasons_Close" xml:space="preserve"><value>Close</value></data>
+<data name="Seasons_ModalNewTitle" xml:space="preserve"><value>New season</value></data>
+<data name="Seasons_ModalEditTitle" xml:space="preserve"><value>Edit season</value></data>
+<data name="Seasons_FormName" xml:space="preserve"><value>Season name</value></data>
+<data name="Seasons_FormStarts" xml:space="preserve"><value>Starts</value></data>
+<data name="Seasons_FormEnds" xml:space="preserve"><value>Ends</value></data>
+<data name="Seasons_EndAfterStart" xml:space="preserve"><value>End date must be after the start date.</value></data>
+<data name="Seasons_FormCurrent" xml:space="preserve"><value>Current season (default for new events &amp; season tickets)</value></data>
+<data name="Seasons_Cancel" xml:space="preserve"><value>Cancel</value></data>
+<data name="Seasons_CreateSeason" xml:space="preserve"><value>Create season</value></data>
+<data name="Seasons_SaveChanges" xml:space="preserve"><value>Save changes</value></data>
+<data name="Seasons_ValidationNameEnd" xml:space="preserve"><value>A season needs a name and an end date after the start.</value></data>
+<data name="Seasons_CreatedMsg" xml:space="preserve"><value>Season '{0}' created.</value></data>
+<data name="Seasons_CreateFailed" xml:space="preserve"><value>Failed to create season.</value></data>
+<data name="Seasons_UpdatedMsg" xml:space="preserve"><value>Season '{0}' updated.</value></data>
+<data name="Seasons_UpdateFailed" xml:space="preserve"><value>Failed to update season.</value></data>
+<data name="Seasons_LoadPassesFailed" xml:space="preserve"><value>Failed to load passes: {0}</value></data>
+<data name="Seasons_SetCurrentMsg" xml:space="preserve"><value>'{0}' is now the current season.</value></data>
+<data name="Seasons_SetCurrentFailed" xml:space="preserve"><value>Failed to set current season.</value></data>
+<data name="Seasons_DeleteConfirm" xml:space="preserve"><value>Delete season '{0}'? Linked events will be unlinked.</value></data>
+<data name="Seasons_DeletedMsg" xml:space="preserve"><value>Season '{0}' deleted.</value></data>
+<data name="Seasons_DeleteFailed" xml:space="preserve"><value>Failed to delete season.</value></data>
 </root>

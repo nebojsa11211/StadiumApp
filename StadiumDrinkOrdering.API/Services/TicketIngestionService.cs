@@ -12,6 +12,13 @@ public interface ITicketIngestionService
     Task<TicketingWebhookResult> ProcessWebhookAsync(TicketingWebhookEnvelope envelope, CancellationToken ct = default);
     Task<EventSalesSnapshotDto?> GetEventSnapshotAsync(string externalEventId, CancellationToken ct = default);
     Task<EventSalesSnapshotDto?> GetEventOccupancyAsync(int eventId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Generates the per-event access tickets for every active season pass in the given event's
+    /// season (used when an event is created in / linked to a season from the Admin UI). Returns
+    /// how many were created.
+    /// </summary>
+    Task<int> BackfillSeasonTicketsForEventAsync(int eventId, CancellationToken ct = default);
 }
 
 /// <summary>
@@ -73,6 +80,12 @@ public class TicketIngestionService : ITicketIngestionService
                     => await HandleTicketSoldAsync(envelope, ct),
                 TicketingEventTypes.TicketRefunded
                     => await HandleTicketRefundedAsync(envelope, ct),
+                TicketingEventTypes.SeasonCreated or TicketingEventTypes.SeasonUpdated
+                    => await HandleSeasonUpsertAsync(envelope, ct),
+                TicketingEventTypes.SeasonTicketSold
+                    => await HandleSeasonTicketSoldAsync(envelope, ct),
+                TicketingEventTypes.SeasonTicketRefunded
+                    => await HandleSeasonTicketRefundedAsync(envelope, ct),
                 _ => Rejected($"Unknown eventType '{envelope.EventType}'")
             };
         }
@@ -98,6 +111,12 @@ public class TicketIngestionService : ITicketIngestionService
         var evt = await _context.Events.FirstOrDefaultAsync(e => e.ExternalEventId == dto.ExternalEventId, ct);
         var totalSeats = dto.TotalSeats > 0 ? dto.TotalSeats : await GetStadiumCapacityAsync(ct);
 
+        // Resolve the season this event belongs to (if the external system supplied one).
+        Season? season = null;
+        if (!string.IsNullOrWhiteSpace(dto.ExternalSeasonId))
+            season = await ResolveOrCreateSeasonAsync(dto.ExternalSeasonId, null, null, null, false, envelope.SourceSystem, ct);
+        var wasLinkedToSeason = evt?.SeasonId != null;
+
         if (evt == null)
         {
             evt = new Event
@@ -107,9 +126,11 @@ public class TicketIngestionService : ITicketIngestionService
                 EventName = string.IsNullOrWhiteSpace(dto.EventName) ? $"External Event {dto.ExternalEventId}" : dto.EventName,
                 EventType = string.IsNullOrWhiteSpace(dto.EventType) ? "Football" : dto.EventType,
                 EventDate = EnsureUtc(dto.EventDate),
+                EventEndDate = dto.EventEndDate.HasValue ? EnsureUtc(dto.EventEndDate.Value) : null,
                 TotalSeats = totalSeats,
                 BaseTicketPrice = dto.BaseTicketPrice,
                 Description = dto.Description,
+                SeasonId = season?.Id,
                 IsActive = true,
                 Status = EventStatus.OnSale, // externally-created events are sellable so ingested sales apply
                 CreatedAt = DateTime.UtcNow
@@ -121,23 +142,40 @@ public class TicketIngestionService : ITicketIngestionService
             evt.EventName = string.IsNullOrWhiteSpace(dto.EventName) ? evt.EventName : dto.EventName;
             evt.EventType = string.IsNullOrWhiteSpace(dto.EventType) ? evt.EventType : dto.EventType;
             evt.EventDate = EnsureUtc(dto.EventDate);
+            if (dto.EventEndDate.HasValue)
+                evt.EventEndDate = EnsureUtc(dto.EventEndDate.Value);
             evt.TotalSeats = totalSeats;
             evt.BaseTicketPrice = dto.BaseTicketPrice ?? evt.BaseTicketPrice;
             evt.Description = dto.Description ?? evt.Description;
+            if (season != null)
+                evt.SeasonId = season.Id;
             evt.UpdatedAt = DateTime.UtcNow;
         }
 
         RecordInbox(envelope);
         await _context.SaveChangesAsync(ct);
 
-        _logger.LogInformation("Ingested {Type} for external event {ExternalId} -> internal event {EventId}",
-            envelope.EventType, dto.ExternalEventId, evt.Id);
+        // If this event is (now) part of a season, extend every active season pass to cover it
+        // by generating a derived access ticket per pass seat. Only do this when the link is new
+        // to avoid redundant work on repeated updates (the generator is idempotent regardless).
+        var derivedCreated = 0;
+        if (evt.SeasonId != null && !wasLinkedToSeason)
+        {
+            derivedCreated = await MaterializeSeasonTicketsForEventAsync(evt, ct);
+            if (derivedCreated > 0)
+                await BroadcastAndRefreshAsync(evt, null, "Sold", new TicketingWebhookResult(), ct);
+        }
+
+        _logger.LogInformation("Ingested {Type} for external event {ExternalId} -> internal event {EventId} (season={SeasonId}, derivedTickets={Derived})",
+            envelope.EventType, dto.ExternalEventId, evt.Id, evt.SeasonId, derivedCreated);
 
         return new TicketingWebhookResult
         {
             Accepted = true,
             Message = envelope.EventType,
             EventId = evt.Id,
+            SeasonId = evt.SeasonId,
+            DerivedTicketsAffected = derivedCreated,
             TotalSoldForEvent = await CountEventSoldAsync(evt.Id, ct)
         };
     }
@@ -246,6 +284,351 @@ public class TicketIngestionService : ITicketIngestionService
 
         await BroadcastAndRefreshAsync(evt, section, "Refunded", result, ct);
         return result;
+    }
+
+    // ---- Season / season-ticket (annual pass) ingestion -------------------------------------
+
+    public async Task<int> BackfillSeasonTicketsForEventAsync(int eventId, CancellationToken ct = default)
+    {
+        var evt = await _context.Events.FirstOrDefaultAsync(e => e.Id == eventId, ct);
+        if (evt?.SeasonId == null)
+            return 0;
+
+        var created = await MaterializeSeasonTicketsForEventAsync(evt, ct);
+        if (created > 0)
+            await BroadcastAndRefreshAsync(evt, null, "Sold", new TicketingWebhookResult(), ct);
+        return created;
+    }
+
+    private async Task<TicketingWebhookResult> HandleSeasonUpsertAsync(TicketingWebhookEnvelope envelope, CancellationToken ct)
+    {
+        var dto = envelope.Season;
+        if (dto == null || string.IsNullOrWhiteSpace(dto.ExternalSeasonId))
+            return Rejected("Missing season payload");
+
+        var season = await ResolveOrCreateSeasonAsync(
+            dto.ExternalSeasonId, dto.Name, dto.StartDate, dto.EndDate, dto.IsCurrent, envelope.SourceSystem, ct);
+        if (dto.IsCurrent)
+            await SetCurrentSeasonAsync(season, ct);
+
+        RecordInbox(envelope);
+        await _context.SaveChangesAsync(ct);
+
+        _logger.LogInformation("Ingested {Type} for external season {ExternalId} -> internal season {SeasonId}",
+            envelope.EventType, dto.ExternalSeasonId, season.Id);
+
+        return new TicketingWebhookResult { Accepted = true, Message = envelope.EventType, SeasonId = season.Id };
+    }
+
+    private async Task<TicketingWebhookResult> HandleSeasonTicketSoldAsync(TicketingWebhookEnvelope envelope, CancellationToken ct)
+    {
+        var dto = envelope.SeasonTicket;
+        if (dto == null || string.IsNullOrWhiteSpace(dto.ExternalSeasonTicketId) || string.IsNullOrWhiteSpace(dto.ExternalSeasonId))
+            return Rejected("Missing season ticket payload");
+        if (string.IsNullOrWhiteSpace(dto.SectionCode))
+            return Rejected("Missing sectionCode");
+
+        // Idempotency: this pass was already ingested.
+        var existing = await _context.SeasonTickets.AnyAsync(st => st.ExternalSeasonTicketId == dto.ExternalSeasonTicketId, ct);
+        if (existing)
+            return new TicketingWebhookResult { Accepted = true, Duplicate = true, Message = "Season ticket already ingested" };
+
+        var season = await ResolveOrCreateSeasonAsync(dto.ExternalSeasonId, null, null, null, false, envelope.SourceSystem, ct);
+
+        // The "real" stadium is defined by the drawing-tool overlays (source of truth).
+        var overlay = await _context.StadiumSectorOverlays
+            .FirstOrDefaultAsync(o => o.SectorCode == dto.SectionCode && !o.IsDeleted, ct);
+        if (overlay == null)
+            return Rejected($"Unknown sector '{dto.SectionCode}'");
+
+        var section = await ResolveBackingSectionAsync(overlay, ct);
+
+        // A season pass owns a fixed seat for the whole season.
+        var seat = await AllocateSeasonSeatAsync(section, season.Id, overlay.TotalSeats, ct);
+        if (seat == null)
+            return Rejected($"Sector '{dto.SectionCode}' has no free seat for a season ticket");
+
+        var pass = new SeasonTicket
+        {
+            SeasonId = season.Id,
+            Seat = seat, // navigation set so a possibly-new Seat is inserted in the same SaveChanges
+            SeasonTicketNumber = BuildSeasonTicketNumber(dto.ExternalSeasonTicketId),
+            HolderName = dto.HolderName,
+            HolderEmail = dto.HolderEmail,
+            Price = dto.Price,
+            Status = TicketStatuses.Active,
+            PurchaseDate = EnsureUtc(dto.SoldAt),
+            CreatedAt = DateTime.UtcNow,
+            ExternalSeasonTicketId = dto.ExternalSeasonTicketId,
+            SourceSystem = envelope.SourceSystem
+        };
+        _context.SeasonTickets.Add(pass);
+        RecordInbox(envelope);
+        await _context.SaveChangesAsync(ct); // assigns seat.Id + pass.Id
+
+        // Materialize a derived access ticket for every event already in the season.
+        var events = await _context.Events.Where(e => e.SeasonId == season.Id).ToListAsync(ct);
+        var affected = new List<Event>();
+        foreach (var evt in events)
+        {
+            if (await CreateDerivedTicketAsync(pass, seat, section.SectionCode, evt, ct))
+                affected.Add(evt);
+        }
+        if (affected.Count > 0)
+            await _context.SaveChangesAsync(ct);
+
+        // Live-update any admin currently viewing one of the affected events.
+        foreach (var evt in affected)
+            await BroadcastAndRefreshAsync(evt, section, "Sold", new TicketingWebhookResult(), ct);
+
+        _logger.LogInformation("Ingested season ticket {ExternalId} -> pass {PassId}, seat {SeatId}, {Count} derived tickets",
+            dto.ExternalSeasonTicketId, pass.Id, seat.Id, affected.Count);
+
+        return new TicketingWebhookResult
+        {
+            Accepted = true,
+            Message = "Season ticket sold",
+            SeasonId = season.Id,
+            SeasonTicketId = pass.Id,
+            DerivedTicketsAffected = affected.Count
+        };
+    }
+
+    private async Task<TicketingWebhookResult> HandleSeasonTicketRefundedAsync(TicketingWebhookEnvelope envelope, CancellationToken ct)
+    {
+        var dto = envelope.SeasonTicket;
+        if (dto == null || string.IsNullOrWhiteSpace(dto.ExternalSeasonTicketId))
+            return Rejected("Missing season ticket payload");
+
+        var pass = await _context.SeasonTickets
+            .Include(st => st.DerivedTickets)
+            .FirstOrDefaultAsync(st => st.ExternalSeasonTicketId == dto.ExternalSeasonTicketId, ct);
+        if (pass == null)
+            return Rejected("Season ticket not found for refund");
+        if (string.Equals(pass.Status, TicketStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
+            return new TicketingWebhookResult { Accepted = true, Duplicate = true, Message = "Season ticket already refunded" };
+
+        pass.Status = TicketStatuses.Cancelled;
+        var affectedEventIds = new List<int>();
+        foreach (var t in pass.DerivedTickets)
+        {
+            if (string.Equals(t.Status, TicketStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
+                continue;
+            t.Status = TicketStatuses.Cancelled;
+            t.IsActive = false;
+            affectedEventIds.Add(t.EventId);
+        }
+
+        RecordInbox(envelope);
+        await _context.SaveChangesAsync(ct);
+
+        // Live-update affected events (occupancy went down for the pass's seat).
+        var section = await _context.Seats
+            .Where(s => s.Id == pass.SeatId)
+            .Join(_context.StadiumSections, s => s.SectionId, sec => sec.Id, (s, sec) => sec)
+            .FirstOrDefaultAsync(ct);
+        var events = await _context.Events.Where(e => affectedEventIds.Contains(e.Id)).ToListAsync(ct);
+        foreach (var evt in events)
+            await BroadcastAndRefreshAsync(evt, section, "Refunded", new TicketingWebhookResult(), ct);
+
+        _logger.LogInformation("Refunded season ticket {ExternalId} (pass {PassId}); cancelled {Count} derived tickets",
+            dto.ExternalSeasonTicketId, pass.Id, affectedEventIds.Count);
+
+        return new TicketingWebhookResult
+        {
+            Accepted = true,
+            Message = "Season ticket refunded",
+            SeasonId = pass.SeasonId,
+            SeasonTicketId = pass.Id,
+            DerivedTicketsAffected = affectedEventIds.Count
+        };
+    }
+
+    private async Task<Season> ResolveOrCreateSeasonAsync(
+        string externalSeasonId, string? name, DateTime? start, DateTime? end, bool isCurrent, string sourceSystem, CancellationToken ct)
+    {
+        var season = await _context.Seasons.FirstOrDefaultAsync(s => s.ExternalSeasonId == externalSeasonId, ct);
+        if (season != null)
+        {
+            // Patch descriptive fields when supplied (SeasonUpdated / a richer create arriving later).
+            if (!string.IsNullOrWhiteSpace(name)) season.Name = name;
+            if (start.HasValue) season.StartDate = EnsureUtc(start.Value);
+            if (end.HasValue) season.EndDate = EnsureUtc(end.Value);
+            if (!string.IsNullOrWhiteSpace(name) || start.HasValue || end.HasValue)
+                season.UpdatedAt = DateTime.UtcNow;
+            return season;
+        }
+
+        season = new Season
+        {
+            ExternalSeasonId = externalSeasonId,
+            SourceSystem = sourceSystem,
+            Name = string.IsNullOrWhiteSpace(name) ? $"Season {externalSeasonId}" : name,
+            StartDate = start.HasValue ? EnsureUtc(start.Value) : DateTime.UtcNow,
+            EndDate = end.HasValue ? EnsureUtc(end.Value) : DateTime.UtcNow.AddYears(1),
+            IsCurrent = isCurrent,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Seasons.Add(season);
+        await _context.SaveChangesAsync(ct); // assign season.Id for immediate linking
+        return season;
+    }
+
+    private async Task SetCurrentSeasonAsync(Season season, CancellationToken ct)
+    {
+        var others = await _context.Seasons.Where(s => s.IsCurrent && s.Id != season.Id).ToListAsync(ct);
+        foreach (var o in others)
+            o.IsCurrent = false;
+        season.IsCurrent = true;
+    }
+
+    /// <summary>
+    /// Generates a derived access <see cref="Ticket"/> (kind <see cref="TicketKind.Season"/>)
+    /// for one event from a season pass, unless one already exists for this pass+event or the
+    /// pass's seat is already occupied for that event. Adds to the context; the caller saves.
+    /// Returns true when a ticket was added.
+    /// </summary>
+    private async Task<bool> CreateDerivedTicketAsync(SeasonTicket pass, Seat seat, string sectionCode, Event evt, CancellationToken ct)
+    {
+        var alreadyDerived = await _context.Tickets.AnyAsync(t => t.SeasonTicketId == pass.Id && t.EventId == evt.Id, ct);
+        if (alreadyDerived)
+            return false;
+
+        var occupied = await _context.Tickets.AnyAsync(
+            t => t.EventId == evt.Id && t.SeatId == seat.Id && t.Status != TicketStatuses.Cancelled, ct);
+        if (occupied)
+        {
+            _logger.LogWarning("Season pass {PassId} seat {SeatId} already occupied for event {EventId}; skipping derived ticket",
+                pass.Id, seat.Id, evt.Id);
+            return false;
+        }
+
+        _context.Tickets.Add(new Ticket
+        {
+            TicketNumber = $"SEA-{pass.Id}-E{evt.Id}",
+            EventId = evt.Id,
+            SeatId = seat.Id,
+            Kind = TicketKind.Season,
+            SeasonTicketId = pass.Id,
+            QRCode = string.Empty,
+            QRCodeToken = Guid.NewGuid().ToString(),
+            CustomerName = pass.HolderName,
+            CustomerEmail = pass.HolderEmail,
+            Price = 0m, // access is paid for by the pass; per-event price is 0 to avoid double-counting revenue
+            PurchaseDate = pass.PurchaseDate,
+            Status = TicketStatuses.Active,
+            SourceSystem = pass.SourceSystem,
+            SeatNumber = seat.SeatNumber.ToString(),
+            Section = sectionCode,
+            Row = seat.RowNumber.ToString(),
+            EventName = evt.EventName,
+            EventDate = evt.EventDate,
+            IsActive = true
+        });
+        return true;
+    }
+
+    /// <summary>
+    /// Generates derived access tickets for a single event across every active season pass in the
+    /// event's season (used when an event is created in / linked to a season). Saves and returns
+    /// the number created.
+    /// </summary>
+    private async Task<int> MaterializeSeasonTicketsForEventAsync(Event evt, CancellationToken ct)
+    {
+        if (evt.SeasonId == null)
+            return 0;
+
+        var passes = await _context.SeasonTickets
+            .Include(st => st.Seat)
+            .Where(st => st.SeasonId == evt.SeasonId && st.Status != TicketStatuses.Cancelled)
+            .ToListAsync(ct);
+        if (passes.Count == 0)
+            return 0;
+
+        var sectionIds = passes.Where(p => p.Seat != null).Select(p => p.Seat.SectionId).Distinct().ToList();
+        var sectionCodes = await _context.StadiumSections
+            .Where(s => sectionIds.Contains(s.Id))
+            .ToDictionaryAsync(s => s.Id, s => s.SectionCode, ct);
+
+        var created = 0;
+        foreach (var pass in passes)
+        {
+            if (pass.Seat == null)
+                continue;
+            var code = sectionCodes.TryGetValue(pass.Seat.SectionId, out var c) ? c : string.Empty;
+            if (await CreateDerivedTicketAsync(pass, pass.Seat, code, evt, ct))
+                created++;
+        }
+        if (created > 0)
+            await _context.SaveChangesAsync(ct);
+        return created;
+    }
+
+    /// <summary>
+    /// Finds a seat in the section that is free for the whole season — not held by another active
+    /// season pass and not occupied by any non-cancelled single-event ticket. Reuses such a seat
+    /// first; otherwise creates the next unoccupied positional seat, respecting capacity. Returns
+    /// null when the section is full.
+    /// </summary>
+    private async Task<Seat?> AllocateSeasonSeatAsync(StadiumSection section, int seasonId, int capacityOverride, CancellationToken ct)
+    {
+        var existingSeats = await _context.Seats
+            .Where(s => s.SectionId == section.Id)
+            .ToListAsync(ct);
+        var existingIds = existingSeats.Select(s => s.Id).ToList();
+
+        var heldSeatIds = await _context.SeasonTickets
+            .Where(st => st.SeasonId == seasonId
+                         && st.Status != TicketStatuses.Cancelled
+                         && existingIds.Contains(st.SeatId))
+            .Select(st => st.SeatId)
+            .ToListAsync(ct);
+
+        var ticketedSeatIds = await _context.Tickets
+            .Where(t => t.SeatId != null
+                        && t.Status != TicketStatuses.Cancelled
+                        && existingIds.Contains(t.SeatId!.Value))
+            .Select(t => t.SeatId!.Value)
+            .ToListAsync(ct);
+
+        var excluded = new HashSet<int>(heldSeatIds);
+        excluded.UnionWith(ticketedSeatIds);
+
+        var freeExisting = existingSeats
+            .Where(s => !excluded.Contains(s.Id))
+            .OrderBy(s => s.RowNumber).ThenBy(s => s.SeatNumber)
+            .FirstOrDefault();
+        if (freeExisting != null)
+            return freeExisting;
+
+        var occupied = new HashSet<(int, int)>(existingSeats.Select(s => (s.RowNumber, s.SeatNumber)));
+        var capacity = Math.Max(capacityOverride > 0 ? capacityOverride : section.TotalRows * section.SeatsPerRow, 0);
+        for (var i = 0; i < capacity; i++)
+        {
+            var row = i / section.SeatsPerRow + 1;
+            var seatNum = i % section.SeatsPerRow + 1;
+            if (occupied.Contains((row, seatNum)))
+                continue;
+
+            return new Seat
+            {
+                SectionId = section.Id,
+                RowNumber = row,
+                SeatNumber = seatNum,
+                SeatCode = $"{section.SectionCode}-R{row}-S{seatNum}",
+                XCoordinate = 0,
+                YCoordinate = 0,
+                IsAccessible = true
+            };
+        }
+
+        return null; // section full
+    }
+
+    private static string BuildSeasonTicketNumber(string externalSeasonTicketId)
+    {
+        var candidate = $"SEA-{externalSeasonTicketId}";
+        return candidate.Length <= 50 ? candidate : candidate[..50];
     }
 
     /// <summary>
@@ -396,21 +779,28 @@ public class TicketIngestionService : ITicketIngestionService
         {
             var capacity = overlay.TotalSeats;
             totalCapacity += capacity;
-            var sold = backing.TryGetValue(overlay.SectorCode, out var sectionId)
-                ? await CountSectionSoldAsync(evt.Id, sectionId, ct)
-                : 0;
+            var sold = 0;
+            var seasonSold = 0;
+            if (backing.TryGetValue(overlay.SectorCode, out var sectionId))
+            {
+                sold = await CountSectionSoldAsync(evt.Id, sectionId, ct);
+                seasonSold = await CountSectionSeasonSoldAsync(evt.Id, sectionId, ct);
+            }
 
             snapshot.Sectors.Add(new SectorSalesDto
             {
                 SectionCode = overlay.SectorCode,
                 SectionName = overlay.Name,
                 Capacity = capacity,
-                Sold = sold
+                Sold = sold,
+                SeasonSold = seasonSold
             });
         }
 
         snapshot.TotalSeats = totalCapacity;
         snapshot.TotalSold = await CountEventSoldAsync(evt.Id, ct);
+        snapshot.TotalSeasonSold = await _context.Tickets.CountAsync(
+            t => t.EventId == evt.Id && t.Status != TicketStatuses.Cancelled && t.Kind == TicketKind.Season, ct);
         return snapshot;
     }
 
@@ -489,6 +879,17 @@ public class TicketIngestionService : ITicketIngestionService
         return await _context.Tickets.CountAsync(
             t => t.EventId == eventId
                  && t.Status != TicketStatuses.Cancelled
+                 && t.SeatId != null
+                 && sectionSeatIds.Contains(t.SeatId!.Value), ct);
+    }
+
+    private async Task<int> CountSectionSeasonSoldAsync(int eventId, int sectionId, CancellationToken ct)
+    {
+        var sectionSeatIds = _context.Seats.Where(s => s.SectionId == sectionId).Select(s => s.Id);
+        return await _context.Tickets.CountAsync(
+            t => t.EventId == eventId
+                 && t.Status != TicketStatuses.Cancelled
+                 && t.Kind == TicketKind.Season
                  && t.SeatId != null
                  && sectionSeatIds.Contains(t.SeatId!.Value), ct);
     }

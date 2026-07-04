@@ -14,7 +14,7 @@ public interface ISignalRService
     Task SendOrderAssignedToStaff(int orderId, int staffId);
     event Action<OrderDto>? OrderUpdated;
     event Action<OrderDto>? NewOrder;
-    event Action<int, OrderStatus, string>? OrderStatusChanged;
+    event Action<OrderStatusChangedNotification>? OrderStatusChanged;
     event Action<int, int>? OrderAssignedToStaff;
     bool IsConnected { get; }
 }
@@ -27,7 +27,7 @@ public class SignalRService : ISignalRService
 
     public event Action<OrderDto>? OrderUpdated;
     public event Action<OrderDto>? NewOrder;
-    public event Action<int, OrderStatus, string>? OrderStatusChanged;
+    public event Action<OrderStatusChangedNotification>? OrderStatusChanged;
     public event Action<int, int>? OrderAssignedToStaff;
 
     public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
@@ -70,9 +70,9 @@ public class SignalRService : ISignalRService
             NewOrder?.Invoke(order);
         });
 
-        _hubConnection.On<int, OrderStatus, string>("OrderStatusChanged", (orderId, newStatus, seatNumber) =>
+        _hubConnection.On<OrderStatusChangedNotification>("OrderStatusChanged", notification =>
         {
-            OrderStatusChanged?.Invoke(orderId, newStatus, seatNumber);
+            OrderStatusChanged?.Invoke(notification);
         });
 
         _hubConnection.On<int, int>("OrderAssignedToStaff", (orderId, staffId) =>

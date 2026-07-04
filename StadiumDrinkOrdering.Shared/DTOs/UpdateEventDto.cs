@@ -12,6 +12,9 @@ public class UpdateEventDto
 
     public DateTime? Date { get; set; }
 
+    /// <summary>End of the event window; must be after <see cref="Date"/> when supplied.</summary>
+    public DateTime? EndDate { get; set; }
+
     [StringLength(100)]
     public string? Location { get; set; }
 
@@ -22,4 +25,7 @@ public class UpdateEventDto
     public decimal? BasePrice { get; set; }
 
     public bool? IsActive { get; set; }
+
+    /// <summary>Optional season this event belongs to. Linking backfills season passes with a match ticket.</summary>
+    public int? SeasonId { get; set; }
 }

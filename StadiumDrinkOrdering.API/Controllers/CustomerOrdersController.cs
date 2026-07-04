@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Data;
+using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 using System.Text.Json;
@@ -12,11 +13,16 @@ namespace StadiumDrinkOrdering.API.Controllers;
 public class CustomerOrdersController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly IOverlaySeatService _overlaySeats;
     private readonly ILogger<CustomerOrdersController> _logger;
 
-    public CustomerOrdersController(ApplicationDbContext context, ILogger<CustomerOrdersController> logger)
+    public CustomerOrdersController(
+        ApplicationDbContext context,
+        IOverlaySeatService overlaySeats,
+        ILogger<CustomerOrdersController> logger)
     {
         _context = context;
+        _overlaySeats = overlaySeats;
         _logger = logger;
     }
 
@@ -86,6 +92,34 @@ public class CustomerOrdersController : ControllerBase
                 });
             }
 
+            // Re-validate + resolve every seat against the real overlay stadium BEFORE charging.
+            // This rejects seats taken since add-to-cart — including seats held by a season pass —
+            // and gets the concrete Seat (Ticket.SeatId) so occupancy stays consistent everywhere.
+            var resolvedSeatIds = new Dictionary<int, int>(); // item index -> Seat.Id
+            for (var i = 0; i < request.Items.Count; i++)
+            {
+                var item = request.Items[i];
+                if (await _overlaySeats.IsSeatSoldAsync(item.EventId, item.SectorId, item.RowNumber, item.SeatNumber))
+                {
+                    return BadRequest(new TicketOrderResultDto
+                    {
+                        Success = false,
+                        ErrorMessage = $"Seat row {item.RowNumber}, seat {item.SeatNumber} is no longer available. Please pick another seat."
+                    });
+                }
+
+                var seat = await _overlaySeats.ResolveSeatAsync(item.SectorId, item.RowNumber, item.SeatNumber);
+                if (seat == null)
+                {
+                    return BadRequest(new TicketOrderResultDto
+                    {
+                        Success = false,
+                        ErrorMessage = "One of the selected seats is in an unknown sector."
+                    });
+                }
+                resolvedSeatIds[i] = seat.Id;
+            }
+
             // For ticket orders, we don't create a traditional Order record
             // Instead, we create Payment record first to track the transaction
             var customerName = $"{request.CustomerInfo.FirstName} {request.CustomerInfo.LastName}";
@@ -106,8 +140,9 @@ public class CustomerOrdersController : ControllerBase
 
             // Generate tickets for each item
             var tickets = new List<Ticket>();
-            foreach (var item in request.Items)
+            for (var i = 0; i < request.Items.Count; i++)
             {
+                var item = request.Items[i];
                 var ticket = new Ticket
                 {
                     TicketNumber = $"TK{DateTime.Now.Ticks}{tickets.Count + 1:D4}",
@@ -119,10 +154,13 @@ public class CustomerOrdersController : ControllerBase
                     CustomerPhone = request.CustomerInfo.Phone,
                     Price = item.Price,
                     PurchaseDate = DateTime.UtcNow,
-                    Status = "Active",
+                    Status = TicketStatuses.Active,
                     IsUsed = false,
                     QRCodeToken = Guid.NewGuid().ToString(),
                     QRCode = "",
+                    // Bind the concrete overlay Seat so the sale counts as occupied everywhere
+                    // (admin overview, season-seat availability, analytics) via Ticket.SeatId.
+                    SeatId = resolvedSeatIds[i],
                     SeatNumber = item.SeatNumber.ToString(),
                     Row = item.RowNumber.ToString(),
                     Section = item.SectionName

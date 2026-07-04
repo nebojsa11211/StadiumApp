@@ -14,9 +14,17 @@ public class Event
     [StringLength(50)]
     public string EventType { get; set; } = string.Empty; // Football, Concert, Basketball, etc.
     
+    /// <summary>Start of the event (kept as the historical <c>EventDate</c> column).</summary>
     [Required]
     public DateTime EventDate { get; set; }
-    
+
+    /// <summary>
+    /// End of the event. Together with <see cref="EventDate"/> this defines the window during
+    /// which the event is considered "live" (see <see cref="IsLiveAt"/>). Nullable so legacy
+    /// events and externally-ingested events without an explicit end remain valid.
+    /// </summary>
+    public DateTime? EventEndDate { get; set; }
+
     public int? VenueId { get; set; }
     
     [Required]
@@ -54,7 +62,25 @@ public class Event
     [StringLength(100)]
     public string? SourceSystem { get; set; }
 
+    /// <summary>
+    /// The season (e.g. "2026/2027") this event belongs to. Nullable so legacy events and
+    /// one-off (non-league) events remain valid. Events linked to a season are covered by
+    /// that season's season tickets.
+    /// </summary>
+    public int? SeasonId { get; set; }
+
+    /// <summary>
+    /// True when the event is published (<see cref="IsActive"/>) and <paramref name="nowUtc"/>
+    /// falls within its [<see cref="EventDate"/>, <see cref="EventEndDate"/>] window. When no end
+    /// is set the window is open-ended (live from the start onward while published).
+    /// </summary>
+    public bool IsLiveAt(DateTime nowUtc) =>
+        IsActive
+        && nowUtc >= EventDate
+        && (EventEndDate == null || nowUtc <= EventEndDate.Value);
+
     // Navigation properties
+    public virtual Season? Season { get; set; }
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     public virtual ICollection<EventStaffAssignment> StaffAssignments { get; set; } = new List<EventStaffAssignment>();

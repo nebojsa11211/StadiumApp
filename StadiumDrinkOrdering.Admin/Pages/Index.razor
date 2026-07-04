@@ -10,6 +10,27 @@
 
 @* The sidebar + dash-main shell is provided by DashboardLayout. *@
 
+        @* ---------- CURRENT SEASON BANNER (which season is in progress) ---------- *@
+        @if (CurrentSeason != null)
+        {
+            <div id="admin-dashboard-current-season"
+                 style="display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem;padding:.45rem .8rem;border-radius:8px;background:#ede9fe;color:#5b21b6;font-size:.85rem;">
+                <i class="bi bi-calendar-range"></i>
+                <span>@L["Index_CurrentSeason"]:</span>
+                <strong id="admin-dashboard-current-season-name">@CurrentSeason.Name</strong>
+                <span style="opacity:.75;">(@CurrentSeason.StartDate.ToLocalTime().ToString("MMM yyyy") – @CurrentSeason.EndDate.ToLocalTime().ToString("MMM yyyy"))</span>
+                <span style="margin-left:auto;display:inline-flex;align-items:center;gap:.3rem;">
+                    <i class="bi bi-person-badge"></i> @CurrentSeason.SeasonTicketCount @L["Index_SeasonPasses"]
+                </span>
+            </div>
+            @if (SelectedEventInOtherSeason)
+            {
+                <div id="admin-dashboard-event-season-note" style="margin:-.4rem 0 .75rem;font-size:.78rem;color:#92400e;">
+                    <i class="bi bi-info-circle"></i> @L["Index_ViewingOtherSeason", DashboardSeason?.Name ?? ""]
+                </div>
+            }
+        }
+
         @* ---------- EVENT SELECTOR (scopes the whole dashboard) ---------- *@
         @if (_loading)
         {
@@ -103,6 +124,17 @@
                     <div class="dash-kpi-icon"><i class="bi bi-cup-straw"></i></div>
                 </div>
                 <div class="dash-kpi-value">@_activeDrinkOrders</div>
+            </div>
+
+            <div class="dash-kpi-card" id="admin-dashboard-kpi-season">
+                <div class="dash-kpi-head">
+                    <div class="dash-kpi-label">
+                        <span class="dash-kpi-title">@L["Index_SeasonPasses"]</span>
+                        <span class="dash-kpi-context">@(DashboardSeason?.Name ?? L["Index_NoSeason"])</span>
+                    </div>
+                    <div class="dash-kpi-icon"><i class="bi bi-person-badge"></i></div>
+                </div>
+                <div class="dash-kpi-value @(DashboardSeason == null ? "dash-kpi-value--muted" : "")">@(DashboardSeason == null ? "—" : SeasonPassCount.ToString("N0"))</div>
             </div>
 
             <div class="dash-kpi-card" id="admin-dashboard-kpi-nps">

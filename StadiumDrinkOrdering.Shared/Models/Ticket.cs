@@ -2,6 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StadiumDrinkOrdering.Shared.Models;
 
+/// <summary>Distinguishes an ordinary single-match ticket from a season-pass–derived one.</summary>
+public enum TicketKind
+{
+    SingleEvent = 0,
+    Season = 1
+}
+
 public class Ticket
 {
     public int Id { get; set; }
@@ -44,6 +51,16 @@ public class Ticket
     
     [StringLength(20)]
     public string Status { get; set; } = "Active"; // Active, Used, Cancelled
+
+    /// <summary>
+    /// Whether this is an ordinary single-match ticket or a per-event access ticket derived
+    /// from a <see cref="SeasonTicket"/>. Season-derived tickets share the fixed seat of their
+    /// pass across every event in the season.
+    /// </summary>
+    public TicketKind Kind { get; set; } = TicketKind.SingleEvent;
+
+    /// <summary>Set on <see cref="TicketKind.Season"/> tickets: the pass they were generated from.</summary>
+    public int? SeasonTicketId { get; set; }
     
     // Legacy fields for backward compatibility
     [StringLength(10)]
@@ -78,6 +95,7 @@ public class Ticket
     // Navigation properties
     public virtual Event Event { get; set; } = null!;
     public virtual Seat Seat { get; set; } = null!;
+    public virtual SeasonTicket? SeasonTicket { get; set; }
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     public virtual ICollection<OrderSession> OrderSessions { get; set; } = new List<OrderSession>();
 }

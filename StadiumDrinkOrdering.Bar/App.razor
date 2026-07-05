@@ -1,0 +1,61 @@
+@using StadiumDrinkOrdering.Bar.Services
+@using StadiumDrinkOrdering.Bar.Shared
+@inject IAuthStateService AuthStateService
+@inject IStringLocalizer<SharedResources> Localizer
+
+@if (!isInitialized)
+{
+    <div id="bar-app-loading" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div id="bar-app-loading-content" class="text-center">
+            <div id="bar-app-spinner" class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">@Localizer["Loading"]</span>
+            </div>
+            <p class="text-muted">@Localizer["App_InitializingApplication"]</p>
+        </div>
+    </div>
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            @if (IsLoginPage(routeData.PageType))
+            {
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(AuthLayout)" />
+            }
+            else
+            {
+                <AuthRoute>
+                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                </AuthRoute>
+            }
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>@Localizer["App_NotFound"]</PageTitle>
+            <AuthRoute>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p role="alert">@Localizer["App_NothingAtThisAddress"]</p>
+                </LayoutView>
+            </AuthRoute>
+        </NotFound>
+    </Router>
+}
+
+@code {
+    private bool isInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthStateService.InitializeAsync();
+            isInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    private bool IsLoginPage(Type? pageType)
+    {
+        return pageType?.Name == "Login";
+    }
+}

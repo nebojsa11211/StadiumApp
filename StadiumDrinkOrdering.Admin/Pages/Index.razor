@@ -102,6 +102,21 @@
                     <div class="dash-kpi-icon"><i class="bi bi-ticket-perforated"></i></div>
                 </div>
                 <div class="dash-kpi-value">@_ticketsSold.ToString("N0")</div>
+                @if (_selectedEvent != null)
+                {
+                    <div class="dash-kpi-breakdown" id="admin-dashboard-kpi-tickets-breakdown">
+                        <span class="dash-kpi-chip dash-kpi-chip--regular" id="admin-dashboard-kpi-tickets-regular" title="@L["Index_TicketsRegular"]">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <span class="dash-kpi-chip-label">@L["Index_TicketsRegular"]</span>
+                            <b>@NormalTicketsSold.ToString("N0")</b>
+                        </span>
+                        <span class="dash-kpi-chip dash-kpi-chip--season" id="admin-dashboard-kpi-tickets-season" title="@L["Index_TicketsSeason"]">
+                            <i class="bi bi-person-badge"></i>
+                            <span class="dash-kpi-chip-label">@L["Index_TicketsSeason"]</span>
+                            <b>@_seasonTicketsSold.ToString("N0")</b>
+                        </span>
+                    </div>
+                }
             </div>
 
             <div class="dash-kpi-card" id="admin-dashboard-kpi-revenue">

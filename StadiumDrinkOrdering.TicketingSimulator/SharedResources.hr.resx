@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Layout_Brand" xml:space="preserve">
+    <value>Simulator prodaje ulaznica</value>
+  </data>
+  <data name="Layout_Tag" xml:space="preserve">
+    <value>zamjena za vanjski sustav</value>
+  </data>
+  <data name="Index_MainTitle" xml:space="preserve">
+    <value>Simulator za vanjske ulaznice</value>
+  </data>
+  <data name="Index_MainSubtitle" xml:space="preserve">
+    <value>Zamjena za stvarni sustav prodaje ulaznica. Kreirajte događaj i simulirajte prodaju — sve se sinkronizira sa Stadium aplikacijom kroz potpisane webhookove.</value>
+  </data>
+  <data name="Index_ApiLabel" xml:space="preserve">
+    <value>API</value>
+  </data>
+  <data name="Index_SectionsDiscovered" xml:space="preserve">
+    <value>sekcije pronađene</value>
+  </data>
+  <data name="Index_NotReachable" xml:space="preserve">
+    <value>nije dostupan</value>
+  </data>
+  <data name="Index_ReloadButton" xml:space="preserve">
+    <value>Ponovno učitaj</value>
+  </data>
+  <data name="Index_SeasonsHeader" xml:space="preserve">
+    <value>0. Sezone</value>
+  </data>
+  <data name="Index_RefreshButton" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  <data name="Index_SeasonNameLabel" xml:space="preserve">
+    <value>Naziv sezone</value>
+  </data>
+  <data name="Index_SeasonNamePlaceholder" xml:space="preserve">
+    <value>2026/2027</value>
+  </data>
+  <data name="Index_StartsLabel" xml:space="preserve">
+    <value>Počinje</value>
+  </data>
+  <data name="Index_EndsLabel" xml:space="preserve">
+    <value>Završava</value>
+  </data>
+  <data name="Index_SetCurrentCheckbox" xml:space="preserve">
+    <value>Postavi kao trenutnu</value>
+  </data>
+  <data name="Index_CreateButton" xml:space="preserve">
+    <value>Kreiraj</value>
+  </data>
+  <data name="Index_NoSeasonsYet" xml:space="preserve">
+    <value>Nema sezona. Kreirajte novu (npr. 2026/2027) kako biste grupirali utakmice i prodavali sezonske karte.</value>
+  </data>
+  <data name="Index_SeasonColumn" xml:space="preserve">
+    <value>Sezona</value>
+  </data>
+  <data name="Index_WindowColumn" xml:space="preserve">
+    <value>Vremenski prozor</value>
+  </data>
+  <data name="Index_CurrentColumn" xml:space="preserve">
+    <value>Trenutna</value>
+  </data>
+  <data name="Index_EventsColumn" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="Index_PassesColumn" xml:space="preserve">
+    <value>Karte</value>
+  </data>
+  <data name="Index_ActionColumn" xml:space="preserve">
+    <value>Akcija</value>
+  </data>
+  <data name="Index_CurrentBadge" xml:space="preserve">
+    <value>trenutna</value>
+  </data>
+  <data name="Index_SelectedBadge" xml:space="preserve">
+    <value>odabrana</value>
+  </data>
+  <data name="Index_SelectButton" xml:space="preserve">
+    <value>Odaberi</value>
+  </data>
+  <data name="Index_DeleteButton" xml:space="preserve">
+    <value>Obriši</value>
+  </data>
+  <data name="Index_DeleteEventTooltip" xml:space="preserve">
+    <value>Obriši ovaj događaj i sve njegove ulaznice</value>
+  </data>
+  <data name="Index_DeleteConfirm" xml:space="preserve">
+    <value>Obrisati događaj "{0}" i sve njegove ulaznice? Ovo se ne može poništiti.</value>
+  </data>
+  <data name="Index_SeasonTicketSectorLabel" xml:space="preserve">
+    <value>Sektor za sezonsku kartu</value>
+  </data>
+  <data name="Index_Sell1Button" xml:space="preserve">
+    <value>Prodaj 1</value>
+  </data>
+  <data name="Index_RefundLastButton" xml:space="preserve">
+    <value>Vrati zadnju</value>
+  </data>
+  <data name="Index_BulkLabel" xml:space="preserve">
+    <value>Masovno (razpoređeno po sektorima)</value>
+  </data>
+  <data name="Index_CreatePassesButton" xml:space="preserve">
+    <value>Kreiraj {0} karata</value>
+  </data>
+  <data name="Index_Plus20Button" xml:space="preserve">
+    <value>+20</value>
+  </data>
+  <data name="Index_Plus40Button" xml:space="preserve">
+    <value>+40</value>
+  </data>
+  <data name="Index_Plus100Button" xml:space="preserve">
+    <value>+100</value>
+  </data>
+  <data name="Index_SoldThisSession" xml:space="preserve">
+    <value>Prodano ovu sesiju</value>
+  </data>
+  <data name="Index_PassesFor" xml:space="preserve">
+    <value>karta(e) za</value>
+  </data>
+  <data name="Index_SeasonPassInfo" xml:space="preserve">
+    <value>Sezonska karta drži jedno mjesto u svakom događaju povezanom s ovom sezonom — po-utakmici ulaznice se generiraju automatski. Masovna prodaja raspoređuje karte po sektorima proporcionalno kapacitetu.</value>
+  </data>
+  <data name="Index_EventHeader" xml:space="preserve">
+    <value>1. Događaj</value>
+  </data>
+  <data name="Index_EventNameLabel" xml:space="preserve">
+    <value>Naziv događaja</value>
+  </data>
+  <data name="Index_StartLabel" xml:space="preserve">
+    <value>Početak</value>
+  </data>
+  <data name="Index_EndLabel" xml:space="preserve">
+    <value>Kraj</value>
+  </data>
+  <data name="Index_SeasonLabel" xml:space="preserve">
+    <value>Sezona</value>
+  </data>
+  <data name="Index_NoSeasonOption" xml:space="preserve">
+    <value>(bez sezone)</value>
+  </data>
+  <data name="Index_CreateSyncButton" xml:space="preserve">
+    <value>Kreiraj i sinkronizacija</value>
+  </data>
+  <data name="Index_EndTimeValidationError" xml:space="preserve">
+    <value>Vrijeme završetka mora biti nakon vremena početka.</value>
+  </data>
+  <data name="Index_EventLabel" xml:space="preserve">
+    <value>Događaj:</value>
+  </data>
+  <data name="Index_WindowLabel" xml:space="preserve">
+    <value>Vremenski prozor:</value>
+  </data>
+  <data name="Index_ExternalIdLabel" xml:space="preserve">
+    <value>Vanjski ID:</value>
+  </data>
+  <data name="Index_StadiumEventIdLabel" xml:space="preserve">
+    <value>ID događaja u stadionu:</value>
+  </data>
+  <data name="Index_StatusLabel" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="Index_LiveBadge" xml:space="preserve">
+    <value>● UŽIVO</value>
+  </data>
+  <data name="Index_SalesClosedBadge" xml:space="preserve">
+    <value>prodaja zatvorena</value>
+  </data>
+  <data name="Index_TotalOccupiedLabel" xml:space="preserve">
+    <value>Ukupno zauzeto:</value>
+  </data>
+  <data name="Index_IncludingSeasonText" xml:space="preserve">
+    <value>(uključ. {0} sezonskih)</value>
+  </data>
+  <data name="Index_MakeLiveNowTooltip" xml:space="preserve">
+    <value>Pomaknite početak ovog događaja na trenutni vrijeme i postavite status na Aktivno kako biste testirali značajke dostupne samo tijekom mandata (naručivanje pića, sesije živih ulaznica).</value>
+  </data>
+  <data name="Index_MakeLiveNowButton" xml:space="preserve">
+    <value>Postavi uživo sada</value>
+  </data>
+  <data name="Index_BackToEventsButton" xml:space="preserve">
+    <value>Povratak na događaje</value>
+  </data>
+  <data name="Index_NewEventButton" xml:space="preserve">
+    <value>Novi događaj</value>
+  </data>
+  <data name="Index_ExistingEventsHeader" xml:space="preserve">
+    <value>Postojeći događaji</value>
+  </data>
+  <data name="Index_NoEventsYet" xml:space="preserve">
+    <value>Nema kreiranog događaja. Kreirajte jedan iznad kako biste počeli.</value>
+  </data>
+  <data name="Index_EventColumn" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="Index_StartColumn" xml:space="preserve">
+    <value>Početak</value>
+  </data>
+  <data name="Index_EndColumn" xml:space="preserve">
+    <value>Kraj</value>
+  </data>
+  <data name="Index_SourceColumn" xml:space="preserve">
+    <value>Izvor</value>
+  </data>
+  <data name="Index_SoldCapacityColumn" xml:space="preserve">
+    <value>Prodano / Kapacitet</value>
+  </data>
+  <data name="Index_SalesHeader" xml:space="preserve">
+    <value>2. Simulacija prodaje</value>
+  </data>
+  <data name="Index_RateLabel" xml:space="preserve">
+    <value>stopa</value>
+  </data>
+  <data name="Index_PerLabel" xml:space="preserve">
+    <value>per</value>
+  </data>
+  <data name="Index_MsLabel" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="Index_StopAutoSellButton" xml:space="preserve">
+    <value>Zaustavi auto-prodaju</value>
+  </data>
+  <data name="Index_StartAutoSellButton" xml:space="preserve">
+    <value>Započni auto-prodaju</value>
+  </data>
+  <data name="Index_SellRandom20Button" xml:space="preserve">
+    <value>Prodaj nasumičnih 20</value>
+  </data>
+  <data name="Index_SalesClosedBannerPrefix" xml:space="preserve">
+    <value>Prodaja ulaznica je zatvorena — događaj je</value>
+  </data>
+  <data name="Index_SalesClosedBannerSuffix" xml:space="preserve">
+    <value>.</value>
+  </data>
+  <data name="Index_SimulateDrinkOrdersText" xml:space="preserve">
+    <value>Simulirajte narudžbe pića u panelu ispod.</value>
+  </data>
+  <data name="Index_SectorColumn" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="Index_OccupancyColumn" xml:space="preserve">
+    <value>Zauzetost</value>
+  </data>
+  <data name="Index_OccupiedCapacityColumn" xml:space="preserve">
+    <value>Zauzeto / Kapacitet</value>
+  </data>
+  <data name="Index_ActionsColumn" xml:space="preserve">
+    <value>Akcije</value>
+  </data>
+  <data name="Index_Plus1Button" xml:space="preserve">
+    <value>+1</value>
+  </data>
+  <data name="Index_Plus5Button" xml:space="preserve">
+    <value>+5</value>
+  </data>
+  <data name="Index_Minus1Button" xml:space="preserve">
+    <value>−1</value>
+  </data>
+  <data name="Index_RefundTooltip" xml:space="preserve">
+    <value>Vraća jednu ulaznu kartu (sezonske karte se vraćaju iz sezonskog panela)</value>
+  </data>
+  <data name="Index_DrinksHeader" xml:space="preserve">
+    <value>2b. Simulacija narudžbi pića</value>
+  </data>
+  <data name="Index_PlacedThisSession" xml:space="preserve">
+    <value>Postavljeno ovu sesiju</value>
+  </data>
+  <data name="Index_DrinksLockedMessage" xml:space="preserve">
+    <value>Naručivanje pića je dostupno kada je događaj uživo. Koristite Postavi uživo sada iznad kako biste započeli utakmicu, zatim simulirajte kupce koji naručuju pće sa svojih mjesta.</value>
+  </data>
+  <data name="Index_Place1OrderButton" xml:space="preserve">
+    <value>Postavi 1 narudžbu</value>
+  </data>
+  <data name="Index_Place5OrdersButton" xml:space="preserve">
+    <value>Postavi 5 narudžbi</value>
+  </data>
+  <data name="Index_StopAutoOrdersButton" xml:space="preserve">
+    <value>Zaustavi auto-narudžbe</value>
+  </data>
+  <data name="Index_StartAutoOrdersButton" xml:space="preserve">
+    <value>Započni auto-narudžbe</value>
+  </data>
+  <data name="Index_DrinkOrdersInfo" xml:space="preserve">
+    <value>Svaka narudžba pridodaje nasumična pića slučajnom zauzetu mjestu i gura živu NewOrder u Bar/Staff red čekanja.</value>
+  </data>
+  <data name="Index_ReconciliationHeader" xml:space="preserve">
+    <value>3. Usklađivanje</value>
+  </data>
+  <data name="Index_VerifySyncButton" xml:space="preserve">
+    <value>Provjeri sinkronizaciju</value>
+  </data>
+  <data name="Index_ReplayAllSalesButton" xml:space="preserve">
+    <value>Ponovi sve prodaje</value>
+  </data>
+  <data name="Index_ReplayInfo" xml:space="preserve">
+    <value>Ponovno reproducira lokalnu prodaju prema API-ju (idempotentno) kako bi se izliječili otpušteni webhookovi.</value>
+  </data>
+  <data name="Index_ApiReportsPrefix" xml:space="preserve">
+    <value>API izvještava</value>
+  </data>
+  <data name="Index_SoldIncludingPrefix" xml:space="preserve">
+    <value>prodano (uključ.</value>
+  </data>
+  <data name="Index_SeasonSimulatorHoldsText" xml:space="preserve">
+    <value>sezonskih); simulator drži</value>
+  </data>
+  <data name="Index_InSyncText" xml:space="preserve">
+    <value>Sinkronizovano ✓</value>
+  </data>
+  <data name="Index_DriftText" xml:space="preserve">
+    <value>Odstupanje</value>
+  </data>
+  <data name="Index_ApiSoldColumn" xml:space="preserve">
+    <value>API prodano</value>
+  </data>
+  <data name="Index_SimulatorOccupiedColumn" xml:space="preserve">
+    <value>Simulator zauzeto</value>
+  </data>
+  <data name="Index_ActivityLogHeader" xml:space="preserve">
+    <value>Zapisnik aktivnosti</value>
+  </data>
+  <data name="Index_NoActivityYet" xml:space="preserve">
+    <value>Nema aktivnosti.</value>
+  </data>
+</root>

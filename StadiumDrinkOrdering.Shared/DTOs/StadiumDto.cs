@@ -38,3 +38,11 @@ public class SeatOrderDto
     public StadiumSeatDto Seat { get; set; } = new();
     public OrderDto Order { get; set; } = new();
 }
+
+// Lightweight structured-section reference (code + display name). Lets staff apps map legacy
+// free-text seat strings onto the same section names the ordering system stores.
+public class SectionRefDto
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+}

@@ -6,9 +6,10 @@
 @inject ApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 @rendermode @(new InteractiveServerRenderMode())
 
-<PageTitle>Order Drinks - Stadium Ordering</PageTitle>
+<PageTitle>@Localizer["Ordering_PageTitle"]</PageTitle>
 
 <div class="ordering-container">
     @if (isLoading)
@@ -17,16 +18,16 @@
             <div class="loading-spinner">
                 <div class="spinner"></div>
             </div>
-            <h2>Loading Menu...</h2>
+            <h2>@Localizer["Ordering_LoadingMenu"]</h2>
         </div>
     }
     else if (orderSession == null)
     {
         <div class="error-screen">
             <div class="error-icon">❌</div>
-            <h2>Session Expired</h2>
-            <p>Your ordering session has expired. Please scan your ticket again.</p>
-            <button id="customer-ordering-scan-again-btn" class="btn btn-primary" @onclick="GoToScanner">Scan Again</button>
+            <h2>@Localizer["Ordering_SessionExpired"]</h2>
+            <p>@Localizer["Ordering_SessionExpiredMessage"]</p>
+            <button id="customer-ordering-scan-again-btn" class="btn btn-primary" @onclick="GoToScanner">@Localizer["Ordering_ScanAgain"]</button>
         </div>
     }
     else
@@ -55,7 +56,7 @@
             <div class="cart-summary @(isCartExpanded ? "expanded" : "")" @onclick="ToggleCart">
                 <div class="cart-header">
                     <div class="cart-info">
-                        <span class="cart-count">@cartItems.Sum(x => x.Quantity) items</span>
+                        <span class="cart-count">@cartItems.Sum(x => x.Quantity) @Localizer["Ordering_Items"]</span>
                         <span class="cart-total">€@cartTotal.ToString("F2")</span>
                     </div>
                     <div class="cart-toggle">
@@ -85,7 +86,7 @@
                     
                     <div class="checkout-section">
                         <button id="customer-ordering-checkout-btn" class="btn btn-primary btn-checkout" @onclick="ProceedToCheckout">
-                            Proceed to Payment • €@cartTotal.ToString("F2")
+                            @Localizer["Ordering_ProceedPayment"] • €@cartTotal.ToString("F2")
                         </button>
                     </div>
                 }
@@ -128,7 +129,7 @@
                                 <span class="price">€@drink.Price.ToString("F2")</span>
                                 @if (drink.StockQuantity <= 0)
                                 {
-                                    <span class="out-of-stock-badge">Out of Stock</span>
+                                    <span class="out-of-stock-badge">@Localizer["Ordering_OutOfStock"]</span>
                                 }
                                 else
                                 {
@@ -171,7 +172,7 @@
                 @if (selectedDrink.StockQuantity > 0)
                 {
                     <div class="quantity-selector">
-                        <label>Quantity:</label>
+                        <label>@Localizer["Ordering_Quantity"]</label>
                         <div class="quantity-controls-large">
                             <button id="customer-ordering-modal-decrease-btn" class="btn-quantity-large" @onclick="() => selectedQuantity = Math.Max(1, selectedQuantity - 1)">-</button>
                             <span class="quantity-large">@selectedQuantity</span>
@@ -180,19 +181,19 @@
                     </div>
 
                     <div class="special-instructions">
-                        <label>Special Instructions (optional):</label>
+                        <label>@Localizer["Ordering_SpecialInstructions"]</label>
                         <textarea @bind="specialInstructions" placeholder="e.g., No ice, Extra lime..." maxlength="100"></textarea>
                     </div>
 
                     <button id="customer-ordering-add-to-cart-btn" class="btn btn-primary btn-add-large" @onclick="AddToCartWithDetails">
-                        Add @selectedQuantity to Cart • €@((selectedDrink.Price * selectedQuantity).ToString("F2"))
+                        @Localizer["Ordering_AddToCart"] @selectedQuantity @Localizer["Ordering_Items"] • €@((selectedDrink.Price * selectedQuantity).ToString("F2"))
                     </button>
                 }
                 else
                 {
                     <div class="out-of-stock-message">
-                        <span class="out-of-stock-badge">Out of Stock</span>
-                        <p>Sorry, this item is currently unavailable.</p>
+                        <span class="out-of-stock-badge">@Localizer["Ordering_OutOfStock"]</span>
+                        <p>@Localizer["Ordering_ItemCurrentlyUnavailable"]</p>
                     </div>
                 }
             </div>

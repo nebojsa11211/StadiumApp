@@ -1,0 +1,52 @@
+@inject RunnerAuthService Auth
+@inject OutboxService Outbox
+@implements IDisposable
+
+@if (!initialized)
+{
+    <div class="d-flex justify-content-center align-items-center" style="height:100vh">
+        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            @if (IsLoginPage(routeData.PageType) || Auth.IsAllowed)
+            {
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            }
+            else
+            {
+                <RedirectToLogin />
+            }
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+}
+
+@code {
+    private bool initialized;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Auth.OnChange += OnAuthChanged;
+        await Auth.InitializeAsync();
+        // Load the outbox (IndexedDB + connectivity listeners) and flush anything left from a prior
+        // session. Runs regardless of route so a queued delivery syncs as soon as we're back online.
+        await Outbox.InitializeAsync();
+        initialized = true;
+    }
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    private static bool IsLoginPage(Type? pageType) => pageType?.Name == "Login";
+
+    public void Dispose() => Auth.OnChange -= OnAuthChanged;
+}

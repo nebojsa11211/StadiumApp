@@ -13,7 +13,13 @@ public interface IApiService
     Task<LoginResponseDto?> LoginAsync(LoginDto loginDto);
     Task<UserDto?> RegisterAsync(RegisterDto registerDto);
     Task<OrderDto?> CreateOrderAsync(CreateOrderDto createOrderDto);
+    Task<OrderPlacementResult> PlaceOrderAsync(CreateOrderDto createOrderDto);
     Task<List<OrderDto>?> GetMyOrdersAsync();
+
+    // Fan wallet
+    Task<WalletSummaryDto?> GetWalletSummaryAsync();
+    Task<WalletTransactionListDto?> GetWalletTransactionsAsync(int page = 1, int pageSize = 20);
+    Task<DepositResultDto?> DepositToWalletAsync(InitiateDepositDto dto);
     Task<OrderDto?> GetOrderAsync(int id);
     Task<bool> CancelOrderAsync(int id);
     Task<StadiumLayoutDto?> GetStadiumLayoutAsync();
@@ -180,6 +186,58 @@ public class ApiService : IApiService
             Console.WriteLine($"Error creating order: {ex.Message}");
         }
         return null;
+    }
+
+    /// <summary>
+    /// Places an order and reports the outcome richly, in particular distinguishing an HTTP 402
+    /// (wallet payment declined for insufficient funds) so the UI can offer an inline top-up rather
+    /// than a generic failure. Used by the "Pay with Wallet" flow.
+    /// </summary>
+    public async Task<OrderPlacementResult> PlaceOrderAsync(CreateOrderDto createOrderDto)
+    {
+        try
+        {
+            SetAuthorizationHeader();
+            var json = JsonSerializer.Serialize(createOrderDto, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("orders", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                var order = JsonSerializer.Deserialize<OrderDto>(responseJson, _jsonOptions);
+                return new OrderPlacementResult { Success = true, Order = order };
+            }
+
+            var body = await response.Content.ReadAsStringAsync();
+            if (response.StatusCode == System.Net.HttpStatusCode.PaymentRequired) // 402: wallet declined
+            {
+                return new OrderPlacementResult { InsufficientFunds = true, Error = body };
+            }
+            return new OrderPlacementResult { Error = string.IsNullOrWhiteSpace(body) ? "Failed to place order." : body };
+        }
+        catch (Exception ex)
+        {
+            return new OrderPlacementResult { Error = ex.Message };
+        }
+    }
+
+    public async Task<WalletSummaryDto?> GetWalletSummaryAsync()
+    {
+        SetAuthorizationHeader();
+        return await GetAsync<WalletSummaryDto>("api/wallet/me");
+    }
+
+    public async Task<WalletTransactionListDto?> GetWalletTransactionsAsync(int page = 1, int pageSize = 20)
+    {
+        SetAuthorizationHeader();
+        return await GetAsync<WalletTransactionListDto>($"api/wallet/me/transactions?page={page}&pageSize={pageSize}");
+    }
+
+    public async Task<DepositResultDto?> DepositToWalletAsync(InitiateDepositDto dto)
+    {
+        SetAuthorizationHeader();
+        return await PostAsync<InitiateDepositDto, DepositResultDto>("api/wallet/me/deposits", dto);
     }
 
     public async Task<List<OrderDto>?> GetMyOrdersAsync()
@@ -836,6 +894,16 @@ public class ApiService : IApiService
         }
     }
 
+}
+
+/// <summary>Outcome of placing a drink order, distinguishing a wallet insufficient-funds rejection
+/// (HTTP 402) so the UI can prompt an inline top-up.</summary>
+public class OrderPlacementResult
+{
+    public bool Success { get; init; }
+    public bool InsufficientFunds { get; init; }
+    public OrderDto? Order { get; init; }
+    public string? Error { get; init; }
 }
 
 // Customer Ticketing DTOs

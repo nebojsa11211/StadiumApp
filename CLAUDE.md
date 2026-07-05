@@ -62,6 +62,14 @@
 
 ### 🚨 **MANDATORY CLEANUP RULE** 🚨
 
+> 🔴🔴🔴 **AGENT / CLAUDE ABSOLUTE RULE — KILL EVERY APP YOU START, EVERY TIME.** 🔴🔴🔴
+>
+> If you (the AI assistant) start ANY Stadium app — `dotnet run`, a background task, a launch profile, or via any tool — you MUST kill it again **in the same response, before you finish your turn.** NEVER leave an app running for the user to clean up. NEVER hand the turn back with a Stadium app still alive.
+> - Do NOT leave the API/Bar/etc. "running in the background for convenience." That locks `StadiumDrinkOrdering.Shared.dll` and breaks the user's very next build with **MSB3027**.
+> - After ANY verification (curl, Playwright, screenshots), the LAST thing you do before replying is run the kill command below and confirm 0 processes remain.
+> - If you started it in a background task, killing the exe is not enough on its own — also stop the background task so it can't respawn.
+> - Treat "I started an app" and "I must kill that app before finishing" as a single, inseparable unit of work.
+
 **CRITICAL**: You MUST ALWAYS kill all running Stadium app processes BEFORE and AFTER making ANY code changes, debugging sessions, or testing. This is NOT optional - it's MANDATORY. **Every time you start the apps, you MUST kill them again before the next build/run.**
 
 > ⛔ **THE #1 CAUSE OF `MSB3027` / "file is locked by StadiumDrinkOrdering.API" IS A RUNNING APP THAT WASN'T KILLED.**
@@ -72,10 +80,11 @@
 **Required Cleanup Commands (USE THESE — kill by app exe name):**
 ```powershell
 # Kill ALL Stadium app processes by their real exe names (MANDATORY before AND after ANY build/run)
-taskkill /F /IM StadiumDrinkOrdering.API.exe /IM StadiumDrinkOrdering.Admin.exe /IM StadiumDrinkOrdering.Customer.exe /IM StadiumDrinkOrdering.Staff.exe 2>$null
+taskkill /F /IM StadiumDrinkOrdering.API.exe /IM StadiumDrinkOrdering.Admin.exe /IM StadiumDrinkOrdering.Customer.exe /IM StadiumDrinkOrdering.Staff.exe /IM StadiumDrinkOrdering.Bar.exe /IM StadiumDrinkOrdering.Runner.exe /IM StadiumDrinkOrdering.TicketingSimulator.exe 2>$null
 
-# Equivalent PowerShell (no error if a process isn't running):
-Get-Process StadiumDrinkOrdering.API,StadiumDrinkOrdering.Admin,StadiumDrinkOrdering.Customer,StadiumDrinkOrdering.Staff -ErrorAction SilentlyContinue | Stop-Process -Force
+# Equivalent PowerShell (no error if a process isn't running) — INCLUDES the newer Bar/Runner/Simulator apps.
+# Run this AND verify it prints 0 remaining before finishing.
+Get-Process StadiumDrinkOrdering.API,StadiumDrinkOrdering.Admin,StadiumDrinkOrdering.Customer,StadiumDrinkOrdering.Staff,StadiumDrinkOrdering.Bar,StadiumDrinkOrdering.Runner,StadiumDrinkOrdering.TicketingSimulator -ErrorAction SilentlyContinue | Stop-Process -Force
 
 # Or use the automated cleanup script
 powershell -ExecutionPolicy Bypass -File "cleanup-for-vs-debug.ps1"
@@ -87,6 +96,21 @@ powershell -ExecutionPolicy Bypass -File "cleanup-for-vs-debug.ps1"
 Get-NetTCPConnection -LocalPort 7010,7030 -State Listen -ErrorAction SilentlyContinue |
   Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force }
 ```
+
+> ⚠️ **PORTS: Runner = 7060, TicketingSimulator = 7050 (they must NOT share a port).**
+> These two were both originally configured on **7050**, so whenever the Simulator was running the Runner failed to start with
+> `IOException: Failed to bind to address https://127.0.0.1:7050: address already in use` — even though no `Runner` process existed.
+> The Runner is now on **7060** (Docker 9060); the Simulator keeps **7050**. Both can run at once.
+> - The Runner is a Blazor **WebAssembly** app served by `Microsoft.AspNetCore.Components.WebAssembly.DevServer` (runs under **`dotnet.exe`**, no `StadiumDrinkOrdering.Runner.exe` apphost). Kill it by port, not exe name.
+> - The Simulator runs as its own apphost **`StadiumDrinkOrdering.TicketingSimulator.exe`** on 7050.
+> - To see what actually owns a "port in use" (a raw bind can fail even when `netstat` looks empty — check with a TcpListener test):
+> ```powershell
+> # Who owns 7050 / 7060 right now?
+> netstat -ano | Select-String ":7050|:7060"
+> # Free either port (kills the owning process):
+> Get-NetTCPConnection -LocalPort 7050,7060 -State Listen -ErrorAction SilentlyContinue |
+>   Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force }
+> ```
 
 **Inside Visual Studio:** the csproj kill-before-build target is intentionally disabled in VS (it caused debugger "object disconnected" errors). So in VS you must **Stop debugging (Shift+F5) BEFORE Rebuild**, or run the cleanup command above first — otherwise the running exe keeps `StadiumDrinkOrdering.Shared.dll` / the apphost exe locked and the build fails with MSB3027.
 

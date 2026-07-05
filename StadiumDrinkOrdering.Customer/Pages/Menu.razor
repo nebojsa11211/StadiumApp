@@ -6,29 +6,30 @@
 @inject IApiService ApiService
 @inject ICartService CartService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Stadium Drinks - Order Now</PageTitle>
+<PageTitle>@Localizer["Menu_PageTitle"]</PageTitle>
 
 <TicketProtectedRoute>
     <div class="container-fluid" id="customer-menu-container">
     <div class="row">
         <div class="col-md-8">
-            <h1 class="mb-4" id="customer-menu-title">🍺 Stadium Drinks Menu</h1>
-            
+            <h1 class="mb-4" id="customer-menu-title">🍺 @Localizer["Menu_Title"]</h1>
+
             @if (drinks == null)
             {
                 <div class="text-center" id="customer-menu-loading">
                     <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">@Localizer["Loading"]</span>
                     </div>
-                    <p>Loading drinks...</p>
+                    <p>@Localizer["Menu_LoadingDrinks"]</p>
                 </div>
             }
             else if (!drinks.Any())
             {
                 <div class="alert alert-info" id="customer-menu-empty">
-                    <h4 id="customer-menu-empty-title">No drinks available</h4>
-                    <p id="customer-menu-empty-message">Sorry, no drinks are currently available for order.</p>
+                    <h4 id="customer-menu-empty-title">@Localizer["Menu_NoDrinks"]</h4>
+                    <p id="customer-menu-empty-message">@Localizer["Menu_NoDrinksMessage"]</p>
                 </div>
             }
             else
@@ -36,9 +37,9 @@
                 <!-- Category filters -->
                 <div class="mb-4" id="customer-category-filters">
                     <div class="btn-group" role="group" id="customer-category-buttons">
-                        <button type="button" class="btn @(selectedCategory == null ? "btn-primary" : "btn-outline-primary")" 
+                        <button type="button" class="btn @(selectedCategory == null ? "btn-primary" : "btn-outline-primary")"
                                 @onclick="() => FilterByCategory(null)" id="customer-category-all">
-                            All
+                            @Localizer["Menu_All"]
                         </button>
                         @foreach (var category in Enum.GetValues<DrinkCategory>())
                         {
@@ -73,7 +74,7 @@
                                     <div class="mt-auto">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="h5 mb-0 text-primary" id="customer-drink-price-@drink.Id">$@drink.Price.ToString("F2")</span>
-                                            <small class="text-muted" id="customer-drink-stock-@drink.Id">Stock: @drink.StockQuantity</small>
+                                            <small class="text-muted" id="customer-drink-stock-@drink.Id">@Localizer["Menu_Stock"]: @drink.StockQuantity</small>
                                         </div>
                                         
                                         @if (drink.StockQuantity > 0 && drink.IsAvailable)
@@ -87,16 +88,16 @@
                                                         @onclick="() => IncreaseQuantity(drink.Id)" id="customer-increase-btn-@drink.Id">+</button>
                                             </div>
                                             
-                                            <button class="btn btn-primary w-100" 
+                                            <button class="btn btn-primary w-100"
                                                     @onclick="() => AddToCart(drink)"
                                                     disabled="@(quantities.GetValueOrDefault(drink.Id, 0) <= 0)" id="customer-add-to-cart-btn-@drink.Id">
-                                                Add to Cart
+                                                @Localizer["Menu_AddToCart"]
                                             </button>
                                         }
                                         else
                                         {
                                             <button class="btn btn-secondary w-100" disabled id="customer-out-of-stock-btn-@drink.Id">
-                                                Out of Stock
+                                                @Localizer["Menu_OutOfStock"]
                                             </button>
                                         }
                                     </div>
@@ -160,7 +161,25 @@
                                           placeholder="Any special requests?" rows="2" id="customer-notes-input"></textarea>
                             </div>
                             
-                            <button class="btn btn-success w-100 mb-2" 
+                            @if (walletSummary is { Exists: true })
+                            {
+                                <div class="form-check mb-2" id="customer-menu-pay-wallet-group">
+                                    <input class="form-check-input" type="checkbox" id="customer-menu-pay-wallet-check" @bind="payWithWallet" />
+                                    <label class="form-check-label" for="customer-menu-pay-wallet-check">
+                                        @Localizer["Wallet_PayWithWallet"]
+                                        <span class="text-muted">(@FormatWalletMoney(walletSummary.Balance) @Localizer["Wallet_Available"])</span>
+                                    </label>
+                                </div>
+                            }
+                            @if (showTopUpPrompt)
+                            {
+                                <div class="alert alert-warning py-2" id="customer-menu-topup-prompt">
+                                    @Localizer["Wallet_InsufficientFunds"]
+                                    <a href="/wallet" class="alert-link" id="customer-menu-topup-link">@Localizer["Wallet_TopUp"]</a>
+                                </div>
+                            }
+
+                            <button class="btn btn-success w-100 mb-2"
                                     @onclick="PlaceOrder"
                                     disabled="@(string.IsNullOrWhiteSpace(ticketNumber) || isPlacingOrder)" id="customer-place-order-btn">
                                 @if (isPlacingOrder)
@@ -202,10 +221,14 @@
     private bool isPlacingOrder = false;
     private string alertMessage = "";
     private string alertType = "";
+    private WalletSummaryDto? walletSummary;
+    private bool payWithWallet = false;
+    private bool showTopUpPrompt = false;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadDrinks();
+        walletSummary = await ApiService.GetWalletSummaryAsync();
         CartService.OnCartChanged += StateHasChanged;
     }
 
@@ -273,18 +296,21 @@
             return;
 
         isPlacingOrder = true;
-        
+        showTopUpPrompt = false;
+
         try
         {
             // Get the current ticket session
             var sessionToken = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "ticketSessionToken");
             var ticketSession = !string.IsNullOrEmpty(sessionToken) ? await ApiService.GetTicketSessionAsync(sessionToken) : null;
-            
+
             var createOrderDto = new CreateOrderDto
             {
                 TicketSessionId = ticketSession?.Id,
                 TicketNumber = string.IsNullOrWhiteSpace(ticketNumber) ? null : ticketNumber.Trim(),
                 CustomerNotes = string.IsNullOrWhiteSpace(orderNotes) ? null : orderNotes.Trim(),
+                // Charge the wallet when the fan opts in; otherwise the order is created unpaid as before.
+                PaymentMethod = payWithWallet ? PaymentMethod.DigitalWallet : null,
                 OrderItems = CartService.Items.Select(item => new CreateOrderItemDto
                 {
                     DrinkId = item.Drink.Id,
@@ -293,13 +319,24 @@
                 }).ToList()
             };
 
-            var order = await ApiService.CreateOrderAsync(createOrderDto);
-            if (order != null)
+            var result = await ApiService.PlaceOrderAsync(createOrderDto);
+            if (result.Success)
             {
                 CartService.ClearCart();
                 ticketNumber = "";
                 orderNotes = "";
-                ShowAlert($"Order #{order.Id} placed successfully!", "success");
+                ShowAlert($"Order #{result.Order?.Id} placed successfully!", "success");
+                if (payWithWallet)
+                {
+                    // Reflect the new balance in the checkout hint.
+                    walletSummary = await ApiService.GetWalletSummaryAsync();
+                }
+            }
+            else if (result.InsufficientFunds)
+            {
+                // Order was NOT created (server rolled it back) — prompt an inline top-up.
+                showTopUpPrompt = true;
+                ShowAlert(Localizer["Wallet_InsufficientFunds"], "danger");
             }
             else
             {
@@ -314,6 +351,13 @@
         {
             isPlacingOrder = false;
         }
+    }
+
+    private string FormatWalletMoney(decimal amount)
+    {
+        var currency = walletSummary?.Currency ?? "EUR";
+        var symbol = currency == "EUR" ? "€" : currency + " ";
+        return $"{symbol}{amount.ToString("N2")}";
     }
 
     private void ShowAlert(string message, string type)

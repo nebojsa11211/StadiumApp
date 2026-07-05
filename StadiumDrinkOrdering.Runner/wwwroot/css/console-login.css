@@ -1,0 +1,182 @@
+/* =============================================================================
+   Runner - Operations Console login design system.
+   Self-contained port of the Admin "console" login look (admin-console.css plus
+   the stadium and pitch design tokens from the Admin site.css) so the Runner WASM
+   app shows the SAME login screen as the Admin app.
+   ============================================================================= */
+
+:root {
+    --stadium-danger: #b91c1c;
+    --stadium-info: #2f6f8f;
+
+    --pitch: #1f7a4d;
+    --pitch-dark: #176239;
+    --pitch-soft: #eaf3ec;
+    --pitch-line: #cfe6d7;
+
+    --stadium-gray-50: #f6f7f5;
+    --stadium-gray-100: #eef0ec;
+    --stadium-gray-200: #e4e7e1;
+    --stadium-gray-300: #d2d6cf;
+    --stadium-gray-500: #71776e;
+    --stadium-gray-700: #3a3e38;
+    --stadium-gray-900: #16181d;
+
+    --stadium-font-mono: 'IBM Plex Mono', 'SF Mono', 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+/* ----- Login shell (matches Admin LoginLayout) ----------------------------- */
+.login-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--stadium-gray-50);
+}
+
+.login-shell__main {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* ----- Console --------------------------------------------------------------- */
+.console {
+    --line: var(--stadium-gray-200);
+    --ink: var(--stadium-gray-900);
+    --muted: var(--stadium-gray-500);
+    --surface: #ffffff;
+    width: 100%;
+    color: var(--ink);
+}
+
+.eyebrow {
+    display: inline-block;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pitch);
+    margin-bottom: 0.4rem;
+}
+
+.console-head__title h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin: 0 0 0.35rem;
+    line-height: 1.1;
+}
+
+.console-head__title p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* ----- Buttons ------------------------------------------------------------- */
+.pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 36px;
+    padding: 0 0.95rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--stadium-gray-700);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.pill-btn:hover:not(:disabled) {
+    background: var(--stadium-gray-50);
+    border-color: var(--stadium-gray-300);
+    color: var(--ink);
+    text-decoration: none;
+}
+
+.pill-btn:disabled { opacity: 0.55; cursor: default; }
+
+.pill-btn--primary {
+    background: var(--pitch);
+    border-color: var(--pitch);
+    color: #fff;
+}
+
+.pill-btn--primary:hover:not(:disabled) {
+    background: var(--pitch-dark);
+    border-color: var(--pitch-dark);
+    color: #fff;
+}
+
+/* ----- Panel --------------------------------------------------------------- */
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.panel__body { padding: 1.25rem; }
+
+/* ----- Fields -------------------------------------------------------------- */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 160px;
+}
+
+.field__label {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-500);
+}
+
+.field__input {
+    height: 48px;                 /* larger tap target */
+    padding: 0 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 1rem;              /* >=16px prevents iOS focus-zoom */
+    width: 100%;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field__input:focus {
+    outline: none;
+    border-color: var(--pitch);
+    box-shadow: 0 0 0 3px var(--pitch-soft);
+}
+
+/* ----- Inline alert -------------------------------------------------------- */
+.console-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.1rem;
+    border: 1px solid var(--line);
+    border-left-width: 3px;
+    border-radius: 8px;
+    background: var(--surface);
+    font-size: 0.85rem;
+    color: var(--stadium-gray-700);
+    margin-bottom: 1.25rem;
+}
+
+.console-alert--danger { border-left-color: var(--stadium-danger); background: #fbe9e9; color: #991b1b; }
+
+.text-muted { color: var(--stadium-gray-500); }

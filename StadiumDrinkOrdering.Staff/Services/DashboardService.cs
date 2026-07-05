@@ -124,6 +124,8 @@ public class DashboardService : IDashboardService
         var acceptedOrders = orders.Where(o => o.Status == OrderStatus.Accepted).ToList();
         var inPreparationOrders = orders.Where(o => o.Status == OrderStatus.InPreparation).ToList();
         var readyOrders = orders.Where(o => o.Status == OrderStatus.Ready).ToList();
+        var outForDeliveryOrders = orders.Where(o => o.Status == OrderStatus.OutForDelivery).ToList();
+        var deliveredOrders = orders.Where(o => o.Status == OrderStatus.Delivered).ToList();
 
         var quickActions = new List<QuickAction>
         {
@@ -156,6 +158,8 @@ public class DashboardService : IDashboardService
             AcceptedOrdersCount = acceptedOrders.Count,
             InPreparationOrdersCount = inPreparationOrders.Count,
             ReadyOrdersCount = readyOrders.Count,
+            OutForDeliveryOrdersCount = outForDeliveryOrders.Count,
+            DeliveredOrdersCount = deliveredOrders.Count,
 
             // Order Lists
             RecentOrders = recentOrders,
@@ -163,6 +167,8 @@ public class DashboardService : IDashboardService
             AcceptedOrders = acceptedOrders,
             InPreparationOrders = inPreparationOrders,
             ReadyOrders = readyOrders,
+            OutForDeliveryOrders = outForDeliveryOrders,
+            DeliveredOrders = deliveredOrders,
 
             // UI Elements
             QuickActions = quickActions,

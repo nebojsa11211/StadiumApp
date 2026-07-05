@@ -13,6 +13,7 @@
             @if (AuthStateService.IsAuthenticated)
             {
                 <li role="listitem"><a href="/orders" class="nav-link" aria-label="View your orders">📋 @Localizer["MyOrders"]</a></li>
+                <li role="listitem"><a href="/wallet" class="nav-link" id="customer-nav-wallet-link" aria-label="View your wallet">💳 @Localizer["Wallet"]</a></li>
             }
         </ul>
     </div>

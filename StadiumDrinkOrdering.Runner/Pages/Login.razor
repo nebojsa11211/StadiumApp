@@ -1,0 +1,121 @@
+@page "/login"
+@layout EmptyLayout
+@inject RunnerApiService Api
+@inject RunnerAuthService Auth
+@inject NavigationManager Nav
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["Login_PageTitle"]</PageTitle>
+
+<div class="login-shell" id="runner-login-shell">
+    <main class="login-shell__main" id="runner-login-shell-main">
+        <div class="console" id="runner-login-container">
+            <div id="runner-login-row" style="display:flex; justify-content:center;">
+                <div id="runner-login-col" style="width:100%; max-width:420px; margin:3rem 0;">
+                    <div class="panel" id="runner-login-card">
+                        <div class="panel__body" id="runner-login-body">
+                            <div class="console-head__title" id="runner-login-header" style="text-align:center; margin-bottom:1.5rem;">
+                                <span class="eyebrow">Stadium Runner</span>
+                                <h1 id="runner-login-title" style="font-size:1.5rem; margin-bottom:0.35rem;">@Localizer["Login_Title"]</h1>
+                                <p>@Localizer["Login_DeliveryConsoleAccess"]</p>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(error))
+                            {
+                                <div class="console-alert console-alert--danger" id="runner-login-error">
+                                    @error
+                                </div>
+                            }
+
+                            <form @onsubmit="HandleLogin" id="runner-login-form">
+                                <div class="field" id="runner-login-email-group" style="margin-bottom:1rem;">
+                                    <label class="field__label" for="runner-login-email">@Localizer["Login_EmailLabel"]</label>
+                                    <input type="email" class="field__input" @bind="model.Email" @bind:event="oninput"
+                                           autocomplete="username" inputmode="email" required id="runner-login-email" />
+                                </div>
+
+                                <div class="field" id="runner-login-password-group" style="margin-bottom:1.25rem;">
+                                    <label class="field__label" for="runner-login-password">@Localizer["Login_PasswordLabel"]</label>
+                                    <div style="position:relative;">
+                                        <input type="@(showPassword ? "text" : "password")" class="field__input" style="padding-right:3.25rem;"
+                                               @bind="model.Password" @bind:event="oninput" autocomplete="current-password" required id="runner-login-password" />
+                                        <button type="button" id="runner-login-password-toggle-btn"
+                                                @onclick="TogglePasswordVisibility"
+                                                aria-label="@(showPassword ? Localizer["Login_HidePassword"] : Localizer["Login_ShowPassword"])"
+                                                aria-pressed="@showPassword"
+                                                style="position:absolute; top:50%; right:0.25rem; transform:translateY(-50%); background:none; border:none; padding:0; width:44px; height:44px; cursor:pointer; color:inherit; display:flex; align-items:center; justify-content:center;">
+                                            @if (showPassword)
+                                            {
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                                </svg>
+                                            }
+                                            else
+                                            {
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
+                                            }
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="runner-login-button-group">
+                                    <button type="submit" class="runner-cta @(busy ? "is-loading" : "")" disabled="@busy" aria-busy="@busy" id="runner-login-submit">
+                                        @if (busy)
+                                        {
+                                            <span class="runner-cta-spinner" role="status" aria-hidden="true" id="runner-login-spinner"></span>
+                                            <span id="runner-login-loading-text">@Localizer["Login_LoggingIn"]</span>
+                                        }
+                                        else
+                                        {
+                                            <span id="runner-login-button-text">@Localizer["Login_LoginButton"]</span>
+                                        }
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+@code {
+    private readonly LoginDto model = new();
+    private string? error;
+    private bool busy;
+    private bool showPassword;
+
+    private void TogglePasswordVisibility() => showPassword = !showPassword;
+
+    private async Task HandleLogin()
+    {
+        busy = true;
+        error = null;
+
+        var login = await Api.LoginAsync(model);
+        if (login is null || string.IsNullOrEmpty(login.Token))
+        {
+            error = "Invalid credentials, or the server is unreachable.";
+            busy = false;
+            return;
+        }
+
+        var role = login.User?.Role.ToString();
+        var allowed = string.Equals(role, "Waiter", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+        if (!allowed)
+        {
+            error = "This app is for delivery runners. Your account doesn't have access.";
+            busy = false;
+            return;
+        }
+
+        await Auth.SetSessionAsync(login);
+        Nav.NavigateTo("");
+    }
+}

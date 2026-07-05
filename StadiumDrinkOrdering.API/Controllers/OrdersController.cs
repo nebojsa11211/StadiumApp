@@ -46,19 +46,28 @@ public class OrdersController : ControllerBase
 
         try
         {
-            var order = await _orderService.CreateOrderAsync(createOrderDto, userId);
+            var result = await _orderService.CreateOrderAsync(createOrderDto, userId);
 
-            if (order == null)
+            if (result.Outcome != CreateOrderOutcome.Success)
             {
                 await _loggingService.LogWarningAsync("Order creation failed",
                     BusinessEventActions.OrderCreated, BusinessEventCategories.OrderProcessing,
                     userId.ToString(), userEmail, userRole,
-                    details: $"Failed to create order - ticket validation or drink availability issue",
+                    details: $"Order creation rejected ({result.Outcome}): {result.Error}",
                     requestPath: Request.Path, httpMethod: Request.Method,
                     ipAddress: GetClientIpAddress(), userAgent: Request.Headers.UserAgent.ToString());
 
-                return BadRequest("Unable to create order. Please check ticket number and drink availability.");
+                // Wallet-payment rejections get 402 Payment Required so the client can distinguish them
+                // from ordinary validation problems (400) and offer a top-up.
+                return result.Outcome switch
+                {
+                    CreateOrderOutcome.InsufficientFunds or CreateOrderOutcome.NoWallet or CreateOrderOutcome.WalletFrozen
+                        => StatusCode(StatusCodes.Status402PaymentRequired, result.Error),
+                    _ => BadRequest(result.Error ?? "Unable to create order. Please check ticket number and drink availability.")
+                };
             }
+
+            var order = result.Order!;
 
             // Calculate total amount from order items
             var totalAmount = order.OrderItems?.Sum(i => i.Quantity * i.UnitPrice) ?? 0;
@@ -121,12 +130,59 @@ public class OrdersController : ControllerBase
         return Ok(order);
     }
 
+    // Accepts a single status ("Pending"), a numeric value ("1"), or a comma-separated list of
+    // statuses in any casing/hyphenation (e.g. "pending,accepted,in-preparation"), so callers can
+    // fetch the "active" set in one request. Bound as a raw string (rather than OrderStatus?) so a
+    // multi-value or hyphenated query doesn't fail [ApiController] model binding with a 400.
     [HttpGet]
     [Authorize(Policy = AuthorizationPolicies.CanReadOrders)]
-    public async Task<ActionResult<List<OrderDto>>> GetOrders([FromQuery] OrderStatus? status = null)
+    public async Task<ActionResult<List<OrderDto>>> GetOrders([FromQuery] string? status = null)
     {
-        var orders = await _orderService.GetOrdersAsync(status);
+        var statuses = ParseStatuses(status);
+
+        // Fast path: a single status uses the existing filtered query.
+        if (statuses.Count == 1)
+            return Ok(await _orderService.GetOrdersAsync(statuses[0]));
+
+        var orders = await _orderService.GetOrdersAsync();
+        if (statuses.Count > 1)
+            orders = orders.Where(o => statuses.Contains(o.Status)).ToList();
+
         return Ok(orders);
+    }
+
+    /// <summary>
+    /// Parses a status query value into distinct <see cref="OrderStatus"/> values. Tolerates
+    /// comma-separated lists, numeric codes, and casing/hyphen/underscore/space variations
+    /// (e.g. "in-preparation" → <see cref="OrderStatus.InPreparation"/>). Unknown tokens are ignored.
+    /// </summary>
+    private static List<OrderStatus> ParseStatuses(string? raw)
+    {
+        var result = new List<OrderStatus>();
+        if (string.IsNullOrWhiteSpace(raw))
+            return result;
+
+        foreach (var token in raw.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var normalized = token.Replace("-", "").Replace("_", "").Replace(" ", "");
+
+            if (int.TryParse(normalized, out var num) && Enum.IsDefined(typeof(OrderStatus), num))
+            {
+                result.Add((OrderStatus)num);
+                continue;
+            }
+
+            foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
+            {
+                if (string.Equals(s.ToString(), normalized, StringComparison.OrdinalIgnoreCase))
+                {
+                    result.Add(s);
+                    break;
+                }
+            }
+        }
+
+        return result.Distinct().ToList();
     }
 
     [HttpGet("my-orders")]
@@ -136,6 +192,111 @@ public class OrdersController : ControllerBase
         var userId = GetCurrentUserId();
         var orders = await _orderService.GetOrdersByCustomerAsync(userId);
         return Ok(orders);
+    }
+
+    /// <summary>
+    /// Returns the orders assigned to the currently authenticated staff member (derived from the
+    /// JWT, never a client-supplied id). Used by the Runner app so a waiter only ever sees their
+    /// own delivery queue. Replaces the never-implemented /orders/staff/{id} endpoint the old Staff
+    /// app called with a hardcoded id.
+    /// </summary>
+    [HttpGet("mine")]
+    [Authorize(Policy = AuthorizationPolicies.CanReadOrders)]
+    public async Task<ActionResult<List<OrderDto>>> GetMyAssignedOrders()
+    {
+        var userId = GetCurrentUserId();
+        var orders = await _orderService.GetAssignedOrdersAsync(userId);
+        return Ok(orders);
+    }
+
+    /// <summary>
+    /// The shared delivery pool: prepared (Ready) orders not yet claimed by any runner. The Runner
+    /// app shows this list; a waiter claims one via POST /orders/{id}/claim.
+    /// </summary>
+    [HttpGet("available-for-delivery")]
+    [Authorize(Policy = AuthorizationPolicies.CanReadOrders)]
+    public async Task<ActionResult<List<OrderDto>>> GetAvailableForDelivery()
+    {
+        var orders = await _orderService.GetAvailableForDeliveryAsync();
+        return Ok(orders);
+    }
+
+    /// <summary>
+    /// Claims a Ready order from the shared pool for the current runner: assigns it to them and
+    /// moves it to OutForDelivery. First claimer wins (409 for anyone else); re-claiming one you
+    /// already hold is an idempotent success (supports the Runner's offline-outbox retries).
+    /// </summary>
+    [HttpPost("{id}/claim")]
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
+    public async Task<IActionResult> ClaimOrder(int id)
+    {
+        var userId = GetCurrentUserId();
+        var (outcome, order) = await _orderService.ClaimOrderForDeliveryAsync(id, userId);
+
+        switch (outcome)
+        {
+            case ClaimOutcome.NotFound:
+                return NotFound();
+
+            case ClaimOutcome.AlreadyClaimed:
+                return Conflict(new { message = "This order was already claimed by another runner." });
+
+            default:
+                await _loggingService.LogBusinessEventAsync(new LogUserActionRequest
+                {
+                    Action = BusinessEventActions.OrderUpdated,
+                    Category = BusinessEventCategories.OrderProcessing,
+                    UserId = userId.ToString(),
+                    UserEmail = User.FindFirst(ClaimTypes.Email)?.Value,
+                    UserRole = GetCurrentUserRole(),
+                    Details = $"Order #{id} claimed for delivery",
+                    RequestPath = Request.Path,
+                    HttpMethod = Request.Method,
+                    Source = "API",
+                    BusinessEntityType = "Order",
+                    BusinessEntityId = id.ToString(),
+                    BusinessEntityName = $"Order #{id}",
+                    StatusAfter = OrderStatus.OutForDelivery.ToString()
+                });
+                return Ok(order);
+        }
+    }
+
+    /// <summary>
+    /// Claims several Ready orders from the shared pool for the current runner in one action — used
+    /// by the Runner app when a waiter grabs multiple prepared drinks for a single trip. Returns the
+    /// per-order breakdown (claimed / taken / not-found); a partially-stale selection still claims
+    /// whatever is available rather than failing wholesale.
+    /// </summary>
+    [HttpPost("claim-batch")]
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
+    public async Task<ActionResult<BatchClaimResultDto>> ClaimOrders([FromBody] BatchClaimRequestDto request)
+    {
+        if (request?.OrderIds == null || request.OrderIds.Count == 0)
+            return BadRequest("No order ids supplied.");
+
+        var userId = GetCurrentUserId();
+        var result = await _orderService.ClaimOrdersForDeliveryAsync(request.OrderIds, userId);
+
+        if (result.Claimed.Count > 0)
+        {
+            await _loggingService.LogBusinessEventAsync(new LogUserActionRequest
+            {
+                Action = BusinessEventActions.OrderUpdated,
+                Category = BusinessEventCategories.OrderProcessing,
+                UserId = userId.ToString(),
+                UserEmail = User.FindFirst(ClaimTypes.Email)?.Value,
+                UserRole = GetCurrentUserRole(),
+                Details = $"Batch-claimed {result.Claimed.Count} order(s) for delivery: {string.Join(", ", result.Claimed.Select(id => $"#{id}"))}",
+                RequestPath = Request.Path,
+                HttpMethod = Request.Method,
+                Source = "API",
+                BusinessEntityType = "Order",
+                StatusAfter = OrderStatus.OutForDelivery.ToString()
+            });
+        }
+
+        return Ok(result);
     }
 
     [HttpPut("{id}/status")]
@@ -200,9 +361,10 @@ public class OrdersController : ControllerBase
                 BusinessEntityName = $"Order #{id}",
                 StatusBefore = previousStatus,
                 StatusAfter = updateDto.Status.ToString(),
-                MetadataJson = System.Text.Json.JsonSerializer.Serialize(new { 
+                MetadataJson = System.Text.Json.JsonSerializer.Serialize(new {
                     UpdatedBy = userRole,
-                    UpdateTimestamp = DateTime.UtcNow
+                    UpdateTimestamp = DateTime.UtcNow,
+                    ClientActionId = updateDto.ClientActionId
                 })
             });
 

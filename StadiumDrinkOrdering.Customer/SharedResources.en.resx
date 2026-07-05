@@ -354,4 +354,917 @@
   <data name="UnexpectedError" xml:space="preserve">
     <value>An unexpected error occurred. Please try again.</value>
   </data>
+
+  <!-- MainLayout -->
+  <data name="MainLayout_PageTitle" xml:space="preserve">
+    <value>Stadium Drinks - Premium Experience</value>
+  </data>
+
+  <!-- Register Page -->
+  <data name="Register_PageTitle" xml:space="preserve">
+    <value>Create Account - Stadium Ordering</value>
+  </data>
+  <data name="Register_CreateAccount" xml:space="preserve">
+    <value>Create Account</value>
+  </data>
+  <data name="Register_Subtitle" xml:space="preserve">
+    <value>Join to order drinks and buy tickets</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Register_ChooseUsername" xml:space="preserve">
+    <value>Choose a username</value>
+  </data>
+  <data name="Register_EnterEmail" xml:space="preserve">
+    <value>Enter your email</value>
+  </data>
+  <data name="Register_ChoosePassword" xml:space="preserve">
+    <value>Choose a secure password</value>
+  </data>
+  <data name="Register_PasswordMinLength" xml:space="preserve">
+    <value>Must be at least 6 characters long</value>
+  </data>
+  <data name="Register_ReEnterPassword" xml:space="preserve">
+    <value>Re-enter your password</value>
+  </data>
+  <data name="Register_AgreeTerms" xml:space="preserve">
+    <value>I agree to the</value>
+  </data>
+  <data name="Register_TermsOfService" xml:space="preserve">
+    <value>Terms of Service</value>
+  </data>
+  <data name="Register_And" xml:space="preserve">
+    <value>and</value>
+  </data>
+  <data name="Register_PrivacyPolicy" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="Register_MustAcceptTerms" xml:space="preserve">
+    <value>You must accept the terms to create an account</value>
+  </data>
+  <data name="Register_CreatingAccount" xml:space="preserve">
+    <value>Creating Account...</value>
+  </data>
+  <data name="Register_AlreadyHaveAccount" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="Register_RegistrationFailed" xml:space="preserve">
+    <value>Registration failed. Email or username may already be in use.</value>
+  </data>
+  <data name="Register_UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred. Please try again.</value>
+  </data>
+  <data name="Register_AccountCreatedRedirecting" xml:space="preserve">
+    <value>Account created successfully! Redirecting...</value>
+  </data>
+  <data name="Register_AccountCreatedSignIn" xml:space="preserve">
+    <value>Account created successfully! Please sign in.</value>
+  </data>
+
+  <!-- Orders Page -->
+  <data name="Orders_PageTitle" xml:space="preserve">
+    <value>My Orders</value>
+  </data>
+  <data name="Orders_NewOrder" xml:space="preserve">
+    <value>New Order</value>
+  </data>
+  <data name="Orders_LoadingOrders" xml:space="preserve">
+    <value>Loading your orders...</value>
+  </data>
+  <data name="Orders_NoOrders" xml:space="preserve">
+    <value>No orders yet</value>
+  </data>
+  <data name="Orders_NoOrdersMessage" xml:space="preserve">
+    <value>You haven't placed any orders. Ready to get started?</value>
+  </data>
+  <data name="Orders_BrowseMenu" xml:space="preserve">
+    <value>Browse Menu</value>
+  </data>
+  <data name="Orders_Items" xml:space="preserve">
+    <value>Items</value>
+  </data>
+
+  <!-- Menu Page -->
+  <data name="Menu_PageTitle" xml:space="preserve">
+    <value>Stadium Drinks - Order Now</value>
+  </data>
+  <data name="Menu_Title" xml:space="preserve">
+    <value>Stadium Drinks Menu</value>
+  </data>
+  <data name="Menu_LoadingDrinks" xml:space="preserve">
+    <value>Loading drinks...</value>
+  </data>
+  <data name="Menu_NoDrinks" xml:space="preserve">
+    <value>No drinks available</value>
+  </data>
+  <data name="Menu_NoDrinksMessage" xml:space="preserve">
+    <value>Sorry, no drinks are currently available for order.</value>
+  </data>
+  <data name="Menu_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Menu_Stock" xml:space="preserve">
+    <value>Stock</value>
+  </data>
+  <data name="Menu_AddToCart" xml:space="preserve">
+    <value>Add to Cart</value>
+  </data>
+  <data name="Menu_OutOfStock" xml:space="preserve">
+    <value>Out of Stock</value>
+  </data>
+
+  <!-- Events Page -->
+  <data name="Events_PageTitle" xml:space="preserve">
+    <value>Browse Premium Events - Stadium Drinks</value>
+  </data>
+
+  <!-- Logs Page -->
+  <data name="Logs_PageTitle" xml:space="preserve">
+    <value>My Activity</value>
+  </data>
+
+  <!-- Event Details Page -->
+  <data name="EventDetails_PageTitle" xml:space="preserve">
+    <value>Event Details</value>
+  </data>
+
+  <!-- Checkout Page -->
+  <data name="Checkout_PageTitle" xml:space="preserve">
+    <value>Checkout - Stadium Drinks</value>
+  </data>
+
+  <!-- Order Confirmation Page -->
+  <data name="OrderConfirmation_PageTitle" xml:space="preserve">
+    <value>Order Confirmation - Stadium Drinks</value>
+  </data>
+
+  <!-- Ordering Component Page -->
+  <data name="Ordering_PageTitle" xml:space="preserve">
+    <value>Order Drinks - Stadium Ordering</value>
+  </data>
+
+  <!-- QR Scanner Page -->
+  <data name="QRScanner_PageTitle" xml:space="preserve">
+    <value>QR Scanner - Stadium Ordering</value>
+  </data>
+
+  <!-- Stadium Viewer Page -->
+  <data name="StadiumViewer_PageTitle" xml:space="preserve">
+    <value>Stadium Viewer</value>
+  </data>
+
+  <!-- Component Checkout Page -->
+  <data name="ComponentCheckout_PageTitle" xml:space="preserve">
+    <value>Checkout - Stadium Ordering</value>
+  </data>
+
+  <!-- Stadium Map Page -->
+  <data name="StadiumMap_PageTitle" xml:space="preserve">
+    <value>Stadium Map - Select Your Sector</value>
+  </data>
+
+  <!-- Events Page -->
+  <data name="Events_HeaderTitle" xml:space="preserve">
+    <value>Premium Events</value>
+  </data>
+  <data name="Events_HeaderSubtitle" xml:space="preserve">
+    <value>Discover exclusive sports events, concerts, and premium entertainment experiences. Secure your tickets and enjoy world-class concessions delivered to your seat.</value>
+  </data>
+  <data name="Events_FindYourEvent" xml:space="preserve">
+    <value>Find Your Perfect Event</value>
+  </data>
+  <data name="Events_AdvancedFiltering" xml:space="preserve">
+    <value>Advanced filtering for premium experiences</value>
+  </data>
+  <data name="Events_PremiumSelection" xml:space="preserve">
+    <value>Premium Selection</value>
+  </data>
+  <data name="Events_CuratedEvents" xml:space="preserve">
+    <value>Curated Events</value>
+  </data>
+  <data name="Events_EventType" xml:space="preserve">
+    <value>Event Type</value>
+  </data>
+  <data name="Events_AllPremium" xml:space="preserve">
+    <value>All Premium Events</value>
+  </data>
+  <data name="Events_Football" xml:space="preserve">
+    <value>Football</value>
+  </data>
+  <data name="Events_PremiumConcerts" xml:space="preserve">
+    <value>Premium Concerts</value>
+  </data>
+  <data name="Events_Basketball" xml:space="preserve">
+    <value>Basketball</value>
+  </data>
+  <data name="Events_Baseball" xml:space="preserve">
+    <value>Baseball</value>
+  </data>
+  <data name="Events_Hockey" xml:space="preserve">
+    <value>Hockey</value>
+  </data>
+  <data name="Events_Soccer" xml:space="preserve">
+    <value>Soccer</value>
+  </data>
+  <data name="Events_OtherPremium" xml:space="preserve">
+    <value>Other Premium Events</value>
+  </data>
+  <data name="Events_FromDate" xml:space="preserve">
+    <value>From Date</value>
+  </data>
+  <data name="Events_ToDate" xml:space="preserve">
+    <value>To Date</value>
+  </data>
+  <data name="Events_PriceRange" xml:space="preserve">
+    <value>Price Range</value>
+  </data>
+  <data name="Events_MinPrice" xml:space="preserve">
+    <value>Min $</value>
+  </data>
+  <data name="Events_MaxPrice" xml:space="preserve">
+    <value>Max $</value>
+  </data>
+  <data name="Events_ClearFilters" xml:space="preserve">
+    <value>Clear Filters</value>
+  </data>
+  <data name="Events_Searching" xml:space="preserve">
+    <value>Searching...</value>
+  </data>
+  <data name="Events_ApplyFilters" xml:space="preserve">
+    <value>Apply Filters</value>
+  </data>
+  <data name="Events_DiscoveringEvents" xml:space="preserve">
+    <value>Discovering Premium Events</value>
+  </data>
+  <data name="Events_PleaseWaitCurating" xml:space="preserve">
+    <value>Please wait while we curate the best experiences for you...</value>
+  </data>
+  <data name="Events_NoEventsFound" xml:space="preserve">
+    <value>No Premium Events Found</value>
+  </data>
+  <data name="Events_NoEventsMessage" xml:space="preserve">
+    <value>We couldn't find any premium events matching your criteria. Try adjusting your filters or check back later for new exclusive events.</value>
+  </data>
+  <data name="Events_ClearAllFilters" xml:space="preserve">
+    <value>Clear All Filters</value>
+  </data>
+  <data name="Events_BackToHome" xml:space="preserve">
+    <value>Back to Home</value>
+  </data>
+  <data name="Events_From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Events_Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Events_Sold" xml:space="preserve">
+    <value>Sold</value>
+  </data>
+  <data name="Events_SoldOut" xml:space="preserve">
+    <value>Sold Out</value>
+  </data>
+  <data name="Events_SellingFast" xml:space="preserve">
+    <value>Selling Fast</value>
+  </data>
+  <data name="Events_OnlyLeftActFast" xml:space="preserve">
+    <value>Only {0} Left - Act Fast!</value>
+  </data>
+  <data name="Events_GetPremiumTickets" xml:space="preserve">
+    <value>Get Premium Tickets</value>
+  </data>
+  <data name="Events_GetTickets" xml:space="preserve">
+    <value>Get Tickets</value>
+  </data>
+
+  <!-- Event Details Page -->
+  <data name="EventDetails_EventNotFound" xml:space="preserve">
+    <value>Event Not Found</value>
+  </data>
+  <data name="EventDetails_EventNotFoundMessage" xml:space="preserve">
+    <value>The requested event could not be found or is no longer available.</value>
+  </data>
+  <data name="EventDetails_BackToEvents" xml:space="preserve">
+    <value>Back to Events</value>
+  </data>
+  <data name="EventDetails_PricingTiers" xml:space="preserve">
+    <value>Pricing Tiers</value>
+  </data>
+  <data name="EventDetails_YourCart" xml:space="preserve">
+    <value>Your Cart</value>
+  </data>
+  <data name="EventDetails_NoSeatsSelected" xml:space="preserve">
+    <value>No seats selected yet.</value>
+  </data>
+  <data name="EventDetails_Total" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="EventDetails_ProceedCheckout" xml:space="preserve">
+    <value>Proceed to Checkout</value>
+  </data>
+  <data name="EventDetails_ClearCart" xml:space="preserve">
+    <value>Clear Cart</value>
+  </data>
+  <data name="EventDetails_StadiumSections" xml:space="preserve">
+    <value>Stadium Sections</value>
+  </data>
+  <data name="EventDetails_ClickSectionSeats" xml:space="preserve">
+    <value>Click on a section to view available seats</value>
+  </data>
+  <data name="EventDetails_SelectSeats" xml:space="preserve">
+    <value>Select Seats</value>
+  </data>
+  <data name="EventDetails_LoadingSeats" xml:space="preserve">
+    <value>Loading seats...</value>
+  </data>
+  <data name="EventDetails_SeatLegendAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="EventDetails_SeatLegendSelected" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="EventDetails_SeatLegendSold" xml:space="preserve">
+    <value>Sold</value>
+  </data>
+  <data name="EventDetails_Row" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="EventDetails_NoSeatsAvailable" xml:space="preserve">
+    <value>No seats available in this section.</value>
+  </data>
+  <data name="EventDetails_SelectedSeats" xml:space="preserve">
+    <value>Selected: {0} seats</value>
+  </data>
+  <data name="EventDetails_AddToCart" xml:space="preserve">
+    <value>Add to Cart</value>
+  </data>
+  <data name="EventDetails_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+
+  <!-- Checkout Page -->
+  <data name="Checkout_CustomerInformation" xml:space="preserve">
+    <value>Customer Information</value>
+  </data>
+  <data name="Checkout_FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="Checkout_EnterFirstName" xml:space="preserve">
+    <value>Enter first name</value>
+  </data>
+  <data name="Checkout_LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Checkout_EnterLastName" xml:space="preserve">
+    <value>Enter last name</value>
+  </data>
+  <data name="Checkout_EmailAddress" xml:space="preserve">
+    <value>Email Address</value>
+  </data>
+  <data name="Checkout_PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Checkout_PaymentInformation" xml:space="preserve">
+    <value>Payment Information</value>
+  </data>
+  <data name="Checkout_FillSampleData" xml:space="preserve">
+    <value>Fill Sample Data</value>
+  </data>
+  <data name="Checkout_CardNumber" xml:space="preserve">
+    <value>Card Number</value>
+  </data>
+  <data name="Checkout_ExpiryDate" xml:space="preserve">
+    <value>Expiry Date</value>
+  </data>
+  <data name="Checkout_CVV" xml:space="preserve">
+    <value>CVV</value>
+  </data>
+  <data name="Checkout_CardholderName" xml:space="preserve">
+    <value>Cardholder Name</value>
+  </data>
+  <data name="Checkout_AgreeToTerms" xml:space="preserve">
+    <value>I agree to the Terms and Conditions and Privacy Policy</value>
+  </data>
+  <data name="Checkout_OrderSummary" xml:space="preserve">
+    <value>Order Summary</value>
+  </data>
+  <data name="Checkout_Event" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="Checkout_EventID" xml:space="preserve">
+    <value>Event ID:</value>
+  </data>
+  <data name="Checkout_SelectedSeats" xml:space="preserve">
+    <value>Selected Seats</value>
+  </data>
+  <data name="Checkout_Sector" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Checkout_Subtotal" xml:space="preserve">
+    <value>Subtotal ({0} tickets)</value>
+  </data>
+  <data name="Checkout_ServiceFee" xml:space="preserve">
+    <value>Service Fee</value>
+  </data>
+  <data name="Checkout_ProcessingFee" xml:space="preserve">
+    <value>Processing Fee</value>
+  </data>
+  <data name="Checkout_Processing" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="Checkout_CompletePurchase" xml:space="preserve">
+    <value>Complete Purchase</value>
+  </data>
+  <data name="Checkout_CartEmpty" xml:space="preserve">
+    <value>Your cart is empty</value>
+  </data>
+  <data name="Checkout_BrowseEvents" xml:space="preserve">
+    <value>Browse Events</value>
+  </data>
+  <data name="Checkout_ProcessingPayment" xml:space="preserve">
+    <value>Please wait while we process your payment and generate your tickets...</value>
+  </data>
+
+  <!-- Order Confirmation Page -->
+  <data name="OrderConfirmation_LoadingConfirmation" xml:space="preserve">
+    <value>Loading your order details...</value>
+  </data>
+  <data name="OrderConfirmation_OrderNotFound" xml:space="preserve">
+    <value>Order Not Found</value>
+  </data>
+  <data name="OrderConfirmation_OrderNotFoundMessage" xml:space="preserve">
+    <value>We couldn't find your order. Please check your email for confirmation details or contact support.</value>
+  </data>
+  <data name="OrderConfirmation_PaymentSuccessful" xml:space="preserve">
+    <value>Payment Successful!</value>
+  </data>
+  <data name="OrderConfirmation_ConfirmedReady" xml:space="preserve">
+    <value>Your order has been confirmed and your tickets are ready.</value>
+  </data>
+  <data name="OrderConfirmation_OrderDetails" xml:space="preserve">
+    <value>Order Details</value>
+  </data>
+  <data name="OrderConfirmation_OrderID" xml:space="preserve">
+    <value>Order ID:</value>
+  </data>
+  <data name="OrderConfirmation_OrderDate" xml:space="preserve">
+    <value>Order Date:</value>
+  </data>
+  <data name="OrderConfirmation_Customer" xml:space="preserve">
+    <value>Customer:</value>
+  </data>
+  <data name="OrderConfirmation_PaymentStatus" xml:space="preserve">
+    <value>Payment Status:</value>
+  </data>
+  <data name="OrderConfirmation_EventDate" xml:space="preserve">
+    <value>Event Date:</value>
+  </data>
+  <data name="OrderConfirmation_YourTickets" xml:space="preserve">
+    <value>Your Tickets ({0})</value>
+  </data>
+  <data name="OrderConfirmation_Tickets" xml:space="preserve">
+    <value>Tickets ({0})</value>
+  </data>
+  <data name="OrderConfirmation_ServiceFee" xml:space="preserve">
+    <value>Service Fee (10%)</value>
+  </data>
+  <data name="OrderConfirmation_ProcessingFee" xml:space="preserve">
+    <value>Processing Fee</value>
+  </data>
+  <data name="OrderConfirmation_PrintTickets" xml:space="preserve">
+    <value>Print Tickets</value>
+  </data>
+  <data name="OrderConfirmation_DownloadPDF" xml:space="preserve">
+    <value>Download PDF</value>
+  </data>
+  <data name="OrderConfirmation_EmailTickets" xml:space="preserve">
+    <value>Email Tickets</value>
+  </data>
+  <data name="OrderConfirmation_BrowseMoreEvents" xml:space="preserve">
+    <value>Browse More Events</value>
+  </data>
+  <data name="OrderConfirmation_ImportantInformation" xml:space="preserve">
+    <value>Important Information</value>
+  </data>
+  <data name="OrderConfirmation_ArriveInfo" xml:space="preserve">
+    <value>Please arrive at the venue at least 30 minutes before the event start time.</value>
+  </data>
+  <data name="OrderConfirmation_QRCodeInfo" xml:space="preserve">
+    <value>Present your QR code tickets at the entrance for scanning.</value>
+  </data>
+  <data name="OrderConfirmation_KeepSafeInfo" xml:space="preserve">
+    <value>Keep your tickets safe and don't share the QR codes with others.</value>
+  </data>
+  <data name="OrderConfirmation_SupportInfo" xml:space="preserve">
+    <value>For any issues or questions, contact our support team.</value>
+  </data>
+
+  <!-- Ordering Component Page -->
+  <data name="Ordering_LoadingMenu" xml:space="preserve">
+    <value>Loading Menu...</value>
+  </data>
+  <data name="Ordering_SessionExpired" xml:space="preserve">
+    <value>Session Expired</value>
+  </data>
+  <data name="Ordering_SessionExpiredMessage" xml:space="preserve">
+    <value>Your ordering session has expired. Please scan your ticket again.</value>
+  </data>
+  <data name="Ordering_ScanAgain" xml:space="preserve">
+    <value>Scan Again</value>
+  </data>
+  <data name="Ordering_Items" xml:space="preserve">
+    <value>items</value>
+  </data>
+  <data name="Ordering_ProceedPayment" xml:space="preserve">
+    <value>Proceed to Payment</value>
+  </data>
+  <data name="Ordering_OutOfStock" xml:space="preserve">
+    <value>Out of Stock</value>
+  </data>
+  <data name="Ordering_Quantity" xml:space="preserve">
+    <value>Quantity:</value>
+  </data>
+  <data name="Ordering_SpecialInstructions" xml:space="preserve">
+    <value>Special Instructions (optional):</value>
+  </data>
+  <data name="Ordering_AddToCart" xml:space="preserve">
+    <value>Add to Cart</value>
+  </data>
+  <data name="Ordering_ItemCurrentlyUnavailable" xml:space="preserve">
+    <value>Sorry, this item is currently unavailable.</value>
+  </data>
+
+  <!-- Component Checkout Page -->
+  <data name="ComponentCheckout_LoadingCheckout" xml:space="preserve">
+    <value>Loading Checkout...</value>
+  </data>
+  <data name="ComponentCheckout_NoItems" xml:space="preserve">
+    <value>No Items to Checkout</value>
+  </data>
+  <data name="ComponentCheckout_CartEmptyExpired" xml:space="preserve">
+    <value>Your cart is empty or session has expired.</value>
+  </data>
+  <data name="ComponentCheckout_ContinueShopping" xml:space="preserve">
+    <value>Continue Shopping</value>
+  </data>
+  <data name="ComponentCheckout_OrderPlacedSuccess" xml:space="preserve">
+    <value>Order Placed Successfully!</value>
+  </data>
+  <data name="ComponentCheckout_OrderNumber" xml:space="preserve">
+    <value>Order #{0}</value>
+  </data>
+  <data name="ComponentCheckout_DeliveredTo" xml:space="preserve">
+    <value>Your drinks will be delivered to:</value>
+  </data>
+  <data name="ComponentCheckout_TotalAmount" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="ComponentCheckout_YoullReceiveUpdates" xml:space="preserve">
+    <value>You'll receive updates on your order status</value>
+  </data>
+  <data name="ComponentCheckout_EstimatedDelivery" xml:space="preserve">
+    <value>Estimated delivery: 10-15 minutes</value>
+  </data>
+  <data name="ComponentCheckout_TrackOrder" xml:space="preserve">
+    <value>Track Order</value>
+  </data>
+  <data name="ComponentCheckout_BackToHome" xml:space="preserve">
+    <value>Back to Home</value>
+  </data>
+  <data name="ComponentCheckout_CheckoutTitle" xml:space="preserve">
+    <value>Checkout</value>
+  </data>
+  <data name="ComponentCheckout_ReviewOrder" xml:space="preserve">
+    <value>Review Order</value>
+  </data>
+  <data name="ComponentCheckout_Payment" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="ComponentCheckout_Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="ComponentCheckout_DeliveryInformation" xml:space="preserve">
+    <value>Delivery Information</value>
+  </data>
+  <data name="ComponentCheckout_Note" xml:space="preserve">
+    <value>Note:</value>
+  </data>
+  <data name="ComponentCheckout_PaymentMethod" xml:space="preserve">
+    <value>Payment Method</value>
+  </data>
+  <data name="ComponentCheckout_CreditDebitCard" xml:space="preserve">
+    <value>Credit/Debit Card</value>
+  </data>
+  <data name="ComponentCheckout_VisaMastercardAmex" xml:space="preserve">
+    <value>Visa, Mastercard, American Express</value>
+  </data>
+  <data name="ComponentCheckout_ContinuePayment" xml:space="preserve">
+    <value>Continue to Payment</value>
+  </data>
+  <data name="ComponentCheckout_ProcessingPaymentTitle" xml:space="preserve">
+    <value>Processing Payment...</value>
+  </data>
+  <data name="ComponentCheckout_DontClose" xml:space="preserve">
+    <value>Please don't close this page or navigate away.</value>
+  </data>
+  <data name="ComponentCheckout_SecurePayment" xml:space="preserve">
+    <value>Secure Payment</value>
+  </data>
+  <data name="ComponentCheckout_PaymentEncrypted" xml:space="preserve">
+    <value>Your payment information is encrypted and secure.</value>
+  </data>
+  <data name="ComponentCheckout_BackToReview" xml:space="preserve">
+    <value>Back to Review</value>
+  </data>
+  <data name="ComponentCheckout_Pay" xml:space="preserve">
+    <value>Pay</value>
+  </data>
+  <data name="ComponentCheckout_Selected" xml:space="preserve">
+    <value>Selected:</value>
+  </data>
+
+  <!-- QR Scanner Page -->
+  <data name="QRScanner_ValidatingTicket" xml:space="preserve">
+    <value>Validating Ticket...</value>
+  </data>
+  <data name="QRScanner_VerifyingTicket" xml:space="preserve">
+    <value>Please wait while we verify your ticket</value>
+  </data>
+  <data name="QRScanner_InvalidTicket" xml:space="preserve">
+    <value>Invalid Ticket</value>
+  </data>
+  <data name="QRScanner_TryAgain" xml:space="preserve">
+    <value>Try Again</value>
+  </data>
+  <data name="QRScanner_GoHome" xml:space="preserve">
+    <value>Go Home</value>
+  </data>
+  <data name="QRScanner_TicketValidated" xml:space="preserve">
+    <value>Ticket Validated!</value>
+  </data>
+  <data name="QRScanner_StartOrdering" xml:space="preserve">
+    <value>Start Ordering</value>
+  </data>
+  <data name="QRScanner_ScanYourTicket" xml:space="preserve">
+    <value>Scan Your Ticket</value>
+  </data>
+  <data name="QRScanner_PositionQRCode" xml:space="preserve">
+    <value>Position the QR code within the frame to start ordering</value>
+  </data>
+  <data name="QRScanner_ManualEntry" xml:space="preserve">
+    <value>Manual Entry</value>
+  </data>
+  <data name="QRScanner_CantScan" xml:space="preserve">
+    <value>Enter your ticket number if you can't scan</value>
+  </data>
+  <data name="QRScanner_TicketNumberPlaceholder" xml:space="preserve">
+    <value>Enter ticket number</value>
+  </data>
+  <data name="QRScanner_Validate" xml:space="preserve">
+    <value>Validate</value>
+  </data>
+  <data name="QRScanner_ScannerIssue" xml:space="preserve">
+    <value>Scanner Issue:</value>
+  </data>
+
+  <!-- Stadium Viewer Page -->
+  <data name="StadiumViewer_StadiumOverview" xml:space="preserve">
+    <value>Stadium Overview</value>
+  </data>
+  <data name="StadiumViewer_SelectEvent" xml:space="preserve">
+    <value>Select Event</value>
+  </data>
+  <data name="StadiumViewer_ChooseEvent" xml:space="preserve">
+    <value>Choose an event...</value>
+  </data>
+  <data name="StadiumViewer_FindSeat" xml:space="preserve">
+    <value>Find Seat</value>
+  </data>
+  <data name="StadiumViewer_SeatCodeExample" xml:space="preserve">
+    <value>e.g., N1A-R5S12</value>
+  </data>
+  <data name="StadiumViewer_Legend" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+  <data name="StadiumViewer_Occupancy" xml:space="preserve">
+    <value>Occupancy</value>
+  </data>
+  <data name="StadiumViewer_LoadingStadiumData" xml:space="preserve">
+    <value>Loading stadium data...</value>
+  </data>
+  <data name="StadiumViewer_ProcessingLayout" xml:space="preserve">
+    <value>Processing stadium layout...</value>
+  </data>
+  <data name="StadiumViewer_RenderingVisualization" xml:space="preserve">
+    <value>Rendering visualization...</value>
+  </data>
+  <data name="StadiumViewer_Field" xml:space="preserve">
+    <value>FIELD</value>
+  </data>
+  <data name="StadiumViewer_LegendTitle" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+  <data name="StadiumViewer_Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="StadiumViewer_LimitedAvailability" xml:space="preserve">
+    <value>Limited Availability</value>
+  </data>
+  <data name="StadiumViewer_FullyOccupied" xml:space="preserve">
+    <value>Fully Occupied</value>
+  </data>
+  <data name="StadiumViewer_NoEventSelected" xml:space="preserve">
+    <value>No Event Selected</value>
+  </data>
+  <data name="StadiumViewer_TotalSeats" xml:space="preserve">
+    <value>total seats</value>
+  </data>
+  <data name="StadiumViewer_AvailableSeats" xml:space="preserve">
+    <value>available</value>
+  </data>
+  <data name="StadiumViewer_ReservedSeats" xml:space="preserve">
+    <value>reserved</value>
+  </data>
+  <data name="StadiumViewer_OccupiedPercentage" xml:space="preserve">
+    <value>occupied</value>
+  </data>
+  <data name="StadiumViewer_UnableToLoad" xml:space="preserve">
+    <value>Unable to Load Stadium</value>
+  </data>
+  <data name="StadiumViewer_TryAgain" xml:space="preserve">
+    <value>Try Again</value>
+  </data>
+  <data name="StadiumViewer_NoStadiumData" xml:space="preserve">
+    <value>No Stadium Data</value>
+  </data>
+  <data name="StadiumViewer_NotFound" xml:space="preserve">
+    <value>Stadium structure not found. Please contact support if this problem persists.</value>
+  </data>
+  <data name="StadiumViewer_SelectSeatsTitle" xml:space="preserve">
+    <value>- Seat Selection</value>
+  </data>
+  <data name="StadiumViewer_ZoomIn" xml:space="preserve">
+    <value>Zoom in</value>
+  </data>
+  <data name="StadiumViewer_ZoomOut" xml:space="preserve">
+    <value>Zoom out</value>
+  </data>
+  <data name="StadiumViewer_ResetZoom" xml:space="preserve">
+    <value>Reset zoom</value>
+  </data>
+  <data name="StadiumViewer_SelectedSeats" xml:space="preserve">
+    <value>Selected Seats ({0})</value>
+  </data>
+  <data name="StadiumViewer_ClickToSelect" xml:space="preserve">
+    <value>Click seats to select them</value>
+  </data>
+  <data name="StadiumViewer_UseMouseOrTouch" xml:space="preserve">
+    <value>Use mouse or touch to select individual seats</value>
+  </data>
+
+  <!-- Stadium Map Page Content -->
+  <data name="StadiumMap_LayoutTitle" xml:space="preserve">
+    <value>Stadium Layout - Select Your Sector</value>
+  </data>
+  <data name="StadiumMap_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="StadiumMap_OrderDrinks" xml:space="preserve">
+    <value>Order Drinks</value>
+  </data>
+  <data name="StadiumMap_LoadingLayout" xml:space="preserve">
+    <value>Loading stadium layout...</value>
+  </data>
+  <data name="StadiumMap_StadiumLayoutDescription" xml:space="preserve">
+    <value>Stadium layout with 4 sectors</value>
+  </data>
+  <data name="StadiumMap_NorthStand" xml:space="preserve">
+    <value>North Stand</value>
+  </data>
+  <data name="StadiumMap_SouthStand" xml:space="preserve">
+    <value>South Stand</value>
+  </data>
+  <data name="StadiumMap_EastStand" xml:space="preserve">
+    <value>East Stand</value>
+  </data>
+  <data name="StadiumMap_WestStand" xml:space="preserve">
+    <value>West Stand</value>
+  </data>
+  <data name="StadiumMap_Entrance" xml:space="preserve">
+    <value>ENTRANCE</value>
+  </data>
+  <data name="StadiumMap_OrderHere" xml:space="preserve">
+    <value>Order Here</value>
+  </data>
+  <data name="StadiumMap_Section" xml:space="preserve">
+    <value>Section:</value>
+  </data>
+  <data name="StadiumMap_TotalSeats" xml:space="preserve">
+    <value>Total Seats:</value>
+  </data>
+  <data name="StadiumMap_ActiveOrders" xml:space="preserve">
+    <value>Active Orders:</value>
+  </data>
+  <data name="StadiumMap_Type" xml:space="preserve">
+    <value>Type:</value>
+  </data>
+  <data name="StadiumMap_Available" xml:space="preserve">
+    <value>Available:</value>
+  </data>
+  <data name="StadiumMap_Status" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="StadiumMap_ClickToViewDetails" xml:space="preserve">
+    <value>Click on a stand to view details and place orders</value>
+  </data>
+  <data name="StadiumMap_UltrasSection" xml:space="preserve">
+    <value>Ultras Section</value>
+  </data>
+  <data name="StadiumMap_FamilySection" xml:space="preserve">
+    <value>Family Section</value>
+  </data>
+  <data name="StadiumMap_VIPSection" xml:space="preserve">
+    <value>VIP Section</value>
+  </data>
+  <data name="StadiumMap_GeneralAdmission" xml:space="preserve">
+    <value>General Admission</value>
+  </data>
+  <data name="StadiumMap_ManySeatsAvailable" xml:space="preserve">
+    <value>Many seats available</value>
+  </data>
+  <data name="StadiumMap_SomeSeatsAvailable" xml:space="preserve">
+    <value>Some seats available</value>
+  </data>
+  <data name="StadiumMap_AlmostFull" xml:space="preserve">
+    <value>Almost full</value>
+  </data>
+  <data name="StadiumMap_Seats" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="Wallet" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="Wallet_PageTitle" xml:space="preserve">
+    <value>My Wallet</value>
+  </data>
+  <data name="Wallet_Balance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Wallet_NotEligibleTitle" xml:space="preserve">
+    <value>No wallet yet</value>
+  </data>
+  <data name="Wallet_NotEligibleMessage" xml:space="preserve">
+    <value>Digital wallets are available to fans with a season ticket.</value>
+  </data>
+  <data name="Wallet_AddFunds" xml:space="preserve">
+    <value>Add funds</value>
+  </data>
+  <data name="Wallet_Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Wallet_Method" xml:space="preserve">
+    <value>Payment method</value>
+  </data>
+  <data name="Wallet_Deposit" xml:space="preserve">
+    <value>Deposit</value>
+  </data>
+  <data name="Wallet_Transactions" xml:space="preserve">
+    <value>Transaction history</value>
+  </data>
+  <data name="Wallet_NoTransactions" xml:space="preserve">
+    <value>No transactions yet.</value>
+  </data>
+  <data name="Wallet_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Wallet_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Wallet_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Wallet_DepositSuccess" xml:space="preserve">
+    <value>Deposit successful</value>
+  </data>
+  <data name="Wallet_DepositFailed" xml:space="preserve">
+    <value>Deposit failed</value>
+  </data>
+  <data name="Wallet_ConfirmationRequired" xml:space="preserve">
+    <value>Card confirmation required to complete your deposit.</value>
+  </data>
+  <data name="Wallet_Frozen" xml:space="preserve">
+    <value>Your wallet is frozen.</value>
+  </data>
+  <data name="Wallet_PayWithWallet" xml:space="preserve">
+    <value>Pay with Wallet</value>
+  </data>
+  <data name="Wallet_InsufficientFunds" xml:space="preserve">
+    <value>Insufficient wallet balance. Please top up.</value>
+  </data>
+  <data name="Wallet_TopUp" xml:space="preserve">
+    <value>Top up</value>
+  </data>
+  <data name="Wallet_Available" xml:space="preserve">
+    <value>available</value>
+  </data>
 </root>

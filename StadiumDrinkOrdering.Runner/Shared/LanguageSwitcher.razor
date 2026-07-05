@@ -1,0 +1,23 @@
+@using System.Globalization
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Nav
+
+<select class="runner-lang" @onchange="OnLanguageChange" value="@CurrentCulture" aria-label="Language" id="runner-lang-switcher">
+    <option value="hr" selected="@(CurrentCulture == "hr")">HR</option>
+    <option value="en" selected="@(CurrentCulture == "en")">EN</option>
+</select>
+
+@code {
+    private string CurrentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+    private async Task OnLanguageChange(ChangeEventArgs e)
+    {
+        var culture = e.Value?.ToString() ?? "hr";
+
+        // Persist to localStorage; Program.cs reads it back and applies it on the next startup.
+        await JSRuntime.InvokeVoidAsync("blazorCulture.set", culture);
+
+        // Force a full reload so the new culture is applied before rendering.
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+}

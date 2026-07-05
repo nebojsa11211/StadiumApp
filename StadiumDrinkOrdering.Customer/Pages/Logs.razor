@@ -3,8 +3,9 @@
 @using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
 @inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>My Activity</PageTitle>
+<PageTitle>@Localizer["Logs_PageTitle"]</PageTitle>
 
 <AuthenticationGuard>
     <div class="container-fluid">

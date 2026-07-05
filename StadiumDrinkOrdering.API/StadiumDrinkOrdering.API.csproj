@@ -42,16 +42,12 @@
     <Exec Command="$(ProjectDir)..\kill-api-process.bat" ContinueOnError="true" IgnoreExitCode="true" />
   </Target>
 
-  <!-- When launching from Visual Studio (F5/Ctrl+F5 builds before it runs), make sure the local
-       PostgreSQL dev container (stadium-postgres-local) is up first, otherwise the API fails on
-       startup with "The maximum number of retries (3) was exceeded ... NpgsqlRetryingExecutionStrategy".
-       ensure-localdb.ps1 is idempotent (starts/recreates the container only if needed) and
-       ContinueOnError keeps the build going even if Docker isn't running. -->
-  <Target Name="EnsureLocalDbBeforeBuild" BeforeTargets="BeforeBuild" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(ProjectDir)..\ensure-localdb.ps1&quot;" ContinueOnError="true" IgnoreExitCode="true" />
-  </Target>
-
-
+  <!-- The old EnsureLocalDbBeforeBuild target (which ran ensure-localdb.ps1 on every VS build) was
+       REMOVED: it ran the full docker/powershell script on every single F5 build with no fast-path,
+       adding several seconds of Docker-CLI latency to each launch. That responsibility now lives in
+       Program.cs (EnsureLocalDbContainerRunning), which runs on EVERY launch - F5 or dotnet run,
+       build or no-build - and short-circuits in ~ms via a TCP probe when the DB is already up,
+       only shelling out to ensure-localdb.ps1 when the port is genuinely dead. -->
 
 
 </Project>

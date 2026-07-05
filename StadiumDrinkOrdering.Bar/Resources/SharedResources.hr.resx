@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Common Actions -->
+  <data name="Login" xml:space="preserve">
+    <value>Prijava</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Odjava</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registracija</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Prijavite se</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>Registrirajte se</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Pošalji</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Odustani</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Spremi</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Obriši</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Uredi</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Dodaj</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Pretraži</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filtriraj</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Očisti</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Natrag</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Sljedeće</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Prethodno</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  
+  <!-- Common Labels -->
+  <data name="Email" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Lozinka</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Potvrdi lozinku</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Zapamti me</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Prezime</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Adresa</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>Grad</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Država</value>
+  </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>Poštanski broj</value>
+  </data>
+  
+  <!-- Navigation -->
+  <data name="Home" xml:space="preserve">
+    <value>Početna</value>
+  </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Jelovnik</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="MyOrders" xml:space="preserve">
+    <value>Moje narudžbe</value>
+  </data>
+  <data name="MainLayout_System" xml:space="preserve">
+    <value>Sustav</value>
+  </data>
+  <data name="Events" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="Tickets" xml:space="preserve">
+    <value>Ulaznice</value>
+  </data>
+  <data name="Cart" xml:space="preserve">
+    <value>Košarica</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>Naplata</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Postavke</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Nadzorna ploča</value>
+  </data>
+  
+  <!-- Messages -->
+  <data name="Loading" xml:space="preserve">
+    <value>Učitavanje...</value>
+  </data>
+  <data name="SigningIn" xml:space="preserve">
+    <value>Prijavljivanje...</value>
+  </data>
+  <data name="PleaseWait" xml:space="preserve">
+    <value>Molimo pričekajte...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Nema dostupnih podataka</value>
+  </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>Dogodila se greška</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Uspjeh</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Neuspješno</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Završeno</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Na čekanju</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Obrađuje se</value>
+  </data>
+  
+  <!-- Order Status -->
+  <data name="OrderStatus_Pending" xml:space="preserve">
+    <value>Na čekanju</value>
+  </data>
+  <data name="OrderStatus_Accepted" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="OrderStatus_InPreparation" xml:space="preserve">
+    <value>U pripremi</value>
+  </data>
+  <data name="OrderStatus_Ready" xml:space="preserve">
+    <value>Spremno</value>
+  </data>
+  <data name="OrderStatus_OutForDelivery" xml:space="preserve">
+    <value>U dostavi</value>
+  </data>
+  <data name="OrderStatus_Delivered" xml:space="preserve">
+    <value>Dostavljeno</value>
+  </data>
+  <data name="OrderStatus_Cancelled" xml:space="preserve">
+    <value>Otkazano</value>
+  </data>
+
+  <!-- Dashboard Metric Cards -->
+  <data name="Dashboard_CardPendingTitle" xml:space="preserve">
+    <value>Narudžbe na čekanju</value>
+  </data>
+  <data name="Dashboard_CardPendingSub" xml:space="preserve">
+    <value>čekaju prihvaćanje</value>
+  </data>
+  <data name="Dashboard_CardInPreparationTitle" xml:space="preserve">
+    <value>U pripremi</value>
+  </data>
+  <data name="Dashboard_CardInPreparationSub" xml:space="preserve">
+    <value>u pripremi</value>
+  </data>
+  <data name="Dashboard_CardReadyTitle" xml:space="preserve">
+    <value>Spremno za dostavu</value>
+  </data>
+  <data name="Dashboard_CardReadySub" xml:space="preserve">
+    <value>spremno za preuzimanje</value>
+  </data>
+  <data name="Dashboard_CardPickedUpTitle" xml:space="preserve">
+    <value>Preuzeto</value>
+  </data>
+  <data name="Dashboard_CardPickedUpSub" xml:space="preserve">
+    <value>preuzeo dostavljač</value>
+  </data>
+  <data name="Dashboard_CardDeliveredTitle" xml:space="preserve">
+    <value>Dostavljeno</value>
+  </data>
+  <data name="Dashboard_CardDeliveredSub" xml:space="preserve">
+    <value>dostavljeno gostu</value>
+  </data>
+
+  <!-- Validation Messages -->
+  <data name="RequiredField" xml:space="preserve">
+    <value>Ovo polje je obavezno</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Molimo unesite važeću adresu e-pošte</value>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>Lozinke se ne podudaraju</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Neispravna e-pošta ili lozinka</value>
+  </data>
+  <data name="AccountCreated" xml:space="preserve">
+    <value>Račun je uspješno stvoren</value>
+  </data>
+  <data name="LoginSuccessful" xml:space="preserve">
+    <value>Prijava uspješna</value>
+  </data>
+  <data name="LogoutSuccessful" xml:space="preserve">
+    <value>Uspješno ste odjavljeni</value>
+  </data>
+
+  <!-- Login Page -->
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Prijava osoblja</value>
+  </data>
+  <data name="Login_StadiumBar" xml:space="preserve">
+    <value>Stadium Bar</value>
+  </data>
+  <data name="Login_BartenderStationAccess" xml:space="preserve">
+    <value>Pristup barmenu</value>
+  </data>
+  <data name="Login_EnterYourEmail" xml:space="preserve">
+    <value>Unesite svoju e-poštu</value>
+  </data>
+  <data name="Login_EnterYourPassword" xml:space="preserve">
+    <value>Unesite svoju lozinku</value>
+  </data>
+  <data name="Login_ShowPassword" xml:space="preserve">
+    <value>Prikaži lozinku</value>
+  </data>
+  <data name="Login_HidePassword" xml:space="preserve">
+    <value>Sakrij lozinku</value>
+  </data>
+  <data name="Login_StaffAccessOnly" xml:space="preserve">
+    <value>Samo za pristup osoblja. Koristite dodjeljene vjerodajnice.</value>
+  </data>
+  <data name="Login_LoginFailed" xml:space="preserve">
+    <value>Prijava neuspješna</value>
+  </data>
+
+  <!-- Dashboard Page -->
+  <data name="Dashboard_PageTitle" xml:space="preserve">
+    <value>Nadzorna ploča osoblja</value>
+  </data>
+  <data name="Dashboard_AuthenticationRequired" xml:space="preserve">
+    <value>Potrebna je autentifikacija</value>
+  </data>
+  <data name="Dashboard_MustBeLoggedIn" xml:space="preserve">
+    <value>Morate biti prijavljeni kako biste pristupili nadzornoj ploči osoblja.</value>
+  </data>
+  <data name="Dashboard_GoToLogin" xml:space="preserve">
+    <value>Idite na prijavu</value>
+  </data>
+  <data name="Dashboard_BarStation" xml:space="preserve">
+    <value>Bar stanica</value>
+  </data>
+  <data name="Dashboard_BartenderDashboard" xml:space="preserve">
+    <value>Nadzorna ploča barmena</value>
+  </data>
+  <data name="Dashboard_RealTimeOrderManagement" xml:space="preserve">
+    <value>Upravljanje narudžbama u stvarnom vremenu i ispunjavanje</value>
+  </data>
+  <data name="Dashboard_Updated" xml:space="preserve">
+    <value>Ažurirano</value>
+  </data>
+  <data name="Dashboard_CurrentEvent" xml:space="preserve">
+    <value>Trenutni događaj</value>
+  </data>
+  <data name="Dashboard_NoActiveEvent" xml:space="preserve">
+    <value>Nema aktivnog događaja</value>
+  </data>
+  <data name="Dashboard_OrdersWillAppear" xml:space="preserve">
+    <value>Narudžbe će se pojaviti čim je događaj aktivan.</value>
+  </data>
+  <data name="Dashboard_RecentOrders" xml:space="preserve">
+    <value>Nedavne narudžbe</value>
+  </data>
+  <data name="Dashboard_QuickActions" xml:space="preserve">
+    <value>Brze radnje</value>
+  </data>
+  <data name="Dashboard_ConnectionStatus" xml:space="preserve">
+    <value>Status veze</value>
+  </data>
+  <data name="Dashboard_Warning" xml:space="preserve">
+    <value>Upozorenje:</value>
+  </data>
+  <data name="Dashboard_RefreshingDashboard" xml:space="preserve">
+    <value>Osvježavanje podataka nadzorne ploče...</value>
+  </data>
+  <data name="Dashboard_RefreshedSuccessfully" xml:space="preserve">
+    <value>Nadzorna ploča je uspješno osvježena</value>
+  </data>
+  <data name="Dashboard_FailedToRefresh" xml:space="preserve">
+    <value>Osvježavanje nadzorne ploče nije uspjelo</value>
+  </data>
+  <data name="Dashboard_AttemptingToReconnect" xml:space="preserve">
+    <value>Pokušaj ponovno povezivanja...</value>
+  </data>
+  <data name="Dashboard_ReconnectedSuccessfully" xml:space="preserve">
+    <value>Ponovno povezan uspješno</value>
+  </data>
+  <data name="Dashboard_FailedToReconnect" xml:space="preserve">
+    <value>Ponovno povezivanje SignalR nije uspjelo</value>
+  </data>
+  <data name="Dashboard_SignalRConnectionEstablished" xml:space="preserve">
+    <value>Konekcija SignalR je uspostavljena</value>
+  </data>
+  <data name="Dashboard_SignalRConnectionFailed" xml:space="preserve">
+    <value>Konekcija SignalR nije uspjela</value>
+  </data>
+  <data name="Dashboard_FailedToLoadData" xml:space="preserve">
+    <value>Neuspješno učitavanje podataka nadzorne ploče. Pokušajte osvježiti.</value>
+  </data>
+
+  <!-- Order Queue Page -->
+  <data name="OrderQueue_PageTitle" xml:space="preserve">
+    <value>Bar — Nadzorna ploča narudžbi</value>
+  </data>
+  <data name="OrderQueue_OrderBoard" xml:space="preserve">
+    <value>Nadzorna ploča narudžbi</value>
+  </data>
+  <data name="OrderQueue_Live" xml:space="preserve">
+    <value>Uživo</value>
+  </data>
+  <data name="OrderQueue_Offline" xml:space="preserve">
+    <value>Izvanmreže</value>
+  </data>
+  <data name="OrderQueue_Updated" xml:space="preserve">
+    <value>Ažurirano</value>
+  </data>
+  <data name="OrderQueue_Sectors" xml:space="preserve">
+    <value>Sektori</value>
+  </data>
+  <data name="OrderQueue_AllSectors" xml:space="preserve">
+    <value>Svi sektori</value>
+  </data>
+  <data name="OrderQueue_NoSector" xml:space="preserve">
+    <value>Bez sektora</value>
+  </data>
+
+  <!-- Order Queue Page -->
+  <data name="OrderQueue_Accept" xml:space="preserve">
+    <value>Prihvati</value>
+  </data>
+  <data name="OrderQueue_StartPreparation" xml:space="preserve">
+    <value>Započni pripremu</value>
+  </data>
+  <data name="OrderQueue_MarkReady" xml:space="preserve">
+    <value>Označi kao spremno</value>
+  </data>
+  <data name="OrderQueue_AwaitingRunnerPickup" xml:space="preserve">
+    <value>Čeka preuzimanje</value>
+  </data>
+  <data name="OrderQueue_CollectedByRunner" xml:space="preserve">
+    <value>Preuzeto — u dostavi</value>
+  </data>
+  <data name="OrderQueue_JustNow" xml:space="preserve">
+    <value>upravo sada</value>
+  </data>
+  <data name="OrderQueue_OneMin" xml:space="preserve">
+    <value>1 min</value>
+  </data>
+  <data name="OrderQueue_MinutesAgo" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="OrderQueue_OrderAccepted" xml:space="preserve">
+    <value>Narudžba prihvaćena</value>
+  </data>
+  <data name="OrderQueue_PreparationStarted" xml:space="preserve">
+    <value>Priprema započeta</value>
+  </data>
+  <data name="OrderQueue_OrderReadyForPickup" xml:space="preserve">
+    <value>Narudžba je spremna za preuzimanje</value>
+  </data>
+
+  <!-- Logs Page -->
+  <data name="Logs_PageTitle" xml:space="preserve">
+    <value>Sistemski zapisnici</value>
+  </data>
+  <data name="Logs_System" xml:space="preserve">
+    <value>Sustav</value>
+  </data>
+  <data name="Logs_CentralizedActivityTelemetry" xml:space="preserve">
+    <value>Centralizirani zapisnici aktivnosti i greške</value>
+  </data>
+  <data name="Logs_SearchLogs" xml:space="preserve">
+    <value>Pretraži zapisnike</value>
+  </data>
+  <data name="Logs_TimeRange" xml:space="preserve">
+    <value>Vremenski raspon</value>
+  </data>
+  <data name="Logs_From" xml:space="preserve">
+    <value>Od</value>
+  </data>
+  <data name="Logs_To" xml:space="preserve">
+    <value>Za</value>
+  </data>
+  <data name="Logs_LogLevel" xml:space="preserve">
+    <value>Razina zapisnika</value>
+  </data>
+  <data name="Logs_Category" xml:space="preserve">
+    <value>Kategorija</value>
+  </data>
+  <data name="Logs_NoLogsFound" xml:space="preserve">
+    <value>Nema pronađenih zapisnika</value>
+  </data>
+  <data name="Logs_AdjustFiltersAbove" xml:space="preserve">
+    <value>Prilagodite filtre iznad da vidite više rezultata.</value>
+  </data>
+  <data name="Logs_TotalLogs" xml:space="preserve">
+    <value>Ukupno zapisnika</value>
+  </data>
+  <data name="Logs_QuickFilters" xml:space="preserve">
+    <value>Brzi filtri</value>
+  </data>
+  <data name="Logs_AllLogs" xml:space="preserve">
+    <value>Svi zapisnici</value>
+  </data>
+  <data name="Logs_LogEntries" xml:space="preserve">
+    <value>Stavke zapisnika</value>
+  </data>
+  <data name="Logs_Timestamp" xml:space="preserve">
+    <value>Vrijeme</value>
+  </data>
+  <data name="Logs_Level" xml:space="preserve">
+    <value>Razina</value>
+  </data>
+  <data name="Logs_Action" xml:space="preserve">
+    <value>Radnja</value>
+  </data>
+  <data name="Logs_User" xml:space="preserve">
+    <value>Korisnik</value>
+  </data>
+  <data name="Logs_Source" xml:space="preserve">
+    <value>Izvor</value>
+  </data>
+  <data name="Logs_Message" xml:space="preserve">
+    <value>Poruka</value>
+  </data>
+  <data name="Logs_ShowingFirstOf" xml:space="preserve">
+    <value>Prikazujem prvih 50 od {0} zapisnika. Koristite filtre za preciziranje rezultata.</value>
+  </data>
+  <data name="Logs_RefreshedSuccessfully" xml:space="preserve">
+    <value>Zapisnici su uspješno osvježeni!</value>
+  </data>
+  <data name="Logs_ErrorLoadingLogs" xml:space="preserve">
+    <value>Greška pri učitavanju zapisnika</value>
+  </data>
+  <data name="Logs_Error" xml:space="preserve">
+    <value>Greška</value>
+  </data>
+  <data name="Logs_Warning" xml:space="preserve">
+    <value>Upozorenje</value>
+  </data>
+  <data name="Logs_Info" xml:space="preserve">
+    <value>Informacija</value>
+  </data>
+  <data name="Logs_Debug" xml:space="preserve">
+    <value>Otklanjanje grešaka</value>
+  </data>
+
+  <!-- ConnectionStatus Component -->
+  <data name="ConnectionStatus_LiveOrderUpdates" xml:space="preserve">
+    <value>Ažuriranja narudžbi u direktnom prijenosu: povezano</value>
+  </data>
+  <data name="ConnectionStatus_NoConnection" xml:space="preserve">
+    <value>Ažuriranja narudžbi u direktnom prijenosu: isključeno</value>
+  </data>
+
+  <!-- RecentOrdersList Component -->
+  <data name="RecentOrders_OrderNumber" xml:space="preserve">
+    <value>Narudžba #</value>
+  </data>
+  <data name="RecentOrders_Customer" xml:space="preserve">
+    <value>Kupac</value>
+  </data>
+  <data name="RecentOrders_Seat" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="RecentOrders_Items" xml:space="preserve">
+    <value>Stavke</value>
+  </data>
+  <data name="RecentOrders_Status" xml:space="preserve">
+    <value>Stanje</value>
+  </data>
+  <data name="RecentOrders_Time" xml:space="preserve">
+    <value>Vrijeme</value>
+  </data>
+  <data name="RecentOrders_Actions" xml:space="preserve">
+    <value>Radnje</value>
+  </data>
+  <data name="RecentOrders_ShowingOf" xml:space="preserve">
+    <value>Prikazujem {0} od {1} narudžbi</value>
+  </data>
+  <data name="RecentOrders_ViewAll" xml:space="preserve">
+    <value>Prikaži sve</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Prikazi</value>
+  </data>
+
+  <!-- QuickActionsPanel Component -->
+  <data name="QuickActions_NoActionsAvailable" xml:space="preserve">
+    <value>Nema dostupnih radnji</value>
+  </data>
+
+  <!-- NavMenu Component -->
+  <data name="NavMenu_StadiumStaff" xml:space="preserve">
+    <value>Stadium Bar</value>
+  </data>
+  <data name="NavMenu_NavigationMenu" xml:space="preserve">
+    <value>Navigacijski izbornik</value>
+  </data>
+
+  <!-- AuthRoute Component -->
+  <data name="AuthRoute_CheckingAuthentication" xml:space="preserve">
+    <value>Provjera autentifikacije...</value>
+  </data>
+  <data name="AuthRoute_VerifyingAuthentication" xml:space="preserve">
+    <value>Provjera autentifikacije...</value>
+  </data>
+  <data name="AuthRoute_AuthenticationRequired" xml:space="preserve">
+    <value>Potrebna je autentifikacija</value>
+  </data>
+  <data name="AuthRoute_MustBeLoggedInToAccessPage" xml:space="preserve">
+    <value>Trebate biti prijavljeni kako biste pristupili ovoj stranici.</value>
+  </data>
+  <data name="AuthRoute_GoToLogin" xml:space="preserve">
+    <value>Idite na prijavu</value>
+  </data>
+  <data name="AuthRoute_AccessRestricted" xml:space="preserve">
+    <value>Pristup ograničen</value>
+  </data>
+  <data name="AuthRoute_BarStationForBartenders" xml:space="preserve">
+    <value>Bar stanica je za barmenea i administratore. Vaš račun ({0}) nema pristupa ovdje.</value>
+  </data>
+  <data name="AuthRoute_Unknown" xml:space="preserve">
+    <value>nepoznato</value>
+  </data>
+  <data name="AuthRoute_SignInAsDifferentUser" xml:space="preserve">
+    <value>Prijavite se kao drugi korisnik</value>
+  </data>
+
+  <!-- App Component -->
+  <data name="App_InitializingApplication" xml:space="preserve">
+    <value>Inicijalizacija aplikacije...</value>
+  </data>
+  <data name="App_NotFound" xml:space="preserve">
+    <value>Nije pronađeno</value>
+  </data>
+  <data name="App_NothingAtThisAddress" xml:space="preserve">
+    <value>Nažalost, na ovoj adresi nema ničega.</value>
+  </data>
+
+  <!-- ConnectionStatusCard Component -->
+  <data name="ConnectionStatusCard_Reconnecting" xml:space="preserve">
+    <value>Ponovno povezivanje...</value>
+  </data>
+  <data name="ConnectionStatusCard_Reconnect" xml:space="preserve">
+    <value>Ponovno se spojite</value>
+  </data>
+  <data name="ConnectionStatusCard_Last" xml:space="preserve">
+    <value>Zadnje</value>
+  </data>
+  <data name="ConnectionStatusCard_Connected" xml:space="preserve">
+    <value>Povezan</value>
+  </data>
+  <data name="ConnectionStatusCard_Disconnected" xml:space="preserve">
+    <value>Isključen</value>
+  </data>
+</root>

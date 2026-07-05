@@ -1,0 +1,19 @@
+- generic [ref=e7]:
+  - banner [ref=e8]:
+    - generic [ref=e9]: 🏃 Runner
+    - generic [ref=e10]:
+      - generic [ref=e11]: nebojsa.medancic+runner@gmail.com
+      - button "Sign out" [ref=e12] [cursor=pointer]
+  - main [ref=e13]:
+    - generic [ref=e15]:
+      - heading "Ready for pickup" [active] [level=1] [ref=e16]
+      - button "↻" [ref=e17] [cursor=pointer]
+  - navigation [ref=e20]:
+    - link "📋 Pool" [ref=e21] [cursor=pointer]:
+      - /url: ""
+      - generic [ref=e22]: 📋
+      - generic [ref=e23]: Pool
+    - link "🚚 My deliveries" [ref=e24] [cursor=pointer]:
+      - /url: my-deliveries
+      - generic [ref=e25]: 🚚
+      - generic [ref=e26]: My deliveries

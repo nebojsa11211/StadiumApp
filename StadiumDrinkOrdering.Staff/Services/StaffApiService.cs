@@ -80,7 +80,7 @@ public class StaffApiService : IStaffApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("orders?status=pending,accepted,in-preparation");
+            var response = await _httpClient.GetAsync("orders?status=pending,accepted,in-preparation,ready,out-for-delivery,delivered");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();

@@ -6,8 +6,9 @@
 @inject CustomerServices.IApiService ApiService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Checkout - Stadium Drinks</PageTitle>
+<PageTitle>@Localizer["Checkout_PageTitle"]</PageTitle>
 
 <CustomerAuthRoute>
 <div class="container-fluid py-4" id="customer-checkout-container">
@@ -15,7 +16,7 @@
         <div class="col-lg-8" id="customer-checkout-form-col">
             <div class="card shadow-sm" id="customer-checkout-form-card">
                 <div class="card-header bg-primary text-white" id="customer-checkout-form-header">
-                    <h4 class="mb-0" id="customer-checkout-form-title"><i class="fas fa-user-circle me-2"></i>Customer Information</h4>
+                    <h4 class="mb-0" id="customer-checkout-form-title"><i class="fas fa-user-circle me-2"></i>@Localizer["Checkout_CustomerInformation"]</h4>
                 </div>
                 <div class="card-body" id="customer-checkout-form-body">
                     <EditForm Model="@checkoutForm" OnValidSubmit="@ProcessCheckout" id="customer-checkout-form">
@@ -24,25 +25,25 @@
                         <!-- Personal Information -->
                         <div class="row mb-3" id="customer-checkout-personal-row">
                             <div class="col-md-6" id="customer-checkout-firstname-col">
-                                <label for="firstName" class="form-label" id="customer-checkout-firstname-label">First Name *</label>
-                                <InputText id="firstName" class="form-control" @bind-Value="checkoutForm.FirstName" placeholder="Enter first name" />
+                                <label for="firstName" class="form-label" id="customer-checkout-firstname-label">@Localizer["Checkout_FirstName"] *</label>
+                                <InputText id="firstName" class="form-control" @bind-Value="checkoutForm.FirstName" placeholder="@Localizer["Checkout_EnterFirstName"]" />
                                 <ValidationMessage For="@(() => checkoutForm.FirstName)" class="text-danger small" />
                             </div>
                             <div class="col-md-6" id="customer-checkout-lastname-col">
-                                <label for="lastName" class="form-label" id="customer-checkout-lastname-label">Last Name *</label>
-                                <InputText id="lastName" class="form-control" @bind-Value="checkoutForm.LastName" placeholder="Enter last name" />
+                                <label for="lastName" class="form-label" id="customer-checkout-lastname-label">@Localizer["Checkout_LastName"] *</label>
+                                <InputText id="lastName" class="form-control" @bind-Value="checkoutForm.LastName" placeholder="@Localizer["Checkout_EnterLastName"]" />
                                 <ValidationMessage For="@(() => checkoutForm.LastName)" class="text-danger small" />
                             </div>
                         </div>
 
                         <div class="row mb-3" id="customer-checkout-contact-row">
                             <div class="col-md-6" id="customer-checkout-email-col">
-                                <label for="email" class="form-label" id="customer-checkout-email-label">Email Address *</label>
+                                <label for="email" class="form-label" id="customer-checkout-email-label">@Localizer["Checkout_EmailAddress"] *</label>
                                 <InputText id="email" type="email" class="form-control" @bind-Value="checkoutForm.Email" placeholder="your.email@example.com" />
                                 <ValidationMessage For="@(() => checkoutForm.Email)" class="text-danger small" />
                             </div>
                             <div class="col-md-6" id="customer-checkout-phone-col">
-                                <label for="phone" class="form-label" id="customer-checkout-phone-label">Phone Number *</label>
+                                <label for="phone" class="form-label" id="customer-checkout-phone-label">@Localizer["Checkout_PhoneNumber"] *</label>
                                 <InputText id="phone" class="form-control" @bind-Value="checkoutForm.Phone" placeholder="+1 (555) 123-4567" />
                                 <ValidationMessage For="@(() => checkoutForm.Phone)" class="text-danger small" />
                             </div>
@@ -51,16 +52,16 @@
                         <!-- Payment Information -->
                         <div class="card mt-4" id="customer-checkout-payment-card">
                             <div class="card-header bg-success text-white" id="customer-checkout-payment-header">
-                                <h5 class="mb-0" id="customer-checkout-payment-title"><i class="fas fa-credit-card me-2"></i>Payment Information</h5>
+                                <h5 class="mb-0" id="customer-checkout-payment-title"><i class="fas fa-credit-card me-2"></i>@Localizer["Checkout_PaymentInformation"]</h5>
                                 <!-- Temporary button for testing -->
                                 <button type="button" class="btn btn-sm btn-warning float-end" @onclick="FillSamplePaymentData" id="customer-checkout-fill-sample-btn">
-                                    <i class="fas fa-fill-drip me-1"></i>Fill Sample Data
+                                    <i class="fas fa-fill-drip me-1"></i>@Localizer["Checkout_FillSampleData"]
                                 </button>
                             </div>
                             <div class="card-body" id="customer-checkout-payment-body">
                                 <div class="row mb-3" id="customer-checkout-cardnumber-row">
                                     <div class="col-12" id="customer-checkout-cardnumber-col">
-                                        <label for="cardNumber" class="form-label" id="customer-checkout-cardnumber-label">Card Number *</label>
+                                        <label for="cardNumber" class="form-label" id="customer-checkout-cardnumber-label">@Localizer["Checkout_CardNumber"] *</label>
                                         <InputText id="cardNumber" class="form-control" @bind-Value="checkoutForm.CardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
                                         <ValidationMessage For="@(() => checkoutForm.CardNumber)" class="text-danger small" />
                                     </div>
@@ -68,12 +69,12 @@
 
                                 <div class="row mb-3" id="customer-checkout-expiry-cvv-row">
                                     <div class="col-md-6" id="customer-checkout-expiry-col">
-                                        <label for="expiryDate" class="form-label" id="customer-checkout-expiry-label">Expiry Date *</label>
+                                        <label for="expiryDate" class="form-label" id="customer-checkout-expiry-label">@Localizer["Checkout_ExpiryDate"] *</label>
                                         <InputText id="expiryDate" class="form-control" @bind-Value="checkoutForm.ExpiryDate" placeholder="MM/YY" maxlength="5" />
                                         <ValidationMessage For="@(() => checkoutForm.ExpiryDate)" class="text-danger small" />
                                     </div>
                                     <div class="col-md-6" id="customer-checkout-cvv-col">
-                                        <label for="cvv" class="form-label" id="customer-checkout-cvv-label">CVV *</label>
+                                        <label for="cvv" class="form-label" id="customer-checkout-cvv-label">@Localizer["Checkout_CVV"] *</label>
                                         <InputText id="cvv" class="form-control" @bind-Value="checkoutForm.CVV" placeholder="123" maxlength="4" />
                                         <ValidationMessage For="@(() => checkoutForm.CVV)" class="text-danger small" />
                                     </div>
@@ -81,7 +82,7 @@
 
                                 <div class="row mb-3" id="customer-checkout-cardholder-row">
                                     <div class="col-12" id="customer-checkout-cardholder-col">
-                                        <label for="cardholderName" class="form-label" id="customer-checkout-cardholder-label">Cardholder Name *</label>
+                                        <label for="cardholderName" class="form-label" id="customer-checkout-cardholder-label">@Localizer["Checkout_CardholderName"] *</label>
                                         <InputText id="cardholderName" class="form-control" @bind-Value="checkoutForm.CardholderName" placeholder="Name as it appears on card" />
                                         <ValidationMessage For="@(() => checkoutForm.CardholderName)" class="text-danger small" />
                                     </div>
@@ -93,7 +94,7 @@
                         <div class="form-check mt-4" id="customer-checkout-terms">
                             <InputCheckbox id="agreeTerms" class="form-check-input" @bind-Value="checkoutForm.AgreeToTerms" />
                             <label class="form-check-label" for="agreeTerms">
-                                I agree to the <a href="/terms" target="_blank">Terms and Conditions</a> and <a href="/privacy" target="_blank">Privacy Policy</a> *
+                                @Localizer["Checkout_AgreeToTerms"] <a href="/terms" target="_blank">@Localizer["Register_TermsOfService"]</a> @Localizer["Register_And"] <a href="/privacy" target="_blank">@Localizer["Register_PrivacyPolicy"]</a> *
                             </label>
                             <ValidationMessage For="@(() => checkoutForm.AgreeToTerms)" class="text-danger small d-block" />
                         </div>
@@ -106,29 +107,29 @@
         <div class="col-lg-4" id="customer-checkout-summary-col">
             <div class="card shadow-sm sticky-top" style="top: 20px;" id="customer-checkout-summary-card">
                 <div class="card-header bg-dark text-white" id="customer-checkout-summary-header">
-                    <h4 class="mb-0" id="customer-checkout-summary-title"><i class="fas fa-receipt me-2"></i>Order Summary</h4>
+                    <h4 class="mb-0" id="customer-checkout-summary-title"><i class="fas fa-receipt me-2"></i>@Localizer["Checkout_OrderSummary"]</h4>
                 </div>
                 <div class="card-body" id="customer-checkout-summary-body">
                     @if (cart != null && cart.Items.Any())
                     {
                         <!-- Event Information -->
                         <div class="mb-3 pb-3 border-bottom" id="customer-checkout-event-info">
-                            <h6 class="text-muted mb-1" id="customer-checkout-event-title">Event</h6>
+                            <h6 class="text-muted mb-1" id="customer-checkout-event-title">@Localizer["Checkout_Event"]</h6>
                             <strong id="customer-checkout-event-name">@(cart.Items.FirstOrDefault()?.EventName ?? "Unknown Event")</strong>
                             <div class="text-muted small" id="customer-checkout-event-id">
-                                Event ID: @(cart.Items.FirstOrDefault()?.EventId ?? 0)
+                                @Localizer["Checkout_EventID"] @(cart.Items.FirstOrDefault()?.EventId ?? 0)
                             </div>
                         </div>
 
                         <!-- Seat Details -->
                         <div class="mb-3" id="customer-checkout-seats">
-                            <h6 class="text-muted mb-2" id="customer-checkout-seats-title">Selected Seats</h6>
+                            <h6 class="text-muted mb-2" id="customer-checkout-seats-title">@Localizer["Checkout_SelectedSeats"]</h6>
                             @foreach (var item in cart.Items)
                             {
                                 <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded" id="customer-checkout-seat-item-@item.SectorId-@item.RowNumber-@item.SeatNumber">
                                     <div id="customer-checkout-seat-info-@item.SectorId-@item.RowNumber-@item.SeatNumber">
                                         <div class="fw-bold" id="customer-checkout-seat-code-@item.SectorId-@item.RowNumber-@item.SeatNumber">@item.SeatCode</div>
-                                        <div class="text-muted small" id="customer-checkout-seat-sector-@item.SectorId-@item.RowNumber-@item.SeatNumber">Sector @item.SectorId</div>
+                                        <div class="text-muted small" id="customer-checkout-seat-sector-@item.SectorId-@item.RowNumber-@item.SeatNumber">@Localizer["Checkout_Sector"] @item.SectorId</div>
                                     </div>
                                     <div class="text-end" id="customer-checkout-seat-price-container-@item.SectorId-@item.RowNumber-@item.SeatNumber">
                                         <div class="fw-bold" id="customer-checkout-seat-price-@item.SectorId-@item.RowNumber-@item.SeatNumber">$@item.Price.ToString("F2")</div>
@@ -140,20 +141,20 @@
                         <!-- Pricing Breakdown -->
                         <div class="border-top pt-3" id="customer-checkout-pricing">
                             <div class="d-flex justify-content-between mb-2" id="customer-checkout-subtotal">
-                                <span id="customer-checkout-subtotal-label">Subtotal (@cart.Items.Count tickets)</span>
+                                <span id="customer-checkout-subtotal-label">@string.Format(Localizer["Checkout_Subtotal"].Value, cart.Items.Count)</span>
                                 <span id="customer-checkout-subtotal-amount">$@subtotal.ToString("F2")</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2" id="customer-checkout-service-fee">
-                                <span id="customer-checkout-service-fee-label">Service Fee</span>
+                                <span id="customer-checkout-service-fee-label">@Localizer["Checkout_ServiceFee"]</span>
                                 <span id="customer-checkout-service-fee-amount">$@serviceFee.ToString("F2")</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2" id="customer-checkout-processing-fee">
-                                <span id="customer-checkout-processing-fee-label">Processing Fee</span>
+                                <span id="customer-checkout-processing-fee-label">@Localizer["Checkout_ProcessingFee"]</span>
                                 <span id="customer-checkout-processing-fee-amount">$@processingFee.ToString("F2")</span>
                             </div>
                             <hr id="customer-checkout-pricing-divider">
                             <div class="d-flex justify-content-between fw-bold h5" id="customer-checkout-total">
-                                <span id="customer-checkout-total-label">Total</span>
+                                <span id="customer-checkout-total-label">@Localizer["Checkout_OrderSummary"]</span>
                                 <span id="customer-checkout-total-amount">$@total.ToString("F2")</span>
                             </div>
                         </div>
@@ -164,12 +165,12 @@
                                 @if (isProcessing)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                                    <span>Processing...</span>
+                                    <span>@Localizer["Checkout_Processing"]</span>
                                 }
                                 else
                                 {
                                     <i class="fas fa-lock me-2"></i>
-                                    <span>Complete Purchase - $@total.ToString("F2")</span>
+                                    <span>@Localizer["Checkout_CompletePurchase"] - $@total.ToString("F2")</span>
                                 }
                             </button>
                         </div>
@@ -178,8 +179,8 @@
                     {
                         <div class="text-center py-4" id="customer-checkout-empty">
                             <i class="fas fa-shopping-cart fa-3x text-muted mb-3" id="customer-checkout-empty-icon"></i>
-                            <p class="text-muted" id="customer-checkout-empty-text">Your cart is empty</p>
-                            <a href="/events" class="btn btn-primary" id="customer-checkout-browse-events-btn">Browse Events</a>
+                            <p class="text-muted" id="customer-checkout-empty-text">@Localizer["Checkout_CartEmpty"]</p>
+                            <a href="/events" class="btn btn-primary" id="customer-checkout-browse-events-btn">@Localizer["Checkout_BrowseEvents"]</a>
                         </div>
                     }
                 </div>
@@ -195,8 +196,8 @@
             <div class="modal-content" id="customer-checkout-processing-modal-content">
                 <div class="modal-body text-center py-4" id="customer-checkout-processing-modal-body">
                     <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" id="customer-checkout-processing-spinner"></div>
-                    <h4 id="customer-checkout-processing-title">Processing Your Order</h4>
-                    <p class="text-muted" id="customer-checkout-processing-text">Please wait while we process your payment and generate your tickets...</p>
+                    <h4 id="customer-checkout-processing-title">@Localizer["Checkout_Processing"]</h4>
+                    <p class="text-muted" id="customer-checkout-processing-text">@Localizer["Checkout_ProcessingPayment"]</p>
                 </div>
             </div>
         </div>

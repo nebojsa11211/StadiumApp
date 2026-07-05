@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Common Actions -->
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>Sign Up</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  
+  <!-- Common Labels -->
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Remember me</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>Postal Code</value>
+  </data>
+  
+  <!-- Navigation -->
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="MyOrders" xml:space="preserve">
+    <value>My Orders</value>
+  </data>
+  <data name="MainLayout_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Events" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="Tickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="Cart" xml:space="preserve">
+    <value>Cart</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>Checkout</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  
+  <!-- Messages -->
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="SigningIn" xml:space="preserve">
+    <value>Signing in...</value>
+  </data>
+  <data name="PleaseWait" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>No data available</value>
+  </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>An error occurred</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Processing</value>
+  </data>
+  
+  <!-- Order Status -->
+  <data name="OrderStatus_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="OrderStatus_Accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="OrderStatus_InPreparation" xml:space="preserve">
+    <value>In Preparation</value>
+  </data>
+  <data name="OrderStatus_Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="OrderStatus_OutForDelivery" xml:space="preserve">
+    <value>Out for Delivery</value>
+  </data>
+  <data name="OrderStatus_Delivered" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="OrderStatus_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+
+  <!-- Dashboard Metric Cards -->
+  <data name="Dashboard_CardPendingTitle" xml:space="preserve">
+    <value>Pending Orders</value>
+  </data>
+  <data name="Dashboard_CardPendingSub" xml:space="preserve">
+    <value>awaiting acceptance</value>
+  </data>
+  <data name="Dashboard_CardInPreparationTitle" xml:space="preserve">
+    <value>In Preparation</value>
+  </data>
+  <data name="Dashboard_CardInPreparationSub" xml:space="preserve">
+    <value>being prepared</value>
+  </data>
+  <data name="Dashboard_CardReadyTitle" xml:space="preserve">
+    <value>Ready for Delivery</value>
+  </data>
+  <data name="Dashboard_CardReadySub" xml:space="preserve">
+    <value>ready for pickup</value>
+  </data>
+  <data name="Dashboard_CardPickedUpTitle" xml:space="preserve">
+    <value>Picked Up</value>
+  </data>
+  <data name="Dashboard_CardPickedUpSub" xml:space="preserve">
+    <value>collected by runner</value>
+  </data>
+  <data name="Dashboard_CardDeliveredTitle" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="Dashboard_CardDeliveredSub" xml:space="preserve">
+    <value>delivered to customer</value>
+  </data>
+
+  <!-- Validation Messages -->
+  <data name="RequiredField" xml:space="preserve">
+    <value>This field is required</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Please enter a valid email address</value>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>Passwords do not match</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid email or password</value>
+  </data>
+  <data name="AccountCreated" xml:space="preserve">
+    <value>Account created successfully</value>
+  </data>
+  <data name="LoginSuccessful" xml:space="preserve">
+    <value>Login successful</value>
+  </data>
+  <data name="LogoutSuccessful" xml:space="preserve">
+    <value>You have been logged out</value>
+  </data>
+
+  <!-- Login Page -->
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Staff Login</value>
+  </data>
+  <data name="Login_StadiumBar" xml:space="preserve">
+    <value>Stadium Bar</value>
+  </data>
+  <data name="Login_BartenderStationAccess" xml:space="preserve">
+    <value>Bartender station access</value>
+  </data>
+  <data name="Login_EnterYourEmail" xml:space="preserve">
+    <value>Enter your email</value>
+  </data>
+  <data name="Login_EnterYourPassword" xml:space="preserve">
+    <value>Enter your password</value>
+  </data>
+  <data name="Login_ShowPassword" xml:space="preserve">
+    <value>Show password</value>
+  </data>
+  <data name="Login_HidePassword" xml:space="preserve">
+    <value>Hide password</value>
+  </data>
+  <data name="Login_StaffAccessOnly" xml:space="preserve">
+    <value>Staff access only. Use your assigned credentials.</value>
+  </data>
+  <data name="Login_LoginFailed" xml:space="preserve">
+    <value>Login failed</value>
+  </data>
+
+  <!-- Dashboard Page -->
+  <data name="Dashboard_PageTitle" xml:space="preserve">
+    <value>Staff Dashboard</value>
+  </data>
+  <data name="Dashboard_AuthenticationRequired" xml:space="preserve">
+    <value>Authentication Required</value>
+  </data>
+  <data name="Dashboard_MustBeLoggedIn" xml:space="preserve">
+    <value>You must be logged in to access the staff dashboard.</value>
+  </data>
+  <data name="Dashboard_GoToLogin" xml:space="preserve">
+    <value>Go to Login</value>
+  </data>
+  <data name="Dashboard_BarStation" xml:space="preserve">
+    <value>Bar Station</value>
+  </data>
+  <data name="Dashboard_BartenderDashboard" xml:space="preserve">
+    <value>Bartender Dashboard</value>
+  </data>
+  <data name="Dashboard_RealTimeOrderManagement" xml:space="preserve">
+    <value>Real-time order management and fulfillment</value>
+  </data>
+  <data name="Dashboard_Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="Dashboard_CurrentEvent" xml:space="preserve">
+    <value>Current Event</value>
+  </data>
+  <data name="Dashboard_NoActiveEvent" xml:space="preserve">
+    <value>No active event</value>
+  </data>
+  <data name="Dashboard_OrdersWillAppear" xml:space="preserve">
+    <value>Orders will appear here once an event is live.</value>
+  </data>
+  <data name="Dashboard_RecentOrders" xml:space="preserve">
+    <value>Recent Orders</value>
+  </data>
+  <data name="Dashboard_QuickActions" xml:space="preserve">
+    <value>Quick Actions</value>
+  </data>
+  <data name="Dashboard_ConnectionStatus" xml:space="preserve">
+    <value>Connection Status</value>
+  </data>
+  <data name="Dashboard_Warning" xml:space="preserve">
+    <value>Warning:</value>
+  </data>
+  <data name="Dashboard_RefreshingDashboard" xml:space="preserve">
+    <value>Refreshing dashboard data...</value>
+  </data>
+  <data name="Dashboard_RefreshedSuccessfully" xml:space="preserve">
+    <value>Dashboard refreshed successfully</value>
+  </data>
+  <data name="Dashboard_FailedToRefresh" xml:space="preserve">
+    <value>Failed to refresh dashboard</value>
+  </data>
+  <data name="Dashboard_AttemptingToReconnect" xml:space="preserve">
+    <value>Attempting to reconnect...</value>
+  </data>
+  <data name="Dashboard_ReconnectedSuccessfully" xml:space="preserve">
+    <value>Reconnected successfully</value>
+  </data>
+  <data name="Dashboard_FailedToReconnect" xml:space="preserve">
+    <value>Failed to reconnect SignalR</value>
+  </data>
+  <data name="Dashboard_SignalRConnectionEstablished" xml:space="preserve">
+    <value>SignalR connection established</value>
+  </data>
+  <data name="Dashboard_SignalRConnectionFailed" xml:space="preserve">
+    <value>SignalR connection failed</value>
+  </data>
+  <data name="Dashboard_FailedToLoadData" xml:space="preserve">
+    <value>Failed to load dashboard data. Please try refreshing.</value>
+  </data>
+
+  <!-- Order Queue Page -->
+  <data name="OrderQueue_PageTitle" xml:space="preserve">
+    <value>Bar — Order Board</value>
+  </data>
+  <data name="OrderQueue_OrderBoard" xml:space="preserve">
+    <value>Order Board</value>
+  </data>
+  <data name="OrderQueue_Live" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="OrderQueue_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="OrderQueue_Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="OrderQueue_Sectors" xml:space="preserve">
+    <value>Sectors</value>
+  </data>
+  <data name="OrderQueue_AllSectors" xml:space="preserve">
+    <value>All sectors</value>
+  </data>
+  <data name="OrderQueue_NoSector" xml:space="preserve">
+    <value>No sector</value>
+  </data>
+
+  <!-- Order Queue Page -->
+  <data name="OrderQueue_Accept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="OrderQueue_StartPreparation" xml:space="preserve">
+    <value>Start Preparation</value>
+  </data>
+  <data name="OrderQueue_MarkReady" xml:space="preserve">
+    <value>Mark Ready</value>
+  </data>
+  <data name="OrderQueue_AwaitingRunnerPickup" xml:space="preserve">
+    <value>Awaiting runner pickup</value>
+  </data>
+  <data name="OrderQueue_CollectedByRunner" xml:space="preserve">
+    <value>Collected — out for delivery</value>
+  </data>
+  <data name="OrderQueue_JustNow" xml:space="preserve">
+    <value>just now</value>
+  </data>
+  <data name="OrderQueue_OneMin" xml:space="preserve">
+    <value>1 min</value>
+  </data>
+  <data name="OrderQueue_MinutesAgo" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="OrderQueue_OrderAccepted" xml:space="preserve">
+    <value>Order accepted</value>
+  </data>
+  <data name="OrderQueue_PreparationStarted" xml:space="preserve">
+    <value>Preparation started</value>
+  </data>
+  <data name="OrderQueue_OrderReadyForPickup" xml:space="preserve">
+    <value>Order ready for pickup</value>
+  </data>
+
+  <!-- Logs Page -->
+  <data name="Logs_PageTitle" xml:space="preserve">
+    <value>System Logs</value>
+  </data>
+  <data name="Logs_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Logs_CentralizedActivityTelemetry" xml:space="preserve">
+    <value>Centralized activity &amp; error telemetry</value>
+  </data>
+  <data name="Logs_SearchLogs" xml:space="preserve">
+    <value>Search Logs</value>
+  </data>
+  <data name="Logs_TimeRange" xml:space="preserve">
+    <value>Time Range</value>
+  </data>
+  <data name="Logs_From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Logs_To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Logs_LogLevel" xml:space="preserve">
+    <value>Log Level</value>
+  </data>
+  <data name="Logs_Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Logs_NoLogsFound" xml:space="preserve">
+    <value>No logs found</value>
+  </data>
+  <data name="Logs_AdjustFiltersAbove" xml:space="preserve">
+    <value>Adjust the filters above to see more results.</value>
+  </data>
+  <data name="Logs_TotalLogs" xml:space="preserve">
+    <value>Total Logs</value>
+  </data>
+  <data name="Logs_QuickFilters" xml:space="preserve">
+    <value>Quick Filters</value>
+  </data>
+  <data name="Logs_AllLogs" xml:space="preserve">
+    <value>All Logs</value>
+  </data>
+  <data name="Logs_LogEntries" xml:space="preserve">
+    <value>Log Entries</value>
+  </data>
+  <data name="Logs_Timestamp" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Logs_Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Logs_Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Logs_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Logs_Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="Logs_Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Logs_ShowingFirstOf" xml:space="preserve">
+    <value>Showing first 50 of {0} logs. Use filters to narrow results.</value>
+  </data>
+  <data name="Logs_RefreshedSuccessfully" xml:space="preserve">
+    <value>Logs refreshed successfully!</value>
+  </data>
+  <data name="Logs_ErrorLoadingLogs" xml:space="preserve">
+    <value>Error loading logs</value>
+  </data>
+  <data name="Logs_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Logs_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Logs_Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Logs_Debug" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+
+  <!-- ConnectionStatus Component -->
+  <data name="ConnectionStatus_LiveOrderUpdates" xml:space="preserve">
+    <value>Live order updates: connected</value>
+  </data>
+  <data name="ConnectionStatus_NoConnection" xml:space="preserve">
+    <value>Live order updates: disconnected</value>
+  </data>
+
+  <!-- RecentOrdersList Component -->
+  <data name="RecentOrders_OrderNumber" xml:space="preserve">
+    <value>Order #</value>
+  </data>
+  <data name="RecentOrders_Customer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="RecentOrders_Seat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="RecentOrders_Items" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="RecentOrders_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="RecentOrders_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="RecentOrders_Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="RecentOrders_ShowingOf" xml:space="preserve">
+    <value>Showing {0} of {1} orders</value>
+  </data>
+  <data name="RecentOrders_ViewAll" xml:space="preserve">
+    <value>View All</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>View</value>
+  </data>
+
+  <!-- QuickActionsPanel Component -->
+  <data name="QuickActions_NoActionsAvailable" xml:space="preserve">
+    <value>No actions available</value>
+  </data>
+
+  <!-- NavMenu Component -->
+  <data name="NavMenu_StadiumStaff" xml:space="preserve">
+    <value>Stadium Bar</value>
+  </data>
+  <data name="NavMenu_NavigationMenu" xml:space="preserve">
+    <value>Navigation menu</value>
+  </data>
+
+  <!-- AuthRoute Component -->
+  <data name="AuthRoute_CheckingAuthentication" xml:space="preserve">
+    <value>Checking authentication...</value>
+  </data>
+  <data name="AuthRoute_VerifyingAuthentication" xml:space="preserve">
+    <value>Verifying authentication...</value>
+  </data>
+  <data name="AuthRoute_AuthenticationRequired" xml:space="preserve">
+    <value>Authentication Required</value>
+  </data>
+  <data name="AuthRoute_MustBeLoggedInToAccessPage" xml:space="preserve">
+    <value>You need to be logged in to access this page.</value>
+  </data>
+  <data name="AuthRoute_GoToLogin" xml:space="preserve">
+    <value>Go to Login</value>
+  </data>
+  <data name="AuthRoute_AccessRestricted" xml:space="preserve">
+    <value>Access Restricted</value>
+  </data>
+  <data name="AuthRoute_BarStationForBartenders" xml:space="preserve">
+    <value>The Bar station is for bartenders and administrators. Your account ({0}) does not have access here.</value>
+  </data>
+  <data name="AuthRoute_Unknown" xml:space="preserve">
+    <value>unknown</value>
+  </data>
+  <data name="AuthRoute_SignInAsDifferentUser" xml:space="preserve">
+    <value>Sign in as a different user</value>
+  </data>
+
+  <!-- App Component -->
+  <data name="App_InitializingApplication" xml:space="preserve">
+    <value>Initializing application...</value>
+  </data>
+  <data name="App_NotFound" xml:space="preserve">
+    <value>Not found</value>
+  </data>
+  <data name="App_NothingAtThisAddress" xml:space="preserve">
+    <value>Sorry, there's nothing at this address.</value>
+  </data>
+
+  <!-- ConnectionStatusCard Component -->
+  <data name="ConnectionStatusCard_Reconnecting" xml:space="preserve">
+    <value>Reconnecting...</value>
+  </data>
+  <data name="ConnectionStatusCard_Reconnect" xml:space="preserve">
+    <value>Reconnect</value>
+  </data>
+  <data name="ConnectionStatusCard_Last" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="ConnectionStatusCard_Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="ConnectionStatusCard_Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+</root>

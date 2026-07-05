@@ -98,6 +98,9 @@ public class AuthService : IAuthService
         }
         */
 
+        // Attach any season tickets bought under this email so wallet eligibility is up to date.
+        await LinkSeasonTicketsByEmailAsync(user);
+
         var token = GenerateJwtToken(user);
         var userDto = MapToUserDto(user);
 
@@ -284,7 +287,34 @@ public class AuthService : IAuthService
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
+        // Attach any season tickets already sold under this email (e.g. externally ingested) so the
+        // fan is immediately wallet-eligible.
+        await LinkSeasonTicketsByEmailAsync(user);
+
         return MapToUserDto(user);
+    }
+
+    /// <summary>
+    /// Links unclaimed season tickets to a fan by email (<c>HolderEmail == User.Email</c>, case-insensitive).
+    /// Runs on register and login so passes bought or ingested at any time attach on next contact. Only
+    /// fills empty links — never reassigns a pass already owned by another account. A single set-based
+    /// UPDATE, so it is cheap and never fails the surrounding auth flow.
+    /// </summary>
+    private async Task LinkSeasonTicketsByEmailAsync(User user)
+    {
+        try
+        {
+            var email = user.Email.ToLower();
+            await _context.SeasonTickets
+                .Where(st => st.UserId == null
+                             && st.HolderEmail != null
+                             && st.HolderEmail.ToLower() == email)
+                .ExecuteUpdateAsync(s => s.SetProperty(st => st.UserId, user.Id));
+        }
+        catch
+        {
+            // Linking is best-effort; a failure here must not block login/registration.
+        }
     }
 
     public async Task<UserDto?> GetUserByIdAsync(int userId)
@@ -341,11 +371,20 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };
 
+        // Role-based token lifetime. Waiters use the roaming Runner PWA and re-login per shift; they
+        // get a shorter (default 4h) token to limit the exposure of a long-lived bearer token on a
+        // mobile device. Refresh cannot happen offline anyway, so a fixed lifetime + re-login is the
+        // model (see docs/staff-app-split-plan.md). Fixed-screen Bar/Admin sessions keep the longer
+        // default. Both are tunable via JwtSettings without a code change.
+        var defaultTokenHours = double.TryParse(jwtSettings["AccessTokenHours"], out var dh) ? dh : 24;
+        var waiterTokenHours = double.TryParse(jwtSettings["WaiterAccessTokenHours"], out var wh) ? wh : 4;
+        var tokenHours = user.Role == UserRole.Waiter ? waiterTokenHours : defaultTokenHours;
+
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(24), // 24-hour access tokens for better UX
+            expires: DateTime.UtcNow.AddHours(tokenHours),
             signingCredentials: credentials
         );
 

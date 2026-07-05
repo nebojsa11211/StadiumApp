@@ -1,0 +1,32 @@
+- generic [ref=f2e33]:
+  - banner [ref=f2e34]:
+    - generic [ref=f2e35]: 🏃 Runner
+    - generic [ref=f2e36]:
+      - generic [ref=f2e37]: nebojsa.medancic+runner@gmail.com
+      - button "Sign out" [ref=f2e38] [cursor=pointer]
+  - main [ref=f2e39]:
+    - generic [ref=f2e73]:
+      - generic [ref=f2e74]:
+        - heading "My deliveries" [active] [level=1] [ref=f2e75]
+        - button "↻" [ref=f2e76] [cursor=pointer]
+      - generic [ref=f2e77]:
+        - generic [ref=f2e78]:
+          - generic [ref=f2e79]: "#1"
+          - generic [ref=f2e80]: Seat 20
+        - generic [ref=f2e81]:
+          - generic [ref=f2e82]:
+            - generic [ref=f2e83]: 2×
+            - text: Orange Juice
+          - generic [ref=f2e84]:
+            - generic [ref=f2e85]: 2×
+            - text: Water
+        - button "Mark delivered" [ref=f2e86] [cursor=pointer]
+  - navigation [ref=f2e66]:
+    - link "📋 Pool" [ref=f2e67] [cursor=pointer]:
+      - /url: ""
+      - generic [ref=f2e68]: 📋
+      - generic [ref=f2e69]: Pool
+    - link "🚚 My deliveries" [ref=f2e70] [cursor=pointer]:
+      - /url: my-deliveries
+      - generic [ref=f2e71]: 🚚
+      - generic [ref=f2e72]: My deliveries

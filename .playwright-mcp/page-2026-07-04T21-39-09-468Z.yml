@@ -1,0 +1,18 @@
+- main [ref=e34]:
+  - generic [ref=e39]:
+    - generic [ref=e40]:
+      - generic [ref=e41]: Stadium Runner
+      - heading "Sign In" [active] [level=1] [ref=e42]
+      - paragraph [ref=e43]: Delivery console access
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - generic [ref=e46]: Email
+        - textbox "Email" [ref=e47]
+      - generic [ref=e48]:
+        - generic [ref=e49]: Password
+        - generic [ref=e50]:
+          - textbox "Password" [ref=e51]
+          - button "Show password" [ref=e52] [cursor=pointer]:
+            - img [ref=e53]
+      - button "Login" [ref=e57] [cursor=pointer]:
+        - generic [ref=e58]: Login

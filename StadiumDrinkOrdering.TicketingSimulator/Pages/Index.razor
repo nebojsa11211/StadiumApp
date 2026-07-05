@@ -2,64 +2,66 @@
 @page "/simulator"
 @using StadiumDrinkOrdering.Shared.DTOs.Integration
 @inject SimulatorApiClient Api
+@inject IStringLocalizer<SharedResources> Localizer
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 <PageTitle>Ticketing Simulator</PageTitle>
 
-<h1 class="h4 mb-1">External Ticketing Simulator</h1>
-<p class="text-muted">Stands in for the real ticketing system. Create an event and simulate sales — everything syncs to the Stadium app via signed webhooks.</p>
+<h1 class="h4 mb-1">@Localizer["Index_MainTitle"]</h1>
+<p class="text-muted">@Localizer["Index_MainSubtitle"]</p>
 
 <div id="simulator-index-connection-alert" class="alert @(connectionOk ? "alert-success" : "alert-warning") py-2">
     <i class="bi @(connectionOk ? "bi-plug-fill" : "bi-plug")"></i>
-    API: <code>@Api.ApiBaseUrl</code>
-    @if (connectionOk) { <span>· @sections.Count sections discovered</span> }
-    else { <span>· not reachable @(string.IsNullOrEmpty(connectionError) ? "" : $"({connectionError})")</span> }
-    <button id="simulator-index-reload-btn" class="btn btn-sm btn-outline-secondary ms-2" @onclick="LoadSectionsAsync">Reload</button>
+    @Localizer["Index_ApiLabel"]: <code>@Api.ApiBaseUrl</code>
+    @if (connectionOk) { <span>· @sections.Count @Localizer["Index_SectionsDiscovered"]</span> }
+    else { <span>· @Localizer["Index_NotReachable"] @(string.IsNullOrEmpty(connectionError) ? "" : $"({connectionError})")</span> }
+    <button id="simulator-index-reload-btn" class="btn btn-sm btn-outline-secondary ms-2" @onclick="LoadSectionsAsync">@Localizer["Index_ReloadButton"]</button>
 </div>
 
 @* ---------- Step 0: seasons ---------- *@
 <div id="simulator-index-season-card" class="card mb-3">
     <div id="simulator-index-season-header" class="card-header fw-bold d-flex align-items-center">
-        <span><i class="bi bi-calendar-range"></i> 0. Seasons</span>
+        <span><i class="bi bi-calendar-range"></i> @Localizer["Index_SeasonsHeader"]</span>
         @if (seasons.Count > 0) { <span class="badge bg-secondary ms-2">@seasons.Count</span> }
-        <button id="simulator-index-season-refresh-btn" class="btn btn-sm btn-outline-secondary ms-auto" @onclick="LoadSeasonsAsync" disabled="@busy">Refresh</button>
+        <button id="simulator-index-season-refresh-btn" class="btn btn-sm btn-outline-secondary ms-auto" @onclick="LoadSeasonsAsync" disabled="@busy">@Localizer["Index_RefreshButton"]</button>
     </div>
     <div id="simulator-index-season-body" class="card-body">
         <div id="simulator-index-season-form-row" class="row g-2 align-items-end mb-3">
             <div class="col-md-3">
-                <label class="form-label">Season name</label>
-                <input id="simulator-index-season-name-input" class="form-control" placeholder="2026/2027" @bind="newSeasonName" />
+                <label class="form-label">@Localizer["Index_SeasonNameLabel"]</label>
+                <input id="simulator-index-season-name-input" class="form-control" placeholder="@Localizer["Index_SeasonNamePlaceholder"]" @bind="newSeasonName" />
             </div>
             <div class="col-md-3">
-                <label class="form-label">Starts</label>
+                <label class="form-label">@Localizer["Index_StartsLabel"]</label>
                 <input id="simulator-index-season-start-input" type="date" class="form-control" @bind="seasonStart" />
             </div>
             <div class="col-md-3">
-                <label class="form-label">Ends</label>
+                <label class="form-label">@Localizer["Index_EndsLabel"]</label>
                 <input id="simulator-index-season-end-input" type="date" class="form-control" @bind="seasonEnd" />
             </div>
             <div class="col-md-2 mb-1">
                 <div class="form-check">
                     <input id="simulator-index-season-current-input" type="checkbox" class="form-check-input" @bind="seasonIsCurrent" />
-                    <label class="form-check-label">Set current</label>
+                    <label class="form-check-label">@Localizer["Index_SetCurrentCheckbox"]</label>
                 </div>
             </div>
             <div class="col-md-1">
                 <button id="simulator-index-season-create-btn" class="btn btn-primary w-100" @onclick="CreateSeasonAsync" disabled="@(busy || !connectionOk || string.IsNullOrWhiteSpace(newSeasonName) || seasonEnd <= seasonStart)">
-                    <i class="bi bi-broadcast"></i> Create
+                    <i class="bi bi-broadcast"></i> @Localizer["Index_CreateButton"]
                 </button>
             </div>
         </div>
 
         @if (seasons.Count == 0)
         {
-            <p id="simulator-index-season-empty" class="text-muted mb-0">No seasons yet. Create one (e.g. <code>2026/2027</code>) to group matches and sell season tickets.</p>
+            <p id="simulator-index-season-empty" class="text-muted mb-0">@Localizer["Index_NoSeasonsYet"]</p>
         }
         else
         {
             <table id="simulator-index-season-table" class="table table-sm mb-0 align-middle">
                 <thead class="table-light">
-                    <tr><th>Season</th><th>Window</th><th class="text-center">Current</th><th class="text-end">Events</th><th class="text-end">Passes</th><th class="text-end">Action</th></tr>
+                    <tr><th>@Localizer["Index_SeasonColumn"]</th><th>@Localizer["Index_WindowColumn"]</th><th class="text-center">@Localizer["Index_CurrentColumn"]</th><th class="text-end">@Localizer["Index_EventsColumn"]</th><th class="text-end">@Localizer["Index_PassesColumn"]</th><th class="text-end">@Localizer["Index_ActionColumn"]</th></tr>
                 </thead>
                 <tbody>
                     @foreach (var se in seasons)
@@ -67,17 +69,17 @@
                         <tr id="simulator-index-season-row-@se.SeasonId" class="@(se.ExternalSeasonId == selectedSeasonExternalId ? "table-primary" : "")">
                             <td><strong>@se.Name</strong> <span class="text-muted small">#@se.SeasonId · <code>@se.ExternalSeasonId</code></span></td>
                             <td class="text-nowrap small">@se.StartDate.ToLocalTime().ToString("yyyy-MM-dd") → @se.EndDate.ToLocalTime().ToString("yyyy-MM-dd")</td>
-                            <td class="text-center">@if (se.IsCurrent) { <span class="badge bg-success">current</span> }</td>
+                            <td class="text-center">@if (se.IsCurrent) { <span class="badge bg-success">@Localizer["Index_CurrentBadge"]</span> }</td>
                             <td class="text-end">@se.EventCount</td>
                             <td class="text-end">@se.SeasonTicketCount</td>
                             <td class="text-end">
                                 @if (se.ExternalSeasonId == selectedSeasonExternalId)
                                 {
-                                    <span class="badge bg-primary">selected</span>
+                                    <span class="badge bg-primary">@Localizer["Index_SelectedBadge"]</span>
                                 }
                                 else
                                 {
-                                    <button id="simulator-index-season-select-btn-@se.SeasonId" class="btn btn-sm btn-outline-primary" @onclick="() => SelectSeason(se)" disabled="@busy">Select</button>
+                                    <button id="simulator-index-season-select-btn-@se.SeasonId" class="btn btn-sm btn-outline-primary" @onclick="() => SelectSeason(se)" disabled="@busy">@Localizer["Index_SelectButton"]</button>
                                 }
                             </td>
                         </tr>
@@ -90,7 +92,7 @@
                 <div id="simulator-index-season-ticket-panel" class="border rounded p-2 mt-3 bg-light">
                     <div class="d-flex align-items-end gap-2 flex-wrap">
                         <div>
-                            <label class="form-label mb-0 small">Season ticket sector</label>
+                            <label class="form-label mb-0 small">@Localizer["Index_SeasonTicketSectorLabel"]</label>
                             <select id="simulator-index-season-ticket-sector-select" class="form-select form-select-sm" @bind="seasonTicketSector" style="min-width:170px">
                                 @foreach (var s in sections)
                                 {
@@ -99,31 +101,31 @@
                             </select>
                         </div>
                         <button id="simulator-index-season-ticket-sell-btn" class="btn btn-sm btn-success" @onclick="SellSeasonTicketAsync" disabled="@(busy || string.IsNullOrEmpty(seasonTicketSector))">
-                            <i class="bi bi-person-badge"></i> Sell 1
+                            <i class="bi bi-person-badge"></i> @Localizer["Index_Sell1Button"]
                         </button>
                         <button id="simulator-index-season-ticket-refund-btn" class="btn btn-sm btn-outline-danger" @onclick="RefundSeasonTicketAsync" disabled="@(busy || seasonTicketIds.Count == 0)">
-                            <i class="bi bi-arrow-return-left"></i> Refund last
+                            <i class="bi bi-arrow-return-left"></i> @Localizer["Index_RefundLastButton"]
                         </button>
 
                         <div class="vr mx-1"></div>
                         <div>
-                            <label class="form-label mb-0 small">Bulk (spread across sectors)</label>
+                            <label class="form-label mb-0 small">@Localizer["Index_BulkLabel"]</label>
                             <div class="input-group input-group-sm" style="width:auto">
                                 <input id="simulator-index-season-ticket-batch-input" type="number" min="1" max="1000" class="form-control form-control-sm" style="width:80px" @bind="seasonTicketBatch" />
                                 <button id="simulator-index-season-ticket-batch-btn" class="btn btn-sm btn-primary" @onclick="() => SellSeasonTicketBatchAsync(seasonTicketBatch)" disabled="@(busy || sections.Count == 0)">
-                                    <i class="bi bi-people-fill"></i> Create @seasonTicketBatch passes
+                                    <i class="bi bi-people-fill"></i> @Localizer["Index_CreatePassesButton", seasonTicketBatch]
                                 </button>
                             </div>
                             <div class="btn-group btn-group-sm mt-1" role="group">
-                                <button id="simulator-index-season-ticket-preset-20" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(20)" disabled="@(busy || sections.Count == 0)">+20</button>
-                                <button id="simulator-index-season-ticket-preset-40" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(40)" disabled="@(busy || sections.Count == 0)">+40</button>
-                                <button id="simulator-index-season-ticket-preset-100" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(100)" disabled="@(busy || sections.Count == 0)">+100</button>
+                                <button id="simulator-index-season-ticket-preset-20" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(20)" disabled="@(busy || sections.Count == 0)">@Localizer["Index_Plus20Button"]</button>
+                                <button id="simulator-index-season-ticket-preset-40" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(40)" disabled="@(busy || sections.Count == 0)">@Localizer["Index_Plus40Button"]</button>
+                                <button id="simulator-index-season-ticket-preset-100" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(100)" disabled="@(busy || sections.Count == 0)">@Localizer["Index_Plus100Button"]</button>
                             </div>
                         </div>
 
-                        <span class="ms-auto small text-muted">Sold this session: <strong>@seasonTicketIds.Count</strong> pass(es) for <strong>@selectedSeasonName</strong></span>
+                        <span class="ms-auto small text-muted">@Localizer["Index_SoldThisSession"]: <strong>@seasonTicketIds.Count</strong> @Localizer["Index_PassesFor"] <strong>@selectedSeasonName</strong></span>
                     </div>
-                    <div class="small text-muted mt-1">A season pass holds one seat across <em>every</em> event linked to this season — the per-match tickets are generated automatically. Bulk spreads passes across sectors weighted by capacity.</div>
+                    <div class="small text-muted mt-1">@Localizer["Index_SeasonPassInfo"]</div>
                 </div>
             }
         }
@@ -132,31 +134,27 @@
 
 @* ---------- Step 1: create event ---------- *@
 <div id="simulator-index-event-card" class="card mb-3">
-    <div id="simulator-index-event-header" class="card-header fw-bold"><i class="bi bi-calendar-plus"></i> 1. Event</div>
+    <div id="simulator-index-event-header" class="card-header fw-bold"><i class="bi bi-calendar-plus"></i> @Localizer["Index_EventHeader"]</div>
     <div id="simulator-index-event-body" class="card-body">
         @if (externalEventId == null)
         {
             <div id="simulator-index-event-form-row" class="row g-2 align-items-end">
                 <div id="simulator-index-event-name-col" class="col-md-3">
-                    <label class="form-label">Event name</label>
+                    <label class="form-label">@Localizer["Index_EventNameLabel"]</label>
                     <input id="simulator-index-event-name-input" class="form-control" @bind="eventName" />
                 </div>
                 <div id="simulator-index-event-date-col" class="col-md-2">
-                    <label class="form-label">Start</label>
+                    <label class="form-label">@Localizer["Index_StartLabel"]</label>
                     <input id="simulator-index-event-date-input" type="datetime-local" class="form-control" @bind="eventDate" />
                 </div>
                 <div id="simulator-index-event-enddate-col" class="col-md-2">
-                    <label class="form-label">End</label>
+                    <label class="form-label">@Localizer["Index_EndLabel"]</label>
                     <input id="simulator-index-event-enddate-input" type="datetime-local" class="form-control" @bind="eventEndDate" />
                 </div>
-                <div id="simulator-index-event-price-col" class="col-md-1">
-                    <label class="form-label">Price</label>
-                    <input id="simulator-index-event-price-input" type="number" step="0.5" min="0" class="form-control" @bind="basePrice" />
-                </div>
                 <div id="simulator-index-event-season-col" class="col-md-2">
-                    <label class="form-label">Season</label>
+                    <label class="form-label">@Localizer["Index_SeasonLabel"]</label>
                     <select id="simulator-index-event-season-select" class="form-select" @bind="linkSeasonExternalId">
-                        <option value="">(no season)</option>
+                        <option value="">@Localizer["Index_NoSeasonOption"]</option>
                         @foreach (var se in seasons)
                         {
                             <option value="@se.ExternalSeasonId">@se.Name</option>
@@ -165,27 +163,35 @@
                 </div>
                 <div id="simulator-index-event-buttons-col" class="col-md-2">
                     <button id="simulator-index-event-create-btn" class="btn btn-primary w-100" @onclick="CreateEventAsync" disabled="@(busy || !connectionOk || !EndAfterStart)">
-                        <i class="bi bi-broadcast"></i> Create &amp; sync
+                        <i class="bi bi-broadcast"></i> @Localizer["Index_CreateSyncButton"]
                     </button>
                 </div>
             </div>
             @if (!EndAfterStart)
             {
-                <div id="simulator-index-event-validation-msg" class="text-danger small mt-1"><i class="bi bi-exclamation-triangle"></i> End time must be after the start time.</div>
+                <div id="simulator-index-event-validation-msg" class="text-danger small mt-1"><i class="bi bi-exclamation-triangle"></i> @Localizer["Index_EndTimeValidationError"]</div>
             }
         }
         else
         {
             <div id="simulator-index-event-summary" class="d-flex flex-wrap gap-3 align-items-center">
-                <div><span class="text-muted">Event:</span> <strong>@eventName</strong></div>
-                <div><span class="text-muted">Window:</span> <strong>@eventDate.ToString("yyyy-MM-dd HH:mm")</strong> → <strong>@eventEndDate.ToString("HH:mm")</strong></div>
-                <div><span class="text-muted">External ID:</span> <code>@externalEventId</code></div>
-                <div><span class="text-muted">Stadium event ID:</span> <strong>@(internalEventId?.ToString() ?? "?")</strong></div>
-                <div><span class="text-muted">Total sold:</span> <strong>@TotalSold</strong> / @TotalCapacity</div>
-                <button id="simulator-index-event-back-btn" class="btn btn-sm btn-outline-secondary ms-auto" @onclick="ResetEvent">
-                    <i class="bi bi-arrow-left"></i> Back to events
+                <div><span class="text-muted">@Localizer["Index_EventLabel"]</span> <strong>@eventName</strong></div>
+                <div><span class="text-muted">@Localizer["Index_WindowLabel"]</span> <strong>@eventDate.ToString("yyyy-MM-dd HH:mm")</strong> → <strong>@eventEndDate.ToString("HH:mm")</strong></div>
+                <div><span class="text-muted">@Localizer["Index_ExternalIdLabel"]</span> <code>@externalEventId</code></div>
+                <div><span class="text-muted">@Localizer["Index_StadiumEventIdLabel"]</span> <strong>@(internalEventId?.ToString() ?? "?")</strong></div>
+                <div>
+                    <span class="text-muted">@Localizer["Index_StatusLabel"]</span> <strong>@eventStatusName</strong>
+                    @if (eventLive) { <span id="simulator-index-event-live-badge" class="badge bg-danger ms-1">@Localizer["Index_LiveBadge"]</span> }
+                    else if (!eventCanSell) { <span class="badge bg-secondary ms-1">@Localizer["Index_SalesClosedBadge"]</span> }
+                </div>
+                <div><span class="text-muted">@Localizer["Index_TotalOccupiedLabel"]</span> <strong>@TotalOccupied</strong> / @TotalCapacity@if (TotalSeasonSold > 0) { <span class="text-info small"> @Localizer["Index_IncludingSeasonText", TotalSeasonSold]</span> }</div>
+                <button id="simulator-index-event-golive-btn" class="btn btn-sm btn-danger ms-auto" title="@Localizer["Index_MakeLiveNowTooltip"]" @onclick="MakeEventLiveAsync" disabled="@(busy || !connectionOk || eventLive)">
+                    <i class="bi bi-broadcast-pin"></i> @Localizer["Index_MakeLiveNowButton"]
                 </button>
-                <button id="simulator-index-event-reset-btn" class="btn btn-sm btn-outline-danger" @onclick="ResetEvent">New event</button>
+                <button id="simulator-index-event-back-btn" class="btn btn-sm btn-outline-secondary" @onclick="ResetEvent">
+                    <i class="bi bi-arrow-left"></i> @Localizer["Index_BackToEventsButton"]
+                </button>
+                <button id="simulator-index-event-reset-btn" class="btn btn-sm btn-outline-danger" @onclick="ResetEvent">@Localizer["Index_NewEventButton"]</button>
             </div>
         }
     </div>
@@ -196,22 +202,22 @@
 {
     <div id="simulator-index-existing-events-card" class="card mb-3">
         <div id="simulator-index-existing-header" class="card-header fw-bold d-flex align-items-center">
-            <span><i class="bi bi-collection"></i> Existing events</span>
+            <span><i class="bi bi-collection"></i> @Localizer["Index_ExistingEventsHeader"]</span>
             @if (existingEvents.Count > 0) { <span class="badge bg-secondary ms-2">@existingEvents.Count</span> }
-            <button id="simulator-index-existing-refresh-btn" class="btn btn-sm btn-outline-secondary ms-auto" @onclick="LoadEventsAsync" disabled="@busy">Refresh</button>
+            <button id="simulator-index-existing-refresh-btn" class="btn btn-sm btn-outline-secondary ms-auto" @onclick="LoadEventsAsync" disabled="@busy">@Localizer["Index_RefreshButton"]</button>
         </div>
         <div id="simulator-index-existing-body" class="card-body p-0">
             @if (existingEvents.Count == 0)
             {
-                <p class="text-muted m-3 mb-3">No events created yet. Create one above to get started.</p>
+                <p class="text-muted m-3 mb-3">@Localizer["Index_NoEventsYet"]</p>
             }
             else
             {
                 <table id="simulator-index-existing-table" class="table table-sm mb-0 align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Event</th><th>Start</th><th>End</th><th>Source</th>
-                            <th class="text-end">Sold / Capacity</th><th class="text-end">Action</th>
+                            <th>@Localizer["Index_EventColumn"]</th><th>@Localizer["Index_StartColumn"]</th><th>@Localizer["Index_EndColumn"]</th><th>@Localizer["Index_SourceColumn"]</th>
+                            <th class="text-end">@Localizer["Index_SoldCapacityColumn"]</th><th class="text-end">@Localizer["Index_ActionColumn"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -226,9 +232,12 @@
                                 <td class="text-nowrap small">@(e.EventEndDate is DateTime end ? end.ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "—")</td>
                                 <td class="small text-muted">@e.SourceSystem</td>
                                 <td class="text-end">@e.TotalSold / @e.TotalSeats</td>
-                                <td class="text-end">
+                                <td class="text-end text-nowrap">
                                     <button id="simulator-index-existing-select-btn-@e.EventId" class="btn btn-sm btn-outline-primary" @onclick="() => SelectEventAsync(e)" disabled="@(busy || !connectionOk)">
-                                        <i class="bi bi-box-arrow-in-right"></i> Select
+                                        <i class="bi bi-box-arrow-in-right"></i> @Localizer["Index_SelectButton"]
+                                    </button>
+                                    <button id="simulator-index-existing-delete-btn-@e.EventId" class="btn btn-sm btn-outline-danger ms-1" title="@Localizer["Index_DeleteEventTooltip"]" @onclick="() => DeleteEventAsync(e)" disabled="@(busy || !connectionOk)">
+                                        <i class="bi bi-trash"></i> @Localizer["Index_DeleteButton"]
                                     </button>
                                 </td>
                             </tr>
@@ -245,42 +254,63 @@
     @* ---------- Step 2: sales ---------- *@
     <div id="simulator-index-sales-card" class="card mb-3">
         <div id="simulator-index-sales-header" class="card-header fw-bold d-flex align-items-center">
-            <span><i class="bi bi-cash-coin"></i> 2. Simulate sales</span>
+            <span><i class="bi bi-cash-coin"></i> @Localizer["Index_SalesHeader"]</span>
             <div id="simulator-index-sales-controls" class="ms-auto d-flex align-items-center gap-2">
-                <span class="small text-muted">rate</span>
+                <span class="small text-muted">@Localizer["Index_RateLabel"]</span>
                 <input id="simulator-index-sales-rate-input" type="number" min="1" max="50" class="form-control form-control-sm" style="width:70px" @bind="autoRate" />
-                <span class="small text-muted">per</span>
+                <span class="small text-muted">@Localizer["Index_PerLabel"]</span>
                 <input id="simulator-index-sales-interval-input" type="number" min="200" step="100" class="form-control form-control-sm" style="width:90px" @bind="autoIntervalMs" />
-                <span class="small text-muted">ms</span>
-                <button id="simulator-index-sales-autosell-toggle-btn" class="btn btn-sm @(autoSelling ? "btn-danger" : "btn-success")" @onclick="ToggleAutoSell">
+                <span class="small text-muted">@Localizer["Index_MsLabel"]</span>
+                <button id="simulator-index-sales-autosell-toggle-btn" class="btn btn-sm @(autoSelling ? "btn-danger" : "btn-success")" @onclick="ToggleAutoSell" disabled="@(!autoSelling && !eventCanSell)">
                     <i class="bi @(autoSelling ? "bi-stop-fill" : "bi-play-fill")"></i>
-                    @(autoSelling ? "Stop auto-sell" : "Start auto-sell")
+                    @(autoSelling ? Localizer["Index_StopAutoSellButton"] : Localizer["Index_StartAutoSellButton"])
                 </button>
-                <button id="simulator-index-sales-random-batch-btn" class="btn btn-sm btn-outline-primary" @onclick="() => SellRandomBatchAsync(20)" disabled="@busy">Sell random 20</button>
+                <button id="simulator-index-sales-random-batch-btn" class="btn btn-sm btn-outline-primary" @onclick="() => SellRandomBatchAsync(20)" disabled="@(busy || !eventCanSell)">@Localizer["Index_SellRandom20Button"]</button>
             </div>
         </div>
         <div id="simulator-index-sales-body" class="card-body p-0">
+            @if (!eventCanSell)
+            {
+                <div id="simulator-index-sales-closed-banner" class="alert alert-warning m-2 mb-0 py-2">
+                    <i class="bi bi-lock-fill"></i> @Localizer["Index_SalesClosedBannerPrefix"] <strong>@eventStatusName</strong>@(eventLive ? " (live)" : "")@Localizer["Index_SalesClosedBannerSuffix"]
+                    @if (eventLive) { <span>@Localizer["Index_SimulateDrinkOrdersText"]</span> }
+                </div>
+            }
             <table id="simulator-index-sales-table" class="table table-sm mb-0 align-middle">
                 <thead class="table-light">
-                    <tr><th>Sector</th><th style="width:45%">Occupancy</th><th class="text-end">Sold / Capacity</th><th class="text-end">Actions</th></tr>
+                    <tr><th>@Localizer["Index_SectorColumn"]</th><th style="width:45%">@Localizer["Index_OccupancyColumn"]</th><th class="text-end">@Localizer["Index_OccupiedCapacityColumn"]</th><th class="text-end">@Localizer["Index_ActionsColumn"]</th></tr>
                 </thead>
                 <tbody>
                     @foreach (var s in sections)
                     {
-                        var sold = SoldCount(s.SectionCode);
-                        var pct = s.Capacity > 0 ? (double)sold / s.Capacity * 100 : 0;
+                        var single = SoldCount(s.SectionCode);
+                        var season = SeasonSoldCount(s.SectionCode);
+                        var occupied = single + season;
+                        var pct = s.Capacity > 0 ? (double)occupied / s.Capacity * 100 : 0;
+                        var singlePct = s.Capacity > 0 ? (double)single / s.Capacity * 100 : 0;
+                        var seasonPct = s.Capacity > 0 ? (double)season / s.Capacity * 100 : 0;
                         <tr id="simulator-index-sales-row-@s.SectionCode">
                             <td><strong>@s.SectionCode</strong> <span class="text-muted small">@s.SectionName</span></td>
                             <td>
-                                <div id="simulator-index-sales-progress-@s.SectionCode" class="progress" style="height:14px">
-                                    <div class="progress-bar @BarClass(pct)" style="width:@pct.ToString("0.##")%"></div>
+                                <div id="simulator-index-sales-progress-@s.SectionCode" class="progress" style="height:14px" title="@single single-match + @season season pass = @occupied / @s.Capacity">
+                                    <div class="progress-bar @BarClass(pct)" style="width:@singlePct.ToString("0.##")%"></div>
+                                    @if (season > 0)
+                                    {
+                                        <div class="progress-bar bg-info" style="width:@seasonPct.ToString("0.##")%"></div>
+                                    }
                                 </div>
                             </td>
-                            <td class="text-end">@sold / @s.Capacity</td>
+                            <td class="text-end">
+                                @occupied / @s.Capacity
+                                @if (season > 0)
+                                {
+                                    <span class="text-info small" title="@season season-pass seat(s) held in this sector">(@season <i class="bi bi-person-badge"></i>)</span>
+                                }
+                            </td>
                             <td class="text-end text-nowrap">
-                                <button id="simulator-index-sales-sell1-btn-@s.SectionCode" class="btn btn-outline-success btn-sm" @onclick="() => SellAsync(s, 1)" disabled="@(busy || sold >= s.Capacity)">+1</button>
-                                <button id="simulator-index-sales-sell5-btn-@s.SectionCode" class="btn btn-outline-success btn-sm" @onclick="() => SellAsync(s, 5)" disabled="@(busy || sold >= s.Capacity)">+5</button>
-                                <button id="simulator-index-sales-refund-btn-@s.SectionCode" class="btn btn-outline-danger btn-sm" @onclick="() => RefundAsync(s)" disabled="@(busy || sold == 0)">−1</button>
+                                <button id="simulator-index-sales-sell1-btn-@s.SectionCode" class="btn btn-outline-success btn-sm" @onclick="() => SellAsync(s, 1)" disabled="@(busy || !eventCanSell || occupied >= s.Capacity)">@Localizer["Index_Plus1Button"]</button>
+                                <button id="simulator-index-sales-sell5-btn-@s.SectionCode" class="btn btn-outline-success btn-sm" @onclick="() => SellAsync(s, 5)" disabled="@(busy || !eventCanSell || occupied >= s.Capacity)">@Localizer["Index_Plus5Button"]</button>
+                                <button id="simulator-index-sales-refund-btn-@s.SectionCode" class="btn btn-outline-danger btn-sm" @onclick="() => RefundAsync(s)" disabled="@(busy || single == 0)" title="@Localizer["Index_RefundTooltip"]">@Localizer["Index_Minus1Button"]</button>
                             </td>
                         </tr>
                     }
@@ -289,28 +319,71 @@
         </div>
     </div>
 
+    @* ---------- Step 2b: live drink orders ---------- *@
+    <div id="simulator-index-drinks-card" class="card mb-3 @(eventLive ? "border-danger" : "")">
+        <div id="simulator-index-drinks-header" class="card-header fw-bold d-flex align-items-center">
+            <span><i class="bi bi-cup-straw"></i> @Localizer["Index_DrinksHeader"]</span>
+            @if (eventLive) { <span class="badge bg-danger ms-2">@Localizer["Index_LiveBadge"]</span> }
+            <span class="ms-auto small text-muted">@Localizer["Index_PlacedThisSession"]: <strong>@drinkOrdersPlaced</strong></span>
+        </div>
+        <div id="simulator-index-drinks-body" class="card-body">
+            @if (!eventLive)
+            {
+                <p id="simulator-index-drinks-locked" class="text-muted mb-0">
+                    <i class="bi bi-lock"></i> @Localizer["Index_DrinksLockedMessage"]
+                </p>
+            }
+            else
+            {
+                <div class="d-flex align-items-end gap-2 flex-wrap">
+                    <button id="simulator-index-drinks-order1-btn" class="btn btn-success" @onclick="() => SimulateDrinkOrdersAsync(1)" disabled="@busy">
+                        <i class="bi bi-cup-hot"></i> @Localizer["Index_Place1OrderButton"]
+                    </button>
+                    <button id="simulator-index-drinks-order5-btn" class="btn btn-outline-success" @onclick="() => SimulateDrinkOrdersAsync(5)" disabled="@busy">
+                        @Localizer["Index_Place5OrdersButton"]
+                    </button>
+
+                    <div class="vr mx-1"></div>
+
+                    <span class="small text-muted">@Localizer["Index_RateLabel"]</span>
+                    <input id="simulator-index-drinks-rate-input" type="number" min="1" max="20" class="form-control form-control-sm" style="width:70px" @bind="autoOrderRate" />
+                    <span class="small text-muted">@Localizer["Index_PerLabel"]</span>
+                    <input id="simulator-index-drinks-interval-input" type="number" min="300" step="100" class="form-control form-control-sm" style="width:90px" @bind="autoOrderIntervalMs" />
+                    <span class="small text-muted">@Localizer["Index_MsLabel"]</span>
+                    <button id="simulator-index-drinks-auto-toggle-btn" class="btn btn-sm @(autoOrdering ? "btn-danger" : "btn-success")" @onclick="ToggleAutoOrder">
+                        <i class="bi @(autoOrdering ? "bi-stop-fill" : "bi-play-fill")"></i>
+                        @(autoOrdering ? Localizer["Index_StopAutoOrdersButton"] : Localizer["Index_StartAutoOrdersButton"])
+                    </button>
+                </div>
+                <div class="small text-muted mt-2">
+                    @Localizer["Index_DrinkOrdersInfo"]
+                </div>
+            }
+        </div>
+    </div>
+
     @* ---------- Step 3: reconciliation ---------- *@
     <div id="simulator-index-reconciliation-card" class="card mb-3">
         <div id="simulator-index-reconciliation-header" class="card-header fw-bold">
-            <i class="bi bi-arrow-repeat"></i> 3. Reconciliation
-            <button id="simulator-index-reconciliation-verify-btn" class="btn btn-sm btn-outline-secondary ms-2" @onclick="VerifySyncAsync" disabled="@busy">Verify sync</button>
-            <button id="simulator-index-reconciliation-replay-btn" class="btn btn-sm btn-outline-warning ms-1" @onclick="ReplayAsync" disabled="@busy">Replay all sales</button>
-            <span class="small text-muted ms-2">Replays local sales to the API (idempotent) to heal any missed webhooks.</span>
+            <i class="bi bi-arrow-repeat"></i> @Localizer["Index_ReconciliationHeader"]
+            <button id="simulator-index-reconciliation-verify-btn" class="btn btn-sm btn-outline-secondary ms-2" @onclick="VerifySyncAsync" disabled="@busy">@Localizer["Index_VerifySyncButton"]</button>
+            <button id="simulator-index-reconciliation-replay-btn" class="btn btn-sm btn-outline-warning ms-1" @onclick="ReplayAsync" disabled="@busy">@Localizer["Index_ReplayAllSalesButton"]</button>
+            <span class="small text-muted ms-2">@Localizer["Index_ReplayInfo"]</span>
         </div>
         @if (snapshot != null)
         {
             <div id="simulator-index-reconciliation-body" class="card-body">
-                <p class="mb-2">API reports <strong>@snapshot.TotalSold</strong> sold; simulator holds <strong>@TotalSold</strong>.
-                    <span class="@(snapshot.TotalSold == TotalSold ? "text-success" : "text-danger")">
-                        @(snapshot.TotalSold == TotalSold ? "In sync ✓" : $"Drift: {TotalSold - snapshot.TotalSold}")
+                <p class="mb-2">@Localizer["Index_ApiReportsPrefix"] <strong>@snapshot.TotalSold</strong> @Localizer["Index_SoldIncludingPrefix"] <strong>@snapshot.TotalSeasonSold</strong> @Localizer["Index_SeasonSimulatorHoldsText"] <strong>@TotalOccupied</strong>.
+                    <span class="@(snapshot.TotalSold == TotalOccupied ? "text-success" : "text-danger")">
+                        @(snapshot.TotalSold == TotalOccupied ? Localizer["Index_InSyncText"] : $"{Localizer["Index_DriftText"]}: {TotalOccupied - snapshot.TotalSold}")
                     </span>
                 </p>
                 <table id="simulator-index-reconciliation-table" class="table table-sm">
-                    <thead><tr><th>Sector</th><th class="text-end">API sold</th><th class="text-end">Simulator</th></tr></thead>
+                    <thead><tr><th>@Localizer["Index_SectorColumn"]</th><th class="text-end">@Localizer["Index_ApiSoldColumn"]</th><th class="text-end">@Localizer["Index_SimulatorOccupiedColumn"]</th></tr></thead>
                     <tbody>
                         @foreach (var sec in snapshot.Sectors)
                         {
-                            var local = SoldCount(sec.SectionCode);
+                            var local = OccupiedCount(sec.SectionCode);
                             <tr id="simulator-index-reconciliation-row-@sec.SectionCode" class="@(sec.Sold == local ? "" : "table-warning")">
                                 <td>@sec.SectionCode</td>
                                 <td class="text-end">@sec.Sold</td>
@@ -326,11 +399,11 @@
 
 @* ---------- Activity log ---------- *@
 <div id="simulator-index-log-card" class="card">
-    <div id="simulator-index-log-header" class="card-header fw-bold"><i class="bi bi-terminal"></i> Activity log</div>
+    <div id="simulator-index-log-header" class="card-header fw-bold"><i class="bi bi-terminal"></i> @Localizer["Index_ActivityLogHeader"]</div>
     <div id="simulator-index-log-body" class="card-body" style="max-height:220px; overflow:auto; font-family:monospace; font-size:0.82rem;">
         @if (log.Count == 0)
         {
-            <span class="text-muted">No activity yet.</span>
+            <span class="text-muted">@Localizer["Index_NoActivityYet"]</span>
         }
         else
         {
@@ -366,7 +439,20 @@
     private string eventName = "Simulated Match";
     private DateTime eventDate = DateTime.Today.AddDays(7).AddHours(18);
     private DateTime eventEndDate = DateTime.Today.AddDays(7).AddHours(20);
-    private decimal basePrice = 45m;
+    private const decimal basePrice = 45m;
+
+    // Lifecycle of the loaded event (from the API). Ticket sales are only allowed while the event
+    // is on sale; once it's live, selling stops and drink-order simulation opens up.
+    private bool eventCanSell = true;
+    private bool eventLive;
+    private string eventStatusName = "";
+
+    // Live drink-order simulation state
+    private bool autoOrdering;
+    private int autoOrderRate = 3;
+    private int autoOrderIntervalMs = 1500;
+    private CancellationTokenSource? autoOrderCts;
+    private int drinkOrdersPlaced;
 
     // The event is only "live" between start and end, so the end must come after the start.
     private bool EndAfterStart => eventEndDate > eventDate;
@@ -374,6 +460,11 @@
     // Fixed-key structures created at event creation (safe for concurrent read/write of existing keys).
     private readonly Dictionary<string, int> soldCount = new();
     private readonly Dictionary<string, List<string>> soldIds = new();
+
+    // Per-sector season-pass occupancy for the loaded event. Season passes hold a seat across every
+    // event linked to their season, but their per-match access tickets carry no external id, so they
+    // never appear in GetEventTickets/soldCount — we source this from the authoritative API snapshot.
+    private readonly Dictionary<string, int> seasonCount = new();
     private readonly object _lock = new();
 
     private bool busy;
@@ -392,6 +483,13 @@
     private int TotalCapacity => sections.Sum(s => s.Capacity);
     private int TotalSold => sections.Sum(s => SoldCount(s.SectionCode));
     private int SoldCount(string code) => soldCount.TryGetValue(code, out var c) ? c : 0;
+
+    // Season passes occupy seats too, so occupancy/availability must count both single-match sales
+    // and season holders.
+    private int SeasonSoldCount(string code) => seasonCount.TryGetValue(code, out var c) ? c : 0;
+    private int OccupiedCount(string code) => SoldCount(code) + SeasonSoldCount(code);
+    private int TotalSeasonSold => sections.Sum(s => SeasonSoldCount(s.SectionCode));
+    private int TotalOccupied => TotalSold + TotalSeasonSold;
 
     protected override async Task OnInitializedAsync()
     {
@@ -487,6 +585,7 @@
             {
                 Log($"🎟 Season ticket sold in {seasonTicketSector} — {result.DerivedTicketsAffected} match ticket(s) generated (pass #{result.SeasonTicketId})");
                 await LoadSeasonsAsync();
+                await RefreshSeasonOccupancyAsync();
             }
         }
         finally
@@ -513,6 +612,7 @@
             }
             Log($"🎟 Bulk season passes: {made} sold across sectors" + (failed > 0 ? $", {failed} failed (sector full?)" : ""));
             await LoadSeasonsAsync();
+            await RefreshSeasonOccupancyAsync();
         }
         finally
         {
@@ -574,6 +674,31 @@
         return sections[^1];
     }
 
+    /// <summary>
+    /// Refreshes the loaded event's per-sector season-pass occupancy from the API snapshot. Season
+    /// passes materialise a per-match access ticket with no external id, so they never show up in
+    /// GetEventTickets — this is the only way the simulator learns how many seats they hold.
+    /// </summary>
+    private async Task RefreshSeasonOccupancyAsync()
+    {
+        if (externalEventId == null) return;
+        try
+        {
+            var snap = await Api.GetSnapshotAsync(externalEventId);
+            if (snap == null) return;
+            lock (_lock)
+            {
+                seasonCount.Clear();
+                foreach (var sec in snap.Sectors)
+                    if (sec.SeasonSold > 0) seasonCount[sec.SectionCode] = sec.SeasonSold;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"⚠ Could not refresh season occupancy: {ex.Message}");
+        }
+    }
+
     private async Task RefundSeasonTicketAsync()
     {
         if (busy || seasonTicketIds.Count == 0) return;
@@ -599,6 +724,7 @@
                 seasonTicketIds.Remove(extId);
                 Log($"↩ Season ticket refunded — {result.DerivedTicketsAffected} match ticket(s) cancelled");
                 await LoadSeasonsAsync();
+                await RefreshSeasonOccupancyAsync();
             }
             else
             {
@@ -660,13 +786,56 @@
             eventName = summary.EventName;
             eventDate = summary.EventDate.ToLocalTime();
             if (summary.EventEndDate is DateTime end) eventEndDate = end.ToLocalTime();
-            if (summary.BaseTicketPrice is decimal p) basePrice = p;
+            ApplyEventState(summary);
             snapshot = null;
             Log($"📂 Loaded '{summary.EventName}' (external {summary.ExternalEventId} → stadium #{summary.EventId}) — {refs.Count} sold ticket(s) restored");
+            await RefreshSeasonOccupancyAsync();
         }
         catch (Exception ex)
         {
             Log($"❌ Failed to load event: {ex.Message}");
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
+    // Deletes an existing event (and its tickets) after a confirm. Derived season-pass tickets go
+    // with it; the season passes themselves survive. If the deleted event was the loaded one, clear it.
+    private async Task DeleteEventAsync(ExternalEventSummaryDto summary)
+    {
+        if (busy) return;
+
+        var confirmed = await JSRuntime.InvokeAsync<bool>(
+            "confirm", Localizer["Index_DeleteConfirm", summary.EventName].Value);
+        if (!confirmed) return;
+
+        busy = true;
+        try
+        {
+            var (ok, message) = await Api.DeleteEventAsync(summary.ExternalEventId);
+            if (ok)
+            {
+                Log($"🗑 Deleted '{summary.EventName}' (external {summary.ExternalEventId} → stadium #{summary.EventId})");
+                if (externalEventId == summary.ExternalEventId)
+                {
+                    await ResetEvent(); // clears loaded event + reloads the list
+                }
+                else
+                {
+                    await LoadEventsAsync();
+                    await LoadSeasonsAsync(); // season EventCount may have changed
+                }
+            }
+            else
+            {
+                Log($"❌ Delete failed for '{summary.EventName}': {message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"❌ Delete error: {ex.Message}");
         }
         finally
         {
@@ -733,6 +902,7 @@
                 {
                     soldCount.Clear();
                     soldIds.Clear();
+                    seasonCount.Clear();
                     foreach (var s in sections)
                     {
                         soldCount[s.SectionCode] = 0;
@@ -744,7 +914,9 @@
                     : "";
                 Log($"✅ Event created — external {extId} → stadium event #{result.EventId}{seasonNote}");
                 await LoadEventsAsync();
+                ApplyEventState(existingEvents.FirstOrDefault(e => e.ExternalEventId == externalEventId));
                 await LoadSeasonsAsync();
+                await RefreshSeasonOccupancyAsync();
             }
             else
             {
@@ -761,6 +933,58 @@
         }
     }
 
+    // Slides the selected event's start to "now" and flips its lifecycle to Active on the API,
+    // so features gated on the event being live (drink ordering, live ticket sessions) can be tested.
+    private async Task MakeEventLiveAsync()
+    {
+        if (busy || externalEventId == null) return;
+        busy = true;
+        try
+        {
+            var envelope = new TicketingWebhookEnvelope
+            {
+                EventType = TicketingEventTypes.EventWentLive,
+                IdempotencyKey = Guid.NewGuid().ToString(),
+                OccurredAt = DateTime.UtcNow,
+                SourceSystem = Api.SourceSystem,
+                Event = new ExternalEventDto
+                {
+                    ExternalEventId = externalEventId!,
+                    EventName = eventName
+                }
+            };
+
+            var result = await Api.SendAsync(envelope);
+            if (result.Accepted)
+            {
+                // Mirror the new "now" window locally, preserving the event's original duration.
+                var window = eventEndDate - eventDate;
+                if (window <= TimeSpan.Zero) window = TimeSpan.FromHours(2);
+                eventDate = DateTime.Now;
+                eventEndDate = eventDate.Add(window);
+
+                // Selling is closed once live — stop any running auto-sell.
+                if (autoSelling) { autoSelling = false; autoCts?.Cancel(); }
+
+                Log($"🔴 Event is now LIVE — window moved to now, {result.Message}");
+                await LoadEventsAsync();
+                ApplyEventState(existingEvents.FirstOrDefault(e => e.ExternalEventId == externalEventId));
+            }
+            else
+            {
+                Log($"❌ Could not make event live: {result.Message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"❌ Make-live failed: {ex.Message}");
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
     private async Task SellAsync(StadiumSectionInfoDto s, int count)
     {
         busy = true;
@@ -769,11 +993,11 @@
             var made = 0;
             for (var i = 0; i < count; i++)
             {
-                if (SoldCount(s.SectionCode) >= s.Capacity) break;
+                if (OccupiedCount(s.SectionCode) >= s.Capacity) break;
                 if (await SellOneAsync(s)) made++;
                 else break;
             }
-            if (made > 0) Log($"Sold {made} in {s.SectionCode} (now {SoldCount(s.SectionCode)}/{s.Capacity})");
+            if (made > 0) Log($"Sold {made} in {s.SectionCode} (now {OccupiedCount(s.SectionCode)}/{s.Capacity})");
         }
         finally
         {
@@ -857,7 +1081,7 @@
                     soldIds[s.SectionCode].Remove(extTicket);
                     soldCount[s.SectionCode] = soldIds[s.SectionCode].Count;
                 }
-                Log($"↩ Refunded 1 in {s.SectionCode} (now {SoldCount(s.SectionCode)}/{s.Capacity})");
+                Log($"↩ Refunded 1 in {s.SectionCode} (now {OccupiedCount(s.SectionCode)}/{s.Capacity})");
             }
             else
             {
@@ -876,7 +1100,7 @@
         try
         {
             var made = await SellRandomInternalAsync(count, CancellationToken.None);
-            Log($"Sold {made} random tickets (total {TotalSold}/{TotalCapacity})");
+            Log($"Sold {made} random tickets (total {TotalOccupied}/{TotalCapacity})");
         }
         finally
         {
@@ -889,16 +1113,16 @@
         var made = 0;
         for (var i = 0; i < count && !ct.IsCancellationRequested; i++)
         {
-            var available = sections.Where(s => SoldCount(s.SectionCode) < s.Capacity).ToList();
+            var available = sections.Where(s => OccupiedCount(s.SectionCode) < s.Capacity).ToList();
             if (available.Count == 0) break;
             // Weight by remaining capacity so fuller sectors fill more slowly.
-            var totalRemaining = available.Sum(s => s.Capacity - SoldCount(s.SectionCode));
+            var totalRemaining = available.Sum(s => s.Capacity - OccupiedCount(s.SectionCode));
             var pick = _rng.Next(totalRemaining);
             StadiumSectionInfoDto chosen = available[0];
             var acc = 0;
             foreach (var s in available)
             {
-                acc += s.Capacity - SoldCount(s.SectionCode);
+                acc += s.Capacity - OccupiedCount(s.SectionCode);
                 if (pick < acc) { chosen = s; break; }
             }
             if (await SellOneAsync(chosen)) made++;
@@ -913,6 +1137,12 @@
             autoSelling = false;
             autoCts?.Cancel();
             Log("⏹ Auto-sell stopped");
+            return;
+        }
+
+        if (!eventCanSell)
+        {
+            Log($"⚠ Ticket sales are closed — event is {eventStatusName}.");
             return;
         }
 
@@ -955,7 +1185,7 @@
         {
             snapshot = await Api.GetSnapshotAsync(externalEventId!);
             if (snapshot == null) Log("⚠ No snapshot returned by API");
-            else Log($"🔍 Verify: API {snapshot.TotalSold} vs simulator {TotalSold}");
+            else Log($"🔍 Verify: API {snapshot.TotalSold} (incl. {snapshot.TotalSeasonSold} season) vs simulator {TotalOccupied}");
         }
         catch (Exception ex)
         {
@@ -1008,14 +1238,111 @@
         }
     }
 
+    // Mirrors the loaded event's lifecycle flags from the API summary so the UI can gate ticket
+    // selling (only while on sale) and drink ordering (only while live).
+    private void ApplyEventState(ExternalEventSummaryDto? s)
+    {
+        eventCanSell = s?.CanSellTickets ?? true;
+        eventLive = s?.CanOrderDrinks ?? false;
+        eventStatusName = s?.StatusName ?? "";
+    }
+
+    // Places N simulated live drink orders (server picks a random occupied seat + random drinks).
+    private async Task SimulateDrinkOrdersAsync(int count)
+    {
+        if (busy || externalEventId == null || !eventLive) return;
+        busy = true;
+        try
+        {
+            for (var i = 0; i < count; i++)
+            {
+                var r = await Api.SimulateDrinkOrderAsync(externalEventId);
+                if (r.Accepted)
+                {
+                    drinkOrdersPlaced++;
+                    Log($"🍺 Drink order #{r.OrderId} @ seat {r.SeatNumber}: {r.OrderSummary} (€{r.TotalAmount:0.00})");
+                }
+                else
+                {
+                    Log($"⚠ Drink order rejected: {r.Message}");
+                    break; // stop the batch on the first rejection (no seats / no longer live)
+                }
+            }
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
+    private async Task ToggleAutoOrder()
+    {
+        if (autoOrdering)
+        {
+            autoOrdering = false;
+            autoOrderCts?.Cancel();
+            Log("⏹ Auto drink-orders stopped");
+            return;
+        }
+
+        if (!eventLive || externalEventId == null)
+        {
+            Log("⚠ Drink ordering is only available while the event is live.");
+            return;
+        }
+
+        autoOrdering = true;
+        autoOrderCts = new CancellationTokenSource();
+        var token = autoOrderCts.Token;
+        Log($"▶ Auto drink-orders started ({autoOrderRate} / {autoOrderIntervalMs}ms)");
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                while (!token.IsCancellationRequested && autoOrdering)
+                {
+                    for (var i = 0; i < autoOrderRate && !token.IsCancellationRequested; i++)
+                    {
+                        var r = await Api.SimulateDrinkOrderAsync(externalEventId!);
+                        if (r.Accepted)
+                        {
+                            drinkOrdersPlaced++;
+                        }
+                        else
+                        {
+                            autoOrdering = false;
+                            Log($"⏹ Auto drink-orders stopped — {r.Message}");
+                            break;
+                        }
+                    }
+                    await InvokeAsync(StateHasChanged);
+                    if (!autoOrdering) break;
+                    await Task.Delay(autoOrderIntervalMs, token);
+                }
+            }
+            catch (OperationCanceledException) { /* expected on stop */ }
+            catch (Exception ex)
+            {
+                Log($"Auto drink-order error: {ex.Message}");
+            }
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
     private async Task ResetEvent()
     {
         autoSelling = false;
         autoCts?.Cancel();
+        autoOrdering = false;
+        autoOrderCts?.Cancel();
         externalEventId = null;
         internalEventId = null;
         snapshot = null;
-        lock (_lock) { soldCount.Clear(); soldIds.Clear(); }
+        eventCanSell = true;
+        eventLive = false;
+        eventStatusName = "";
+        lock (_lock) { soldCount.Clear(); soldIds.Clear(); seasonCount.Clear(); }
         Log("↩ Back to events list — cleared active event");
         await LoadEventsAsync();
     }
@@ -1039,5 +1366,8 @@
         autoSelling = false;
         autoCts?.Cancel();
         autoCts?.Dispose();
+        autoOrdering = false;
+        autoOrderCts?.Cancel();
+        autoOrderCts?.Dispose();
     }
 }

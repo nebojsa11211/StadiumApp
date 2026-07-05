@@ -1,31 +1,34 @@
 @page "/test-notifications"
+@using Microsoft.Extensions.Localization
+@using StadiumDrinkOrdering.Admin
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Test Notifications</PageTitle>
+<PageTitle>@L["TestNotif_PageTitle"]</PageTitle>
 
-<h3>🧪 Test Error Notifications</h3>
+<h3>🧪 @L["TestNotif_Title"]</h3>
 
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h5>Error Notification Tests</h5>
+                <h5>@L["TestNotif_CardTitle"]</h5>
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
                     <button class="btn btn-danger" @onclick="TestErrorNotification" id="admin-test-notifications-error-btn">
-                        🚨 Test Error Notification
+                        🚨 @L["TestNotif_TestErrorNotif"]
                     </button>
 
                     <button class="btn btn-warning" @onclick="TestTimeoutNotification" id="admin-test-notifications-timeout-btn">
-                        ⏱️ Test Timeout Notification
+                        ⏱️ @L["TestNotif_TestTimeoutNotif"]
                     </button>
 
                     <button class="btn btn-info" @onclick="TestApiErrorNotification" id="admin-test-notifications-api-error-btn">
-                        🌐 Test API Error (400 Bad Request)
+                        🌐 @L["TestNotif_TestApiError"]
                     </button>
 
                     <button class="btn btn-secondary" @onclick="TestJavaScriptDirect" id="admin-test-notifications-js-direct-btn">
-                        📱 Test JavaScript Direct
+                        📱 @L["TestNotif_TestJsDirect"]
                     </button>
                 </div>
             </div>

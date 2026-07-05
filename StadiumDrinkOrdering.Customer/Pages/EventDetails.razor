@@ -4,8 +4,9 @@
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>@(eventDetails?.EventName ?? "Event Details")</PageTitle>
+<PageTitle>@(eventDetails?.EventName ?? Localizer["EventDetails_PageTitle"])</PageTitle>
 
 <CustomerAuthRoute>
 @if (isLoading)
@@ -20,9 +21,9 @@
 else if (eventDetails == null)
 {
     <div class="alert alert-danger" id="customer-eventdetails-not-found">
-        <h5 id="customer-eventdetails-not-found-title"><i class="fas fa-exclamation-triangle me-2"></i>Event Not Found</h5>
-        <p id="customer-eventdetails-not-found-message">The requested event could not be found or is no longer available.</p>
-        <a href="/events" class="btn btn-primary" id="customer-eventdetails-back-btn">Back to Events</a>
+        <h5 id="customer-eventdetails-not-found-title"><i class="fas fa-exclamation-triangle me-2"></i>@Localizer["EventDetails_EventNotFound"]</h5>
+        <p id="customer-eventdetails-not-found-message">@Localizer["EventDetails_EventNotFoundMessage"]</p>
+        <a href="/events" class="btn btn-primary" id="customer-eventdetails-back-btn">@Localizer["EventDetails_BackToEvents"]</a>
     </div>
 }
 else
@@ -71,7 +72,7 @@ else
 
                         <!-- Pricing Tiers -->
                         <div class="pricing-tiers" id="customer-eventdetails-pricing-tiers">
-                            <h6 id="customer-eventdetails-pricing-title"><strong>💰 Pricing Tiers</strong></h6>
+                            <h6 id="customer-eventdetails-pricing-title"><strong>💰 @Localizer["EventDetails_PricingTiers"]</strong></h6>
                             @foreach (var tier in eventDetails.PricingTiers)
                             {
                                 <div class="tier-info mb-2" id="customer-eventdetails-tier-@tier.Name">
@@ -90,7 +91,7 @@ else
                 <div class="card mt-3" id="customer-eventdetails-cart-card">
                     <div class="card-header" id="customer-eventdetails-cart-header">
                         <h5 class="mb-0" id="customer-eventdetails-cart-title">
-                            🛒 Your Cart 
+                            🛒 @Localizer["EventDetails_YourCart"]
                             @if (cartItems.Any())
                             {
                                 <span class="badge bg-primary">@cartItems.Count</span>
@@ -100,7 +101,7 @@ else
                     <div class="card-body" id="customer-eventdetails-cart-body">
                         @if (!cartItems.Any())
                         {
-                            <p class="text-muted mb-0" id="customer-eventdetails-cart-empty">No seats selected yet.</p>
+                            <p class="text-muted mb-0" id="customer-eventdetails-cart-empty">@Localizer["EventDetails_NoSeatsSelected"]</p>
                         }
                         else
                         {
@@ -121,14 +122,14 @@ else
                             }
                             <hr id="customer-eventdetails-cart-divider">
                             <div class="d-flex justify-content-between fw-bold" id="customer-eventdetails-cart-total">
-                                <span id="customer-eventdetails-cart-total-label">Total:</span>
+                                <span id="customer-eventdetails-cart-total-label">@Localizer["EventDetails_Total"]</span>
                                 <span class="text-success" id="customer-eventdetails-cart-total-amount">$@cartItems.Sum(i => i.Price).ToString("F2")</span>
                             </div>
                             <button id="customer-eventdetails-checkout-btn" class="btn btn-success w-100 mt-2" @onclick="ProceedToCheckout">
-                                <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                                <i class="fas fa-credit-card me-2"></i>@Localizer["EventDetails_ProceedCheckout"]
                             </button>
                             <button id="customer-eventdetails-clear-cart-btn" class="btn btn-outline-secondary w-100 mt-1" @onclick="ClearCart">
-                                <i class="fas fa-trash me-2"></i>Clear Cart
+                                <i class="fas fa-trash me-2"></i>@Localizer["EventDetails_ClearCart"]
                             </button>
                         }
                     </div>
@@ -139,8 +140,8 @@ else
             <div class="col-lg-8" id="customer-eventdetails-sections-col">
                 <div class="card" id="customer-eventdetails-sections-card">
                     <div class="card-header" id="customer-eventdetails-sections-header">
-                        <h5 class="mb-0" id="customer-eventdetails-sections-title">🏟️ Stadium Sections</h5>
-                        <small class="text-muted" id="customer-eventdetails-sections-subtitle">Click on a section to view available seats</small>
+                        <h5 class="mb-0" id="customer-eventdetails-sections-title">🏟️ @Localizer["EventDetails_StadiumSections"]</h5>
+                        <small class="text-muted" id="customer-eventdetails-sections-subtitle">@Localizer["EventDetails_ClickSectionSeats"]</small>
                     </div>
                     <div class="card-body" id="customer-eventdetails-sections-body">
                         @if (eventDetails.SectionAvailability.Any())
@@ -156,17 +157,17 @@ else
                                                 <strong>@info.SectionName</strong>
                                                 @if (info.AvailableSeats == 0)
                                                 {
-                                                    <span class="badge bg-danger ms-2">Sold Out</span>
+                                                    <span class="badge bg-danger ms-2">@Localizer["Events_SoldOut"]</span>
                                                 }
                                             </div>
                                             <div class="section-details">
                                                 <div class="availability">
                                                     <span class="@(info.AvailableSeats > 20 ? "text-success" : info.AvailableSeats > 10 ? "text-warning" : "text-danger")">
-                                                        @info.AvailableSeats/@info.TotalSeats available
+                                                        @info.AvailableSeats/@info.TotalSeats @Localizer["Events_Available"]
                                                     </span>
                                                 </div>
                                                 <div class="price">
-                                                    <span class="fw-bold text-success">From $@info.BasePrice.ToString("F2")</span>
+                                                    <span class="fw-bold text-success">@Localizer["Events_From"] $@info.BasePrice.ToString("F2")</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -176,7 +177,7 @@ else
                         }
                         else
                         {
-                            <p class="text-muted">No sections available for this event.</p>
+                            <p class="text-muted">@Localizer["EventDetails_StadiumSections"]</p>
                         }
                     </div>
                 </div>
@@ -192,7 +193,7 @@ else
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">
-                            Select Seats - @selectedSection.TribuneName @selectedSection.SectionName
+                            @Localizer["EventDetails_SelectSeats"] - @selectedSection.TribuneName @selectedSection.SectionName
                         </h5>
                         <button id="customer-eventdetails-close-modal-btn" type="button" class="btn-close" @onclick="CloseSeatModal"></button>
                     </div>
@@ -201,15 +202,15 @@ else
                         {
                             <div class="text-center py-3">
                                 <div class="spinner-border text-primary" role="status"></div>
-                                <p>Loading seats...</p>
+                                <p>@Localizer["EventDetails_LoadingSeats"]</p>
                             </div>
                         }
                         else if (selectedSection.AvailableSeats.Any())
                         {
                             <div class="seat-legend mb-3">
-                                <span class="badge bg-success me-2">Available</span>
-                                <span class="badge bg-warning me-2">Selected</span>
-                                <span class="badge bg-danger me-2">Sold</span>
+                                <span class="badge bg-success me-2">@Localizer["EventDetails_SeatLegendAvailable"]</span>
+                                <span class="badge bg-warning me-2">@Localizer["EventDetails_SeatLegendSelected"]</span>
+                                <span class="badge bg-danger me-2">@Localizer["EventDetails_SeatLegendSold"]</span>
                             </div>
 
                             <div class="seats-container">
@@ -219,7 +220,7 @@ else
                                 @foreach (var rowGroup in seatsByRow)
                                 {
                                     <div class="seat-row mb-2">
-                                        <div class="row-label">Row @rowGroup.Key</div>
+                                        <div class="row-label">@Localizer["EventDetails_Row"] @rowGroup.Key</div>
                                         <div class="seats">
                                             @foreach (var seat in rowGroup.OrderBy(s => s.SeatNumber))
                                             {
@@ -237,20 +238,20 @@ else
                         }
                         else
                         {
-                            <p class="text-center py-3">No seats available in this section.</p>
+                            <p class="text-center py-3">@Localizer["EventDetails_NoSeatsAvailable"]</p>
                         }
                     </div>
                     <div class="modal-footer">
                         @if (selectedSeats.Any())
                         {
                             <div class="me-auto">
-                                <strong>Selected: @selectedSeats.Count seats - $@selectedSeats.Sum(s => s.Price).ToString("F2")</strong>
+                                <strong>@string.Format(Localizer["EventDetails_SelectedSeats"].Value, selectedSeats.Count) - $@selectedSeats.Sum(s => s.Price).ToString("F2")</strong>
                             </div>
                             <button id="customer-eventdetails-add-to-cart-btn" class="btn btn-success" @onclick="AddSelectedSeatsToCart">
-                                <i class="fas fa-plus me-2"></i>Add to Cart
+                                <i class="fas fa-plus me-2"></i>@Localizer["EventDetails_AddToCart"]
                             </button>
                         }
-                        <button id="customer-eventdetails-close-seat-modal-btn" class="btn btn-secondary" @onclick="CloseSeatModal">Close</button>
+                        <button id="customer-eventdetails-close-seat-modal-btn" class="btn btn-secondary" @onclick="CloseSeatModal">@Localizer["EventDetails_Close"]</button>
                     </div>
                 </div>
             </div>

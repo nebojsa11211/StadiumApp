@@ -1,0 +1,224 @@
+@page "/"
+@implements IDisposable
+@inject RunnerApiService Api
+@inject OutboxService Outbox
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["Home_PageTitle"]</PageTitle>
+
+<div class="runner-page @(selected.Count > 0 ? "runner-page-has-bar" : "")">
+    <div class="runner-page-head">
+        <h1 class="runner-page-title">@Localizer["Home_ReadyForPickup"]</h1>
+        <button class="runner-refresh" @onclick="Load" aria-label="@Localizer["Home_Refresh"]" id="runner-pool-refresh">↻</button>
+    </div>
+
+    @if (!Outbox.IsOnline)
+    {
+        <div class="runner-offline-banner" role="status" id="runner-pool-offline">
+            <span class="runner-banner-icon" aria-hidden="true">⚠</span>
+            <span>@Localizer["Home_OfflineBanner"]</span>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="runner-notice runner-notice-info" role="status" aria-live="polite" id="runner-pool-message">@message</div>
+    }
+
+    @if (loading && orders is null)
+    {
+        <div class="runner-loading"><div class="runner-cta-spinner"></div></div>
+    }
+    else if (orders is null || orders.Count == 0)
+    {
+        <div class="runner-empty">
+            <div class="runner-empty-icon" aria-hidden="true">📋</div>
+            <div class="runner-empty-text">@Localizer["Home_NoOrdersEmpty"]</div>
+        </div>
+    }
+    else
+    {
+        <div class="runner-pool-toolbar" id="runner-pool-toolbar">
+            <span class="runner-pool-hint">@Localizer["Home_SelectHint"]</span>
+            <button class="runner-linkbtn" @onclick="ToggleSelectAll" id="runner-pool-select-all"
+                    disabled="@(!Outbox.IsOnline)">
+                @(AllSelected ? Localizer["Home_ClearSelection"] : Localizer["Home_SelectAll"])
+            </button>
+        </div>
+
+        @foreach (var o in orders)
+        {
+            var isSelected = selected.Contains(o.Id);
+            <div class="runner-card runner-card-selectable @(isSelected ? "runner-card-selected" : "")"
+                 role="button" aria-pressed="@isSelected" tabindex="0"
+                 @onclick="() => ToggleSelect(o.Id)"
+                 id="runner-pool-card-@o.Id">
+                <div class="runner-card-top">
+                    <span class="runner-seat-label">@Localizer["Home_SeatLabel"]</span>
+                    <span class="runner-card-meta">
+                        <span class="runner-order-id">#@o.Id</span> · @Localizer["Home_Ready"] @Age(o)
+                        <span class="runner-check @(isSelected ? "runner-check-on" : "")" aria-hidden="true">@(isSelected ? "✓" : "")</span>
+                    </span>
+                </div>
+                <div class="runner-seat">@SeatText(o)</div>
+                <div class="runner-items">
+                    @foreach (var it in o.OrderItems)
+                    {
+                        <div><span class="runner-qty">@it.Quantity×</span> @it.DrinkName</div>
+                    }
+                </div>
+                <div class="runner-total" id="runner-pool-total-@o.Id">
+                    <span class="runner-total-label">@Localizer["Home_TotalLabel"]</span>
+                    <span class="runner-total-amount">€@o.TotalAmount.ToString("F2")</span>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@if (selected.Count > 0)
+{
+    <div class="runner-actionbar" id="runner-pool-actionbar">
+        <button class="runner-cta @(collecting ? "is-loading" : "")" @onclick="CollectSelected"
+                disabled="@(collecting || !Outbox.IsOnline)"
+                aria-busy="@collecting" id="runner-pool-collect">
+            @if (collecting)
+            {
+                <span class="runner-cta-spinner" aria-hidden="true"></span>
+                <span>@Localizer["Home_Collecting"]</span>
+            }
+            else if (!Outbox.IsOnline)
+            {
+                <span class="runner-cta-icon" aria-hidden="true">🔒</span>
+                <span>@Localizer["Home_OfflineClaim"]</span>
+            }
+            else
+            {
+                <span class="runner-cta-icon" aria-hidden="true">🫱</span>
+                <span>@Localizer["Home_CollectSelected", selected.Count]</span>
+            }
+        </button>
+    </div>
+}
+
+@code {
+    private List<OrderDto>? orders;
+    private HashSet<int> selected = new();
+    private bool loading;
+    private bool collecting;
+    private string? message;
+    private System.Threading.Timer? timer;
+
+    private bool AllSelected => orders is { Count: > 0 } && selected.Count == orders.Count;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Outbox.OnChange += OnConnectivityChanged;
+        await Load();
+        timer = new System.Threading.Timer(async _ => await InvokeAsync(Load), null,
+            TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+    }
+
+    private void OnConnectivityChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task Load()
+    {
+        loading = true;
+        orders = await Api.GetPoolAsync();
+        // Drop any selection that's no longer in the pool (claimed by another runner, delivered, etc.)
+        // so the action-bar count and batch request never reference stale orders.
+        if (orders is not null)
+        {
+            var live = orders.Select(o => o.Id).ToHashSet();
+            selected.RemoveWhere(id => !live.Contains(id));
+        }
+        loading = false;
+        StateHasChanged();
+    }
+
+    private void ToggleSelect(int orderId)
+    {
+        if (!selected.Remove(orderId))
+            selected.Add(orderId);
+        message = null;
+        _ = Haptic();
+    }
+
+    private void ToggleSelectAll()
+    {
+        if (orders is null) return;
+        if (AllSelected)
+            selected.Clear();
+        else
+            selected = orders.Select(o => o.Id).ToHashSet();
+        message = null;
+    }
+
+    private async Task CollectSelected()
+    {
+        if (selected.Count == 0 || !Outbox.IsOnline) return;
+
+        await Haptic();
+        collecting = true;
+        message = null;
+        var ids = selected.ToList();
+        var result = await Api.ClaimBatchAsync(ids);
+        collecting = false;
+
+        if (result is null)
+        {
+            message = Localizer["Home_CollectError"];
+            StateHasChanged();
+            return;
+        }
+
+        // Clean sweep — everything we asked for is ours. Go straight to the delivery list.
+        if (result.Claimed.Count > 0 && result.Taken.Count == 0 && result.NotFound.Count == 0)
+        {
+            selected.Clear();
+            Nav.NavigateTo("my-deliveries");
+            return;
+        }
+
+        // Nothing left to take: another runner beat us to the whole selection.
+        if (result.Claimed.Count == 0)
+        {
+            message = Localizer["Home_AllTaken"];
+        }
+        else
+        {
+            // Partial: keep the runner on the pool so they see what happened before moving on.
+            message = Localizer["Home_PartialClaim", result.Claimed.Count, result.Taken.Count + result.NotFound.Count];
+        }
+
+        selected.Clear();
+        await Load();
+    }
+
+    private async Task Haptic()
+    {
+        try { await JS.InvokeVoidAsync("runnerHaptic", 15); } catch { /* JS unavailable — ignore */ }
+    }
+
+    // Full seat location from the server (section · row · seat), falling back to the short seat
+    // number and finally an em dash when neither is present.
+    private static string SeatText(OrderDto o)
+    {
+        if (!string.IsNullOrWhiteSpace(o.SeatPath)) return o.SeatPath;
+        return string.IsNullOrWhiteSpace(o.SeatNumber) ? "—" : o.SeatNumber;
+    }
+
+    private static string Age(OrderDto o)
+    {
+        var mins = (int)Math.Floor((DateTime.UtcNow - DateTime.SpecifyKind(o.CreatedAt, DateTimeKind.Utc)).TotalMinutes);
+        return mins <= 0 ? "just now" : (mins == 1 ? "1 min ago" : $"{mins} min ago");
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+        Outbox.OnChange -= OnConnectivityChanged;
+    }
+}

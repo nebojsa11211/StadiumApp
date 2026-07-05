@@ -1,0 +1,533 @@
+@page "/order-queue"
+@inject IStaffApiService ApiService
+@inject IAuthStateService AuthService
+@inject ISignalRService SignalRService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
+
+<PageTitle>@Localizer["OrderQueue_PageTitle"]</PageTitle>
+
+<div id="bar-orderqueue-page-container" class="container-fluid">
+    <div id="bar-orderqueue-page-header" class="kds-header">
+        <h1 class="kds-title">🍺 @Localizer["OrderQueue_OrderBoard"]</h1>
+        <div id="bar-orderqueue-page-header-info" class="d-flex align-items-center gap-3">
+            <span class="badge @(SignalRService.IsConnected ? "bg-success" : "bg-secondary")">
+                @(SignalRService.IsConnected ? Localizer["OrderQueue_Live"] : Localizer["OrderQueue_Offline"])
+            </span>
+            @if (lastUpdated != default)
+            {
+                <small class="text-muted">@Localizer["OrderQueue_Updated"] @lastUpdated.ToString("HH:mm:ss")</small>
+            }
+            <button class="btn btn-outline-primary" @onclick="RefreshOrders" id="bar-orderqueue-refresh-btn">
+                <span class="oi oi-reload me-2"></span>@Localizer["Refresh"]
+            </button>
+        </div>
+    </div>
+
+    @if (knownSectors.Count > 1)
+    {
+        <div id="bar-orderqueue-page-sector-filter" class="kds-sector-filter">
+            <span class="kds-filter-label">@Localizer["OrderQueue_Sectors"]</span>
+            <button type="button"
+                    class="kds-chip @(selectedSectors.Count == 0 ? "kds-chip-on" : "")"
+                    @onclick="SelectAllSectors" id="bar-orderqueue-sector-all-btn">
+                @Localizer["OrderQueue_AllSectors"]
+            </button>
+            @foreach (var sector in knownSectors)
+            {
+                <button type="button"
+                        class="kds-chip @(selectedSectors.Contains(sector) ? "kds-chip-on" : "")"
+                        @onclick="() => ToggleSector(sector)"
+                        id="bar-orderqueue-sector-btn-@Slug(sector)">
+                    @(sector == NoSectorKey ? Localizer["OrderQueue_NoSector"].Value : sector)
+                </button>
+            }
+        </div>
+    }
+
+    <div id="bar-orderqueue-page-board" class="kds-board">
+        @RenderColumn(Localizer["OrderStatus_Pending"].Value, "kds-col-pending", pendingOrders.Concat(legacyAcceptedOrders).ToList(), OrderStatus.Pending)
+        @RenderColumn(Localizer["OrderStatus_InPreparation"].Value, "kds-col-prep", inPreparationOrders, OrderStatus.InPreparation)
+        @RenderColumn(Localizer["OrderStatus_Ready"].Value, "kds-col-ready", readyOrders.Concat(collectedOrders).ToList(), OrderStatus.Ready)
+    </div>
+</div>
+
+@code {
+    private List<OrderDto> pendingOrders = new();
+    // Legacy stragglers only: the board no longer produces the Accepted state (Pending starts prep
+    // directly), but orders left in Accepted before this change would otherwise vanish from the
+    // board. Shown in the Pending column with a Start button so they can still be progressed.
+    private List<OrderDto> legacyAcceptedOrders = new();
+    private List<OrderDto> inPreparationOrders = new();
+    private List<OrderDto> readyOrders = new();
+    // Orders a runner has picked up (OutForDelivery). Shown greyed in the Ready column so the
+    // bartender still sees them until delivered, but no longer as actionable "to make" work.
+    private List<OrderDto> collectedOrders = new();
+
+    private HashSet<int> knownIds = new();
+    private HashSet<int> flashIds = new();
+    private bool firstLoad = true;
+    private bool isLoading = false;
+    private DateTime lastUpdated;
+
+    // Sector filter: the bartender can restrict the board to one or more sectors. Every sector ever
+    // seen this session is remembered (never removed) so its chip stays stable even when it currently
+    // has no orders. An EMPTY selection means "all sectors". The last fetched orders are cached so
+    // toggling a chip re-partitions instantly without waiting for the next poll.
+    private readonly SortedSet<string> knownSectors = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> selectedSectors = new(StringComparer.OrdinalIgnoreCase);
+    private List<OrderDto> lastOrders = new();
+    // Learned section code → structured name map (e.g. "A" → "Sector A"), harvested from orders that
+    // ARE linked to a structured seat. Legacy orders that carry only a free-text seat string are
+    // normalized through this map so they collapse onto the same chip as their structured siblings,
+    // instead of appearing under a bare code. Accumulated across polls so a name learned once sticks.
+    private readonly Dictionary<string, string> sectorNames = new(StringComparer.OrdinalIgnoreCase);
+    private bool suppressChimeOnce;
+    private const string NoSectorKey = "—";
+    private const string SelectionStorageKey = "bar-orderqueue-selected-sectors";
+
+    private System.Threading.Timer? refreshTimer;
+    private const int RefreshSeconds = 8;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SignalRService.NewOrder += OnNewOrder;
+        SignalRService.OrderUpdated += OnOrderUpdated;
+        SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
+
+        // The auth token is restored from storage asynchronously, so it may not be available yet
+        // when this page first initializes. Retry the connection whenever the auth state changes
+        // (e.g. once the token is restored or the user logs in) so the badge can reach "Live".
+        AuthService.OnAuthenticationStateChanged += OnAuthStateChanged;
+
+        await TryStartSignalR();
+
+        // Seed the full code → name map up front so legacy seats resolve to structured names even for
+        // sectors that have no linked-seat order to learn the name from.
+        await LoadSectorNamesAsync();
+
+        await LoadOrders();
+
+        // Poll as a backstop: new orders are currently pushed only to waiters/admins server-side,
+        // so the board must not rely on SignalR alone to surface incoming work. Diff-based detection
+        // (below) makes the chime/flash fire for either source without double-alerting.
+        refreshTimer = new System.Threading.Timer(async _ =>
+            await InvokeAsync(LoadOrders), null,
+            TimeSpan.FromSeconds(RefreshSeconds), TimeSpan.FromSeconds(RefreshSeconds));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // localStorage is only reachable after the first interactive render (not during prerender),
+        // so restore the saved sector selection here and re-partition the already-loaded orders.
+        try
+        {
+            var stored = await JS.InvokeAsync<string?>("localStorage.getItem", SelectionStorageKey);
+            if (!string.IsNullOrWhiteSpace(stored))
+            {
+                selectedSectors = stored.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                                        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                // A selection saved under a bare code (before its name was known) must be migrated to
+                // the structured name learned during the initial load, or it would match nothing.
+                ReconcileSectorNames();
+                suppressChimeOnce = true;
+                await Partition();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Restoring sector filter failed: {ex.Message}");
+        }
+    }
+
+    private async Task LoadOrders()
+    {
+        if (isLoading) return;
+        isLoading = true;
+        try
+        {
+            var orders = await ApiService.GetActiveOrdersAsync() ?? new List<OrderDto>();
+            lastOrders = orders;
+
+            // Learn code → name from structured orders FIRST, so legacy seats in this same batch can
+            // be normalized against it when their sector is resolved below.
+            foreach (var section in orders.Select(o => o.Seat?.Section).Where(s => s != null))
+            {
+                if (!string.IsNullOrWhiteSpace(section!.SectionCode) && !string.IsNullOrWhiteSpace(section.SectionName))
+                    sectorNames[section.SectionCode.Trim()] = section.SectionName.Trim();
+            }
+            ReconcileSectorNames();
+
+            // Remember every sector present so its filter chip stays available across refreshes.
+            foreach (var order in orders)
+                knownSectors.Add(SectorOf(order));
+
+            if (await Partition())
+                await Chime();
+
+            lastUpdated = DateTime.Now;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load orders: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // Splits the cached order list into the three KDS columns, honouring the active sector filter.
+    // Returns true when a genuinely new pending order became visible (so the caller can chime).
+    // Runs without a network call, so filter toggles re-partition instantly.
+    private Task<bool> Partition()
+    {
+        var visible = selectedSectors.Count == 0
+            ? lastOrders
+            : lastOrders.Where(o => selectedSectors.Contains(SectorOf(o))).ToList();
+
+        pendingOrders = visible.Where(o => o.Status == OrderStatus.Pending)
+                               .OrderBy(o => o.CreatedAt).ToList();
+        legacyAcceptedOrders = visible.Where(o => o.Status == OrderStatus.Accepted)
+                                      .OrderBy(o => o.CreatedAt).ToList();
+        inPreparationOrders = visible.Where(o => o.Status == OrderStatus.InPreparation)
+                                     .OrderBy(o => o.CreatedAt).ToList();
+        readyOrders = visible.Where(o => o.Status == OrderStatus.Ready)
+                             .OrderBy(o => o.CreatedAt).ToList();
+        collectedOrders = visible.Where(o => o.Status == OrderStatus.OutForDelivery)
+                                 .OrderBy(o => o.CreatedAt).ToList();
+
+        // Detect genuinely new incoming (pending) orders since the last partition.
+        var currentIds = visible.Select(o => o.Id).ToHashSet();
+        var newPending = pendingOrders.Select(o => o.Id).Where(id => !knownIds.Contains(id)).ToList();
+        knownIds = currentIds;
+        flashIds = newPending.ToHashSet();
+
+        // A filter change shifts which orders are "new" purely because the view changed — don't chime
+        // for that, only for orders that actually arrived.
+        var shouldChime = !firstLoad && !suppressChimeOnce && newPending.Count > 0;
+        suppressChimeOnce = false;
+        firstLoad = false;
+        return Task.FromResult(shouldChime);
+    }
+
+    // The sector an order belongs to, normalized to the structured section name whenever possible so
+    // structured and legacy orders share one chip. Resolution order:
+    //   1. Structured seat → its own SectionName (canonical).
+    //   2. Legacy free-text seat → the learned section name whose code the seat string starts with
+    //      (longest match wins, so "VIP…" beats "V…"); matches the API's StartsWith(code) rule.
+    //   3. Unknown code → the seat's leading letters as a best-effort code.
+    //   4. No seat info → a shared "no sector" bucket so it stays filterable.
+    // Full human-readable seat location for the card, e.g. "Sjever1 · Row 1 · Seat 2". SeatPath is
+    // computed server-side from the linked Seat/Section and already falls back to the legacy seat
+    // string when a seat isn't structurally linked; we only guard against it being blank.
+    private static string SeatLabel(OrderDto o) =>
+        !string.IsNullOrWhiteSpace(o.SeatPath) ? o.SeatPath
+        : !string.IsNullOrWhiteSpace(o.SeatNumber) ? o.SeatNumber
+        : "—";
+
+    private string SectorOf(OrderDto o)
+    {
+        var section = o.Seat?.Section?.SectionName;
+        if (!string.IsNullOrWhiteSpace(section))
+            return section!.Trim();
+
+        var seat = o.SeatNumber?.Trim();
+        if (string.IsNullOrWhiteSpace(seat))
+            return NoSectorKey;
+
+        var match = sectorNames.Keys
+            .Where(code => seat.StartsWith(code, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(code => code.Length)
+            .FirstOrDefault();
+        if (match != null)
+            return sectorNames[match];
+
+        return LeadingCode(seat);
+    }
+
+    // Best-effort section code from a legacy seat string when no structured name is known: the leading
+    // run of letters ("A5-12" → "A", "VIP3-4" → "VIP"), falling back to the token before the first
+    // dash if the string doesn't start with a letter.
+    private static string LeadingCode(string seat)
+    {
+        var letters = new string(seat.TakeWhile(char.IsLetter).ToArray());
+        if (!string.IsNullOrEmpty(letters))
+            return letters;
+
+        var dash = seat.IndexOf('-');
+        return (dash > 0 ? seat[..dash] : seat).Trim();
+    }
+
+    // Once a code's structured name becomes known, retire any chip/selection that was created under
+    // the bare code (from a legacy order seen before the name was learned) so it doesn't linger as a
+    // duplicate alongside the named chip. Also migrates a restored selection saved under a bare code.
+    private void ReconcileSectorNames()
+    {
+        foreach (var (code, name) in sectorNames)
+        {
+            if (string.Equals(code, name, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            knownSectors.Remove(code);
+            if (selectedSectors.Remove(code))
+                selectedSectors.Add(name);
+        }
+    }
+
+    // Preloads the authoritative section code → name map from the API so legacy seats can be resolved
+    // even for sectors the current orders don't cover. Best-effort: if it fails, the board still falls
+    // back to learning names from structured orders as they arrive.
+    private async Task LoadSectorNamesAsync()
+    {
+        try
+        {
+            var sections = await ApiService.GetSectionsAsync();
+            if (sections == null)
+                return;
+
+            foreach (var s in sections)
+            {
+                if (!string.IsNullOrWhiteSpace(s.Code) && !string.IsNullOrWhiteSpace(s.Name))
+                    sectorNames[s.Code.Trim()] = s.Name.Trim();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Loading section names failed: {ex.Message}");
+        }
+    }
+
+    private async Task ToggleSector(string sector)
+    {
+        if (!selectedSectors.Add(sector))
+            selectedSectors.Remove(sector);
+        await ApplyFilterChange();
+    }
+
+    private async Task SelectAllSectors()
+    {
+        selectedSectors.Clear();
+        await ApplyFilterChange();
+    }
+
+    private async Task ApplyFilterChange()
+    {
+        suppressChimeOnce = true;
+        await Partition();
+        StateHasChanged();
+        await PersistSelectionAsync();
+    }
+
+    private async Task PersistSelectionAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", SelectionStorageKey,
+                string.Join("\n", selectedSectors));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Persisting sector filter failed: {ex.Message}");
+        }
+    }
+
+    // Turns a sector label into a value safe to embed in an element id attribute.
+    private static string Slug(string s) =>
+        new string(s.Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray());
+
+    private async Task Chime()
+    {
+        try { await JS.InvokeVoidAsync("barKds.beep"); }
+        catch (Exception ex) { Console.WriteLine($"Chime failed: {ex.Message}"); }
+    }
+
+    private RenderFragment RenderColumn(string title, string cssClass, List<OrderDto> orders, OrderStatus status) => __builder =>
+    {
+        <div id="bar-orderqueue-page-col-@cssClass" class="kds-col @cssClass">
+            <div id="bar-orderqueue-page-col-head-@cssClass" class="kds-col-head">
+                <span>@title</span>
+                <span class="kds-count">@orders.Count</span>
+            </div>
+            @if (orders.Count == 0)
+            {
+                <div id="bar-orderqueue-page-empty-@cssClass" class="kds-empty">—</div>
+            }
+            else
+            {
+                @foreach (var order in orders)
+                {
+                    <div class="kds-card @(flashIds.Contains(order.Id) ? "kds-new" : "") @(order.Status == OrderStatus.OutForDelivery ? "kds-card-collected" : "")" id="bar-kds-card-@order.Id">
+                        <div id="bar-orderqueue-page-card-top-@order.Id" class="kds-card-top">
+                            <span class="kds-order-id">#@order.Id</span>
+                            <span class="kds-seat">@SeatLabel(order)</span>
+                        </div>
+                        <div id="bar-orderqueue-page-items-@order.Id" class="kds-items">
+                            @foreach (var item in order.OrderItems)
+                            {
+                                <div id="bar-orderqueue-page-item-@order.Id-@(order.OrderItems.IndexOf(item))" class="kds-item">
+                                    <span class="kds-qty">@item.Quantity×</span> @item.DrinkName
+                                    @if (!string.IsNullOrEmpty(item.Notes))
+                                    {
+                                        <span class="kds-note">(@item.Notes)</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div id="bar-orderqueue-page-time-@order.Id" class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="kds-age @AgeClass(StepTime(order))">@AgeText(StepTime(order))</span>
+                            <span class="kds-step-time">@StepClock(order)</span>
+                        </div>
+                        @{ var stepStaff = StepStaff(order); }
+                        @if (!string.IsNullOrWhiteSpace(stepStaff))
+                        {
+                            <div id="bar-orderqueue-page-staff-@order.Id" class="kds-staff">👤 @stepStaff</div>
+                        }
+                        @RenderAction(order, order.Status)
+                    </div>
+                }
+            }
+        </div>
+    };
+
+    private RenderFragment RenderAction(OrderDto order, OrderStatus status) => __builder =>
+    {
+        @switch (status)
+        {
+            case OrderStatus.Pending:
+                <button class="btn btn-warning kds-btn" @onclick="() => StartPreparation(order.Id)" id="bar-kds-start-prep-btn-@order.Id">
+                    @Localizer["OrderQueue_StartPreparation"]
+                </button>
+                break;
+            case OrderStatus.Accepted:
+                <button class="btn btn-info kds-btn" @onclick="() => StartPreparation(order.Id)" id="bar-kds-start-prep-btn-@order.Id">
+                    @Localizer["OrderQueue_StartPreparation"]
+                </button>
+                break;
+            case OrderStatus.InPreparation:
+                <button class="btn btn-success kds-btn" @onclick="() => MarkReady(order.Id)" id="bar-kds-mark-ready-btn-@order.Id">
+                    @Localizer["OrderQueue_MarkReady"]
+                </button>
+                break;
+            case OrderStatus.Ready:
+                <div id="bar-orderqueue-page-ready-note-@order.Id" class="kds-ready-note">✓ @Localizer["OrderQueue_AwaitingRunnerPickup"]</div>
+                break;
+            case OrderStatus.OutForDelivery:
+                <div id="bar-orderqueue-page-collected-note-@order.Id" class="kds-collected-note">🫱 @Localizer["OrderQueue_CollectedByRunner"]</div>
+                break;
+        }
+    };
+
+    private string AgeText(DateTime createdUtc)
+    {
+        var mins = (int)Math.Floor((DateTime.UtcNow - DateTime.SpecifyKind(createdUtc, DateTimeKind.Utc)).TotalMinutes);
+        if (mins <= 0) return Localizer["OrderQueue_JustNow"].Value;
+        return mins == 1 ? Localizer["OrderQueue_OneMin"].Value : string.Format(Localizer["OrderQueue_MinutesAgo"].Value, mins);
+    }
+
+    private static string AgeClass(DateTime createdUtc)
+    {
+        var mins = (DateTime.UtcNow - DateTime.SpecifyKind(createdUtc, DateTimeKind.Utc)).TotalMinutes;
+        if (mins >= 10) return "late";
+        if (mins >= 5) return "aged";
+        return "";
+    }
+
+    // The timestamp at which the order entered its current step, so each column shows the age/clock
+    // of THAT step rather than always the original order-creation time. Each status falls back to
+    // the previous step's timestamp (and ultimately CreatedAt) for older orders recorded before the
+    // per-step stamps existed.
+    private static DateTime StepTime(OrderDto o) => o.Status switch
+    {
+        OrderStatus.Accepted => o.AcceptedAt ?? o.CreatedAt,
+        OrderStatus.InPreparation => o.InPreparationAt ?? o.AcceptedAt ?? o.CreatedAt,
+        OrderStatus.Ready => o.PreparedAt ?? o.InPreparationAt ?? o.AcceptedAt ?? o.CreatedAt,
+        OrderStatus.OutForDelivery => o.PreparedAt ?? o.InPreparationAt ?? o.AcceptedAt ?? o.CreatedAt,
+        _ => o.CreatedAt
+    };
+
+    // Station-local clock time (HH:mm) for the current step.
+    private static string StepClock(OrderDto o) =>
+        DateTime.SpecifyKind(StepTime(o), DateTimeKind.Utc).ToLocalTime().ToString("HH:mm");
+
+    // Staff member responsible for the current step (who accepted / started prep / prepared /
+    // collected it). Falls back to the previous step's owner for older orders.
+    private static string? StepStaff(OrderDto o) => o.Status switch
+    {
+        OrderStatus.Accepted => o.AcceptedByUserName,
+        OrderStatus.InPreparation => o.InPreparationByUserName ?? o.AcceptedByUserName,
+        OrderStatus.Ready => o.PreparedByUserName ?? o.InPreparationByUserName ?? o.AcceptedByUserName,
+        OrderStatus.OutForDelivery => o.DeliveredByUserName ?? o.PreparedByUserName ?? o.InPreparationByUserName ?? o.AcceptedByUserName,
+        _ => null
+    };
+
+    private async Task StartPreparation(int orderId) =>
+        await Transition(orderId, OrderStatus.InPreparation, Localizer["OrderQueue_PreparationStarted"].Value);
+
+    private async Task MarkReady(int orderId) =>
+        await Transition(orderId, OrderStatus.Ready, Localizer["OrderQueue_OrderReadyForPickup"].Value);
+
+    private async Task Transition(int orderId, OrderStatus newStatus, string note)
+    {
+        var updateDto = new UpdateOrderStatusDto { Status = newStatus, Notes = note };
+        var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
+        if (success)
+        {
+            await LoadOrders();
+            try { await SignalRService.SendOrderStatusChanged(orderId, newStatus, ""); }
+            catch (Exception ex) { Console.WriteLine($"Status broadcast failed: {ex.Message}"); }
+        }
+    }
+
+    private async Task RefreshOrders() => await LoadOrders();
+
+    private async void OnNewOrder(OrderDto order) => await InvokeAsync(LoadOrders);
+
+    private async void OnOrderUpdated(OrderDto order) => await InvokeAsync(LoadOrders);
+
+    private async void OnConnectionStateChanged() => await InvokeAsync(StateHasChanged);
+
+    private bool signalRStarting;
+
+    private async Task TryStartSignalR()
+    {
+        // Guard against overlapping/duplicate starts (e.g. rapid auth-state callbacks).
+        if (signalRStarting || SignalRService.IsConnected) return;
+        signalRStarting = true;
+        try
+        {
+            await SignalRService.StartAsync();
+            // Hub auto-joins this connection to the staff-{role} + staff-all groups on connect.
+        }
+        catch (Exception ex)
+        {
+            // Most commonly the auth token isn't ready yet on initial load; OnAuthStateChanged will
+            // call back here once it's restored so the connection can reach "Live".
+            Console.WriteLine($"SignalR start deferred (will retry when auth is ready): {ex.Message}");
+        }
+        finally
+        {
+            signalRStarting = false;
+        }
+    }
+
+    private async void OnAuthStateChanged() => await InvokeAsync(TryStartSignalR);
+
+    public void Dispose()
+    {
+        refreshTimer?.Dispose();
+        if (SignalRService != null)
+        {
+            SignalRService.NewOrder -= OnNewOrder;
+            SignalRService.OrderUpdated -= OnOrderUpdated;
+            SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
+        }
+        AuthService.OnAuthenticationStateChanged -= OnAuthStateChanged;
+    }
+}

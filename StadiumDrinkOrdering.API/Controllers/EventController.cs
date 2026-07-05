@@ -403,7 +403,9 @@ public class EventController : ControllerBase
     private async Task<List<EventDto>> MapEventsWithSoldCountsAsync(IEnumerable<Event> events)
     {
         var eventList = events.ToList();
-        var soldCounts = await _eventService.GetSoldSeatCountsAsync(eventList.Select(e => e.Id));
+        var ids = eventList.Select(e => e.Id).ToList();
+        var soldCounts = await _eventService.GetSoldSeatCountsAsync(ids);
+        var seasonSoldCounts = await _eventService.GetSeasonSoldSeatCountsAsync(ids);
         var seasonNames = await _seasonService.GetSeasonNamesAsync(
             eventList.Where(e => e.SeasonId != null).Select(e => e.SeasonId!.Value));
 
@@ -411,7 +413,8 @@ public class EventController : ControllerBase
             .Select(e => MapEventToDto(
                 e,
                 soldCounts.GetValueOrDefault(e.Id, 0),
-                e.SeasonId != null ? seasonNames.GetValueOrDefault(e.SeasonId.Value) : null))
+                e.SeasonId != null ? seasonNames.GetValueOrDefault(e.SeasonId.Value) : null,
+                seasonSoldCounts.GetValueOrDefault(e.Id, 0)))
             .ToList();
     }
 
@@ -435,7 +438,7 @@ public class EventController : ControllerBase
     /// endpoints use raw SQL that omits it). When null, sold seats are counted from the
     /// loaded Tickets navigation. Both paths funnel through <see cref="TicketStatuses.CountsAsSold"/>.
     /// </param>
-    private EventDto MapEventToDto(Event evt, int? soldSeatsOverride = null, string? seasonName = null)
+    private EventDto MapEventToDto(Event evt, int? soldSeatsOverride = null, string? seasonName = null, int? seasonSoldOverride = null)
     {
         if (evt == null)
         {
@@ -448,6 +451,12 @@ public class EventController : ControllerBase
             ?? evt.Tickets?.Count(t => TicketStatuses.CountsAsSold(t.Status))
             ?? 0;
 
+        // Of those sold seats, how many are season-pass–derived (the rest are single-event).
+        // Same override/loaded-navigation split as above; clamp so it never exceeds total sold.
+        int seasonSold = seasonSoldOverride
+            ?? evt.Tickets?.Count(t => t.Kind == TicketKind.Season && TicketStatuses.CountsAsSold(t.Status))
+            ?? 0;
+
         return new EventDto
         {
             Id = evt.Id,
@@ -458,6 +467,7 @@ public class EventController : ControllerBase
             Location = evt.EventType ?? "Main Stadium", // Using EventType as location for now
             Capacity = evt.TotalSeats,
             AvailableSeats = Math.Max(0, evt.TotalSeats - soldSeats),
+            SeasonTicketsSold = Math.Min(seasonSold, soldSeats),
             BasePrice = evt.BaseTicketPrice ?? 0m,
             IsActive = evt.IsActive,
             CreatedAt = evt.CreatedAt,

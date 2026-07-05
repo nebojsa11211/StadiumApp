@@ -5,9 +5,16 @@ namespace StadiumDrinkOrdering.Shared.Models;
 public class Payment
 {
     public int Id { get; set; }
-    
+
     public int? OrderId { get; set; }
-    
+
+    /// <summary>
+    /// Set when this payment funds a wallet <b>deposit</b> rather than an order. A Payment references
+    /// either an <see cref="OrderId"/> (spend) or a <see cref="WalletTransactionId"/> (top-up); both
+    /// are nullable so the row can serve either flow.
+    /// </summary>
+    public long? WalletTransactionId { get; set; }
+
     [Required]
     [StringLength(50)]
     public string PaymentMethod { get; set; } = string.Empty; // CreditCard, PayPal, Stripe, etc.
@@ -47,6 +54,7 @@ public class Payment
     
     // Navigation properties
     public virtual Order? Order { get; set; }
+    public virtual WalletTransaction? WalletTransaction { get; set; }
 }
 
 public enum PaymentMethod

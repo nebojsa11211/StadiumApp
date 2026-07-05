@@ -1,5 +1,6 @@
 using StadiumDrinkOrdering.Shared.Models;
 using StadiumDrinkOrdering.Shared.DTOs;
+using Microsoft.Extensions.Localization;
 
 namespace StadiumDrinkOrdering.Staff.Models;
 
@@ -10,6 +11,8 @@ public class DashboardViewModel
     public int AcceptedOrdersCount { get; set; }
     public int InPreparationOrdersCount { get; set; }
     public int ReadyOrdersCount { get; set; }
+    public int OutForDeliveryOrdersCount { get; set; }
+    public int DeliveredOrdersCount { get; set; }
     public int TotalOrdersToday { get; set; }
 
     // Order Collections
@@ -18,6 +21,8 @@ public class DashboardViewModel
     public List<OrderDto> AcceptedOrders { get; set; } = new();
     public List<OrderDto> InPreparationOrders { get; set; } = new();
     public List<OrderDto> ReadyOrders { get; set; } = new();
+    public List<OrderDto> OutForDeliveryOrders { get; set; } = new();
+    public List<OrderDto> DeliveredOrders { get; set; } = new();
 
     // UI Components Data
     public List<QuickAction> QuickActions { get; set; } = new();
@@ -32,46 +37,61 @@ public class DashboardViewModel
     public bool HasOrders => TotalActiveOrders > 0;
     public bool HasRecentOrders => RecentOrders.Any();
 
-    // Dashboard Cards Data
-    public List<DashboardCardData> GetDashboardCards()
+    // Dashboard Cards Data. Titles/subtitles are localized via the injected localizer, while each
+    // card keeps a stable English Slug so any element IDs stay constant across cultures.
+    public List<DashboardCardData> GetDashboardCards(IStringLocalizer localizer)
     {
         return new List<DashboardCardData>
         {
             new DashboardCardData
             {
-                Title = "Pending Orders",
+                Slug = "pending-orders",
+                Title = localizer["Dashboard_CardPendingTitle"],
                 Value = PendingOrdersCount.ToString(),
                 IconClass = "oi oi-clock",
                 BackgroundClass = "bg-primary",
                 TextColorClass = "text-white",
-                Subtitle = PendingOrdersCount == 1 ? "order awaiting acceptance" : "orders awaiting acceptance"
+                Subtitle = localizer["Dashboard_CardPendingSub"]
             },
             new DashboardCardData
             {
-                Title = "Accepted Orders",
-                Value = AcceptedOrdersCount.ToString(),
-                IconClass = "oi oi-check",
-                BackgroundClass = "bg-info",
-                TextColorClass = "text-white",
-                Subtitle = AcceptedOrdersCount == 1 ? "order in progress" : "orders in progress"
-            },
-            new DashboardCardData
-            {
-                Title = "In Preparation",
+                Slug = "in-preparation",
+                Title = localizer["Dashboard_CardInPreparationTitle"],
                 Value = InPreparationOrdersCount.ToString(),
                 IconClass = "oi oi-wrench",
                 BackgroundClass = "bg-warning",
                 TextColorClass = "text-dark",
-                Subtitle = InPreparationOrdersCount == 1 ? "order being prepared" : "orders being prepared"
+                Subtitle = localizer["Dashboard_CardInPreparationSub"]
             },
             new DashboardCardData
             {
-                Title = "Ready for Delivery",
+                Slug = "ready-for-delivery",
+                Title = localizer["Dashboard_CardReadyTitle"],
                 Value = ReadyOrdersCount.ToString(),
                 IconClass = "oi oi-box",
                 BackgroundClass = "bg-success",
                 TextColorClass = "text-white",
-                Subtitle = ReadyOrdersCount == 1 ? "order ready" : "orders ready"
+                Subtitle = localizer["Dashboard_CardReadySub"]
+            },
+            new DashboardCardData
+            {
+                Slug = "picked-up",
+                Title = localizer["Dashboard_CardPickedUpTitle"],
+                Value = OutForDeliveryOrdersCount.ToString(),
+                IconClass = "oi oi-transfer",
+                BackgroundClass = "bg-info",
+                TextColorClass = "text-white",
+                Subtitle = localizer["Dashboard_CardPickedUpSub"]
+            },
+            new DashboardCardData
+            {
+                Slug = "delivered",
+                Title = localizer["Dashboard_CardDeliveredTitle"],
+                Value = DeliveredOrdersCount.ToString(),
+                IconClass = "oi oi-circle-check",
+                BackgroundClass = "bg-secondary",
+                TextColorClass = "text-white",
+                Subtitle = localizer["Dashboard_CardDeliveredSub"]
             }
         };
     }
@@ -98,6 +118,8 @@ public class DashboardViewModel
 
 public class DashboardCardData
 {
+    // Stable, language-independent identifier used for element IDs (decoupled from the localized Title).
+    public string? Slug { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Value { get; set; } = "0";
     public string IconClass { get; set; } = "oi oi-info";

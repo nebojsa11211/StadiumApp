@@ -53,6 +53,42 @@ public class SimulatorApiClient
             : null;
     }
 
+    /// <summary>
+    /// Asks the API to place a randomised live drink order for the event. Signed like the webhook;
+    /// the API rejects it unless the event is live.
+    /// </summary>
+    public async Task<SimulatedDrinkOrderResult> SimulateDrinkOrderAsync(string externalEventId)
+    {
+        const string body = "{}"; // no payload needed — the server assembles a random order
+        using var content = new StringContent(body, Encoding.UTF8, "application/json");
+        var path = $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/simulate-order";
+        using var req = new HttpRequestMessage(HttpMethod.Post, path) { Content = content };
+        req.Headers.TryAddWithoutValidation("X-Signature", "sha256=" + Sign(body));
+
+        var resp = await _http.SendAsync(req);
+        var result = await resp.Content.ReadFromJsonAsync<SimulatedDrinkOrderResult>(Json);
+        return result ?? new SimulatedDrinkOrderResult { Accepted = false, Message = $"HTTP {(int)resp.StatusCode}" };
+    }
+
+    /// <summary>
+    /// Deletes an event (and its tickets) by external id. Signed like the webhook over the raw —
+    /// empty — body. Returns whether the delete succeeded plus a message for the activity log.
+    /// </summary>
+    public async Task<(bool Ok, string Message)> DeleteEventAsync(string externalEventId)
+    {
+        const string body = ""; // DELETE has no body — sign the empty string
+        var path = $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}";
+        using var req = new HttpRequestMessage(HttpMethod.Delete, path);
+        req.Headers.TryAddWithoutValidation("X-Signature", "sha256=" + Sign(body));
+
+        var resp = await _http.SendAsync(req);
+        if (resp.IsSuccessStatusCode)
+            return (true, "Deleted");
+
+        var text = await resp.Content.ReadAsStringAsync();
+        return (false, string.IsNullOrWhiteSpace(text) ? $"HTTP {(int)resp.StatusCode}" : text);
+    }
+
     public async Task<TicketingWebhookResult> SendAsync(TicketingWebhookEnvelope envelope)
     {
         var body = JsonSerializer.Serialize(envelope, Json);

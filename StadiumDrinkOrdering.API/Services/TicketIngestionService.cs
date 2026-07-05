@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.API.Hubs;
+using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.DTOs.Integration;
 using StadiumDrinkOrdering.Shared.Models;
 
@@ -19,6 +20,14 @@ public interface ITicketIngestionService
     /// how many were created.
     /// </summary>
     Task<int> BackfillSeasonTicketsForEventAsync(int eventId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Testing hook: places a randomised drink order against a currently-occupied seat of a
+    /// <em>live</em> event (rejected unless <see cref="EventLifecycle.CanOrderDrinks"/> is true),
+    /// so the external system/simulator can exercise the game-day drink-ordering flow and light up
+    /// the Bar/Staff order queue. Broadcasts the new order over SignalR like a real customer order.
+    /// </summary>
+    Task<SimulatedDrinkOrderResult> SimulateDrinkOrderAsync(string externalEventId, CancellationToken ct = default);
 }
 
 /// <summary>
@@ -76,6 +85,8 @@ public class TicketIngestionService : ITicketIngestionService
             {
                 TicketingEventTypes.EventCreated or TicketingEventTypes.EventUpdated
                     => await HandleEventUpsertAsync(envelope, ct),
+                TicketingEventTypes.EventWentLive
+                    => await HandleEventWentLiveAsync(envelope, ct),
                 TicketingEventTypes.TicketSold
                     => await HandleTicketSoldAsync(envelope, ct),
                 TicketingEventTypes.TicketRefunded
@@ -180,6 +191,58 @@ public class TicketIngestionService : ITicketIngestionService
         };
     }
 
+    /// <summary>
+    /// Testing hook: slides the event window to "now" (preserving its original duration) and
+    /// advances the lifecycle to <see cref="EventStatus.Active"/> so features gated on
+    /// <see cref="EventLifecycle.CanOrderDrinks"/> (drink ordering, live ticket sessions) unlock.
+    /// The simulator uses this to make a Future event testable as if it were live.
+    /// </summary>
+    private async Task<TicketingWebhookResult> HandleEventWentLiveAsync(TicketingWebhookEnvelope envelope, CancellationToken ct)
+    {
+        var dto = envelope.Event;
+        if (dto == null || string.IsNullOrWhiteSpace(dto.ExternalEventId))
+            return Rejected("Missing event payload");
+
+        var evt = await _context.Events.FirstOrDefaultAsync(e => e.ExternalEventId == dto.ExternalEventId, ct);
+        if (evt == null)
+            return Rejected($"No event mapped to external id '{dto.ExternalEventId}'");
+
+        if (EventLifecycle.IsTerminal(evt.Status))
+            return Rejected($"Event is {evt.Status} (terminal) and cannot be made live.");
+
+        var now = DateTime.UtcNow;
+
+        // Slide the window so the event reads as happening right now, keeping its original length.
+        var window = (evt.EventEndDate ?? evt.EventDate.AddHours(2)) - evt.EventDate;
+        if (window <= TimeSpan.Zero) window = TimeSpan.FromHours(2);
+        evt.EventDate = now;
+        evt.EventEndDate = now.Add(window);
+
+        // Advance the lifecycle to Active via legal transitions (e.g. Planned → OnSale → Active).
+        if (evt.Status == EventStatus.Planned && EventLifecycle.CanTransition(evt.Status, EventStatus.OnSale))
+            evt.Status = EventStatus.OnSale;
+        if (evt.Status is not (EventStatus.Active or EventStatus.InProgress)
+            && EventLifecycle.CanTransition(evt.Status, EventStatus.Active))
+            evt.Status = EventStatus.Active;
+
+        evt.IsActive = true;
+        evt.UpdatedAt = now;
+
+        RecordInbox(envelope);
+        await _context.SaveChangesAsync(ct);
+
+        _logger.LogInformation("Event {ExternalId} -> internal {EventId} made live: status={Status}, window {Start:o}..{End:o}",
+            dto.ExternalEventId, evt.Id, evt.Status, evt.EventDate, evt.EventEndDate);
+
+        return new TicketingWebhookResult
+        {
+            Accepted = true,
+            Message = $"{envelope.EventType}:{evt.Status}",
+            EventId = evt.Id,
+            TotalSoldForEvent = await CountEventSoldAsync(evt.Id, ct)
+        };
+    }
+
     private async Task<TicketingWebhookResult> HandleTicketSoldAsync(TicketingWebhookEnvelope envelope, CancellationToken ct)
     {
         var dto = envelope.Ticket;
@@ -195,6 +258,13 @@ public class TicketIngestionService : ITicketIngestionService
 
         // Resolve (or lazily create) the event — tolerates out-of-order delivery.
         var evt = await ResolveOrCreateEventAsync(dto.ExternalEventId, envelope.SourceSystem, ct);
+
+        // Lifecycle gate: tickets may only be sold while the event is on sale. Once it goes live
+        // (Active/InProgress), is sold out, or has ended, sales are closed — reject the webhook so
+        // the external system stops selling into it.
+        if (!EventLifecycle.CanSellTickets(evt.Status))
+            return Rejected($"Ticket sales are closed — event is {evt.Status}"
+                + (EventLifecycle.PhaseOf(evt.Status) == EventPhase.Active ? " (live)" : "") + ".");
 
         // The "real" stadium is defined by the drawing-tool overlays (source of truth).
         var overlay = await _context.StadiumSectorOverlays
@@ -682,6 +752,162 @@ public class TicketIngestionService : ITicketIngestionService
 
         return null; // section full
     }
+
+    // ---- Live drink-order simulation --------------------------------------------------------
+
+    private const string SimulatorCustomerEmail = "simulator+drinks@stadium.local";
+
+    public async Task<SimulatedDrinkOrderResult> SimulateDrinkOrderAsync(string externalEventId, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(externalEventId))
+            return new SimulatedDrinkOrderResult { Accepted = false, Message = "Missing externalEventId" };
+
+        var evt = await _context.Events.FirstOrDefaultAsync(e => e.ExternalEventId == externalEventId, ct);
+        if (evt == null)
+            return new SimulatedDrinkOrderResult { Accepted = false, Message = $"No event mapped to external id '{externalEventId}'" };
+
+        // Drink ordering is a game-day (live) feature — gate exactly like the real customer flow.
+        if (!EventLifecycle.CanOrderDrinks(evt.Status))
+            return new SimulatedDrinkOrderResult { Accepted = false, Message = EventLifecycle.OrderingBlockedReason(evt.Status) };
+
+        // Attach the order to a real occupied seat in this event, so it carries a seat + section
+        // just like a customer order placed from a seat.
+        var occupiedSeats = await _context.Tickets
+            .Where(t => t.EventId == evt.Id && t.Status != TicketStatuses.Cancelled && t.SeatId != null)
+            .Select(t => new { t.SeatId, t.SeatNumber, t.TicketNumber, t.CustomerName })
+            .ToListAsync(ct);
+        if (occupiedSeats.Count == 0)
+            return new SimulatedDrinkOrderResult { Accepted = false, Message = "No occupied seats to order from — sell some tickets first." };
+
+        var drinks = await _context.Drinks
+            .Where(d => d.IsAvailable && d.StockQuantity > 0)
+            .ToListAsync(ct);
+        if (drinks.Count == 0)
+            return new SimulatedDrinkOrderResult { Accepted = false, Message = "No drinks available to order." };
+
+        var seat = occupiedSeats[_rng.Next(occupiedSeats.Count)];
+        var customerId = await ResolveSimulatorCustomerIdAsync(ct);
+
+        // 1–3 distinct drinks, 1–2 of each.
+        var chosen = drinks.OrderBy(_ => _rng.Next()).Take(_rng.Next(1, 4)).ToList();
+        var order = new Order
+        {
+            TicketNumber = seat.TicketNumber,
+            SeatNumber = seat.SeatNumber ?? string.Empty,
+            CustomerId = customerId,
+            Status = OrderStatus.Pending,
+            CreatedAt = DateTime.UtcNow,
+            EventId = evt.Id,
+            SeatId = seat.SeatId,
+            CustomerNotes = "Simulated live order"
+        };
+
+        decimal total = 0;
+        var summaryParts = new List<string>();
+        foreach (var drink in chosen)
+        {
+            var qty = Math.Min(_rng.Next(1, 3), drink.StockQuantity);
+            if (qty <= 0) continue;
+            order.OrderItems.Add(new OrderItem
+            {
+                DrinkId = drink.Id,
+                Quantity = qty,
+                UnitPrice = drink.Price,
+                TotalPrice = drink.Price * qty
+            });
+            drink.StockQuantity -= qty;
+            total += drink.Price * qty;
+            summaryParts.Add($"{qty}× {drink.Name}");
+        }
+
+        if (order.OrderItems.Count == 0)
+            return new SimulatedDrinkOrderResult { Accepted = false, Message = "Chosen drinks were out of stock." };
+
+        order.TotalAmount = total;
+        _context.Orders.Add(order);
+        await _context.SaveChangesAsync(ct);
+
+        var summary = string.Join(", ", summaryParts);
+        await BroadcastNewOrderAsync(order, seat.CustomerName, summary, ct);
+
+        _logger.LogInformation("Simulated drink order #{OrderId} for event {EventId} seat {Seat}: {Summary}",
+            order.Id, evt.Id, order.SeatNumber, summary);
+
+        return new SimulatedDrinkOrderResult
+        {
+            Accepted = true,
+            Message = "Order placed",
+            OrderId = order.Id,
+            EventId = evt.Id,
+            SeatNumber = order.SeatNumber,
+            OrderSummary = summary,
+            TotalAmount = total
+        };
+    }
+
+    /// <summary>Resolve-or-create the dedicated customer used to attribute simulated drink orders.</summary>
+    private async Task<int> ResolveSimulatorCustomerIdAsync(CancellationToken ct)
+    {
+        var existing = await _context.Users
+            .Where(u => u.Email == SimulatorCustomerEmail)
+            .Select(u => u.Id)
+            .FirstOrDefaultAsync(ct);
+        if (existing != 0)
+            return existing;
+
+        var user = new User
+        {
+            Username = "Simulator Customer",
+            Email = SimulatorCustomerEmail,
+            // Not a real login — a non-empty placeholder just satisfies the required column.
+            PasswordHash = Guid.NewGuid().ToString("N"),
+            Role = UserRole.Customer,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync(ct);
+        return user.Id;
+    }
+
+    /// <summary>Broadcasts a new order to staff exactly like a real customer order so the Bar/Staff queue updates live.</summary>
+    private async Task BroadcastNewOrderAsync(Order order, string? customerName, string summary, CancellationToken ct)
+    {
+        var dto = new OrderDto
+        {
+            Id = order.Id,
+            TicketNumber = order.TicketNumber,
+            SeatNumber = order.SeatNumber,
+            CustomerId = order.CustomerId,
+            CustomerName = string.IsNullOrWhiteSpace(customerName) ? "Simulated customer" : customerName!,
+            TotalAmount = order.TotalAmount,
+            Status = order.Status,
+            OrderDate = order.CreatedAt,
+            CreatedAt = order.CreatedAt,
+            EventId = order.EventId,
+            SeatId = order.SeatId,
+            CustomerNotes = order.CustomerNotes,
+            OrderItems = order.OrderItems.Select(oi => new OrderItemDto
+            {
+                DrinkId = oi.DrinkId,
+                Quantity = oi.Quantity,
+                UnitPrice = oi.UnitPrice,
+                TotalPrice = oi.TotalPrice
+            }).ToList()
+        };
+
+        try
+        {
+            if (order.EventId is int eventId)
+                await _hub.Clients.Group($"event-{eventId}").SendAsync("NewOrder", dto, ct);
+            await _hub.Clients.Group("staff-all").SendAsync("NewOrder", dto, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to broadcast simulated NewOrder for order {OrderId}", order.Id);
+        }
+    }
+
+    private readonly Random _rng = new();
 
     private async Task BroadcastAndRefreshAsync(Event evt, StadiumSection? section, string action, TicketingWebhookResult result, CancellationToken ct)
     {

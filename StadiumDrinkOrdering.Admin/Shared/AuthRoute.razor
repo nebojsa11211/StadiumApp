@@ -1,11 +1,15 @@
+@using Microsoft.Extensions.Localization
+@using StadiumDrinkOrdering.Admin
+@inject IStringLocalizer<SharedResources> L
+
 @if (isChecking)
 {
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="text-center">
             <div class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">Checking authentication...</span>
+                <span class="visually-hidden">@L["AuthRoute_CheckingAuth"]</span>
             </div>
-            <p class="text-muted">Verifying authentication...</p>
+            <p class="text-muted">@L["AuthRoute_VerifyingAuth"]</p>
         </div>
     </div>
 }
@@ -19,9 +23,9 @@ else
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="text-center">
             <div class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">Redirecting to login...</span>
+                <span class="visually-hidden">@L["AuthRoute_RedirectingToLogin"]</span>
             </div>
-            <p class="text-muted">Redirecting to login...</p>
+            <p class="text-muted">@L["AuthRoute_RedirectingToLogin"]</p>
         </div>
     </div>
 }

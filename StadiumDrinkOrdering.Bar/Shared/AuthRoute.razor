@@ -1,0 +1,99 @@
+@using StadiumDrinkOrdering.Shared.Authentication.Interfaces
+@using StadiumDrinkOrdering.Shared.Authentication.Models
+@inject IAuthenticationStateService AuthState
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
+
+@if (isChecking)
+{
+    <div id="bar-authroute-checking-container" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div id="bar-authroute-checking-center" class="text-center">
+            <div id="bar-authroute-spinner" class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">@Localizer["AuthRoute_CheckingAuthentication"]</span>
+            </div>
+            <p class="text-muted">@Localizer["AuthRoute_VerifyingAuthentication"]</p>
+        </div>
+    </div>
+}
+else if (!AuthState.IsAuthenticated)
+{
+    <div id="bar-authroute-unauth-container" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div id="bar-authroute-unauth-center" class="text-center">
+            <div id="bar-authroute-unauth-card" class="card">
+                <div id="bar-authroute-unauth-body" class="card-body">
+                    <h5 class="card-title">🔐 @Localizer["AuthRoute_AuthenticationRequired"]</h5>
+                    <p class="card-text">@Localizer["AuthRoute_MustBeLoggedInToAccessPage"]</p>
+                    <button class="btn btn-primary" @onclick="RedirectToLogin" id="bar-authroute-login-btn">
+                        @Localizer["AuthRoute_GoToLogin"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (!AuthState.HasAnyRole(AllowedRoles))
+{
+    <div id="bar-authroute-restricted-container" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div id="bar-authroute-restricted-center" class="text-center">
+            <div id="bar-authroute-restricted-card" class="card border-warning">
+                <div id="bar-authroute-restricted-body" class="card-body">
+                    <h5 class="card-title">⛔ @Localizer["AuthRoute_AccessRestricted"]</h5>
+                    <p class="card-text">
+                        @string.Format(Localizer["AuthRoute_BarStationForBartenders"].Value, AuthState.UserRole ?? Localizer["AuthRoute_Unknown"].Value)
+                    </p>
+                    <button class="btn btn-outline-secondary" @onclick="Logout" id="bar-authroute-logout-btn">
+                        @Localizer["AuthRoute_SignInAsDifferentUser"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+
+    // The Bar (prep station) is a Bartender workstation; Admins may also supervise it.
+    // Waiters use the separate Runner app; Customers have no access.
+    private static readonly string[] AllowedRoles = { "Bartender", "Admin" };
+
+    private bool isChecking = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Brief delay so the auth state (restored from storage in App.razor) settles before we decide.
+        await Task.Delay(100);
+        isChecking = false;
+        StateHasChanged();
+
+        AuthState.OnAuthenticationStateChanged += OnAuthChanged;
+    }
+
+    private void OnAuthChanged(StadiumDrinkOrdering.Shared.Authentication.Models.AuthenticationState _)
+        => InvokeAsync(StateHasChanged);
+
+    private void RedirectToLogin()
+    {
+        // Pass a relative return path (e.g. /order-queue) so login can send the user back to the
+        // page they actually requested instead of the home page.
+        var relativePath = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var returnUrl = Uri.EscapeDataString(relativePath);
+        NavigationManager.NavigateTo($"/login?returnUrl={returnUrl}");
+    }
+
+    private async Task Logout()
+    {
+        await AuthState.LogoutAsync();
+        NavigationManager.NavigateTo("/login", forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        AuthState.OnAuthenticationStateChanged -= OnAuthChanged;
+    }
+}

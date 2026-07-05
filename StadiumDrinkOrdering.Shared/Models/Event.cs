@@ -70,14 +70,17 @@ public class Event
     public int? SeasonId { get; set; }
 
     /// <summary>
-    /// True when the event is published (<see cref="IsActive"/>) and <paramref name="nowUtc"/>
-    /// falls within its [<see cref="EventDate"/>, <see cref="EventEndDate"/>] window. When no end
-    /// is set the window is open-ended (live from the start onward while published).
+    /// True when the event is in a live lifecycle phase (<see cref="EventStatus.Active"/> or
+    /// <see cref="EventStatus.InProgress"/> — the authoritative game-day state) and has not yet
+    /// ended at <paramref name="nowUtc"/>. When an explicit <see cref="EventEndDate"/> is set the
+    /// window closes at that instant; otherwise the event is treated as live only through the end
+    /// of its start day, so a past event with no end date does not stay "live" forever.
     /// </summary>
     public bool IsLiveAt(DateTime nowUtc) =>
-        IsActive
-        && nowUtc >= EventDate
-        && (EventEndDate == null || nowUtc <= EventEndDate.Value);
+        EventLifecycle.PhaseOf(Status) == EventPhase.Active
+        && (EventEndDate.HasValue
+            ? nowUtc <= EventEndDate.Value
+            : nowUtc.Date <= EventDate.Date);
 
     // Navigation properties
     public virtual Season? Season { get; set; }

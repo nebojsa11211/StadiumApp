@@ -55,9 +55,18 @@ public class SeasonTicket
     [StringLength(100)]
     public string? SourceSystem { get; set; }
 
+    /// <summary>
+    /// The fan account this pass belongs to, once linked. A season ticket may be ingested externally
+    /// before its holder has an account, so this is nullable and populated by the email-match linker
+    /// (<c>HolderEmail == User.Email</c>) on register/login. Once set, the FK — not live email
+    /// matching — is the authoritative owner and drives wallet eligibility.
+    /// </summary>
+    public int? UserId { get; set; }
+
     // Navigation properties
     public virtual Season Season { get; set; } = null!;
     public virtual Seat Seat { get; set; } = null!;
+    public virtual User? User { get; set; }
 
     /// <summary>The per-event access tickets generated from this pass (one per season event).</summary>
     public virtual ICollection<Ticket> DerivedTickets { get; set; } = new List<Ticket>();

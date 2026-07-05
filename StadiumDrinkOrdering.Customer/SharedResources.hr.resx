@@ -354,4 +354,917 @@
   <data name="UnexpectedError" xml:space="preserve">
     <value>Došlo je do neočekivane greške. Molimo pokušajte ponovo.</value>
   </data>
+
+  <!-- MainLayout -->
+  <data name="MainLayout_PageTitle" xml:space="preserve">
+    <value>Stadionska Pića - Premium Iskustvo</value>
+  </data>
+
+  <!-- Register Page -->
+  <data name="Register_PageTitle" xml:space="preserve">
+    <value>Kreiraj Račun - Stadionska Naručivanja</value>
+  </data>
+  <data name="Register_CreateAccount" xml:space="preserve">
+    <value>Kreiraj Račun</value>
+  </data>
+  <data name="Register_Subtitle" xml:space="preserve">
+    <value>Pridružite se kako bi naručili pića i kupili ulaznice</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Korisničko Ime</value>
+  </data>
+  <data name="Register_ChooseUsername" xml:space="preserve">
+    <value>Odaberite korisničko ime</value>
+  </data>
+  <data name="Register_EnterEmail" xml:space="preserve">
+    <value>Unesite svoju e-poštu</value>
+  </data>
+  <data name="Register_ChoosePassword" xml:space="preserve">
+    <value>Odaberite sigurnu lozinku</value>
+  </data>
+  <data name="Register_PasswordMinLength" xml:space="preserve">
+    <value>Mora biti najmanje 6 znakova dugačka</value>
+  </data>
+  <data name="Register_ReEnterPassword" xml:space="preserve">
+    <value>Ponovno unesite lozinku</value>
+  </data>
+  <data name="Register_AgreeTerms" xml:space="preserve">
+    <value>Slažem se s</value>
+  </data>
+  <data name="Register_TermsOfService" xml:space="preserve">
+    <value>Uvjetima Korištenja</value>
+  </data>
+  <data name="Register_And" xml:space="preserve">
+    <value>i</value>
+  </data>
+  <data name="Register_PrivacyPolicy" xml:space="preserve">
+    <value>Politikom Privatnosti</value>
+  </data>
+  <data name="Register_MustAcceptTerms" xml:space="preserve">
+    <value>Morate prihvatiti uvjete kako bi kreirali račun</value>
+  </data>
+  <data name="Register_CreatingAccount" xml:space="preserve">
+    <value>Kreiranje Računa...</value>
+  </data>
+  <data name="Register_AlreadyHaveAccount" xml:space="preserve">
+    <value>Već imate račun?</value>
+  </data>
+  <data name="Register_RegistrationFailed" xml:space="preserve">
+    <value>Registracija nije uspjela. E-pošta ili korisničko ime mogu biti već u uporabi.</value>
+  </data>
+  <data name="Register_UnexpectedError" xml:space="preserve">
+    <value>Došlo je do neočekivane greške. Molimo pokušajte ponovo.</value>
+  </data>
+  <data name="Register_AccountCreatedRedirecting" xml:space="preserve">
+    <value>Račun je uspješno stvoren! Preusmjeravanje...</value>
+  </data>
+  <data name="Register_AccountCreatedSignIn" xml:space="preserve">
+    <value>Račun je uspješno stvoren! Molimo prijavite se.</value>
+  </data>
+
+  <!-- Orders Page -->
+  <data name="Orders_PageTitle" xml:space="preserve">
+    <value>Moje Narudžbe</value>
+  </data>
+  <data name="Orders_NewOrder" xml:space="preserve">
+    <value>Nova Narudžba</value>
+  </data>
+  <data name="Orders_LoadingOrders" xml:space="preserve">
+    <value>Učitavanje vaših narudžbi...</value>
+  </data>
+  <data name="Orders_NoOrders" xml:space="preserve">
+    <value>Nema narudžbi</value>
+  </data>
+  <data name="Orders_NoOrdersMessage" xml:space="preserve">
+    <value>Niste još napravili niti jednu narudžbu. Spremni za početak?</value>
+  </data>
+  <data name="Orders_BrowseMenu" xml:space="preserve">
+    <value>Pregledaj Jelovnik</value>
+  </data>
+  <data name="Orders_Items" xml:space="preserve">
+    <value>Stavke</value>
+  </data>
+
+  <!-- Menu Page -->
+  <data name="Menu_PageTitle" xml:space="preserve">
+    <value>Stadionska Pića - Naruči Sada</value>
+  </data>
+  <data name="Menu_Title" xml:space="preserve">
+    <value>Jelovnik Stadionskih Pića</value>
+  </data>
+  <data name="Menu_LoadingDrinks" xml:space="preserve">
+    <value>Učitavanje pića...</value>
+  </data>
+  <data name="Menu_NoDrinks" xml:space="preserve">
+    <value>Nema dostupnih pića</value>
+  </data>
+  <data name="Menu_NoDrinksMessage" xml:space="preserve">
+    <value>Nažalost, trenutno nema dostupnih pića za naručivanje.</value>
+  </data>
+  <data name="Menu_All" xml:space="preserve">
+    <value>Sve</value>
+  </data>
+  <data name="Menu_Stock" xml:space="preserve">
+    <value>Zaliha</value>
+  </data>
+  <data name="Menu_AddToCart" xml:space="preserve">
+    <value>Dodaj u Košaricu</value>
+  </data>
+  <data name="Menu_OutOfStock" xml:space="preserve">
+    <value>Nema na Zalihi</value>
+  </data>
+
+  <!-- Events Page -->
+  <data name="Events_PageTitle" xml:space="preserve">
+    <value>Pregled Premium Događaja - Stadionska Pića</value>
+  </data>
+
+  <!-- Logs Page -->
+  <data name="Logs_PageTitle" xml:space="preserve">
+    <value>Moja Aktivnost</value>
+  </data>
+
+  <!-- Event Details Page -->
+  <data name="EventDetails_PageTitle" xml:space="preserve">
+    <value>Detalji Događaja</value>
+  </data>
+
+  <!-- Checkout Page -->
+  <data name="Checkout_PageTitle" xml:space="preserve">
+    <value>Naplata - Stadionska Pića</value>
+  </data>
+
+  <!-- Order Confirmation Page -->
+  <data name="OrderConfirmation_PageTitle" xml:space="preserve">
+    <value>Potvrda Narudžbe - Stadionska Pića</value>
+  </data>
+
+  <!-- Ordering Component Page -->
+  <data name="Ordering_PageTitle" xml:space="preserve">
+    <value>Naruči Pića - Stadionska Naručivanja</value>
+  </data>
+
+  <!-- QR Scanner Page -->
+  <data name="QRScanner_PageTitle" xml:space="preserve">
+    <value>QR Skener - Stadionska Naručivanja</value>
+  </data>
+
+  <!-- Stadium Viewer Page -->
+  <data name="StadiumViewer_PageTitle" xml:space="preserve">
+    <value>Prikaz Stadiona</value>
+  </data>
+
+  <!-- Component Checkout Page -->
+  <data name="ComponentCheckout_PageTitle" xml:space="preserve">
+    <value>Naplata - Stadionska Naručivanja</value>
+  </data>
+
+  <!-- Stadium Map Page -->
+  <data name="StadiumMap_PageTitle" xml:space="preserve">
+    <value>Karta Stadiona - Odaberite Sektor</value>
+  </data>
+
+  <!-- Events Page -->
+  <data name="Events_HeaderTitle" xml:space="preserve">
+    <value>Premium Događaji</value>
+  </data>
+  <data name="Events_HeaderSubtitle" xml:space="preserve">
+    <value>Otkrijte ekskluzivne sportske događaje, koncerte i premium zabavne iskustva. Osigurajte ulaznice i uživajte u svjetskom dostavu dostavljen direktno na vaše sjedište.</value>
+  </data>
+  <data name="Events_FindYourEvent" xml:space="preserve">
+    <value>Pronađite Savršen Događaj</value>
+  </data>
+  <data name="Events_AdvancedFiltering" xml:space="preserve">
+    <value>Napredna filtriranja za premium iskustva</value>
+  </data>
+  <data name="Events_PremiumSelection" xml:space="preserve">
+    <value>Premium Izbor</value>
+  </data>
+  <data name="Events_CuratedEvents" xml:space="preserve">
+    <value>Kurirani Događaji</value>
+  </data>
+  <data name="Events_EventType" xml:space="preserve">
+    <value>Vrsta Događaja</value>
+  </data>
+  <data name="Events_AllPremium" xml:space="preserve">
+    <value>Svi Premium Događaji</value>
+  </data>
+  <data name="Events_Football" xml:space="preserve">
+    <value>Američki Fudbal</value>
+  </data>
+  <data name="Events_PremiumConcerts" xml:space="preserve">
+    <value>Premium Koncerti</value>
+  </data>
+  <data name="Events_Basketball" xml:space="preserve">
+    <value>Košarka</value>
+  </data>
+  <data name="Events_Baseball" xml:space="preserve">
+    <value>Bejzbol</value>
+  </data>
+  <data name="Events_Hockey" xml:space="preserve">
+    <value>Hokej</value>
+  </data>
+  <data name="Events_Soccer" xml:space="preserve">
+    <value>Fudbal</value>
+  </data>
+  <data name="Events_OtherPremium" xml:space="preserve">
+    <value>Ostali Premium Događaji</value>
+  </data>
+  <data name="Events_FromDate" xml:space="preserve">
+    <value>Od Datuma</value>
+  </data>
+  <data name="Events_ToDate" xml:space="preserve">
+    <value>Do Datuma</value>
+  </data>
+  <data name="Events_PriceRange" xml:space="preserve">
+    <value>Raspon Cijena</value>
+  </data>
+  <data name="Events_MinPrice" xml:space="preserve">
+    <value>Min €</value>
+  </data>
+  <data name="Events_MaxPrice" xml:space="preserve">
+    <value>Max €</value>
+  </data>
+  <data name="Events_ClearFilters" xml:space="preserve">
+    <value>Očisti Filtere</value>
+  </data>
+  <data name="Events_Searching" xml:space="preserve">
+    <value>Pretraživanje...</value>
+  </data>
+  <data name="Events_ApplyFilters" xml:space="preserve">
+    <value>Primijeni Filtere</value>
+  </data>
+  <data name="Events_DiscoveringEvents" xml:space="preserve">
+    <value>Pronalaženje Premium Događaja</value>
+  </data>
+  <data name="Events_PleaseWaitCurating" xml:space="preserve">
+    <value>Molimo čekajte dok kuviramo najbolja iskustva za vas...</value>
+  </data>
+  <data name="Events_NoEventsFound" xml:space="preserve">
+    <value>Nema Pronađenih Premium Događaja</value>
+  </data>
+  <data name="Events_NoEventsMessage" xml:space="preserve">
+    <value>Nismo mogli pronaći nijedan premium događaj koji odgovara vašim kriterijima. Pokušajte prilagoditi filtere ili se vratite kasnije za nove ekskluzivne događaje.</value>
+  </data>
+  <data name="Events_ClearAllFilters" xml:space="preserve">
+    <value>Očisti Sve Filtere</value>
+  </data>
+  <data name="Events_BackToHome" xml:space="preserve">
+    <value>Natrag na Početnu</value>
+  </data>
+  <data name="Events_From" xml:space="preserve">
+    <value>Od</value>
+  </data>
+  <data name="Events_Available" xml:space="preserve">
+    <value>Dostupno</value>
+  </data>
+  <data name="Events_Sold" xml:space="preserve">
+    <value>Prodano</value>
+  </data>
+  <data name="Events_SoldOut" xml:space="preserve">
+    <value>Rasprodano</value>
+  </data>
+  <data name="Events_SellingFast" xml:space="preserve">
+    <value>Brzo se Prodaje</value>
+  </data>
+  <data name="Events_OnlyLeftActFast" xml:space="preserve">
+    <value>Samo {0} Preostalo - Brzo Djeluj!</value>
+  </data>
+  <data name="Events_GetPremiumTickets" xml:space="preserve">
+    <value>Kupi Premium Ulaznice</value>
+  </data>
+  <data name="Events_GetTickets" xml:space="preserve">
+    <value>Kupi Ulaznice</value>
+  </data>
+
+  <!-- Event Details Page -->
+  <data name="EventDetails_EventNotFound" xml:space="preserve">
+    <value>Događaj Nije Pronađen</value>
+  </data>
+  <data name="EventDetails_EventNotFoundMessage" xml:space="preserve">
+    <value>Traženi događaj ne može biti pronađen ili više nije dostupan.</value>
+  </data>
+  <data name="EventDetails_BackToEvents" xml:space="preserve">
+    <value>Natrag na Događaje</value>
+  </data>
+  <data name="EventDetails_PricingTiers" xml:space="preserve">
+    <value>Razine Cijena</value>
+  </data>
+  <data name="EventDetails_YourCart" xml:space="preserve">
+    <value>Vaša Košarica</value>
+  </data>
+  <data name="EventDetails_NoSeatsSelected" xml:space="preserve">
+    <value>Još nisu odabrana sjedišta.</value>
+  </data>
+  <data name="EventDetails_Total" xml:space="preserve">
+    <value>Ukupno:</value>
+  </data>
+  <data name="EventDetails_ProceedCheckout" xml:space="preserve">
+    <value>Nastavi na Naplatu</value>
+  </data>
+  <data name="EventDetails_ClearCart" xml:space="preserve">
+    <value>Očisti Košaricu</value>
+  </data>
+  <data name="EventDetails_StadiumSections" xml:space="preserve">
+    <value>Sektori Stadiona</value>
+  </data>
+  <data name="EventDetails_ClickSectionSeats" xml:space="preserve">
+    <value>Kliknite na sektor da vidite dostupna sjedišta</value>
+  </data>
+  <data name="EventDetails_SelectSeats" xml:space="preserve">
+    <value>Odaberite Sjedišta</value>
+  </data>
+  <data name="EventDetails_LoadingSeats" xml:space="preserve">
+    <value>Učitavanje sjedišta...</value>
+  </data>
+  <data name="EventDetails_SeatLegendAvailable" xml:space="preserve">
+    <value>Dostupno</value>
+  </data>
+  <data name="EventDetails_SeatLegendSelected" xml:space="preserve">
+    <value>Odabrano</value>
+  </data>
+  <data name="EventDetails_SeatLegendSold" xml:space="preserve">
+    <value>Prodano</value>
+  </data>
+  <data name="EventDetails_Row" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="EventDetails_NoSeatsAvailable" xml:space="preserve">
+    <value>Nema dostupnih sjedišta u ovom sektoru.</value>
+  </data>
+  <data name="EventDetails_SelectedSeats" xml:space="preserve">
+    <value>Odabrano: {0} sjedišta</value>
+  </data>
+  <data name="EventDetails_AddToCart" xml:space="preserve">
+    <value>Dodaj u Košaricu</value>
+  </data>
+  <data name="EventDetails_Close" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+
+  <!-- Checkout Page -->
+  <data name="Checkout_CustomerInformation" xml:space="preserve">
+    <value>Informacije o Kupcu</value>
+  </data>
+  <data name="Checkout_FirstName" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="Checkout_EnterFirstName" xml:space="preserve">
+    <value>Unesite ime</value>
+  </data>
+  <data name="Checkout_LastName" xml:space="preserve">
+    <value>Prezime</value>
+  </data>
+  <data name="Checkout_EnterLastName" xml:space="preserve">
+    <value>Unesite prezime</value>
+  </data>
+  <data name="Checkout_EmailAddress" xml:space="preserve">
+    <value>Adresa E-pošte</value>
+  </data>
+  <data name="Checkout_PhoneNumber" xml:space="preserve">
+    <value>Telefonski Broj</value>
+  </data>
+  <data name="Checkout_PaymentInformation" xml:space="preserve">
+    <value>Informacije o Plaćanju</value>
+  </data>
+  <data name="Checkout_FillSampleData" xml:space="preserve">
+    <value>Popuni Primjer Podataka</value>
+  </data>
+  <data name="Checkout_CardNumber" xml:space="preserve">
+    <value>Broj Kartice</value>
+  </data>
+  <data name="Checkout_ExpiryDate" xml:space="preserve">
+    <value>Datum Isteka</value>
+  </data>
+  <data name="Checkout_CVV" xml:space="preserve">
+    <value>CVV</value>
+  </data>
+  <data name="Checkout_CardholderName" xml:space="preserve">
+    <value>Ime Vlasnika Kartice</value>
+  </data>
+  <data name="Checkout_AgreeToTerms" xml:space="preserve">
+    <value>Slažem se s Uvjetima Korištenja i Politikom Privatnosti</value>
+  </data>
+  <data name="Checkout_OrderSummary" xml:space="preserve">
+    <value>Sažetak Narudžbe</value>
+  </data>
+  <data name="Checkout_Event" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="Checkout_EventID" xml:space="preserve">
+    <value>ID Događaja:</value>
+  </data>
+  <data name="Checkout_SelectedSeats" xml:space="preserve">
+    <value>Odabrana Sjedišta</value>
+  </data>
+  <data name="Checkout_Sector" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="Checkout_Subtotal" xml:space="preserve">
+    <value>Međuzbroj ({0} ulaznica)</value>
+  </data>
+  <data name="Checkout_ServiceFee" xml:space="preserve">
+    <value>Naknad za Uslugu</value>
+  </data>
+  <data name="Checkout_ProcessingFee" xml:space="preserve">
+    <value>Naknad za Obradu</value>
+  </data>
+  <data name="Checkout_Processing" xml:space="preserve">
+    <value>Obrada...</value>
+  </data>
+  <data name="Checkout_CompletePurchase" xml:space="preserve">
+    <value>Završi Kupovinu</value>
+  </data>
+  <data name="Checkout_CartEmpty" xml:space="preserve">
+    <value>Vaša košarica je prazna</value>
+  </data>
+  <data name="Checkout_BrowseEvents" xml:space="preserve">
+    <value>Pregled Događaja</value>
+  </data>
+  <data name="Checkout_ProcessingPayment" xml:space="preserve">
+    <value>Molimo čekajte dok obrađujemo vašu uplatu i generiramo vaše ulaznice...</value>
+  </data>
+
+  <!-- Order Confirmation Page -->
+  <data name="OrderConfirmation_LoadingConfirmation" xml:space="preserve">
+    <value>Učitavanje detalja vaše narudžbe...</value>
+  </data>
+  <data name="OrderConfirmation_OrderNotFound" xml:space="preserve">
+    <value>Narudžba Nije Pronađena</value>
+  </data>
+  <data name="OrderConfirmation_OrderNotFoundMessage" xml:space="preserve">
+    <value>Nismo mogli pronaći vašu narudžbu. Molimo provjerite e-poštu za detalje potvrde ili kontaktirajte podršku.</value>
+  </data>
+  <data name="OrderConfirmation_PaymentSuccessful" xml:space="preserve">
+    <value>Plaćanje Uspješno!</value>
+  </data>
+  <data name="OrderConfirmation_ConfirmedReady" xml:space="preserve">
+    <value>Vaša narudžba je potvrđena i vaše ulaznice su spremne.</value>
+  </data>
+  <data name="OrderConfirmation_OrderDetails" xml:space="preserve">
+    <value>Detalji Narudžbe</value>
+  </data>
+  <data name="OrderConfirmation_OrderID" xml:space="preserve">
+    <value>ID Narudžbe:</value>
+  </data>
+  <data name="OrderConfirmation_OrderDate" xml:space="preserve">
+    <value>Datum Narudžbe:</value>
+  </data>
+  <data name="OrderConfirmation_Customer" xml:space="preserve">
+    <value>Kupac:</value>
+  </data>
+  <data name="OrderConfirmation_PaymentStatus" xml:space="preserve">
+    <value>Status Plaćanja:</value>
+  </data>
+  <data name="OrderConfirmation_EventDate" xml:space="preserve">
+    <value>Datum Događaja:</value>
+  </data>
+  <data name="OrderConfirmation_YourTickets" xml:space="preserve">
+    <value>Vaše Ulaznice ({0})</value>
+  </data>
+  <data name="OrderConfirmation_Tickets" xml:space="preserve">
+    <value>Ulaznice ({0})</value>
+  </data>
+  <data name="OrderConfirmation_ServiceFee" xml:space="preserve">
+    <value>Naknad za Uslugu (10%)</value>
+  </data>
+  <data name="OrderConfirmation_ProcessingFee" xml:space="preserve">
+    <value>Naknad za Obradu</value>
+  </data>
+  <data name="OrderConfirmation_PrintTickets" xml:space="preserve">
+    <value>Ispis Ulaznica</value>
+  </data>
+  <data name="OrderConfirmation_DownloadPDF" xml:space="preserve">
+    <value>Preuzmi PDF</value>
+  </data>
+  <data name="OrderConfirmation_EmailTickets" xml:space="preserve">
+    <value>Pošalji Ulaznice E-poštom</value>
+  </data>
+  <data name="OrderConfirmation_BrowseMoreEvents" xml:space="preserve">
+    <value>Pregledaj Više Događaja</value>
+  </data>
+  <data name="OrderConfirmation_ImportantInformation" xml:space="preserve">
+    <value>Važne Informacije</value>
+  </data>
+  <data name="OrderConfirmation_ArriveInfo" xml:space="preserve">
+    <value>Molimo stignite na mjesto događaja najmanje 30 minuta prije početka događaja.</value>
+  </data>
+  <data name="OrderConfirmation_QRCodeInfo" xml:space="preserve">
+    <value>Predstavite svoje QR kod ulaznice na ulazu za skeniranje.</value>
+  </data>
+  <data name="OrderConfirmation_KeepSafeInfo" xml:space="preserve">
+    <value>Čuvajte svoje ulaznice sigurno i ne dijelite QR kodove s drugima.</value>
+  </data>
+  <data name="OrderConfirmation_SupportInfo" xml:space="preserve">
+    <value>Za bilo koja pitanja ili probleme, kontaktirajte naš tim podrške.</value>
+  </data>
+
+  <!-- Ordering Component Page -->
+  <data name="Ordering_LoadingMenu" xml:space="preserve">
+    <value>Učitavanje Jelovnika...</value>
+  </data>
+  <data name="Ordering_SessionExpired" xml:space="preserve">
+    <value>Sesija je Istekla</value>
+  </data>
+  <data name="Ordering_SessionExpiredMessage" xml:space="preserve">
+    <value>Vaša sesija naručivanja je istekla. Molimo ponovno skenirajte vašu ulaznici.</value>
+  </data>
+  <data name="Ordering_ScanAgain" xml:space="preserve">
+    <value>Skeniraj Ponovno</value>
+  </data>
+  <data name="Ordering_Items" xml:space="preserve">
+    <value>stavki</value>
+  </data>
+  <data name="Ordering_ProceedPayment" xml:space="preserve">
+    <value>Nastavi na Plaćanje</value>
+  </data>
+  <data name="Ordering_OutOfStock" xml:space="preserve">
+    <value>Nema na Zalihi</value>
+  </data>
+  <data name="Ordering_Quantity" xml:space="preserve">
+    <value>Količina:</value>
+  </data>
+  <data name="Ordering_SpecialInstructions" xml:space="preserve">
+    <value>Posebne Upute (opciono):</value>
+  </data>
+  <data name="Ordering_AddToCart" xml:space="preserve">
+    <value>Dodaj u Košaricu</value>
+  </data>
+  <data name="Ordering_ItemCurrentlyUnavailable" xml:space="preserve">
+    <value>Nažalost, ova stavka trenutno nije dostupna.</value>
+  </data>
+
+  <!-- Component Checkout Page -->
+  <data name="ComponentCheckout_LoadingCheckout" xml:space="preserve">
+    <value>Učitavanje Naplate...</value>
+  </data>
+  <data name="ComponentCheckout_NoItems" xml:space="preserve">
+    <value>Nema Stavki za Naplatu</value>
+  </data>
+  <data name="ComponentCheckout_CartEmptyExpired" xml:space="preserve">
+    <value>Vaša košarica je prazna ili je sesija istekla.</value>
+  </data>
+  <data name="ComponentCheckout_ContinueShopping" xml:space="preserve">
+    <value>Nastavi Kupovanje</value>
+  </data>
+  <data name="ComponentCheckout_OrderPlacedSuccess" xml:space="preserve">
+    <value>Narudžba Uspješno Poslana!</value>
+  </data>
+  <data name="ComponentCheckout_OrderNumber" xml:space="preserve">
+    <value>Narudžba #{0}</value>
+  </data>
+  <data name="ComponentCheckout_DeliveredTo" xml:space="preserve">
+    <value>Vaša pića će biti dostavljena na:</value>
+  </data>
+  <data name="ComponentCheckout_TotalAmount" xml:space="preserve">
+    <value>Ukupno:</value>
+  </data>
+  <data name="ComponentCheckout_YoullReceiveUpdates" xml:space="preserve">
+    <value>Primiti ćete ažuriranja o statusu vaše narudžbe</value>
+  </data>
+  <data name="ComponentCheckout_EstimatedDelivery" xml:space="preserve">
+    <value>Procijenjeno vrijeme dostave: 10-15 minuta</value>
+  </data>
+  <data name="ComponentCheckout_TrackOrder" xml:space="preserve">
+    <value>Prati Narudžbu</value>
+  </data>
+  <data name="ComponentCheckout_BackToHome" xml:space="preserve">
+    <value>Natrag na Početnu</value>
+  </data>
+  <data name="ComponentCheckout_CheckoutTitle" xml:space="preserve">
+    <value>Naplata</value>
+  </data>
+  <data name="ComponentCheckout_ReviewOrder" xml:space="preserve">
+    <value>Pregled Narudžbe</value>
+  </data>
+  <data name="ComponentCheckout_Payment" xml:space="preserve">
+    <value>Plaćanje</value>
+  </data>
+  <data name="ComponentCheckout_Confirm" xml:space="preserve">
+    <value>Potvrdi</value>
+  </data>
+  <data name="ComponentCheckout_DeliveryInformation" xml:space="preserve">
+    <value>Informacije o Dostavi</value>
+  </data>
+  <data name="ComponentCheckout_Note" xml:space="preserve">
+    <value>Napomena:</value>
+  </data>
+  <data name="ComponentCheckout_PaymentMethod" xml:space="preserve">
+    <value>Način Plaćanja</value>
+  </data>
+  <data name="ComponentCheckout_CreditDebitCard" xml:space="preserve">
+    <value>Kreditna/Debitna Kartica</value>
+  </data>
+  <data name="ComponentCheckout_VisaMastercardAmex" xml:space="preserve">
+    <value>Visa, Mastercard, American Express</value>
+  </data>
+  <data name="ComponentCheckout_ContinuePayment" xml:space="preserve">
+    <value>Nastavi na Plaćanje</value>
+  </data>
+  <data name="ComponentCheckout_ProcessingPaymentTitle" xml:space="preserve">
+    <value>Obrada Plaćanja...</value>
+  </data>
+  <data name="ComponentCheckout_DontClose" xml:space="preserve">
+    <value>Molimo ne zatvarajte ovu stranicu niti navigirajte dalje.</value>
+  </data>
+  <data name="ComponentCheckout_SecurePayment" xml:space="preserve">
+    <value>Sigurno Plaćanje</value>
+  </data>
+  <data name="ComponentCheckout_PaymentEncrypted" xml:space="preserve">
+    <value>Vaše informacije o plaćanju su šifrirane i sigurne.</value>
+  </data>
+  <data name="ComponentCheckout_BackToReview" xml:space="preserve">
+    <value>Natrag na Pregled</value>
+  </data>
+  <data name="ComponentCheckout_Pay" xml:space="preserve">
+    <value>Plati</value>
+  </data>
+  <data name="ComponentCheckout_Selected" xml:space="preserve">
+    <value>Odabrano:</value>
+  </data>
+
+  <!-- QR Scanner Page -->
+  <data name="QRScanner_ValidatingTicket" xml:space="preserve">
+    <value>Provjera Ulaznice...</value>
+  </data>
+  <data name="QRScanner_VerifyingTicket" xml:space="preserve">
+    <value>Molimo čekajte dok verifikujemo vašu ulaznici</value>
+  </data>
+  <data name="QRScanner_InvalidTicket" xml:space="preserve">
+    <value>Neispravna Ulaznica</value>
+  </data>
+  <data name="QRScanner_TryAgain" xml:space="preserve">
+    <value>Pokušaj Ponovno</value>
+  </data>
+  <data name="QRScanner_GoHome" xml:space="preserve">
+    <value>Idi na Početnu</value>
+  </data>
+  <data name="QRScanner_TicketValidated" xml:space="preserve">
+    <value>Ulaznica Validirana!</value>
+  </data>
+  <data name="QRScanner_StartOrdering" xml:space="preserve">
+    <value>Počni Naručivanje</value>
+  </data>
+  <data name="QRScanner_ScanYourTicket" xml:space="preserve">
+    <value>Skeniraj Svoju Ulaznici</value>
+  </data>
+  <data name="QRScanner_PositionQRCode" xml:space="preserve">
+    <value>Pozicionirajte QR kod unutar okvira za početak naručivanja</value>
+  </data>
+  <data name="QRScanner_ManualEntry" xml:space="preserve">
+    <value>Ručni Unos</value>
+  </data>
+  <data name="QRScanner_CantScan" xml:space="preserve">
+    <value>Unesite broj ulaznice ako ne možete skenirati</value>
+  </data>
+  <data name="QRScanner_TicketNumberPlaceholder" xml:space="preserve">
+    <value>Unesite broj ulaznice</value>
+  </data>
+  <data name="QRScanner_Validate" xml:space="preserve">
+    <value>Provjeri</value>
+  </data>
+  <data name="QRScanner_ScannerIssue" xml:space="preserve">
+    <value>Problem sa Skenerom:</value>
+  </data>
+
+  <!-- Stadium Viewer Page -->
+  <data name="StadiumViewer_StadiumOverview" xml:space="preserve">
+    <value>Pregled Stadiona</value>
+  </data>
+  <data name="StadiumViewer_SelectEvent" xml:space="preserve">
+    <value>Odaberite Događaj</value>
+  </data>
+  <data name="StadiumViewer_ChooseEvent" xml:space="preserve">
+    <value>Odaberite događaj...</value>
+  </data>
+  <data name="StadiumViewer_FindSeat" xml:space="preserve">
+    <value>Pronađi Sjedište</value>
+  </data>
+  <data name="StadiumViewer_SeatCodeExample" xml:space="preserve">
+    <value>npr. N1A-R5S12</value>
+  </data>
+  <data name="StadiumViewer_Legend" xml:space="preserve">
+    <value>Legenda</value>
+  </data>
+  <data name="StadiumViewer_Occupancy" xml:space="preserve">
+    <value>Zauzetost</value>
+  </data>
+  <data name="StadiumViewer_LoadingStadiumData" xml:space="preserve">
+    <value>Učitavanje podataka stadiona...</value>
+  </data>
+  <data name="StadiumViewer_ProcessingLayout" xml:space="preserve">
+    <value>Obrada rasporeda stadiona...</value>
+  </data>
+  <data name="StadiumViewer_RenderingVisualization" xml:space="preserve">
+    <value>Prikaz vizualizacije...</value>
+  </data>
+  <data name="StadiumViewer_Field" xml:space="preserve">
+    <value>TEREN</value>
+  </data>
+  <data name="StadiumViewer_LegendTitle" xml:space="preserve">
+    <value>Legenda</value>
+  </data>
+  <data name="StadiumViewer_Available" xml:space="preserve">
+    <value>Dostupno</value>
+  </data>
+  <data name="StadiumViewer_LimitedAvailability" xml:space="preserve">
+    <value>Ograničena Dostupnost</value>
+  </data>
+  <data name="StadiumViewer_FullyOccupied" xml:space="preserve">
+    <value>Potpuno Zauzeto</value>
+  </data>
+  <data name="StadiumViewer_NoEventSelected" xml:space="preserve">
+    <value>Nema Odabranog Događaja</value>
+  </data>
+  <data name="StadiumViewer_TotalSeats" xml:space="preserve">
+    <value>ukupno sjedišta</value>
+  </data>
+  <data name="StadiumViewer_AvailableSeats" xml:space="preserve">
+    <value>dostupno</value>
+  </data>
+  <data name="StadiumViewer_ReservedSeats" xml:space="preserve">
+    <value>rezervirano</value>
+  </data>
+  <data name="StadiumViewer_OccupiedPercentage" xml:space="preserve">
+    <value>zauzeto</value>
+  </data>
+  <data name="StadiumViewer_UnableToLoad" xml:space="preserve">
+    <value>Nemoguće Učitati Stadion</value>
+  </data>
+  <data name="StadiumViewer_TryAgain" xml:space="preserve">
+    <value>Pokušaj Ponovno</value>
+  </data>
+  <data name="StadiumViewer_NoStadiumData" xml:space="preserve">
+    <value>Nema Podataka o Stadionu</value>
+  </data>
+  <data name="StadiumViewer_NotFound" xml:space="preserve">
+    <value>Struktura stadiona nije pronađena. Molimo kontaktirajte podršku ako problem persiste.</value>
+  </data>
+  <data name="StadiumViewer_SelectSeatsTitle" xml:space="preserve">
+    <value>- Odabir Sjedišta</value>
+  </data>
+  <data name="StadiumViewer_ZoomIn" xml:space="preserve">
+    <value>Uveličaj</value>
+  </data>
+  <data name="StadiumViewer_ZoomOut" xml:space="preserve">
+    <value>Umanji</value>
+  </data>
+  <data name="StadiumViewer_ResetZoom" xml:space="preserve">
+    <value>Resetuj Zumiranje</value>
+  </data>
+  <data name="StadiumViewer_SelectedSeats" xml:space="preserve">
+    <value>Odabrana Sjedišta ({0})</value>
+  </data>
+  <data name="StadiumViewer_ClickToSelect" xml:space="preserve">
+    <value>Kliknite na sjedišta da ih odaberete</value>
+  </data>
+  <data name="StadiumViewer_UseMouseOrTouch" xml:space="preserve">
+    <value>Koristite miš ili dodir da odaberete pojedinaćna sjedišta</value>
+  </data>
+
+  <!-- Stadium Map Page Content -->
+  <data name="StadiumMap_LayoutTitle" xml:space="preserve">
+    <value>Raspored Stadiona - Odaberite Sektor</value>
+  </data>
+  <data name="StadiumMap_Refresh" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  <data name="StadiumMap_OrderDrinks" xml:space="preserve">
+    <value>Naruči Pića</value>
+  </data>
+  <data name="StadiumMap_LoadingLayout" xml:space="preserve">
+    <value>Učitavanje rasporeda stadiona...</value>
+  </data>
+  <data name="StadiumMap_StadiumLayoutDescription" xml:space="preserve">
+    <value>Raspored stadiona sa 4 sektora</value>
+  </data>
+  <data name="StadiumMap_NorthStand" xml:space="preserve">
+    <value>Sjevernu Tribinu</value>
+  </data>
+  <data name="StadiumMap_SouthStand" xml:space="preserve">
+    <value>Južna Tribina</value>
+  </data>
+  <data name="StadiumMap_EastStand" xml:space="preserve">
+    <value>Istočna Tribina</value>
+  </data>
+  <data name="StadiumMap_WestStand" xml:space="preserve">
+    <value>Zapadna Tribina</value>
+  </data>
+  <data name="StadiumMap_Entrance" xml:space="preserve">
+    <value>ULAZ</value>
+  </data>
+  <data name="StadiumMap_OrderHere" xml:space="preserve">
+    <value>Naruči Ovdje</value>
+  </data>
+  <data name="StadiumMap_Section" xml:space="preserve">
+    <value>Sektor:</value>
+  </data>
+  <data name="StadiumMap_TotalSeats" xml:space="preserve">
+    <value>Ukupno Sjedišta:</value>
+  </data>
+  <data name="StadiumMap_ActiveOrders" xml:space="preserve">
+    <value>Aktivne Narudžbe:</value>
+  </data>
+  <data name="StadiumMap_Type" xml:space="preserve">
+    <value>Vrsta:</value>
+  </data>
+  <data name="StadiumMap_Available" xml:space="preserve">
+    <value>Dostupno:</value>
+  </data>
+  <data name="StadiumMap_Status" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="StadiumMap_ClickToViewDetails" xml:space="preserve">
+    <value>Kliknite na tribinu da vidite detalje i napravite narudžbu</value>
+  </data>
+  <data name="StadiumMap_UltrasSection" xml:space="preserve">
+    <value>Sektor Ultras</value>
+  </data>
+  <data name="StadiumMap_FamilySection" xml:space="preserve">
+    <value>Obiteljski Sektor</value>
+  </data>
+  <data name="StadiumMap_VIPSection" xml:space="preserve">
+    <value>VIP Sektor</value>
+  </data>
+  <data name="StadiumMap_GeneralAdmission" xml:space="preserve">
+    <value>Opća Prijava</value>
+  </data>
+  <data name="StadiumMap_ManySeatsAvailable" xml:space="preserve">
+    <value>Mnogo dostupnih sjedišta</value>
+  </data>
+  <data name="StadiumMap_SomeSeatsAvailable" xml:space="preserve">
+    <value>Neka sjedišta dostupna</value>
+  </data>
+  <data name="StadiumMap_AlmostFull" xml:space="preserve">
+    <value>Gotovo puno</value>
+  </data>
+  <data name="StadiumMap_Seats" xml:space="preserve">
+    <value>sjedišta</value>
+  </data>
+  <data name="Wallet" xml:space="preserve">
+    <value>Novčanik</value>
+  </data>
+  <data name="Wallet_PageTitle" xml:space="preserve">
+    <value>Moj novčanik</value>
+  </data>
+  <data name="Wallet_Balance" xml:space="preserve">
+    <value>Stanje</value>
+  </data>
+  <data name="Wallet_NotEligibleTitle" xml:space="preserve">
+    <value>Još nemate novčanik</value>
+  </data>
+  <data name="Wallet_NotEligibleMessage" xml:space="preserve">
+    <value>Digitalni novčanici dostupni su navijačima sa sezonskom kartom.</value>
+  </data>
+  <data name="Wallet_AddFunds" xml:space="preserve">
+    <value>Dodaj sredstva</value>
+  </data>
+  <data name="Wallet_Amount" xml:space="preserve">
+    <value>Iznos</value>
+  </data>
+  <data name="Wallet_Method" xml:space="preserve">
+    <value>Način plaćanja</value>
+  </data>
+  <data name="Wallet_Deposit" xml:space="preserve">
+    <value>Uplati</value>
+  </data>
+  <data name="Wallet_Transactions" xml:space="preserve">
+    <value>Povijest transakcija</value>
+  </data>
+  <data name="Wallet_NoTransactions" xml:space="preserve">
+    <value>Još nema transakcija.</value>
+  </data>
+  <data name="Wallet_Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Wallet_Type" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="Wallet_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Wallet_DepositSuccess" xml:space="preserve">
+    <value>Uplata uspješna</value>
+  </data>
+  <data name="Wallet_DepositFailed" xml:space="preserve">
+    <value>Uplata nije uspjela</value>
+  </data>
+  <data name="Wallet_ConfirmationRequired" xml:space="preserve">
+    <value>Za dovršetak uplate potrebna je potvrda kartice.</value>
+  </data>
+  <data name="Wallet_Frozen" xml:space="preserve">
+    <value>Vaš novčanik je zamrznut.</value>
+  </data>
+  <data name="Wallet_PayWithWallet" xml:space="preserve">
+    <value>Plati novčanikom</value>
+  </data>
+  <data name="Wallet_InsufficientFunds" xml:space="preserve">
+    <value>Nedovoljno sredstava u novčaniku. Molimo nadoplatite.</value>
+  </data>
+  <data name="Wallet_TopUp" xml:space="preserve">
+    <value>Nadoplati</value>
+  </data>
+  <data name="Wallet_Available" xml:space="preserve">
+    <value>dostupno</value>
+  </data>
 </root>

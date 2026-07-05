@@ -1,46 +1,49 @@
 @page "/test-error-handling"
+@using Microsoft.Extensions.Localization
+@using StadiumDrinkOrdering.Admin
+@inject IStringLocalizer<SharedResources> L
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3>🧪 Error Handling Test Page</h3>
-                    <p class="mb-0">Test different error scenarios to verify error notifications are working</p>
+                    <h3>🧪 @L["TestError_Title"]</h3>
+                    <p class="mb-0">@L["TestError_Subtitle"]</p>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4>Manual Error Tests</h4>
+                            <h4>@L["TestError_ManualTests"]</h4>
                             <div class="d-grid gap-2">
                                 <button class="btn btn-danger" @onclick="TestErrorNotification" id="admin-test-error-btn">
-                                    🔴 Test Error Message
+                                    🔴 @L["TestError_TestErrorMsg"]
                                 </button>
                                 <button class="btn btn-warning" @onclick="TestWarningNotification" id="admin-test-warning-btn">
-                                    🟡 Test Warning Message
+                                    🟡 @L["TestError_TestWarningMsg"]
                                 </button>
                                 <button class="btn btn-success" @onclick="TestSuccessNotification" id="admin-test-success-btn">
-                                    🟢 Test Success Message
+                                    🟢 @L["TestError_TestSuccessMsg"]
                                 </button>
                                 <button class="btn btn-info" @onclick="TestInfoNotification" id="admin-test-info-btn">
-                                    🔵 Test Info Message
+                                    🔵 @L["TestError_TestInfoMsg"]
                                 </button>
                                 <button class="btn btn-secondary" @onclick="TestAuthError" id="admin-test-auth-error-btn">
-                                    🔐 Test Authentication Error
+                                    🔐 @L["TestError_TestAuthError"]
                                 </button>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <h4>API Error Tests</h4>
+                            <h4>@L["TestError_ApiTests"]</h4>
                             <div class="d-grid gap-2">
                                 <button class="btn btn-outline-danger" @onclick="TestApiConnection" id="admin-test-api-connection-btn">
-                                    🌐 Test API Connection (Will likely fail if API not running)
+                                    🌐 @L["TestError_TestApiConnection"]
                                 </button>
                                 <button class="btn btn-outline-warning" @onclick="TestDrinksFetch" id="admin-test-drinks-fetch-btn">
-                                    🥤 Test Drinks Fetch (Uses new error handling)
+                                    🥤 @L["TestError_TestDrinksFetch"]
                                 </button>
                                 <button class="btn btn-outline-info" @onclick="TestOrdersFetch" id="admin-test-orders-fetch-btn">
-                                    📦 Test Orders Fetch (Uses new error handling)
+                                    📦 @L["TestError_TestOrdersFetch"]
                                 </button>
                             </div>
                         </div>
@@ -49,13 +52,13 @@
                     <hr class="my-4" />
 
                     <div class="alert alert-info">
-                        <h5>📋 Test Results:</h5>
-                        <p>Watch the top-right corner of the screen for toast notifications!</p>
+                        <h5>📋 @L["TestError_Results"]</h5>
+                        <p>@L["TestError_ResultsNote"]</p>
                         <ul>
-                            <li>✅ <strong>Success</strong>: Green toast with checkmark</li>
-                            <li>⚠️ <strong>Warning</strong>: Orange toast with warning icon</li>
-                            <li>❌ <strong>Error</strong>: Red toast with error icon</li>
-                            <li>ℹ️ <strong>Info</strong>: Blue toast with info icon</li>
+                            <li>✅ <strong>@L["Success"]</strong>: @L["TestError_SuccessDesc"]</li>
+                            <li>⚠️ <strong>@L["TestError_Warning"]</strong>: @L["TestError_WarningDesc"]</li>
+                            <li>❌ <strong>@L["ErrorOccurred"]</strong>: @L["TestError_ErrorDesc"]</li>
+                            <li>ℹ️ <strong>@L["TestError_Info"]</strong>: @L["TestError_InfoDesc"]</li>
                         </ul>
                     </div>
                 </div>

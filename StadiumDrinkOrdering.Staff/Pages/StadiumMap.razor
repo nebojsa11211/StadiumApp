@@ -3,16 +3,17 @@
 @inject IAuthStateService AuthService
 @inject ISignalRService SignalRService
 @inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<PageTitle>Stadium Map</PageTitle>
+<PageTitle>@Localizer["StadiumMap_Title"]</PageTitle>
 
 @if (!AuthService.IsAuthenticated)
 {
     <div class="container mt-5">
         <div class="alert alert-warning" role="alert">
-            You must be logged in to view the stadium map.
-            <a href="/login" class="btn btn-primary ms-2">Login</a>
+            @Localizer["StadiumMap_AuthRequired"]
+            <a href="/login" class="btn btn-primary ms-2">@Localizer["Login"]</a>
         </div>
     </div>
 }
@@ -21,12 +22,12 @@ else
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col">
-                <h1>Stadium Map</h1>
-                <p class="text-muted">Interactive stadium map showing orders by location</p>
+                <h1>@Localizer["StadiumMap_Heading"]</h1>
+                <p class="text-muted">@Localizer["StadiumMap_Subtitle"]</p>
             </div>
             <div class="col-auto">
                 <button class="btn btn-outline-primary" @onclick="RefreshMap" id="staff-stadiummap-refresh-btn">
-                    <span class="oi oi-reload me-2"></span>Refresh
+                    <span class="oi oi-reload me-2"></span>@Localizer["Refresh"]
                 </button>
             </div>
         </div>
@@ -38,14 +39,14 @@ else
                     <div class="card-body py-2">
                         <div class="row align-items-center">
                             <div class="col-auto">
-                                <strong>Legend:</strong>
+                                <strong>@Localizer["StadiumMap_Legend"]</strong>
                             </div>
                             <div class="col-auto">
-                                <span class="badge bg-secondary me-2">⚪ No Orders</span>
-                                <span class="badge bg-warning me-2">⚠️ Pending</span>
-                                <span class="badge bg-primary me-2">🔵 In Progress</span>
-                                <span class="badge bg-success me-2">✅ Ready</span>
-                                <span class="badge bg-info me-2">🚚 Out for Delivery</span>
+                                <span class="badge bg-secondary me-2">⚪ @Localizer["StadiumMap_NoOrders"]</span>
+                                <span class="badge bg-warning me-2">⚠️ @Localizer["OrderQueue_Pending"]</span>
+                                <span class="badge bg-primary me-2">🔵 @Localizer["StadiumMap_InProgress"]</span>
+                                <span class="badge bg-success me-2">✅ @Localizer["OrderQueue_Ready"]</span>
+                                <span class="badge bg-info me-2">🚚 @Localizer["MyOrders_OutForDelivery"]</span>
                             </div>
                             <div class="col text-end">
                                 <small class="text-muted">

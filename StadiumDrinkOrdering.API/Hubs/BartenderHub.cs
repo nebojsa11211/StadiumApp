@@ -201,11 +201,32 @@ public class BartenderHub : Hub
         await Clients.All.SendAsync("SeatHighlight", seatNumber, highlight);
     }
 
+    /// <summary>
+    /// Notifies customers that an order is ready for pickup. Requires Staff or Admin role.
+    /// Broadcasts "OrderReady" to the "customers" group (where customer connections land).
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.RequireStaffRole)]
+    public async Task NotifyOrderReady(int orderId, string customerName, string seatNumber)
+    {
+        await Clients.Group("customers").SendAsync("OrderReady", orderId, customerName, seatNumber);
+    }
+
+    /// <summary>
+    /// Broadcasts an order status change to customers and staff. Requires Staff or Admin role.
+    /// Emits "OrderStatusUpdated" which both the Customer and Staff apps listen for.
+    /// </summary>
+    [Authorize(Policy = AuthorizationPolicies.RequireStaffRole)]
+    public async Task UpdateOrderStatus(int orderId, string status)
+    {
+        await Clients.Group("customers").SendAsync("OrderStatusUpdated", orderId, status);
+        await Clients.Group("staff-all").SendAsync("OrderStatusUpdated", orderId, status);
+    }
+
     public override async Task OnConnectedAsync()
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var userRole = Context.User?.FindFirst(ClaimTypes.Role)?.Value?.ToLower();
-        
+
         if (Context.User?.Identity?.IsAuthenticated == true)
         {
             // Authenticated staff member

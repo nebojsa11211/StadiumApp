@@ -1,0 +1,249 @@
+@page "/logs"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Bar.Services
+@inject IStaffApiService ApiService
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["Logs_PageTitle"]</PageTitle>
+
+<div id="bar-logs-console" class="console">
+    <div id="bar-logs-header" class="console-head">
+        <div id="bar-logs-header-title" class="console-head__title">
+            <span class="eyebrow">@Localizer["Logs_System"]</span>
+            <h1>@Localizer["Logs_PageTitle"]</h1>
+            <p>@Localizer["Logs_CentralizedActivityTelemetry"]</p>
+        </div>
+        <div id="bar-logs-header-actions" class="console-head__actions">
+            <button class="pill-btn" @onclick="RefreshLogs" id="staff-logs-refresh-btn">
+                <i class="bi bi-arrow-clockwise"></i> @Localizer["Refresh"]
+            </button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div id="bar-logs-alert" class="console-alert @(isSuccess ? "console-alert--success" : "console-alert--danger")">
+            <i class="bi @(isSuccess ? "bi-check-circle" : "bi-exclamation-triangle")"></i>
+            @statusMessage
+        </div>
+    }
+
+    @if (isLoading)
+    {
+        <div id="bar-logs-loading-container" class="loading-state">
+            <div id="bar-logs-spinner" class="loading-spinner"></div>
+            <p>@Localizer["Loading"]</p>
+        </div>
+    }
+    else if (logSummary != null)
+    {
+        <!-- Summary metrics -->
+        <div id="bar-logs-metrics" class="metrics">
+            <div id="bar-logs-metric-total" class="metric">
+                <div id="bar-logs-metric-total-header" class="metric__head">
+                    <span class="metric__label">@Localizer["Logs_TotalLogs"]</span>
+                    <i class="bi bi-card-list metric__icon"></i>
+                </div>
+                <div id="bar-logs-metric-total-value" class="metric__value mono">@logSummary.TotalLogs</div>
+            </div>
+            <div id="bar-logs-metric-errors" class="metric metric--accent">
+                <div id="bar-logs-metric-errors-header" class="metric__head">
+                    <span class="metric__label">@Localizer["Logs_Error"]</span>
+                    <i class="bi bi-exclamation-triangle metric__icon admin-text-error"></i>
+                </div>
+                <div id="bar-logs-metric-errors-value" class="metric__value mono admin-text-error">@logSummary.ErrorCount</div>
+            </div>
+            <div id="bar-logs-metric-warnings" class="metric">
+                <div id="bar-logs-metric-warnings-header" class="metric__head">
+                    <span class="metric__label">@Localizer["Logs_Warning"]</span>
+                    <i class="bi bi-exclamation-circle metric__icon admin-text-warning"></i>
+                </div>
+                <div id="bar-logs-metric-warnings-value" class="metric__value mono admin-text-warning">@logSummary.WarningCount</div>
+            </div>
+            <div id="bar-logs-metric-info" class="metric">
+                <div id="bar-logs-metric-info-header" class="metric__head">
+                    <span class="metric__label">@Localizer["Logs_Info"]</span>
+                    <i class="bi bi-info-circle metric__icon is-ok"></i>
+                </div>
+                <div id="bar-logs-metric-info-value" class="metric__value mono">@logSummary.InfoCount</div>
+            </div>
+        </div>
+
+        <!-- Quick filters -->
+        <div id="bar-logs-filters-panel" class="panel">
+            <div id="bar-logs-filters-panel-header" class="panel__head">
+                <h2 class="panel__title"><i class="bi bi-funnel"></i> @Localizer["Logs_QuickFilters"]</h2>
+            </div>
+            <div id="bar-logs-filters-buttons" class="filters">
+                <button class="pill-btn @(selectedLevel == "Error" ? "pill-btn--danger" : "")" @onclick="@(() => FilterByLevel("Error"))" id="staff-logs-filter-error-btn">
+                    @Localizer["Logs_Error"] (@logSummary.ErrorCount)
+                </button>
+                <button class="pill-btn @(selectedLevel == "Warning" ? "pill-btn--primary" : "")" @onclick="@(() => FilterByLevel("Warning"))" id="staff-logs-filter-warning-btn">
+                    @Localizer["Logs_Warning"] (@logSummary.WarningCount)
+                </button>
+                <button class="pill-btn @(selectedLevel == "Info" ? "pill-btn--success" : "")" @onclick="@(() => FilterByLevel("Info"))" id="staff-logs-filter-info-btn">
+                    @Localizer["Logs_Info"] (@logSummary.InfoCount)
+                </button>
+                <button class="pill-btn @(selectedLevel == "" ? "pill-btn--primary" : "")" @onclick="@(() => FilterByLevel(""))" id="staff-logs-filter-all-btn">
+                    @Localizer["Logs_AllLogs"]
+                </button>
+            </div>
+        </div>
+
+        <!-- Logs table -->
+        <div id="bar-logs-table-panel" class="panel">
+            <div id="bar-logs-table-panel-header" class="panel__head">
+                <h2 class="panel__title"><i class="bi bi-terminal"></i> @Localizer["Logs_LogEntries"]</h2>
+                @if (logs != null)
+                {
+                    <span class="panel__count">@logs.TotalCount</span>
+                }
+            </div>
+            @if (logs?.Logs?.Any() == true)
+            {
+                <div id="bar-logs-table-wrapper" style="overflow-x:auto;">
+                    <table class="console-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Logs_Timestamp"]</th>
+                                <th>@Localizer["Logs_Level"]</th>
+                                <th>@Localizer["Logs_Action"]</th>
+                                <th>@Localizer["Logs_User"]</th>
+                                <th>@Localizer["Logs_Source"]</th>
+                                <th>@Localizer["Logs_Message"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in logs.Logs.Take(50))
+                            {
+                                <tr class="@GetRowClass(log.Level)">
+                                    <td class="console-table__time mono">@log.Timestamp.ToLocalTime().ToString("MM-dd HH:mm:ss")</td>
+                                    <td>
+                                        <span class="badge @GetLevelBadgeClass(log.Level)">@log.Level</span>
+                                    </td>
+                                    <td class="console-table__id">@log.Action</td>
+                                    <td class="console-table__muted">
+                                        @if (!string.IsNullOrEmpty(log.UserEmail))
+                                        {
+                                            @log.UserEmail
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@log.Source</span>
+                                    </td>
+                                    <td class="console-table__muted">
+                                        @if (!string.IsNullOrEmpty(log.Message))
+                                        {
+                                            @(log.Message.Length > 80 ? log.Message.Substring(0, 80) + "..." : log.Message)
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (logs.TotalCount > 50)
+                {
+                    <div id="bar-logs-table-footer" class="table-foot">
+                        <p>@string.Format(Localizer["Logs_ShowingFirstOf"].Value, logs.TotalCount)</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div id="bar-logs-empty-state" class="empty">
+                    <i class="bi bi-inbox"></i>
+                    <p>@Localizer["Logs_NoLogsFound"]</p>
+                    <span>@Localizer["Logs_AdjustFiltersAbove"]</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private PagedLogsDto? logs;
+    private LogSummaryDto? logSummary;
+    private bool isLoading = true;
+    private string selectedLevel = "";
+    private string? statusMessage;
+    private bool isSuccess = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        await ApiService.LogUserActionAsync("ViewLogsPage", "UserAction", "Staff viewed System Logs page");
+    }
+
+    private async Task LoadData()
+    {
+        isLoading = true;
+        
+        var filter = new LogFilterDto 
+        { 
+            Page = 1, 
+            PageSize = 100,
+            Level = selectedLevel
+        };
+
+        try
+        {
+            logs = await ApiService.GetLogsAsync(filter);
+            logSummary = await ApiService.GetLogSummaryAsync();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"{Localizer["Logs_ErrorLoadingLogs"].Value}: {ex.Message}";
+            isSuccess = false;
+        }
+        
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task RefreshLogs()
+    {
+        await LoadData();
+        await ApiService.LogUserActionAsync("RefreshLogs", "UserAction", "Staff refreshed system logs");
+
+        statusMessage = Localizer["Logs_RefreshedSuccessfully"].Value;
+        isSuccess = true;
+        StateHasChanged();
+
+        await Task.Delay(3000);
+        statusMessage = null;
+        StateHasChanged();
+    }
+
+    private async Task FilterByLevel(string level)
+    {
+        selectedLevel = level;
+        await LoadData();
+        await ApiService.LogUserActionAsync("FilterLogs", "UserAction", $"Filtered logs by level: {level}");
+    }
+
+    private string GetRowClass(string level)
+    {
+        return level switch
+        {
+            "Error" => "table-danger",
+            "Warning" => "table-warning",
+            "Critical" => "table-danger",
+            _ => ""
+        };
+    }
+
+    private string GetLevelBadgeClass(string level)
+    {
+        return level switch
+        {
+            "Info" => "bg-info",
+            "Warning" => "bg-warning text-dark",
+            "Error" => "bg-danger",
+            "Critical" => "bg-dark",
+            _ => "bg-secondary"
+        };
+    }
+}

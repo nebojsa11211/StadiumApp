@@ -23,6 +23,7 @@ public class IntegrationController : ControllerBase
     private const string SignatureHeader = "X-Signature";
 
     private readonly ITicketIngestionService _ingestion;
+    private readonly IEventService _eventService;
     private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
     private readonly ILogger<IntegrationController> _logger;
@@ -34,11 +35,13 @@ public class IntegrationController : ControllerBase
 
     public IntegrationController(
         ITicketIngestionService ingestion,
+        IEventService eventService,
         ApplicationDbContext context,
         IConfiguration configuration,
         ILogger<IntegrationController> logger)
     {
         _ingestion = ingestion;
+        _eventService = eventService;
         _context = context;
         _configuration = configuration;
         _logger = logger;
@@ -80,6 +83,30 @@ public class IntegrationController : ControllerBase
     }
 
     /// <summary>
+    /// Testing hook: places a randomised live drink order for the given event (signed like the
+    /// webhook). Rejected unless the event is live. Lets the external system/simulator exercise
+    /// the game-day drink-ordering flow and populate the Bar/Staff order queue.
+    /// </summary>
+    [HttpPost("events/{externalEventId}/simulate-order")]
+    public async Task<ActionResult<SimulatedDrinkOrderResult>> SimulateOrder(string externalEventId, CancellationToken ct)
+    {
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
+        if (!VerifySignature(body, Request.Headers[SignatureHeader].ToString()))
+        {
+            _logger.LogWarning("Rejected simulate-order: invalid or missing signature");
+            return Unauthorized(new SimulatedDrinkOrderResult { Accepted = false, Message = "Invalid signature" });
+        }
+
+        var result = await _ingestion.SimulateDrinkOrderAsync(externalEventId, ct);
+        return result.Accepted ? Ok(result) : UnprocessableEntity(result);
+    }
+
+    /// <summary>
     /// Lists sellable stadium sectors + capacities (from the drawing-tool overlays — the real
     /// stadium) so the external system/simulator can discover valid sector codes to sell into.
     /// </summary>
@@ -113,24 +140,44 @@ public class IntegrationController : ControllerBase
     [HttpGet("events")]
     public async Task<ActionResult<List<ExternalEventSummaryDto>>> GetEvents(CancellationToken ct)
     {
-        var events = await _context.Events
+        // Project raw fields (incl. Status) first, then compute the lifecycle flags in memory —
+        // EventLifecycle rules don't translate to SQL.
+        var rows = await _context.Events
             .AsNoTracking()
             .Where(e => e.ExternalEventId != null)
             .OrderByDescending(e => e.CreatedAt)
-            .Select(e => new ExternalEventSummaryDto
+            .Select(e => new
             {
-                EventId = e.Id,
-                ExternalEventId = e.ExternalEventId!,
-                EventName = e.EventName,
-                EventType = e.EventType,
-                EventDate = e.EventDate,
-                EventEndDate = e.EventEndDate,
-                SourceSystem = e.SourceSystem,
-                BaseTicketPrice = e.BaseTicketPrice,
-                TotalSeats = e.TotalSeats,
+                e.Id,
+                e.ExternalEventId,
+                e.EventName,
+                e.EventType,
+                e.EventDate,
+                e.EventEndDate,
+                e.SourceSystem,
+                e.BaseTicketPrice,
+                e.TotalSeats,
+                e.Status,
                 TotalSold = _context.Tickets.Count(t => t.EventId == e.Id && t.Status != TicketStatuses.Cancelled)
             })
             .ToListAsync(ct);
+
+        var events = rows.Select(e => new ExternalEventSummaryDto
+        {
+            EventId = e.Id,
+            ExternalEventId = e.ExternalEventId!,
+            EventName = e.EventName,
+            EventType = e.EventType,
+            EventDate = e.EventDate,
+            EventEndDate = e.EventEndDate,
+            SourceSystem = e.SourceSystem,
+            BaseTicketPrice = e.BaseTicketPrice,
+            TotalSeats = e.TotalSeats,
+            TotalSold = e.TotalSold,
+            StatusName = e.Status.ToString(),
+            CanSellTickets = EventLifecycle.CanSellTickets(e.Status),
+            CanOrderDrinks = EventLifecycle.CanOrderDrinks(e.Status)
+        }).ToList();
 
         return Ok(events);
     }
@@ -189,6 +236,43 @@ public class IntegrationController : ControllerBase
             .ToListAsync(ct);
 
         return Ok(tickets);
+    }
+
+    /// <summary>
+    /// Deletes an externally-originated event by its external id, together with its tickets and
+    /// derived season-pass tickets (reusing the Admin force-delete path). Signed like the webhook
+    /// over the raw — empty — body, so the external system/simulator can remove a test event it
+    /// created. Season passes themselves survive (they belong to the season, not the event).
+    /// </summary>
+    [HttpDelete("events/{externalEventId}")]
+    public async Task<IActionResult> DeleteEvent(string externalEventId, CancellationToken ct)
+    {
+        // DELETE carries no body; read (empty) and verify the HMAC over exactly what was signed.
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
+        if (!VerifySignature(body, Request.Headers[SignatureHeader].ToString()))
+        {
+            _logger.LogWarning("Rejected delete-event: invalid or missing signature");
+            return Unauthorized(new { message = "Invalid signature" });
+        }
+
+        var evt = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.ExternalEventId == externalEventId, ct);
+        if (evt == null)
+            return NotFound(new { message = $"No event mapped to external id '{externalEventId}'" });
+
+        var deleted = await _eventService.DeleteEventAsync(evt.Id);
+        if (!deleted)
+            return UnprocessableEntity(new { message = "Event could not be deleted" });
+
+        _logger.LogInformation("Deleted external event {ExternalId} (internal {EventId}) via integration surface",
+            externalEventId, evt.Id);
+        return Ok(new { deleted = true, eventId = evt.Id });
     }
 
     /// <summary>

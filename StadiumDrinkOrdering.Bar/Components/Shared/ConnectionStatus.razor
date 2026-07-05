@@ -1,0 +1,114 @@
+@implements IDisposable
+@inject ISignalRService SignalRService
+@inject IAuthStateService AuthService
+@inject IStringLocalizer<SharedResources> Localizer
+
+@* Sidebar live-updates indicator. Reflects the SHARED ISignalRService connection (token-authenticated,
+   correct API URL, auto-reconnect) — the same connection the Order Board badge shows — instead of opening
+   a second, unauthenticated HubConnection of its own. *@
+<div id="bar-signalr-status"
+     class="connection-status @(SignalRService.IsConnected ? "connected" : "disconnected")"
+     title="@(SignalRService.IsConnected ? Localizer["ConnectionStatus_LiveOrderUpdates"] : Localizer["ConnectionStatus_NoConnection"])">
+    <span class="connection-indicator @(SignalRService.IsConnected ? "connected" : "disconnected")"></span>
+    <span class="connection-text d-none d-sm-inline">@(SignalRService.IsConnected ? Localizer["OrderQueue_Live"] : Localizer["OrderQueue_Offline"])</span>
+</div>
+
+@code {
+    private bool signalRStarting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
+        // The auth token is restored from storage asynchronously, so it may not be ready yet. Retry the
+        // connection whenever the auth state changes (token restored / login) so we can reach "Live".
+        AuthService.OnAuthenticationStateChanged += OnAuthStateChanged;
+
+        await TryStartSignalR();
+    }
+
+    private async Task TryStartSignalR()
+    {
+        // Guard against overlapping starts; StartAsync itself is idempotent (no-ops if already built),
+        // so this is also safe to race with the Order Board page starting the same shared connection.
+        if (signalRStarting || SignalRService.IsConnected) return;
+        signalRStarting = true;
+        try
+        {
+            await SignalRService.StartAsync();
+        }
+        catch (Exception ex)
+        {
+            // Usually the token isn't available yet on first load; OnAuthStateChanged retries once it is.
+            Console.WriteLine($"SignalR start deferred (will retry when auth is ready): {ex.Message}");
+        }
+        finally
+        {
+            signalRStarting = false;
+        }
+    }
+
+    private async void OnConnectionStateChanged() => await InvokeAsync(StateHasChanged);
+
+    private async void OnAuthStateChanged() => await InvokeAsync(TryStartSignalR);
+
+    public void Dispose()
+    {
+        SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
+        AuthService.OnAuthenticationStateChanged -= OnAuthStateChanged;
+    }
+}
+
+<style>
+    .connection-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        border-radius: var(--stadium-radius);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        background: white;
+        border: 1px solid var(--stadium-gray-200);
+        box-shadow: var(--stadium-shadow-sm);
+        min-height: 48px;
+    }
+
+    .connection-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .connection-indicator.connected {
+        background: var(--staff-primary);
+        box-shadow: 0 0 10px rgba(5, 150, 105, 0.4);
+    }
+
+    .connection-indicator.disconnected {
+        background: var(--stadium-danger);
+    }
+
+    .connection-status.connected {
+        color: var(--staff-primary);
+        border-color: rgba(5, 150, 105, 0.2);
+    }
+
+    .connection-status.disconnected {
+        color: var(--stadium-danger);
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    @@media (max-width: 640px) {
+        .connection-status {
+            padding: 0.625rem;
+            font-size: 0;
+            min-height: 44px;
+        }
+
+        .connection-text {
+            display: none !important;
+        }
+    }
+</style>

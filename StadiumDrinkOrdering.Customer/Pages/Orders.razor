@@ -4,15 +4,16 @@
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>My Orders</PageTitle>
+<PageTitle>@Localizer["Orders_PageTitle"]</PageTitle>
 
 <AuthenticationGuard>
     <div class="container" id="customer-orders-container">
     <div class="d-flex justify-content-between align-items-center mb-4" id="customer-orders-header">
-        <h1 id="customer-orders-title">📋 My Orders</h1>
+        <h1 id="customer-orders-title">📋 @Localizer["MyOrders"]</h1>
         <a href="/menu" class="btn btn-primary" id="customer-new-order-btn">
-            <i class="bi bi-plus"></i> New Order
+            <i class="bi bi-plus"></i> @Localizer["Orders_NewOrder"]
         </a>
     </div>
 
@@ -20,9 +21,9 @@
     {
         <div class="text-center" id="customer-orders-loading">
             <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">@Localizer["Loading"]</span>
             </div>
-            <p>Loading your orders...</p>
+            <p>@Localizer["Orders_LoadingOrders"]</p>
         </div>
     }
     else if (!orders.Any())
@@ -31,10 +32,10 @@
             <div class="mb-4">
                 <span style="font-size: 4rem;">🛒</span>
             </div>
-            <h3 id="customer-orders-empty-title">No orders yet</h3>
-            <p class="text-muted mb-4" id="customer-orders-empty-message">You haven't placed any orders. Ready to get started?</p>
+            <h3 id="customer-orders-empty-title">@Localizer["Orders_NoOrders"]</h3>
+            <p class="text-muted mb-4" id="customer-orders-empty-message">@Localizer["Orders_NoOrdersMessage"]</p>
             <a href="/menu" class="btn btn-primary btn-lg" id="customer-browse-menu-btn">
-                Browse Menu
+                @Localizer["Orders_BrowseMenu"]
             </a>
         </div>
     }
@@ -64,7 +65,7 @@
                             </div>
 
                             <div class="mb-3" id="customer-order-items-@order.Id">
-                                <h6 id="customer-order-items-title-@order.Id">Items:</h6>
+                                <h6 id="customer-order-items-title-@order.Id">@Localizer["Orders_Items"]:</h6>
                                 @foreach (var item in order.OrderItems)
                                 {
                                     <div class="d-flex justify-content-between align-items-center mb-1" id="customer-order-item-@item.Id-@order.Id">

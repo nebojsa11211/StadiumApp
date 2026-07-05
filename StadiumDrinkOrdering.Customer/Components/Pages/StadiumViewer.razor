@@ -5,25 +5,26 @@
 @inject IApiService ApiService
 @inject IJSRuntime JSRuntime
 @inject ILogger<StadiumViewer> Logger
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Stadium Viewer</PageTitle>
+<PageTitle>@Localizer["StadiumViewer_PageTitle"]</PageTitle>
 
 <div class="stadium-viewer-container">
     <div class="viewer-header" role="banner">
-        <h2>Stadium Overview</h2>
-        
+        <h2>@Localizer["StadiumViewer_StadiumOverview"]</h2>
+
         <div class="viewer-controls" role="toolbar" aria-label="Stadium viewer controls">
             <!-- Primary Controls -->
             <div class="event-selector">
                 <label for="eventSelect" class="form-label">
                     <i class="bi bi-calendar-event" aria-hidden="true"></i>
-                    Select Event
+                    @Localizer["StadiumViewer_SelectEvent"]
                 </label>
-                <select id="eventSelect" 
-                        class="form-select" 
+                <select id="eventSelect"
+                        class="form-select"
                         @onchange="OnEventChanged"
                         aria-describedby="eventSelect-help">
-                    <option value="">Choose an event...</option>
+                    <option value="">@Localizer["StadiumViewer_ChooseEvent"]</option>
                     @if (events != null)
                     {
                         @foreach (var evt in events)
@@ -46,13 +47,13 @@
                     <div class="search-seat">
                         <label for="searchInput" class="form-label">
                             <i class="bi bi-search" aria-hidden="true"></i>
-                            Find Seat
+                            @Localizer["StadiumViewer_FindSeat"]
                         </label>
                         <div class="search-input-group">
-                            <input type="text" 
+                            <input type="text"
                                    id="searchInput"
-                                   class="form-control" 
-                                   placeholder="e.g., N1A-R5S12" 
+                                   class="form-control"
+                                   placeholder="@Localizer["StadiumViewer_SeatCodeExample"]"
                                    @bind="searchSeatCode"
                                    @onkeyup="HandleSearchKeyUp"
                                    aria-describedby="search-help" />
@@ -70,19 +71,19 @@
 
                     <div class="view-options">
                         <div class="toggle-group" role="group" aria-label="Display options">
-                            <button class="btn btn-outline-primary @(showLegend ? "active" : "")" 
+                            <button class="btn btn-outline-primary @(showLegend ? "active" : "")"
                                     @onclick="() => showLegend = !showLegend"
                                     aria-pressed="@showLegend"
                                     aria-describedby="legend-help">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
-                                Legend
+                                @Localizer["StadiumViewer_Legend"]
                             </button>
                             <button class="btn btn-outline-primary @(showOccupancy ? "active" : "")"
                                     @onclick="() => showOccupancy = !showOccupancy"
                                     aria-pressed="@showOccupancy"
                                     aria-describedby="occupancy-help">
                                 <i class="bi bi-pie-chart" aria-hidden="true"></i>
-                                Occupancy
+                                @Localizer["StadiumViewer_Occupancy"]
                             </button>
                         </div>
                         <div id="legend-help" class="visually-hidden">
@@ -112,9 +113,9 @@
                             <div class="spinner-sm" aria-hidden="true"></div>
                         }
                     </div>
-                    <span>Loading stadium data...</span>
+                    <span>@Localizer["StadiumViewer_LoadingStadiumData"]</span>
                 </div>
-                
+
                 <div class="stage @(loadingStage >= LoadingStage.ProcessingLayout ? "completed" : loadingStage == LoadingStage.ProcessingLayout ? "active" : "pending")">
                     <div class="stage-icon">
                         @if (loadingStage > LoadingStage.ProcessingLayout)
@@ -130,9 +131,9 @@
                             <div class="stage-pending" aria-hidden="true"></div>
                         }
                     </div>
-                    <span>Processing stadium layout...</span>
+                    <span>@Localizer["StadiumViewer_ProcessingLayout"]</span>
                 </div>
-                
+
                 <div class="stage @(loadingStage >= LoadingStage.RenderingVisualization ? "active" : "pending")">
                     <div class="stage-icon">
                         @if (loadingStage == LoadingStage.RenderingVisualization)
@@ -144,7 +145,7 @@
                             <div class="stage-pending" aria-hidden="true"></div>
                         }
                     </div>
-                    <span>Rendering visualization...</span>
+                    <span>@Localizer["StadiumViewer_RenderingVisualization"]</span>
                 </div>
             </div>
             
@@ -238,12 +239,12 @@
                                  stroke-width="2"
                                  role="img"
                                  aria-label="Stadium playing field" />
-                        <text x="@(stadiumData.CoordinateSystem.Width / 2)" 
+                        <text x="@(stadiumData.CoordinateSystem.Width / 2)"
                               y="@(stadiumData.CoordinateSystem.Height / 2)"
-                              text-anchor="middle" 
-                              fill="white" 
+                              text-anchor="middle"
+                              fill="white"
                               font-size="24"
-                              aria-hidden="true">FIELD</text>
+                              aria-hidden="true">@Localizer["StadiumViewer_Field"]</text>
                     </g>
 
                     <!-- Stands and Sectors -->
@@ -298,40 +299,40 @@
 
             @if (showLegend)
             {
-                <div class="legend-panel @(showLegend ? "visible" : "")" 
-                     role="complementary" 
+                <div class="legend-panel @(showLegend ? "visible" : "")"
+                     role="complementary"
                      aria-label="Stadium seating color legend">
-                    <h5>Legend</h5>
+                    <h5>@Localizer["StadiumViewer_LegendTitle"]</h5>
                     <div class="legend-item">
-                        <span class="legend-color" 
-                              style="background: var(--seat-available);" 
+                        <span class="legend-color"
+                              style="background: var(--seat-available);"
                               data-pattern="✓"
                               role="img"
                               aria-label="Available seats color indicator"></span>
-                        <span>Available</span>
+                        <span>@Localizer["StadiumViewer_Available"]</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" 
-                              style="background: var(--seat-partial);" 
+                        <span class="legend-color"
+                              style="background: var(--seat-partial);"
                               data-pattern="!"
                               role="img"
                               aria-label="Limited availability color indicator"></span>
-                        <span>Limited Availability</span>
+                        <span>@Localizer["StadiumViewer_LimitedAvailability"]</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" 
-                              style="background: var(--seat-full);" 
+                        <span class="legend-color"
+                              style="background: var(--seat-full);"
                               data-pattern="✗"
                               role="img"
                               aria-label="Fully occupied color indicator"></span>
-                        <span>Fully Occupied</span>
+                        <span>@Localizer["StadiumViewer_FullyOccupied"]</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" 
+                        <span class="legend-color"
                               style="background: var(--seat-unavailable);"
                               role="img"
                               aria-label="No event selected color indicator"></span>
-                        <span>No Event Selected</span>
+                        <span>@Localizer["StadiumViewer_NoEventSelected"]</span>
                     </div>
                 </div>
             }
@@ -355,24 +356,24 @@
                 <div class="tooltip-body">
                     <div class="tooltip-stat">
                         <i class="bi bi-people" aria-hidden="true"></i>
-                        <span>@sector.TotalSeats total seats</span>
+                        <span>@sector.TotalSeats @Localizer["StadiumViewer_TotalSeats"]</span>
                     </div>
                     @if (summary != null)
                     {
                         <div class="tooltip-stat availability-@GetAvailabilityLevel(summary)">
                             <i class="bi bi-check-circle" aria-hidden="true"></i>
-                            <span>@summary.FreeSeats available</span>
+                            <span>@summary.FreeSeats @Localizer["StadiumViewer_AvailableSeats"]</span>
                         </div>
                         @if (summary.HeldSeats > 0)
                         {
                             <div class="tooltip-stat">
                                 <i class="bi bi-hourglass-split" aria-hidden="true"></i>
-                                <span>@summary.HeldSeats reserved</span>
+                                <span>@summary.HeldSeats @Localizer["StadiumViewer_ReservedSeats"]</span>
                             </div>
                         }
                         <div class="tooltip-stat">
                             <i class="bi bi-graph-up" aria-hidden="true"></i>
-                            <span>@summary.OccupancyPercentage.ToString("0.0")% occupied</span>
+                            <span>@summary.OccupancyPercentage.ToString("0.0")% @Localizer["StadiumViewer_OccupiedPercentage"]</span>
                         </div>
                     }
                 </div>
@@ -385,13 +386,13 @@
             <div class="d-flex align-items-center">
                 <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
                 <div>
-                    <h6 class="mb-1">Unable to Load Stadium</h6>
+                    <h6 class="mb-1">@Localizer["StadiumViewer_UnableToLoad"]</h6>
                     <p class="mb-0">@errorMessage</p>
                 </div>
             </div>
             <button class="btn btn-outline-danger btn-sm mt-2" @onclick="RetryLoad">
                 <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
-                Try Again
+                @Localizer["StadiumViewer_TryAgain"]
             </button>
         </div>
     }
@@ -401,8 +402,8 @@
             <div class="d-flex align-items-center">
                 <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
                 <div>
-                    <h6 class="mb-1">No Stadium Data</h6>
-                    <p class="mb-0">Stadium structure not found. Please contact support if this problem persists.</p>
+                    <h6 class="mb-1">@Localizer["StadiumViewer_NoStadiumData"]</h6>
+                    <p class="mb-0">@Localizer["StadiumViewer_NotFound"]</p>
                 </div>
             </div>
         </div>
@@ -423,7 +424,7 @@
              @onkeydown="HandleModalKeyDown">
             <div class="modal-header">
                 <div class="modal-title">
-                    <h5 id="sector-modal-title">@selectedSector.Name - Seat Selection</h5>
+                    <h5 id="sector-modal-title">@selectedSector.Name @Localizer["StadiumViewer_SelectSeatsTitle"]</h5>
                     <span class="sector-meta" id="sector-modal-description">
                         @GetSectorMeta(selectedSector)
                     </span>
@@ -448,13 +449,13 @@
                             Your browser does not support the HTML5 canvas element.
                         </canvas>
                         <div class="canvas-controls">
-                            <button class="btn btn-secondary" @onclick="ZoomIn" aria-label="Zoom in">
+                            <button class="btn btn-secondary" @onclick="ZoomIn" aria-label="@Localizer["StadiumViewer_ZoomIn"]">
                                 <i class="bi bi-zoom-in" aria-hidden="true"></i>
                             </button>
-                            <button class="btn btn-secondary" @onclick="ZoomOut" aria-label="Zoom out">
+                            <button class="btn btn-secondary" @onclick="ZoomOut" aria-label="@Localizer["StadiumViewer_ZoomOut"]">
                                 <i class="bi bi-zoom-out" aria-hidden="true"></i>
                             </button>
-                            <button class="btn btn-secondary" @onclick="ResetZoom" aria-label="Reset zoom">
+                            <button class="btn btn-secondary" @onclick="ResetZoom" aria-label="@Localizer["StadiumViewer_ResetZoom"]">
                                 <i class="bi bi-arrows-fullscreen" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -464,7 +465,7 @@
                         @if (selectedSeats.Any())
                         {
                             <div class="selected-seats">
-                                <h6>Selected Seats (@selectedSeats.Count)</h6>
+                                <h6>@string.Format(Localizer["StadiumViewer_SelectedSeats"], selectedSeats.Count)</h6>
                                 <div class="seat-list" role="list">
                                     @foreach (var seat in selectedSeats)
                                     {
@@ -484,8 +485,8 @@
                         {
                             <div class="empty-selection">
                                 <i class="bi bi-mouse" aria-hidden="true"></i>
-                                <p>Click seats to select them</p>
-                                <small class="text-muted">Use mouse or touch to select individual seats</small>
+                                <p>@Localizer["StadiumViewer_ClickToSelect"]</p>
+                                <small class="text-muted">@Localizer["StadiumViewer_UseMouseOrTouch"]</small>
                             </div>
                         }
                     </div>
@@ -493,10 +494,10 @@
             </div>
             
             <div class="modal-footer">
-                <button type="button" 
-                        class="btn btn-secondary" 
+                <button type="button"
+                        class="btn btn-secondary"
                         @onclick="CloseSectorModal">
-                    Close
+                    @Localizer["Close"]
                 </button>
                 @if (selectedSeats.Any())
                 {

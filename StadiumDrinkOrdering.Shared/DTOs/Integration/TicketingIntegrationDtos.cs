@@ -11,6 +11,8 @@ public static class TicketingEventTypes
 {
     public const string EventCreated = "EventCreated";
     public const string EventUpdated = "EventUpdated";
+    /// <summary>Slides the event window to "now" and moves its lifecycle to Active (game-day) so live-only features unlock.</summary>
+    public const string EventWentLive = "EventWentLive";
     public const string TicketSold = "TicketSold";
     public const string TicketRefunded = "TicketRefunded";
 
@@ -181,6 +183,39 @@ public class ExternalEventSummaryDto
     public decimal? BaseTicketPrice { get; set; }
     public int TotalSold { get; set; }
     public int TotalSeats { get; set; }
+
+    /// <summary>Display name of the event's authoritative lifecycle status (e.g. "OnSale", "Active").</summary>
+    public string StatusName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Whether the external system may still sell tickets/seats into this event. False once the
+    /// event goes live (or is sold out / past), so the simulator disables ticket selling.
+    /// </summary>
+    public bool CanSellTickets { get; set; }
+
+    /// <summary>
+    /// Whether the event is live and drink ordering is open — the simulator uses this to enable
+    /// its "simulate drink orders" controls.
+    /// </summary>
+    public bool CanOrderDrinks { get; set; }
+}
+
+/// <summary>Outcome of a simulated live drink order requested by the external system/simulator.</summary>
+public class SimulatedDrinkOrderResult
+{
+    public bool Accepted { get; set; }
+    public string Message { get; set; } = string.Empty;
+
+    public int? OrderId { get; set; }
+    public int? EventId { get; set; }
+
+    /// <summary>Seat the order was attached to (a currently-occupied seat in the live event).</summary>
+    public string? SeatNumber { get; set; }
+
+    /// <summary>Human-readable summary of what was ordered, e.g. "2× Beer, 1× Water".</summary>
+    public string? OrderSummary { get; set; }
+
+    public decimal TotalAmount { get; set; }
 }
 
 /// <summary>

@@ -250,7 +250,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 1,
                             Category = 2,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9039),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5820),
                             Description = "Classic Coca Cola",
                             IsAvailable = true,
                             Name = "Coca Cola",
@@ -261,7 +261,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 2,
                             Category = 2,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9060),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5831),
                             Description = "Pepsi Cola",
                             IsAvailable = true,
                             Name = "Pepsi",
@@ -272,7 +272,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 3,
                             Category = 3,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9062),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5833),
                             Description = "Bottled Water",
                             IsAvailable = true,
                             Name = "Water",
@@ -283,7 +283,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 4,
                             Category = 1,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9063),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5835),
                             Description = "Local Draft Beer",
                             IsAvailable = true,
                             Name = "Beer",
@@ -294,7 +294,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 5,
                             Category = 4,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9064),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5836),
                             Description = "Hot Coffee",
                             IsAvailable = true,
                             Name = "Coffee",
@@ -305,7 +305,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 6,
                             Category = 6,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9065),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5838),
                             Description = "Fresh Orange Juice",
                             IsAvailable = true,
                             Name = "Orange Juice",
@@ -316,7 +316,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 7,
                             Category = 7,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9067),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5839),
                             Description = "Energy Drink",
                             IsAvailable = true,
                             Name = "Red Bull",
@@ -327,7 +327,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 8,
                             Category = 5,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9068),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5841),
                             Description = "Hot Green Tea",
                             IsAvailable = true,
                             Name = "Green Tea",
@@ -417,9 +417,9 @@ namespace StadiumDrinkOrdering.API.Migrations
                         {
                             Id = 1,
                             BaseTicketPrice = 50.00m,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9162),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(5935),
                             Description = "Championship final match",
-                            EventDate = new DateTime(2026, 7, 3, 19, 0, 0, 0, DateTimeKind.Utc),
+                            EventDate = new DateTime(2026, 7, 5, 19, 0, 0, 0, DateTimeKind.Utc),
                             EventName = "Championship Match",
                             EventType = "Football",
                             IsActive = true,
@@ -810,6 +810,12 @@ namespace StadiumDrinkOrdering.API.Migrations
                     b.Property<int?>("EventId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("InPreparationAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("InPreparationByUserId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -871,6 +877,8 @@ namespace StadiumDrinkOrdering.API.Migrations
                     b.HasIndex("DeliveredByUserId");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("InPreparationByUserId");
 
                     b.HasIndex("PaymentId")
                         .IsUnique();
@@ -1058,6 +1066,9 @@ namespace StadiumDrinkOrdering.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<long?>("WalletTransactionId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId")
@@ -1069,6 +1080,8 @@ namespace StadiumDrinkOrdering.API.Migrations
 
                     b.HasIndex("TransactionId")
                         .IsUnique();
+
+                    b.HasIndex("WalletTransactionId");
 
                     b.HasIndex("PaymentMethod", "PaymentDate");
 
@@ -1281,6 +1294,9 @@ namespace StadiumDrinkOrdering.API.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ExternalSeasonTicketId")
@@ -1291,6 +1307,8 @@ namespace StadiumDrinkOrdering.API.Migrations
                     b.HasIndex("SeasonId");
 
                     b.HasIndex("SeatId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("SeasonTickets");
                 });
@@ -1573,7 +1591,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9530),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6555),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 1,
@@ -1584,7 +1602,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9548),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6570),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 2,
@@ -1595,7 +1613,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9549),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6571),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 3,
@@ -1606,7 +1624,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9550),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6572),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 4,
@@ -1617,7 +1635,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9550),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6573),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 5,
@@ -1628,7 +1646,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9551),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6575),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 6,
@@ -1639,7 +1657,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9553),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6576),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 7,
@@ -1650,7 +1668,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9554),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6577),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 8,
@@ -1661,7 +1679,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9554),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6577),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 9,
@@ -1672,7 +1690,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9555),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6579),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 10,
@@ -1683,7 +1701,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 16,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9556),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6580),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 1,
@@ -1694,7 +1712,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 17,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9557),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6581),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 2,
@@ -1705,7 +1723,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 18,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9557),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6582),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 3,
@@ -1716,7 +1734,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 19,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9558),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6583),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 4,
@@ -1727,7 +1745,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 20,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9558),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6584),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 5,
@@ -1738,7 +1756,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 21,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9559),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6584),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 6,
@@ -1749,7 +1767,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 22,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9559),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6585),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 7,
@@ -1760,7 +1778,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 23,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9560),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6587),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 8,
@@ -1771,7 +1789,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 24,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9561),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6588),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 9,
@@ -1782,7 +1800,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 25,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9561),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6588),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 10,
@@ -1793,7 +1811,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 26,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9562),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6589),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 1,
@@ -1804,7 +1822,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 27,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9562),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6590),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 2,
@@ -1815,7 +1833,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 28,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9563),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6591),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 3,
@@ -1826,7 +1844,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 29,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9563),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6592),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 4,
@@ -1837,7 +1855,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 30,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9564),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6593),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 5,
@@ -1848,7 +1866,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 31,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9564),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6593),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 6,
@@ -1859,7 +1877,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 32,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9565),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6594),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 7,
@@ -1870,7 +1888,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 33,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9565),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6595),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 8,
@@ -1881,7 +1899,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 34,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9566),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6596),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 9,
@@ -1892,7 +1910,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 35,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9566),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6597),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 10,
@@ -1903,7 +1921,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 36,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9567),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6597),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 1,
@@ -1914,7 +1932,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 37,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9567),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6598),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 2,
@@ -1925,7 +1943,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 38,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9568),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6599),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 3,
@@ -1936,7 +1954,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 39,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9569),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6669),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 4,
@@ -1947,7 +1965,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 40,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9569),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6670),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 5,
@@ -1958,7 +1976,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 41,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9570),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6671),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 6,
@@ -1969,7 +1987,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 42,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9570),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6672),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 7,
@@ -1980,7 +1998,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 43,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9571),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6673),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 8,
@@ -1991,7 +2009,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 44,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9571),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6674),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 9,
@@ -2002,7 +2020,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 45,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9572),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6675),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 10,
@@ -2013,7 +2031,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 46,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9572),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6675),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 1,
@@ -2024,7 +2042,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 47,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9573),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6676),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 2,
@@ -2035,7 +2053,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 48,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9573),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6677),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 3,
@@ -2046,7 +2064,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 49,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9574),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6678),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 4,
@@ -2057,7 +2075,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 50,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9574),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6679),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 5,
@@ -2068,7 +2086,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 51,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9575),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6679),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 6,
@@ -2079,7 +2097,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 52,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9575),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6680),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 7,
@@ -2090,7 +2108,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 53,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9576),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6681),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 8,
@@ -2101,7 +2119,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 54,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9576),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6682),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 9,
@@ -2112,7 +2130,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 55,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9598),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6683),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 10,
@@ -2123,7 +2141,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 56,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9599),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6683),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 1,
@@ -2134,7 +2152,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 57,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9600),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6684),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 2,
@@ -2145,7 +2163,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 58,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9600),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6685),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 3,
@@ -2156,7 +2174,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 59,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9601),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6686),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 4,
@@ -2167,7 +2185,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 60,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9601),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6687),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 5,
@@ -2178,7 +2196,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 61,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9602),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6687),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 6,
@@ -2189,7 +2207,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 62,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9602),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6688),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 7,
@@ -2200,7 +2218,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 63,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9603),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6689),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 8,
@@ -2211,7 +2229,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 64,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9603),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6690),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 9,
@@ -2222,7 +2240,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 65,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9604),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6690),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 10,
@@ -2233,7 +2251,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 66,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9604),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6691),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 1,
@@ -2244,7 +2262,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 67,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9605),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6692),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 2,
@@ -2255,7 +2273,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 68,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9605),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6693),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 3,
@@ -2266,7 +2284,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 69,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9606),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6693),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 4,
@@ -2277,7 +2295,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 70,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9606),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6694),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 5,
@@ -2288,7 +2306,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 71,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9607),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6696),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 6,
@@ -2299,7 +2317,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 72,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9608),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6697),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 7,
@@ -2310,7 +2328,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 73,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9608),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6697),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 8,
@@ -2321,7 +2339,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 74,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9609),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6698),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 9,
@@ -2332,7 +2350,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 75,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9609),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6699),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 10,
@@ -2343,7 +2361,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 76,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9610),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6700),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 1,
@@ -2354,7 +2372,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 77,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9610),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6701),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 2,
@@ -2365,7 +2383,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 78,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9611),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6702),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 3,
@@ -2376,7 +2394,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 79,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9611),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6702),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 4,
@@ -2387,7 +2405,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 80,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9611),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6703),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 5,
@@ -2398,7 +2416,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 81,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9612),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6704),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 6,
@@ -2409,7 +2427,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 82,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9612),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6705),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 7,
@@ -2420,7 +2438,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 83,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9613),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6705),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 8,
@@ -2431,7 +2449,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 84,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9613),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6706),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 9,
@@ -2442,7 +2460,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 85,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9614),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6707),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 10,
@@ -2453,7 +2471,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 86,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9614),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6708),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 1,
@@ -2464,7 +2482,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 87,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9615),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6709),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 2,
@@ -2475,7 +2493,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 88,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9615),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6709),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 3,
@@ -2486,7 +2504,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 89,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9616),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6710),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 4,
@@ -2497,7 +2515,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 90,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9616),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6711),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 5,
@@ -2508,7 +2526,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 91,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9617),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6712),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 6,
@@ -2519,7 +2537,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 92,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9617),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6712),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 7,
@@ -2530,7 +2548,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 93,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9618),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6713),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 8,
@@ -2541,7 +2559,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 94,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9618),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6714),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 9,
@@ -2552,7 +2570,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 95,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9619),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6715),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 10,
@@ -2563,7 +2581,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 96,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9619),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6716),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 1,
@@ -2574,7 +2592,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 97,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9620),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6716),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 2,
@@ -2585,7 +2603,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 98,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9620),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6717),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 3,
@@ -2596,7 +2614,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 99,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9621),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6718),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 4,
@@ -2607,7 +2625,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 100,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9621),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6719),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 5,
@@ -2618,7 +2636,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 101,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9621),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6719),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 6,
@@ -2629,7 +2647,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 102,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9622),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6720),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 7,
@@ -2640,7 +2658,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 103,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9622),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6721),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 8,
@@ -2651,7 +2669,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 104,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9623),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6722),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 9,
@@ -2662,7 +2680,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 105,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9623),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6722),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 10,
@@ -2673,7 +2691,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 106,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9624),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6724),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 1,
@@ -2684,7 +2702,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 107,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9626),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6725),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 2,
@@ -2695,7 +2713,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 108,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9626),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6726),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 3,
@@ -2706,7 +2724,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 109,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9627),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6727),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 4,
@@ -2717,7 +2735,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 110,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9627),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6728),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 5,
@@ -2728,7 +2746,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 111,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9628),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6773),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 6,
@@ -2739,7 +2757,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 112,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9628),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6774),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 7,
@@ -2750,7 +2768,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 113,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9629),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6775),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 8,
@@ -2761,7 +2779,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 114,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9629),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6776),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 9,
@@ -2772,7 +2790,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 115,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9630),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6777),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 10,
@@ -2783,7 +2801,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 116,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9630),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6778),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 1,
@@ -2794,7 +2812,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 117,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9631),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6779),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 2,
@@ -2805,7 +2823,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 118,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9631),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6780),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 3,
@@ -2816,7 +2834,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 119,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9632),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6781),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 4,
@@ -2827,7 +2845,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 120,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9632),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6781),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 5,
@@ -2838,7 +2856,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 121,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9633),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6782),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 6,
@@ -2849,7 +2867,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 122,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9633),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6783),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 7,
@@ -2860,7 +2878,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 123,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9634),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6784),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 8,
@@ -2871,7 +2889,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 124,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9634),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6785),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 9,
@@ -2882,7 +2900,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 125,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9635),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6786),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 10,
@@ -2893,7 +2911,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 126,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9635),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6787),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 1,
@@ -2904,7 +2922,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 127,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9635),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6788),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 2,
@@ -2915,7 +2933,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 128,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9636),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6788),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 3,
@@ -2926,7 +2944,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 129,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9636),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6789),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 4,
@@ -2937,7 +2955,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 130,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9658),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6790),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 5,
@@ -2948,7 +2966,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 131,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9659),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6791),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 6,
@@ -2959,7 +2977,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 132,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9660),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6792),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 7,
@@ -2970,7 +2988,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 133,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9660),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6793),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 8,
@@ -2981,7 +2999,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 134,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9661),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6793),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 9,
@@ -2992,7 +3010,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 135,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9662),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6795),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 10,
@@ -3003,7 +3021,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 136,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9663),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6797),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 1,
@@ -3014,7 +3032,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 137,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9664),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6797),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 2,
@@ -3025,7 +3043,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 138,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9664),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6798),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 3,
@@ -3036,7 +3054,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 139,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9665),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6799),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 4,
@@ -3047,7 +3065,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 140,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9665),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6800),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 5,
@@ -3058,7 +3076,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 141,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9665),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6801),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 6,
@@ -3069,7 +3087,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 142,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9666),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6802),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 7,
@@ -3080,7 +3098,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 143,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9666),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6803),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 8,
@@ -3091,7 +3109,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 144,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9667),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6804),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 9,
@@ -3102,7 +3120,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 145,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9667),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6805),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 10,
@@ -3113,7 +3131,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 146,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9668),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6806),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 1,
@@ -3124,7 +3142,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 147,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9668),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6806),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 2,
@@ -3135,7 +3153,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 148,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9669),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6807),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 3,
@@ -3146,7 +3164,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 149,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9669),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6808),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 4,
@@ -3157,7 +3175,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 150,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9670),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6809),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 5,
@@ -3168,7 +3186,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 151,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9670),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6810),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 6,
@@ -3179,7 +3197,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 152,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9671),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6811),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 7,
@@ -3190,7 +3208,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 153,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9671),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6812),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 8,
@@ -3201,7 +3219,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 154,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9672),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6813),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 9,
@@ -3212,7 +3230,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 155,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9672),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6814),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 10,
@@ -3223,7 +3241,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 156,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9673),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6815),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 1,
@@ -3234,7 +3252,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 157,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9673),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6816),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 2,
@@ -3245,7 +3263,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 158,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9673),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6816),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 3,
@@ -3256,7 +3274,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 159,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9674),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6818),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 4,
@@ -3267,7 +3285,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 160,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9674),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6818),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 5,
@@ -3278,7 +3296,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 161,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9675),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6819),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 6,
@@ -3289,7 +3307,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 162,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9675),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6820),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 7,
@@ -3300,7 +3318,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 163,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9676),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6821),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 8,
@@ -3311,7 +3329,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 164,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9676),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6822),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 9,
@@ -3322,7 +3340,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 165,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9677),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6822),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 10,
@@ -3333,7 +3351,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 166,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9677),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6823),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 1,
@@ -3344,7 +3362,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 167,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9678),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6824),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 2,
@@ -3355,7 +3373,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 168,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9678),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6825),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 3,
@@ -3366,7 +3384,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 169,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9679),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6826),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 4,
@@ -3377,7 +3395,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 170,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9679),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6827),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 5,
@@ -3388,7 +3406,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 171,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9680),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6828),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 6,
@@ -3399,7 +3417,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 172,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9680),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6828),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 7,
@@ -3410,7 +3428,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 173,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9681),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6829),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 8,
@@ -3421,7 +3439,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 174,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9681),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6830),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 9,
@@ -3432,7 +3450,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 175,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9682),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6872),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 10,
@@ -3443,7 +3461,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 176,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9682),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6873),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 1,
@@ -3454,7 +3472,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 177,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9683),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6874),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 2,
@@ -3465,7 +3483,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 178,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9683),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6875),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 3,
@@ -3476,7 +3494,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 179,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9683),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6876),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 4,
@@ -3487,7 +3505,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 180,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9684),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6877),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 5,
@@ -3498,7 +3516,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 181,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9684),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6878),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 6,
@@ -3509,7 +3527,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 182,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9685),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6879),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 7,
@@ -3520,7 +3538,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 183,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9685),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6879),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 8,
@@ -3531,7 +3549,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 184,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9686),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6880),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 9,
@@ -3542,7 +3560,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 185,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9686),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6881),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 10,
@@ -3553,7 +3571,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 186,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9687),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6882),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 1,
@@ -3564,7 +3582,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 187,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9687),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6883),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 2,
@@ -3575,7 +3593,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 188,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9688),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6884),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 3,
@@ -3586,7 +3604,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 189,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9688),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6885),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 4,
@@ -3597,7 +3615,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 190,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9689),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6885),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 5,
@@ -3608,7 +3626,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 191,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9689),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6886),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 6,
@@ -3619,7 +3637,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 192,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9689),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6887),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 7,
@@ -3630,7 +3648,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 193,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9705),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6888),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 8,
@@ -3641,7 +3659,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 194,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9706),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6889),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 9,
@@ -3652,7 +3670,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 195,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9706),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6890),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 10,
@@ -3663,7 +3681,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 196,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9707),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6891),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 1,
@@ -3674,7 +3692,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 197,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9707),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6892),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 2,
@@ -3685,7 +3703,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 198,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9708),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6893),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 3,
@@ -3696,7 +3714,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 199,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9709),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6893),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 4,
@@ -3707,7 +3725,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 200,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9709),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6894),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 5,
@@ -3718,7 +3736,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 201,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9710),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6895),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 6,
@@ -3729,7 +3747,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 202,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9710),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6896),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 7,
@@ -3740,7 +3758,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 203,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9710),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6897),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 8,
@@ -3751,7 +3769,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 204,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9711),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6898),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 9,
@@ -3762,7 +3780,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 205,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9711),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6899),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 10,
@@ -3773,7 +3791,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 206,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9712),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6900),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 1,
@@ -3784,7 +3802,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 207,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9714),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6902),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 2,
@@ -3795,7 +3813,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 208,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9715),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6902),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 3,
@@ -3806,7 +3824,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 209,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9715),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6903),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 4,
@@ -3817,7 +3835,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 210,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9716),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6904),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 5,
@@ -3828,7 +3846,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 211,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9716),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6905),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 6,
@@ -3839,7 +3857,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 212,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9717),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6906),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 7,
@@ -3850,7 +3868,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 213,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9717),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6907),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 8,
@@ -3861,7 +3879,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 214,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9717),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6907),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 9,
@@ -3872,7 +3890,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 215,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9718),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6908),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 10,
@@ -3883,7 +3901,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 216,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9718),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6910),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 1,
@@ -3894,7 +3912,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 217,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9719),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6911),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 2,
@@ -3905,7 +3923,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 218,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9719),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6911),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 3,
@@ -3916,7 +3934,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 219,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9720),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6912),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 4,
@@ -3927,7 +3945,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 220,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9720),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6913),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 5,
@@ -3938,7 +3956,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 221,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9721),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6914),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 6,
@@ -3949,7 +3967,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 222,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9721),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6915),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 7,
@@ -3960,7 +3978,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 223,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9722),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6916),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 8,
@@ -3971,7 +3989,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 224,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9722),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6916),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 9,
@@ -3982,7 +4000,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 225,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9723),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6917),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 10,
@@ -3993,7 +4011,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 226,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9723),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6918),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 1,
@@ -4004,7 +4022,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 227,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9724),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6919),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 2,
@@ -4015,7 +4033,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 228,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9724),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6920),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 3,
@@ -4026,7 +4044,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 229,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9725),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6921),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 4,
@@ -4037,7 +4055,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 230,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9725),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6922),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 5,
@@ -4048,7 +4066,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 231,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9725),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6923),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 6,
@@ -4059,7 +4077,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 232,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9726),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6923),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 7,
@@ -4070,7 +4088,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 233,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9726),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6924),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 8,
@@ -4081,7 +4099,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 234,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9727),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6925),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 9,
@@ -4092,7 +4110,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 235,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9727),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6926),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 10,
@@ -4103,7 +4121,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 236,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9728),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6927),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 1,
@@ -4114,7 +4132,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 237,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9728),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6928),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 2,
@@ -4125,7 +4143,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 238,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9729),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6929),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 3,
@@ -4136,7 +4154,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 239,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9729),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6929),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 4,
@@ -4147,7 +4165,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 240,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9730),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6930),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 5,
@@ -4158,7 +4176,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 241,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9730),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6931),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 6,
@@ -4169,7 +4187,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 242,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9731),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6932),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 7,
@@ -4180,7 +4198,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 243,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9731),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6933),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 8,
@@ -4191,7 +4209,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 244,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9732),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6933),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 9,
@@ -4202,7 +4220,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 245,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9732),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6934),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 10,
@@ -4213,7 +4231,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 246,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9733),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6935),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 1,
@@ -4224,7 +4242,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 247,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9733),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6936),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 2,
@@ -4235,7 +4253,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 248,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9734),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6937),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 3,
@@ -4246,7 +4264,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 249,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9734),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6938),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 4,
@@ -4257,7 +4275,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 250,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9735),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6938),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 5,
@@ -4268,7 +4286,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 251,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9735),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6939),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 6,
@@ -4279,7 +4297,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 252,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9736),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6940),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 7,
@@ -4290,7 +4308,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 253,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9736),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6941),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 8,
@@ -4301,7 +4319,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 254,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9737),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6942),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 9,
@@ -4312,7 +4330,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 255,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9737),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6943),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 10,
@@ -4323,7 +4341,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 256,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9738),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6944),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 1,
@@ -4334,7 +4352,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 257,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9738),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6945),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 2,
@@ -4345,7 +4363,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 258,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9739),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6945),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 3,
@@ -4356,7 +4374,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 259,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9739),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6947),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 4,
@@ -4367,7 +4385,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 260,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9740),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6989),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 5,
@@ -4378,7 +4396,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 261,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9740),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6991),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 6,
@@ -4389,7 +4407,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 262,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9741),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6992),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 7,
@@ -4400,7 +4418,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 263,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9793),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6994),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 8,
@@ -4411,7 +4429,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 264,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9794),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6995),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 9,
@@ -4422,7 +4440,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 265,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9795),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6996),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 10,
@@ -4433,7 +4451,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 266,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9796),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6997),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 1,
@@ -4444,7 +4462,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 267,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9796),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6998),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 2,
@@ -4455,7 +4473,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 268,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9797),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6999),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 3,
@@ -4466,7 +4484,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 269,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9798),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7000),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 4,
@@ -4477,7 +4495,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 270,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9798),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7001),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 5,
@@ -4488,7 +4506,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 271,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9799),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7001),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 6,
@@ -4499,7 +4517,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 272,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9799),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7002),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 7,
@@ -4510,7 +4528,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 273,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9800),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7003),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 8,
@@ -4521,7 +4539,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 274,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9800),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7004),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 9,
@@ -4532,7 +4550,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 275,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9801),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7005),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 10,
@@ -4543,7 +4561,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 276,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9801),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7006),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 1,
@@ -4554,7 +4572,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 277,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9802),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7007),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 2,
@@ -4565,7 +4583,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 278,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9802),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7007),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 3,
@@ -4576,7 +4594,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 279,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9803),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7008),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 4,
@@ -4587,7 +4605,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 280,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9803),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7009),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 5,
@@ -4598,7 +4616,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 281,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9804),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7010),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 6,
@@ -4609,7 +4627,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 282,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9804),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7011),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 7,
@@ -4620,7 +4638,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 283,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9805),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7011),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 8,
@@ -4631,7 +4649,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 284,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9805),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7012),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 9,
@@ -4642,7 +4660,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 285,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9806),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7013),
                             IsActive = true,
                             RowNumber = 8,
                             SeatNumber = 10,
@@ -4653,7 +4671,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 286,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9806),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7014),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 1,
@@ -4664,7 +4682,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 287,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9807),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7015),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 2,
@@ -4675,7 +4693,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 288,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9807),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7016),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 3,
@@ -4686,7 +4704,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 289,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9807),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7016),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 4,
@@ -4697,7 +4715,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 290,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9808),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7017),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 5,
@@ -4708,7 +4726,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 291,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9808),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7018),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 6,
@@ -4719,7 +4737,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 292,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9809),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7019),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 7,
@@ -4730,7 +4748,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 293,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9809),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7020),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 8,
@@ -4741,7 +4759,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 294,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9810),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7021),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 9,
@@ -4752,7 +4770,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 295,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9810),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7021),
                             IsActive = true,
                             RowNumber = 9,
                             SeatNumber = 10,
@@ -4763,7 +4781,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 296,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9811),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7022),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 1,
@@ -4774,7 +4792,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 297,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9811),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7023),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 2,
@@ -4785,7 +4803,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 298,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9812),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7024),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 3,
@@ -4796,7 +4814,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 299,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9812),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7025),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 4,
@@ -4807,7 +4825,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 300,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9813),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7026),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 5,
@@ -4818,7 +4836,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 301,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9813),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7027),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 6,
@@ -4829,7 +4847,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 302,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9814),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7028),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 7,
@@ -4840,7 +4858,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 303,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9814),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7075),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 8,
@@ -4851,7 +4869,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 304,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9815),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7075),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 9,
@@ -4862,7 +4880,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 305,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9815),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7076),
                             IsActive = true,
                             RowNumber = 10,
                             SeatNumber = 10,
@@ -4873,7 +4891,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 306,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9816),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7078),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 1,
@@ -4884,7 +4902,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 307,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9818),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7079),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 2,
@@ -4895,7 +4913,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 308,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9818),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7081),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 3,
@@ -4906,7 +4924,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 309,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9818),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7081),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 4,
@@ -4917,7 +4935,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 310,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9819),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7082),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 5,
@@ -4928,7 +4946,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 311,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9819),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7083),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 6,
@@ -4939,7 +4957,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 312,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9820),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7084),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 7,
@@ -4950,7 +4968,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 313,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9820),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7085),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 8,
@@ -4961,7 +4979,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 314,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9821),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7086),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 9,
@@ -4972,7 +4990,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 315,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9821),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7087),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 10,
@@ -4983,7 +5001,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 316,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9822),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7087),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 11,
@@ -4994,7 +5012,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 317,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9822),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7089),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 12,
@@ -5005,7 +5023,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 318,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9823),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7089),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 13,
@@ -5016,7 +5034,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 319,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9853),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7090),
                             IsActive = true,
                             RowNumber = 1,
                             SeatNumber = 14,
@@ -5027,7 +5045,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 320,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9854),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7091),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 1,
@@ -5038,7 +5056,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 321,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9854),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7092),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 2,
@@ -5049,7 +5067,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 322,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9855),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7093),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 3,
@@ -5060,7 +5078,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 323,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9855),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7094),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 4,
@@ -5071,7 +5089,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 324,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9856),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7095),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 5,
@@ -5082,7 +5100,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 325,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9856),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7096),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 6,
@@ -5093,7 +5111,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 326,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9857),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7097),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 7,
@@ -5104,7 +5122,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 327,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9857),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7097),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 8,
@@ -5115,7 +5133,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 328,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9858),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7098),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 9,
@@ -5126,7 +5144,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 329,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9858),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7099),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 10,
@@ -5137,7 +5155,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 330,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9859),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7100),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 11,
@@ -5148,7 +5166,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 331,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9859),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7101),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 12,
@@ -5159,7 +5177,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 332,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9860),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7102),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 13,
@@ -5170,7 +5188,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 333,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9860),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7103),
                             IsActive = true,
                             RowNumber = 2,
                             SeatNumber = 14,
@@ -5181,7 +5199,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 334,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9861),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7104),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 1,
@@ -5192,7 +5210,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 335,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9861),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7104),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 2,
@@ -5203,7 +5221,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 336,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9862),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7105),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 3,
@@ -5214,7 +5232,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 337,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9862),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7106),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 4,
@@ -5225,7 +5243,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 338,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9863),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7107),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 5,
@@ -5236,7 +5254,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 339,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9863),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7108),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 6,
@@ -5247,7 +5265,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 340,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9864),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7109),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 7,
@@ -5258,7 +5276,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 341,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9864),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7110),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 8,
@@ -5269,7 +5287,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 342,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9865),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7111),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 9,
@@ -5280,7 +5298,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 343,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9865),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7112),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 10,
@@ -5291,7 +5309,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 344,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9866),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7112),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 11,
@@ -5302,7 +5320,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 345,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9866),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7113),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 12,
@@ -5313,7 +5331,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 346,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9867),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7114),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 13,
@@ -5324,7 +5342,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 347,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9867),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7115),
                             IsActive = true,
                             RowNumber = 3,
                             SeatNumber = 14,
@@ -5335,7 +5353,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 348,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9868),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7116),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 1,
@@ -5346,7 +5364,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 349,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9868),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7117),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 2,
@@ -5357,7 +5375,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 350,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9869),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7117),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 3,
@@ -5368,7 +5386,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 351,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9869),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7119),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 4,
@@ -5379,7 +5397,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 352,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9870),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7119),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 5,
@@ -5390,7 +5408,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 353,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9870),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7120),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 6,
@@ -5401,7 +5419,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 354,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9871),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7121),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 7,
@@ -5412,7 +5430,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 355,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9871),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7122),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 8,
@@ -5423,7 +5441,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 356,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9872),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7123),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 9,
@@ -5434,7 +5452,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 357,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9872),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7124),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 10,
@@ -5445,7 +5463,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 358,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9873),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7125),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 11,
@@ -5456,7 +5474,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 359,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9873),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7125),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 12,
@@ -5467,7 +5485,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 360,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9874),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7126),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 13,
@@ -5478,7 +5496,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 361,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9874),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7127),
                             IsActive = true,
                             RowNumber = 4,
                             SeatNumber = 14,
@@ -5489,7 +5507,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 362,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9874),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7128),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 1,
@@ -5500,7 +5518,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 363,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9875),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7129),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 2,
@@ -5511,7 +5529,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 364,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9875),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7130),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 3,
@@ -5522,7 +5540,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 365,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9876),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7131),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 4,
@@ -5533,7 +5551,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 366,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9876),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7132),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 5,
@@ -5544,7 +5562,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 367,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9877),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7133),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 6,
@@ -5555,7 +5573,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 368,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9877),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7134),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 7,
@@ -5566,7 +5584,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 369,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9878),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7134),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 8,
@@ -5577,7 +5595,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 370,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9878),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7135),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 9,
@@ -5588,7 +5606,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 371,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9879),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7136),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 10,
@@ -5599,7 +5617,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 372,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9879),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7137),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 11,
@@ -5610,7 +5628,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 373,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9880),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7138),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 12,
@@ -5621,7 +5639,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 374,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9880),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7138),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 13,
@@ -5632,7 +5650,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 375,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9881),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7139),
                             IsActive = true,
                             RowNumber = 5,
                             SeatNumber = 14,
@@ -5643,7 +5661,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 376,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9881),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7140),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 1,
@@ -5654,7 +5672,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 377,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9882),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7141),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 2,
@@ -5665,7 +5683,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 378,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9882),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7142),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 3,
@@ -5676,7 +5694,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 379,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9883),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7143),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 4,
@@ -5687,7 +5705,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 380,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9883),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7143),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 5,
@@ -5698,7 +5716,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 381,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9884),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7144),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 6,
@@ -5709,7 +5727,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 382,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9884),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7145),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 7,
@@ -5720,7 +5738,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 383,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9885),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7146),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 8,
@@ -5731,7 +5749,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 384,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9885),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7147),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 9,
@@ -5742,7 +5760,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 385,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9886),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7147),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 10,
@@ -5753,7 +5771,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 386,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9886),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7148),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 11,
@@ -5764,7 +5782,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 387,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9886),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7149),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 12,
@@ -5775,7 +5793,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 388,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9887),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7190),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 13,
@@ -5786,7 +5804,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 389,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9887),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7192),
                             IsActive = true,
                             RowNumber = 6,
                             SeatNumber = 14,
@@ -5797,7 +5815,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 390,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9888),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7193),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 1,
@@ -5808,7 +5826,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 391,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9889),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7194),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 2,
@@ -5819,7 +5837,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 392,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9889),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7195),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 3,
@@ -5830,7 +5848,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 393,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9890),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7195),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 4,
@@ -5841,7 +5859,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 394,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9890),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7196),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 5,
@@ -5852,7 +5870,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 395,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9890),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7197),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 6,
@@ -5863,7 +5881,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 396,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9891),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7198),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 7,
@@ -5874,7 +5892,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 397,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9891),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7199),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 8,
@@ -5885,7 +5903,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 398,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9892),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7200),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 9,
@@ -5896,7 +5914,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 399,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9892),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7201),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 10,
@@ -5907,7 +5925,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 400,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9893),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7201),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 11,
@@ -5918,7 +5936,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 401,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9893),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7202),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 12,
@@ -5929,7 +5947,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 402,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9894),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7203),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 13,
@@ -5940,7 +5958,7 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 403,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9894),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(7204),
                             IsActive = true,
                             RowNumber = 7,
                             SeatNumber = 14,
@@ -6301,17 +6319,17 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9385),
-                            EventDate = new DateTime(2026, 7, 3, 19, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6377),
+                            EventDate = new DateTime(2026, 7, 5, 19, 0, 0, 0, DateTimeKind.Utc),
                             EventId = 1,
                             EventName = "Championship Match",
                             IsActive = true,
                             IsUsed = false,
                             Kind = 0,
                             Price = 50.00m,
-                            PurchaseDate = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9462),
+                            PurchaseDate = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6507),
                             QRCode = "",
-                            QRCodeToken = "2ea306fe-1f47-4add-b841-8282a571e64d",
+                            QRCodeToken = "afb35216-058c-4b7d-a42e-99820864b8d1",
                             Row = "1",
                             SeatId = 1,
                             SeatNumber = "A1",
@@ -6322,17 +6340,17 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9463),
-                            EventDate = new DateTime(2026, 7, 3, 19, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6509),
+                            EventDate = new DateTime(2026, 7, 5, 19, 0, 0, 0, DateTimeKind.Utc),
                             EventId = 1,
                             EventName = "Championship Match",
                             IsActive = true,
                             IsUsed = false,
                             Kind = 0,
                             Price = 50.00m,
-                            PurchaseDate = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9469),
+                            PurchaseDate = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6515),
                             QRCode = "",
-                            QRCodeToken = "c3632498-8ee8-4f02-a809-4c01bd53d55d",
+                            QRCodeToken = "1c9de22c-4ea3-457c-b75a-75e27e135a1e",
                             Row = "1",
                             SeatId = 2,
                             SeatNumber = "A2",
@@ -6343,17 +6361,17 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9470),
-                            EventDate = new DateTime(2026, 7, 3, 19, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6517),
+                            EventDate = new DateTime(2026, 7, 5, 19, 0, 0, 0, DateTimeKind.Utc),
                             EventId = 1,
                             EventName = "Championship Match",
                             IsActive = true,
                             IsUsed = false,
                             Kind = 0,
                             Price = 60.00m,
-                            PurchaseDate = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9479),
+                            PurchaseDate = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6521),
                             QRCode = "",
-                            QRCodeToken = "e785e33b-3793-49cc-af73-3fed2f61c75e",
+                            QRCodeToken = "308cd7db-81bc-48bc-b858-9e62e64ebc02",
                             Row = "5",
                             SeatId = 3,
                             SeatNumber = "B5",
@@ -6364,17 +6382,17 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9480),
-                            EventDate = new DateTime(2026, 7, 3, 19, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6522),
+                            EventDate = new DateTime(2026, 7, 5, 19, 0, 0, 0, DateTimeKind.Utc),
                             EventId = 1,
                             EventName = "Championship Match",
                             IsActive = true,
                             IsUsed = false,
                             Kind = 0,
                             Price = 75.00m,
-                            PurchaseDate = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9493),
+                            PurchaseDate = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6527),
                             QRCode = "",
-                            QRCodeToken = "7c808f7d-225c-4df3-864d-c188e5c8d6bc",
+                            QRCodeToken = "e4f843dc-c9b8-45ad-a88d-e2cd742577bb",
                             Row = "10",
                             SeatId = 4,
                             SeatNumber = "C10",
@@ -6385,17 +6403,17 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9494),
-                            EventDate = new DateTime(2026, 7, 3, 19, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6528),
+                            EventDate = new DateTime(2026, 7, 5, 19, 0, 0, 0, DateTimeKind.Utc),
                             EventId = 1,
                             EventName = "Championship Match",
                             IsActive = true,
                             IsUsed = false,
                             Kind = 0,
                             Price = 100.00m,
-                            PurchaseDate = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(9499),
+                            PurchaseDate = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(6532),
                             QRCode = "",
-                            QRCodeToken = "95e3cc93-3d1b-457d-924d-f9276ef947f5",
+                            QRCodeToken = "4c5d6479-dec4-4518-a019-d463610212a6",
                             Row = "15",
                             SeatId = 5,
                             SeatNumber = "D15",
@@ -6571,12 +6589,124 @@ namespace StadiumDrinkOrdering.API.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 7, 3, 11, 52, 15, 989, DateTimeKind.Utc).AddTicks(8249),
+                            CreatedAt = new DateTime(2026, 7, 5, 20, 49, 24, 332, DateTimeKind.Utc).AddTicks(4891),
                             Email = "nebojsa.medancic+adminStadion@gmail.com",
-                            PasswordHash = "$2a$11$2mR5d6eDCcaLM8nnLZsru.Jgz9wz4P2Z510oTZThUJcMFNk3Ce2Ke",
+                            PasswordHash = "$2a$11$5WKfpNiCyn.ysTDwI.l76.FsBxe5Lz/kFjFsB0EcBW5BjCk8Jp0Be",
                             Role = 2,
                             Username = "nebojsa.medancic+adminStadion@gmail.com"
                         });
+                });
+
+            modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.Wallet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Balance")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.WalletTransaction", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<decimal>("BalanceAfter")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("ReferenceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReferenceType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WalletId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique();
+
+                    b.HasIndex("WalletId");
+
+                    b.ToTable("WalletTransactions");
                 });
 
             modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.CartItem", b =>
@@ -6683,6 +6813,11 @@ namespace StadiumDrinkOrdering.API.Migrations
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("StadiumDrinkOrdering.Shared.Models.User", "InPreparationByUser")
+                        .WithMany()
+                        .HasForeignKey("InPreparationByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("StadiumDrinkOrdering.Shared.Models.Payment", "PaymentDetails")
                         .WithOne()
                         .HasForeignKey("StadiumDrinkOrdering.Shared.Models.Order", "PaymentId")
@@ -6729,6 +6864,8 @@ namespace StadiumDrinkOrdering.API.Migrations
                     b.Navigation("DeliveredByUser");
 
                     b.Navigation("Event");
+
+                    b.Navigation("InPreparationByUser");
 
                     b.Navigation("PaymentDetails");
 
@@ -6778,7 +6915,14 @@ namespace StadiumDrinkOrdering.API.Migrations
                         .HasForeignKey("StadiumDrinkOrdering.Shared.Models.Payment", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("StadiumDrinkOrdering.Shared.Models.WalletTransaction", "WalletTransaction")
+                        .WithMany()
+                        .HasForeignKey("WalletTransactionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Order");
+
+                    b.Navigation("WalletTransaction");
                 });
 
             modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.RefreshToken", b =>
@@ -6817,9 +6961,16 @@ namespace StadiumDrinkOrdering.API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("StadiumDrinkOrdering.Shared.Models.User", "User")
+                        .WithMany("SeasonTickets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Season");
 
                     b.Navigation("Seat");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.Seat", b =>
@@ -6949,6 +7100,28 @@ namespace StadiumDrinkOrdering.API.Migrations
                     b.Navigation("Ticket");
                 });
 
+            modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.Wallet", b =>
+                {
+                    b.HasOne("StadiumDrinkOrdering.Shared.Models.User", "User")
+                        .WithOne("Wallet")
+                        .HasForeignKey("StadiumDrinkOrdering.Shared.Models.Wallet", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.WalletTransaction", b =>
+                {
+                    b.HasOne("StadiumDrinkOrdering.Shared.Models.Wallet", "Wallet")
+                        .WithMany("Transactions")
+                        .HasForeignKey("WalletId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Wallet");
+                });
+
             modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.Drink", b =>
                 {
                     b.Navigation("OrderItems");
@@ -7039,6 +7212,15 @@ namespace StadiumDrinkOrdering.API.Migrations
             modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.User", b =>
                 {
                     b.Navigation("Orders");
+
+                    b.Navigation("SeasonTickets");
+
+                    b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("StadiumDrinkOrdering.Shared.Models.Wallet", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

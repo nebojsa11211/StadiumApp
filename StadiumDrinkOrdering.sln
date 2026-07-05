@@ -17,6 +17,10 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StadiumDrinkOrdering.TicketingSimulator", "StadiumDrinkOrdering.TicketingSimulator\StadiumDrinkOrdering.TicketingSimulator.csproj", "{AB995D45-166E-4C3E-97A6-0902789C6DC6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StadiumDrinkOrdering.Bar", "StadiumDrinkOrdering.Bar\StadiumDrinkOrdering.Bar.csproj", "{0C7C4709-5B87-467B-878C-FBC5F7405855}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StadiumDrinkOrdering.Runner", "StadiumDrinkOrdering.Runner\StadiumDrinkOrdering.Runner.csproj", "{32381920-D21E-4903-AF96-FF8DA1490135}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +115,30 @@ Global
 		{AB995D45-166E-4C3E-97A6-0902789C6DC6}.Release|x64.Build.0 = Release|Any CPU
 		{AB995D45-166E-4C3E-97A6-0902789C6DC6}.Release|x86.ActiveCfg = Release|Any CPU
 		{AB995D45-166E-4C3E-97A6-0902789C6DC6}.Release|x86.Build.0 = Release|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Debug|x64.Build.0 = Debug|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Debug|x86.Build.0 = Debug|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Release|x64.ActiveCfg = Release|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Release|x64.Build.0 = Release|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Release|x86.ActiveCfg = Release|Any CPU
+		{0C7C4709-5B87-467B-878C-FBC5F7405855}.Release|x86.Build.0 = Release|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Debug|x64.Build.0 = Debug|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Debug|x86.Build.0 = Debug|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|x64.ActiveCfg = Release|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|x64.Build.0 = Release|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|x86.ActiveCfg = Release|Any CPU
+		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

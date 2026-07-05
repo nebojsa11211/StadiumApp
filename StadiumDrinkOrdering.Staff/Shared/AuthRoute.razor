@@ -1,15 +1,16 @@
 @using StadiumDrinkOrdering.Staff.Services
 @inject IAuthStateService AuthStateService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
 
 @if (isChecking)
 {
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="text-center">
             <div class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">Checking authentication...</span>
+                <span class="visually-hidden">@Localizer["AuthRoute_Checking"]</span>
             </div>
-            <p class="text-muted">Verifying authentication...</p>
+            <p class="text-muted">@Localizer["AuthRoute_Verifying"]</p>
         </div>
     </div>
 }
@@ -23,10 +24,10 @@ else
         <div class="text-center">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">🔐 Authentication Required</h5>
-                    <p class="card-text">You need to be logged in to access this page.</p>
+                    <h5 class="card-title">@Localizer["AuthRoute_Required"]</h5>
+                    <p class="card-text">@Localizer["AuthRoute_Message"]</p>
                     <button class="btn btn-primary" @onclick="RedirectToLogin" id="staff-authroute-login-btn">
-                        Go to Login
+                        @Localizer["Dashboard_GoToLogin"]
                     </button>
                 </div>
             </div>

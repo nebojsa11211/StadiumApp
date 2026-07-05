@@ -1,0 +1,66 @@
+/* =============================================================================
+   Stadium Bar — shared design tokens (mirrors the Admin console)
+   Loaded AFTER the legacy site.css so the Bar app inherits the exact same
+   "Matchday Control Room" palette / IBM Plex Mono telemetry readouts that the
+   Admin operations console uses. This is what makes admin-console.css and the
+   dash-* sidebar shell render identically to the Admin app.
+   ============================================================================= */
+:root {
+    /* Pitch green — the single brand accent (floodlit grass) */
+    --stadium-primary: #1f7a4d;
+    --stadium-primary-dark: #176239;
+    --stadium-primary-light: #2f9d68;
+    --stadium-secondary: #1f7a4d;
+    --stadium-accent: #b7791f;
+    --stadium-danger: #b91c1c;
+    --stadium-warning: #b7791f;
+    --stadium-success: #1f7a4d;
+    --stadium-info: #2f6f8f;
+
+    /* Accent tints (consumed by admin-console.css) */
+    --pitch: #1f7a4d;
+    --pitch-dark: #176239;
+    --pitch-soft: #eaf3ec;
+    --pitch-line: #cfe6d7;
+
+    /* Neutral ramp — warm-cool ink, not blue-slate */
+    --stadium-gray-50: #f6f7f5;   /* canvas / concrete */
+    --stadium-gray-100: #eef0ec;
+    --stadium-gray-200: #e4e7e1;  /* hairlines */
+    --stadium-gray-300: #d2d6cf;
+    --stadium-gray-400: #a7ada2;
+    --stadium-gray-500: #71776e;  /* muted text */
+    --stadium-gray-600: #565b53;
+    --stadium-gray-700: #3a3e38;
+    --stadium-gray-800: #242722;
+    --stadium-gray-900: #16181d;  /* ink */
+
+    /* Quiet, tight shadows — instrument panels, not glossy cards */
+    --stadium-shadow-sm: 0 1px 2px 0 rgb(20 22 18 / 0.04);
+    --stadium-shadow: 0 1px 2px 0 rgb(20 22 18 / 0.05), 0 1px 1px -1px rgb(20 22 18 / 0.04);
+    --stadium-shadow-md: 0 4px 12px -4px rgb(20 22 18 / 0.10);
+    --stadium-shadow-lg: 0 12px 28px -10px rgb(20 22 18 / 0.14);
+    --stadium-shadow-xl: 0 24px 48px -16px rgb(20 22 18 / 0.18);
+
+    --stadium-radius: 8px;
+    --stadium-radius-lg: 12px;
+    --stadium-radius-xl: 16px;
+
+    --stadium-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Signature: telemetry / scoreboard readout */
+    --stadium-font-mono: 'IBM Plex Mono', 'SF Mono', 'Cascadia Code', 'Roboto Mono', monospace;
+
+    /* Staff/Bar accent aliases (kept for the SignalR indicator + legacy rules) */
+    --staff-primary: #1f7a4d;
+    --staff-primary-dark: #176239;
+    --staff-primary-light: #2f9d68;
+    --admin-primary: #1f7a4d;
+    --admin-primary-dark: #176239;
+    --admin-primary-light: #2f9d68;
+}
+
+/* Bar identity: give the sidebar brand logo an amber "bar" tint so a bartender
+   instantly recognises this station, while everything else stays 1:1 with Admin. */
+.dashboard-shell-root .dash-brand-logo {
+    background: linear-gradient(135deg, #d98a1f, #b7791f);
+}

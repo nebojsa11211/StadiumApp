@@ -14,6 +14,11 @@ public class EventDto
     public string? Location { get; set; }
     public int Capacity { get; set; }
     public int AvailableSeats { get; set; }
+    /// <summary>
+    /// Of the sold seats (<see cref="Capacity"/> − <see cref="AvailableSeats"/>), how many come from
+    /// season-pass–derived tickets. The remainder are ordinary single-event tickets.
+    /// </summary>
+    public int SeasonTicketsSold { get; set; }
     public decimal BasePrice { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }

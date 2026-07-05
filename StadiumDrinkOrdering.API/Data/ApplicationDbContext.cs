@@ -60,6 +60,10 @@ public class ApplicationDbContext : DbContext
     // External integration (ticketing webhook idempotency ledger)
     public DbSet<IntegrationInboxEntry> IntegrationInboxEntries { get; set; }
 
+    // Fan digital wallet (stored value + append-only ledger)
+    public DbSet<Wallet> Wallets { get; set; }
+    public DbSet<WalletTransaction> WalletTransactions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -116,6 +120,11 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(e => e.AcceptedByUser)
                 .WithMany()
                 .HasForeignKey(e => e.AcceptedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.InPreparationByUser)
+                .WithMany()
+                .HasForeignKey(e => e.InPreparationByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.PreparedByUser)
@@ -253,6 +262,67 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(e => e.Seat)
                 .WithMany()
                 .HasForeignKey(e => e.SeatId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Linked fan account (populated by the email-match linker). Nullable; if the user is
+            // deleted the pass survives with its link cleared rather than cascading the delete.
+            entity.HasIndex(e => e.UserId);
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.SeasonTickets)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Wallet (fan stored-value account) configuration
+        modelBuilder.Entity<Wallet>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Balance).HasPrecision(10, 2);
+            entity.Property(e => e.Currency).HasMaxLength(3);
+            entity.Property(e => e.Status).HasMaxLength(20);
+
+            // One wallet per user.
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasOne(e => e.User)
+                .WithOne(u => u.Wallet)
+                .HasForeignKey<Wallet>(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Map the PostgreSQL xmin system column as the optimistic-concurrency token. Npgsql
+            // recognises xmin/xid and does NOT emit a physical column for it in the migration.
+            entity.Property(e => e.Version)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
+        });
+
+        // WalletTransaction (append-only ledger) configuration
+        modelBuilder.Entity<WalletTransaction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Amount).HasPrecision(10, 2);
+            entity.Property(e => e.BalanceAfter).HasPrecision(10, 2);
+            entity.Property(e => e.Currency).HasMaxLength(3);
+            entity.Property(e => e.Status).HasMaxLength(20);
+            entity.Property(e => e.IdempotencyKey).HasMaxLength(100);
+
+            // The anti-double-charge guard: a given idempotency key posts at most one ledger row.
+            entity.HasIndex(e => e.IdempotencyKey).IsUnique();
+            entity.HasIndex(e => e.WalletId);
+
+            entity.HasOne(e => e.Wallet)
+                .WithMany(w => w.Transactions)
+                .HasForeignKey(e => e.WalletId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // A Payment may fund a wallet deposit; the ledger is append-only so never cascade from it.
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasOne(e => e.WalletTransaction)
+                .WithMany()
+                .HasForeignKey(e => e.WalletTransactionId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 

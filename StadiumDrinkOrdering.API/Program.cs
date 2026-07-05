@@ -154,7 +154,7 @@ var usesLocalDb = connectionString.Contains("localhost", StringComparison.Ordina
     || connectionString.Contains("127.0.0.1");
 if (builder.Environment.IsDevelopment() && !runningInContainer && usesLocalDb)
 {
-    EnsureLocalDbContainerRunning(builder.Environment.ContentRootPath);
+    EnsureLocalDbContainerRunning(builder.Environment.ContentRootPath, connectionString);
 }
 
 // Configure Health Checks
@@ -179,10 +179,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     // Configure query behavior
     options.ConfigureWarnings(warnings => warnings.Log(RelationalEventId.MultipleCollectionIncludeWarning));
 
-    // Add logging for SQL queries in development
+    // Add logging for SQL queries in development.
+    // Kept at Warning (not Information): at Information EF writes EVERY executed SQL command to the
+    // console synchronously (and it double-prints alongside the default logger), which adds real I/O
+    // to both startup and every request while burying the useful lines. Warning still surfaces
+    // problems (e.g. client-eval / multiple-collection-include). Set to Information ad hoc when
+    // actively debugging a specific query.
     if (builder.Environment.IsDevelopment())
     {
-        options.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information);
+        options.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Warning);
     }
 });
 
@@ -303,6 +308,14 @@ builder.Services.AddScoped<IStadiumAuthorizationService, StadiumAuthorizationSer
 builder.Services.AddScoped<DatabaseHealthCheck>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+// Wallet deposit gateway: Mock (synchronous, default for dev) or Stripe (async intent + webhook).
+// Selected via WalletGateway:Provider so switching to real payments is config-only.
+var walletGatewayProvider = builder.Configuration.GetValue<string>("WalletGateway:Provider") ?? "Mock";
+if (string.Equals(walletGatewayProvider, "Stripe", StringComparison.OrdinalIgnoreCase))
+    builder.Services.AddScoped<IWalletPaymentGateway, StripeWalletPaymentGateway>();
+else
+    builder.Services.AddScoped<IWalletPaymentGateway, MockWalletPaymentGateway>();
 builder.Services.AddScoped<IQRCodeService, QRCodeService>();
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
@@ -358,6 +371,9 @@ builder.Services.Configure<SecurityHeadersOptions>(builder.Configuration.GetSect
 // builder.Services.AddHostedService<LogRetentionBackgroundService>();
 // builder.Services.AddHostedService<RateLimitCleanupService>();
 // builder.Services.AddHostedService<TicketSessionCleanupService>();
+// Wallet reconciliation is self-gated on WalletReconciliation:Enabled (default false), so registering
+// it is safe: it no-ops unless explicitly enabled. Read-only (verifies Balance == Σ ledger).
+builder.Services.AddHostedService<WalletReconciliationBackgroundService>();
 
 // Stripe Configuration
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
@@ -380,10 +396,14 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            // Default origins for development (should be overridden in production)
+            // Default origins for development (should be overridden in production).
+            // 7060/9060 + host "runner" are the Runner WASM PWA (browser-origin, so it needs CORS
+            // unlike the server-rendered apps). NOTE: 7050 is the TicketingSimulator (server-rendered,
+            // no CORS needed) — the Runner moved off the shared 7050 to 7060. See docs/staff-app-split-plan.md.
             corsBuilder.WithOrigins(
-                "https://localhost:7010", "https://localhost:7020", "https://localhost:7030", "https://localhost:7040",
-                "https://admin:9030", "https://customer:9020", "https://staff:9040"
+                "https://localhost:7010", "https://localhost:7020", "https://localhost:7030", "https://localhost:7040", "https://localhost:7060",
+                "https://admin:9030", "https://customer:9020", "https://staff:9040", "https://runner:9060",
+                "https://localhost:9060"
             );
         }
 
@@ -436,37 +456,68 @@ app.MapHub<StadiumDrinkOrdering.API.Hubs.CustomerHub>("/customerHub");
 // Add health check endpoint
 app.MapHealthChecks("/health");
 
-// Enhanced database migration with circuit breaker pattern.
-// Run in the BACKGROUND so Kestrel starts listening immediately instead of blocking the
-// port until migrations + BCrypt seeding finish. On a warm DB the init is a no-op anyway;
-// on a cold/first boot the only exposure is a tiny window where the seeded admin/customer
-// users aren't present yet (login may 401 for ~1-2s until init completes).
-Console.WriteLine("Scheduling database initialization (non-blocking)...");
-_ = Task.Run(async () =>
+// ================================================================================================
+// OPEN THE LISTENING SOCKET *FIRST*, then warm the database.
+// ================================================================================================
+// This ordering is the fix for: "No connection could be made because the target machine actively
+// refused it (localhost:7010)". Previously the DB warm-up / migrations / seeding all ran BEFORE the
+// server started, so Kestrel did not bind port 7010 until every bit of that finished. During a cold
+// or slow DB start that window was many seconds (and if the DB was briefly unreachable, the retry
+// loop stretched it to tens of seconds) - and for that ENTIRE window every app pointing at the API
+// got a hard "connection refused", because nothing was listening yet.
+//
+// app.StartAsync() binds the socket and begins accepting connections immediately. We then warm the
+// DB while the server is already up, so clients connect right away instead of being refused. The
+// local DB container is guaranteed running by EnsureLocalDbContainerRunning (above), so an early
+// request warms the pool in ~1s rather than hitting the old cold-connect penalty. If the DB is
+// genuinely unreachable we log and stay up (degraded) rather than hard-crash.
+await app.StartAsync();
+Console.WriteLine("✓ API is now listening (port bound); warming database connection/pool...");
+
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     var environment = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
 
+    // Re-verifying every seed user's BCrypt hash costs ~0.9s on EVERY launch (4 users x ~200-300ms).
+    // It only exists to self-heal a corrupted/mismatched password hash, which is rare - so it is OFF
+    // by default. Set SeedData:VerifyPasswordsOnStartup=true (appsettings or env) to force the check
+    // when you suspect a bad seed password. Missing users are still always created; empty/invalid-
+    // format hashes are still always reset (those checks are free).
+    var verifySeedPasswords = app.Configuration.GetValue<bool>("SeedData:VerifyPasswordsOnStartup", false);
+
     try
     {
-        await InitializeDatabaseAsync(context, logger, environment);
+        await InitializeDatabaseAsync(context, logger, environment, verifySeedPasswords);
     }
     catch (Exception ex)
     {
-        logger.LogCritical(ex, "Background database initialization failed");
+        logger.LogCritical(ex, "Database initialization failed - starting in a degraded state");
     }
-});
+}
 
 
 // Runs ensure-localdb.ps1 to guarantee the local Postgres dev container is up before the API tries
 // to connect. Invoked on every local (non-container) launch that targets the local DB. Failures are
 // swallowed - the DB-init retry loop below surfaces a clear error if the DB is genuinely unreachable.
-static void EnsureLocalDbContainerRunning(string contentRootPath)
+static void EnsureLocalDbContainerRunning(string contentRootPath, string connectionString)
 {
     try
     {
+        // FAST PATH: if the DB port is already accepting TCP connections, the container is up and
+        // there is nothing to do. This cheap (~ms) probe avoids shelling out to PowerShell +
+        // several docker CLI round-trips (each ~0.3-1s on Docker Desktop/Windows) on EVERY launch
+        // when the DB is already running - which is the overwhelmingly common case. We only pay the
+        // slow ensure-localdb.ps1 path when the port is genuinely dead (container stopped/removed).
+        var (dbHost, dbPort) = ParseHostPort(connectionString);
+        if (IsTcpPortOpen(dbHost, dbPort, TimeSpan.FromMilliseconds(500)))
+        {
+            Console.WriteLine($"Local dev database already reachable at {dbHost}:{dbPort}; skipping container auto-start.");
+            return;
+        }
+        Console.WriteLine($"Local dev database not reachable at {dbHost}:{dbPort}; running ensure-localdb.ps1...");
+
         // Walk up from the content root (the API project dir under VS/dotnet run) to the repo root
         // that holds ensure-localdb.ps1.
         string? scriptPath = null;
@@ -505,9 +556,11 @@ static void EnsureLocalDbContainerRunning(string contentRootPath)
         proc.BeginOutputReadLine();
         proc.BeginErrorReadLine();
 
-        if (!proc.WaitForExit(60000))
+        // ensure-localdb.ps1 caps its own health wait at ~30s, so waiting much longer than that
+        // just adds dead time on a genuinely broken DB. Give it a small margin over its own budget.
+        if (!proc.WaitForExit(35000))
         {
-            Console.WriteLine("⚠ ensure-localdb.ps1 timed out after 60s; continuing startup.");
+            Console.WriteLine("⚠ ensure-localdb.ps1 timed out after 35s; continuing startup.");
             try { proc.Kill(entireProcessTree: true); } catch { /* best effort */ }
         }
     }
@@ -518,11 +571,50 @@ static void EnsureLocalDbContainerRunning(string contentRootPath)
     }
 }
 
-// Database initialization method - FIXED VERSION
-static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger logger, IWebHostEnvironment environment)
+// Parses the host and port the DB lives on from the connection string, so the fast-path TCP probe
+// knows where to knock. Defaults to localhost:5432 if anything is missing or unparseable.
+static (string Host, int Port) ParseHostPort(string connectionString)
 {
-    const int maxRetries = 5;
-    const int baseDelayMs = 1000;
+    try
+    {
+        var b = new NpgsqlConnectionStringBuilder(connectionString);
+        // Host may be a comma-separated list (multi-host failover); probe the first entry.
+        var host = (b.Host ?? "localhost").Split(',')[0].Trim();
+        if (string.IsNullOrEmpty(host)) host = "localhost";
+        return (host, b.Port); // NpgsqlConnectionStringBuilder.Port defaults to 5432
+    }
+    catch
+    {
+        return ("localhost", 5432);
+    }
+}
+
+// Cheap synchronous "is anything listening?" probe. Returns false (not open) on any failure or
+// timeout, which sends us down the slow ensure-localdb.ps1 path - the safe direction.
+static bool IsTcpPortOpen(string host, int port, TimeSpan timeout)
+{
+    try
+    {
+        using var client = new System.Net.Sockets.TcpClient();
+        var connectTask = client.ConnectAsync(host, port);
+        return connectTask.Wait(timeout) && client.Connected;
+    }
+    catch
+    {
+        return false;
+    }
+}
+
+// Database initialization method - FIXED VERSION
+static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger logger, IWebHostEnvironment environment, bool verifySeedPasswords)
+{
+    // Docker Desktop's Windows port proxy typically refuses/times-out the first few connections to
+    // localhost:5432 ("Timeout during reading attempt"), then starts working. That warm-up needs a
+    // handful of QUICK retries - not long waits - so we use many attempts with a short, capped delay
+    // (see below). The old 5-attempt exponential backoff slept ~15-20s before the attempt that
+    // finally connected, which is what left the DB unavailable for so long after launch.
+    const int maxRetries = 12;
+    const int baseDelayMs = 400;
     
     for (int attempt = 1; attempt <= maxRetries; attempt++)
     {
@@ -686,9 +778,11 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                             logger.LogInformation("Admin password hash has invalid format, regenerating...");
                             passwordNeedsReset = true;
                         }
-                        else
+                        else if (verifySeedPasswords)
                         {
-                            // Verify the hash actually works with the configured admin password
+                            // Verify the hash actually works with the configured admin password.
+                            // Gated: this BCrypt.Verify is ~300ms and only guards against a corrupted
+                            // hash (rare). Skipped on normal launches; see SeedData:VerifyPasswordsOnStartup.
                             try
                             {
                                 bool passwordValid = BCrypt.Net.BCrypt.Verify(adminPassword, adminUser.PasswordHash);
@@ -749,21 +843,116 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                     {
                         logger.LogInformation("Customer user found: customer@stadium.com");
 
-                        // Verify password hash works with "customer123"
-                        bool passwordValid = false;
-                        try
+                        // Verify password hash works with "customer123". Gated behind
+                        // SeedData:VerifyPasswordsOnStartup - skipped on normal launches to save ~200ms.
+                        if (verifySeedPasswords)
                         {
-                            passwordValid = BCrypt.Net.BCrypt.Verify("customer123", customerUser.PasswordHash);
-                        }
-                        catch { }
+                            bool passwordValid = false;
+                            try
+                            {
+                                passwordValid = BCrypt.Net.BCrypt.Verify("customer123", customerUser.PasswordHash);
+                            }
+                            catch { }
 
-                        if (!passwordValid)
+                            if (!passwordValid)
+                            {
+                                logger.LogInformation("Customer password needs reset, updating...");
+                                customerUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("customer123");
+                                customerUser.Role = StadiumDrinkOrdering.Shared.Models.UserRole.Customer;
+                                await context.SaveChangesAsync(cancellationToken);
+                                logger.LogInformation("Customer user password reset successfully");
+                            }
+                        }
+                    }
+
+                    // Check if staff user exists or needs to be created
+                    const string staffEmail = "nebojsa.medancic+staff1@gmail.com";
+                    const string staffPassword = "Admin123!";
+                    var staffUser = await context.Users.FirstOrDefaultAsync(u => u.Email == staffEmail, cancellationToken);
+
+                    if (staffUser == null)
+                    {
+                        logger.LogInformation("No staff user found, creating default staff user...");
+                        staffUser = new StadiumDrinkOrdering.Shared.Models.User
                         {
-                            logger.LogInformation("Customer password needs reset, updating...");
-                            customerUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("customer123");
-                            customerUser.Role = StadiumDrinkOrdering.Shared.Models.UserRole.Customer;
-                            await context.SaveChangesAsync(cancellationToken);
-                            logger.LogInformation("Customer user password reset successfully");
+                            Username = staffEmail,
+                            Email = staffEmail,
+                            PasswordHash = BCrypt.Net.BCrypt.HashPassword(staffPassword),
+                            Role = StadiumDrinkOrdering.Shared.Models.UserRole.Bartender,
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        context.Users.Add(staffUser);
+                        await context.SaveChangesAsync(cancellationToken);
+                        logger.LogInformation("Default staff user created successfully: {StaffEmail}", staffEmail);
+                    }
+                    else
+                    {
+                        logger.LogInformation("Staff user found: {StaffEmail}", staffEmail);
+
+                        // Verify password hash works with the expected password. Gated behind
+                        // SeedData:VerifyPasswordsOnStartup - skipped on normal launches to save ~200ms.
+                        if (verifySeedPasswords)
+                        {
+                            bool passwordValid = false;
+                            try
+                            {
+                                passwordValid = BCrypt.Net.BCrypt.Verify(staffPassword, staffUser.PasswordHash);
+                            }
+                            catch { }
+
+                            if (!passwordValid)
+                            {
+                                logger.LogInformation("Staff password needs reset, updating...");
+                                staffUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(staffPassword);
+                                await context.SaveChangesAsync(cancellationToken);
+                                logger.LogInformation("Staff user password reset successfully");
+                            }
+                        }
+                    }
+
+                    // Check if waiter (Runner app) user exists or needs to be created
+                    const string waiterEmail = "nebojsa.medancic+waiter1@gmail.com";
+                    const string waiterPassword = "Admin123!";
+                    var waiterUser = await context.Users.FirstOrDefaultAsync(u => u.Email == waiterEmail, cancellationToken);
+
+                    if (waiterUser == null)
+                    {
+                        logger.LogInformation("No waiter user found, creating default waiter user...");
+                        waiterUser = new StadiumDrinkOrdering.Shared.Models.User
+                        {
+                            Username = waiterEmail,
+                            Email = waiterEmail,
+                            PasswordHash = BCrypt.Net.BCrypt.HashPassword(waiterPassword),
+                            Role = StadiumDrinkOrdering.Shared.Models.UserRole.Waiter,
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        context.Users.Add(waiterUser);
+                        await context.SaveChangesAsync(cancellationToken);
+                        logger.LogInformation("Default waiter user created successfully: {WaiterEmail}", waiterEmail);
+                    }
+                    else
+                    {
+                        logger.LogInformation("Waiter user found: {WaiterEmail}", waiterEmail);
+
+                        // Verify password hash works with the expected password. Gated behind
+                        // SeedData:VerifyPasswordsOnStartup - skipped on normal launches to save ~200ms.
+                        if (verifySeedPasswords)
+                        {
+                            bool passwordValid = false;
+                            try
+                            {
+                                passwordValid = BCrypt.Net.BCrypt.Verify(waiterPassword, waiterUser.PasswordHash);
+                            }
+                            catch { }
+
+                            if (!passwordValid)
+                            {
+                                logger.LogInformation("Waiter password needs reset, updating...");
+                                waiterUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(waiterPassword);
+                                waiterUser.Role = StadiumDrinkOrdering.Shared.Models.UserRole.Waiter;
+                                await context.SaveChangesAsync(cancellationToken);
+                                logger.LogInformation("Waiter user password reset successfully");
+                            }
                         }
                     }
 
@@ -895,13 +1084,20 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
                 $"Failed to initialize database after {maxRetries} attempts. Application cannot start. Check logs for details.");
         }
         
-        // Exponential backoff with jitter
-        var delay = TimeSpan.FromMilliseconds(baseDelayMs * Math.Pow(2, attempt - 1) + Random.Shared.Next(0, 1000));
-        logger.LogInformation("Waiting {DelayMs:F0}ms before retry attempt {NextAttempt}...", 
+        // Backoff with jitter, but CAPPED at 1.5s so we keep retrying briskly through the Docker
+        // port-proxy warm-up instead of sleeping for many seconds between the late attempts. With
+        // baseDelay 400ms this gives ~0.4s, 0.8s, 1.5s, 1.5s... - the proxy is usually accepting by
+        // the 4th-5th attempt, so the DB warms in a few seconds rather than ~15-20s.
+        var delayMs = Math.Min(baseDelayMs * Math.Pow(2, attempt - 1), 1500) + Random.Shared.Next(0, 250);
+        var delay = TimeSpan.FromMilliseconds(delayMs);
+        logger.LogInformation("Waiting {DelayMs:F0}ms before retry attempt {NextAttempt}...",
             delay.TotalMilliseconds, attempt + 1);
         await Task.Delay(delay);
     }
 }
 
-app.Run();
+// The server was already started with app.StartAsync() above so the port opens before the DB
+// warm-up. Block here until shutdown instead of app.Run() (which would try to start it a second time).
+Console.WriteLine("✓ API startup complete (database warmed).");
+await app.WaitForShutdownAsync();
  

@@ -3,21 +3,22 @@
 @using StadiumDrinkOrdering.Customer.Services
 @inject IApiService ApiService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Stadium Map - Select Your Sector</PageTitle>
+<PageTitle>@Localizer["StadiumMap_PageTitle"]</PageTitle>
 
 <div class="container-fluid" id="customer-stadium-map-container">
     <div class="row">
         <div class="col-12">
             <div class="card" id="customer-stadium-map-card">
                 <div class="card-header d-flex justify-content-between align-items-center" id="customer-stadium-map-header">
-                    <h3 id="customer-stadium-map-title">🏟️ Stadium Layout - Select Your Sector</h3>
+                    <h3 id="customer-stadium-map-title">🏟️ @Localizer["StadiumMap_LayoutTitle"]</h3>
                     <div id="customer-stadium-map-controls">
                         <button class="btn btn-outline-primary" @onclick="RefreshMap" id="customer-stadium-map-refresh-btn">
-                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                            <i class="bi bi-arrow-clockwise"></i> @Localizer["Refresh"]
                         </button>
                         <a href="/menu" class="btn btn-primary ms-2" id="customer-stadium-map-order-btn">
-                            <i class="bi bi-cup-straw"></i> Order Drinks
+                            <i class="bi bi-cup-straw"></i> @Localizer["StadiumMap_OrderDrinks"]
                         </a>
                     </div>
                 </div>
@@ -26,9 +27,9 @@
                     {
                         <div class="text-center" id="customer-stadium-map-loading">
                             <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                                <span class="visually-hidden">@Localizer["Loading"]</span>
                             </div>
-                            <p class="mt-3">Loading stadium layout...</p>
+                            <p class="mt-3">@Localizer["StadiumMap_LoadingLayout"]</p>
                         </div>
                     }
                     else
@@ -37,7 +38,7 @@
                             <div class="stadium-svg-container">
                                 <svg viewBox="0 0 400 300" class="stadium-svg" id="stadium-layout-svg"
                                      aria-labelledby="stadium-title" role="img">
-                                    <title id="stadium-title">Stadium layout with 4 sectors</title>
+                                    <title id="stadium-title">@Localizer["StadiumMap_StadiumLayoutDescription"]</title>
                                     
                                     <!-- Field -->
                                     <rect x="100" y="100" width="200" height="100" 
@@ -59,9 +60,9 @@
                                               fill="#1e3a8a" stroke="#1e40af" stroke-width="1"
                                               class="@GetStandClass("north")"
                                               rx="2"/>
-                                        <text x="200" y="62" text-anchor="middle" 
+                                        <text x="200" y="62" text-anchor="middle"
                                               fill="white" font-size="12" font-weight="bold"
-                                              class="stand-label">North Stand</text>
+                                              class="stand-label">@Localizer["StadiumMap_NorthStand"]</text>
                                         <text x="200" y="75" text-anchor="middle" 
                                               fill="#e2e8f0" font-size="9"
                                               class="stand-info">@GetSectorInfo("north")</text>
@@ -78,7 +79,7 @@
                                               rx="2" />
                                         <text x="200" y="242" text-anchor="middle"
                                               fill="white" font-size="12" font-weight="bold"
-                                              class="stand-label">South Stand</text>
+                                              class="stand-label">@Localizer["StadiumMap_SouthStand"]</text>
                                         <text x="200" y="255" text-anchor="middle"
                                               fill="#fecaca" font-size="9"
                                               class="stand-info">@GetSectorInfo("south")</text>
@@ -95,7 +96,7 @@
                                               rx="2" />
                                         <text x="330" y="150" text-anchor="middle"
                                               fill="white" font-size="12" font-weight="bold"
-                                              class="stand-label" transform="rotate(90, 330, 150)">East Stand</text>
+                                              class="stand-label" transform="rotate(90, 330, 150)">@Localizer["StadiumMap_EastStand"]</text>
                                         <text x="330" y="175" text-anchor="middle"
                                               fill="#dcfce7" font-size="9"
                                               class="stand-info" transform="rotate(90, 330, 175)">@GetSectorInfo("east")</text>
@@ -112,7 +113,7 @@
                                               rx="2" />
                                         <text x="70" y="150" text-anchor="middle"
                                               fill="white" font-size="12" font-weight="bold"
-                                              class="stand-label" transform="rotate(-90, 70, 150)">West Stand</text>
+                                              class="stand-label" transform="rotate(-90, 70, 150)">@Localizer["StadiumMap_WestStand"]</text>
                                         <text x="70" y="125" text-anchor="middle"
                                               fill="#e9d5ff" font-size="9"
                                               class="stand-info" transform="rotate(-90, 70, 125)">@GetSectorInfo("west")</text>
@@ -121,7 +122,7 @@
                                     
                                     <!-- Stadium entrance indicators -->
                                     <circle cx="200" cy="280" r="3" fill="#6b7280" class="entrance"/>
-                                    <text x="200" y="290" text-anchor="middle" font-size="8" fill="#6b7280">ENTRANCE</text>
+                                    <text x="200" y="290" text-anchor="middle" font-size="8" fill="#6b7280">@Localizer["StadiumMap_Entrance"]</text>
                                 </svg>
                             </div>
                             
@@ -135,23 +136,23 @@
                                                 <i class="bi bi-geo-alt-fill" style="color: @GetSectionColor(selectedSection.SectionName)"></i>
                                                 @selectedSection.DisplayName
                                             </h5>
-                                            <button class="btn btn-sm btn-primary" 
+                                            <button class="btn btn-sm btn-primary"
                                                     @onclick="() => NavigateToMenu(selectedSection.SectionName)"
                                                     id="customer-stadium-order-from-sector-btn">
-                                                <i class="bi bi-cup-straw"></i> Order Here
+                                                <i class="bi bi-cup-straw"></i> @Localizer["StadiumMap_OrderHere"]
                                             </button>
                                         </div>
                                         <div class="card-body" id="customer-stadium-selected-sector-body">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <p><strong>Section:</strong> @selectedSection.SectionName</p>
-                                                    <p><strong>Total Seats:</strong> @selectedSection.TotalSeats</p>
-                                                    <p><strong>Active Orders:</strong> @selectedSection.ActiveOrders</p>
+                                                    <p><strong>@Localizer["StadiumMap_Section"]</strong> @selectedSection.SectionName</p>
+                                                    <p><strong>@Localizer["StadiumMap_TotalSeats"]</strong> @selectedSection.TotalSeats</p>
+                                                    <p><strong>@Localizer["StadiumMap_ActiveOrders"]</strong> @selectedSection.ActiveOrders</p>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <p><strong>Type:</strong> @GetSectionType(selectedSection.SectionName)</p>
-                                                    <p><strong>Available:</strong> @(selectedSection.TotalSeats - selectedSection.ActiveOrders) seats</p>
-                                                    <p><strong>Status:</strong> 
+                                                    <p><strong>@Localizer["StadiumMap_Type"]</strong> @GetSectionType(selectedSection.SectionName)</p>
+                                                    <p><strong>@Localizer["StadiumMap_Available"]</strong> @(selectedSection.TotalSeats - selectedSection.ActiveOrders) @Localizer["StadiumMap_Seats"]</p>
+                                                    <p><strong>@Localizer["StadiumMap_Status"]</strong>
                                                         <span class="badge @GetStatusBadgeClass(selectedSection.ActiveOrders, selectedSection.TotalSeats)">
                                                             @GetStatusText(selectedSection.ActiveOrders, selectedSection.TotalSeats)
                                                         </span>
@@ -165,7 +166,7 @@
                                 {
                                     <div class="text-center text-muted" id="customer-stadium-select-prompt">
                                         <i class="bi bi-hand-index" style="font-size: 2rem;"></i>
-                                        <p class="mt-2">Click on a stand to view details and place orders</p>
+                                        <p class="mt-2">@Localizer["StadiumMap_ClickToViewDetails"]</p>
                                     </div>
                                 }
                             </div>

@@ -6,16 +6,17 @@
 @inject IApiService ApiService
 @inject ICustomerAuthStateService AuthStateService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Create Account - Stadium Ordering</PageTitle>
+<PageTitle>@Localizer["Register_PageTitle"]</PageTitle>
 
 <div class="container mt-5" id="customer-register-container">
     <div class="row justify-content-center" id="customer-register-row">
         <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4" id="customer-register-col">
             <div class="card" id="customer-register-card">
                 <div class="card-header" id="customer-register-header">
-                    <h3 class="text-center" id="customer-register-title">🎟️ Create Account</h3>
-                    <p class="text-center text-muted mb-0">Join to order drinks and buy tickets</p>
+                    <h3 class="text-center" id="customer-register-title">🎟️ @Localizer["Register_CreateAccount"]</h3>
+                    <p class="text-center text-muted mb-0">@Localizer["Register_Subtitle"]</p>
                 </div>
                 <div class="card-body" id="customer-register-body">
                     @if (!string.IsNullOrEmpty(errorMessage))
@@ -36,61 +37,61 @@
                         <DataAnnotationsValidator />
                         
                         <div class="mb-3" id="customer-register-username-group">
-                            <label class="form-label" for="customer-register-username-input">Username</label>
-                            <InputText class="form-control" @bind-Value="registerModel.Username" id="customer-register-username-input" placeholder="Choose a username" />
+                            <label class="form-label" for="customer-register-username-input">@Localizer["Username"]</label>
+                            <InputText class="form-control" @bind-Value="registerModel.Username" id="customer-register-username-input" placeholder="@Localizer["Register_ChooseUsername"]" />
                             <ValidationMessage For="@(() => registerModel.Username)" class="text-danger" />
                         </div>
-                        
+
                         <div class="mb-3" id="customer-register-email-group">
-                            <label class="form-label" for="customer-register-email-input">Email</label>
-                            <InputText type="email" class="form-control" @bind-Value="registerModel.Email" id="customer-register-email-input" placeholder="Enter your email" />
+                            <label class="form-label" for="customer-register-email-input">@Localizer["Email"]</label>
+                            <InputText type="email" class="form-control" @bind-Value="registerModel.Email" id="customer-register-email-input" placeholder="@Localizer["Register_EnterEmail"]" />
                             <ValidationMessage For="@(() => registerModel.Email)" class="text-danger" />
                         </div>
-                        
+
                         <div class="mb-3" id="customer-register-password-group">
-                            <label class="form-label" for="customer-register-password-input">Password</label>
-                            <InputText type="password" class="form-control" @bind-Value="registerModel.Password" id="customer-register-password-input" placeholder="Choose a secure password" />
+                            <label class="form-label" for="customer-register-password-input">@Localizer["Password"]</label>
+                            <InputText type="password" class="form-control" @bind-Value="registerModel.Password" id="customer-register-password-input" placeholder="@Localizer["Register_ChoosePassword"]" />
                             <ValidationMessage For="@(() => registerModel.Password)" class="text-danger" />
-                            <small class="form-text text-muted">Must be at least 6 characters long</small>
+                            <small class="form-text text-muted">@Localizer["Register_PasswordMinLength"]</small>
                         </div>
-                        
+
                         <div class="mb-3" id="customer-register-confirm-password-group">
-                            <label class="form-label" for="customer-register-confirm-password-input">Confirm Password</label>
-                            <InputText type="password" class="form-control" @bind-Value="registerModel.ConfirmPassword" id="customer-register-confirm-password-input" placeholder="Re-enter your password" />
+                            <label class="form-label" for="customer-register-confirm-password-input">@Localizer["ConfirmPassword"]</label>
+                            <InputText type="password" class="form-control" @bind-Value="registerModel.ConfirmPassword" id="customer-register-confirm-password-input" placeholder="@Localizer["Register_ReEnterPassword"]" />
                             <ValidationMessage For="@(() => registerModel.ConfirmPassword)" class="text-danger" />
                         </div>
                         
                         <div class="mb-3 form-check" id="customer-register-terms-group">
                             <InputCheckbox class="form-check-input" @bind-Value="acceptTerms" id="customer-register-terms-input" />
                             <label class="form-check-label" for="customer-register-terms-input">
-                                I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                                @Localizer["Register_AgreeTerms"] <a href="#" target="_blank">@Localizer["Register_TermsOfService"]</a> @Localizer["Register_And"] <a href="#" target="_blank">@Localizer["Register_PrivacyPolicy"]</a>
                             </label>
                             @if (!acceptTerms && showTermsError)
                             {
-                                <div class="text-danger small">You must accept the terms to create an account</div>
+                                <div class="text-danger small">@Localizer["Register_MustAcceptTerms"]</div>
                             }
                         </div>
-                        
+
                         <div class="d-grid" id="customer-register-button-group">
                             <button type="submit" class="btn btn-primary" disabled="@isLoading" id="customer-register-submit-btn">
                                 @if (isLoading)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2" role="status" id="customer-register-spinner"></span>
-                                    <span id="customer-register-loading-text">Creating Account...</span>
+                                    <span id="customer-register-loading-text">@Localizer["Register_CreatingAccount"]</span>
                                 }
                                 else
                                 {
-                                    <span id="customer-register-button-text">Create Account</span>
+                                    <span id="customer-register-button-text">@Localizer["Register_CreateAccount"]</span>
                                 }
                             </button>
                         </div>
                     </EditForm>
                     
                     <hr class="mt-4">
-                    
+
                     <div class="text-center" id="customer-register-login-section">
-                        <p class="mb-2">Already have an account?</p>
-                        <a href="/login" class="btn btn-outline-secondary" id="customer-register-login-link">Sign In</a>
+                        <p class="mb-2">@Localizer["Register_AlreadyHaveAccount"]</p>
+                        <a href="/login" class="btn btn-outline-secondary" id="customer-register-login-link">@Localizer["SignIn"]</a>
                     </div>
                 </div>
             </div>
@@ -173,34 +174,34 @@
                 {
                     await AuthStateService.LoginAsync(loginResult.Token, loginResult.User);
                     await ApiService.LogUserActionAsync("CustomerRegistration", "Authentication", $"New customer registered and logged in: {registerModel.Email}");
-                    
-                    successMessage = "Account created successfully! Redirecting...";
+
+                    successMessage = Localizer["Register_AccountCreatedRedirecting"];
                     StateHasChanged();
-                    
+
                     // Small delay to show success message
                     await Task.Delay(1500);
                     NavigationManager.NavigateTo("/");
                 }
                 else
                 {
-                    successMessage = "Account created successfully! Please sign in.";
+                    successMessage = Localizer["Register_AccountCreatedSignIn"];
                     registerModel = new RegisterModel();
                     acceptTerms = false;
                 }
             }
             else
             {
-                errorMessage = "Registration failed. Email or username may already be in use.";
+                errorMessage = Localizer["Register_RegistrationFailed"];
                 await ApiService.LogUserActionAsync("CustomerRegistrationFailed", "Authentication", $"Failed registration attempt for {registerModel.Email}");
             }
         }
         catch (HttpRequestException)
         {
-            errorMessage = "Unable to connect to server. Please try again later.";
+            errorMessage = Localizer["ConnectionError"];
         }
         catch (Exception ex)
         {
-            errorMessage = "An unexpected error occurred. Please try again.";
+            errorMessage = Localizer["Register_UnexpectedError"];
             await ApiService.LogUserActionAsync("CustomerRegistrationError", "Authentication", $"Registration error for {registerModel.Email}: {ex.Message}");
             Console.WriteLine($"Registration error: {ex.Message}");
         }

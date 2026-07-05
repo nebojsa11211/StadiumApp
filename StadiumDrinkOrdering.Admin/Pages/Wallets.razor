@@ -1,0 +1,309 @@
+@page "/admin/wallets"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Admin.Services
+@inject IAdminApiService ApiService
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@L["Wallets_PageTitle"]</PageTitle>
+
+<div class="console" id="admin-wallets-main-container">
+    <header class="console-head" id="admin-wallets-header">
+        <div class="console-head__title">
+            <span class="eyebrow">@L["Wallets_Eyebrow"]</span>
+            <h1 id="admin-wallets-title">@L["Wallets_Title"]</h1>
+            <p>@L["Wallets_Intro"]</p>
+        </div>
+        <div class="console-head__actions">
+            <input type="text" class="form-control" style="max-width:260px;" placeholder="@L["Wallets_SearchPlaceholder"]"
+                   @bind="search" @bind:event="oninput" @onkeyup="OnSearchKey" id="admin-wallets-search" />
+            <button class="pill-btn pill-btn--primary" @onclick="Load" id="admin-wallets-search-btn">
+                <i class="bi bi-search"></i><span>@L["Wallets_Search"]</span>
+            </button>
+        </div>
+    </header>
+
+    @if (list == null)
+    {
+        <div class="loading-state" id="admin-wallets-loading">
+            <span class="loading-spinner"></span><p>@L["Wallets_Loading"]</p>
+        </div>
+    }
+    else if (!list.Wallets.Any())
+    {
+        <div class="empty" id="admin-wallets-empty">
+            <i class="bi bi-wallet2"></i>
+            <p>@L["Wallets_NoneTitle"]</p>
+            <span>@L["Wallets_NoneDesc"]</span>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle" id="admin-wallets-table">
+                <thead>
+                    <tr>
+                        <th>@L["Wallets_ColUser"]</th>
+                        <th class="text-end">@L["Wallets_ColBalance"]</th>
+                        <th>@L["Wallets_ColStatus"]</th>
+                        <th class="text-end">@L["Wallets_ColActions"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var w in list.Wallets)
+                    {
+                        <tr id="admin-wallet-row-@w.WalletId">
+                            <td>
+                                <div class="fw-semibold">@w.Username</div>
+                                <div class="text-muted small">@w.Email</div>
+                            </td>
+                            <td class="text-end fw-bold" id="admin-wallet-balance-@w.WalletId">@FormatMoney(w.Balance, w.Currency)</td>
+                            <td>
+                                <span class="badge @(w.Status == WalletStatus.Active ? "bg-success" : w.Status == WalletStatus.Frozen ? "bg-danger" : "bg-secondary")"
+                                      id="admin-wallet-status-@w.WalletId">@w.Status</span>
+                            </td>
+                            <td class="text-end">
+                                <button class="pill-btn" @onclick="() => OpenManage(w)" id="admin-wallet-manage-btn-@w.WalletId">
+                                    <i class="bi bi-gear"></i><span>@L["Wallets_Manage"]</span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@if (managed != null)
+{
+    <div id="admin-wallet-modal">
+        <div class="modal-dialog modal-lg" id="admin-wallet-modal-dialog">
+            <div class="modal-content" id="admin-wallet-modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="admin-wallet-modal-title">
+                        @L["Wallets_ManageTitle"]: @managed.Username
+                        <span class="badge @(managed.Status == WalletStatus.Active ? "bg-success" : "bg-danger") ms-2">@managed.Status</span>
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="() => managed = null" id="admin-wallet-modal-close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="text-muted small">@L["Wallets_ColBalance"]</div>
+                            <div class="h4 mb-0" id="admin-wallet-modal-balance">@FormatMoney(managed.Balance, managed.Currency)</div>
+                        </div>
+                        @if (managed.Status == WalletStatus.Active)
+                        {
+                            <button class="btn btn-outline-danger" @onclick="Freeze" disabled="@busy" id="admin-wallet-freeze-btn">
+                                <i class="bi bi-snow"></i> @L["Wallets_Freeze"]
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-success" @onclick="Unfreeze" disabled="@busy" id="admin-wallet-unfreeze-btn">
+                                <i class="bi bi-fire"></i> @L["Wallets_Unfreeze"]
+                            </button>
+                        }
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="card h-100"><div class="card-body">
+                                <h6>@L["Wallets_Adjust"]</h6>
+                                <input type="number" step="0.01" class="form-control mb-2" placeholder="@L["Wallets_AmountSigned"]"
+                                       @bind="adjustAmount" id="admin-wallet-adjust-amount" />
+                                <input type="text" class="form-control mb-2" placeholder="@L["Wallets_Reason"]"
+                                       @bind="adjustReason" id="admin-wallet-adjust-reason" />
+                                <button class="btn btn-primary w-100" @onclick="Adjust"
+                                        disabled="@(busy || adjustAmount == 0 || string.IsNullOrWhiteSpace(adjustReason))" id="admin-wallet-adjust-btn">
+                                    @L["Wallets_ApplyAdjust"]
+                                </button>
+                            </div></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100"><div class="card-body">
+                                <h6>@L["Wallets_Refund"]</h6>
+                                <input type="number" step="0.01" min="0.01" class="form-control mb-2" placeholder="@L["Wallets_Amount"]"
+                                       @bind="refundAmount" id="admin-wallet-refund-amount" />
+                                <input type="text" class="form-control mb-2" placeholder="@L["Wallets_Reason"]"
+                                       @bind="refundReason" id="admin-wallet-refund-reason" />
+                                <button class="btn btn-success w-100" @onclick="Refund"
+                                        disabled="@(busy || refundAmount <= 0 || string.IsNullOrWhiteSpace(refundReason))" id="admin-wallet-refund-btn">
+                                    @L["Wallets_ApplyRefund"]
+                                </button>
+                            </div></div>
+                        </div>
+                    </div>
+
+                    <h6>@L["Wallets_Ledger"]</h6>
+                    @if (ledger == null)
+                    {
+                        <p class="text-muted small">@L["Wallets_Loading"]</p>
+                    }
+                    else if (ledger.Transactions.Count == 0)
+                    {
+                        <p class="text-muted small" id="admin-wallet-ledger-empty">@L["Wallets_LedgerEmpty"]</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive" style="max-height:280px;overflow:auto;">
+                            <table class="table table-sm" id="admin-wallet-ledger-table">
+                                <thead><tr>
+                                    <th>@L["Wallets_LedgerDate"]</th>
+                                    <th>@L["Wallets_LedgerType"]</th>
+                                    <th>@L["Wallets_Reason"]</th>
+                                    <th class="text-end">@L["Wallets_Amount"]</th>
+                                    <th class="text-end">@L["Wallets_LedgerAfter"]</th>
+                                </tr></thead>
+                                <tbody>
+                                    @foreach (var t in ledger.Transactions)
+                                    {
+                                        <tr id="admin-wallet-ledger-row-@t.Id">
+                                            <td class="small text-nowrap">@t.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@t.Type</td>
+                                            <td class="small text-muted">@t.Description</td>
+                                            <td class="text-end fw-bold @(t.Amount < 0 ? "text-danger" : "text-success")">
+                                                @(t.Amount < 0 ? "" : "+")@FormatMoney(t.Amount, managed.Currency)
+                                            </td>
+                                            <td class="text-end">@FormatMoney(t.BalanceAfter, managed.Currency)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => managed = null" id="admin-wallet-modal-close-btn">@L["Wallets_Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-wallet-alert-container">
+        <div class="console-alert @(alertType == "success" ? "console-alert--success" : "console-alert--danger")" id="admin-wallet-alert">
+            <i class="bi @(alertType == "success" ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill")"></i>
+            <span>@alertMessage</span>
+            <button type="button" class="icon-btn" @onclick="() => alertMessage = string.Empty" style="margin-left:auto;" id="admin-wallet-alert-close">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private WalletAdminListDto? list;
+    private string search = "";
+    private WalletAdminDto? managed;
+    private WalletTransactionListDto? ledger;
+    private bool busy;
+
+    private decimal adjustAmount;
+    private string adjustReason = "";
+    private decimal refundAmount;
+    private string refundReason = "";
+
+    private string alertMessage = "";
+    private string alertType = "";
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task OnSearchKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await Load();
+    }
+
+    private async Task Load()
+    {
+        list = null;
+        var q = string.IsNullOrWhiteSpace(search) ? "" : $"&search={Uri.EscapeDataString(search.Trim())}";
+        list = await ApiService.GetAsync<WalletAdminListDto>($"api/admin/wallets?page=1&pageSize=50{q}")
+               ?? new WalletAdminListDto();
+    }
+
+    private async Task OpenManage(WalletAdminDto w)
+    {
+        managed = w;
+        ledger = null;
+        adjustAmount = 0; adjustReason = "";
+        refundAmount = 0; refundReason = "";
+        ledger = await ApiService.GetAsync<WalletTransactionListDto>($"api/admin/wallets/{w.WalletId}/transactions?page=1&pageSize=50");
+    }
+
+    private async Task Freeze() => await SetStatus("freeze");
+    private async Task Unfreeze() => await SetStatus("unfreeze");
+
+    private async Task SetStatus(string action)
+    {
+        if (managed == null) return;
+        busy = true;
+        try
+        {
+            var res = await ApiService.PostAsync<object>($"api/admin/wallets/{managed.WalletId}/{action}", null);
+            await AfterMutation(res != null, action == "freeze" ? L["Wallets_Frozen"] : L["Wallets_Unfrozen"]);
+        }
+        finally { busy = false; }
+    }
+
+    private async Task Adjust()
+    {
+        if (managed == null) return;
+        busy = true;
+        try
+        {
+            var dto = new AdjustWalletDto { Amount = adjustAmount, Reason = adjustReason.Trim() };
+            var txn = await ApiService.PostAsync<WalletTransactionDto>($"api/admin/wallets/{managed.WalletId}/adjust", dto);
+            await AfterMutation(txn != null, L["Wallets_AdjustDone"]);
+        }
+        finally { busy = false; }
+    }
+
+    private async Task Refund()
+    {
+        if (managed == null) return;
+        busy = true;
+        try
+        {
+            var dto = new RefundWalletDto { Amount = refundAmount, Reason = refundReason.Trim() };
+            var txn = await ApiService.PostAsync<WalletTransactionDto>($"api/admin/wallets/{managed.WalletId}/refund", dto);
+            await AfterMutation(txn != null, L["Wallets_RefundDone"]);
+        }
+        finally { busy = false; }
+    }
+
+    private async Task AfterMutation(bool ok, string successMsg)
+    {
+        if (!ok)
+        {
+            ShowAlert(L["Wallets_ActionFailed"], "danger");
+            return;
+        }
+        ShowAlert(successMsg, "success");
+        var id = managed!.WalletId;
+        await Load();
+        // Re-bind the managed wallet + ledger to reflect the new state.
+        managed = list?.Wallets.FirstOrDefault(x => x.WalletId == id) ?? managed;
+        if (managed != null)
+            ledger = await ApiService.GetAsync<WalletTransactionListDto>($"api/admin/wallets/{id}/transactions?page=1&pageSize=50");
+        adjustAmount = 0; adjustReason = "";
+        refundAmount = 0; refundReason = "";
+    }
+
+    private static string FormatMoney(decimal amount, string currency)
+    {
+        var symbol = currency == "EUR" ? "€" : currency + " ";
+        return $"{symbol}{Math.Abs(amount).ToString("N2")}";
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+        StateHasChanged();
+        _ = Task.Delay(4000).ContinueWith(_ => { alertMessage = ""; InvokeAsync(StateHasChanged); });
+    }
+}

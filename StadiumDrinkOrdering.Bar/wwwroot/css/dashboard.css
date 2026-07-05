@@ -1,0 +1,473 @@
+/* =============================================================================
+   Bar Dashboard — harmonized with the Admin operations-console design tokens.
+   Class names are preserved (the Dashboard components depend on them); only the
+   visual language changes: white instrument surfaces, warm hairlines, pitch/
+   amber/info accents, IBM Plex Mono telemetry readouts.
+   ============================================================================= */
+
+/* ===== LAYOUT ===== */
+.dashboard-container {
+    width: 100%;
+}
+
+.dashboard-header {
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-metrics {
+    margin-bottom: 0.5rem;
+}
+
+/* ===== METRIC CARDS (DashboardCard) ===== */
+/* Bootstrap bg-* utilities are neutralised: the cards become white instrument
+   tiles with a colored top-accent bar + colored readout, like the Admin metrics. */
+.dashboard-card {
+    --accent: var(--stadium-gray-400);
+    position: relative;
+    background: #ffffff;
+    border: 1px solid var(--stadium-gray-200);
+    border-radius: 12px;
+    box-shadow: var(--stadium-shadow-sm);
+    overflow: hidden;
+    height: 100%;
+    transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.dashboard-card.bg-primary,
+.dashboard-card.bg-info,
+.dashboard-card.bg-warning,
+.dashboard-card.bg-success,
+.dashboard-card.bg-secondary,
+.dashboard-card.bg-danger {
+    background: #ffffff !important;
+}
+
+.dashboard-card.bg-primary { --accent: #2563eb; }
+.dashboard-card.bg-info    { --accent: var(--stadium-info); }
+.dashboard-card.bg-warning { --accent: var(--stadium-accent); }
+.dashboard-card.bg-success { --accent: var(--pitch); }
+.dashboard-card.bg-danger  { --accent: var(--stadium-danger); }
+
+.dashboard-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent);
+}
+
+.dashboard-card:hover {
+    box-shadow: var(--stadium-shadow-md);
+    border-color: var(--stadium-gray-300);
+}
+
+.dashboard-card.clickable { cursor: pointer; }
+.dashboard-card.clickable:hover { transform: translateY(-2px); }
+
+.dashboard-card .card-body {
+    padding: 1.15rem 1.25rem 1.1rem;
+}
+
+.dashboard-card .metric-content { flex: 1; }
+
+.dashboard-card .metric-value {
+    font-family: var(--stadium-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 2.1rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+    color: var(--accent) !important;
+}
+
+.dashboard-card .metric-title {
+    display: block;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--stadium-gray-500) !important;
+    opacity: 1;
+}
+
+.dashboard-card .metric-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--stadium-gray-50);
+    opacity: 1;
+}
+
+.dashboard-card .metric-icon span {
+    color: var(--accent) !important;
+    font-size: 1.35rem !important;
+}
+
+.dashboard-card small {
+    color: var(--stadium-gray-500) !important;
+    opacity: 1 !important;
+    font-size: 0.78rem;
+}
+
+.dash-updated {
+    font-size: 0.78rem;
+    color: var(--stadium-gray-500);
+}
+
+/* ===== SHARED PANEL LOOK (RecentOrders / QuickActions / ConnectionStatus) ===== */
+.recent-orders-card,
+.quick-actions-card,
+.connection-status-card {
+    background: #ffffff;
+    border: 1px solid var(--stadium-gray-200);
+    border-radius: 12px;
+    box-shadow: var(--stadium-shadow-sm);
+    overflow: hidden;
+}
+
+.recent-orders-card .card-header,
+.quick-actions-card .card-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--stadium-gray-200);
+    padding: 1rem 1.25rem;
+}
+
+.recent-orders-card .card-header h5,
+.quick-actions-card .card-header h5,
+.connection-status-card .card-title {
+    color: var(--stadium-gray-900);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+}
+
+.recent-orders-card .card-body,
+.quick-actions-card .card-body,
+.connection-status-card .card-body {
+    padding: 1.25rem;
+}
+
+/* ===== RECENT ORDERS TABLE ===== */
+.orders-table {
+    margin-bottom: 0;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th {
+    border-top: none;
+    border-bottom: 1px solid var(--stadium-gray-200);
+    font-family: var(--stadium-font-mono);
+    font-weight: 500;
+    color: var(--stadium-gray-400);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.7rem 0.75rem;
+}
+
+.orders-table td {
+    padding: 0.8rem 0.75rem;
+    vertical-align: middle;
+    border-top: none;
+    border-bottom: 1px solid var(--stadium-gray-100);
+    font-size: 0.875rem;
+    color: var(--stadium-gray-700);
+}
+
+.order-row:hover { background-color: var(--stadium-gray-50); }
+
+.order-id {
+    font-family: var(--stadium-font-mono);
+    font-weight: 600;
+    color: var(--stadium-gray-900);
+}
+
+.customer-name { font-weight: 500; color: var(--stadium-gray-800); }
+
+.seat-number {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.8rem;
+    background-color: var(--stadium-gray-100);
+    color: var(--stadium-gray-700);
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.items-count { color: var(--stadium-gray-500); font-size: 0.82rem; }
+
+.order-status .badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.35em 0.7em;
+    border-radius: 999px;
+}
+
+.order-time {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.82rem;
+    color: var(--stadium-gray-500);
+}
+
+.order-actions .btn {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 7px;
+}
+
+/* ===== QUICK ACTIONS ===== */
+.quick-actions-card .btn {
+    font-weight: 600;
+    border-radius: 9px;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.quick-actions-card .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--stadium-shadow-sm);
+}
+
+.quick-actions-card .badge {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+}
+
+/* ===== CONNECTION STATUS ===== */
+.connection-status-card .badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.connection-status-card .btn {
+    font-size: 0.82rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 7px;
+}
+
+/* ===== EMPTY STATES ===== */
+.empty-state { padding: 2.5rem 1rem; }
+.empty-state .oi { opacity: 0.5; margin-bottom: 0.75rem; color: var(--stadium-gray-400); }
+.empty-state p { font-size: 1rem; color: var(--stadium-gray-500); }
+
+/* ===== LOADING SKELETONS ===== */
+.skeleton-card {
+    background: #ffffff;
+    border: 1px solid var(--stadium-gray-200);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.skeleton-content { flex: 1; }
+
+.skeleton-text {
+    background: var(--stadium-gray-100);
+    border-radius: 6px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.skeleton-title { height: 1.5rem; width: 60%; margin-bottom: 0.5rem; }
+.skeleton-subtitle { height: 1rem; width: 80%; }
+
+.skeleton-icon {
+    width: 3rem;
+    height: 3rem;
+    background: var(--stadium-gray-100);
+    border-radius: 12px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.skeleton-button {
+    height: 2.5rem;
+    background: var(--stadium-gray-100);
+    border-radius: 9px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.skeleton-badge {
+    height: 1.5rem;
+    width: 5rem;
+    background: var(--stadium-gray-100);
+    border-radius: 999px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.orders-skeleton { padding: 0.5rem 0; }
+
+.skeleton-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--stadium-gray-100);
+}
+
+.skeleton-order-id { width: 4rem; height: 1rem; }
+.skeleton-customer { width: 8rem; height: 1rem; }
+.skeleton-status { width: 5rem; height: 1.5rem; border-radius: 999px; }
+
+@keyframes skeleton-pulse {
+    0% { opacity: 0.55; }
+    100% { opacity: 1; }
+}
+
+/* ===== CURRENT EVENT BANNER ===== */
+.current-event-banner {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    background: #ffffff;
+    border: 1px solid var(--stadium-gray-200);
+    border-left: 4px solid var(--stadium-gray-300);
+    border-radius: 12px;
+    padding: 1.1rem 1.35rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--stadium-shadow-sm);
+}
+
+.current-event-banner.is-live {
+    border-left-color: var(--pitch);
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.06), #ffffff 45%);
+}
+
+.current-event-banner.is-empty {
+    border-left-color: var(--stadium-gray-300);
+    color: var(--stadium-gray-500);
+}
+
+.current-event-banner__icon {
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border-radius: 10px;
+    background: var(--stadium-gray-100);
+    color: var(--stadium-gray-600);
+}
+
+.current-event-banner.is-live .current-event-banner__icon {
+    background: rgba(5, 150, 105, 0.12);
+    color: var(--pitch);
+}
+
+.current-event-banner__body { flex: 1; min-width: 0; }
+
+.current-event-banner__body h2 {
+    margin: 0.1rem 0 0.35rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--stadium-gray-900);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.current-event-banner__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--stadium-gray-500);
+}
+
+.current-event-banner__meta i { margin-right: 0.25rem; }
+
+.current-event-banner__status { flex-shrink: 0; }
+
+.live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--pitch);
+    background: rgba(5, 150, 105, 0.12);
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pitch);
+    box-shadow: 0 0 0 rgba(5, 150, 105, 0.6);
+    animation: live-pulse 1.6s ease-out infinite;
+}
+
+@keyframes live-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.5); }
+    100% { box-shadow: 0 0 0 8px rgba(5, 150, 105, 0); }
+}
+
+.status-badge {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--stadium-gray-600);
+    background: var(--stadium-gray-100);
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .live-dot { animation: none; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 767.98px) {
+    .current-event-banner { gap: 0.85rem; padding: 0.9rem 1rem; }
+    .current-event-banner__body h2 { font-size: 1.1rem; white-space: normal; }
+    .current-event-banner__meta { gap: 0.5rem 1rem; }
+    .dashboard-card .metric-value { font-size: 1.85rem; }
+    .dashboard-card .card-body { padding: 1rem; }
+    .orders-table { font-size: 0.82rem; }
+    .orders-table th,
+    .orders-table td { padding: 0.5rem 0.4rem; }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-card,
+    .dashboard-card:hover,
+    .quick-actions-card .btn,
+    .quick-actions-card .btn:hover,
+    .skeleton-card,
+    .skeleton-text,
+    .skeleton-icon,
+    .skeleton-button,
+    .skeleton-badge {
+        animation: none;
+        transition: none;
+        transform: none;
+    }
+}
+
+.dashboard-card.clickable:focus,
+.quick-actions-card .btn:focus,
+.connection-status-card .btn:focus {
+    outline: 2px solid var(--pitch);
+    outline-offset: 2px;
+}

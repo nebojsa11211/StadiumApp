@@ -7,19 +7,20 @@
 @inject ISignalRService SignalRService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<PageTitle>Staff Dashboard</PageTitle>
+<PageTitle>@Localizer["Dashboard_Title"]</PageTitle>
 
 @if (!AuthService.IsAuthenticated)
 {
     <div class="container mt-5">
         <div class="alert alert-warning" role="alert">
-            <h4 class="alert-heading">🔐 Authentication Required</h4>
-            <p>You must be logged in to access the staff dashboard.</p>
+            <h4 class="alert-heading">@Localizer["Dashboard_AuthRequired"]</h4>
+            <p>@Localizer["Dashboard_AuthMessage"]</p>
             <hr>
             <p class="mb-0">
-                <a href="/login" class="btn btn-primary">Go to Login</a>
+                <a href="/login" class="btn btn-primary">@Localizer["Dashboard_GoToLogin"]</a>
             </p>
         </div>
     </div>
@@ -31,14 +32,14 @@ else
         <div class="dashboard-header">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1>Staff Dashboard</h1>
-                    <p class="text-muted mb-0">Real-time order management and fulfillment</p>
+                    <h1>@Localizer["Dashboard_Title"]</h1>
+                    <p class="text-muted mb-0">@Localizer["Dashboard_Subtitle"]</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
                     @if (dashboardData.LastUpdated != default)
                     {
                         <small class="text-muted">
-                            Last updated: @dashboardData.LastUpdated.ToString("HH:mm:ss")
+                            @Localizer["Dashboard_LastUpdated"] @dashboardData.LastUpdated.ToString("HH:mm:ss")
                         </small>
                     }
                     <button class="btn btn-outline-secondary btn-sm" @onclick="RefreshData" disabled="@isRefreshing">
@@ -50,7 +51,7 @@ else
                         {
                             <span class="oi oi-reload me-1"></span>
                         }
-                        Refresh
+                        @Localizer["Refresh"]
                     </button>
                 </div>
             </div>
@@ -60,14 +61,14 @@ else
         <div class="row dashboard-metrics">
             @if (dashboardData.IsLoading)
             {
-                @for (int i = 0; i < 4; i++)
+                @for (int i = 0; i < 5; i++)
                 {
                     <DashboardCard IsLoading="true" />
                 }
             }
             else
             {
-                @foreach (var cardData in dashboardData.GetDashboardCards())
+                @foreach (var cardData in dashboardData.GetDashboardCards(Localizer))
                 {
                     <DashboardCard
                         Title="@cardData.Title"
@@ -86,7 +87,7 @@ else
             <!-- Recent Orders -->
             <div class="col-lg-8 mb-4">
                 <RecentOrdersList
-                    Title="Recent Orders"
+                    Title="@Localizer["Dashboard_RecentOrders"]"
                     Orders="@dashboardData.RecentOrders"
                     IsLoading="@dashboardData.IsLoading"
                     ShowActions="true"
@@ -100,14 +101,14 @@ else
                 <!-- Quick Actions -->
                 <div class="mb-4">
                     <QuickActionsPanel
-                        Title="Quick Actions"
+                        Title="@Localizer["Dashboard_QuickActions"]"
                         Actions="@dashboardData.QuickActions"
                         IsLoading="@dashboardData.IsLoading" />
                 </div>
 
                 <!-- Connection Status -->
                 <ConnectionStatusCard
-                    Title="Connection Status"
+                    Title="@Localizer["Dashboard_ConnectionStatus"]"
                     IsConnected="@SignalRService.IsConnected"
                     IsLoading="@dashboardData.IsLoading"
                     IsReconnecting="@isReconnecting"
@@ -120,8 +121,8 @@ else
         @if (!string.IsNullOrEmpty(dashboardData.ErrorMessage))
         {
             <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
-                <strong>Warning:</strong> @dashboardData.ErrorMessage
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>@Localizer["Dashboard_Warning"]</strong> @dashboardData.ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@Localizer["Close"]"></button>
             </div>
         }
     </div>

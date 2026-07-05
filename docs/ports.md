@@ -52,8 +52,10 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 - **7010-7019**: API services
 - **7020-7029**: Customer applications
 - **7030-7039**: Admin applications  
-- **7040-7049**: Staff applications
-- **7050-7099**: Reserved for future services
+- **7040-7049**: Staff / Bar applications
+- **7050**: TicketingSimulator (external ticketing dev tool)
+- **7060**: Runner (Waiter WASM PWA) — moved off 7050 to avoid colliding with the Simulator
+- **7070-7099**: Reserved for future services
 
 ### Docker External Ports (9000-9099) 
 - **9010-9019**: API services

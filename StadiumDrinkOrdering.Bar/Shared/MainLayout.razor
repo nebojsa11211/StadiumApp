@@ -1,0 +1,156 @@
+@using System.Globalization
+@using StadiumDrinkOrdering.Bar.Components.Shared
+@using StadiumDrinkOrdering.Bar.Services
+@inject IAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
+@inherits LayoutComponentBase
+@implements IDisposable
+
+<PageTitle>Stadium Bar</PageTitle>
+
+@* Modern dashboard shell — shared 1:1 with the Admin operations console. *@
+<div class="dash dashboard-shell-root" id="bar-dashboard">
+
+    @* ============================ SIDEBAR ============================ *@
+    <aside class="dash-sidebar" id="bar-dashboard-sidebar">
+        <div class="dash-brand" id="bar-dashboard-brand">
+            <div id="bar-layout-brand-logo" class="dash-brand-logo" aria-hidden="true">
+                <i class="bi bi-cup-straw"></i>
+            </div>
+            <div id="bar-layout-brand-text" class="dash-brand-text">
+                <span class="dash-brand-name">STADIUM</span>
+                <span class="dash-brand-sub">BAR</span>
+            </div>
+        </div>
+
+        <div class="dash-clock" id="bar-dashboard-clock">
+            <div id="bar-layout-clock-time" class="dash-clock-time">@_now.ToString("HH:mm:ss")</div>
+            <div id="bar-layout-clock-date" class="dash-clock-date">@_now.ToString("dd/MM/yy") <span class="dash-clock-hr">HR</span></div>
+        </div>
+
+        <nav class="dash-nav" id="bar-dashboard-nav">
+            <a href="" class="@NavClass("")" id="bar-nav-dashboard">
+                <i class="bi bi-grid-1x2"></i><span>@Localizer["Dashboard"]</span>
+            </a>
+            <a href="order-queue" class="@NavClass("order-queue")" id="bar-nav-order-queue">
+                <i class="bi bi-columns-gap"></i><span>@Localizer["OrderQueue_OrderBoard"]</span>
+            </a>
+            <a href="my-orders" class="@NavClass("my-orders")" id="bar-nav-my-orders">
+                <i class="bi bi-clipboard-check"></i><span>@Localizer["MyOrders"]</span>
+            </a>
+
+            <div id="bar-layout-nav-group" class="dash-nav-group">@Localizer["MainLayout_System"]</div>
+            <a href="logs" class="@NavClass("logs")" id="bar-nav-logs">
+                <i class="bi bi-card-list"></i><span>@Localizer["Logs_PageTitle"]</span>
+            </a>
+        </nav>
+
+        <div id="bar-layout-sidebar-footer" class="dash-sidebar-footer">
+            <div class="bar-conn-panel" id="bar-dashboard-connection">
+                <ConnectionStatus />
+            </div>
+
+            @if (AuthStateService.IsAuthenticated)
+            {
+                <div class="dash-profile" id="bar-dashboard-profile">
+                    <div id="bar-layout-avatar" class="dash-avatar">@GetInitials()</div>
+                    <div id="bar-layout-profile-info" class="dash-profile-info">
+                        <button class="dash-logout" @onclick="HandleLogout" id="staff-mainlayout-logout-btn">@Localizer["Logout"]</button>
+                        <div id="bar-layout-profile-email" class="dash-profile-email">@AuthStateService.UserEmail</div>
+                    </div>
+                </div>
+            }
+
+            <div class="dash-lang" id="bar-dashboard-lang">
+                <span class="dash-lang-label">HR/EN</span>
+                <div id="bar-layout-lang-switch" class="dash-lang-switch">
+                    <button class="@LangClass("hr")" @onclick="@(() => SetLang("hr"))" id="bar-dashboard-lang-hr">HR</button>
+                    <button class="@LangClass("en")" @onclick="@(() => SetLang("en"))" id="bar-dashboard-lang-en">EN</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    @* ============================ MAIN ============================ *@
+    <main class="dash-main" id="bar-dashboard-main">
+        @Body
+    </main>
+</div>
+
+@code {
+    private DateTime _now = DateTime.Now;
+    private System.Timers.Timer? _clock;
+    private string _lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+    protected override void OnInitialized()
+    {
+        _clock = new System.Timers.Timer(1000);
+        _clock.Elapsed += (_, _) => InvokeAsync(() =>
+        {
+            _now = DateTime.Now;
+            StateHasChanged();
+        });
+        _clock.Start();
+
+        AuthStateService.OnAuthenticationStateChanged += OnAuthChanged;
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    // Highlight the nav item matching the current route.
+    private string NavClass(string href, string? extra = null)
+    {
+        var baseClass = "dash-nav-item";
+        if (!string.IsNullOrEmpty(extra))
+            baseClass += " " + extra;
+
+        var rel = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var path = rel.Split('?', '#')[0].Trim('/');
+
+        bool active = href.Length == 0
+            ? path.Length == 0
+            : path.Equals(href, StringComparison.OrdinalIgnoreCase)
+              || path.StartsWith(href + "/", StringComparison.OrdinalIgnoreCase);
+
+        return active ? baseClass + " active" : baseClass;
+    }
+
+    private string LangClass(string lang) => _lang == lang ? "dash-lang-btn active" : "dash-lang-btn";
+
+    private async Task SetLang(string lang)
+    {
+        if (_lang == lang)
+            return;
+
+        _lang = lang;
+        await JSRuntime.InvokeVoidAsync("blazorCulture.set", lang);
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+    }
+
+    private string GetInitials()
+    {
+        var email = AuthStateService.UserEmail;
+        var name = email?.Split('@').FirstOrDefault();
+        return string.IsNullOrEmpty(name) ? "B" : name[..1].ToUpperInvariant();
+    }
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    private async Task HandleLogout()
+    {
+        await AuthStateService.LogoutAsync();
+        NavigationManager.NavigateTo("/login");
+    }
+
+    public void Dispose()
+    {
+        _clock?.Stop();
+        _clock?.Dispose();
+        AuthStateService.OnAuthenticationStateChanged -= OnAuthChanged;
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

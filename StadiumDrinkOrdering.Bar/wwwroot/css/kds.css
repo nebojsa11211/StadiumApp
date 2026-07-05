@@ -1,0 +1,251 @@
+/* =============================================================================
+   Bar Order Board (KDS) — harmonized with the console design tokens.
+   Structure/classes/ids preserved; colors now use the semantic Matchday palette
+   (amber = pending, blue = prep, pitch = ready). Touch-friendly
+   for across-the-room glanceability. Late/aged ageing + new-order flash kept.
+   ============================================================================= */
+
+.kds-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--stadium-gray-200);
+}
+
+.kds-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--stadium-gray-900);
+    margin: 0;
+}
+
+/* Sector filter — multi-select chips letting the bartender restrict the board to one or more
+   sectors. An empty selection ("All sectors" highlighted) shows everything. */
+.kds-sector-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.kds-filter-label {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--stadium-gray-600);
+    margin-right: 0.15rem;
+}
+
+.kds-chip {
+    background: var(--stadium-gray-50);
+    border: 1px solid var(--stadium-gray-300);
+    color: var(--stadium-gray-700);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s ease-in-out, border-color 0.12s ease-in-out, color 0.12s ease-in-out;
+}
+
+.kds-chip:hover {
+    border-color: var(--stadium-gray-500);
+    color: var(--stadium-gray-900);
+}
+
+.kds-chip-on {
+    background: var(--stadium-gray-900);
+    border-color: var(--stadium-gray-900);
+    color: #fff;
+}
+
+/* Three status columns side-by-side (Pending → Preparing → Ready), filling the screen for
+   glanceability. The separate "Accepted" step was collapsed into starting preparation. */
+.kds-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+    align-items: start;
+}
+
+.kds-col {
+    background: var(--stadium-gray-50);
+    border: 1px solid var(--stadium-gray-200);
+    border-radius: 12px;
+    padding: 0.6rem;
+    min-height: 62vh;
+}
+
+.kds-col-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.55rem 0.65rem;
+    color: var(--stadium-gray-600);
+}
+
+.kds-count {
+    background: var(--stadium-gray-900);
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-family: var(--stadium-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Column accents (heading + count chip) */
+.kds-col-pending  .kds-col-head { color: var(--stadium-accent); }
+.kds-col-prep     .kds-col-head { color: #2563eb; }
+.kds-col-ready    .kds-col-head { color: var(--pitch); }
+
+.kds-col-pending  .kds-count { background: var(--stadium-accent); }
+.kds-col-prep     .kds-count { background: #2563eb; }
+.kds-col-ready    .kds-count { background: var(--pitch); }
+
+.kds-card {
+    background: #ffffff;
+    border: 1px solid var(--stadium-gray-200);
+    border-left: 5px solid var(--stadium-gray-300);
+    border-radius: 10px;
+    box-shadow: var(--stadium-shadow-sm);
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.6rem;
+}
+
+.kds-col-pending  .kds-card { border-left-color: var(--stadium-accent); }
+.kds-col-prep     .kds-card { border-left-color: #2563eb; }
+.kds-col-ready    .kds-card { border-left-color: var(--pitch); }
+
+.kds-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.3rem;
+}
+
+.kds-order-id {
+    font-family: var(--stadium-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--stadium-gray-900);
+    flex: 0 0 auto;
+}
+
+/* Full seat path (e.g. "Sjever1 · Row 1 · Seat 2"). Right-aligned; allowed to wrap so the whole
+   location stays visible rather than being clipped next to the order id. */
+.kds-seat {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--stadium-gray-600);
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: right;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.kds-items { margin: 0.35rem 0; }
+.kds-item { font-size: 1.02rem; line-height: 1.35; color: var(--stadium-gray-800); }
+.kds-qty { font-weight: 800; color: var(--stadium-gray-900); }
+.kds-note { color: var(--stadium-gray-500); font-style: italic; font-size: 0.9rem; }
+
+.kds-age {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--stadium-gray-500);
+}
+.kds-age.aged { color: var(--stadium-accent); }
+.kds-age.late { color: var(--stadium-danger); }
+
+/* Clock time (HH:mm) of the step this card is currently in — sits opposite the relative age. */
+.kds-step-time {
+    font-family: var(--stadium-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--stadium-gray-500);
+}
+
+/* Staff member who took the order (started prep / prepared / collected). Shown from the
+   Preparing column onward — pending orders have no owner yet. */
+.kds-staff {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--stadium-gray-700);
+    margin-bottom: 0.5rem;
+}
+
+.kds-btn {
+    width: 100%;
+    font-size: 1.02rem;
+    font-weight: 700;
+    padding: 0.55rem;
+    border-radius: 9px;
+}
+
+.kds-ready-note {
+    text-align: center;
+    color: var(--pitch-dark);
+    font-weight: 700;
+    padding: 0.3rem;
+}
+
+/* A runner has collected this order: keep it visible on the Ready column but greyed and dimmed,
+   so the bartender knows it's handled and no longer their active work. */
+.kds-col-ready .kds-card.kds-card-collected {
+    background: var(--stadium-gray-100);
+    border-left-color: var(--stadium-gray-400);
+    opacity: 0.72;
+}
+
+.kds-collected-note {
+    text-align: center;
+    color: var(--stadium-gray-500);
+    font-weight: 700;
+    padding: 0.3rem;
+}
+
+.kds-empty {
+    color: var(--stadium-gray-400);
+    text-align: center;
+    padding: 1.5rem 0.5rem;
+    font-style: italic;
+}
+
+/* New-order flash — fires on cards that appeared since the last poll. */
+.kds-card.kds-new { animation: kds-flash 0.9s ease-in-out 5; }
+
+@keyframes kds-flash {
+    0%, 100% { background: #ffffff; box-shadow: var(--stadium-shadow-sm); }
+    50% { background: #fbf3df; box-shadow: 0 0 0 4px var(--stadium-accent); }
+}
+
+@media (max-width: 1100px) {
+    .kds-board { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 620px) {
+    .kds-board { grid-template-columns: 1fr; }
+    .kds-col { min-height: auto; }
+}

@@ -1,0 +1,186 @@
+@page "/login"
+@layout AuthLayout
+@inject IStaffApiService ApiService
+@inject IAuthStateService AuthService
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["Login_PageTitle"]</PageTitle>
+
+<div id="staff-login-container">
+    <div id="staff-login-row" style="display:flex; justify-content:center;">
+        <div id="staff-login-col">
+            <div id="staff-login-card">
+                <div id="staff-login-body">
+                    <div id="staff-login-header">
+                        <span class="eyebrow">@Localizer["Login_StadiumBar"]</span>
+                        <h1 id="staff-login-title">@Localizer["SignIn"]</h1>
+                        <p>@Localizer["Login_BartenderStationAccess"]</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div id="staff-login-error" role="alert">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <form @onsubmit="HandleLogin" id="staff-login-form">
+                        <div class="staff-field" id="staff-login-email-group">
+                            <label class="staff-field__label" for="staff-login-email-input">@Localizer["Email"]</label>
+                            <input type="email" class="staff-field__input" @bind="loginModel.Email" required
+                                   id="staff-login-email-input" placeholder="@Localizer["Login_EnterYourEmail"]" />
+                        </div>
+
+                        <div class="staff-field" id="staff-login-password-group">
+                            <label class="staff-field__label" for="staff-login-password-input">@Localizer["Password"]</label>
+                            <div id="bar-login-password-wrap" class="staff-pw-wrap">
+                                <input type="@(showPassword ? "text" : "password")"
+                                       class="staff-field__input staff-field__input--pw"
+                                       @bind="loginModel.Password" required
+                                       id="staff-login-password-input" placeholder="@Localizer["Login_EnterYourPassword"]" />
+                                <button type="button" id="staff-login-password-toggle-btn" class="staff-pw-toggle"
+                                        @onclick="TogglePasswordVisibility"
+                                        aria-label="@(showPassword ? Localizer["Login_HidePassword"] : Localizer["Login_ShowPassword"])"
+                                        aria-pressed="@showPassword">
+                                    @if (showPassword)
+                                    {
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                            <line x1="1" y1="1" x2="23" y2="23" />
+                                        </svg>
+                                    }
+                                    else
+                                    {
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="staff-login-button-group">
+                            <button type="submit" id="staff-login-submit-btn" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" id="staff-login-spinner"></span>
+                                    <span id="staff-login-loading-text">@Localizer["SigningIn"]</span>
+                                }
+                                else
+                                {
+                                    <span id="staff-login-button-text">@Localizer["SignIn"]</span>
+                                }
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="staff-login-demo-info">
+                        <small>@Localizer["Login_StaffAccessOnly"]</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginDto loginModel = new();
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+    private bool showPassword = false;
+    private string? returnUrl;
+
+    protected override void OnInitialized()
+    {
+        // Parse the return URL first so it is available for any redirect below
+        var uri = new Uri(Navigation.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        returnUrl = query["returnUrl"];
+
+        // If already authenticated, go straight to the requested page
+        if (AuthService.IsAuthenticated)
+        {
+            NavigateToReturnUrl();
+        }
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = string.Empty;
+
+            var response = await ApiService.LoginAsync(loginModel);
+
+            if (response?.Token != null)
+            {
+                await AuthService.LoginAsync(response.Token, loginModel.Email);
+                await ApiService.LogUserActionAsync("StaffLogin", "Authentication", $"Staff user {loginModel.Email} logged in successfully");
+                NavigateToReturnUrl();
+            }
+            else
+            {
+                errorMessage = Localizer["InvalidCredentials"].Value;
+                await ApiService.LogUserActionAsync("StaffLoginFailed", "Authentication", $"Failed login attempt for {loginModel.Email}");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"{Localizer["Login_LoginFailed"].Value}: {ex.Message}";
+            await ApiService.LogUserActionAsync("StaffLoginError", "Authentication", $"Login error for {loginModel.Email}: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void NavigateToReturnUrl()
+    {
+        Navigation.NavigateTo(ResolveReturnUrl(), forceLoad: true);
+    }
+
+    // Returns the post-login destination, preserving the originally requested page.
+    // Absolute URLs are only honored when same-origin (prevents open-redirect); anything
+    // else (or a loop back to /login or /register) falls back to home.
+    private string ResolveReturnUrl()
+    {
+        if (string.IsNullOrEmpty(returnUrl))
+            return "/";
+
+        string decoded;
+        try
+        {
+            decoded = Uri.UnescapeDataString(returnUrl);
+        }
+        catch
+        {
+            return "/";
+        }
+
+        if (Uri.TryCreate(decoded, UriKind.Absolute, out var absolute))
+        {
+            var sameOrigin = Uri.Compare(absolute, new Uri(Navigation.BaseUri),
+                UriComponents.SchemeAndServer, UriFormat.Unescaped, StringComparison.OrdinalIgnoreCase) == 0;
+
+            if (!sameOrigin)
+                return "/";
+
+            decoded = absolute.PathAndQuery; // keep only the local path
+        }
+
+        if (decoded.StartsWith("/login", StringComparison.OrdinalIgnoreCase) ||
+            decoded.StartsWith("/register", StringComparison.OrdinalIgnoreCase))
+            return "/";
+
+        return decoded;
+    }
+}

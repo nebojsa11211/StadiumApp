@@ -2836,6 +2836,12 @@
   <data name="Index_OfSeats" xml:space="preserve">
     <value>od {0} mjesta</value>
   </data>
+  <data name="Index_TicketsRegular" xml:space="preserve">
+    <value>Pojedinačne</value>
+  </data>
+  <data name="Index_TicketsSeason" xml:space="preserve">
+    <value>Sezonske</value>
+  </data>
   <data name="Index_TotalRevenue" xml:space="preserve">
     <value>Ukupni Prihod</value>
   </data>
@@ -3189,4 +3195,90 @@
 <data name="Seasons_DeleteConfirm" xml:space="preserve"><value>Obrisati sezonu '{0}'? Povezani događaji bit će odvojeni.</value></data>
 <data name="Seasons_DeletedMsg" xml:space="preserve"><value>Sezona '{0}' je obrisana.</value></data>
 <data name="Seasons_DeleteFailed" xml:space="preserve"><value>Brisanje sezone nije uspjelo.</value></data>
+  <!-- App Component -->
+  <data name="App_InitializingApplication" xml:space="preserve"><value>Inicijalizacija aplikacije...</value></data>
+  <data name="App_NotFound" xml:space="preserve"><value>Nije pronađeno</value></data>
+  <data name="App_NothingAtAddress" xml:space="preserve"><value>Nažalost, nema ničega na ovoj adresi.</value></data>
+  <!-- AuthRoute Component -->
+  <data name="AuthRoute_CheckingAuth" xml:space="preserve"><value>Provjera autentifikacije...</value></data>
+  <data name="AuthRoute_VerifyingAuth" xml:space="preserve"><value>Potvrđivanje autentifikacije...</value></data>
+  <data name="AuthRoute_RedirectingToLogin" xml:space="preserve"><value>Preusmjeravanje na prijavu...</value></data>
+  <!-- Counter Page -->
+  <data name="Counter_PageTitle" xml:space="preserve"><value>Brojač</value></data>
+  <data name="Counter_Title" xml:space="preserve"><value>Brojač</value></data>
+  <data name="Counter_CurrentCount" xml:space="preserve"><value>Trenutni broj:</value></data>
+  <data name="Counter_ClickMe" xml:space="preserve"><value>Klikni me</value></data>
+  <!-- FetchData Page -->
+  <data name="FetchData_PageTitle" xml:space="preserve"><value>Vremenska prognoza</value></data>
+  <data name="FetchData_Title" xml:space="preserve"><value>Vremenska prognoza</value></data>
+  <data name="FetchData_Description" xml:space="preserve"><value>Ova komponenta demonstrira dohvaćanje podataka iz servisa.</value></data>
+  <data name="FetchData_Date" xml:space="preserve"><value>Datum</value></data>
+  <data name="FetchData_TempC" xml:space="preserve"><value>Temp. (°C)</value></data>
+  <data name="FetchData_TempF" xml:space="preserve"><value>Temp. (°F)</value></data>
+  <data name="FetchData_Summary" xml:space="preserve"><value>Sažetak</value></data>
+  <!-- TestErrorHandling Page -->
+  <data name="TestError_Title" xml:space="preserve"><value>Stranica za testiranje rukovanja greškama</value></data>
+  <data name="TestError_Subtitle" xml:space="preserve"><value>Testirajte različite scenarije greške kako biste provjerili da obavijesti o greškama funkcioniraju</value></data>
+  <data name="TestError_ManualTests" xml:space="preserve"><value>Ručni testovi greške</value></data>
+  <data name="TestError_TestErrorMsg" xml:space="preserve"><value>Testiraj poruku greške</value></data>
+  <data name="TestError_TestWarningMsg" xml:space="preserve"><value>Testiraj poruku upozorenja</value></data>
+  <data name="TestError_TestSuccessMsg" xml:space="preserve"><value>Testiraj poruku uspjeha</value></data>
+  <data name="TestError_TestInfoMsg" xml:space="preserve"><value>Testiraj informativnu poruku</value></data>
+  <data name="TestError_TestAuthError" xml:space="preserve"><value>Testiraj grešku autentifikacije</value></data>
+  <data name="TestError_ApiTests" xml:space="preserve"><value>Testovi API greške</value></data>
+  <data name="TestError_TestApiConnection" xml:space="preserve"><value>Testiraj API konekciju (Vjerojatno će failati ako API nije pokrenut)</value></data>
+  <data name="TestError_TestDrinksFetch" xml:space="preserve"><value>Testiraj dohvaćanje pića (Koristi novo rukovanje greškama)</value></data>
+  <data name="TestError_TestOrdersFetch" xml:space="preserve"><value>Testiraj dohvaćanje narudžbi (Koristi novo rukovanje greškama)</value></data>
+  <data name="TestError_Results" xml:space="preserve"><value>Rezultati testiranja:</value></data>
+  <data name="TestError_ResultsNote" xml:space="preserve"><value>Pogledajte gornji desni kut zaslona za toast obavijesti!</value></data>
+  <data name="TestError_SuccessDesc" xml:space="preserve"><value>Zeleni toast s kvakom</value></data>
+  <data name="TestError_Warning" xml:space="preserve"><value>Upozorenje</value></data>
+  <data name="TestError_WarningDesc" xml:space="preserve"><value>Narančasti toast s ikonom upozorenja</value></data>
+  <data name="TestError_ErrorDesc" xml:space="preserve"><value>Crveni toast s ikonom greške</value></data>
+  <data name="TestError_Info" xml:space="preserve"><value>Info</value></data>
+  <data name="TestError_InfoDesc" xml:space="preserve"><value>Plavi toast s ikonom info</value></data>
+  <!-- TestNotifications Page -->
+  <data name="TestNotif_PageTitle" xml:space="preserve"><value>Testiraj obavijesti</value></data>
+  <data name="TestNotif_Title" xml:space="preserve"><value>Testiraj obavijesti o greškama</value></data>
+  <data name="TestNotif_CardTitle" xml:space="preserve"><value>Testovi obavijesti o greškama</value></data>
+  <data name="TestNotif_TestErrorNotif" xml:space="preserve"><value>Testiraj obavijest o grešci</value></data>
+  <data name="TestNotif_TestTimeoutNotif" xml:space="preserve"><value>Testiraj obavijest o isteku vremena</value></data>
+  <data name="TestNotif_TestApiError" xml:space="preserve"><value>Testiraj API grešku (400 Bad Request)</value></data>
+  <data name="TestNotif_TestJsDirect" xml:space="preserve"><value>Testiraj JavaScript izravno</value></data>
+  <data name="Nav_Wallets" xml:space="preserve"><value>Novčanici</value></data>
+  <data name="Wallets_PageTitle" xml:space="preserve"><value>Novčanici</value></data>
+  <data name="Wallets_Eyebrow" xml:space="preserve"><value>Financije</value></data>
+  <data name="Wallets_Title" xml:space="preserve"><value>Novčanici navijača</value></data>
+  <data name="Wallets_Intro" xml:space="preserve"><value>Pregledajte, zamrznite, uskladite i vratite sredstva navijačkih novčanika.</value></data>
+  <data name="Wallets_SearchPlaceholder" xml:space="preserve"><value>Traži po imenu ili e-pošti…</value></data>
+  <data name="Wallets_Search" xml:space="preserve"><value>Traži</value></data>
+  <data name="Wallets_Loading" xml:space="preserve"><value>Učitavanje novčanika…</value></data>
+  <data name="Wallets_NoneTitle" xml:space="preserve"><value>Nema novčanika</value></data>
+  <data name="Wallets_NoneDesc" xml:space="preserve"><value>Nijedan navijač još nije otvorio novčanik.</value></data>
+  <data name="Wallets_ColUser" xml:space="preserve"><value>Navijač</value></data>
+  <data name="Wallets_ColBalance" xml:space="preserve"><value>Stanje</value></data>
+  <data name="Wallets_ColStatus" xml:space="preserve"><value>Status</value></data>
+  <data name="Wallets_ColActions" xml:space="preserve"><value>Radnje</value></data>
+  <data name="Wallets_Manage" xml:space="preserve"><value>Upravljaj</value></data>
+  <data name="Wallets_ManageTitle" xml:space="preserve"><value>Upravljanje novčanikom</value></data>
+  <data name="Wallets_Freeze" xml:space="preserve"><value>Zamrzni</value></data>
+  <data name="Wallets_Unfreeze" xml:space="preserve"><value>Odmrzni</value></data>
+  <data name="Wallets_Frozen" xml:space="preserve"><value>Novčanik zamrznut</value></data>
+  <data name="Wallets_Unfrozen" xml:space="preserve"><value>Novčanik ponovno aktiviran</value></data>
+  <data name="Wallets_Adjust" xml:space="preserve"><value>Ručno usklađenje</value></data>
+  <data name="Wallets_AmountSigned" xml:space="preserve"><value>Iznos (+/−)</value></data>
+  <data name="Wallets_Amount" xml:space="preserve"><value>Iznos</value></data>
+  <data name="Wallets_Reason" xml:space="preserve"><value>Razlog</value></data>
+  <data name="Wallets_ApplyAdjust" xml:space="preserve"><value>Primijeni usklađenje</value></data>
+  <data name="Wallets_AdjustDone" xml:space="preserve"><value>Usklađenje primijenjeno</value></data>
+  <data name="Wallets_Refund" xml:space="preserve"><value>Povrat</value></data>
+  <data name="Wallets_ApplyRefund" xml:space="preserve"><value>Izvrši povrat</value></data>
+  <data name="Wallets_RefundDone" xml:space="preserve"><value>Povrat izvršen</value></data>
+  <data name="Wallets_Ledger" xml:space="preserve"><value>Knjiga</value></data>
+  <data name="Wallets_LedgerEmpty" xml:space="preserve"><value>Nema transakcija.</value></data>
+  <data name="Wallets_LedgerDate" xml:space="preserve"><value>Datum</value></data>
+  <data name="Wallets_LedgerType" xml:space="preserve"><value>Vrsta</value></data>
+  <data name="Wallets_LedgerAfter" xml:space="preserve"><value>Stanje nakon</value></data>
+  <data name="Wallets_Close" xml:space="preserve"><value>Zatvori</value></data>
+  <data name="Wallets_ActionFailed" xml:space="preserve"><value>Radnja nije uspjela.</value></data>
 </root>

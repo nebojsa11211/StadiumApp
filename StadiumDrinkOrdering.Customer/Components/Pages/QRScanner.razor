@@ -6,9 +6,10 @@
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 @rendermode @(new InteractiveServerRenderMode())
 
-<PageTitle>QR Scanner - Stadium Ordering</PageTitle>
+<PageTitle>@Localizer["QRScanner_PageTitle"]</PageTitle>
 
 <div class="qr-scanner-container">
     @if (!string.IsNullOrEmpty(qrToken))
@@ -20,25 +21,25 @@
                 <div class="loading-spinner">
                     <div class="spinner"></div>
                 </div>
-                <h2>Validating Ticket...</h2>
-                <p>Please wait while we verify your ticket</p>
+                <h2>@Localizer["QRScanner_ValidatingTicket"]</h2>
+                <p>@Localizer["QRScanner_VerifyingTicket"]</p>
             </div>
         }
         else if (validationError)
         {
             <div class="error-screen">
                 <div class="error-icon">❌</div>
-                <h2>Invalid Ticket</h2>
+                <h2>@Localizer["QRScanner_InvalidTicket"]</h2>
                 <p>@errorMessage</p>
-                <button id="customer-qrscanner-retry-btn" class="btn btn-primary" @onclick="RetryValidation">Try Again</button>
-                <button id="customer-qrscanner-go-home-btn" class="btn btn-secondary" @onclick="GoHome">Go Home</button>
+                <button id="customer-qrscanner-retry-btn" class="btn btn-primary" @onclick="RetryValidation">@Localizer["QRScanner_TryAgain"]</button>
+                <button id="customer-qrscanner-go-home-btn" class="btn btn-secondary" @onclick="GoHome">@Localizer["QRScanner_GoHome"]</button>
             </div>
         }
         else if (ticket != null)
         {
             <div class="ticket-validated-screen">
                 <div class="success-icon">✅</div>
-                <h2>Ticket Validated!</h2>
+                <h2>@Localizer["QRScanner_TicketValidated"]</h2>
                 <div class="ticket-info">
                     <div class="event-card">
                         <h3>@ticket.EventName</h3>
@@ -52,7 +53,7 @@
                     </div>
                 </div>
                 <button id="customer-qrscanner-start-ordering-btn" class="btn btn-primary btn-large" @onclick="StartOrdering">
-                    🍻 Start Ordering
+                    🍻 @Localizer["QRScanner_StartOrdering"]
                 </button>
             </div>
         }
@@ -61,8 +62,8 @@
     {
         <!-- QR Scanner Interface -->
         <div class="scanner-header">
-            <h1>Scan Your Ticket</h1>
-            <p>Position the QR code within the frame to start ordering</p>
+            <h1>@Localizer["QRScanner_ScanYourTicket"]</h1>
+            <p>@Localizer["QRScanner_PositionQRCode"]</p>
         </div>
 
         <div class="camera-container">
@@ -81,15 +82,15 @@
         </div>
 
         <div class="manual-entry">
-            <h3>Manual Entry</h3>
-            <p>Enter your ticket number if you can't scan</p>
+            <h3>@Localizer["QRScanner_ManualEntry"]</h3>
+            <p>@Localizer["QRScanner_CantScan"]</p>
             <div class="input-group">
-                <input @bind="manualTicketNumber" 
-                       class="form-control" 
-                       placeholder="Enter ticket number"
+                <input @bind="manualTicketNumber"
+                       class="form-control"
+                       placeholder="@Localizer["QRScanner_TicketNumberPlaceholder"]"
                        @onkeypress="HandleManualEntry" />
                 <button id="customer-qrscanner-validate-manual-btn" class="btn btn-secondary" @onclick="ValidateManualEntry">
-                    Validate
+                    @Localizer["QRScanner_Validate"]
                 </button>
             </div>
         </div>
@@ -97,7 +98,7 @@
         @if (!string.IsNullOrEmpty(scanError))
         {
             <div class="alert alert-warning">
-                <strong>Scanner Issue:</strong> @scanError
+                <strong>@Localizer["QRScanner_ScannerIssue"]</strong> @scanError
                 <button id="customer-qrscanner-close-error-btn" class="btn-close" @onclick="() => scanError = string.Empty"></button>
             </div>
         }

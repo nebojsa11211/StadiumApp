@@ -87,7 +87,11 @@ builder.Services.AddHttpClient("StaffSecureApi", client =>
 });
 
 // Add legacy services
-builder.Services.AddScoped<IStaffApiService, StaffApiService>();
+// NOTE: IStaffApiService is intentionally NOT re-registered here. It is already registered
+// above via AddHttpClient<IStaffApiService, StaffApiService> (line ~44), which supplies the
+// configured HttpClient (correct BaseAddress + dev-cert bypass handler). A plain
+// AddScoped<IStaffApiService, StaffApiService> would shadow that typed client with an
+// unconfigured HttpClient, causing every API call (including login) to fail silently.
 builder.Services.AddScoped<ISignalRService, SignalRService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 

@@ -2,10 +2,11 @@
 @using StadiumDrinkOrdering.Customer.Services
 @inject ICustomerAuthStateService AuthStateService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
 @inherits LayoutComponentBase
 @implements IDisposable
 
-<PageTitle>Stadium Drinks - Premium Experience</PageTitle>
+<PageTitle>@Localizer["MainLayout_PageTitle"]</PageTitle>
 
 <!-- Skip Navigation Component for Keyboard Accessibility -->
 <SkipNavigation ShowSearchLink="false" />
@@ -26,12 +27,12 @@
             <!-- Desktop Navigation -->
             <div class="premium-navbar-menu">
                 <ul class="premium-nav-list" role="menubar">
-                    <li role="none"><a href="/" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.EndsWith("/") ? "page" : null)">Home</a></li>
-                    <li role="none"><a href="/events" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.Contains("/events") ? "page" : null)">Events</a></li>
-                    <li role="none"><a href="/menu" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.Contains("/menu") ? "page" : null)">Menu</a></li>
+                    <li role="none"><a href="/" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.EndsWith("/") ? "page" : null)">@Localizer["Home"]</a></li>
+                    <li role="none"><a href="/events" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.Contains("/events") ? "page" : null)">@Localizer["Events"]</a></li>
+                    <li role="none"><a href="/menu" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.Contains("/menu") ? "page" : null)">@Localizer["Menu"]</a></li>
                     @if (AuthStateService.IsAuthenticated)
                     {
-                        <li role="none"><a href="/orders" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.Contains("/orders") ? "page" : null)">My Orders</a></li>
+                        <li role="none"><a href="/orders" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.Contains("/orders") ? "page" : null)">@Localizer["MyOrders"]</a></li>
                     }
                 </ul>
                 
@@ -90,7 +91,7 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
-                                        <span>My Profile</span>
+                                        <span>@Localizer["Profile"]</span>
                                     </a>
                                     <a href="/orders"
                                        id="customer-layout-orders-link"
@@ -99,7 +100,7 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                         </svg>
-                                        <span>My Orders</span>
+                                        <span>@Localizer["MyOrders"]</span>
                                     </a>
                                 </div>
                                 <hr class="my-2 border-gray-100" role="separator">
@@ -112,7 +113,7 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                                         </svg>
-                                        <span>Sign Out</span>
+                                        <span>@Localizer["Logout"]</span>
                                     </button>
                                 </div>
                             </div>
@@ -122,8 +123,8 @@
                 else
                 {
                     <div class="flex items-center gap-3">
-                        <a href="/login" class="btn btn-outline btn-sm" id="customer-layout-sign-in-btn" aria-label="Sign in to your account">Sign In</a>
-                        <a href="/register" class="btn btn-primary btn-sm" id="customer-layout-sign-up-btn" aria-label="Create a new account">Sign Up</a>
+                        <a href="/login" class="btn btn-outline btn-sm" id="customer-layout-sign-in-btn" aria-label="Sign in to your account">@Localizer["SignIn"]</a>
+                        <a href="/register" class="btn btn-primary btn-sm" id="customer-layout-sign-up-btn" aria-label="Create a new account">@Localizer["SignUp"]</a>
                     </div>
                 }
             </div>
@@ -152,21 +153,21 @@
          aria-label="Mobile navigation">
         <div class="container py-6">
             <ul class="space-y-2" role="menu">
-                <li role="none"><a href="/" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">🏠</span> Home</a></li>
-                <li role="none"><a href="/events" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">🎟️</span> Events</a></li>
-                <li role="none"><a href="/menu" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">🍺</span> Menu</a></li>
+                <li role="none"><a href="/" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">🏠</span> @Localizer["Home"]</a></li>
+                <li role="none"><a href="/events" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">🎟️</span> @Localizer["Events"]</a></li>
+                <li role="none"><a href="/menu" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">🍺</span> @Localizer["Menu"]</a></li>
                 @if (AuthStateService.IsAuthenticated)
                 {
-                    <li role="none"><a href="/orders" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">📋</span> My Orders</a></li>
+                    <li role="none"><a href="/orders" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">📋</span> @Localizer["MyOrders"]</a></li>
                     <li role="none"><hr class="my-4 border-gray-100" role="separator"></li>
-                    <li role="none"><a href="/profile" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">👤</span> Profile</a></li>
-                    <li role="none"><button @onclick="HandleLogout" class="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors" role="menuitem" aria-label="Sign out of your account"><span aria-hidden="true">🚪</span> Sign Out</button></li>
+                    <li role="none"><a href="/profile" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">👤</span> @Localizer["Profile"]</a></li>
+                    <li role="none"><button @onclick="HandleLogout" class="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors" role="menuitem" aria-label="Sign out of your account"><span aria-hidden="true">🚪</span> @Localizer["Logout"]</button></li>
                 }
                 else
                 {
                     <li role="none"><hr class="my-4 border-gray-100" role="separator"></li>
-                    <li role="none"><a href="/login" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem">Sign In</a></li>
-                    <li role="none"><a href="/register" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem">Sign Up</a></li>
+                    <li role="none"><a href="/login" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem">@Localizer["SignIn"]</a></li>
+                    <li role="none"><a href="/register" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem">@Localizer["SignUp"]</a></li>
                 }
             </ul>
         </div>

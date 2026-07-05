@@ -36,6 +36,9 @@ public partial class Index : ComponentBase, IDisposable
 
     // Scoped metrics
     private int _ticketsSold;
+    private int _seasonTicketsSold;
+    /// <summary>Sold seats that are ordinary single-event tickets (total minus season-derived).</summary>
+    private int NormalTicketsSold => Math.Max(0, _ticketsSold - _seasonTicketsSold);
     private decimal _eventRevenue;
     private int _activeDrinkOrders;
     private List<OrderDto> _recentOrders = new();
@@ -232,6 +235,7 @@ public partial class Index : ComponentBase, IDisposable
         _ticketsSold = _selectedEvent == null
             ? 0
             : Math.Max(0, _selectedEvent.Capacity - _selectedEvent.AvailableSeats);
+        _seasonTicketsSold = Math.Min(_selectedEvent?.SeasonTicketsSold ?? 0, _ticketsSold);
     }
 
     // ----- Event navigation (re-filters already-loaded orders, no network) -----

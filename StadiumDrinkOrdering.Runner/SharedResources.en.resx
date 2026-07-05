@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Layout_Brand" xml:space="preserve">
+    <value>Runner</value>
+  </data>
+  <data name="Layout_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Layout_SignOut" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="Layout_TabPool" xml:space="preserve">
+    <value>Pool</value>
+  </data>
+  <data name="Layout_TabMyDeliveries" xml:space="preserve">
+    <value>My deliveries</value>
+  </data>
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Runner Login</value>
+  </data>
+  <data name="Login_Title" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="Login_DeliveryConsoleAccess" xml:space="preserve">
+    <value>Delivery console access</value>
+  </data>
+  <data name="Login_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Login_PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Login_ShowPassword" xml:space="preserve">
+    <value>Show password</value>
+  </data>
+  <data name="Login_HidePassword" xml:space="preserve">
+    <value>Hide password</value>
+  </data>
+  <data name="Login_LoginButton" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Login_LoggingIn" xml:space="preserve">
+    <value>Logging in…</value>
+  </data>
+  <data name="Home_PageTitle" xml:space="preserve">
+    <value>Runner — Pool</value>
+  </data>
+  <data name="Home_ReadyForPickup" xml:space="preserve">
+    <value>Ready for pickup</value>
+  </data>
+  <data name="Home_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Home_OfflineBanner" xml:space="preserve">
+    <value>Offline — reconnect to claim orders. Deliveries you've already picked up still sync automatically.</value>
+  </data>
+  <data name="Home_NoOrdersEmpty" xml:space="preserve">
+    <value>No orders waiting. New ones appear here as they're prepared.</value>
+  </data>
+  <data name="Home_SeatLabel" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Home_Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Home_TotalLabel" xml:space="preserve">
+    <value>Order total</value>
+  </data>
+  <data name="Home_ClaimingButton" xml:space="preserve">
+    <value>Claiming…</value>
+  </data>
+  <data name="Home_OfflineClaim" xml:space="preserve">
+    <value>Offline — can't claim</value>
+  </data>
+  <data name="Home_ClaimDeliveryButton" xml:space="preserve">
+    <value>Claim &amp; deliver</value>
+  </data>
+  <data name="Home_SelectHint" xml:space="preserve">
+    <value>Tap orders to select, then collect them in one trip.</value>
+  </data>
+  <data name="Home_SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="Home_ClearSelection" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Home_CollectSelected" xml:space="preserve">
+    <value>Collect {0}</value>
+  </data>
+  <data name="Home_Collecting" xml:space="preserve">
+    <value>Collecting…</value>
+  </data>
+  <data name="Home_CollectError" xml:space="preserve">
+    <value>Couldn't collect those orders — try again.</value>
+  </data>
+  <data name="Home_AllTaken" xml:space="preserve">
+    <value>Those orders were just taken by other runners.</value>
+  </data>
+  <data name="Home_PartialClaim" xml:space="preserve">
+    <value>Collected {0}. {1} were already taken.</value>
+  </data>
+  <data name="MyDeliveries_PageTitle" xml:space="preserve">
+    <value>Runner — My deliveries</value>
+  </data>
+  <data name="MyDeliveries_Title" xml:space="preserve">
+    <value>My deliveries</value>
+  </data>
+  <data name="MyDeliveries_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="MyDeliveries_EmptyMessage" xml:space="preserve">
+    <value>Nothing to deliver right now. Grab an order from the</value>
+  </data>
+  <data name="MyDeliveries_PoolLink" xml:space="preserve">
+    <value>pool</value>
+  </data>
+  <data name="MyDeliveries_SeatLabel" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="MyDeliveries_MarkDeliveredButton" xml:space="preserve">
+    <value>Mark delivered</value>
+  </data>
+  <data name="MyDeliveries_DeliveredSection" xml:space="preserve">
+    <value>Delivered · waiting to sync</value>
+  </data>
+  <data name="MyDeliveries_SyncingBadge" xml:space="preserve">
+    <value>syncing…</value>
+  </data>
+  <data name="MyDeliveries_OfflineBadge" xml:space="preserve">
+    <value>offline</value>
+  </data>
+  <data name="MyDeliveries_MarkedDelivered" xml:space="preserve">
+    <value>marked delivered</value>
+  </data>
+</root>

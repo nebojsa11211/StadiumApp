@@ -92,6 +92,22 @@ public class StadiumController : ControllerBase
         return Ok(layout);
     }
 
+    // Structured section reference (code + display name) for the whole stadium. Staff apps use this
+    // to normalize legacy free-text seat strings onto the same section names orders are stored under,
+    // covering sectors that currently have no linked-seat orders to learn the name from.
+    [HttpGet("sections")]
+    [Authorize(Roles = "Admin,Bartender,Waiter")]
+    public async Task<ActionResult<List<SectionRefDto>>> GetSections()
+    {
+        var sections = await _context.StadiumSections
+            .Where(s => s.IsActive)
+            .OrderBy(s => s.SectionCode)
+            .Select(s => new SectionRefDto { Code = s.SectionCode, Name = s.SectionName })
+            .ToListAsync();
+
+        return Ok(sections);
+    }
+
     [HttpGet("section/{section}/seats")]
     [Authorize(Roles = "Admin,Bartender,Waiter")]
     public async Task<ActionResult<List<StadiumSeatDto>>> GetSectionSeats(string section)

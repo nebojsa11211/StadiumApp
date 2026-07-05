@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Staff Login - Stadium Drink Ordering</PageTitle>
+<PageTitle>@Localizer["AuthLayout_Title"]</PageTitle>
 
 <div class="auth-page">
     <main class="auth-main">
@@ -11,7 +12,7 @@
 <style>
     .auth-page {
         min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         display: flex;
         align-items: center;
         justify-content: center;

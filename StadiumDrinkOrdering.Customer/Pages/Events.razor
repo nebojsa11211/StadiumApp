@@ -3,8 +3,9 @@
 @using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
 @inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Browse Premium Events - Stadium Drinks</PageTitle>
+<PageTitle>@Localizer["Events_PageTitle"]</PageTitle>
 
 <CustomerAuthRoute>
 <div class="premium-page">
@@ -12,10 +13,9 @@
     <div class="premium-section-header">
         <div class="container py-5">
             <div class="text-center">
-                <h1 class="display-3 fw-bold text-white mb-4">🎫 Premium Events</h1>
+                <h1 class="display-3 fw-bold text-white mb-4">🎫 @Localizer["Events_HeaderTitle"]</h1>
                 <p class="lead text-white-50 mx-auto" style="max-width: 800px;">
-                    Discover exclusive sports events, concerts, and premium entertainment experiences.
-                    Secure your tickets and enjoy world-class concessions delivered to your seat.
+                    @Localizer["Events_HeaderSubtitle"]
                 </p>
             </div>
         </div>
@@ -27,12 +27,12 @@
             <div class="premium-card-header">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                     <div>
-                        <h3 class="h4 fw-bold text-white mb-2">Find Your Perfect Event</h3>
-                        <p class="text-white-50 mb-0">Advanced filtering for premium experiences</p>
+                        <h3 class="h4 fw-bold text-white mb-2">@Localizer["Events_FindYourEvent"]</h3>
+                        <p class="text-white-50 mb-0">@Localizer["Events_AdvancedFiltering"]</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <span class="badge bg-success">Premium Selection</span>
-                        <span class="badge bg-warning text-dark">Curated Events</span>
+                        <span class="badge bg-success">@Localizer["Events_PremiumSelection"]</span>
+                        <span class="badge bg-warning text-dark">@Localizer["Events_CuratedEvents"]</span>
                     </div>
                 </div>
             </div>
@@ -40,37 +40,37 @@
                 <div class="row g-4">
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="mb-3">
-                            <label class="form-label text-white">Event Type</label>
+                            <label class="form-label text-white">@Localizer["Events_EventType"]</label>
                             <select class="form-select premium-form-control" @bind="filterEventType">
-                                <option value="">All Premium Events</option>
-                                <option value="Football">🏈 Football</option>
-                                <option value="Concert">🎵 Premium Concerts</option>
-                                <option value="Basketball">🏀 Basketball</option>
-                                <option value="Baseball">⚾ Baseball</option>
-                                <option value="Hockey">🏒 Hockey</option>
-                                <option value="Soccer">⚽ Soccer</option>
-                                <option value="Other">🎭 Other Premium Events</option>
+                                <option value="">@Localizer["Events_AllPremium"]</option>
+                                <option value="Football">🏈 @Localizer["Events_Football"]</option>
+                                <option value="Concert">🎵 @Localizer["Events_PremiumConcerts"]</option>
+                                <option value="Basketball">🏀 @Localizer["Events_Basketball"]</option>
+                                <option value="Baseball">⚾ @Localizer["Events_Baseball"]</option>
+                                <option value="Hockey">🏒 @Localizer["Events_Hockey"]</option>
+                                <option value="Soccer">⚽ @Localizer["Events_Soccer"]</option>
+                                <option value="Other">🎭 @Localizer["Events_OtherPremium"]</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="mb-3">
-                            <label class="form-label text-white">From Date</label>
+                            <label class="form-label text-white">@Localizer["Events_FromDate"]</label>
                             <input type="date" class="form-control premium-form-control" @bind="filterDateFrom" />
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="mb-3">
-                            <label class="form-label text-white">To Date</label>
+                            <label class="form-label text-white">@Localizer["Events_ToDate"]</label>
                             <input type="date" class="form-control premium-form-control" @bind="filterDateTo" />
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="mb-3">
-                            <label class="form-label text-white">Price Range</label>
+                            <label class="form-label text-white">@Localizer["Events_PriceRange"]</label>
                             <div class="d-flex gap-2">
-                                <input type="number" class="form-control premium-form-control" placeholder="Min $" @bind="filterMinPrice" step="10" />
-                                <input type="number" class="form-control premium-form-control" placeholder="Max $" @bind="filterMaxPrice" step="10" />
+                                <input type="number" class="form-control premium-form-control" placeholder="@Localizer["Events_MinPrice"]" @bind="filterMinPrice" step="10" />
+                                <input type="number" class="form-control premium-form-control" placeholder="@Localizer["Events_MaxPrice"]" @bind="filterMaxPrice" step="10" />
                             </div>
                         </div>
                     </div>
@@ -78,18 +78,18 @@
                 <div class="d-flex gap-3 justify-content-end mt-4">
                     <button class="btn premium-btn-outline" @onclick="ClearFilters">
                         <span>🔄</span>
-                        <span>Clear Filters</span>
+                        <span>@Localizer["Events_ClearFilters"]</span>
                     </button>
                     <button class="btn premium-btn-primary" @onclick="ApplyFilters" disabled="@isLoading">
                         @if (isLoading)
                         {
                             <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            <span>Searching...</span>
+                            <span>@Localizer["Events_Searching"]</span>
                         }
                         else
                         {
                             <span>🔍</span>
-                            <span>Apply Filters</span>
+                            <span>@Localizer["Events_ApplyFilters"]</span>
                         }
                     </button>
                 </div>
@@ -104,10 +104,10 @@
         {
             <div class="text-center py-5">
                 <div class="spinner-border text-success mb-4" style="width: 4rem; height: 4rem;" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                    <span class="visually-hidden">@Localizer["Loading"]</span>
                 </div>
-                <h3 class="h4 fw-bold text-white mb-3">Discovering Premium Events</h3>
-                <p class="text-white-50">Please wait while we curate the best experiences for you...</p>
+                <h3 class="h4 fw-bold text-white mb-3">@Localizer["Events_DiscoveringEvents"]</h3>
+                <p class="text-white-50">@Localizer["Events_PleaseWaitCurating"]</p>
             </div>
         }
         else if (events == null || !events.Any())
@@ -117,18 +117,18 @@
                 <div class="mb-4">
                     <span style="font-size: 6rem;">🎭</span>
                 </div>
-                <h3 class="h3 fw-bold text-white mb-4">No Premium Events Found</h3>
+                <h3 class="h3 fw-bold text-white mb-4">@Localizer["Events_NoEventsFound"]</h3>
                 <p class="text-white-50 mb-4 mx-auto" style="max-width: 600px;">
-                    We couldn't find any premium events matching your criteria. Try adjusting your filters or check back later for new exclusive events.
+                    @Localizer["Events_NoEventsMessage"]
                 </p>
                 <div class="d-flex gap-3 justify-content-center">
                     <button class="btn premium-btn-outline" @onclick="ClearFilters">
                         <span>🔄</span>
-                        <span>Clear All Filters</span>
+                        <span>@Localizer["Events_ClearAllFilters"]</span>
                     </button>
                     <a href="/" class="btn premium-btn-primary">
                         <span>🏠</span>
-                        <span>Back to Home</span>
+                        <span>@Localizer["Events_BackToHome"]</span>
                     </a>
                 </div>
             </div>
@@ -174,14 +174,14 @@
                                         {
                                             <span class="badge bg-danger">
                                                 <span>⚡</span>
-                                                <span>Selling Fast</span>
+                                                <span>@Localizer["Events_SellingFast"]</span>
                                             </span>
                                         }
                                         else if (isSoldOut)
                                         {
                                             <span class="badge bg-secondary">
                                                 <span>❌</span>
-                                                <span>Sold Out</span>
+                                                <span>@Localizer["Events_SoldOut"]</span>
                                             </span>
                                         }
                                     </div>
@@ -218,19 +218,19 @@
                                     <div class="col-4">
                                         <div class="premium-stat-box">
                                             <div class="h5 fw-bold mb-0 @(isPremiumEvent ? "text-warning" : "text-success")">$@evt.BaseTicketPrice.ToString("F0")</div>
-                                            <div class="small text-white-50">From</div>
+                                            <div class="small text-white-50">@Localizer["Events_From"]</div>
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="premium-stat-box">
                                             <div class="h5 fw-bold mb-0 @(evt.AvailableSeats > 100 ? "text-success" : evt.AvailableSeats > 50 ? "text-warning" : "text-danger")">@evt.AvailableSeats</div>
-                                            <div class="small text-white-50">Available</div>
+                                            <div class="small text-white-50">@Localizer["Events_Available"]</div>
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="premium-stat-box">
                                             <div class="h5 fw-bold mb-0 text-white">@capacityPercent%</div>
-                                            <div class="small text-white-50">Sold</div>
+                                            <div class="small text-white-50">@Localizer["Events_Sold"]</div>
                                         </div>
                                     </div>
                                 </div>
@@ -247,15 +247,15 @@
                                     disabled="@isSoldOut">
                                     @if (isSoldOut)
                                     {
-                                        <span>❌ Sold Out</span>
+                                        <span>❌ @Localizer["Events_SoldOut"]</span>
                                     }
                                     else if (isSellingFast)
                                     {
-                                        <span>⚡ Only @evt.AvailableSeats Left - Act Fast!</span>
+                                        <span>⚡ @string.Format(Localizer["Events_OnlyLeftActFast"].Value, evt.AvailableSeats)</span>
                                     }
                                     else
                                     {
-                                        <span>🎫 @(isPremiumEvent ? "Get Premium Tickets" : "Get Tickets")</span>
+                                        <span>🎫 @(isPremiumEvent ? Localizer["Events_GetPremiumTickets"] : Localizer["Events_GetTickets"])</span>
                                     }
                                 </button>
                             </div>

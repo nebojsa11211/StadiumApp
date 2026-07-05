@@ -1,0 +1,60 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject RunnerAuthService Auth
+@inject OutboxService Outbox
+@inject NavigationManager Nav
+@inject IStringLocalizer<SharedResources> Localizer
+
+<div class="runner-shell">
+    <header class="runner-appbar">
+        <span class="runner-brand">🏃 @Localizer["Layout_Brand"]</span>
+        <div class="runner-appbar-right">
+            <span class="runner-appbar-status" aria-live="polite">
+                @if (!Outbox.IsOnline)
+                {
+                    <span class="runner-chip runner-chip-offline" id="runner-offline-chip">⚠ @Localizer["Layout_Offline"]</span>
+                }
+                @if (Outbox.Pending.Count > 0)
+                {
+                    <span class="runner-chip runner-chip-sync" id="runner-sync-chip">⏳ @Outbox.Pending.Count</span>
+                }
+            </span>
+            <LanguageSwitcher />
+            @if (Auth.IsAuthenticated)
+            {
+                <span class="runner-user">@Auth.Email</span>
+                <button class="runner-logout" @onclick="Logout" id="runner-logout">@Localizer["Layout_SignOut"]</button>
+            }
+        </div>
+    </header>
+
+    <main class="runner-content">
+        @Body
+    </main>
+
+    @if (Auth.IsAllowed)
+    {
+        <nav class="runner-tabbar">
+            <NavLink class="runner-tab" href="" Match="NavLinkMatch.All">
+                <span class="runner-tab-icon" aria-hidden="true">📋</span><span>@Localizer["Layout_TabPool"]</span>
+            </NavLink>
+            <NavLink class="runner-tab" href="my-deliveries">
+                <span class="runner-tab-icon" aria-hidden="true">🚚</span><span>@Localizer["Layout_TabMyDeliveries"]</span>
+            </NavLink>
+        </nav>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized() => Outbox.OnChange += OnOutboxChanged;
+
+    private void OnOutboxChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task Logout()
+    {
+        await Auth.ClearAsync();
+        Nav.NavigateTo("login");
+    }
+
+    public void Dispose() => Outbox.OnChange -= OnOutboxChanged;
+}

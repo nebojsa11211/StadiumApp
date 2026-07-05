@@ -4,17 +4,18 @@
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Order Confirmation - Stadium Drinks</PageTitle>
+<PageTitle>@Localizer["OrderConfirmation_PageTitle"]</PageTitle>
 
 @if (isLoading)
 {
     <div class="container-fluid py-5">
         <div class="text-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="visually-hidden">Loading order confirmation...</span>
+                <span class="visually-hidden">@Localizer["Loading"]</span>
             </div>
-            <p class="mt-3">Loading your order details...</p>
+            <p class="mt-3">@Localizer["OrderConfirmation_LoadingConfirmation"]</p>
         </div>
     </div>
 }
@@ -23,9 +24,9 @@ else if (orderConfirmation == null)
     <div class="container-fluid py-5">
         <div class="alert alert-danger text-center">
             <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
-            <h4>Order Not Found</h4>
-            <p>We couldn't find your order. Please check your email for confirmation details or contact support.</p>
-            <a href="/events" class="btn btn-primary">Browse Events</a>
+            <h4>@Localizer["OrderConfirmation_OrderNotFound"]</h4>
+            <p>@Localizer["OrderConfirmation_OrderNotFoundMessage"]</p>
+            <a href="/events" class="btn btn-primary">@Localizer["Events_BackToHome"]</a>
         </div>
     </div>
 }
@@ -37,8 +38,8 @@ else
             <div class="col-12 text-center">
                 <div class="alert alert-success shadow-sm">
                     <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
-                    <h2 class="text-success mb-2">Payment Successful!</h2>
-                    <p class="lead mb-0">Your order has been confirmed and your tickets are ready.</p>
+                    <h2 class="text-success mb-2">@Localizer["OrderConfirmation_PaymentSuccessful"]</h2>
+                    <p class="lead mb-0">@Localizer["OrderConfirmation_ConfirmedReady"]</p>
                 </div>
             </div>
         </div>
@@ -48,32 +49,32 @@ else
             <div class="col-lg-8 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Details</h4>
+                        <h4 class="mb-0"><i class="fas fa-receipt me-2"></i>@Localizer["OrderConfirmation_OrderDetails"]</h4>
                     </div>
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-sm-6">
-                                <strong>Order ID:</strong> #@orderConfirmation.OrderId
+                                <strong>@Localizer["OrderConfirmation_OrderID"]</strong> #@orderConfirmation.OrderId
                             </div>
                             <div class="col-sm-6">
-                                <strong>Order Date:</strong> @orderConfirmation.OrderDate.ToString("MMM dd, yyyy - HH:mm")
+                                <strong>@Localizer["OrderConfirmation_OrderDate"]</strong> @orderConfirmation.OrderDate.ToString("MMM dd, yyyy - HH:mm")
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-6">
-                                <strong>Customer:</strong> @orderConfirmation.CustomerName
+                                <strong>@Localizer["OrderConfirmation_Customer"]</strong> @orderConfirmation.CustomerName
                             </div>
                             <div class="col-sm-6">
-                                <strong>Payment Status:</strong> 
+                                <strong>@Localizer["OrderConfirmation_PaymentStatus"]</strong>
                                 <span class="badge bg-success ms-2">@orderConfirmation.PaymentStatus</span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">
-                                <strong>Event:</strong> @orderConfirmation.EventName
+                                <strong>@Localizer["Checkout_Event"]</strong> @orderConfirmation.EventName
                             </div>
                             <div class="col-sm-6">
-                                <strong>Event Date:</strong> @orderConfirmation.EventDate.ToString("MMM dd, yyyy - HH:mm")
+                                <strong>@Localizer["OrderConfirmation_EventDate"]</strong> @orderConfirmation.EventDate.ToString("MMM dd, yyyy - HH:mm")
                             </div>
                         </div>
                     </div>
@@ -82,7 +83,7 @@ else
                 <!-- Tickets -->
                 <div class="card shadow-sm mt-4">
                     <div class="card-header bg-success text-white">
-                        <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Your Tickets (@orderConfirmation.Tickets.Count)</h4>
+                        <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>@string.Format(Localizer["OrderConfirmation_Tickets"], orderConfirmation.Tickets.Count)</h4>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -95,14 +96,14 @@ else
                                             <span class="badge bg-primary">$@ticket.Price.ToString("F2")</span>
                                         </div>
                                         <div class="mb-2">
-                                            <small class="text-muted">Section: @ticket.SectionName</small>
+                                            <small class="text-muted">@Localizer["Checkout_Sector"]: @ticket.SectionName</small>
                                         </div>
                                         <div class="mb-2">
-                                            <small class="text-muted">Ticket: @ticket.TicketNumber</small>
+                                            <small class="text-muted">@Localizer["Tickets"]: @ticket.TicketNumber</small>
                                         </div>
                                         <div class="qr-code-placeholder bg-white border rounded p-2 text-center">
                                             <i class="fas fa-qrcode fa-2x text-muted"></i>
-                                            <div><small>QR Code</small></div>
+                                            <div><small>@Localizer["Tickets"]</small></div>
                                         </div>
                                     </div>
                                 </div>
@@ -116,44 +117,44 @@ else
             <div class="col-lg-4">
                 <div class="card shadow-sm sticky-top" style="top: 20px;">
                     <div class="card-header bg-dark text-white">
-                        <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Order Summary</h5>
+                        <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>@Localizer["Checkout_OrderSummary"]</h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Tickets (@orderConfirmation.Tickets.Count)</span>
+                            <span>@Localizer["Tickets"] (@orderConfirmation.Tickets.Count)</span>
                             <span>$@orderConfirmation.Tickets.Sum(t => t.Price).ToString("F2")</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Service Fee (10%)</span>
+                            <span>@Localizer["OrderConfirmation_ServiceFee"]</span>
                             <span>$@(orderConfirmation.Tickets.Sum(t => t.Price) * 0.10m).ToString("F2")</span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
-                            <span>Processing Fee</span>
+                            <span>@Localizer["OrderConfirmation_ProcessingFee"]</span>
                             <span>$2.50</span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between fw-bold h5">
-                            <span>Total</span>
+                            <span>@Localizer["Events_From"]</span>
                             <span class="text-success">$@orderConfirmation.TotalAmount.ToString("F2")</span>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="d-grid gap-2 mt-4">
                             <button class="btn btn-primary" @onclick="PrintTickets">
-                                <i class="fas fa-print me-2"></i>Print Tickets
+                                <i class="fas fa-print me-2"></i>@Localizer["OrderConfirmation_PrintTickets"]
                             </button>
                             <button class="btn btn-outline-secondary" @onclick="DownloadTickets">
-                                <i class="fas fa-download me-2"></i>Download PDF
+                                <i class="fas fa-download me-2"></i>@Localizer["OrderConfirmation_DownloadPDF"]
                             </button>
                             <button class="btn btn-outline-info" @onclick="EmailTickets">
-                                <i class="fas fa-envelope me-2"></i>Email Tickets
+                                <i class="fas fa-envelope me-2"></i>@Localizer["OrderConfirmation_EmailTickets"]
                             </button>
                         </div>
 
                         <hr>
                         <div class="text-center">
                             <a href="/events" class="btn btn-success">
-                                <i class="fas fa-calendar me-2"></i>Browse More Events
+                                <i class="fas fa-calendar me-2"></i>@Localizer["OrderConfirmation_BrowseMoreEvents"]
                             </a>
                         </div>
                     </div>
@@ -165,12 +166,12 @@ else
         <div class="row mt-4">
             <div class="col-12">
                 <div class="alert alert-info">
-                    <h6><i class="fas fa-info-circle me-2"></i>Important Information</h6>
+                    <h6><i class="fas fa-info-circle me-2"></i>@Localizer["OrderConfirmation_ImportantInformation"]</h6>
                     <ul class="mb-0">
-                        <li>Please arrive at the venue at least 30 minutes before the event start time.</li>
-                        <li>Present your QR code tickets at the entrance for scanning.</li>
-                        <li>Keep your tickets safe and don't share the QR codes with others.</li>
-                        <li>For any issues or questions, contact our support team.</li>
+                        <li>@Localizer["OrderConfirmation_ArriveInfo"]</li>
+                        <li>@Localizer["OrderConfirmation_QRCodeInfo"]</li>
+                        <li>@Localizer["OrderConfirmation_KeepSafeInfo"]</li>
+                        <li>@Localizer["OrderConfirmation_SupportInfo"]</li>
                     </ul>
                 </div>
             </div>

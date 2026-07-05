@@ -1,0 +1,135 @@
+@page "/my-deliveries"
+@implements IDisposable
+@inject RunnerApiService Api
+@inject OutboxService Outbox
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["MyDeliveries_PageTitle"]</PageTitle>
+
+<div class="runner-page">
+    <div class="runner-page-head">
+        <h1 class="runner-page-title">@Localizer["MyDeliveries_Title"]</h1>
+        <button class="runner-refresh" @onclick="Load" aria-label="@Localizer["MyDeliveries_Refresh"]" id="runner-mine-refresh">↻</button>
+    </div>
+
+    @if (loading && mine is null)
+    {
+        <div class="runner-loading"><div class="runner-cta-spinner"></div></div>
+    }
+    else if (active.Count == 0 && syncing.Count == 0)
+    {
+        <div class="runner-empty">
+            <div class="runner-empty-icon" aria-hidden="true">✅</div>
+            <div class="runner-empty-text">@Localizer["MyDeliveries_EmptyMessage"] <a href="/">@Localizer["MyDeliveries_PoolLink"]</a>.</div>
+        </div>
+    }
+    else
+    {
+        @foreach (var o in active)
+        {
+            <div class="runner-card" id="runner-mine-card-@o.Id">
+                <div class="runner-card-top">
+                    <span class="runner-seat-label">@Localizer["MyDeliveries_SeatLabel"]</span>
+                    <span class="runner-card-meta"><span class="runner-order-id">#@o.Id</span></span>
+                </div>
+                <div class="runner-seat">@SeatText(o)</div>
+                <div class="runner-items">
+                    @foreach (var it in o.OrderItems)
+                    {
+                        <div><span class="runner-qty">@it.Quantity×</span> @it.DrinkName</div>
+                    }
+                </div>
+                <div class="runner-total" id="runner-mine-total-@o.Id">
+                    <span class="runner-total-label">@Localizer["Home_TotalLabel"]</span>
+                    <span class="runner-total-amount">€@o.TotalAmount.ToString("F2")</span>
+                </div>
+                <button class="runner-cta" @onclick="() => Deliver(o.Id)" id="runner-mine-delivered-@o.Id">
+                    <span class="runner-cta-icon" aria-hidden="true">✓</span>
+                    <span>@Localizer["MyDeliveries_MarkDeliveredButton"]</span>
+                </button>
+            </div>
+        }
+
+        @if (syncing.Count > 0)
+        {
+            <div class="runner-sync-head">@Localizer["MyDeliveries_DeliveredSection"] (@syncing.Count)</div>
+            @foreach (var o in syncing)
+            {
+                <div class="runner-card runner-card-pending" id="runner-mine-pending-@o.Id">
+                    <div class="runner-card-top">
+                        <span class="runner-seat-label">@Localizer["MyDeliveries_SeatLabel"]</span>
+                        @if (Outbox.IsOnline)
+                        {
+                            <span class="runner-pending-badge runner-pending-badge-sync">⏳ @Localizer["MyDeliveries_SyncingBadge"]</span>
+                        }
+                        else
+                        {
+                            <span class="runner-pending-badge runner-pending-badge-offline">⚠ @Localizer["MyDeliveries_OfflineBadge"]</span>
+                        }
+                    </div>
+                    <div class="runner-seat">@SeatText(o)</div>
+                    <div class="runner-items">
+                        <span class="runner-order-id">#@o.Id</span> · @Localizer["MyDeliveries_MarkedDelivered"]
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>
+
+@code {
+    private List<OrderDto>? mine;
+    private List<OrderDto> active = new();
+    private List<OrderDto> syncing = new();
+    private bool loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Outbox.OnChange += OnOutboxChanged;
+        await Load();
+    }
+
+    private async Task Load()
+    {
+        loading = true;
+        mine = await Api.GetMyDeliveriesAsync();
+        Recompute();
+        loading = false;
+        StateHasChanged();
+    }
+
+    private void Recompute()
+    {
+        var outForDelivery = mine?.Where(o => o.Status == OrderStatus.OutForDelivery).ToList() ?? new();
+        // An order whose delivery is queued in the outbox is shown as "syncing", not still-to-deliver.
+        active = outForDelivery.Where(o => !Outbox.IsPendingDeliver(o.Id)).ToList();
+        syncing = outForDelivery.Where(o => Outbox.IsPendingDeliver(o.Id)).ToList();
+    }
+
+    private async Task Deliver(int orderId)
+    {
+        try { await JS.InvokeVoidAsync("runnerHaptic", 15); } catch { /* JS unavailable — ignore */ }
+        // Optimistic + offline-safe: queue it, reflect immediately, let the outbox sync when possible.
+        await Outbox.EnqueueDeliverAsync(orderId);
+        Recompute();
+        StateHasChanged();
+    }
+
+    // Full seat location from the server (section · row · seat), falling back to the short seat
+    // number and finally an em dash when neither is present.
+    private static string SeatText(OrderDto o)
+    {
+        if (!string.IsNullOrWhiteSpace(o.SeatPath)) return o.SeatPath;
+        return string.IsNullOrWhiteSpace(o.SeatNumber) ? "—" : o.SeatNumber;
+    }
+
+    private void OnOutboxChanged() => InvokeAsync(() =>
+    {
+        Recompute();     // instant: reflect new pending set against the data we already have
+        StateHasChanged();
+        _ = Load();      // background: reconcile against the server (drops synced-then-Delivered orders)
+    });
+
+    public void Dispose() => Outbox.OnChange -= OnOutboxChanged;
+}

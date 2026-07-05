@@ -134,7 +134,10 @@
         {
             try
             {
-                await hubConnection.SendAsync(method, args);
+                // Use SendCoreAsync so each element of args is passed as a separate
+                // hub-method parameter. SendAsync(method, args) would bind the whole
+                // array to a single parameter and fail server-side argument binding.
+                await hubConnection.SendCoreAsync(method, args);
             }
             catch (Exception ex)
             {

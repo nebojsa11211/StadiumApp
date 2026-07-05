@@ -44,11 +44,13 @@ public class Order
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public DateTime? AcceptedAt { get; set; }
+    public DateTime? InPreparationAt { get; set; }
     public DateTime? PreparedAt { get; set; }
     public DateTime? DeliveredAt { get; set; }
     public DateTime? CancelledAt { get; set; }
-    
+
     public int? AcceptedByUserId { get; set; }
+    public int? InPreparationByUserId { get; set; }
     public int? PreparedByUserId { get; set; }
     public int? DeliveredByUserId { get; set; }
     
@@ -69,6 +71,7 @@ public class Order
     // Legacy navigation properties
     public virtual User Customer { get; set; } = null!;
     public virtual User? AcceptedByUser { get; set; }
+    public virtual User? InPreparationByUser { get; set; }
     public virtual User? PreparedByUser { get; set; }
     public virtual User? DeliveredByUser { get; set; }
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

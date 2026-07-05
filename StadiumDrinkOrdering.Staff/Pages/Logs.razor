@@ -3,15 +3,16 @@
 @using StadiumDrinkOrdering.Staff.Services
 @inject IStaffApiService ApiService
 @inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>System Logs</PageTitle>
+<PageTitle>@Localizer["Logs_Title"]</PageTitle>
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📋 System Logs</h2>
+        <h2>📋 @Localizer["Logs_Title"]</h2>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary" @onclick="RefreshLogs" id="staff-logs-refresh-btn">
-                <i class="fas fa-sync-alt"></i> Refresh
+                <i class="fas fa-sync-alt"></i> @Localizer["Refresh"]
             </button>
         </div>
     </div>
@@ -20,9 +21,9 @@
     {
         <div class="text-center p-4">
             <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">@Localizer["Loading"]</span>
             </div>
-            <p class="mt-2">Loading logs...</p>
+            <p class="mt-2">@Localizer["Logs_Loading"]</p>
         </div>
     }
     else if (logSummary != null)
@@ -34,7 +35,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h6 class="card-title">Total Logs</h6>
+                                <h6 class="card-title">@Localizer["Logs_TotalLogs"]</h6>
                                 <h3 class="mb-0">@logSummary.TotalLogs</h3>
                             </div>
                             <i class="fas fa-list fa-2x"></i>
@@ -47,7 +48,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h6 class="card-title">Errors</h6>
+                                <h6 class="card-title">@Localizer["Logs_Errors"]</h6>
                                 <h3 class="mb-0">@logSummary.ErrorCount</h3>
                             </div>
                             <i class="fas fa-exclamation-triangle fa-2x"></i>
@@ -60,7 +61,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h6 class="card-title">Warnings</h6>
+                                <h6 class="card-title">@Localizer["Logs_Warnings"]</h6>
                                 <h3 class="mb-0">@logSummary.WarningCount</h3>
                             </div>
                             <i class="fas fa-exclamation fa-2x"></i>
@@ -73,7 +74,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h6 class="card-title">Info</h6>
+                                <h6 class="card-title">@Localizer["Logs_Info"]</h6>
                                 <h3 class="mb-0">@logSummary.InfoCount</h3>
                             </div>
                             <i class="fas fa-info-circle fa-2x"></i>
@@ -86,26 +87,26 @@
         <!-- Simple Filters -->
         <div class="card mb-4">
             <div class="card-body">
-                <h6 class="card-title">Quick Filters</h6>
+                <h6 class="card-title">@Localizer["Logs_QuickFilters"]</h6>
                 <div class="row">
                     <div class="col-md-3">
                         <button class="btn @(selectedLevel == "Error" ? "btn-danger" : "btn-outline-danger") me-2" @onclick="@(() => FilterByLevel("Error"))" id="staff-logs-filter-error-btn">
-                            Errors (@logSummary.ErrorCount)
+                            @Localizer["Logs_Errors"] (@logSummary.ErrorCount)
                         </button>
                     </div>
                     <div class="col-md-3">
                         <button class="btn @(selectedLevel == "Warning" ? "btn-warning" : "btn-outline-warning") me-2" @onclick="@(() => FilterByLevel("Warning"))" id="staff-logs-filter-warning-btn">
-                            Warnings (@logSummary.WarningCount)
+                            @Localizer["Logs_Warnings"] (@logSummary.WarningCount)
                         </button>
                     </div>
                     <div class="col-md-3">
                         <button class="btn @(selectedLevel == "Info" ? "btn-info" : "btn-outline-info") me-2" @onclick="@(() => FilterByLevel("Info"))" id="staff-logs-filter-info-btn">
-                            Info (@logSummary.InfoCount)
+                            @Localizer["Logs_Info"] (@logSummary.InfoCount)
                         </button>
                     </div>
                     <div class="col-md-3">
                         <button class="btn @(selectedLevel == "" ? "btn-secondary" : "btn-outline-secondary")" @onclick="@(() => FilterByLevel(""))" id="staff-logs-filter-all-btn">
-                            All Logs
+                            @Localizer["Logs_AllLogs"]
                         </button>
                     </div>
                 </div>
@@ -121,12 +122,12 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Time</th>
-                                    <th>Level</th>
-                                    <th>Action</th>
-                                    <th>User</th>
-                                    <th>Source</th>
-                                    <th>Message</th>
+                                    <th>@Localizer["Logs_TableTime"]</th>
+                                    <th>@Localizer["Logs_TableLevel"]</th>
+                                    <th>@Localizer["Logs_TableAction"]</th>
+                                    <th>@Localizer["Logs_TableUser"]</th>
+                                    <th>@Localizer["Logs_TableSource"]</th>
+                                    <th>@Localizer["Logs_TableMessage"]</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -164,7 +165,7 @@
                     @if (logs.TotalCount > 50)
                     {
                         <div class="text-center mt-3">
-                            <small class="text-muted">Showing first 50 of @logs.TotalCount logs. Use filters to narrow results.</small>
+                            <small class="text-muted">@string.Format(Localizer["Logs_ShowingFirst"].Value, logs.TotalCount)</small>
                         </div>
                     }
                 }
@@ -172,7 +173,7 @@
                 {
                     <div class="text-center p-4">
                         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No logs found.</p>
+                        <p class="text-muted">@Localizer["Logs_NoLogsFound"]</p>
                     </div>
                 }
             </div>
@@ -231,11 +232,11 @@
     {
         await LoadData();
         await ApiService.LogUserActionAsync("RefreshLogs", "UserAction", "Staff refreshed system logs");
-        
-        statusMessage = "Logs refreshed successfully!";
+
+        statusMessage = Localizer["Logs_RefreshSuccess"].Value;
         isSuccess = true;
         StateHasChanged();
-        
+
         await Task.Delay(3000);
         statusMessage = null;
         StateHasChanged();

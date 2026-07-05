@@ -6,9 +6,10 @@
 @inject ApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 @rendermode @(new InteractiveServerRenderMode())
 
-<PageTitle>Checkout - Stadium Ordering</PageTitle>
+<PageTitle>@Localizer["ComponentCheckout_PageTitle"]</PageTitle>
 
 <div class="checkout-container">
     @if (isLoading)
@@ -17,16 +18,16 @@
             <div class="loading-spinner">
                 <div class="spinner"></div>
             </div>
-            <h2>Loading Checkout...</h2>
+            <h2>@Localizer["ComponentCheckout_LoadingCheckout"]</h2>
         </div>
     }
     else if (orderSession == null || !cartItems.Any())
     {
         <div class="error-screen">
             <div class="error-icon">🛒</div>
-            <h2>No Items to Checkout</h2>
-            <p>Your cart is empty or session has expired.</p>
-            <button id="customer-checkout-continue-shopping-btn" class="btn btn-primary" @onclick="GoBackToOrder">Continue Shopping</button>
+            <h2>@Localizer["ComponentCheckout_NoItems"]</h2>
+            <p>@Localizer["ComponentCheckout_CartEmptyExpired"]</p>
+            <button id="customer-checkout-continue-shopping-btn" class="btn btn-primary" @onclick="GoBackToOrder">@Localizer["ComponentCheckout_ContinueShopping"]</button>
         </div>
     }
     else if (orderCompleted)
@@ -35,44 +36,44 @@
             <div class="success-animation">
                 <div class="checkmark">✓</div>
             </div>
-            <h2>Order Placed Successfully!</h2>
+            <h2>@Localizer["ComponentCheckout_OrderPlacedSuccess"]</h2>
             <div class="order-summary-card">
-                <h3>Order #@createdOrder?.Id</h3>
-                <p class="order-details">Your drinks will be delivered to:</p>
+                <h3>@string.Format(Localizer["ComponentCheckout_OrderNumber"], createdOrder?.Id)</h3>
+                <p class="order-details">@Localizer["ComponentCheckout_DeliveredTo"]</p>
                 <div class="delivery-info">
                     <strong>@orderSession.Ticket?.Seat?.Section?.SectionName - Row @orderSession.Ticket?.Seat?.RowNumber, Seat @orderSession.Ticket?.Seat?.SeatNumber</strong>
                 </div>
                 <div class="order-total-final">
-                    <strong>Total: €@cartTotal.ToString("F2")</strong>
+                    <strong>@Localizer["ComponentCheckout_TotalAmount"] €@cartTotal.ToString("F2")</strong>
                 </div>
             </div>
             <div class="next-steps">
-                <p>📱 You'll receive updates on your order status</p>
-                <p>⏱️ Estimated delivery: 10-15 minutes</p>
+                <p>📱 @Localizer["ComponentCheckout_YoullReceiveUpdates"]</p>
+                <p>⏱️ @Localizer["ComponentCheckout_EstimatedDelivery"]</p>
             </div>
-            <button id="customer-checkout-track-order-btn" class="btn btn-primary btn-large" @onclick="TrackOrder">Track Order</button>
-            <button id="customer-checkout-go-home-btn" class="btn btn-secondary" @onclick="GoHome">Back to Home</button>
+            <button id="customer-checkout-track-order-btn" class="btn btn-primary btn-large" @onclick="TrackOrder">@Localizer["ComponentCheckout_TrackOrder"]</button>
+            <button id="customer-checkout-go-home-btn" class="btn btn-secondary" @onclick="GoHome">@Localizer["ComponentCheckout_BackToHome"]</button>
         </div>
     }
     else
     {
         <!-- Checkout Form -->
         <div class="checkout-header">
-            <h1>Checkout</h1>
+            <h1>@Localizer["ComponentCheckout_CheckoutTitle"]</h1>
             <div class="progress-indicator">
                 <div class="progress-step @(currentStep >= 1 ? "completed" : "")">
                     <span class="step-number">1</span>
-                    <span class="step-label">Review Order</span>
+                    <span class="step-label">@Localizer["ComponentCheckout_ReviewOrder"]</span>
                 </div>
                 <div class="progress-line @(currentStep >= 2 ? "completed" : "")"></div>
                 <div class="progress-step @(currentStep >= 2 ? "completed" : "")">
                     <span class="step-number">2</span>
-                    <span class="step-label">Payment</span>
+                    <span class="step-label">@Localizer["ComponentCheckout_Payment"]</span>
                 </div>
                 <div class="progress-line @(currentStep >= 3 ? "completed" : "")"></div>
                 <div class="progress-step @(currentStep >= 3 ? "completed" : "")">
                     <span class="step-number">3</span>
-                    <span class="step-label">Confirm</span>
+                    <span class="step-label">@Localizer["ComponentCheckout_Confirm"]</span>
                 </div>
             </div>
         </div>
@@ -80,7 +81,7 @@
         <div class="checkout-content">
             <!-- Order Summary -->
             <div class="order-summary-section">
-                <h3>📍 Delivery Information</h3>
+                <h3>📍 @Localizer["ComponentCheckout_DeliveryInformation"]</h3>
                 <div class="delivery-card">
                     <div class="event-info">
                         <strong>@orderSession.Ticket?.EventName</strong>
@@ -92,7 +93,7 @@
                     </div>
                 </div>
 
-                <h3>🛒 Order Summary</h3>
+                <h3>🛒 @Localizer["Checkout_OrderSummary"]</h3>
                 <div class="order-items">
                     @foreach (var item in cartItems)
                     {
@@ -101,7 +102,7 @@
                                 <div class="item-name">@item.DrinkName</div>
                                 @if (!string.IsNullOrEmpty(item.SpecialInstructions))
                                 {
-                                    <div class="special-notes">Note: @item.SpecialInstructions</div>
+                                    <div class="special-notes">@Localizer["ComponentCheckout_Note"] @item.SpecialInstructions</div>
                                 }
                             </div>
                             <div class="item-quantity">×@item.Quantity</div>
@@ -112,15 +113,15 @@
 
                 <div class="order-totals">
                     <div class="subtotal">
-                        <span>Subtotal</span>
+                        <span>@Localizer["Checkout_Subtotal", cartItems.Count]</span>
                         <span>€@cartTotal.ToString("F2")</span>
                     </div>
                     <div class="service-fee">
-                        <span>Service Fee</span>
+                        <span>@Localizer["Checkout_ServiceFee"]</span>
                         <span>€@serviceFee.ToString("F2")</span>
                     </div>
                     <div class="total">
-                        <span>Total</span>
+                        <span>@Localizer["Events_From"]</span>
                         <span>€@finalTotal.ToString("F2")</span>
                     </div>
                 </div>
@@ -128,27 +129,27 @@
 
             <!-- Payment Section -->
             <div class="payment-section">
-                <h3>💳 Payment Method</h3>
-                
+                <h3>💳 @Localizer["ComponentCheckout_PaymentMethod"]</h3>
+
                 @if (currentStep == 1)
                 {
                     <div class="payment-methods">
-                        <div class="payment-method @(selectedPaymentMethod == "card" ? "selected" : "")" 
+                        <div class="payment-method @(selectedPaymentMethod == "card" ? "selected" : "")"
                              @onclick="SelectCard">
                             <div class="method-icon">💳</div>
                             <div class="method-info">
-                                <strong>Credit/Debit Card</strong>
-                                <span>Visa, Mastercard, American Express</span>
+                                <strong>@Localizer["ComponentCheckout_CreditDebitCard"]</strong>
+                                <span>@Localizer["ComponentCheckout_VisaMastercardAmex"]</span>
                             </div>
                             <div class="method-radio">
                                 @if (selectedPaymentMethod == "card") { <span>✓</span> }
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="step-actions">
                         <button id="customer-checkout-proceed-payment-btn" class="btn btn-primary btn-large" @onclick="ProceedToPayment">
-                            Continue to Payment
+                            @Localizer["ComponentCheckout_ContinuePayment"]
                         </button>
                     </div>
                 }
@@ -161,8 +162,8 @@
                                 <div class="payment-spinner">
                                     <div class="spinner"></div>
                                 </div>
-                                <h4>Processing Payment...</h4>
-                                <p>Please don't close this page or navigate away.</p>
+                                <h4>@Localizer["ComponentCheckout_ProcessingPaymentTitle"]</h4>
+                                <p>@Localizer["ComponentCheckout_DontClose"]</p>
                             </div>
                         }
                         else
@@ -172,18 +173,18 @@
                                 <!-- Stripe card element -->
                             </div>
                             <div id="stripe-card-errors" class="stripe-errors"></div>
-                            
+
                             <div class="payment-security">
-                                <div class="security-badge">🔒 Secure Payment</div>
-                                <p>Your payment information is encrypted and secure.</p>
+                                <div class="security-badge">🔒 @Localizer["ComponentCheckout_SecurePayment"]</div>
+                                <p>@Localizer["ComponentCheckout_PaymentEncrypted"]</p>
                             </div>
 
                             <div class="step-actions">
                                 <button id="customer-checkout-back-to-review-btn" class="btn btn-secondary" @onclick="GoBackToReview">
-                                    ← Back to Review
+                                    ← @Localizer["ComponentCheckout_BackToReview"]
                                 </button>
                                 <button id="customer-checkout-pay-btn" class="btn btn-primary btn-large" @onclick="ProcessPayment" disabled="@(!paymentFormReady)">
-                                    Pay €@finalTotal.ToString("F2")
+                                    @Localizer["ComponentCheckout_Pay"] €@finalTotal.ToString("F2")
                                 </button>
                             </div>
                         }

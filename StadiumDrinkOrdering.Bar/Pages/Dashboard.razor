@@ -1,0 +1,353 @@
+@page "/"
+@using StadiumDrinkOrdering.Bar.Components.Dashboard
+@using StadiumDrinkOrdering.Bar.Services
+@using StadiumDrinkOrdering.Bar.Models
+@inject IDashboardService DashboardService
+@inject IAuthStateService AuthService
+@inject ISignalRService SignalRService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
+
+<PageTitle>@Localizer["Dashboard_PageTitle"]</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    <div id="bar-dashboard-container" class="container mt-5">
+        <div id="bar-dashboard-alert" class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">🔐 @Localizer["Dashboard_AuthenticationRequired"]</h4>
+            <p>@Localizer["Dashboard_MustBeLoggedIn"]</p>
+            <hr>
+            <p class="mb-0">
+                <a href="/login" class="btn btn-primary">@Localizer["Dashboard_GoToLogin"]</a>
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div id="bar-dashboard-console" class="dashboard-container console">
+        <!-- Dashboard Header -->
+        <div id="bar-dashboard-header" class="console-head dashboard-header">
+            <div id="bar-dashboard-header-title" class="console-head__title">
+                <span class="eyebrow">@Localizer["Dashboard_BarStation"]</span>
+                <h1>@Localizer["Dashboard_BartenderDashboard"]</h1>
+                <p>@Localizer["Dashboard_RealTimeOrderManagement"]</p>
+            </div>
+            <div id="bar-dashboard-header-actions" class="console-head__actions">
+                @if (dashboardData.LastUpdated != default)
+                {
+                    <span class="mono dash-updated">@Localizer["Dashboard_Updated"] @dashboardData.LastUpdated.ToString("HH:mm:ss")</span>
+                }
+                <button class="pill-btn" @onclick="RefreshData" disabled="@isRefreshing" id="bar-dashboard-refresh-btn">
+                    @if (isRefreshing)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-arrow-clockwise"></i>
+                    }
+                    @Localizer["Refresh"]
+                </button>
+            </div>
+        </div>
+
+        <!-- Current Event -->
+        @if (dashboardData.CurrentEvent is { } currentEvent)
+        {
+            <div id="bar-dashboard-current-event" class="current-event-banner @(currentEvent.IsCurrentlyLive ? "is-live" : "")">
+                <div class="current-event-banner__icon">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <div class="current-event-banner__body">
+                    <span class="eyebrow">@Localizer["Dashboard_CurrentEvent"]</span>
+                    <h2 id="bar-dashboard-current-event-name">@currentEvent.Name</h2>
+                    <div class="current-event-banner__meta">
+                        @if (!string.IsNullOrWhiteSpace(currentEvent.Location))
+                        {
+                            <span><i class="bi bi-geo-alt"></i> @currentEvent.Location</span>
+                        }
+                        @if (currentEvent.Date is { } date)
+                        {
+                            <span><i class="bi bi-clock"></i> @date.ToLocalTime().ToString("ddd d MMM, HH:mm")</span>
+                        }
+                    </div>
+                </div>
+                <div class="current-event-banner__status">
+                    @if (currentEvent.IsCurrentlyLive)
+                    {
+                        <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+                    }
+                    else
+                    {
+                        <span class="status-badge">@currentEvent.StatusName</span>
+                    }
+                </div>
+            </div>
+        }
+        else if (!dashboardData.IsLoading)
+        {
+            <div id="bar-dashboard-no-event" class="current-event-banner is-empty">
+                <div class="current-event-banner__icon"><i class="bi bi-calendar-x"></i></div>
+                <div class="current-event-banner__body">
+                    <span class="eyebrow">@Localizer["Dashboard_CurrentEvent"]</span>
+                    <h2>@Localizer["Dashboard_NoActiveEvent"]</h2>
+                    <div class="current-event-banner__meta"><span>@Localizer["Dashboard_OrdersWillAppear"]</span></div>
+                </div>
+            </div>
+        }
+
+        <!-- Dashboard Metrics -->
+        <div id="bar-dashboard-metrics-row" class="row dashboard-metrics">
+            @if (dashboardData.IsLoading)
+            {
+                @for (int i = 0; i < 5; i++)
+                {
+                    <DashboardCard IsLoading="true" IdSlug="@($"skeleton-{i}")" />
+                }
+            }
+            else
+            {
+                @foreach (var cardData in dashboardData.GetDashboardCards(Localizer))
+                {
+                    <DashboardCard
+                        IdSlug="@cardData.Slug"
+                        Title="@cardData.Title"
+                        Value="@cardData.Value"
+                        IconClass="@cardData.IconClass"
+                        BackgroundClass="@cardData.BackgroundClass"
+                        TextColorClass="@cardData.TextColorClass"
+                        Subtitle="@cardData.Subtitle"
+                        Clickable="@cardData.Clickable"
+                        OnClick="@(() => HandleCardClick(cardData))" />
+                }
+            }
+        </div>
+
+        <div id="bar-dashboard-content-row" class="row">
+            <!-- Recent Orders -->
+            <div id="bar-dashboard-recent-orders-col" class="col-lg-8 mb-4">
+                <RecentOrdersList
+                    Title="@Localizer["Dashboard_RecentOrders"]"
+                    Orders="@dashboardData.RecentOrders"
+                    IsLoading="@dashboardData.IsLoading"
+                    ShowActions="true"
+                    MaxDisplayCount="10"
+                    ViewAllUrl="/order-queue"
+                    OnOrderClick="@HandleOrderClick" />
+            </div>
+
+            <!-- Side Panel -->
+            <div id="bar-dashboard-side-panel-col" class="col-lg-4">
+                <!-- Quick Actions -->
+                <div id="bar-dashboard-quick-actions" class="mb-4">
+                    <QuickActionsPanel
+                        Title="@Localizer["Dashboard_QuickActions"]"
+                        Actions="@dashboardData.QuickActions"
+                        IsLoading="@dashboardData.IsLoading" />
+                </div>
+
+                <!-- Connection Status -->
+                <ConnectionStatusCard
+                    Title="@Localizer["Dashboard_ConnectionStatus"]"
+                    IsConnected="@SignalRService.IsConnected"
+                    IsLoading="@dashboardData.IsLoading"
+                    IsReconnecting="@isReconnecting"
+                    LastConnectedTime="@lastConnectedTime"
+                    OnReconnectClick="@HandleReconnectClick"
+                    StatusMessage="@connectionStatusMessage" />
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(dashboardData.ErrorMessage))
+        {
+            <div id="bar-dashboard-error-alert" class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                <strong>@Localizer["Dashboard_Warning"]</strong> @dashboardData.ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private DashboardViewModel dashboardData = new() { IsLoading = true };
+    private bool isRefreshing = false;
+    private bool isReconnecting = false;
+    private DateTime? lastConnectedTime = null;
+    private string? connectionStatusMessage = null;
+    private System.Threading.Timer? refreshTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            return;
+        }
+
+        // Setup authentication change handler
+        AuthService.OnAuthenticationStateChanged += OnAuthenticationStateChanged;
+
+        // Initialize SignalR
+        try
+        {
+            await SignalRService.StartAsync();
+            // Hub auto-joins this connection to the staff-{role} + staff-all groups on connect.
+
+            SignalRService.NewOrder += OnNewOrder;
+            SignalRService.OrderUpdated += OnOrderUpdated;
+
+            lastConnectedTime = DateTime.Now;
+            connectionStatusMessage = Localizer["Dashboard_SignalRConnectionEstablished"].Value;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to start SignalR: {ex.Message}");
+            connectionStatusMessage = $"{Localizer["Dashboard_SignalRConnectionFailed"].Value}: {ex.Message}";
+        }
+
+        // Load initial dashboard data
+        await LoadDashboardData();
+
+        // Setup auto-refresh timer (every 30 seconds)
+        refreshTimer = new System.Threading.Timer(async _ =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadDashboardData();
+            });
+        }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+    }
+
+    private async Task LoadDashboardData()
+    {
+        try
+        {
+            dashboardData = await DashboardService.GetDashboardDataAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load dashboard data: {ex.Message}");
+            dashboardData.ErrorMessage = Localizer["Dashboard_FailedToLoadData"].Value;
+            dashboardData.IsLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        if (isRefreshing) return;
+
+        isRefreshing = true;
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_RefreshingDashboard"].Value, "info");
+            await DashboardService.RefreshDataAsync();
+            await LoadDashboardData();
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_RefreshedSuccessfully"].Value, "success");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to refresh data: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_FailedToRefresh"].Value, "danger");
+        }
+        finally
+        {
+            isRefreshing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleCardClick(DashboardCardData cardData)
+    {
+        if (!string.IsNullOrEmpty(cardData.ClickUrl))
+        {
+            Navigation.NavigateTo(cardData.ClickUrl);
+        }
+    }
+
+    private async Task HandleOrderClick(OrderDto order)
+    {
+        Navigation.NavigateTo($"/order-queue");
+    }
+
+    private async Task HandleReconnectClick()
+    {
+        if (isReconnecting) return;
+
+        isReconnecting = true;
+        connectionStatusMessage = Localizer["Dashboard_AttemptingToReconnect"].Value;
+
+        try
+        {
+            await SignalRService.StopAsync();
+            await Task.Delay(1000); // Brief delay before reconnecting
+
+            await SignalRService.StartAsync();
+            // Hub auto-joins this connection to the staff-{role} + staff-all groups on connect.
+
+            lastConnectedTime = DateTime.Now;
+            connectionStatusMessage = Localizer["Dashboard_ReconnectedSuccessfully"].Value;
+
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_ReconnectedSuccessfully"].Value, "success");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to reconnect SignalR: {ex.Message}");
+            connectionStatusMessage = $"{Localizer["Dashboard_FailedToReconnect"].Value}: {ex.Message}";
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_FailedToReconnect"].Value, "danger");
+        }
+        finally
+        {
+            isReconnecting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnAuthenticationStateChanged()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async void OnNewOrder(OrderDto order)
+    {
+        await InvokeAsync(async () =>
+        {
+            DashboardService.InvalidateCache();
+            await LoadDashboardData();
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", $"New order #{order.Id} received", "info");
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", $"New order received from {order.CustomerName}");
+        });
+    }
+
+    private async void OnOrderUpdated(OrderDto order)
+    {
+        await InvokeAsync(async () =>
+        {
+            DashboardService.InvalidateCache();
+            await LoadDashboardData();
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", $"Order #{order.Id} status updated to {order.Status}");
+        });
+    }
+
+    public void Dispose()
+    {
+        // Cleanup timer
+        refreshTimer?.Dispose();
+
+        // Cleanup event handlers
+        AuthService.OnAuthenticationStateChanged -= OnAuthenticationStateChanged;
+
+        if (SignalRService != null)
+        {
+            SignalRService.NewOrder -= OnNewOrder;
+            SignalRService.OrderUpdated -= OnOrderUpdated;
+        }
+    }
+}

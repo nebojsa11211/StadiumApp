@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Localization;
 using StadiumDrinkOrdering.TicketingSimulator.Services;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,19 @@ if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+// Add localization services (English + Croatian)
+builder.Services.AddLocalization();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { "en", "hr" };
+    options.DefaultRequestCulture = new RequestCulture("hr");
+    options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+
+    // Add cookie request culture provider
+    options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
+});
 
 var apiBaseUrl = (builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7010").TrimEnd('/');
 Console.WriteLine($"🌐 Stadium API base URL: {apiBaseUrl}");
@@ -34,6 +49,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Add localization middleware
+app.UseRequestLocalization();
+
 app.UseRouting();
 
 app.MapBlazorHub();

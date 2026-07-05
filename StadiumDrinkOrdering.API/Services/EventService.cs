@@ -8,6 +8,7 @@ public interface IEventService
 {
     Task<IEnumerable<Event>> GetEventsAsync(bool activeOnly = false);
     Task<Dictionary<int, int>> GetSoldSeatCountsAsync(IEnumerable<int> eventIds);
+    Task<Dictionary<int, int>> GetSeasonSoldSeatCountsAsync(IEnumerable<int> eventIds);
     Task<Event?> GetEventByIdAsync(int id);
     Task<Event> CreateEventAsync(Event eventItem);
     Task<Event?> UpdateEventAsync(int id, Event eventItem);
@@ -17,6 +18,12 @@ public interface IEventService
     Task<EventStatusTransitionResult> TransitionEventStatusAsync(int id, EventStatus newStatus);
     Task<EventAnalyticsResponse?> GetEventAnalyticsAsync(int id);
     Task<IEnumerable<Event>> GetActiveEventsAsync();
+    /// <summary>
+    /// Transitions any event that is still in a live phase (Active/InProgress) but whose time
+    /// window has already elapsed to <see cref="EventStatus.Completed"/>. Returns the number of
+    /// events closed. Called opportunistically on read so stale-Active events don't linger.
+    /// </summary>
+    Task<int> AutoCompleteEndedEventsAsync();
     Task<IEnumerable<Event>> GetUpcomingEventsAsync();
     Task<IEnumerable<Event>> GetPastEventsAsync();
 }
@@ -101,6 +108,27 @@ public class EventService : IEventService
         return await _context.Tickets
             .AsNoTracking()
             .Where(t => ids.Contains(t.EventId)
+                        && t.Status != TicketStatuses.Cancelled)
+            .GroupBy(t => t.EventId)
+            .Select(g => new { EventId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.EventId, x => x.Count);
+    }
+
+    /// <summary>
+    /// Like <see cref="GetSoldSeatCountsAsync"/>, but restricted to season-pass–derived tickets
+    /// (<see cref="TicketKind.Season"/>). The remainder of an event's sold seats are ordinary
+    /// single-event tickets. Events with no season tickets are absent from the dictionary.
+    /// </summary>
+    public async Task<Dictionary<int, int>> GetSeasonSoldSeatCountsAsync(IEnumerable<int> eventIds)
+    {
+        var ids = eventIds.Distinct().ToList();
+        if (ids.Count == 0)
+            return new Dictionary<int, int>();
+
+        return await _context.Tickets
+            .AsNoTracking()
+            .Where(t => ids.Contains(t.EventId)
+                        && t.Kind == TicketKind.Season
                         && t.Status != TicketStatuses.Cancelled)
             .GroupBy(t => t.EventId)
             .Select(g => new { EventId = g.Key, Count = g.Count() })
@@ -399,8 +427,41 @@ public class EventService : IEventService
         */
     }
 
+    public async Task<int> AutoCompleteEndedEventsAsync()
+    {
+        var now = DateTime.UtcNow;
+
+        // Pull the (small) set of currently-live events and evaluate the end-of-window in memory
+        // to avoid Npgsql DateTime.Kind pitfalls on timestamptz comparisons. The window mirrors
+        // Event.IsLiveAt exactly: closed at EventEndDate when set, otherwise at end of the start day.
+        var liveEvents = await _context.Events
+            .Where(e => e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
+            .Select(e => new { e.Id, e.EventDate, e.EventEndDate })
+            .ToListAsync();
+
+        var endedIds = liveEvents
+            .Where(e => e.EventEndDate.HasValue
+                ? now > e.EventEndDate.Value
+                : now.Date > e.EventDate.Date)
+            .Select(e => e.Id)
+            .ToList();
+
+        foreach (var id in endedIds)
+            await TransitionEventStatusAsync(id, EventStatus.Completed);
+
+        if (endedIds.Count > 0)
+            _logger.LogInformation("Auto-completed {Count} ended event(s): {EventIds}",
+                endedIds.Count, string.Join(", ", endedIds));
+
+        return endedIds.Count;
+    }
+
     public async Task<IEnumerable<Event>> GetActiveEventsAsync()
     {
+        // Close out any events whose window has elapsed before reporting the live set, so a
+        // stale-Active event never surfaces as "current" on dashboards.
+        await AutoCompleteEndedEventsAsync();
+
         // Use raw SQL for better performance
         var sql = @"
             SELECT

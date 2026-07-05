@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Layout_Brand" xml:space="preserve">
+    <value>Dostavljač</value>
+  </data>
+  <data name="Layout_Offline" xml:space="preserve">
+    <value>Izvan mreže</value>
+  </data>
+  <data name="Layout_SignOut" xml:space="preserve">
+    <value>Odjava</value>
+  </data>
+  <data name="Layout_TabPool" xml:space="preserve">
+    <value>Skup</value>
+  </data>
+  <data name="Layout_TabMyDeliveries" xml:space="preserve">
+    <value>Moje dostave</value>
+  </data>
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Prijava dostavljača</value>
+  </data>
+  <data name="Login_Title" xml:space="preserve">
+    <value>Prijava</value>
+  </data>
+  <data name="Login_DeliveryConsoleAccess" xml:space="preserve">
+    <value>Pristup konzoli dostave</value>
+  </data>
+  <data name="Login_EmailLabel" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="Login_PasswordLabel" xml:space="preserve">
+    <value>Lozinka</value>
+  </data>
+  <data name="Login_ShowPassword" xml:space="preserve">
+    <value>Prikaži lozinku</value>
+  </data>
+  <data name="Login_HidePassword" xml:space="preserve">
+    <value>Sakrij lozinku</value>
+  </data>
+  <data name="Login_LoginButton" xml:space="preserve">
+    <value>Prijava</value>
+  </data>
+  <data name="Login_LoggingIn" xml:space="preserve">
+    <value>Prijava u tijeku…</value>
+  </data>
+  <data name="Home_PageTitle" xml:space="preserve">
+    <value>Dostavljač — Bazen</value>
+  </data>
+  <data name="Home_ReadyForPickup" xml:space="preserve">
+    <value>Spremno za preuzimanje</value>
+  </data>
+  <data name="Home_Refresh" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  <data name="Home_OfflineBanner" xml:space="preserve">
+    <value>Izvan mreže — ponovno se povežite da biste preuzeli narudžbe. Dostave koje ste već preuzeli i dalje se automatski sinkroniziraju.</value>
+  </data>
+  <data name="Home_NoOrdersEmpty" xml:space="preserve">
+    <value>Nema čekajućih narudžbi. Nove se pojavljuju ovdje kada su pripremljene.</value>
+  </data>
+  <data name="Home_SeatLabel" xml:space="preserve">
+    <value>Mjesto</value>
+  </data>
+  <data name="Home_Ready" xml:space="preserve">
+    <value>Spremno</value>
+  </data>
+  <data name="Home_TotalLabel" xml:space="preserve">
+    <value>Ukupno narudžba</value>
+  </data>
+  <data name="Home_ClaimingButton" xml:space="preserve">
+    <value>Preuzimanje…</value>
+  </data>
+  <data name="Home_OfflineClaim" xml:space="preserve">
+    <value>Izvan mreže — ne mogu preuzeti</value>
+  </data>
+  <data name="Home_ClaimDeliveryButton" xml:space="preserve">
+    <value>Preuzmi i dostavi</value>
+  </data>
+  <data name="Home_SelectHint" xml:space="preserve">
+    <value>Dodirnite narudžbe da ih označite, zatim ih preuzmite u jednom hodu.</value>
+  </data>
+  <data name="Home_SelectAll" xml:space="preserve">
+    <value>Označi sve</value>
+  </data>
+  <data name="Home_ClearSelection" xml:space="preserve">
+    <value>Očisti</value>
+  </data>
+  <data name="Home_CollectSelected" xml:space="preserve">
+    <value>Preuzmi {0}</value>
+  </data>
+  <data name="Home_Collecting" xml:space="preserve">
+    <value>Preuzimanje…</value>
+  </data>
+  <data name="Home_CollectError" xml:space="preserve">
+    <value>Nije moguće preuzeti te narudžbe — pokušajte ponovno.</value>
+  </data>
+  <data name="Home_AllTaken" xml:space="preserve">
+    <value>Te su narudžbe upravo preuzeli drugi dostavljači.</value>
+  </data>
+  <data name="Home_PartialClaim" xml:space="preserve">
+    <value>Preuzeto {0}. {1} je već preuzeto.</value>
+  </data>
+  <data name="MyDeliveries_PageTitle" xml:space="preserve">
+    <value>Dostavljač — Moje dostave</value>
+  </data>
+  <data name="MyDeliveries_Title" xml:space="preserve">
+    <value>Moje dostave</value>
+  </data>
+  <data name="MyDeliveries_Refresh" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  <data name="MyDeliveries_EmptyMessage" xml:space="preserve">
+    <value>Nema se što dostavljati sada. Preuzmi narudžbu iz</value>
+  </data>
+  <data name="MyDeliveries_PoolLink" xml:space="preserve">
+    <value>bazena</value>
+  </data>
+  <data name="MyDeliveries_SeatLabel" xml:space="preserve">
+    <value>Mjesto</value>
+  </data>
+  <data name="MyDeliveries_MarkDeliveredButton" xml:space="preserve">
+    <value>Označi kao dostavljeno</value>
+  </data>
+  <data name="MyDeliveries_DeliveredSection" xml:space="preserve">
+    <value>Dostavljeno · čeka sinkronizaciju</value>
+  </data>
+  <data name="MyDeliveries_SyncingBadge" xml:space="preserve">
+    <value>sinkronizacija…</value>
+  </data>
+  <data name="MyDeliveries_OfflineBadge" xml:space="preserve">
+    <value>izvan mreže</value>
+  </data>
+  <data name="MyDeliveries_MarkedDelivered" xml:space="preserve">
+    <value>označeno kao dostavljeno</value>
+  </data>
+</root>

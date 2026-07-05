@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Layout_Brand" xml:space="preserve">
+    <value>Stadium Ticketing Simulator</value>
+  </data>
+  <data name="Layout_Tag" xml:space="preserve">
+    <value>external system stand-in</value>
+  </data>
+  <data name="Index_MainTitle" xml:space="preserve">
+    <value>External Ticketing Simulator</value>
+  </data>
+  <data name="Index_MainSubtitle" xml:space="preserve">
+    <value>Stands in for the real ticketing system. Create an event and simulate sales — everything syncs to the Stadium app via signed webhooks.</value>
+  </data>
+  <data name="Index_ApiLabel" xml:space="preserve">
+    <value>API</value>
+  </data>
+  <data name="Index_SectionsDiscovered" xml:space="preserve">
+    <value>sections discovered</value>
+  </data>
+  <data name="Index_NotReachable" xml:space="preserve">
+    <value>not reachable</value>
+  </data>
+  <data name="Index_ReloadButton" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="Index_SeasonsHeader" xml:space="preserve">
+    <value>0. Seasons</value>
+  </data>
+  <data name="Index_RefreshButton" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Index_SeasonNameLabel" xml:space="preserve">
+    <value>Season name</value>
+  </data>
+  <data name="Index_SeasonNamePlaceholder" xml:space="preserve">
+    <value>2026/2027</value>
+  </data>
+  <data name="Index_StartsLabel" xml:space="preserve">
+    <value>Starts</value>
+  </data>
+  <data name="Index_EndsLabel" xml:space="preserve">
+    <value>Ends</value>
+  </data>
+  <data name="Index_SetCurrentCheckbox" xml:space="preserve">
+    <value>Set current</value>
+  </data>
+  <data name="Index_CreateButton" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Index_NoSeasonsYet" xml:space="preserve">
+    <value>No seasons yet. Create one (e.g. 2026/2027) to group matches and sell season tickets.</value>
+  </data>
+  <data name="Index_SeasonColumn" xml:space="preserve">
+    <value>Season</value>
+  </data>
+  <data name="Index_WindowColumn" xml:space="preserve">
+    <value>Window</value>
+  </data>
+  <data name="Index_CurrentColumn" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Index_EventsColumn" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="Index_PassesColumn" xml:space="preserve">
+    <value>Passes</value>
+  </data>
+  <data name="Index_ActionColumn" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Index_CurrentBadge" xml:space="preserve">
+    <value>current</value>
+  </data>
+  <data name="Index_SelectedBadge" xml:space="preserve">
+    <value>selected</value>
+  </data>
+  <data name="Index_SelectButton" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="Index_DeleteButton" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Index_DeleteEventTooltip" xml:space="preserve">
+    <value>Delete this event and all its tickets</value>
+  </data>
+  <data name="Index_DeleteConfirm" xml:space="preserve">
+    <value>Delete event "{0}" and all its tickets? This cannot be undone.</value>
+  </data>
+  <data name="Index_SeasonTicketSectorLabel" xml:space="preserve">
+    <value>Season ticket sector</value>
+  </data>
+  <data name="Index_Sell1Button" xml:space="preserve">
+    <value>Sell 1</value>
+  </data>
+  <data name="Index_RefundLastButton" xml:space="preserve">
+    <value>Refund last</value>
+  </data>
+  <data name="Index_BulkLabel" xml:space="preserve">
+    <value>Bulk (spread across sectors)</value>
+  </data>
+  <data name="Index_CreatePassesButton" xml:space="preserve">
+    <value>Create {0} passes</value>
+  </data>
+  <data name="Index_Plus20Button" xml:space="preserve">
+    <value>+20</value>
+  </data>
+  <data name="Index_Plus40Button" xml:space="preserve">
+    <value>+40</value>
+  </data>
+  <data name="Index_Plus100Button" xml:space="preserve">
+    <value>+100</value>
+  </data>
+  <data name="Index_SoldThisSession" xml:space="preserve">
+    <value>Sold this session</value>
+  </data>
+  <data name="Index_PassesFor" xml:space="preserve">
+    <value>pass(es) for</value>
+  </data>
+  <data name="Index_SeasonPassInfo" xml:space="preserve">
+    <value>A season pass holds one seat across every event linked to this season — the per-match tickets are generated automatically. Bulk spreads passes across sectors weighted by capacity.</value>
+  </data>
+  <data name="Index_EventHeader" xml:space="preserve">
+    <value>1. Event</value>
+  </data>
+  <data name="Index_EventNameLabel" xml:space="preserve">
+    <value>Event name</value>
+  </data>
+  <data name="Index_StartLabel" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Index_EndLabel" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="Index_SeasonLabel" xml:space="preserve">
+    <value>Season</value>
+  </data>
+  <data name="Index_NoSeasonOption" xml:space="preserve">
+    <value>(no season)</value>
+  </data>
+  <data name="Index_CreateSyncButton" xml:space="preserve">
+    <value>Create &amp; sync</value>
+  </data>
+  <data name="Index_EndTimeValidationError" xml:space="preserve">
+    <value>End time must be after the start time.</value>
+  </data>
+  <data name="Index_EventLabel" xml:space="preserve">
+    <value>Event:</value>
+  </data>
+  <data name="Index_WindowLabel" xml:space="preserve">
+    <value>Window:</value>
+  </data>
+  <data name="Index_ExternalIdLabel" xml:space="preserve">
+    <value>External ID:</value>
+  </data>
+  <data name="Index_StadiumEventIdLabel" xml:space="preserve">
+    <value>Stadium event ID:</value>
+  </data>
+  <data name="Index_StatusLabel" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="Index_LiveBadge" xml:space="preserve">
+    <value>● LIVE</value>
+  </data>
+  <data name="Index_SalesClosedBadge" xml:space="preserve">
+    <value>sales closed</value>
+  </data>
+  <data name="Index_TotalOccupiedLabel" xml:space="preserve">
+    <value>Total occupied:</value>
+  </data>
+  <data name="Index_IncludingSeasonText" xml:space="preserve">
+    <value>(incl. {0} season)</value>
+  </data>
+  <data name="Index_MakeLiveNowTooltip" xml:space="preserve">
+    <value>Move this event's start to now and set its status to Active, so live-only features (drink ordering, live ticket sessions) can be tested.</value>
+  </data>
+  <data name="Index_MakeLiveNowButton" xml:space="preserve">
+    <value>Make live now</value>
+  </data>
+  <data name="Index_BackToEventsButton" xml:space="preserve">
+    <value>Back to events</value>
+  </data>
+  <data name="Index_NewEventButton" xml:space="preserve">
+    <value>New event</value>
+  </data>
+  <data name="Index_ExistingEventsHeader" xml:space="preserve">
+    <value>Existing events</value>
+  </data>
+  <data name="Index_NoEventsYet" xml:space="preserve">
+    <value>No events created yet. Create one above to get started.</value>
+  </data>
+  <data name="Index_EventColumn" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="Index_StartColumn" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Index_EndColumn" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="Index_SourceColumn" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="Index_SoldCapacityColumn" xml:space="preserve">
+    <value>Sold / Capacity</value>
+  </data>
+  <data name="Index_SalesHeader" xml:space="preserve">
+    <value>2. Simulate sales</value>
+  </data>
+  <data name="Index_RateLabel" xml:space="preserve">
+    <value>rate</value>
+  </data>
+  <data name="Index_PerLabel" xml:space="preserve">
+    <value>per</value>
+  </data>
+  <data name="Index_MsLabel" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="Index_StopAutoSellButton" xml:space="preserve">
+    <value>Stop auto-sell</value>
+  </data>
+  <data name="Index_StartAutoSellButton" xml:space="preserve">
+    <value>Start auto-sell</value>
+  </data>
+  <data name="Index_SellRandom20Button" xml:space="preserve">
+    <value>Sell random 20</value>
+  </data>
+  <data name="Index_SalesClosedBannerPrefix" xml:space="preserve">
+    <value>Ticket sales are closed — event is</value>
+  </data>
+  <data name="Index_SalesClosedBannerSuffix" xml:space="preserve">
+    <value>.</value>
+  </data>
+  <data name="Index_SimulateDrinkOrdersText" xml:space="preserve">
+    <value>Simulate drink orders in the panel below.</value>
+  </data>
+  <data name="Index_SectorColumn" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Index_OccupancyColumn" xml:space="preserve">
+    <value>Occupancy</value>
+  </data>
+  <data name="Index_OccupiedCapacityColumn" xml:space="preserve">
+    <value>Occupied / Capacity</value>
+  </data>
+  <data name="Index_ActionsColumn" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Index_Plus1Button" xml:space="preserve">
+    <value>+1</value>
+  </data>
+  <data name="Index_Plus5Button" xml:space="preserve">
+    <value>+5</value>
+  </data>
+  <data name="Index_Minus1Button" xml:space="preserve">
+    <value>−1</value>
+  </data>
+  <data name="Index_RefundTooltip" xml:space="preserve">
+    <value>Refunds a single-match ticket (season passes are refunded from the season panel)</value>
+  </data>
+  <data name="Index_DrinksHeader" xml:space="preserve">
+    <value>2b. Simulate drink orders</value>
+  </data>
+  <data name="Index_PlacedThisSession" xml:space="preserve">
+    <value>Placed this session</value>
+  </data>
+  <data name="Index_DrinksLockedMessage" xml:space="preserve">
+    <value>Drink ordering opens when the event is live. Use Make live now above to start the match, then simulate customers ordering drinks from their seats.</value>
+  </data>
+  <data name="Index_Place1OrderButton" xml:space="preserve">
+    <value>Place 1 order</value>
+  </data>
+  <data name="Index_Place5OrdersButton" xml:space="preserve">
+    <value>Place 5 orders</value>
+  </data>
+  <data name="Index_StopAutoOrdersButton" xml:space="preserve">
+    <value>Stop auto-orders</value>
+  </data>
+  <data name="Index_StartAutoOrdersButton" xml:space="preserve">
+    <value>Start auto-orders</value>
+  </data>
+  <data name="Index_DrinkOrdersInfo" xml:space="preserve">
+    <value>Each order attaches random drinks to a random occupied seat and pushes a live NewOrder to the Bar/Staff queue.</value>
+  </data>
+  <data name="Index_ReconciliationHeader" xml:space="preserve">
+    <value>3. Reconciliation</value>
+  </data>
+  <data name="Index_VerifySyncButton" xml:space="preserve">
+    <value>Verify sync</value>
+  </data>
+  <data name="Index_ReplayAllSalesButton" xml:space="preserve">
+    <value>Replay all sales</value>
+  </data>
+  <data name="Index_ReplayInfo" xml:space="preserve">
+    <value>Replays local sales to the API (idempotent) to heal any missed webhooks.</value>
+  </data>
+  <data name="Index_ApiReportsPrefix" xml:space="preserve">
+    <value>API reports</value>
+  </data>
+  <data name="Index_SoldIncludingPrefix" xml:space="preserve">
+    <value>sold (incl.</value>
+  </data>
+  <data name="Index_SeasonSimulatorHoldsText" xml:space="preserve">
+    <value>season); simulator holds</value>
+  </data>
+  <data name="Index_InSyncText" xml:space="preserve">
+    <value>In sync ✓</value>
+  </data>
+  <data name="Index_DriftText" xml:space="preserve">
+    <value>Drift</value>
+  </data>
+  <data name="Index_ApiSoldColumn" xml:space="preserve">
+    <value>API sold</value>
+  </data>
+  <data name="Index_SimulatorOccupiedColumn" xml:space="preserve">
+    <value>Simulator occupied</value>
+  </data>
+  <data name="Index_ActivityLogHeader" xml:space="preserve">
+    <value>Activity log</value>
+  </data>
+  <data name="Index_NoActivityYet" xml:space="preserve">
+    <value>No activity yet.</value>
+  </data>
+</root>

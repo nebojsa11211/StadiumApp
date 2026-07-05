@@ -233,6 +233,10 @@ public class AuthStateService : IAuthenticationStateService, IAuthStateService
         {
             IsSuccess = true,
             Token = token,
+            // Derive expiry from the JWT. Without this, ExpiresAt defaults to DateTime.MinValue,
+            // which the token store persists as an already-expired timestamp — so the very next
+            // page load (forceLoad after login) fails IsTokenValidAsync and bounces to login.
+            ExpiresAt = JwtTokenValidator.GetTokenExpiration(token) ?? DateTime.UtcNow.AddHours(1),
             User = new UserDto
             {
                 Email = email,

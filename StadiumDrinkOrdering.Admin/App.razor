@@ -1,11 +1,15 @@
+@using Microsoft.Extensions.Localization
+@using StadiumDrinkOrdering.Admin
+@inject IStringLocalizer<SharedResources> L
+
 @if (!isInitialized)
 {
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="text-center">
             <div class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">@L["Loading"]</span>
             </div>
-            <p class="text-muted">Initializing application...</p>
+            <p class="text-muted">@L["App_InitializingApplication"]</p>
         </div>
     </div>
 }
@@ -26,10 +30,10 @@ else
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
-            <PageTitle>Not found</PageTitle>
+            <PageTitle>@L["App_NotFound"]</PageTitle>
             <AuthRoute>
                 <LayoutView Layout="@typeof(DashboardLayout)">
-                    <p role="alert">Sorry, there's nothing at this address.</p>
+                    <p role="alert">@L["App_NothingAtAddress"]</p>
                 </LayoutView>
             </AuthRoute>
         </NotFound>

@@ -13,19 +13,19 @@
 
 <!-- Premium Dark Navigation -->
 <nav class="premium-navbar" role="navigation" aria-label="Main navigation" id="navigation">
-    <div class="container">
-        <div class="premium-navbar-content">
+    <div id="customer-layout-container" class="container">
+        <div id="customer-layout-navbar-content" class="premium-navbar-content">
             <!-- Brand -->
             <a href="/" class="premium-navbar-brand" aria-label="Stadium Drinks - Home">
-                <div class="premium-brand-icon">⚽</div>
-                <div class="premium-brand-text">
-                    <div class="premium-brand-title">Stadium Drinks</div>
-                    <div class="premium-brand-subtitle">Premium Service</div>
+                <div id="customer-layout-brand-icon" class="premium-brand-icon">⚽</div>
+                <div id="customer-layout-brand-text" class="premium-brand-text">
+                    <div id="customer-layout-brand-title" class="premium-brand-title">Stadium Drinks</div>
+                    <div id="customer-layout-brand-subtitle" class="premium-brand-subtitle">Premium Service</div>
                 </div>
             </a>
 
             <!-- Desktop Navigation -->
-            <div class="premium-navbar-menu">
+            <div id="customer-layout-navbar-menu" class="premium-navbar-menu">
                 <ul class="premium-nav-list" role="menubar">
                     <li role="none"><a href="/" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.EndsWith("/") ? "page" : null)">@Localizer["Home"]</a></li>
                     <li role="none"><a href="/events" class="premium-nav-link" role="menuitem" aria-current="@(NavigationManager.Uri.Contains("/events") ? "page" : null)">@Localizer["Events"]</a></li>
@@ -45,15 +45,15 @@
                 <!-- User Menu -->
                 @if (AuthStateService.IsAuthenticated)
                 {
-                    <div class="relative">
+                    <div id="customer-layout-user-menu-wrapper" class="relative">
                         <button @onclick="ToggleUserMenu"
                                 class="btn btn-secondary btn-sm"
                                 id="customer-layout-user-dropdown"
                                 aria-label="User menu"
                                 aria-expanded="@isUserMenuOpen.ToString().ToLower()"
                                 aria-haspopup="true">
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 bg-gradient-to-br from-premium-gold-400 to-premium-gold-500 rounded-full flex items-center justify-center" aria-hidden="true">
+                            <div id="customer-layout-user-button-content" class="flex items-center gap-2">
+                                <div id="customer-layout-user-avatar-sm" class="w-8 h-8 bg-gradient-to-br from-premium-gold-400 to-premium-gold-500 rounded-full flex items-center justify-center" aria-hidden="true">
                                     <span class="text-sm font-bold text-gray-900">
                                         @(GetInitials(AuthStateService.CurrentUser?.Username ?? "U"))
                                     </span>
@@ -67,23 +67,23 @@
                         
                         @if (isUserMenuOpen)
                         {
-                            <div class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 py-3 z-50 animate-scale-in"
+                            <div id="customer-layout-user-menu-dropdown" class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 py-3 z-50 animate-scale-in"
                                  role="menu"
                                  aria-labelledby="customer-layout-user-dropdown">
-                                <div class="px-4 py-4 border-b border-gray-100">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-12 h-12 bg-gradient-to-br from-premium-gold-400 to-premium-gold-500 rounded-full flex items-center justify-center" aria-hidden="true">
+                                <div id="customer-layout-menu-header" class="px-4 py-4 border-b border-gray-100">
+                                    <div id="customer-layout-menu-user-info" class="flex items-center gap-3">
+                                        <div id="customer-layout-user-avatar-lg" class="w-12 h-12 bg-gradient-to-br from-premium-gold-400 to-premium-gold-500 rounded-full flex items-center justify-center" aria-hidden="true">
                                             <span class="text-lg font-bold text-gray-900">
                                                 @(GetInitials(AuthStateService.CurrentUser?.Username ?? "U"))
                                             </span>
                                         </div>
-                                        <div>
+                                        <div id="customer-layout-menu-username" class="flex flex-col">
                                             <div class="font-semibold text-gray-900">@AuthStateService.CurrentUser?.Username</div>
                                             <div class="text-sm text-gray-500">@AuthStateService.UserEmail</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="py-2">
+                                <div id="customer-layout-menu-links" class="py-2">
                                     <a href="/profile"
                                        id="customer-layout-profile-link"
                                        class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
@@ -104,7 +104,7 @@
                                     </a>
                                 </div>
                                 <hr class="my-2 border-gray-100" role="separator">
-                                <div class="py-2">
+                                <div id="customer-layout-menu-logout" class="py-2">
                                     <button @onclick="HandleLogout"
                                             id="customer-layout-logout-btn"
                                             class="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
@@ -122,7 +122,7 @@
                 }
                 else
                 {
-                    <div class="flex items-center gap-3">
+                    <div id="customer-layout-auth-buttons" class="flex items-center gap-3">
                         <a href="/login" class="btn btn-outline btn-sm" id="customer-layout-sign-in-btn" aria-label="Sign in to your account">@Localizer["SignIn"]</a>
                         <a href="/register" class="btn btn-primary btn-sm" id="customer-layout-sign-up-btn" aria-label="Create a new account">@Localizer["SignUp"]</a>
                     </div>
@@ -151,7 +151,7 @@
          id="mobile-menu"
          role="navigation"
          aria-label="Mobile navigation">
-        <div class="container py-6">
+        <div id="customer-layout-mobile-menu-container" class="container py-6">
             <ul class="space-y-2" role="menu">
                 <li role="none"><a href="/" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">🏠</span> @Localizer["Home"]</a></li>
                 <li role="none"><a href="/events" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" role="menuitem"><span aria-hidden="true">🎟️</span> @Localizer["Events"]</a></li>
@@ -182,15 +182,15 @@
 
 <!-- Main Content -->
 <main class="premium-main-content" id="main-content" role="main" tabindex="-1">
-    <div class="container-fluid premium-content-wrapper">
+    <div id="customer-layout-content-wrapper" class="container-fluid premium-content-wrapper">
         @Body
     </div>
 </main>
 
 <!-- Premium Footer -->
-<div style="position: relative;">
+<div id="customer-layout-footer-wrapper" style="position: relative;">
     <!-- Wave Divider -->
-    <div class="premium-wave-divider" aria-hidden="true">
+    <div id="customer-layout-wave-divider" class="premium-wave-divider" aria-hidden="true">
         <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="wave-fill"></path>
         </svg>
@@ -198,22 +198,22 @@
 
     <footer class="premium-footer" role="contentinfo" aria-label="Site footer">
         <!-- Animated Background -->
-        <div class="premium-footer-bg">
-            <div class="premium-footer-bg-grid"></div>
-            <div class="premium-footer-glow premium-footer-glow-1"></div>
-            <div class="premium-footer-glow premium-footer-glow-2"></div>
+        <div id="customer-layout-footer-bg" class="premium-footer-bg">
+            <div id="customer-layout-footer-bg-grid" class="premium-footer-bg-grid"></div>
+            <div id="customer-layout-footer-glow-1" class="premium-footer-glow premium-footer-glow-1"></div>
+            <div id="customer-layout-footer-glow-2" class="premium-footer-glow premium-footer-glow-2"></div>
         </div>
 
-        <div class="container premium-footer-content">
+        <div id="customer-layout-footer-content-container" class="container premium-footer-content">
             <!-- Main Footer Content -->
-            <div class="row">
+            <div id="customer-layout-footer-row" class="row">
                 <!-- Brand Section -->
-                <div class="col-12 col-lg-5 footer-brand-section">
-                    <div class="footer-brand-logo">
-                        <div class="footer-brand-icon">⚽</div>
-                        <div class="footer-brand-text">
+                <div id="customer-layout-footer-brand-section" class="col-12 col-lg-5 footer-brand-section">
+                    <div id="customer-layout-footer-brand-logo" class="footer-brand-logo">
+                        <div id="customer-layout-footer-brand-icon" class="footer-brand-icon">⚽</div>
+                        <div id="customer-layout-footer-brand-text" class="footer-brand-text">
                             <h3>Stadium Drinks</h3>
-                            <div class="footer-brand-badges">
+                            <div id="customer-layout-footer-brand-badges" class="footer-brand-badges">
                                 <span class="footer-badge footer-badge-premium">PREMIUM</span>
                                 <span class="footer-badge footer-badge-verified">VERIFIED</span>
                             </div>
@@ -226,23 +226,23 @@
                     </p>
 
                     <!-- Stats Cards -->
-                    <div class="footer-stats">
-                        <div class="footer-stat-card">
-                            <div class="footer-stat-value green-gradient">50K+</div>
-                            <div class="footer-stat-label">Happy Fans</div>
+                    <div id="customer-layout-footer-stats" class="footer-stats">
+                        <div id="customer-layout-footer-stat-card-1" class="footer-stat-card">
+                            <div id="customer-layout-footer-stat-value-1" class="footer-stat-value green-gradient">50K+</div>
+                            <div id="customer-layout-footer-stat-label-1" class="footer-stat-label">Happy Fans</div>
                         </div>
-                        <div class="footer-stat-card">
-                            <div class="footer-stat-value gold-gradient">2min</div>
-                            <div class="footer-stat-label">Avg Delivery</div>
+                        <div id="customer-layout-footer-stat-card-2" class="footer-stat-card">
+                            <div id="customer-layout-footer-stat-value-2" class="footer-stat-value gold-gradient">2min</div>
+                            <div id="customer-layout-footer-stat-label-2" class="footer-stat-label">Avg Delivery</div>
                         </div>
-                        <div class="footer-stat-card">
-                            <div class="footer-stat-value blue-gradient">24/7</div>
-                            <div class="footer-stat-label">Support</div>
+                        <div id="customer-layout-footer-stat-card-3" class="footer-stat-card">
+                            <div id="customer-layout-footer-stat-value-3" class="footer-stat-value blue-gradient">24/7</div>
+                            <div id="customer-layout-footer-stat-label-3" class="footer-stat-label">Support</div>
                         </div>
                     </div>
 
                     <!-- Social Media -->
-                    <div class="footer-social">
+                    <div id="customer-layout-footer-social" class="footer-social">
                         <a href="#" class="footer-social-link twitter" aria-label="Follow us on Twitter">
                             <svg class="footer-social-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
@@ -267,8 +267,8 @@
                 </div>
 
                 <!-- Quick Links -->
-                <div class="col-12 col-md-6 col-lg-2">
-                    <div class="footer-nav-section">
+                <div id="customer-layout-footer-quick-links-col" class="col-12 col-md-6 col-lg-2">
+                    <div id="customer-layout-footer-quick-links-section" class="footer-nav-section">
                         <h4 class="footer-nav-title green">Quick Links</h4>
                         <ul class="footer-nav-list">
                             <li><a href="/" class="footer-nav-link">Home</a></li>
@@ -280,8 +280,8 @@
                 </div>
 
                 <!-- Support -->
-                <div class="col-12 col-md-6 col-lg-2">
-                    <div class="footer-nav-section">
+                <div id="customer-layout-footer-support-col" class="col-12 col-md-6 col-lg-2">
+                    <div id="customer-layout-footer-support-section" class="footer-nav-section">
                         <h4 class="footer-nav-title gold">Support</h4>
                         <ul class="footer-nav-list">
                             <li><a href="#" class="footer-nav-link">Help Center</a></li>
@@ -293,8 +293,8 @@
                 </div>
 
                 <!-- Newsletter -->
-                <div class="col-12 col-lg-3">
-                    <div class="footer-newsletter">
+                <div id="customer-layout-footer-newsletter-col" class="col-12 col-lg-3">
+                    <div id="customer-layout-footer-newsletter" class="footer-newsletter">
                         <h4 class="footer-newsletter-title">Newsletter</h4>
                         <p class="footer-newsletter-text">Subscribe for exclusive offers, event updates, and VIP access.</p>
                         <form class="footer-newsletter-form" onsubmit="event.preventDefault();">
@@ -318,13 +318,13 @@
             </div>
 
             <!-- Bottom Bar -->
-            <div class="footer-bottom">
-                <div class="footer-bottom-content">
-                    <div class="footer-copyright">
-                        <div class="footer-status-dot"></div>
+            <div id="customer-layout-footer-bottom" class="footer-bottom">
+                <div id="customer-layout-footer-bottom-content" class="footer-bottom-content">
+                    <div id="customer-layout-footer-copyright" class="footer-copyright">
+                        <div id="customer-layout-footer-status-dot" class="footer-status-dot"></div>
                         <span>© @DateTime.Now.Year Stadium Drinks. All rights reserved.</span>
                     </div>
-                    <div class="footer-bottom-links">
+                    <div id="customer-layout-footer-bottom-links" class="footer-bottom-links">
                         <a href="#" class="footer-bottom-link">Privacy</a>
                         <a href="#" class="footer-bottom-link">Terms</a>
                         <a href="#" class="footer-bottom-link">Cookies</a>

@@ -90,20 +90,48 @@
 .sw{width:14px;height:14px;border-radius:5px;display:inline-block}
 .sw-free{background:var(--surface-3);border:1px solid var(--line-2)}
 .sw-sel{background:var(--brand)}
+.sw-taken{background:var(--surface);border:1px solid var(--line);opacity:.6}
 
-.seats-wrap{overflow-y:auto;padding-right:2px;display:flex;flex-direction:column;gap:10px}
-.seat-row{display:flex;align-items:center;gap:10px}
-.rl{min-width:34px;font-size:12px;font-weight:800;color:var(--muted);flex:none}
-.seats{display:flex;flex-wrap:wrap;gap:7px}
+/* pitch / field orientation marker (row 1 sits nearest the pitch) */
+.seat-pitch{position:relative;flex:none;height:34px;margin-bottom:14px;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--brand-soft);border:1px solid var(--line-2);border-radius:var(--r-sm)}
+.pitch-arc{position:absolute;inset:0;width:100%;height:100%}
+.pitch-label{position:relative;font-size:11px;font-weight:900;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--ink)}
+
+/* scrollable stand map: rows stack vertically, seats wrap so all stay visible */
+.seats-scroll{--seat:44px;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+    display:flex;flex-direction:column;gap:10px;padding-bottom:2px}
+.seat-row{display:flex;align-items:flex-start;gap:10px}
+.rl{flex:none;min-width:46px;padding-top:12px;
+    font-size:11px;font-weight:800;color:var(--muted)}
+.seats{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px}
 .seat{
-    width:38px;height:38px;border-radius:11px;border:1px solid var(--line-2);
-    background:var(--surface-3);color:var(--ink);font-size:12px;font-weight:800;
-    cursor:pointer;transition:transform .12s var(--ease),background .12s;
+    width:var(--seat);height:var(--seat);border-radius:12px;border:1px solid var(--line-2);
+    background:var(--surface-3);color:var(--ink);font-size:13px;font-weight:800;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;
+    transition:transform .12s var(--ease),background .12s,border-color .12s;
 }
-.seat:hover{background:var(--surface);transform:scale(1.06)}
+.seat:hover{background:var(--surface);border-color:var(--muted-2)}
+.seat:active{transform:scale(.92)}
 .seat.sel{background:var(--brand);border-color:transparent;color:#fff;
-    box-shadow:0 8px 18px -8px rgba(255,45,120,.8)}
-.seat:focus-visible{outline:2px solid var(--live);outline-offset:1px}
+    box-shadow:0 8px 18px -8px rgba(255,45,120,.8);transform:scale(1.04)}
+.seat:focus-visible{outline:2px solid var(--live);outline-offset:2px}
+.seat.taken{background:var(--surface);border-color:var(--line);color:var(--muted-2);
+    opacity:.55;cursor:not-allowed;text-decoration:line-through}
+.seat.taken:hover{background:var(--surface);border-color:var(--line);transform:none}
+
+/* selected-seats summary chips */
+.seat-summary{flex:none;display:flex;flex-wrap:wrap;gap:7px;max-height:84px;overflow-y:auto;
+    margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.seat-chip{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+    background:var(--brand-soft);border:1px solid var(--line-2);color:var(--ink);
+    font-size:12px;font-weight:800;border-radius:999px;padding:6px 11px;
+    transition:border-color .12s var(--ease),background .12s}
+.seat-chip:hover{border-color:var(--brand)}
+.seat-chip .x{color:var(--muted);font-size:11px}
+.seat-chip:focus-visible{outline:2px solid var(--live);outline-offset:2px}
 
 /* ---- cart sheet ---- */
 .cart-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:14px}

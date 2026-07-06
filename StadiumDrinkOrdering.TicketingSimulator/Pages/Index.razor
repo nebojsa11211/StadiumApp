@@ -19,6 +19,156 @@
     <button id="simulator-index-reload-btn" class="btn btn-sm btn-outline-secondary ms-2" @onclick="LoadSectionsAsync">@Localizer["Index_ReloadButton"]</button>
 </div>
 
+@* ---------- Stadium reference: structure / sectors / seats ---------- *@
+<div id="simulator-index-stadium-card" class="card mb-3">
+    <div id="simulator-index-stadium-header" class="card-header fw-bold d-flex align-items-center">
+        <span><i class="bi bi-building"></i> @Localizer["Index_StadiumHeader"]</span>
+        @if (sections.Count > 0) { <span class="badge bg-secondary ms-2">@sections.Count @Localizer["Index_SectorsWord"]</span> }
+        <button id="simulator-index-stadium-toggle-btn" class="btn btn-sm btn-outline-secondary ms-auto" @onclick="() => showStadiumDetail = !showStadiumDetail" disabled="@(sections.Count == 0)">
+            <i class="bi @(showStadiumDetail ? "bi-chevron-up" : "bi-chevron-down")"></i>
+            @(showStadiumDetail ? Localizer["Index_HideButton"] : Localizer["Index_DetailsButton"])
+        </button>
+    </div>
+    <div id="simulator-index-stadium-body" class="card-body">
+        @if (sections.Count == 0)
+        {
+            <p id="simulator-index-stadium-empty" class="text-muted mb-0">@Localizer["Index_StadiumEmpty"]</p>
+        }
+        else
+        {
+            <div id="simulator-index-stadium-stats" class="row g-2 text-center">
+                <div class="col-6 col-md-3">
+                    <div class="border rounded py-2"><div class="h4 mb-0">@sections.Count</div><div class="small text-muted">@Localizer["Index_StatSectors"]</div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="border rounded py-2"><div class="h4 mb-0">@TotalCapacity.ToString("N0")</div><div class="small text-muted">@Localizer["Index_StatSeats"]</div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="border rounded py-2"><div class="h4 mb-0">@sections.Sum(s => s.Rows).ToString("N0")</div><div class="small text-muted">@Localizer["Index_StatRows"]</div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="border rounded py-2"><div class="h4 mb-0">@StadiumTypeCount</div><div class="small text-muted">@Localizer["Index_StatTypes"]</div></div>
+                </div>
+            </div>
+
+            @if (showStadiumDetail)
+            {
+                <table id="simulator-index-stadium-table" class="table table-sm align-middle mt-3 mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:1%"></th>
+                            <th>@Localizer["Index_SectorColumn"]</th>
+                            <th>@Localizer["Index_TypeColumn"]</th>
+                            <th class="text-end">@Localizer["Index_RowsColumn"]</th>
+                            <th class="text-end">@Localizer["Index_SeatsPerRowColumn"]</th>
+                            <th class="text-end">@Localizer["Index_CapacityColumn"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in sections)
+                        {
+                            <tr id="simulator-index-stadium-row-@s.SectionCode" class="@(expandedStadiumSector == s.SectionCode ? "table-active" : "")" style="cursor:pointer" title="@Localizer["Index_StadiumRowTooltip"]" @onclick="() => ToggleStadiumSector(s.SectionCode)">
+                                <td><span class="d-inline-block rounded border" style="width:14px;height:14px;background:@s.Color"></span></td>
+                                <td>
+                                    <i class="bi @(expandedStadiumSector == s.SectionCode ? "bi-caret-down-fill" : "bi-caret-right-fill") text-muted small"></i>
+                                    <strong>@s.SectionCode</strong> <span class="text-muted small">@s.SectionName</span>
+                                </td>
+                                <td><span class="badge bg-light text-dark border text-capitalize">@s.Type</span></td>
+                                <td class="text-end">@s.Rows</td>
+                                <td class="text-end">@s.SeatsPerRow</td>
+                                <td class="text-end">@s.Capacity.ToString("N0")</td>
+                            </tr>
+                            @if (expandedStadiumSector == s.SectionCode)
+                            {
+                                <tr id="simulator-index-stadium-detail-@s.SectionCode" class="table-light">
+                                    <td colspan="6">
+                                        <div class="row g-3">
+                                            <div class="col-md-5">
+                                                <table class="table table-sm mb-0">
+                                                    <tbody>
+                                                        <tr><th style="width:45%">@Localizer["Index_DetailNameLabel"]</th><td>@s.SectionName</td></tr>
+                                                        <tr><th>@Localizer["Index_DetailCodeLabel"]</th><td><code>@s.SectionCode</code></td></tr>
+                                                        <tr><th>@Localizer["Index_TypeColumn"]</th><td><span class="badge bg-light text-dark border text-capitalize">@s.Type</span></td></tr>
+                                                        <tr><th>@Localizer["Index_DetailShapeLabel"]</th><td class="text-capitalize">@s.ShapeType</td></tr>
+                                                        <tr>
+                                                            <th>@Localizer["Index_DetailColorLabel"]</th>
+                                                            <td><span class="d-inline-block rounded border align-middle me-1" style="width:14px;height:14px;background:@s.Color"></span><code>@s.Color</code></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>@Localizer["Index_DetailSeatingLabel"]</th>
+                                                            <td>
+                                                                @if (s.UseVariableSeating && s.RowRanges.Count > 0)
+                                                                {
+                                                                    <span class="badge bg-info-subtle text-info-emphasis border mb-1">@Localizer["Index_DetailVariableSeating"]</span>
+                                                                    <ul class="mb-0 ps-3 small">
+                                                                        @foreach (var r in s.RowRanges)
+                                                                        {
+                                                                            <li>@Localizer["Index_SeatRowShort"]@r.FromRow–@r.ToRow: <strong>@r.SeatsPerRow</strong> @Localizer["Index_DetailSeatsWord"]</li>
+                                                                        }
+                                                                    </ul>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>@s.Rows @Localizer["Index_DetailRowsWord"] × @s.SeatsPerRow @Localizer["Index_DetailSeatsWord"]</span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                        <tr><th>@Localizer["Index_CapacityColumn"]</th><td><strong>@s.Capacity.ToString("N0")</strong> @Localizer["Index_DetailSeatsWord"]</td></tr>
+                                                        <tr><th>@Localizer["Index_DetailPositionLabel"]</th><td class="small text-muted">@Localizer["Index_DetailTopShort"] @s.TopPercent.ToString("0.#")% · @Localizer["Index_DetailLeftShort"] @s.LeftPercent.ToString("0.#")% · @s.WidthPercent.ToString("0.#")×@s.HeightPercent.ToString("0.#")%</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <div class="fw-bold small mb-1"><i class="bi bi-grid-3x3-gap"></i> @Localizer["Index_DetailLayoutTitle"]</div>
+                                                @{
+                                                    var layout = SectorRowLayout(s).ToList();
+                                                    var rowCap = 24;
+                                                    var seatCap = 40;
+                                                }
+                                                <div class="d-flex flex-column gap-1" style="overflow-x:auto">
+                                                    @foreach (var row in layout.Take(rowCap))
+                                                    {
+                                                        <div class="d-flex align-items-center gap-1" style="white-space:nowrap">
+                                                            <span class="text-muted small text-end" style="flex:0 0 40px">@Localizer["Index_SeatRowShort"]@row.Row</span>
+                                                            @foreach (var _ in Enumerable.Range(1, Math.Min(row.Seats, seatCap)))
+                                                            {
+                                                                <span class="d-inline-block rounded-circle" style="width:9px;height:9px;flex:0 0 9px;background:@s.Color;opacity:.55"></span>
+                                                            }
+                                                            @if (row.Seats > seatCap)
+                                                            {
+                                                                <span class="text-muted small ms-1">+@(row.Seats - seatCap)</span>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                                @if (layout.Count > rowCap)
+                                                {
+                                                    <div class="small text-muted mt-1">@Localizer["Index_DetailMoreRows", layout.Count - rowCap]</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold table-light">
+                            <td></td>
+                            <td>@Localizer["Index_TotalLabel"]</td>
+                            <td></td>
+                            <td class="text-end">@sections.Sum(s => s.Rows).ToString("N0")</td>
+                            <td></td>
+                            <td class="text-end">@TotalCapacity.ToString("N0")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="small text-muted mt-1">@Localizer["Index_StadiumNote"]</div>
+            }
+        }
+    </div>
+</div>
+
 @* ---------- Step 0: seasons ---------- *@
 <div id="simulator-index-season-card" class="card mb-3">
     <div id="simulator-index-season-header" class="card-header fw-bold d-flex align-items-center">
@@ -572,6 +722,31 @@
     private List<ExternalSeasonSummaryDto> seasons = new();
     private bool connectionOk;
     private string? connectionError;
+
+    // Stadium reference card: whether the per-sector breakdown table is expanded.
+    private bool showStadiumDetail;
+    // Which sector's structure-detail row is open in the stadium reference table (null = none).
+    private string? expandedStadiumSector;
+    // Distinct sector types across the stadium (standard / vip / wheelchair / …).
+    private int StadiumTypeCount => sections.Select(s => s.Type).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+
+    private void ToggleStadiumSector(string code)
+        => expandedStadiumSector = expandedStadiumSector == code ? null : code;
+
+    // Expands a sector's geometry into a per-row seat count (row number → seats in that row) for the
+    // layout schematic. Uses the variable-seating ranges when present, otherwise uniform Rows×SeatsPerRow.
+    private static IEnumerable<(int Row, int Seats)> SectorRowLayout(StadiumSectionInfoDto s)
+    {
+        if (s.UseVariableSeating && s.RowRanges.Count > 0)
+        {
+            foreach (var r in s.RowRanges)
+                for (var row = r.FromRow; row <= r.ToRow; row++)
+                    yield return (row, r.SeatsPerRow);
+            yield break;
+        }
+        for (var row = 1; row <= s.Rows; row++)
+            yield return (row, s.SeatsPerRow);
+    }
 
     // Season state
     private string? selectedSeasonExternalId;

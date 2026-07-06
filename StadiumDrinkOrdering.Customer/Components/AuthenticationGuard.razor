@@ -9,8 +9,8 @@
 }
 else if (isLoading)
 {
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
-        <div class="spinner-border text-primary" role="status">
+    <div id="customer-auth-guard-loading-container" class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+        <div id="customer-auth-guard-spinner" class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
         <span class="ms-2">Checking authentication...</span>
@@ -18,14 +18,14 @@ else if (isLoading)
 }
 else
 {
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body text-center">
+    <div id="customer-auth-guard-container" class="container mt-5">
+        <div id="customer-auth-guard-row" class="row justify-content-center">
+            <div id="customer-auth-guard-col" class="col-md-6">
+                <div id="customer-auth-guard-card" class="card">
+                    <div id="customer-auth-guard-card-body" class="card-body text-center">
                         <h4 class="card-title">🔒 Authentication Required</h4>
                         <p class="card-text">You need to sign in to access this page.</p>
-                        <div class="d-grid gap-2">
+                        <div id="customer-auth-guard-buttons" class="d-grid gap-2">
                             <button class="btn btn-primary" @onclick="RedirectToLogin">
                                 Sign In
                             </button>

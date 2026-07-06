@@ -11,12 +11,12 @@
 
 @if (isLoading)
 {
-    <div class="ev-state"><span class="spinner"></span> Učitavam utakmicu…</div>
+    <div id="customer-event-details-loading" class="ev-state"><span class="spinner"></span> Učitavam utakmicu…</div>
 }
 else if (eventDetails == null)
 {
-    <div class="ev-state ev-notfound">
-        <div class="ev-emoji">🚫</div>
+    <div id="customer-event-details-notfound" class="ev-state ev-notfound">
+        <div id="customer-event-details-emoji" class="ev-emoji">🚫</div>
         <h2>Utakmica nije pronađena</h2>
         <p>Ova utakmica više nije dostupna.</p>
         <button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/welcome"))">Početna</button>
@@ -24,16 +24,16 @@ else if (eventDetails == null)
 }
 else
 {
-    <div class="ev-body no-scrollbar">
-        <div class="ev-hero">
-            <div class="ev-datechip">
+    <div id="customer-event-details-body" class="ev-body no-scrollbar">
+        <div id="customer-event-details-hero" class="ev-hero">
+            <div id="customer-event-details-datechip" class="ev-datechip">
                 <span class="d">@eventDetails.EventDate.ToLocalTime().Day</span>
                 <span class="m">@MonthShort(eventDetails.EventDate.ToLocalTime())</span>
             </div>
-            <div class="ev-hero-main">
+            <div id="customer-event-details-main" class="ev-hero-main">
                 <h1 class="ev-name">@eventDetails.EventName</h1>
                 <div class="ev-when">@CroatianDay(eventDetails.EventDate.ToLocalTime()) · @eventDetails.EventDate.ToLocalTime().ToString("HH:mm")</div>
-                <div class="ev-meta">
+                <div id="customer-event-details-meta" class="ev-meta">
                     <span class="ev-tag">🏟️ @eventDetails.VenueInfo</span>
                     <span class="ev-tag @AvailClass(eventDetails.AvailableSeats)">🪑 @eventDetails.AvailableSeats slobodno</span>
                 </div>
@@ -47,10 +47,11 @@ else
 
         @if (eventDetails.PricingTiers.Any())
         {
-            <div class="ev-tiers">
+            <div id="customer-event-details-tiers" class="ev-tiers">
                 @foreach (var tier in eventDetails.PricingTiers)
                 {
-                    <div class="ev-tier">
+                    var _tierIndex = System.Array.IndexOf(eventDetails.PricingTiers.ToArray(), tier);
+                    <div id="customer-event-details-tier-@_tierIndex" class="ev-tier">
                         <span class="ev-tier-name">@tier.Name</span>
                         <span class="ev-tier-price tnum">€@tier.BasePrice.ToString("F0")</span>
                     </div>
@@ -65,13 +66,13 @@ else
 
         @if (eventDetails.SectionAvailability.Any())
         {
-            <div class="ev-sections">
+            <div id="customer-event-details-sections" class="ev-sections">
                 @foreach (var sec in eventDetails.SectionAvailability.Values.OrderBy(s => s.SectionName))
                 {
                     var soldOut = sec.AvailableSeats == 0;
                     <button class="ev-sec @(soldOut ? "sold" : "")" disabled="@soldOut"
                             @onclick="@(() => ViewSectionSeats(sec.SectionId))">
-                        <div class="ev-sec-l">
+                        <div id="customer-event-details-section-left-@sec.SectionId" class="ev-sec-l">
                             <span class="ev-sec-name">@sec.SectionName</span>
                             <span class="ev-sec-avail @AvailClass(sec.AvailableSeats)">
                                 @if (soldOut)
@@ -84,7 +85,7 @@ else
                                 }
                             </span>
                         </div>
-                        <div class="ev-sec-r">
+                        <div id="customer-event-details-section-right-@sec.SectionId" class="ev-sec-r">
                             <span class="ev-sec-price tnum">€@sec.BasePrice.ToString("F0")</span>
                             @if (!soldOut)
                             {
@@ -97,7 +98,7 @@ else
         }
         else
         {
-            <div class="ev-empty">Još nema objavljenih mjesta za ovu utakmicu.</div>
+            <div id="customer-event-details-empty" class="ev-empty">Još nema objavljenih mjesta za ovu utakmicu.</div>
         }
     </div>
 
@@ -105,13 +106,13 @@ else
 }
 
 @* ---- Seat selection sheet ---- *@
-<div class="scrim @(selectedSection != null ? "show" : "")" @onclick="CloseSeatSheet"></div>
-<div class="sheet @(selectedSection != null ? "show" : "")">
+<div id="customer-event-details-scrim-seats" class="scrim @(selectedSection != null ? "show" : "")" @onclick="CloseSeatSheet"></div>
+<div id="customer-event-details-sheet-seats" class="sheet @(selectedSection != null ? "show" : "")">
     @if (selectedSection != null)
     {
-        <div class="grab"></div>
-        <div class="sheet-head">
-            <div>
+        <div id="customer-event-details-sheet-grab-seats" class="grab"></div>
+        <div id="customer-event-details-sheet-head-seats" class="sheet-head">
+            <div id="customer-event-details-sheet-title-seats">
                 <div class="sheet-title">@selectedSection.SectionName</div>
                 <div class="sheet-sub">@(string.IsNullOrWhiteSpace(selectedSection.TribuneName) ? "Odaberi mjesta" : selectedSection.TribuneName)</div>
             </div>
@@ -120,27 +121,49 @@ else
 
         @if (isLoadingSeats)
         {
-            <div class="ev-state"><span class="spinner"></span> Učitavam mjesta…</div>
+            <div id="customer-event-details-loading-seats" class="ev-state"><span class="spinner"></span> Učitavam mjesta…</div>
         }
-        else if (selectedSection.AvailableSeats.Any())
+        else if (selectedSection.Seats.Any())
         {
-            <div class="seat-legend">
-                <span class="lg"><i class="sw sw-free"></i> Slobodno</span>
-                <span class="lg"><i class="sw sw-sel"></i> Odabrano</span>
+            <div id="customer-event-details-seat-legend" class="seat-legend">
+                <span class="lg"><i class="sw sw-free" aria-hidden="true"></i> Slobodno</span>
+                <span class="lg"><i class="sw sw-sel" aria-hidden="true"></i> Odabrano</span>
+                <span class="lg"><i class="sw sw-taken" aria-hidden="true"></i> Zauzeto</span>
             </div>
-            <div class="seats-wrap no-scrollbar">
-                @foreach (var rowGroup in selectedSection.AvailableSeats.GroupBy(s => s.RowNumber).OrderBy(g => g.Key))
+
+            <div id="customer-event-details-seat-pitch" class="seat-pitch">
+                <svg class="pitch-arc" viewBox="0 0 320 40" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M6 34 Q160 4 314 34" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" opacity=".55" />
+                </svg>
+                <span class="pitch-label">⚽ Teren</span>
+            </div>
+
+            <div id="customer-event-details-seats-scroll" class="seats-scroll no-scrollbar" role="group" aria-label="Raspored mjesta u tribini">
+                @foreach (var rowGroup in selectedSection.Seats.GroupBy(s => s.RowNumber).OrderBy(g => g.Key))
                 {
-                    <div class="seat-row">
-                        <span class="rl">R@rowGroup.Key</span>
-                        <div class="seats">
+                    <div id="customer-event-details-seat-row-@rowGroup.Key" class="seat-row">
+                        <span class="rl">Red @rowGroup.Key</span>
+                        <div id="customer-event-details-seats-@rowGroup.Key" class="seats">
                             @foreach (var seat in rowGroup.OrderBy(s => s.SeatNumber))
                             {
-                                var isSel = selectedSeats.Any(s => s.SectorId == seat.SectorId && s.RowNumber == seat.RowNumber && s.SeatNumber == seat.SeatNumber);
-                                <button class="seat @(isSel ? "sel" : "")" @onclick="@(() => ToggleSeatSelection(seat))"
-                                        title="@SeatTitle(seat)">
-                                    @seat.SeatNumber
-                                </button>
+                                if (seat.IsAvailable)
+                                {
+                                    var isSel = selectedSeats.Any(s => s.SectorId == seat.SectorId && s.RowNumber == seat.RowNumber && s.SeatNumber == seat.SeatNumber);
+                                    <button class="seat @(isSel ? "sel" : "")"
+                                            @onclick="@(() => ToggleSeatSelection(seat))"
+                                            aria-pressed="@isSel"
+                                            aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber}, €{seat.Price.ToString("F0")} — {(isSel ? "odabrano" : "slobodno")}")'
+                                            title="@SeatTitle(seat)">
+                                        @seat.SeatNumber
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="seat taken" disabled aria-disabled="true"
+                                            aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber} — zauzeto")'>
+                                        @seat.SeatNumber
+                                    </button>
+                                }
                             }
                         </div>
                     </div>
@@ -149,7 +172,21 @@ else
         }
         else
         {
-            <div class="ev-empty">Nema slobodnih mjesta u ovoj tribini.</div>
+            <div id="customer-event-details-empty-seats" class="ev-empty">Nema dostupnih mjesta u ovoj tribini.</div>
+        }
+
+        @if (selectedSeats.Any())
+        {
+            <div id="customer-event-details-seat-summary" class="seat-summary no-scrollbar" role="group" aria-label="Odabrana mjesta">
+                @foreach (var seat in selectedSeats.OrderBy(s => s.RowNumber).ThenBy(s => s.SeatNumber))
+                {
+                    <button class="seat-chip" @onclick="@(() => ToggleSeatSelection(seat))"
+                            aria-label='@($"Ukloni: Red {seat.RowNumber}, mjesto {seat.SeatNumber}")'>
+                        <span>Red @seat.RowNumber · @seat.SeatNumber</span>
+                        <span class="x" aria-hidden="true">✕</span>
+                    </button>
+                }
+            </div>
         }
 
         <button class="btn btn-primary sheet-cta" disabled="@(!selectedSeats.Any())" @onclick="AddSelectedSeatsToCart">
@@ -166,13 +203,13 @@ else
 </div>
 
 @* ---- Cart review sheet ---- *@
-<div class="scrim @(showCart ? "show" : "")" @onclick="@(() => showCart = false)"></div>
-<div class="sheet @(showCart ? "show" : "")">
+<div id="customer-event-details-scrim-cart" class="scrim @(showCart ? "show" : "")" @onclick="@(() => showCart = false)"></div>
+<div id="customer-event-details-sheet-cart" class="sheet @(showCart ? "show" : "")">
     @if (showCart)
     {
-        <div class="grab"></div>
-        <div class="sheet-head">
-            <div>
+        <div id="customer-event-details-sheet-grab-cart" class="grab"></div>
+        <div id="customer-event-details-sheet-head-cart" class="sheet-head">
+            <div id="customer-event-details-sheet-title-cart">
                 <div class="sheet-title">Košarica</div>
                 <div class="sheet-sub">@cartItems.Count @Seats(cartItems.Count)</div>
             </div>
@@ -185,15 +222,16 @@ else
         }
         else
         {
-            <div class="cart-list no-scrollbar">
+            <div id="customer-event-details-cart-list" class="cart-list no-scrollbar">
                 @foreach (var item in cartItems)
                 {
-                    <div class="cart-item">
-                        <div class="ci-l">
+                    var _cartIndex = System.Array.IndexOf(cartItems.ToArray(), item);
+                    <div id="customer-event-details-cart-item-@_cartIndex" class="cart-item">
+                        <div id="customer-event-details-cart-item-left-@_cartIndex" class="ci-l">
                             <span class="ci-seat">@SeatLabel(item)</span>
                             <span class="ci-sec">@item.SectionName</span>
                         </div>
-                        <div class="ci-r">
+                        <div id="customer-event-details-cart-item-right-@_cartIndex" class="ci-r">
                             <span class="ci-price tnum">€@item.Price.ToString("F2")</span>
                             <button class="ci-del" @onclick="@(() => RemoveSeatFromCart(item))" aria-label="Ukloni">✕</button>
                         </div>
@@ -201,7 +239,7 @@ else
                 }
             </div>
 
-            <div class="cart-total">
+            <div id="customer-event-details-cart-total" class="cart-total">
                 <span>Ukupno</span>
                 <span class="tnum">€@CartTotal.ToString("F2")</span>
             </div>

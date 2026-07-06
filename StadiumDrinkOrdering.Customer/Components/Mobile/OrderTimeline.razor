@@ -1,17 +1,17 @@
 @using StadiumDrinkOrdering.Shared.Models
 @* Live order status as a vertical timeline. Steps map 1:1 to OrderStatus (Pending..Delivered). *@
 
-<div class="timeline">
+<div id="customer-order-timeline-container" class="timeline">
     @foreach (var step in _steps)
     {
-        <div class="step @StepState(step.Value)">
-            <div class="rail"></div>
-            <div class="node">@NodeGlyph(step.Value)</div>
-            <div class="stx">
-                <div class="t">@step.Label</div>
+        <div id="customer-order-timeline-step-@step.Value" class="step @StepState(step.Value)">
+            <div id="customer-order-timeline-rail-@step.Value" class="rail"></div>
+            <div id="customer-order-timeline-node-@step.Value" class="node">@NodeGlyph(step.Value)</div>
+            <div id="customer-order-timeline-stx-@step.Value" class="stx">
+                <div id="customer-order-timeline-label-@step.Value" class="t">@step.Label</div>
                 @if (!string.IsNullOrEmpty(step.Sub))
                 {
-                    <div class="s">@step.Sub</div>
+                    <div id="customer-order-timeline-sub-@step.Value" class="s">@step.Sub</div>
                 }
             </div>
         </div>

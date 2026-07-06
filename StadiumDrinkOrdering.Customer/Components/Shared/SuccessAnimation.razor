@@ -1,8 +1,8 @@
 @if (IsVisible)
 {
-    <div class="success-animation-container @(Overlay ? "success-overlay" : "")">
-        <div class="success-animation @Size.ToLower()">
-            <div class="success-icon">
+    <div id="customer-success-animation-container" class="success-animation-container @(Overlay ? "success-overlay" : "")">
+        <div id="customer-success-animation-main" class="success-animation @Size.ToLower()">
+            <div id="customer-success-animation-icon" class="success-icon">
                 <svg viewBox="0 0 52 52" class="success-svg">
                     <circle cx="26" cy="26" r="25" fill="none" class="success-circle"/>
                     <path fill="none" d="M14,27 l7.5,7.5 L38,18" class="success-check"/>
@@ -10,11 +10,11 @@
             </div>
             @if (!string.IsNullOrEmpty(Message))
             {
-                <div class="success-message">@Message</div>
+                <div id="customer-success-animation-message" class="success-message">@Message</div>
             }
             @if (!string.IsNullOrEmpty(SubMessage))
             {
-                <div class="success-sub-message">@SubMessage</div>
+                <div id="customer-success-animation-sub-message" class="success-sub-message">@SubMessage</div>
             }
         </div>
     </div>

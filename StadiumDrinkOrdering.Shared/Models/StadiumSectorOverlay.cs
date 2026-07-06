@@ -182,6 +182,14 @@ public class StadiumSectorOverlay
     public string Type { get; set; } = "standard";
 
     /// <summary>
+    /// Explicit ticket price for every seat in this sector. When set, it overrides the
+    /// type-based multiplier so all seats in the sector are sold at exactly this price.
+    /// When null, pricing falls back to the event's base price × the sector-type multiplier.
+    /// </summary>
+    [Range(0, 100000)]
+    public decimal? Price { get; set; }
+
+    /// <summary>
     /// Display color for the sector on the canvas (hex color code)
     /// </summary>
     [Required]

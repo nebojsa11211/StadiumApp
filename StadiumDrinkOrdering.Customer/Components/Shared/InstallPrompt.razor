@@ -21,21 +21,21 @@
 @if (showInstallBanner && !isInstalled && !isDismissed)
 {
     <div class="install-prompt" id="customer-pwa-install-prompt">
-        <div class="install-prompt-content">
-            <div class="install-prompt-icon">
+        <div id="customer-install-prompt-content" class="install-prompt-content">
+            <div id="customer-install-prompt-icon" class="install-prompt-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
             </div>
 
-            <div class="install-prompt-text">
+            <div id="customer-install-prompt-text" class="install-prompt-text">
                 <h4 class="install-prompt-title">Install Stadium Orders</h4>
                 <p class="install-prompt-description">
                     Get the app for faster access and offline ordering
                 </p>
             </div>
 
-            <div class="install-prompt-actions">
+            <div id="customer-install-prompt-actions" class="install-prompt-actions">
                 <button class="btn-install" @onclick="InstallApp" id="customer-pwa-install-btn">
                     Install
                 </button>

@@ -1,10 +1,10 @@
 @if (IsLoading)
 {
     <div class="loading-overlay @(Fullscreen ? "loading-fullscreen" : "")" id="@ComponentId">
-        <div class="loading-spinner-wrapper">
-            <div class="stadium-loader">
-                <div class="stadium-loader-inner">
-                    <div class="stadium-ball">⚽</div>
+        <div id="customer-loading-spinner-wrapper" class="loading-spinner-wrapper">
+            <div id="customer-loading-spinner-loader" class="stadium-loader">
+                <div id="customer-loading-spinner-inner" class="stadium-loader-inner">
+                    <div id="customer-loading-spinner-ball" class="stadium-ball">⚽</div>
                 </div>
                 <div class="stadium-loader-track"></div>
             </div>

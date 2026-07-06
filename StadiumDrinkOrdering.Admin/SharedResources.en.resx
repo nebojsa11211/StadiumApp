@@ -679,6 +679,15 @@
   <data name="SectorEdit_SectorTypeHint" xml:space="preserve">
     <value>Classification for pricing and access</value>
   </data>
+  <data name="SectorEdit_SectorPriceLabel" xml:space="preserve">
+    <value>Ticket Price</value>
+  </data>
+  <data name="SectorEdit_SectorPricePlaceholder" xml:space="preserve">
+    <value>Auto (by type)</value>
+  </data>
+  <data name="SectorEdit_SectorPriceHint" xml:space="preserve">
+    <value>Price per seat in this sector. Leave empty to price by type.</value>
+  </data>
   <data name="SectorEdit_DisplayColorLabel" xml:space="preserve">
     <value>Display Color</value>
   </data>

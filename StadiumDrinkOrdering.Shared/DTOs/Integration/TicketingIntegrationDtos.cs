@@ -255,6 +255,44 @@ public class StadiumSectionInfoDto
     public string SectionCode { get; set; } = string.Empty;
     public string SectionName { get; set; } = string.Empty;
     public int Capacity { get; set; }
+
+    /// <summary>Number of rows in the sector.</summary>
+    public int Rows { get; set; }
+
+    /// <summary>Seats per row (uniform mode); for variable seating this is the base row width.</summary>
+    public int SeatsPerRow { get; set; }
+
+    /// <summary>Sector classification: standard, vip, wheelchair, premium, family.</summary>
+    public string Type { get; set; } = "standard";
+
+    /// <summary>Display color for the sector on the stadium canvas (hex, e.g. <c>#007bff</c>).</summary>
+    public string Color { get; set; } = "#007bff";
+
+    /// <summary>Shape of the sector on the blueprint: rectangle, triangle, rhombus, circularsector, custompolygon.</summary>
+    public string ShapeType { get; set; } = "rectangle";
+
+    /// <summary>True when the sector uses variable seating (different seats per row); see <see cref="RowRanges"/>.</summary>
+    public bool UseVariableSeating { get; set; }
+
+    /// <summary>
+    /// Per-range seat layout when <see cref="UseVariableSeating"/> is true (empty for uniform sectors,
+    /// where every row has <see cref="SeatsPerRow"/> seats).
+    /// </summary>
+    public List<SectorRowRangeDto> RowRanges { get; set; } = new();
+
+    // Position & size of the sector on the responsive stadium canvas (percentages, 0-100).
+    public double TopPercent { get; set; }
+    public double LeftPercent { get; set; }
+    public double WidthPercent { get; set; }
+    public double HeightPercent { get; set; }
+}
+
+/// <summary>A contiguous range of rows sharing the same seat count, for variable-seating sectors.</summary>
+public class SectorRowRangeDto
+{
+    public int FromRow { get; set; }
+    public int ToRow { get; set; }
+    public int SeatsPerRow { get; set; }
 }
 
 /// <summary>Occupancy state of a single seat in a <see cref="SectorSeatMapDto"/>.</summary>

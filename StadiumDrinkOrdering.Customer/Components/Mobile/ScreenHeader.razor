@@ -7,16 +7,16 @@
     {
         <button class="iconbtn" @onclick="HandleBack" aria-label="Back">‹</button>
     }
-    <div class="sh-titles">
-        <div class="sh-title">@Title</div>
+    <div id="customer-screen-header-titles" class="sh-titles">
+        <div id="customer-screen-header-title" class="sh-title">@Title</div>
         @if (!string.IsNullOrWhiteSpace(Subtitle))
         {
-            <div class="sh-sub">@Subtitle</div>
+            <div id="customer-screen-header-subtitle" class="sh-sub">@Subtitle</div>
         }
     </div>
     @if (Live)
     {
-        <div class="live-badge"><span class="pulse"></span>@(string.IsNullOrEmpty(LiveText) ? "" : LiveText)</div>
+        <div id="customer-screen-header-live" class="live-badge"><span class="pulse"></span>@(string.IsNullOrEmpty(LiveText) ? "" : LiveText)</div>
     }
     @ChildContent
 </header>

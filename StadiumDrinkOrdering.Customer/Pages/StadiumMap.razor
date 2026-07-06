@@ -130,7 +130,7 @@
                                 @if (selectedSection != null)
                                 {
                                     <div class="card" id="customer-stadium-selected-sector-card">
-                                        <div class="card-header d-flex justify-content-between align-items-center" 
+                                        <div class="card-header d-flex justify-content-between align-items-center"
                                              id="customer-stadium-selected-sector-header">
                                             <h5 id="customer-stadium-selected-sector-title">
                                                 <i class="bi bi-geo-alt-fill" style="color: @GetSectionColor(selectedSection.SectionName)"></i>
@@ -143,13 +143,13 @@
                                             </button>
                                         </div>
                                         <div class="card-body" id="customer-stadium-selected-sector-body">
-                                            <div class="row">
-                                                <div class="col-md-6">
+                                            <div id="customer-stadium-sector-details-row" class="row">
+                                                <div id="customer-stadium-sector-details-col-left" class="col-md-6">
                                                     <p><strong>@Localizer["StadiumMap_Section"]</strong> @selectedSection.SectionName</p>
                                                     <p><strong>@Localizer["StadiumMap_TotalSeats"]</strong> @selectedSection.TotalSeats</p>
                                                     <p><strong>@Localizer["StadiumMap_ActiveOrders"]</strong> @selectedSection.ActiveOrders</p>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div id="customer-stadium-sector-details-col-right" class="col-md-6">
                                                     <p><strong>@Localizer["StadiumMap_Type"]</strong> @GetSectionType(selectedSection.SectionName)</p>
                                                     <p><strong>@Localizer["StadiumMap_Available"]</strong> @(selectedSection.TotalSeats - selectedSection.ActiveOrders) @Localizer["StadiumMap_Seats"]</p>
                                                     <p><strong>@Localizer["StadiumMap_Status"]</strong>

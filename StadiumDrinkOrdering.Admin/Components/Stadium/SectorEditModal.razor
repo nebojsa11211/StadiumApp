@@ -212,9 +212,9 @@
                                 </div>
                             }
 
-                            <!-- Row 4: Type and Color -->
+                            <!-- Row 4: Type, Price and Color -->
                             <div class="row mb-3">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label fw-bold">@L["SectorEdit_SectorTypeLabel"]</label>
                                     <select class="form-select" @bind="Sector.Type">
                                         <option value="standard">@L["SectorEdit_TypeStandard"]</option>
@@ -225,7 +225,21 @@
                                     </select>
                                     <small class="text-muted">@L["SectorEdit_SectorTypeHint"]</small>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">@L["SectorEdit_SectorPriceLabel"]</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">€</span>
+                                        <input type="number"
+                                               class="form-control"
+                                               @bind="Sector.Price"
+                                               min="0"
+                                               max="100000"
+                                               step="0.01"
+                                               placeholder="@L["SectorEdit_SectorPricePlaceholder"]" />
+                                    </div>
+                                    <small class="text-muted">@L["SectorEdit_SectorPriceHint"]</small>
+                                </div>
+                                <div class="col-md-4">
                                     <label class="form-label fw-bold">@L["SectorEdit_DisplayColorLabel"]</label>
                                     <div class="input-group">
                                         <input type="color"
@@ -649,6 +663,7 @@
             }
         }
         public string Type { get; set; } = "standard";
+        public decimal? Price { get; set; }
         public string Color { get; set; } = "#007bff";
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;

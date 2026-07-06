@@ -1,12 +1,13 @@
 @* Sticky cart summary that rises from the bottom when the cart is non-empty. *@
 
-<div class="cartbar @(Count > 0 ? "show" : "")">
-    <div class="inner" @onclick="OnView">
-        <div class="l">
-            <span class="cc tnum">@Count</span>
+<div id="customer-cart-bar-container" class="cartbar @(Count > 0 ? "show" : "")">
+    <div id="customer-cart-bar-inner" class="inner" @onclick="OnView">
+        <div id="customer-cart-bar-left" class="l">
+            @* @key re-mounts the badge when the count changes, replaying the bump keyframe. *@
+            <span class="cc tnum" @key="Count">@Count</span>
             <span class="ct">@Label</span>
         </div>
-        <div class="r tnum">€@Total.ToString("F2") ›</div>
+        <div id="customer-cart-bar-right" class="r tnum">€@Total.ToString("F2") ›</div>
     </div>
 </div>
 

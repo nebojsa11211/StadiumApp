@@ -1,93 +1,152 @@
 @page "/welcome"
 @layout MobileShell
+@using System.Globalization
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Customer.Services
 @inject IApiService Api
 @inject NavigationManager Nav
+@inject IJSRuntime JS
+@inject OrderSessionState State
 
 <PageTitle>HALFTIME</PageTitle>
 
-<div class="welcome">
-    <div class="hero">
-        <div class="glow"></div>
-        <div class="grid-lines"></div>
-        <div class="hero-content">
-            <div class="live-badge"><span class="pulse"></span> Rujevica · večeras uživo</div>
+<div id="customer-welcome-container" class="welcome">
+    <div id="customer-welcome-crowd" class="wl-crowd"></div>
+
+    <header class="wl-top">
+        <div id="customer-welcome-logo" class="wl-logo">HALF<span>TIME</span></div>
+    </header>
+
+    <div id="customer-welcome-hero" class="hero">
+        <div id="customer-welcome-glow" class="glow"></div>
+        <div id="customer-welcome-grid-lines" class="grid-lines"></div>
+        <div id="customer-welcome-hero-content" class="hero-content">
+            <div id="customer-welcome-place" class="wl-place">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c-3.9 0-7 3.1-7 7 0 5 7 13 7 13s7-8 7-13c0-3.9-3.1-7-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>
+                <span>STADION RUJEVICA · RIJEKA</span>
+            </div>
             <h1 class="display big-mark">
                 <span>NEMA</span>
                 <span class="grad-text">REDOVA.</span>
-                <span>SAMO</span>
-                <span>PIĆE.</span>
+                <span class="grad-text">SAMO PIĆE.</span>
             </h1>
             <p class="hero-lede">Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.</p>
         </div>
     </div>
 
-    @if (_season is not null)
+    @if (_season?.NextEvent is { } next)
     {
-        var next = _season.NextEvent;
-        <div class="welcome-info">
-            <div class="season-strip">
-                <span class="label">⭐ Sezona</span>
-                <span class="season-name">@_season.Name</span>
-                @if (_season.EventCount > 0)
-                {
-                    <span class="season-dot">·</span>
-                    <span class="season-sub">@_season.EventCount utakmica</span>
-                }
-            </div>
-
-            @if (next is not null)
+        var teams = SplitTeams(next.EventName);
+        var home = CrestColors(teams.home);
+        var away = CrestColors(teams.away);
+        <div id="customer-welcome-fixture-wrap" class="wl-fixture-wrap">
+            @if (!string.IsNullOrWhiteSpace(_season!.Name))
             {
-                <div class="fixture-card" role="button" tabindex="0"
-                     @onclick="@(() => Nav.NavigateTo($"/events/{next.Id}"))"
-                     @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{next.Id}"); })">
-                    <div class="fixture-when">
-                        <span class="fixture-day">@next.EventDate.ToLocalTime().Day</span>
-                        <span class="fixture-mon">@MonthShort(next.EventDate.ToLocalTime())</span>
+                <div id="customer-welcome-season" class="wl-season">@_season.Name</div>
+            }
+            <div id="customer-welcome-vs-card" class="vs-card" role="button" tabindex="0"
+                 @onclick="@(() => Nav.NavigateTo($"/events/{next.Id}"))"
+                 @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{next.Id}"); })">
+                <div id="customer-welcome-vs-label" class="vs-label">@(next.IsLive ? "LIVE NOW" : "NEXT FIXTURE")</div>
+                <div id="customer-welcome-vs-body" class="vs-body">
+                    <div id="customer-welcome-vs-team-home" class="vs-team">
+                        <div id="customer-welcome-crest-home" class="crest" style="--c1:@home.a;--c2:@home.b">
+                            <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
+                                <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
+                                <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
+                            </svg>
+                            <span class="crest-mono" style="color:@home.fg">@Initials(teams.home)</span>
+                        </div>
+                        <div id="customer-welcome-vs-name-home" class="vs-name">@teams.home</div>
                     </div>
-                    <div class="fixture-main">
-                        <span class="label">@(next.IsLive ? "Uživo sada" : "Sljedeća utakmica")</span>
-                        <span class="fixture-name">@next.EventName</span>
-                        <span class="fixture-meta">@RelativeDay(next.EventDate.ToLocalTime()) · @next.EventDate.ToLocalTime().ToString("HH:mm")</span>
+                    <div id="customer-welcome-vs-mid" class="vs-mid">
+                        @if (next.IsLive)
+                        {
+                            <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
+                        }
+                        else
+                        {
+                            <span class="vs-when tnum">@WhenLabel(next.EventDate.ToLocalTime())</span>
+                        }
                     </div>
-                    @if (next.IsLive)
-                    {
-                        <span class="fixture-avail fixture-live"><span class="pulse"></span></span>
-                    }
-                    else if (next.AvailableSeats > 0)
-                    {
-                        <span class="fixture-avail">@next.AvailableSeats<span class="fixture-avail-lbl">slobodno</span></span>
-                    }
-                    else
-                    {
-                        <span class="fixture-avail fixture-soldout">Rasprodano</span>
-                    }
-                    <span class="fixture-chevron" aria-hidden="true">›</span>
+                    <div id="customer-welcome-vs-team-away" class="vs-team">
+                        <div id="customer-welcome-crest-away" class="crest" style="--c1:@away.a;--c2:@away.b">
+                            <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
+                                <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
+                                <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
+                            </svg>
+                            <span class="crest-mono" style="color:@away.fg">@Initials(teams.away)</span>
+                        </div>
+                        <div id="customer-welcome-vs-name-away" class="vs-name">@teams.away</div>
+                    </div>
                 </div>
-            }
-            else
+                <div id="customer-welcome-vs-foot" class="vs-foot">STADION RUJEVICA</div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div id="customer-welcome-fixture-wrap-empty" class="wl-fixture-wrap">
+            @if (!string.IsNullOrWhiteSpace(_season?.Name))
             {
-                <div class="fixture-empty">Još nema objavljenih utakmica.</div>
+                <div id="customer-welcome-season-empty" class="wl-season">@_season!.Name</div>
             }
+            <div id="customer-welcome-fixture-empty" class="fixture-empty">Još nema objavljenih utakmica.</div>
         </div>
     }
 
-    <div class="welcome-cta">
-        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">📷&nbsp; Skeniraj ulaznicu</button>
-        <button class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">Imaš pretplatu? Prijavi se</button>
-        <p class="welcome-note">Kupio si pojedinačnu ulaznicu? Samo <a @onclick="@(() => Nav.NavigateTo("/scan"))" @onclick:preventDefault href="#">skeniraj QR kod</a> na njoj.</p>
+    <div id="customer-welcome-wl-mark" class="wl-mark">HALF<span>TIME</span></div>
+
+    <div id="customer-welcome-cta" class="welcome-cta">
+        @if (_hasSession)
+        {
+            @* Ticket already scanned this session — jump back into ordering instead of scanning again. *@
+            <button id="customer-welcome-continue-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/order"))">
+                <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                Nastavi naručivanje
+            </button>
+        }
+        else
+        {
+            <button class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
+                <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M6 9.5v5M18 9.5v5"/></svg>
+                Skeniraj ulaznicu
+            </button>
+            <button class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">Imaš pretplatu? Prijavi se</button>
+        }
     </div>
+
+    <footer class="wl-foot">
+        @if (!_hasSession)
+        {
+            @* Redundant once a ticket is scanned — the CTA above already offers "continue ordering". *@
+            <button id="customer-welcome-foot-scan" class="wl-foot-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
+                <span>Pojedinačna ulaznica? Skeniraj QR kod.</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm0 3h2v-2h3v2h-2v-1h-1v3h-2v-2Zm3-3h2v2h-2v-2Z"/></svg>
+            </button>
+        }
+        <div id="customer-welcome-lang" class="wl-lang" role="group" aria-label="Jezik">
+            <button class="@(IsHr ? "on" : "")" @onclick='() => SetCulture("hr")'>HR</button>
+            <span aria-hidden="true">/</span>
+            <button class="@(IsHr ? "" : "on")" @onclick='() => SetCulture("en")'>EN</button>
+        </div>
+    </footer>
 </div>
 
 @code {
     private CurrentSeasonDto? _season;
+    private bool _hasSession;
 
     private static readonly string[] MonthsHr =
         { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
 
+    private bool IsHr => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "hr";
+
     protected override async Task OnInitializedAsync()
     {
+        // In-circuit session (soft navigation back to /welcome after a scan) is known immediately.
+        _hasSession = State.HasSession;
+
         // Anonymous landing — this endpoint is public. Fail silently so the panel is optional
         // and the landing never breaks if the API is unreachable.
         try
@@ -97,16 +156,82 @@
         catch { /* ignore — panel is optional */ }
     }
 
-    private static string MonthShort(DateTime date) => MonthsHr[date.Month - 1];
-
-    private static string RelativeDay(DateTime date)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var days = (date.Date - DateTime.Today).Days;
-        return days switch
+        // On a fresh page load / QR reopen the in-memory session is gone, but the token was
+        // persisted to sessionStorage on scan. Rehydrate it (interactive-only, never during
+        // prerender) so the CTA offers "continue ordering" instead of "scan again".
+        if (!firstRender || _hasSession) return;
+
+        string? token = null;
+        try { token = await JS.InvokeAsync<string?>("sessionStorage.getItem", "htSessionToken"); }
+        catch { /* prerender / no JS — ignore */ }
+        if (string.IsNullOrEmpty(token)) return;
+
+        if (await State.InitFromTokenAsync(token))
         {
-            <= 0 => "Danas",
-            1 => "Sutra",
-            _ => $"za {days} dana"
-        };
+            _hasSession = true;
+            StateHasChanged();
+        }
+        else
+        {
+            // Stale/expired token — drop it so we don't keep probing a dead session.
+            try { await JS.InvokeVoidAsync("sessionStorage.removeItem", "htSessionToken"); }
+            catch { /* ignore */ }
+        }
+    }
+
+    private async Task SetCulture(string culture)
+    {
+        if (culture == CultureInfo.CurrentUICulture.TwoLetterISOLanguageName) return;
+        await JS.InvokeVoidAsync("blazorCulture.set", culture);
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+
+    // The fixture DTO carries a single "Home – Away" title; split it so each side gets its own crest.
+    private static (string home, string away) SplitTeams(string eventName)
+    {
+        var seps = new[] { " - ", " – ", " — ", " vs ", " VS ", " v ", " x " };
+        foreach (var s in seps)
+        {
+            var idx = eventName.IndexOf(s, StringComparison.OrdinalIgnoreCase);
+            if (idx > 0)
+                return (eventName[..idx].Trim(), eventName[(idx + s.Length)..].Trim());
+        }
+        return (eventName.Trim(), "");
+    }
+
+    // Monogram crest fallback — first letter of each word, up to three, digits ignored.
+    private static string Initials(string team)
+    {
+        if (string.IsNullOrWhiteSpace(team)) return "?";
+        var letters = team
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Where(w => char.IsLetter(w[0]))
+            .Select(w => char.ToUpperInvariant(w[0]))
+            .Take(3);
+        var s = string.Concat(letters);
+        return s.Length > 0 ? s : "?";
+    }
+
+    // Club-coloured shield fallback (we hold no logo assets): known Croatian clubs get their
+    // real colours, everything else a neutral navy badge.
+    private static (string a, string b, string fg) CrestColors(string team)
+    {
+        var t = team.ToLowerInvariant();
+        if (t.Contains("rijeka")) return ("#1F6FE0", "#0B2B63", "#FFFFFF");
+        if (t.Contains("istra")) return ("#2FA83A", "#123A0C", "#F6D50B");
+        if (t.Contains("hajduk")) return ("#EDEFF5", "#9AA4B2", "#123A6B");
+        if (t.Contains("dinamo")) return ("#1E63C8", "#0C2E63", "#FFFFFF");
+        if (t.Contains("osijek")) return ("#1B5FA6", "#0B2E52", "#FFFFFF");
+        if (t.Contains("gorica")) return ("#2FA83A", "#123A0C", "#FFFFFF");
+        return ("#3A5B87", "#1A2942", "#FFFFFF");
+    }
+
+    private static string WhenLabel(DateTime local)
+    {
+        var days = (local.Date - DateTime.Today).Days;
+        var day = days switch { <= 0 => "Danas", 1 => "Sutra", _ => $"{local.Day}. {MonthsHr[local.Month - 1]}" };
+        return $"{day}, {local:HH:mm}";
     }
 }

@@ -76,6 +76,93 @@
   <data name="Index_SectionsDiscovered" xml:space="preserve">
     <value>sections discovered</value>
   </data>
+  <data name="Index_StadiumHeader" xml:space="preserve">
+    <value>Stadium</value>
+  </data>
+  <data name="Index_SectorsWord" xml:space="preserve">
+    <value>sectors</value>
+  </data>
+  <data name="Index_DetailsButton" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Index_HideButton" xml:space="preserve">
+    <value>Hide</value>
+  </data>
+  <data name="Index_StadiumEmpty" xml:space="preserve">
+    <value>No stadium sectors found. Import a stadium structure in the Admin app first.</value>
+  </data>
+  <data name="Index_StatSectors" xml:space="preserve">
+    <value>Sectors</value>
+  </data>
+  <data name="Index_StatSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="Index_StatRows" xml:space="preserve">
+    <value>Rows</value>
+  </data>
+  <data name="Index_StatTypes" xml:space="preserve">
+    <value>Sector types</value>
+  </data>
+  <data name="Index_TypeColumn" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Index_RowsColumn" xml:space="preserve">
+    <value>Rows</value>
+  </data>
+  <data name="Index_SeatsPerRowColumn" xml:space="preserve">
+    <value>Seats/row</value>
+  </data>
+  <data name="Index_CapacityColumn" xml:space="preserve">
+    <value>Capacity</value>
+  </data>
+  <data name="Index_TotalLabel" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Index_StadiumNote" xml:space="preserve">
+    <value>These are the real stadium sectors from the Admin drawing tool — the same seats tickets are sold into.</value>
+  </data>
+  <data name="Index_StadiumRowTooltip" xml:space="preserve">
+    <value>Click for sector details</value>
+  </data>
+  <data name="Index_DetailNameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Index_DetailCodeLabel" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Index_DetailShapeLabel" xml:space="preserve">
+    <value>Shape</value>
+  </data>
+  <data name="Index_DetailColorLabel" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Index_DetailSeatingLabel" xml:space="preserve">
+    <value>Seating</value>
+  </data>
+  <data name="Index_DetailVariableSeating" xml:space="preserve">
+    <value>Variable seating</value>
+  </data>
+  <data name="Index_DetailSeatsWord" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="Index_DetailRowsWord" xml:space="preserve">
+    <value>rows</value>
+  </data>
+  <data name="Index_DetailPositionLabel" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="Index_DetailTopShort" xml:space="preserve">
+    <value>top</value>
+  </data>
+  <data name="Index_DetailLeftShort" xml:space="preserve">
+    <value>left</value>
+  </data>
+  <data name="Index_DetailLayoutTitle" xml:space="preserve">
+    <value>Seat layout</value>
+  </data>
+  <data name="Index_DetailMoreRows" xml:space="preserve">
+    <value>… +{0} more rows</value>
+  </data>
   <data name="Index_NotReachable" xml:space="preserve">
     <value>not reachable</value>
   </data>

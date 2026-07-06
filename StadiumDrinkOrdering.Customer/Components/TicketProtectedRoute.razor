@@ -4,12 +4,12 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 
-<div class="ticket-protected-route">
+<div id="customer-ticket-protected-route" class="ticket-protected-route">
     @if (isLoading)
     {
-        <div class="loading-container">
-            <div class="loading-spinner">
-                <div class="spinner"></div>
+        <div id="customer-ticket-protected-loading" class="loading-container">
+            <div id="customer-ticket-protected-spinner-wrapper" class="loading-spinner">
+                <div id="customer-ticket-protected-spinner" class="spinner"></div>
             </div>
             <h3>Verifying Access...</h3>
             <p>Please wait while we verify your ticket session</p>
@@ -17,11 +17,11 @@
     }
     else if (isAccessDenied)
     {
-        <div class="access-denied-container">
-            <div class="access-denied-icon">🚫</div>
+        <div id="customer-ticket-protected-denied" class="access-denied-container">
+            <div id="customer-ticket-protected-denied-icon" class="access-denied-icon">🚫</div>
             <h2>Access Denied</h2>
             <p>@errorMessage</p>
-            <div class="action-buttons">
+            <div id="customer-ticket-protected-buttons" class="action-buttons">
                 <button class="btn btn-primary" @onclick="RedirectToScanner">
                     📱 Scan Your Ticket
                 </button>

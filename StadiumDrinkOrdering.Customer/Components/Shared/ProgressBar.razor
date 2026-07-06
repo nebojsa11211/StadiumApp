@@ -1,9 +1,9 @@
 @if (IsVisible)
 {
-    <div class="progress-container @Size.ToLower()">
+    <div id="customer-progress-bar-container" class="progress-container @Size.ToLower()">
         @if (!string.IsNullOrEmpty(Label))
         {
-            <div class="progress-label">
+            <div id="customer-progress-bar-label" class="progress-label">
                 <span>@Label</span>
                 @if (ShowPercentage)
                 {
@@ -11,19 +11,19 @@
                 }
             </div>
         }
-        <div class="progress-bar-container">
-            <div class="progress-bar-track">
-                <div class="progress-bar-fill @Color.ToLower()" style="width: @($"{Value}%")">
+        <div id="customer-progress-bar-bar-container" class="progress-bar-container">
+            <div id="customer-progress-bar-track" class="progress-bar-track">
+                <div id="customer-progress-bar-fill" class="progress-bar-fill @Color.ToLower()" style="width: @($"{Value}%")">
                     @if (Animated)
                     {
-                        <div class="progress-bar-glow"></div>
+                        <div id="customer-progress-bar-glow" class="progress-bar-glow"></div>
                     }
                 </div>
             </div>
         </div>
         @if (!string.IsNullOrEmpty(SubLabel))
         {
-            <div class="progress-sub-label">@SubLabel</div>
+            <div id="customer-progress-bar-sub-label" class="progress-sub-label">@SubLabel</div>
         }
     </div>
 }

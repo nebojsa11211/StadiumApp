@@ -709,6 +709,15 @@
   <data name="SectorEdit_SectorTypeHint" xml:space="preserve">
     <value>Klasifikacija za određivanje cijene i pristupa</value>
   </data>
+  <data name="SectorEdit_SectorPriceLabel" xml:space="preserve">
+    <value>Cijena ulaznice</value>
+  </data>
+  <data name="SectorEdit_SectorPricePlaceholder" xml:space="preserve">
+    <value>Automatski (po tipu)</value>
+  </data>
+  <data name="SectorEdit_SectorPriceHint" xml:space="preserve">
+    <value>Cijena po sjedalu u ovom sektoru. Ostavite prazno za cijenu po tipu.</value>
+  </data>
   <data name="SectorEdit_DisplayColorLabel" xml:space="preserve">
     <value>Boja prikaza</value>
   </data>

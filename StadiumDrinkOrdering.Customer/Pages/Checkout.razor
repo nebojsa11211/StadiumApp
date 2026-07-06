@@ -13,8 +13,8 @@
 
 @if (cart == null || !cart.Items.Any())
 {
-    <div class="co-empty">
-        <div class="co-emoji">🛒</div>
+    <div id="customer-checkout-empty" class="co-empty">
+        <div id="customer-checkout-emoji" class="co-emoji">🛒</div>
         <h2>Košarica je prazna</h2>
         <p>Dodaj ulaznice prije plaćanja.</p>
         <button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">Pregledaj utakmice</button>
@@ -25,19 +25,20 @@ else
     <EditForm Model="@checkoutForm" OnValidSubmit="@ProcessCheckout">
         <DataAnnotationsValidator />
 
-        <div class="co-body no-scrollbar">
+        <div id="customer-checkout-body" class="co-body no-scrollbar">
             <!-- Order summary -->
-            <div class="co-card">
-                <div class="co-card-head">
+            <div id="customer-checkout-card" class="co-card">
+                <div id="customer-checkout-card-head" class="co-card-head">
                     <span class="label">Sažetak</span>
                     <span class="co-event">@(cart.Items.FirstOrDefault()?.EventName ?? "Utakmica")</span>
                 </div>
 
-                <div class="co-seats">
+                <div id="customer-checkout-seats" class="co-seats">
                     @foreach (var item in cart.Items)
                     {
-                        <div class="co-seat">
-                            <div class="co-seat-l">
+                        var _itemIndex = System.Array.IndexOf(cart.Items.ToArray(), item);
+                        <div id="customer-checkout-seat-@_itemIndex" class="co-seat">
+                            <div id="customer-checkout-seat-left-@_itemIndex" class="co-seat-l">
                                 <span class="co-seat-code">@SeatLabel(item)</span>
                                 <span class="co-seat-sec">@(string.IsNullOrWhiteSpace(item.SectionName) ? ("Sektor " + item.SectorId) : item.SectionName)</span>
                             </div>
@@ -46,35 +47,35 @@ else
                     }
                 </div>
 
-                <div class="co-lines">
-                    <div class="co-line"><span>Međuzbroj (@cart.Items.Count)</span><span class="tnum">€@subtotal.ToString("F2")</span></div>
-                    <div class="co-line"><span>Naknada za uslugu</span><span class="tnum">€@serviceFee.ToString("F2")</span></div>
-                    <div class="co-line"><span>Naknada za obradu</span><span class="tnum">€@processingFee.ToString("F2")</span></div>
-                    <div class="co-line co-line-total"><span>Ukupno</span><span class="tnum">€@total.ToString("F2")</span></div>
+                <div id="customer-checkout-lines" class="co-lines">
+                    <div id="customer-checkout-line-subtotal" class="co-line"><span>Međuzbroj (@cart.Items.Count)</span><span class="tnum">€@subtotal.ToString("F2")</span></div>
+                    <div id="customer-checkout-line-service" class="co-line"><span>Naknada za uslugu</span><span class="tnum">€@serviceFee.ToString("F2")</span></div>
+                    <div id="customer-checkout-line-processing" class="co-line"><span>Naknada za obradu</span><span class="tnum">€@processingFee.ToString("F2")</span></div>
+                    <div id="customer-checkout-line-total" class="co-line co-line-total"><span>Ukupno</span><span class="tnum">€@total.ToString("F2")</span></div>
                 </div>
             </div>
 
             <!-- Customer info -->
-            <div class="co-section">
+            <div id="customer-checkout-customer-info" class="co-section">
                 <span class="label">Podaci o kupcu</span>
-                <div class="co-grid2">
-                    <div class="field">
+                <div id="customer-checkout-grid-name" class="co-grid2">
+                    <div id="customer-checkout-field-firstname" class="field">
                         <label>Ime</label>
                         <InputText class="co-input" @bind-Value="checkoutForm.FirstName" placeholder="Ivan" />
                         <ValidationMessage For="@(() => checkoutForm.FirstName)" class="co-err" />
                     </div>
-                    <div class="field">
+                    <div id="customer-checkout-field-lastname" class="field">
                         <label>Prezime</label>
                         <InputText class="co-input" @bind-Value="checkoutForm.LastName" placeholder="Horvat" />
                         <ValidationMessage For="@(() => checkoutForm.LastName)" class="co-err" />
                     </div>
                 </div>
-                <div class="field">
+                <div id="customer-checkout-field-email" class="field">
                     <label>Email</label>
                     <InputText type="email" class="co-input" @bind-Value="checkoutForm.Email" placeholder="ime@email.hr" />
                     <ValidationMessage For="@(() => checkoutForm.Email)" class="co-err" />
                 </div>
-                <div class="field">
+                <div id="customer-checkout-field-phone" class="field">
                     <label>Telefon</label>
                     <InputText class="co-input" @bind-Value="checkoutForm.Phone" placeholder="+385 91 234 5678" />
                     <ValidationMessage For="@(() => checkoutForm.Phone)" class="co-err" />
@@ -82,29 +83,29 @@ else
             </div>
 
             <!-- Payment -->
-            <div class="co-section">
-                <div class="co-section-head">
+            <div id="customer-checkout-payment-section" class="co-section">
+                <div id="customer-checkout-payment-head" class="co-section-head">
                     <span class="label">Plaćanje karticom</span>
                     <button type="button" class="btn btn-ghost btn-sm" @onclick="FillSamplePaymentData">Testni podaci</button>
                 </div>
-                <div class="field">
+                <div id="customer-checkout-field-cardnumber" class="field">
                     <label>Broj kartice</label>
                     <InputText class="co-input" @bind-Value="checkoutForm.CardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
                     <ValidationMessage For="@(() => checkoutForm.CardNumber)" class="co-err" />
                 </div>
-                <div class="co-grid2">
-                    <div class="field">
+                <div id="customer-checkout-grid-carddetails" class="co-grid2">
+                    <div id="customer-checkout-field-expiry" class="field">
                         <label>Vrijedi do</label>
                         <InputText class="co-input" @bind-Value="checkoutForm.ExpiryDate" placeholder="MM/GG" maxlength="5" />
                         <ValidationMessage For="@(() => checkoutForm.ExpiryDate)" class="co-err" />
                     </div>
-                    <div class="field">
+                    <div id="customer-checkout-field-cvv" class="field">
                         <label>CVV</label>
                         <InputText class="co-input" @bind-Value="checkoutForm.CVV" placeholder="123" maxlength="4" />
                         <ValidationMessage For="@(() => checkoutForm.CVV)" class="co-err" />
                     </div>
                 </div>
-                <div class="field">
+                <div id="customer-checkout-field-cardholder" class="field">
                     <label>Ime na kartici</label>
                     <InputText class="co-input" @bind-Value="checkoutForm.CardholderName" placeholder="IVAN HORVAT" />
                     <ValidationMessage For="@(() => checkoutForm.CardholderName)" class="co-err" />
@@ -119,7 +120,7 @@ else
             <ValidationMessage For="@(() => checkoutForm.AgreeToTerms)" class="co-err" />
         </div>
 
-        <div class="co-paybar">
+        <div id="customer-checkout-paybar" class="co-paybar">
             <button type="submit" class="btn btn-primary" disabled="@isProcessing">
                 @if (isProcessing)
                 {
@@ -136,8 +137,8 @@ else
 
 @if (showProcessingModal)
 {
-    <div class="co-overlay">
-        <div class="co-overlay-box">
+    <div id="customer-checkout-overlay" class="co-overlay">
+        <div id="customer-checkout-overlay-box" class="co-overlay-box">
             <span class="spinner co-big-spin"></span>
             <h3>Obrađujem plaćanje…</h3>
             <p>Molimo pričekaj, ne zatvaraj aplikaciju.</p>

@@ -125,8 +125,10 @@ public class CustomerTicketingController : ControllerBase
                 return NotFound("Event not found or not available");
             }
 
-            // Get availability by section
-            var sectionAvailability = await GetSectionAvailabilityForEvent(eventId);
+            var baseTicketPrice = evt.BaseTicketPrice ?? 50.00m;
+
+            // Availability + price per sector. Every seat in a sector shares the sector's price.
+            var sectionAvailability = await GetSectionAvailabilityForEvent(eventId, baseTicketPrice);
 
             var eventDetails = new CustomerEventDetailsDto
             {
@@ -135,11 +137,11 @@ public class CustomerTicketingController : ControllerBase
                 EventType = evt.EventType,
                 EventDate = evt.EventDate,
                 Description = evt.Description,
-                BaseTicketPrice = evt.BaseTicketPrice ?? 50.00m,
+                BaseTicketPrice = baseTicketPrice,
                 TotalSeats = evt.TotalSeats,
                 VenueInfo = "Stadium Arena",
                 SectionAvailability = sectionAvailability,
-                PricingTiers = await GetPricingTiers(eventId)
+                PricingTiers = BuildPricingTiersFromSectors(sectionAvailability)
             };
 
             return Ok(eventDetails);
@@ -177,17 +179,18 @@ public class CustomerTicketingController : ControllerBase
             }
 
             var basePrice = evt.BaseTicketPrice ?? 50.00m;
-            var seatPrice = CalculateOverlaySeatPrice(basePrice, overlay.Type);
+            var seatPrice = ResolveSectorPrice(overlay.Price, basePrice, overlay.Type);
 
-            var available = await _overlaySeats.GetAvailableSeatsAsync(eventId, sectionId);
-            var availableSeats = available
+            var allSeats = await _overlaySeats.GetAllSeatsAsync(eventId, sectionId);
+            var seats = allSeats
                 .Select(s => new CustomerSeatDto
                 {
                     SectorId = sectionId,
                     RowNumber = s.RowNumber,
                     SeatNumber = s.SeatNumber,
                     Price = seatPrice,
-                    SeatCode = s.SeatCode
+                    SeatCode = s.SeatCode,
+                    IsAvailable = s.IsAvailable
                 })
                 .ToList();
 
@@ -199,7 +202,8 @@ public class CustomerTicketingController : ControllerBase
                 TribuneName = overlay.SectorCode,
                 RingName = overlay.Type,
                 TotalSeats = overlay.TotalSeats,
-                AvailableSeats = availableSeats
+                AvailableSeats = seats.Where(s => s.IsAvailable).ToList(),
+                Seats = seats
             });
         }
         catch (Exception ex)
@@ -209,7 +213,7 @@ public class CustomerTicketingController : ControllerBase
         }
     }
 
-    private async Task<Dictionary<string, SectionAvailabilityInfo>> GetSectionAvailabilityForEvent(int eventId)
+    private async Task<Dictionary<string, SectionAvailabilityInfo>> GetSectionAvailabilityForEvent(int eventId, decimal baseTicketPrice)
     {
         // Real stadium = the drawing-tool overlay sectors. Sold counts include season-pass seats.
         var summaries = await _overlaySeats.GetSectionSummariesAsync(eventId);
@@ -221,14 +225,26 @@ public class CustomerTicketingController : ControllerBase
             {
                 SectionId = summary.OverlayId,
                 SectionName = summary.Name,
+                SectionType = summary.Type,
                 TotalSeats = summary.TotalSeats,
                 AvailableSeats = summary.AvailableSeats,
-                BasePrice = CalculateOverlaySeatPrice(50.00m, summary.Type)
+                // One price for the whole sector. This is the same resolution GetSectionAvailability
+                // uses for the individual seats, so the price shown in the sector list matches what
+                // the customer pays per seat.
+                BasePrice = ResolveSectorPrice(summary.Price, baseTicketPrice, summary.Type)
             };
         }
 
         return result;
     }
+
+    /// <summary>
+    /// The price charged for every seat in a sector. An explicit per-sector price set by the admin
+    /// wins; otherwise it falls back to the event's base price scaled by the sector-type multiplier.
+    /// Either way, all seats in the sector get the same price.
+    /// </summary>
+    private static decimal ResolveSectorPrice(decimal? explicitSectorPrice, decimal basePrice, string? sectorType)
+        => explicitSectorPrice ?? CalculateOverlaySeatPrice(basePrice, sectorType);
 
     private static decimal CalculateOverlaySeatPrice(decimal basePrice, string? sectorType) => (sectorType?.ToLowerInvariant()) switch
     {
@@ -238,17 +254,34 @@ public class CustomerTicketingController : ControllerBase
         _ => basePrice
     };
 
-    private Task<List<PricingTierDto>> GetPricingTiers(int eventId)
+    private static List<PricingTierDto> BuildPricingTiersFromSectors(Dictionary<string, SectionAvailabilityInfo> sections)
     {
-        // This would typically be configurable per event
-        return Task.FromResult(new List<PricingTierDto>
-        {
-            new PricingTierDto { Name = "VIP", BasePrice = 150.00m, Description = "Premium seating with exclusive access" },
-            new PricingTierDto { Name = "Premium", BasePrice = 100.00m, Description = "Great views and comfort" },
-            new PricingTierDto { Name = "Standard", BasePrice = 75.00m, Description = "Good value seating" },
-            new PricingTierDto { Name = "Economy", BasePrice = 50.00m, Description = "Budget-friendly options" }
-        });
+        // Price is a property of the sector: every seat in a sector has the same price, and
+        // sectors of the same type share a price. Build one tier per distinct sector price
+        // directly from the real sectors, so the tiers panel always matches the sector list.
+        return sections.Values
+            .GroupBy(s => new { s.SectionType, s.BasePrice })
+            .OrderByDescending(g => g.Key.BasePrice)
+            .Select(g => new PricingTierDto
+            {
+                Name = TierDisplayName(g.Key.SectionType),
+                BasePrice = g.Key.BasePrice,
+                Description = string.Join(", ", g.Select(s => s.SectionName).OrderBy(n => n))
+            })
+            .ToList();
     }
+
+    private static string TierDisplayName(string? sectorType) => (sectorType?.ToLowerInvariant()) switch
+    {
+        "vip" => "VIP",
+        "premium" => "Premium",
+        "family" => "Family",
+        "wheelchair" => "Wheelchair",
+        "standard" => "Standard",
+        _ => string.IsNullOrWhiteSpace(sectorType)
+            ? "Standard"
+            : char.ToUpperInvariant(sectorType[0]) + sectorType[1..]
+    };
 
     private decimal CalculateSeatPrice(decimal basePrice, string tribuneCode)
     {
@@ -298,6 +331,7 @@ public class SectionAvailabilityInfo
 {
     public int SectionId { get; set; }
     public string SectionName { get; set; } = string.Empty;
+    public string SectionType { get; set; } = "standard";
     public int TotalSeats { get; set; }
     public int AvailableSeats { get; set; }
     public decimal BasePrice { get; set; }
@@ -312,6 +346,8 @@ public class SectionAvailabilityDto
     public string RingName { get; set; } = string.Empty;
     public int TotalSeats { get; set; }
     public List<CustomerSeatDto> AvailableSeats { get; set; } = new();
+    /// <summary>Every seat in the section (available + taken) so the whole stand can be drawn.</summary>
+    public List<CustomerSeatDto> Seats { get; set; } = new();
 }
 
 public class CustomerSeatDto
@@ -321,6 +357,7 @@ public class CustomerSeatDto
     public int SeatNumber { get; set; }
     public decimal Price { get; set; }
     public string SeatCode { get; set; } = string.Empty;
+    public bool IsAvailable { get; set; } = true;
 }
 
 public class PricingTierDto

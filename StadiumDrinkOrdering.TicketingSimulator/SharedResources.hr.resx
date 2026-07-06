@@ -76,6 +76,93 @@
   <data name="Index_SectionsDiscovered" xml:space="preserve">
     <value>sekcije pronađene</value>
   </data>
+  <data name="Index_StadiumHeader" xml:space="preserve">
+    <value>Stadion</value>
+  </data>
+  <data name="Index_SectorsWord" xml:space="preserve">
+    <value>sektora</value>
+  </data>
+  <data name="Index_DetailsButton" xml:space="preserve">
+    <value>Detalji</value>
+  </data>
+  <data name="Index_HideButton" xml:space="preserve">
+    <value>Sakrij</value>
+  </data>
+  <data name="Index_StadiumEmpty" xml:space="preserve">
+    <value>Nema pronađenih sektora stadiona. Najprije uvezite strukturu stadiona u Admin aplikaciji.</value>
+  </data>
+  <data name="Index_StatSectors" xml:space="preserve">
+    <value>Sektori</value>
+  </data>
+  <data name="Index_StatSeats" xml:space="preserve">
+    <value>Sjedala</value>
+  </data>
+  <data name="Index_StatRows" xml:space="preserve">
+    <value>Redovi</value>
+  </data>
+  <data name="Index_StatTypes" xml:space="preserve">
+    <value>Vrste sektora</value>
+  </data>
+  <data name="Index_TypeColumn" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="Index_RowsColumn" xml:space="preserve">
+    <value>Redovi</value>
+  </data>
+  <data name="Index_SeatsPerRowColumn" xml:space="preserve">
+    <value>Sjedala/red</value>
+  </data>
+  <data name="Index_CapacityColumn" xml:space="preserve">
+    <value>Kapacitet</value>
+  </data>
+  <data name="Index_TotalLabel" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="Index_StadiumNote" xml:space="preserve">
+    <value>Ovo su stvarni sektori stadiona iz Admin alata za crtanje — ista sjedala u koja se prodaju ulaznice.</value>
+  </data>
+  <data name="Index_StadiumRowTooltip" xml:space="preserve">
+    <value>Kliknite za detalje sektora</value>
+  </data>
+  <data name="Index_DetailNameLabel" xml:space="preserve">
+    <value>Naziv</value>
+  </data>
+  <data name="Index_DetailCodeLabel" xml:space="preserve">
+    <value>Šifra</value>
+  </data>
+  <data name="Index_DetailShapeLabel" xml:space="preserve">
+    <value>Oblik</value>
+  </data>
+  <data name="Index_DetailColorLabel" xml:space="preserve">
+    <value>Boja</value>
+  </data>
+  <data name="Index_DetailSeatingLabel" xml:space="preserve">
+    <value>Raspored sjedala</value>
+  </data>
+  <data name="Index_DetailVariableSeating" xml:space="preserve">
+    <value>Varijabilni raspored</value>
+  </data>
+  <data name="Index_DetailSeatsWord" xml:space="preserve">
+    <value>sjedala</value>
+  </data>
+  <data name="Index_DetailRowsWord" xml:space="preserve">
+    <value>redova</value>
+  </data>
+  <data name="Index_DetailPositionLabel" xml:space="preserve">
+    <value>Pozicija</value>
+  </data>
+  <data name="Index_DetailTopShort" xml:space="preserve">
+    <value>vrh</value>
+  </data>
+  <data name="Index_DetailLeftShort" xml:space="preserve">
+    <value>lijevo</value>
+  </data>
+  <data name="Index_DetailLayoutTitle" xml:space="preserve">
+    <value>Raspored sjedala</value>
+  </data>
+  <data name="Index_DetailMoreRows" xml:space="preserve">
+    <value>… +{0} redova više</value>
+  </data>
   <data name="Index_NotReachable" xml:space="preserve">
     <value>nije dostupan</value>
   </data>

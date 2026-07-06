@@ -26,6 +26,10 @@ public interface IOverlaySeatService
     /// <summary>Bookable (not sold, not reserved) seats in an overlay sector for an event.</summary>
     Task<List<OverlaySeatInfo>> GetAvailableSeatsAsync(int eventId, int overlaySectorId, CancellationToken ct = default);
 
+    /// <summary>Every seat in an overlay sector for an event, each flagged available/taken so the
+    /// full stand can be drawn (sold + reserved seats come back with <c>IsAvailable = false</c>).</summary>
+    Task<List<OverlaySeatInfo>> GetAllSeatsAsync(int eventId, int overlaySectorId, CancellationToken ct = default);
+
     /// <summary>True when a non-cancelled ticket (incl. a season pass) already occupies the seat for the event.</summary>
     Task<bool> IsSeatSoldAsync(int eventId, int overlaySectorId, int rowNumber, int seatNumber, CancellationToken ct = default);
 
@@ -39,6 +43,8 @@ public class OverlaySectionSummary
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Type { get; set; } = "standard";
+    /// <summary>Explicit per-sector price if the admin set one; null means fall back to the type multiplier.</summary>
+    public decimal? Price { get; set; }
     public int TotalSeats { get; set; }
     public int SoldSeats { get; set; }
     public int AvailableSeats { get; set; }
@@ -49,6 +55,8 @@ public class OverlaySeatInfo
     public int RowNumber { get; set; }
     public int SeatNumber { get; set; }
     public string SeatCode { get; set; } = string.Empty;
+    /// <summary>False when the seat is already sold or currently reserved for the event.</summary>
+    public bool IsAvailable { get; set; } = true;
 }
 
 public class OverlaySeatService : IOverlaySeatService
@@ -94,6 +102,7 @@ public class OverlaySeatService : IOverlaySeatService
                 Code = o.SectorCode,
                 Name = o.Name,
                 Type = o.Type,
+                Price = o.Price,
                 TotalSeats = total,
                 SoldSeats = sold,
                 AvailableSeats = Math.Max(0, total - sold)
@@ -124,6 +133,33 @@ public class OverlaySeatService : IOverlaySeatService
                     RowNumber = row,
                     SeatNumber = seat,
                     SeatCode = $"{overlay.SectorCode}-R{row}-S{seat}"
+                });
+            }
+        }
+        return result;
+    }
+
+    public async Task<List<OverlaySeatInfo>> GetAllSeatsAsync(int eventId, int overlaySectorId, CancellationToken ct = default)
+    {
+        var overlay = await GetOverlayAsync(overlaySectorId, ct);
+        if (overlay == null)
+            return new List<OverlaySeatInfo>();
+
+        var sectionId = await GetBackingSectionIdAsync(overlay, ct);
+        var taken = sectionId != null ? await TakenPositionsAsync(eventId, sectionId.Value, ct) : new HashSet<(int, int)>();
+        var reserved = await ReservedPositionsAsync(eventId, overlaySectorId, ct);
+
+        var result = new List<OverlaySeatInfo>();
+        foreach (var (row, seats) in RowLayout(overlay))
+        {
+            for (var seat = 1; seat <= seats; seat++)
+            {
+                result.Add(new OverlaySeatInfo
+                {
+                    RowNumber = row,
+                    SeatNumber = seat,
+                    SeatCode = $"{overlay.SectorCode}-R{row}-S{seat}",
+                    IsAvailable = !taken.Contains((row, seat)) && !reserved.Contains((row, seat))
                 });
             }
         }

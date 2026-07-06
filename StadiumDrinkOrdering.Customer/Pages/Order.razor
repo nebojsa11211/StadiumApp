@@ -14,60 +14,93 @@
 
 @if (!State.HasSession && !_loading)
 {
-    <div class="no-session">
-        <div class="ns-emoji">🎟️</div>
+    <div id="customer-order-no-session-1" class="no-session">
+        <div id="customer-order-no-session-pass-1" class="pass-blank">
+            <div class="pb-eyebrow">HALFTIME · Ulaznica</div>
+            <div id="customer-order-no-session-emoji-1" class="pb-glyph">🎟️</div>
+            <div class="pb-slots">
+                <div class="pb-slot"><span class="k">Sektor</span><span class="v">—</span></div>
+                <div class="pb-slot"><span class="k">Red</span><span class="v">—</span></div>
+                <div class="pb-slot"><span class="k">Sjedalo</span><span class="v">—</span></div>
+            </div>
+            <div class="pass-tear"></div>
+            <div class="pb-status"><span class="dot"></span>Čeka skeniranje</div>
+        </div>
         <h2>Nema aktivne narudžbe</h2>
-        <p>Skeniraj QR kod sa svoje ulaznice da započneš naručivanje na svoje mjesto.</p>
+        <p>Skeniraj QR kod s ulaznice pa ti piće stigne točno na tvoje mjesto — bez čekanja u redu.</p>
         <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
     </div>
 }
 else if (State.HasSession && !State.CanOrderDrinks && !_loading)
 {
-    <div class="no-session">
-        <div class="ns-emoji">⏸️</div>
-        <h2>Naručivanje nije dostupno</h2>
-        <p>Naručivanje pića otvoreno je samo dok utakmica traje. Provjeri ponovno kad utakmica počne.</p>
-        @if (!string.IsNullOrWhiteSpace(State.EventName) || !string.IsNullOrWhiteSpace(State.SeatText))
-        {
-            <p class="ns-seat tnum">@State.EventName · @State.SeatText</p>
-        }
+    <div id="customer-order-no-session-2" class="no-session">
+        <div id="customer-order-no-session-pass-2" class="pass-blank paused">
+            <div class="pb-eyebrow">@(string.IsNullOrWhiteSpace(State.EventName) ? "HALFTIME · Ulaznica" : State.EventName)</div>
+            <div id="customer-order-no-session-emoji-2" class="pb-glyph">⏸️</div>
+            <div class="pb-slots">
+                <div class="pb-slot"><span class="k">Sektor</span><span class="v tnum">@Coord(State.SeatSection)</span></div>
+                <div class="pb-slot"><span class="k">Red</span><span class="v tnum">@Coord(State.SeatRow)</span></div>
+                <div class="pb-slot"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></div>
+            </div>
+            <div class="pass-tear"></div>
+            <div class="pb-status paused"><span class="dot"></span>Nije uživo</div>
+        </div>
+        <h2>Naručivanje je na pauzi</h2>
+        <p>Piće možeš naručiti samo dok utakmica traje. Tvoje mjesto te čeka — vrati se kad sudac svira početak.</p>
         <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/"))">Početna</button>
     </div>
 }
 else
 {
-    <div class="order-head">
-        <div class="oh-top">
-            <button class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="Natrag">‹</button>
-            <div class="oh-match">
-                <div class="t">@(string.IsNullOrWhiteSpace(State.EventName) ? "Utakmica" : State.EventName)</div>
-                <div class="s">@State.SeatText</div>
+    <div id="customer-order-head" class="order-head">
+        <div id="customer-order-top" class="pass">
+            <div class="pass-top">
+                <button class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="Natrag">‹</button>
+                <div id="customer-order-match-info" class="pass-id">
+                    <div class="pass-eyebrow">Piće stiže na tvoje mjesto</div>
+                    <div class="pass-match">@(string.IsNullOrWhiteSpace(State.EventName) ? "Utakmica" : State.EventName)</div>
+                </div>
+                <span class="pass-live"><span class="pulse"></span>Uživo</span>
             </div>
-            <div class="live-badge"><span class="pulse"></span></div>
+            <div id="customer-order-seat-coords" class="coords">
+                <div class="coord"><span class="k">Sektor</span><span class="v tnum">@Coord(State.SeatSection)</span></div>
+                <span class="cdiv"></span>
+                <div class="coord"><span class="k">Red</span><span class="v tnum">@Coord(State.SeatRow)</span></div>
+                <span class="cdiv"></span>
+                <div class="coord seat"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></div>
+            </div>
         </div>
-        <div class="tabs no-scrollbar">
+        <div id="customer-order-pass-tear" class="pass-tear"></div>
+        <div id="customer-order-tabs" class="tabs no-scrollbar">
             @foreach (var cat in _categories)
             {
+                var n = CatCount(cat);
                 <button class="tab @(cat == _selected ? "on" : "")" @onclick="() => _selected = cat">
-                    @DrinkVisuals.Emoji(cat) @DrinkVisuals.Label(cat)
+                    <span class="tab-emoji">@DrinkVisuals.Emoji(cat)</span> @DrinkVisuals.Label(cat)
+                    @if (n > 0)
+                    {
+                        <span class="cnt tnum">@n</span>
+                    }
                 </button>
             }
         </div>
     </div>
 
-    <div class="body no-scrollbar" style="padding-bottom:120px">
+    <div id="customer-order-body" class="body no-scrollbar" style="padding-bottom:120px">
         @if (_loading)
         {
-            <div class="loading"><span class="spinner"></span> Učitavam ponudu…</div>
+            <div id="customer-order-loading" class="loading"><span class="spinner"></span> Učitavam ponudu…</div>
         }
         else
         {
-            <div class="menu-grid">
+            <div id="customer-order-menu-grid" class="menu-grid">
                 @foreach (var drink in Filtered())
                 {
                     <DrinkCard Drink="drink"
                                Qty="State.QtyOf(drink.Id)"
                                OnAdd="() => QuickAdd(drink)"
+                               OnInc="() => State.AddDrink(drink, 1)"
+                               OnDec="() => State.SetQty(drink.Id, State.QtyOf(drink.Id) - 1)"
                                OnOpen="() => _sheetDrink = drink" />
                 }
             </div>
@@ -137,6 +170,12 @@ else
         _drinks.Where(d => d.Category == _selected).OrderByDescending(d => d.IsAvailable && d.StockQuantity > 0).ThenBy(d => d.Name);
 
     private void QuickAdd(DrinkDto drink) => State.AddDrink(drink, 1);
+
+    // Total cart quantity for a category — powers the count badge on each tab.
+    private int CatCount(DrinkCategory c) => _drinks.Where(d => d.Category == c).Sum(d => State.QtyOf(d.Id));
+
+    // A seat coordinate for the pass; falls back to an em dash so the ticket layout never collapses.
+    private static string Coord(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value.Trim();
 
     private void SheetAdd(DrinkOrderRequest req)
     {

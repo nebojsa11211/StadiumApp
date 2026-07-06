@@ -413,6 +413,7 @@
                     UseVariableSeating = db.UseVariableSeating,
                     VariableSeatingData = db.VariableSeatingData,
                     Type = db.Type,
+                    Price = db.Price,
                     Color = db.Color,
                     CreatedDate = db.CreatedDate,
                     ModifiedDate = db.ModifiedDate
@@ -510,6 +511,7 @@
 
         // Classification
         public string Type { get; set; } = "standard";
+        public decimal? Price { get; set; }
         public string Color { get; set; } = "#007bff";
 
         // Metadata
@@ -798,6 +800,7 @@
                     UseVariableSeating = currentSectorData.UseVariableSeating,
                     VariableSeatingData = currentSectorData.VariableSeatingData,
                     Type = currentSectorData.Type,
+                    Price = currentSectorData.Price,
                     Color = currentSectorData.Color
                 };
 
@@ -845,6 +848,7 @@
                         UseVariableSeating = currentSectorData.UseVariableSeating,
                         VariableSeatingData = currentSectorData.VariableSeatingData,
                         Type = currentSectorData.Type,
+                        Price = currentSectorData.Price,
                         Color = currentSectorData.Color
                     };
 
@@ -960,6 +964,7 @@
                 UseVariableSeating = sector.UseVariableSeating,
                 VariableSeatingData = sector.VariableSeatingData,
                 Type = sector.Type,
+                Price = sector.Price,
                 Color = sector.Color,
                 CreatedDate = sector.CreatedDate,
                 ModifiedDate = DateTime.UtcNow
@@ -995,6 +1000,7 @@
                     Rows = modifiedSectorData.Rows,
                     SeatsPerRow = modifiedSectorData.SeatsPerRow,
                     Type = modifiedSectorData.Type,
+                    Price = modifiedSectorData.Price,
                     Color = modifiedSectorData.Color
                 };
 
@@ -1066,6 +1072,7 @@
             UseVariableSeating = sector.UseVariableSeating,
             VariableSeatingData = sector.VariableSeatingData,
             Type = sector.Type,
+            Price = sector.Price,
             Color = sector.Color,
             CreatedDate = sector.CreatedDate,
             ModifiedDate = sector.ModifiedDate
@@ -1090,6 +1097,7 @@
             UseVariableSeating = data.UseVariableSeating,
             VariableSeatingData = data.VariableSeatingData,
             Type = data.Type,
+            Price = data.Price,
             Color = data.Color,
             CreatedDate = data.CreatedDate,
             ModifiedDate = DateTime.UtcNow
@@ -1105,6 +1113,7 @@
         sector.UseVariableSeating = data.UseVariableSeating;
         sector.VariableSeatingData = data.VariableSeatingData;
         sector.Type = data.Type;
+        sector.Price = data.Price;
         sector.Color = data.Color;
         sector.ModifiedDate = DateTime.UtcNow;
     }

@@ -13,34 +13,34 @@
 
 <ScreenHeader Title="Tvoja košarica" Subtitle="@SubtitleText" BackHref="/order" />
 
-<div class="body">
+<div id="customer-cart-body" class="body">
     @if (State.Count == 0)
     {
-        <div class="empty">
-            <div class="e-emoji">🛒</div>
+        <div id="customer-cart-empty" class="empty">
+            <div id="customer-cart-emoji" class="e-emoji">🛒</div>
             <p>Košarica je prazna.</p>
             <button class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
         </div>
     }
     else
     {
-        <div class="deliver-banner">
+        <div id="customer-cart-deliver-banner" class="deliver-banner">
             <span class="ic">📍</span>
-            <div>
-                <div class="t">Dostava na tvoje mjesto</div>
-                <div class="s tnum">@State.SeatText</div>
+            <div id="customer-cart-delivery-info">
+                <div id="customer-cart-delivery-title" class="t">Dostava na tvoje mjesto</div>
+                <div id="customer-cart-delivery-seat" class="s tnum">@State.SeatText</div>
             </div>
         </div>
 
-        <div class="pad">
-            <div class="items">
+        <div id="customer-cart-pad" class="pad">
+            <div id="customer-cart-items" class="items">
                 @foreach (var item in State.Items)
                 {
-                    <div class="cart-item">
-                        <div class="th">🥤</div>
-                        <div class="ci">
-                            <div class="n">@item.DrinkName</div>
-                            <div class="p tnum">€@item.UnitPrice.ToString("F2") / kom</div>
+                    <div id="customer-cart-item-@item.DrinkId" class="cart-item">
+                        <div id="customer-cart-item-icon-@item.DrinkId" class="th">🥤</div>
+                        <div id="customer-cart-item-info-@item.DrinkId" class="ci">
+                            <div id="customer-cart-item-name-@item.DrinkId" class="n">@item.DrinkName</div>
+                            <div id="customer-cart-item-price-@item.DrinkId" class="p tnum">€@item.UnitPrice.ToString("F2") / kom</div>
                         </div>
                         <div class="mini-step">
                             <button @onclick="() => Change(item.DrinkId, item.Quantity - 1)" aria-label="Manje">−</button>
@@ -51,37 +51,37 @@
                 }
             </div>
 
-            <div class="label" style="margin:22px 0 12px">Plaćanje</div>
-            <div class="pay-opt @(_pay == "wallet" ? "sel" : "")" @onclick="@(() => _pay = "wallet")">
-                <div class="pic">👛</div>
-                <div class="pb">
-                    <div class="t">HALFTIME novčanik</div>
-                    <div class="s tnum">@WalletText</div>
+            <div id="customer-cart-payment-label" class="label" style="margin:22px 0 12px">Plaćanje</div>
+            <div id="customer-cart-pay-wallet" class="pay-opt @(_pay == "wallet" ? "sel" : "")" @onclick="@(() => _pay = "wallet")">
+                <div id="customer-cart-wallet-icon" class="pic">👛</div>
+                <div id="customer-cart-wallet-info" class="pb">
+                    <div id="customer-cart-wallet-title" class="t">HALFTIME novčanik</div>
+                    <div id="customer-cart-wallet-balance" class="s tnum">@WalletText</div>
                 </div>
                 <div class="radio"></div>
             </div>
-            <div class="pay-opt @(_pay == "card" ? "sel" : "")" @onclick="@(() => _pay = "card")">
-                <div class="pic">💳</div>
-                <div class="pb">
-                    <div class="t">Kartica</div>
-                    <div class="s">Visa · Mastercard</div>
+            <div id="customer-cart-pay-card" class="pay-opt @(_pay == "card" ? "sel" : "")" @onclick="@(() => _pay = "card")">
+                <div id="customer-cart-card-icon" class="pic">💳</div>
+                <div id="customer-cart-card-info" class="pb">
+                    <div id="customer-cart-card-title" class="t">Kartica</div>
+                    <div id="customer-cart-card-subtitle" class="s">Visa · Mastercard</div>
                 </div>
                 <div class="radio"></div>
             </div>
 
-            <div class="summary">
-                <div class="sr"><span>Međuzbroj</span><b class="tnum">€@State.Subtotal.ToString("F2")</b></div>
-                <div class="sr"><span>Naknada za uslugu</span><b class="tnum">€@ServiceFee.ToString("F2")</b></div>
-                <div class="sr total"><span>Ukupno</span><b class="tnum">€@Total.ToString("F2")</b></div>
+            <div id="customer-cart-summary" class="summary">
+                <div id="customer-cart-summary-subtotal" class="sr"><span>Međuzbroj</span><b class="tnum">€@State.Subtotal.ToString("F2")</b></div>
+                <div id="customer-cart-summary-fee" class="sr"><span>Naknada za uslugu</span><b class="tnum">€@ServiceFee.ToString("F2")</b></div>
+                <div id="customer-cart-summary-total" class="sr total"><span>Ukupno</span><b class="tnum">€@Total.ToString("F2")</b></div>
             </div>
 
             @if (State.HasSession && !State.CanOrderDrinks)
             {
-                <div class="err">Naručivanje je zatvoreno jer utakmica trenutno ne traje.</div>
+                <div id="customer-cart-error-closed" class="err">Naručivanje je zatvoreno jer utakmica trenutno ne traje.</div>
             }
             @if (!string.IsNullOrEmpty(_error))
             {
-                <div class="err">@_error</div>
+                <div id="customer-cart-error-message" class="err">@_error</div>
             }
         </div>
     }
@@ -89,7 +89,7 @@
 
 @if (State.Count > 0)
 {
-    <div class="checkout-foot">
+    <div id="customer-cart-checkout-footer" class="checkout-foot">
         <button class="btn btn-primary" @onclick="PlaceOrder" disabled="@(_placing || !State.CanOrderDrinks)">
             @if (_placing)
             {

@@ -12,7 +12,7 @@
 
 <TicketProtectedRoute>
     <div class="container-fluid" id="customer-menu-container">
-    <div class="row">
+    <div id="customer-menu-row" class="row">
         <div class="col-md-8">
             <h1 class="mb-4" id="customer-menu-title">🍺 @Localizer["Menu_Title"]</h1>
 
@@ -67,12 +67,12 @@
                                         <span class="text-muted">🥤</span>
                                     </div>
                                 }
-                                
-                                <div class="card-body d-flex flex-column">
+
+                                <div id="customer-drink-card-body-@drink.Id" class="card-body d-flex flex-column">
                                     <h5 class="card-title" id="customer-drink-name-@drink.Id">@drink.Name</h5>
                                     <p class="card-text flex-grow-1" id="customer-drink-description-@drink.Id">@drink.Description</p>
-                                    <div class="mt-auto">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div id="customer-drink-actions-@drink.Id" class="mt-auto">
+                                        <div id="customer-drink-price-row-@drink.Id" class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="h5 mb-0 text-primary" id="customer-drink-price-@drink.Id">$@drink.Price.ToString("F2")</span>
                                             <small class="text-muted" id="customer-drink-stock-@drink.Id">@Localizer["Menu_Stock"]: @drink.StockQuantity</small>
                                         </div>
@@ -108,9 +108,9 @@
                 </div>
             }
         </div>
-        
+
         <!-- Cart sidebar -->
-        <div class="col-md-4">
+        <div id="customer-cart-column" class="col-md-4">
             <div class="card sticky-top" style="top: 20px;" id="customer-cart-card">
                 <div class="card-header d-flex justify-content-between align-items-center" id="customer-cart-header">
                     <h5 class="mb-0" id="customer-cart-title">🛒 Your Order</h5>
@@ -126,7 +126,7 @@
                         @foreach (var item in CartService.Items)
                         {
                             <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom" id="customer-cart-item-@item.Drink.Id">
-                                <div class="flex-grow-1">
+                                <div id="customer-cart-item-details-@item.Drink.Id" class="flex-grow-1">
                                     <h6 class="mb-1" id="customer-cart-item-name-@item.Drink.Id">@item.Drink.Name</h6>
                                     <small class="text-muted" id="customer-cart-item-price-@item.Drink.Id">$@item.Drink.Price.ToString("F2") × @item.Quantity</small>
                                     @if (!string.IsNullOrEmpty(item.SpecialInstructions))
@@ -134,7 +134,7 @@
                                         <div id="customer-cart-item-notes-@item.Drink.Id"><small class="text-info">Note: @item.SpecialInstructions</small></div>
                                     }
                                 </div>
-                                <div class="text-end">
+                                <div id="customer-cart-item-actions-@item.Drink.Id" class="text-end">
                                     <div class="fw-bold" id="customer-cart-item-total-@item.Drink.Id">$@item.TotalPrice.ToString("F2")</div>
                                     <button class="btn btn-sm btn-outline-danger" 
                                             @onclick="() => CartService.RemoveItem(item.Drink.Id)" id="customer-cart-remove-btn-@item.Drink.Id">
@@ -145,19 +145,19 @@
                         }
                         
                         <div class="border-top pt-3" id="customer-cart-total-section">
-                            <div class="d-flex justify-content-between mb-3">
+                            <div id="customer-cart-total-row" class="d-flex justify-content-between mb-3">
                                 <strong id="customer-cart-total-label">Total: $@CartService.GetTotalPrice().ToString("F2")</strong>
                             </div>
-                            
-                            <div class="mb-3">
+
+                            <div id="customer-ticket-input-group" class="mb-3">
                                 <label class="form-label" for="customer-ticket-input">Ticket Number</label>
-                                <input type="text" class="form-control" @bind="ticketNumber" 
+                                <input type="text" class="form-control" @bind="ticketNumber"
                                        placeholder="Enter your ticket number" required id="customer-ticket-input">
                             </div>
-                            
-                            <div class="mb-3">
+
+                            <div id="customer-notes-input-group" class="mb-3">
                                 <label class="form-label" for="customer-notes-input">Special Instructions (Optional)</label>
-                                <textarea class="form-control" @bind="orderNotes" 
+                                <textarea class="form-control" @bind="orderNotes"
                                           placeholder="Any special requests?" rows="2" id="customer-notes-input"></textarea>
                             </div>
                             

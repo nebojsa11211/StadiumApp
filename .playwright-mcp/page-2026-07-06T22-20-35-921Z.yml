@@ -1,0 +1,18 @@
+- generic [ref=f7e4]:
+  - generic [ref=f7e5]:
+    - generic [ref=f7e6]: HALFTIME · Ulaznica
+    - generic [ref=f7e7]: 🎟️
+    - generic [ref=f7e8]:
+      - generic [ref=f7e9]:
+        - generic [ref=f7e10]: Sektor
+        - generic [ref=f7e11]: —
+      - generic [ref=f7e12]:
+        - generic [ref=f7e13]: Red
+        - generic [ref=f7e14]: —
+      - generic [ref=f7e15]:
+        - generic [ref=f7e16]: Sjedalo
+        - generic [ref=f7e17]: —
+    - generic [ref=f7e19]: Čeka skeniranje
+  - heading "Nema aktivne narudžbe" [level=2] [ref=f7e21]
+  - paragraph [ref=f7e22]: Skeniraj QR kod s ulaznice pa ti piće stigne točno na tvoje mjesto — bez čekanja u redu.
+  - button "Skeniraj ulaznicu" [ref=f7e24] [cursor=pointer]

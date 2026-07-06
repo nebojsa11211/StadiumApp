@@ -6,25 +6,25 @@
 
 <ScreenHeader Title="Skeniraj ulaznicu" BackHref="/welcome" />
 
-<div class="scan-body">
-    <div class="reticle">
+<div id="customer-scan-body" class="scan-body">
+    <div id="customer-scan-reticle" class="reticle">
         <span class="corner tl"></span><span class="corner tr"></span>
         <span class="corner bl"></span><span class="corner br"></span>
-        <div class="qr-emoji">🎟️</div>
-        <div class="scanline"></div>
+        <div id="customer-scan-qr-emoji" class="qr-emoji">🎟️</div>
+        <div id="customer-scan-scanline" class="scanline"></div>
     </div>
 
     <p class="scan-hint">Uperi kameru svog telefona u QR kôd na ulaznici — aplikacija se otvara automatski.</p>
 
-    <div class="manual">
-        <div class="label">Ne možeš skenirati?</div>
-        <div class="manual-row">
+    <div id="customer-scan-manual" class="manual">
+        <div id="customer-scan-manual-label" class="label">Ne možeš skenirati?</div>
+        <div id="customer-scan-manual-row" class="manual-row">
             <input @bind="_code" @bind:event="oninput" placeholder="Unesi kôd s ulaznice" @onkeydown="OnKey" />
             <button class="btn btn-primary btn-sm" @onclick="Submit" disabled="@string.IsNullOrWhiteSpace(_code)">Nastavi</button>
         </div>
         @if (_error)
         {
-            <div class="err">Unesi važeći kôd s ulaznice.</div>
+            <div id="customer-scan-error" class="err">Unesi važeći kôd s ulaznice.</div>
         }
     </div>
 </div>

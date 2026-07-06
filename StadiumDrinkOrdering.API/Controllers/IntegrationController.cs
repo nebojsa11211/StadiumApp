@@ -125,11 +125,50 @@ public class IntegrationController : ControllerBase
                 Id = o.Id,
                 SectionCode = o.SectorCode,
                 SectionName = o.Name,
-                Capacity = o.TotalSeats
+                Capacity = o.TotalSeats,
+                Rows = o.Rows,
+                SeatsPerRow = o.SeatsPerRow,
+                Type = o.Type,
+                Color = o.Color,
+                ShapeType = o.ShapeType,
+                UseVariableSeating = o.UseVariableSeating,
+                RowRanges = ParseRowRanges(o),
+                TopPercent = o.TopPercent,
+                LeftPercent = o.LeftPercent,
+                WidthPercent = o.WidthPercent,
+                HeightPercent = o.HeightPercent
             })
             .ToList();
 
         return Ok(sections);
+    }
+
+    /// <summary>
+    /// Extracts the per-range seat layout for a variable-seating sector from its stored JSON.
+    /// Returns an empty list for uniform sectors (or when the JSON is missing/invalid).
+    /// </summary>
+    private static List<SectorRowRangeDto> ParseRowRanges(StadiumSectorOverlay o)
+    {
+        if (!o.UseVariableSeating || string.IsNullOrEmpty(o.VariableSeatingData))
+            return new List<SectorRowRangeDto>();
+
+        try
+        {
+            var patterns = System.Text.Json.JsonSerializer.Deserialize<List<RowPattern>>(o.VariableSeatingData);
+            return patterns?
+                .OrderBy(p => p.FromRow)
+                .Select(p => new SectorRowRangeDto
+                {
+                    FromRow = p.FromRow,
+                    ToRow = p.ToRow,
+                    SeatsPerRow = p.SeatsPerRow
+                })
+                .ToList() ?? new List<SectorRowRangeDto>();
+        }
+        catch
+        {
+            return new List<SectorRowRangeDto>();
+        }
     }
 
     /// <summary>

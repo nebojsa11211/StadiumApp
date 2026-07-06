@@ -1,18 +1,18 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @* Bottom sheet for a drink: quantity + special instructions, then add. Visible whenever Drink != null. *@
 
-<div class="scrim @(Drink != null ? "show" : "")" @onclick="OnClose"></div>
-<div class="sheet @(Drink != null ? "show" : "")">
+<div id="customer-drink-sheet-scrim" class="scrim @(Drink != null ? "show" : "")" @onclick="OnClose"></div>
+<div id="customer-drink-sheet-container" class="sheet @(Drink != null ? "show" : "")">
     @if (Drink != null)
     {
-        <div class="grab"></div>
-        <div class="big-thumb @DrinkVisuals.Thumb(Drink.Category)">@DrinkVisuals.Emoji(Drink.Category)</div>
+        <div id="customer-drink-sheet-grab" class="grab"></div>
+        <div id="customer-drink-sheet-thumb" class="big-thumb @DrinkVisuals.Thumb(Drink.Category)">@DrinkVisuals.Emoji(Drink.Category)</div>
         <h3>@Drink.Name</h3>
-        <div class="desc">@(string.IsNullOrWhiteSpace(Drink.Description) ? "Poslužuje se hladno i donosi na tvoje mjesto." : Drink.Description)</div>
+        <div id="customer-drink-sheet-description" class="desc">@(string.IsNullOrWhiteSpace(Drink.Description) ? "Poslužuje se hladno i donosi na tvoje mjesto." : Drink.Description)</div>
 
-        <div class="stepper">
+        <div id="customer-drink-sheet-stepper" class="stepper">
             <span class="lab">Količina</span>
-            <div class="ctrl">
+            <div id="customer-drink-sheet-control" class="ctrl">
                 <button @onclick="Dec" aria-label="Manje">−</button>
                 <span class="q tnum">@_qty</span>
                 <button @onclick="Inc" aria-label="Više">+</button>

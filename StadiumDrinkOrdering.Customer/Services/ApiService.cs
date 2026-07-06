@@ -1041,6 +1041,8 @@ public class SectionAvailabilityDto
     public string RingName { get; set; } = string.Empty;
     public int TotalSeats { get; set; }
     public List<CustomerSeatDto> AvailableSeats { get; set; } = new();
+    /// <summary>Every seat in the section (available + taken) so the whole stand can be drawn.</summary>
+    public List<CustomerSeatDto> Seats { get; set; } = new();
 }
 
 public class CustomerSeatDto
@@ -1050,6 +1052,7 @@ public class CustomerSeatDto
     public int SeatNumber { get; set; }
     public decimal Price { get; set; }
     public string SeatCode { get; set; } = string.Empty;
+    public bool IsAvailable { get; set; } = true;
 }
 
 public class PricingTierDto

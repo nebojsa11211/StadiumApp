@@ -1,22 +1,30 @@
 @using StadiumDrinkOrdering.Shared.DTOs
-@* Grid tile for a single drink. Whole card opens the detail sheet; the + does a one-tap add. *@
+@* Grid tile for a single drink. Whole card opens the detail sheet. When qty is 0 the + does a
+   one-tap add; once in the cart a −/qty/+ stepper lets the fan adjust without opening the sheet. *@
 
-<div class="drink @(Qty > 0 ? "has" : "") @(Available ? "" : "soldout")" @onclick="OnOpen">
-    @if (Qty > 0)
-    {
-        <span class="qty-badge tnum">@Qty</span>
-    }
-    <div class="thumb @DrinkVisuals.Thumb(Drink.Category)">@DrinkVisuals.Emoji(Drink.Category)</div>
-    <div class="dn">@Drink.Name</div>
+<div id="customer-drink-card-item-@Drink.Id" class="drink @(Qty > 0 ? "has" : "") @(Available ? "" : "soldout")" @onclick="OnOpen">
+    <div id="customer-drink-card-thumb-@Drink.Id" class="thumb @DrinkVisuals.Thumb(Drink.Category)">@DrinkVisuals.Emoji(Drink.Category)</div>
+    <div id="customer-drink-card-name-@Drink.Id" class="dn">@Drink.Name</div>
     @if (!string.IsNullOrWhiteSpace(Drink.Description))
     {
-        <div class="dm">@Drink.Description</div>
+        <div id="customer-drink-card-description-@Drink.Id" class="dm">@Drink.Description</div>
     }
-    <div class="drow">
+    <div id="customer-drink-card-row-@Drink.Id" class="drow">
         <span class="price tnum">€@Drink.Price.ToString("F2")</span>
         @if (Available)
         {
-            <button class="add" @onclick="OnAdd" @onclick:stopPropagation="true" aria-label="Dodaj @Drink.Name">+</button>
+            @if (Qty > 0)
+            {
+                <div id="customer-drink-card-stepper-@Drink.Id" class="stepper-mini">
+                    <button id="customer-drink-card-dec-@Drink.Id" class="minus" @onclick="OnDec" @onclick:stopPropagation="true" aria-label="Manje @Drink.Name">−</button>
+                    <span id="customer-drink-card-qty-@Drink.Id" class="q tnum">@Qty</span>
+                    <button id="customer-drink-card-inc-@Drink.Id" class="plus" @onclick="OnInc" @onclick:stopPropagation="true" aria-label="Više @Drink.Name">+</button>
+                </div>
+            }
+            else
+            {
+                <button id="customer-drink-card-add-@Drink.Id" class="add" @onclick="OnAdd" @onclick:stopPropagation="true" aria-label="Dodaj @Drink.Name">+</button>
+            }
         }
         else
         {
@@ -29,6 +37,8 @@
     [Parameter, EditorRequired] public DrinkDto Drink { get; set; } = default!;
     [Parameter] public int Qty { get; set; }
     [Parameter] public EventCallback OnAdd { get; set; }
+    [Parameter] public EventCallback OnInc { get; set; }
+    [Parameter] public EventCallback OnDec { get; set; }
     [Parameter] public EventCallback OnOpen { get; set; }
 
     private bool Available => Drink.IsAvailable && Drink.StockQuantity > 0;

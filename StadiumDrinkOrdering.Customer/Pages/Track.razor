@@ -11,34 +11,34 @@
 
 <PageTitle>Praćenje narudžbe — HALFTIME</PageTitle>
 
-<div class="body">
+<div id="customer-track-body" class="body">
     @if (_loading)
     {
-        <div class="tload"><span class="spinner"></span> Učitavam narudžbu…</div>
+        <div id="customer-track-loading" class="tload"><span class="spinner"></span> Učitavam narudžbu…</div>
     }
     else if (_order == null)
     {
-        <div class="tload">
-            <div style="font-size:44px">🔍</div>
+        <div id="customer-track-not-found" class="tload">
+            <div id="customer-track-not-found-icon" style="font-size:44px">🔍</div>
             <p>Narudžbu nije moguće pronaći.</p>
             <button class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
         </div>
     }
     else
     {
-        <div class="track-hero">
-            <div class="tick">@(_order.Status == OrderStatus.Delivered ? "🎉" : "✓")</div>
+        <div id="customer-track-hero" class="track-hero">
+            <div id="customer-track-hero-emoji" class="tick">@(_order.Status == OrderStatus.Delivered ? "🎉" : "✓")</div>
             <h2>@HeroTitle</h2>
-            <div class="ordno tnum">Narudžba #@_order.Id</div>
+            <div id="customer-track-ordno" class="ordno tnum">Narudžba #@_order.Id</div>
             @if (_order.Status != OrderStatus.Delivered && _order.Status != OrderStatus.Cancelled)
             {
-                <div class="eta">⏱️ Stiže za <b class="tnum">~@EtaMinutes min</b></div>
+                <div id="customer-track-eta" class="eta">⏱️ Stiže za <b class="tnum">~@EtaMinutes min</b></div>
             }
         </div>
 
         @if (_order.Status == OrderStatus.Cancelled)
         {
-            <div class="cancelled">Narudžba je otkazana.</div>
+            <div id="customer-track-cancelled" class="cancelled">Narudžba je otkazana.</div>
         }
         else
         {
@@ -47,21 +47,21 @@
 
         @if (_order.OrderItems.Any())
         {
-            <div class="items pad">
-                <div class="label" style="margin-bottom:10px">Stavke</div>
+            <div id="customer-track-items" class="items pad">
+                <div id="customer-track-items-label" class="label" style="margin-bottom:10px">Stavke</div>
                 @foreach (var item in _order.OrderItems)
                 {
-                    <div class="oi">
+                    <div id="customer-track-item-@item.Id" class="oi">
                         <span class="oq tnum">@item.Quantity×</span>
                         <span class="on">@item.DrinkName</span>
                         <span class="op tnum">€@item.TotalPrice.ToString("F2")</span>
                     </div>
                 }
-                <div class="oi total"><span class="on">Ukupno</span><span class="op tnum">€@_order.TotalAmount.ToString("F2")</span></div>
+                <div id="customer-track-items-total" class="oi total"><span class="on">Ukupno</span><span class="op tnum">€@_order.TotalAmount.ToString("F2")</span></div>
             </div>
         }
 
-        <div class="track-foot">
+        <div id="customer-track-foot" class="track-foot">
             <button class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/order"))">Naruči još</button>
         </div>
     }

@@ -38,16 +38,6 @@ public class TicketAuthService : ITicketAuthService
                 };
             }
 
-            // Check if ticket is already used
-            if (ticket.IsUsed && ticket.Status == "Used")
-            {
-                return new TicketAuthResult
-                {
-                    IsSuccess = false,
-                    ErrorMessage = "This ticket has already been used. Each ticket can only be scanned once per event."
-                };
-            }
-
             // Gate drink ordering on the event's lifecycle status (Phase 2 only: Active / InProgress).
             // This is the authoritative source of truth — replaces ad-hoc EventDate math and blocks
             // both future (not started) and past (ended/cancelled) events.
@@ -62,18 +52,32 @@ public class TicketAuthService : ITicketAuthService
                 };
             }
 
-            // Check if there's already an active session for this ticket
+            // Check if there's already an active session for this ticket. This MUST come before the
+            // "already used" guard: a ticket is marked Used the moment its first session is created,
+            // so re-scanning or reloading to get back into the SAME live session (fan reopens the QR,
+            // refreshes /order, etc.) must resume that session rather than be rejected as "already used".
             var existingSession = await GetActiveSessionByTokenAsync(qrCodeToken);
             if (existingSession != null)
             {
                 // Update last accessed time
                 await UpdateSessionAccessAsync(existingSession.SessionId);
-                
+
                 return new TicketAuthResult
                 {
                     IsSuccess = true,
                     TicketSession = MapToTicketSessionDto(existingSession),
                     Ticket = MapToTicketInfoDto(ticket)
+                };
+            }
+
+            // Already used AND no live session to resume (e.g. the session expired at event end):
+            // this is a genuine second use of a single-use ticket — reject it.
+            if (ticket.IsUsed && ticket.Status == "Used")
+            {
+                return new TicketAuthResult
+                {
+                    IsSuccess = false,
+                    ErrorMessage = "This ticket has already been used. Each ticket can only be scanned once per event."
                 };
             }
 

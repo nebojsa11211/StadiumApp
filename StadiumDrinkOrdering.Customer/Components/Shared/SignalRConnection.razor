@@ -5,7 +5,7 @@
 @* Connection status hidden - SignalR is optional for customer app *@
 @if (_connectionStatus == "Connected")
 {
-    <div class="connection-status @(_connectionStatus.ToLower())" title="Connection: @_connectionStatus">
+    <div id="customer-signalr-connection-status" class="connection-status @(_connectionStatus.ToLower())" title="Connection: @_connectionStatus">
         <span class="connection-indicator connected"></span>
         <span class="connection-text d-none d-md-inline">@_connectionStatus</span>
     </div>

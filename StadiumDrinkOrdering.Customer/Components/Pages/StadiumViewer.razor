@@ -9,13 +9,13 @@
 
 <PageTitle>@Localizer["StadiumViewer_PageTitle"]</PageTitle>
 
-<div class="stadium-viewer-container">
-    <div class="viewer-header" role="banner">
+<div id="customer-stadium-viewer-main" class="stadium-viewer-container">
+    <div id="customer-stadium-viewer-header" class="viewer-header" role="banner">
         <h2>@Localizer["StadiumViewer_StadiumOverview"]</h2>
 
-        <div class="viewer-controls" role="toolbar" aria-label="Stadium viewer controls">
+        <div id="customer-stadium-viewer-controls" class="viewer-controls" role="toolbar" aria-label="Stadium viewer controls">
             <!-- Primary Controls -->
-            <div class="event-selector">
+            <div id="customer-stadium-viewer-event-selector" class="event-selector">
                 <label for="eventSelect" class="form-label">
                     <i class="bi bi-calendar-event" aria-hidden="true"></i>
                     @Localizer["StadiumViewer_SelectEvent"]
@@ -43,13 +43,13 @@
             <!-- Context-sensitive Controls -->
             @if (selectedEventId.HasValue)
             {
-                <div class="controls-secondary fade-in">
-                    <div class="search-seat">
+                <div id="customer-stadium-viewer-controls-secondary" class="controls-secondary fade-in">
+                    <div id="customer-stadium-viewer-search-seat" class="search-seat">
                         <label for="searchInput" class="form-label">
                             <i class="bi bi-search" aria-hidden="true"></i>
                             @Localizer["StadiumViewer_FindSeat"]
                         </label>
-                        <div class="search-input-group">
+                        <div id="customer-stadium-viewer-search-input-group" class="search-input-group">
                             <input type="text"
                                    id="searchInput"
                                    class="form-control"
@@ -69,8 +69,8 @@
                         </div>
                     </div>
 
-                    <div class="view-options">
-                        <div class="toggle-group" role="group" aria-label="Display options">
+                    <div id="customer-stadium-viewer-view-options" class="view-options">
+                        <div id="customer-stadium-viewer-toggle-group" class="toggle-group" role="group" aria-label="Display options">
                             <button class="btn btn-outline-primary @(showLegend ? "active" : "")"
                                     @onclick="() => showLegend = !showLegend"
                                     aria-pressed="@showLegend"
@@ -100,10 +100,10 @@
 
     @if (isLoading)
     {
-        <div class="loading-spinner" role="status" aria-live="polite">
-            <div class="loading-stages">
-                <div class="stage @(loadingStage >= LoadingStage.FetchingData ? "completed" : "active")">
-                    <div class="stage-icon">
+        <div id="customer-stadium-viewer-loading-spinner" class="loading-spinner" role="status" aria-live="polite">
+            <div id="customer-stadium-viewer-loading-stages" class="loading-stages">
+                <div id="customer-stadium-viewer-loading-stage-1" class="stage @(loadingStage >= LoadingStage.FetchingData ? "completed" : "active")">
+                    <div id="customer-stadium-viewer-stage-icon-1" class="stage-icon">
                         @if (loadingStage > LoadingStage.FetchingData)
                         {
                             <i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
@@ -116,8 +116,8 @@
                     <span>@Localizer["StadiumViewer_LoadingStadiumData"]</span>
                 </div>
 
-                <div class="stage @(loadingStage >= LoadingStage.ProcessingLayout ? "completed" : loadingStage == LoadingStage.ProcessingLayout ? "active" : "pending")">
-                    <div class="stage-icon">
+                <div id="customer-stadium-viewer-loading-stage-2" class="stage @(loadingStage >= LoadingStage.ProcessingLayout ? "completed" : loadingStage == LoadingStage.ProcessingLayout ? "active" : "pending")">
+                    <div id="customer-stadium-viewer-stage-icon-2" class="stage-icon">
                         @if (loadingStage > LoadingStage.ProcessingLayout)
                         {
                             <i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
@@ -134,8 +134,8 @@
                     <span>@Localizer["StadiumViewer_ProcessingLayout"]</span>
                 </div>
 
-                <div class="stage @(loadingStage >= LoadingStage.RenderingVisualization ? "active" : "pending")">
-                    <div class="stage-icon">
+                <div id="customer-stadium-viewer-loading-stage-3" class="stage @(loadingStage >= LoadingStage.RenderingVisualization ? "active" : "pending")">
+                    <div id="customer-stadium-viewer-stage-icon-3" class="stage-icon">
                         @if (loadingStage == LoadingStage.RenderingVisualization)
                         {
                             <div class="spinner-sm" aria-hidden="true"></div>
@@ -149,19 +149,19 @@
                 </div>
             </div>
             
-            <div class="loading-progress">
-                <div class="progress-bar" style="width: @(((int)loadingStage / 3.0) * 100)%" aria-hidden="true"></div>
+            <div id="customer-stadium-viewer-loading-progress" class="loading-progress">
+                <div id="customer-stadium-viewer-progress-bar" class="progress-bar" style="width: @(((int)loadingStage / 3.0) * 100)%" aria-hidden="true"></div>
             </div>
-            
-            <div class="visually-hidden" aria-live="polite">
+
+            <div id="customer-stadium-viewer-loading-status" class="visually-hidden" aria-live="polite">
                 @GetLoadingStatusText()
             </div>
         </div>
     }
     else if (stadiumData != null)
     {
-        <div class="stadium-main-view">
-            <div class="svg-container" @ref="svgContainer" role="main">
+        <div id="customer-stadium-viewer-main-view" class="stadium-main-view">
+            <div id="customer-stadium-viewer-svg-container" class="svg-container" @ref="svgContainer" role="main">
                 <svg viewBox="0 0 @stadiumData.CoordinateSystem.Width @stadiumData.CoordinateSystem.Height" 
                      preserveAspectRatio="xMidYMid meet"
                      class="stadium-svg"
@@ -299,11 +299,11 @@
 
             @if (showLegend)
             {
-                <div class="legend-panel @(showLegend ? "visible" : "")"
+                <div id="customer-stadium-viewer-legend-panel" class="legend-panel @(showLegend ? "visible" : "")"
                      role="complementary"
                      aria-label="Stadium seating color legend">
                     <h5>@Localizer["StadiumViewer_LegendTitle"]</h5>
-                    <div class="legend-item">
+                    <div id="customer-stadium-viewer-legend-available" class="legend-item">
                         <span class="legend-color"
                               style="background: var(--seat-available);"
                               data-pattern="✓"
@@ -311,7 +311,7 @@
                               aria-label="Available seats color indicator"></span>
                         <span>@Localizer["StadiumViewer_Available"]</span>
                     </div>
-                    <div class="legend-item">
+                    <div id="customer-stadium-viewer-legend-partial" class="legend-item">
                         <span class="legend-color"
                               style="background: var(--seat-partial);"
                               data-pattern="!"
@@ -319,7 +319,7 @@
                               aria-label="Limited availability color indicator"></span>
                         <span>@Localizer["StadiumViewer_LimitedAvailability"]</span>
                     </div>
-                    <div class="legend-item">
+                    <div id="customer-stadium-viewer-legend-full" class="legend-item">
                         <span class="legend-color"
                               style="background: var(--seat-full);"
                               data-pattern="✗"
@@ -327,7 +327,7 @@
                               aria-label="Fully occupied color indicator"></span>
                         <span>@Localizer["StadiumViewer_FullyOccupied"]</span>
                     </div>
-                    <div class="legend-item">
+                    <div id="customer-stadium-viewer-legend-unavailable" class="legend-item">
                         <span class="legend-color"
                               style="background: var(--seat-unavailable);"
                               role="img"
@@ -342,36 +342,36 @@
         {
             var sector = GetHoveredSectorData();
             var summary = GetSectorSummary(hoveredSector);
-            <div class="sector-tooltip" 
+            <div id="customer-stadium-viewer-tooltip" class="sector-tooltip"
                  style="left: @(tooltipX)px; top: @(tooltipY)px;"
                  role="tooltip"
                  aria-hidden="true">
-                <div class="tooltip-header">
+                <div id="customer-stadium-viewer-tooltip-header" class="tooltip-header">
                     <strong>@sector.Name</strong>
                     @if (sector.TotalSeats > 1000)
                     {
                         <span class="badge">Premium</span>
                     }
                 </div>
-                <div class="tooltip-body">
-                    <div class="tooltip-stat">
+                <div id="customer-stadium-viewer-tooltip-body" class="tooltip-body">
+                    <div id="customer-stadium-viewer-tooltip-stat-seats" class="tooltip-stat">
                         <i class="bi bi-people" aria-hidden="true"></i>
                         <span>@sector.TotalSeats @Localizer["StadiumViewer_TotalSeats"]</span>
                     </div>
                     @if (summary != null)
                     {
-                        <div class="tooltip-stat availability-@GetAvailabilityLevel(summary)">
+                        <div id="customer-stadium-viewer-tooltip-stat-available" class="tooltip-stat availability-@GetAvailabilityLevel(summary)">
                             <i class="bi bi-check-circle" aria-hidden="true"></i>
                             <span>@summary.FreeSeats @Localizer["StadiumViewer_AvailableSeats"]</span>
                         </div>
                         @if (summary.HeldSeats > 0)
                         {
-                            <div class="tooltip-stat">
+                            <div id="customer-stadium-viewer-tooltip-stat-held" class="tooltip-stat">
                                 <i class="bi bi-hourglass-split" aria-hidden="true"></i>
                                 <span>@summary.HeldSeats @Localizer["StadiumViewer_ReservedSeats"]</span>
                             </div>
                         }
-                        <div class="tooltip-stat">
+                        <div id="customer-stadium-viewer-tooltip-stat-occupancy" class="tooltip-stat">
                             <i class="bi bi-graph-up" aria-hidden="true"></i>
                             <span>@summary.OccupancyPercentage.ToString("0.0")% @Localizer["StadiumViewer_OccupiedPercentage"]</span>
                         </div>
@@ -382,10 +382,10 @@
     }
     else if (errorMessage != null)
     {
-        <div class="alert alert-danger" role="alert" aria-live="assertive">
-            <div class="d-flex align-items-center">
+        <div id="customer-stadium-viewer-error-alert" class="alert alert-danger" role="alert" aria-live="assertive">
+            <div id="customer-stadium-viewer-error-content" class="d-flex align-items-center">
                 <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
-                <div>
+                <div id="customer-stadium-viewer-error-message-box">
                     <h6 class="mb-1">@Localizer["StadiumViewer_UnableToLoad"]</h6>
                     <p class="mb-0">@errorMessage</p>
                 </div>
@@ -398,10 +398,10 @@
     }
     else
     {
-        <div class="alert alert-info" role="status">
-            <div class="d-flex align-items-center">
+        <div id="customer-stadium-viewer-no-data-alert" class="alert alert-info" role="status">
+            <div id="customer-stadium-viewer-no-data-content" class="d-flex align-items-center">
                 <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
-                <div>
+                <div id="customer-stadium-viewer-no-data-message-box">
                     <h6 class="mb-1">@Localizer["StadiumViewer_NoStadiumData"]</h6>
                     <p class="mb-0">@Localizer["StadiumViewer_NotFound"]</p>
                 </div>
@@ -413,17 +413,17 @@
 <!-- Enhanced Sector Detail Modal -->
 @if (showSectorModal && selectedSector != null)
 {
-    <div class="modal-backdrop" 
+    <div id="customer-stadium-viewer-modal-backdrop" class="modal-backdrop"
          @onclick="CloseSectorModal"
          role="dialog"
          aria-modal="true"
          aria-labelledby="sector-modal-title"
          aria-describedby="sector-modal-description">
-        <div class="modal-container responsive" 
+        <div id="customer-stadium-viewer-modal-container" class="modal-container responsive"
              @onclick:stopPropagation="true"
              @onkeydown="HandleModalKeyDown">
-            <div class="modal-header">
-                <div class="modal-title">
+            <div id="customer-stadium-viewer-modal-header" class="modal-header">
+                <div id="customer-stadium-viewer-modal-title-box" class="modal-title">
                     <h5 id="sector-modal-title">@selectedSector.Name @Localizer["StadiumViewer_SelectSeatsTitle"]</h5>
                     <span class="sector-meta" id="sector-modal-description">
                         @GetSectorMeta(selectedSector)
@@ -437,18 +437,19 @@
                 </button>
             </div>
             
-            <div class="modal-body responsive">
-                <div class="seat-layout desktop-layout">
-                    <div class="seat-canvas-container">
-                        <canvas @ref="seatCanvas" 
+            <div id="customer-stadium-viewer-modal-body" class="modal-body responsive">
+                <div id="customer-stadium-viewer-seat-layout" class="seat-layout desktop-layout">
+                    <div id="customer-stadium-viewer-seat-canvas-container" class="seat-canvas-container">
+                        <canvas @ref="seatCanvas"
+                                id="customer-stadium-viewer-seat-canvas"
                                 class="seat-canvas responsive"
-                                width="1200" 
+                                width="1200"
                                 height="600"
                                 role="img"
                                 aria-label="Detailed seat layout for @selectedSector.Name">
                             Your browser does not support the HTML5 canvas element.
                         </canvas>
-                        <div class="canvas-controls">
+                        <div id="customer-stadium-viewer-canvas-controls" class="canvas-controls">
                             <button class="btn btn-secondary" @onclick="ZoomIn" aria-label="@Localizer["StadiumViewer_ZoomIn"]">
                                 <i class="bi bi-zoom-in" aria-hidden="true"></i>
                             </button>
@@ -461,15 +462,15 @@
                         </div>
                     </div>
                     
-                    <div class="seat-selection-panel">
+                    <div id="customer-stadium-viewer-seat-selection-panel" class="seat-selection-panel">
                         @if (selectedSeats.Any())
                         {
-                            <div class="selected-seats">
+                            <div id="customer-stadium-viewer-selected-seats" class="selected-seats">
                                 <h6>@string.Format(Localizer["StadiumViewer_SelectedSeats"], selectedSeats.Count)</h6>
-                                <div class="seat-list" role="list">
+                                <div id="customer-stadium-viewer-seat-list" class="seat-list" role="list">
                                     @foreach (var seat in selectedSeats)
                                     {
-                                        <div class="seat-item" role="listitem">
+                                        <div id="customer-stadium-viewer-seat-item-@seat" class="seat-item" role="listitem">
                                             <span class="seat-code">@seat</span>
                                             <button class="btn btn-sm btn-outline-danger" 
                                                     @onclick="() => RemoveSeat(seat)"
@@ -483,7 +484,7 @@
                         }
                         else
                         {
-                            <div class="empty-selection">
+                            <div id="customer-stadium-viewer-empty-selection" class="empty-selection">
                                 <i class="bi bi-mouse" aria-hidden="true"></i>
                                 <p>@Localizer["StadiumViewer_ClickToSelect"]</p>
                                 <small class="text-muted">@Localizer["StadiumViewer_UseMouseOrTouch"]</small>
@@ -493,8 +494,9 @@
                 </div>
             </div>
             
-            <div class="modal-footer">
+            <div id="customer-stadium-viewer-modal-footer" class="modal-footer">
                 <button type="button"
+                        id="customer-stadium-viewer-modal-close-btn"
                         class="btn btn-secondary"
                         @onclick="CloseSectorModal">
                     @Localizer["Close"]

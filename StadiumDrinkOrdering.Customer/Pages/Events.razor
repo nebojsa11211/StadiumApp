@@ -8,11 +8,11 @@
 <PageTitle>@Localizer["Events_PageTitle"]</PageTitle>
 
 <CustomerAuthRoute>
-<div class="premium-page">
+<div id="customer-events-page" class="premium-page">
     <!-- Premium Header -->
-    <div class="premium-section-header">
-        <div class="container py-5">
-            <div class="text-center">
+    <div id="customer-events-header" class="premium-section-header">
+        <div id="customer-events-header-container" class="container py-5">
+            <div id="customer-events-header-center" class="text-center">
                 <h1 class="display-3 fw-bold text-white mb-4">🎫 @Localizer["Events_HeaderTitle"]</h1>
                 <p class="lead text-white-50 mx-auto" style="max-width: 800px;">
                     @Localizer["Events_HeaderSubtitle"]
@@ -22,11 +22,11 @@
     </div>
 
     <!-- Advanced Filters Section -->
-    <div class="container py-4">
-        <div class="premium-card shadow-lg">
-            <div class="premium-card-header">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div>
+    <div id="customer-events-filters-container" class="container py-4">
+        <div id="customer-events-filters-card" class="premium-card shadow-lg">
+            <div id="customer-events-filters-header" class="premium-card-header">
+                <div id="customer-events-filters-top" class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div id="customer-events-filters-title-group">
                         <h3 class="h4 fw-bold text-white mb-2">@Localizer["Events_FindYourEvent"]</h3>
                         <p class="text-white-50 mb-0">@Localizer["Events_AdvancedFiltering"]</p>
                     </div>
@@ -36,10 +36,10 @@
                     </div>
                 </div>
             </div>
-            <div class="premium-card-body">
-                <div class="row g-4">
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <div class="mb-3">
+            <div id="customer-events-filters-body" class="premium-card-body">
+                <div id="customer-events-filter-inputs-row" class="row g-4">
+                    <div id="customer-events-filter-type" class="col-12 col-md-6 col-lg-3">
+                        <div id="customer-events-filter-type-group" class="mb-3">
                             <label class="form-label text-white">@Localizer["Events_EventType"]</label>
                             <select class="form-select premium-form-control" @bind="filterEventType">
                                 <option value="">@Localizer["Events_AllPremium"]</option>
@@ -53,29 +53,29 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <div class="mb-3">
+                    <div id="customer-events-filter-datefrom" class="col-12 col-md-6 col-lg-3">
+                        <div id="customer-events-filter-datefrom-group" class="mb-3">
                             <label class="form-label text-white">@Localizer["Events_FromDate"]</label>
                             <input type="date" class="form-control premium-form-control" @bind="filterDateFrom" />
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <div class="mb-3">
+                    <div id="customer-events-filter-dateto" class="col-12 col-md-6 col-lg-3">
+                        <div id="customer-events-filter-dateto-group" class="mb-3">
                             <label class="form-label text-white">@Localizer["Events_ToDate"]</label>
                             <input type="date" class="form-control premium-form-control" @bind="filterDateTo" />
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <div class="mb-3">
+                    <div id="customer-events-filter-price" class="col-12 col-md-6 col-lg-3">
+                        <div id="customer-events-filter-price-group" class="mb-3">
                             <label class="form-label text-white">@Localizer["Events_PriceRange"]</label>
-                            <div class="d-flex gap-2">
+                            <div id="customer-events-filter-price-inputs" class="d-flex gap-2">
                                 <input type="number" class="form-control premium-form-control" placeholder="@Localizer["Events_MinPrice"]" @bind="filterMinPrice" step="10" />
                                 <input type="number" class="form-control premium-form-control" placeholder="@Localizer["Events_MaxPrice"]" @bind="filterMaxPrice" step="10" />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="d-flex gap-3 justify-content-end mt-4">
+                <div id="customer-events-filter-buttons" class="d-flex gap-3 justify-content-end mt-4">
                     <button class="btn premium-btn-outline" @onclick="ClearFilters">
                         <span>🔄</span>
                         <span>@Localizer["Events_ClearFilters"]</span>
@@ -98,12 +98,12 @@
     </div>
 
     <!-- Events Grid -->
-    <div class="container pb-5">
+    <div id="customer-events-list-container" class="container pb-5">
         <!-- Loading State -->
         @if (isLoading && events == null)
         {
-            <div class="text-center py-5">
-                <div class="spinner-border text-success mb-4" style="width: 4rem; height: 4rem;" role="status">
+            <div id="customer-events-loading-state" class="text-center py-5">
+                <div id="customer-events-spinner" class="spinner-border text-success mb-4" style="width: 4rem; height: 4rem;" role="status">
                     <span class="visually-hidden">@Localizer["Loading"]</span>
                 </div>
                 <h3 class="h4 fw-bold text-white mb-3">@Localizer["Events_DiscoveringEvents"]</h3>
@@ -113,15 +113,15 @@
         else if (events == null || !events.Any())
         {
             <!-- Empty State -->
-            <div class="text-center py-5">
-                <div class="mb-4">
+            <div id="customer-events-empty-state" class="text-center py-5">
+                <div id="customer-events-empty-icon" class="mb-4">
                     <span style="font-size: 6rem;">🎭</span>
                 </div>
                 <h3 class="h3 fw-bold text-white mb-4">@Localizer["Events_NoEventsFound"]</h3>
                 <p class="text-white-50 mb-4 mx-auto" style="max-width: 600px;">
                     @Localizer["Events_NoEventsMessage"]
                 </p>
-                <div class="d-flex gap-3 justify-content-center">
+                <div id="customer-events-empty-buttons" class="d-flex gap-3 justify-content-center">
                     <button class="btn premium-btn-outline" @onclick="ClearFilters">
                         <span>🔄</span>
                         <span>@Localizer["Events_ClearAllFilters"]</span>
@@ -136,7 +136,7 @@
         else
         {
             <!-- Events Grid -->
-            <div class="row g-4">
+            <div id="customer-events-grid" class="row g-4">
                 @foreach (var evt in events)
                 {
                     var capacityPercent = evt.TotalSeats > 0 ? (int)((decimal)evt.SoldTickets / evt.TotalSeats * 100) : 0;
@@ -144,12 +144,12 @@
                     var isSoldOut = evt.AvailableSeats <= 0;
                     var isPremiumEvent = evt.BaseTicketPrice > 100;
 
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="premium-event-card h-100">
+                    <div id="customer-events-col-@evt.Id" class="col-12 col-md-6 col-lg-4">
+                        <div id="customer-events-card-@evt.Id" class="premium-event-card h-100">
                             <!-- Event Header with Premium Badge -->
-                            <div class="premium-event-header position-relative">
-                                <div class="premium-event-image">
-                                    <div class="text-center text-white">
+                            <div id="customer-events-card-header-@evt.Id" class="premium-event-header position-relative">
+                                <div id="customer-events-card-image-@evt.Id" class="premium-event-image">
+                                    <div id="customer-events-card-image-content-@evt.Id" class="text-center text-white">
                                         <div class="fs-1 mb-2">🏟️</div>
                                         <div class="badge bg-dark bg-opacity-50">@evt.VenueInfo</div>
                                     </div>
@@ -158,7 +158,7 @@
                                 <!-- Premium Event Badge -->
                                 @if (isPremiumEvent)
                                 {
-                                    <div class="position-absolute top-0 start-0 p-3">
+                                    <div id="customer-events-card-premium-badge-@evt.Id" class="position-absolute top-0 start-0 p-3">
                                         <span class="badge bg-warning text-dark">
                                             <span>⭐</span>
                                             <span>Premium</span>
@@ -167,8 +167,8 @@
                                 }
 
                                 <!-- Status Badges -->
-                                <div class="position-absolute top-0 end-0 p-3">
-                                    <div class="d-flex flex-column gap-2">
+                                <div id="customer-events-card-status-badges-@evt.Id" class="position-absolute top-0 end-0 p-3">
+                                    <div id="customer-events-card-badge-group-@evt.Id" class="d-flex flex-column gap-2">
                                         <span class="badge bg-success">@evt.EventType</span>
                                         @if (isSellingFast)
                                         {
@@ -188,9 +188,9 @@
                                 </div>
 
                                 <!-- Date Badge -->
-                                <div class="position-absolute bottom-0 end-0 p-3">
-                                    <div class="premium-date-badge">
-                                        <div class="text-center">
+                                <div id="customer-events-card-date-badge-@evt.Id" class="position-absolute bottom-0 end-0 p-3">
+                                    <div id="customer-events-card-date-@evt.Id" class="premium-date-badge">
+                                        <div id="customer-events-card-date-content-@evt.Id" class="text-center">
                                             <div class="text-uppercase small text-muted">@evt.EventDate.ToString("MMM")</div>
                                             <div class="display-6 fw-bold text-dark">@evt.EventDate.ToString("dd")</div>
                                         </div>
@@ -199,36 +199,36 @@
                             </div>
 
                             <!-- Event Details -->
-                            <div class="premium-card-body">
-                                <div class="d-flex align-items-start justify-content-between mb-3">
-                                    <div class="flex-grow-1">
+                            <div id="customer-events-card-body-@evt.Id" class="premium-card-body">
+                                <div id="customer-events-card-title-@evt.Id" class="d-flex align-items-start justify-content-between mb-3">
+                                    <div id="customer-events-card-title-text-@evt.Id" class="flex-grow-1">
                                         <h3 class="h5 fw-bold text-white mb-2">@evt.EventName</h3>
                                         <p class="text-white-50 small mb-0">@evt.EventDate.ToString("dddd, MMMM dd, yyyy") at @evt.EventDate.ToString("h:mm tt")</p>
                                     </div>
                                     @if (isPremiumEvent)
                                     {
-                                        <div class="ms-3">
+                                        <div id="customer-events-card-star-@evt.Id" class="ms-3">
                                             <div class="premium-star-badge">⭐</div>
                                         </div>
                                     }
                                 </div>
 
                                 <!-- Stats Grid -->
-                                <div class="row g-2 mb-3">
-                                    <div class="col-4">
-                                        <div class="premium-stat-box">
+                                <div id="customer-events-card-stats-@evt.Id" class="row g-2 mb-3">
+                                    <div id="customer-events-card-stat-price-@evt.Id" class="col-4">
+                                        <div id="customer-events-card-stat-price-box-@evt.Id" class="premium-stat-box">
                                             <div class="h5 fw-bold mb-0 @(isPremiumEvent ? "text-warning" : "text-success")">$@evt.BaseTicketPrice.ToString("F0")</div>
                                             <div class="small text-white-50">@Localizer["Events_From"]</div>
                                         </div>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="premium-stat-box">
+                                    <div id="customer-events-card-stat-avail-@evt.Id" class="col-4">
+                                        <div id="customer-events-card-stat-avail-box-@evt.Id" class="premium-stat-box">
                                             <div class="h5 fw-bold mb-0 @(evt.AvailableSeats > 100 ? "text-success" : evt.AvailableSeats > 50 ? "text-warning" : "text-danger")">@evt.AvailableSeats</div>
                                             <div class="small text-white-50">@Localizer["Events_Available"]</div>
                                         </div>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="premium-stat-box">
+                                    <div id="customer-events-card-stat-sold-@evt.Id" class="col-4">
+                                        <div id="customer-events-card-stat-sold-box-@evt.Id" class="premium-stat-box">
                                             <div class="h5 fw-bold mb-0 text-white">@capacityPercent%</div>
                                             <div class="small text-white-50">@Localizer["Events_Sold"]</div>
                                         </div>

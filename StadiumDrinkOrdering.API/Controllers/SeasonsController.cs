@@ -26,6 +26,17 @@ public class SeasonsController : ControllerBase
     public async Task<ActionResult<List<SeasonDto>>> GetSeasons(CancellationToken ct)
         => Ok(await _seasons.GetSeasonsAsync(ct));
 
+    /// <summary>
+    /// Public: the current season plus its next upcoming/live fixture, for the mobile landing.
+    /// Anonymous by design (shown pre-login on <c>/welcome</c>).
+    /// </summary>
+    [HttpGet("current")]
+    public async Task<ActionResult<CurrentSeasonDto>> GetCurrentSeason(CancellationToken ct)
+    {
+        var current = await _seasons.GetCurrentSeasonAsync(ct);
+        return current == null ? NotFound() : Ok(current);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<SeasonDto>> GetSeason(int id, CancellationToken ct)
     {
@@ -41,6 +52,14 @@ public class SeasonsController : ControllerBase
         if (season == null)
             return NotFound();
         return Ok(await _seasons.GetSeasonTicketsAsync(id, ct));
+    }
+
+    /// <summary>The scannable QR for a single season pass (deep link to the mobile ordering app).</summary>
+    [HttpGet("tickets/{seasonTicketId:int}/qr")]
+    public async Task<ActionResult<SeasonPassQrDto>> GetPassQr(int seasonTicketId, CancellationToken ct)
+    {
+        var qr = await _seasons.GetPassQrAsync(seasonTicketId, ct);
+        return qr == null ? NotFound() : Ok(qr);
     }
 
     [HttpPost]

@@ -1,176 +1,23 @@
-﻿@page "/"
-@using Microsoft.Extensions.Localization
-@inject IStringLocalizer<SharedResources> Localizer
+@page "/"
+@layout MobileShell
+@using StadiumDrinkOrdering.Customer.Services
+@inject ICustomerAuthStateService AuthState
+@inject NavigationManager Nav
 
-<PageTitle>@Localizer["PageTitle"]</PageTitle>
+<PageTitle>HALFTIME</PageTitle>
 
-<!-- Modern Hero Section with Background -->
-<section class="modern-hero" id="customer-index-hero-section">
-    <div class="hero-overlay" id="customer-index-hero-overlay"></div>
-    <div class="container hero-container" id="customer-index-hero-container">
-        <div class="hero-content-modern" id="customer-index-hero-content">
-            <h1 class="modern-hero-title" id="customer-index-hero-title">
-                Your Favorite Drinks,<br/>
-                <span class="text-accent" id="customer-index-hero-accent">Delivered to Your Seat</span>
-            </h1>
-            <p class="modern-hero-subtitle" id="customer-index-hero-subtitle">
-                Skip the lines. Enjoy the game. Order from your phone and we'll bring it right to you.
-            </p>
-            <div class="hero-cta-group" id="customer-index-hero-cta-group">
-                <a href="/events" class="btn-modern btn-primary-modern" id="customer-index-order-now-btn">
-                    Order Now
-                    <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" id="customer-index-order-now-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                </a>
-                <a href="/menu" class="btn-modern btn-secondary-modern" id="customer-index-view-menu-btn">
-                    View Menu
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
+<div class="splash">
+    <div class="wordmark"><span class="dot"></span>HALF<b>TIME</b></div>
+    <span class="spinner"></span>
+</div>
 
-<!-- Popular Categories Section -->
-<section class="categories-section" id="customer-index-categories-section">
-    <div class="container" id="customer-index-categories-container">
-        <div class="section-header" id="customer-index-categories-header">
-            <h2 class="section-title" id="customer-index-categories-title">What's Popular</h2>
-            <p class="section-subtitle" id="customer-index-categories-subtitle">
-                From ice-cold beers to premium cocktails, we've got everything you need
-            </p>
-        </div>
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
 
-        <div class="row g-4 justify-content-center" id="customer-index-categories-row">
-            <div class="col-md-6 col-lg-3" id="customer-index-category-beer-col">
-                <div class="category-card" id="customer-index-category-beer-card">
-                    <div class="category-icon" id="customer-index-category-beer-icon">🍺</div>
-                    <h3 class="category-title" id="customer-index-category-beer-title">Beer</h3>
-                    <p class="category-desc" id="customer-index-category-beer-desc">Craft & Premium</p>
-                    <a href="/menu#beer" class="category-link" id="customer-index-category-beer-link">Browse Selection →</a>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3" id="customer-index-category-cocktails-col">
-                <div class="category-card" id="customer-index-category-cocktails-card">
-                    <div class="category-icon" id="customer-index-category-cocktails-icon">🍹</div>
-                    <h3 class="category-title" id="customer-index-category-cocktails-title">Cocktails</h3>
-                    <p class="category-desc" id="customer-index-category-cocktails-desc">Signature Mixes</p>
-                    <a href="/menu#cocktails" class="category-link" id="customer-index-category-cocktails-link">Browse Selection →</a>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3" id="customer-index-category-softdrinks-col">
-                <div class="category-card" id="customer-index-category-softdrinks-card">
-                    <div class="category-icon" id="customer-index-category-softdrinks-icon">🥤</div>
-                    <h3 class="category-title" id="customer-index-category-softdrinks-title">Soft Drinks</h3>
-                    <p class="category-desc" id="customer-index-category-softdrinks-desc">Refreshing Choices</p>
-                    <a href="/menu#soft-drinks" class="category-link" id="customer-index-category-softdrinks-link">Browse Selection →</a>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3" id="customer-index-category-snacks-col">
-                <div class="category-card" id="customer-index-category-snacks-card">
-                    <div class="category-icon" id="customer-index-category-snacks-icon">🍟</div>
-                    <h3 class="category-title" id="customer-index-category-snacks-title">Snacks</h3>
-                    <p class="category-desc" id="customer-index-category-snacks-desc">Game Day Favorites</p>
-                    <a href="/menu#snacks" class="category-link" id="customer-index-category-snacks-link">Browse Selection →</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- How It Works Section -->
-<section class="how-it-works-section" id="customer-index-how-it-works-section">
-    <div class="container" id="customer-index-how-it-works-container">
-        <div class="section-header" id="customer-index-how-it-works-header">
-            <h2 class="section-title" id="customer-index-how-it-works-title">How It Works</h2>
-            <p class="section-subtitle" id="customer-index-how-it-works-subtitle">
-                Get your drinks delivered in 3 easy steps
-            </p>
-        </div>
-
-        <div class="row g-5" id="customer-index-steps-row">
-            <div class="col-12 col-sm-4" id="customer-index-step-1-col">
-                <div class="step-card" id="customer-index-step-1-card">
-                    <div class="step-number" id="customer-index-step-1-number">1</div>
-                    <h3 class="step-title" id="customer-index-step-1-title">Browse Menu</h3>
-                    <p class="step-desc" id="customer-index-step-1-desc">
-                        Choose from our wide selection of beers, cocktails, and snacks
-                    </p>
-                </div>
-            </div>
-
-            <div class="col-12 col-sm-4" id="customer-index-step-2-col">
-                <div class="step-card" id="customer-index-step-2-card">
-                    <div class="step-number" id="customer-index-step-2-number">2</div>
-                    <h3 class="step-title" id="customer-index-step-2-title">Place Order</h3>
-                    <p class="step-desc" id="customer-index-step-2-desc">
-                        Enter your seat number and confirm your order
-                    </p>
-                </div>
-            </div>
-
-            <div class="col-12 col-sm-4" id="customer-index-step-3-col">
-                <div class="step-card" id="customer-index-step-3-card">
-                    <div class="step-number" id="customer-index-step-3-number">3</div>
-                    <h3 class="step-title" id="customer-index-step-3-title">Enjoy!</h3>
-                    <p class="step-desc" id="customer-index-step-3-desc">
-                        We'll deliver directly to your seat. No waiting in line!
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Stats Section -->
-<section class="stats-section" id="customer-index-stats-section">
-    <div class="container" id="customer-index-stats-container">
-        <div class="row text-center g-4" id="customer-index-stats-row">
-            <div class="col-6 col-md-3" id="customer-index-stat-customers-col">
-                <div class="stat-item" id="customer-index-stat-customers-item">
-                    <div class="stat-number" id="customer-index-stat-customers-number">10K+</div>
-                    <div class="stat-label" id="customer-index-stat-customers-label">Happy Customers</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3" id="customer-index-stat-menu-col">
-                <div class="stat-item" id="customer-index-stat-menu-item">
-                    <div class="stat-number" id="customer-index-stat-menu-number">50+</div>
-                    <div class="stat-label" id="customer-index-stat-menu-label">Menu Items</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3" id="customer-index-stat-delivery-col">
-                <div class="stat-item" id="customer-index-stat-delivery-item">
-                    <div class="stat-number" id="customer-index-stat-delivery-number">15min</div>
-                    <div class="stat-label" id="customer-index-stat-delivery-label">Avg Delivery</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3" id="customer-index-stat-rating-col">
-                <div class="stat-item" id="customer-index-stat-rating-item">
-                    <div class="stat-number" id="customer-index-stat-rating-number">4.8/5</div>
-                    <div class="stat-label" id="customer-index-stat-rating-label">Rating</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="cta-section" id="customer-index-cta-section">
-    <div class="container text-center" id="customer-index-cta-container">
-        <h2 class="cta-title" id="customer-index-cta-title">Ready to Order?</h2>
-        <p class="cta-subtitle" id="customer-index-cta-subtitle">
-            Join thousands of fans who never miss a moment
-        </p>
-        <div class="cta-buttons" id="customer-index-cta-buttons">
-            <a href="/events" class="btn-modern btn-primary-modern" id="customer-index-get-started-btn">
-                Get Started
-            </a>
-            <a href="/register" class="btn-modern btn-secondary-modern" id="customer-index-sign-up-btn">
-                Sign Up Free
-            </a>
-        </div>
-    </div>
-</section>
+        // Season members land on their home; everyone else starts at the scan-first welcome.
+        await AuthState.InitializeAsync();
+        Nav.NavigateTo(AuthState.IsAuthenticated ? "/home" : "/welcome", forceLoad: false);
+    }
+}

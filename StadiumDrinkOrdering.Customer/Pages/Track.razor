@@ -1,0 +1,147 @@
+@page "/track/{OrderId:int}"
+@layout MobileShell
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@inject IApiService Api
+@inject OrderSessionState State
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>Praćenje narudžbe — HALFTIME</PageTitle>
+
+<div class="body">
+    @if (_loading)
+    {
+        <div class="tload"><span class="spinner"></span> Učitavam narudžbu…</div>
+    }
+    else if (_order == null)
+    {
+        <div class="tload">
+            <div style="font-size:44px">🔍</div>
+            <p>Narudžbu nije moguće pronaći.</p>
+            <button class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
+        </div>
+    }
+    else
+    {
+        <div class="track-hero">
+            <div class="tick">@(_order.Status == OrderStatus.Delivered ? "🎉" : "✓")</div>
+            <h2>@HeroTitle</h2>
+            <div class="ordno tnum">Narudžba #@_order.Id</div>
+            @if (_order.Status != OrderStatus.Delivered && _order.Status != OrderStatus.Cancelled)
+            {
+                <div class="eta">⏱️ Stiže za <b class="tnum">~@EtaMinutes min</b></div>
+            }
+        </div>
+
+        @if (_order.Status == OrderStatus.Cancelled)
+        {
+            <div class="cancelled">Narudžba je otkazana.</div>
+        }
+        else
+        {
+            <OrderTimeline Status="_order.Status" SeatText="@SeatText" />
+        }
+
+        @if (_order.OrderItems.Any())
+        {
+            <div class="items pad">
+                <div class="label" style="margin-bottom:10px">Stavke</div>
+                @foreach (var item in _order.OrderItems)
+                {
+                    <div class="oi">
+                        <span class="oq tnum">@item.Quantity×</span>
+                        <span class="on">@item.DrinkName</span>
+                        <span class="op tnum">€@item.TotalPrice.ToString("F2")</span>
+                    </div>
+                }
+                <div class="oi total"><span class="on">Ukupno</span><span class="op tnum">€@_order.TotalAmount.ToString("F2")</span></div>
+            </div>
+        }
+
+        <div class="track-foot">
+            <button class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/order"))">Naruči još</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int OrderId { get; set; }
+
+    private OrderDto? _order;
+    private string? _token;
+    private bool _loading = true;
+    private Timer? _poll;
+
+    private string SeatText => !string.IsNullOrWhiteSpace(_order?.SeatPath) ? _order!.SeatPath
+        : (!string.IsNullOrWhiteSpace(_order?.SeatNumber) ? _order!.SeatNumber : "");
+
+    private string HeroTitle => _order?.Status switch
+    {
+        OrderStatus.Delivered => "Dostavljeno!",
+        OrderStatus.OutForDelivery => "Stiže na tvoje mjesto",
+        OrderStatus.Ready => "Spremno — kreće k tebi",
+        OrderStatus.InPreparation => "Pripremamo tvoju narudžbu",
+        OrderStatus.Cancelled => "Narudžba otkazana",
+        _ => "Narudžba potvrđena"
+    };
+
+    private int EtaMinutes => _order?.Status switch
+    {
+        OrderStatus.OutForDelivery => 2,
+        OrderStatus.Ready => 4,
+        OrderStatus.InPreparation => 6,
+        _ => 8
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // If the circuit still holds the session (normal navigation), load immediately.
+        if (State.HasSession)
+        {
+            _token = State.SessionToken;
+            await Reload();
+            _loading = false;
+            StartPoll();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || !_loading) return;
+
+        // Hard reload: recover the session token from sessionStorage.
+        _token ??= await JS.InvokeAsync<string?>("sessionStorage.getItem", "htSessionToken");
+        await Reload();
+        _loading = false;
+        StartPoll();
+        StateHasChanged();
+    }
+
+    private void StartPoll()
+    {
+        // Poll for status changes (SignalR wiring is a P4 refinement). Stops at a terminal state.
+        _poll ??= new Timer(async _ => await InvokeAsync(PollTick), null, TimeSpan.FromSeconds(8), TimeSpan.FromSeconds(8));
+    }
+
+    private async Task PollTick()
+    {
+        if (_order is { Status: OrderStatus.Delivered } or { Status: OrderStatus.Cancelled })
+        {
+            _poll?.Dispose();
+            return;
+        }
+        await Reload();
+        StateHasChanged();
+    }
+
+    private async Task Reload()
+    {
+        if (!string.IsNullOrEmpty(_token))
+            _order = await Api.GetSessionOrderAsync(OrderId, _token);
+    }
+
+    public void Dispose() => _poll?.Dispose();
+}

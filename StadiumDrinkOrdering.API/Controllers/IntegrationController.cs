@@ -287,6 +287,34 @@ public class IntegrationController : ControllerBase
     }
 
     /// <summary>
+    /// Full per-seat map of one sector for an event: every real seat position (row/number) with
+    /// its actual occupancy — free, single-match sold, or held by a season pass. Lets the external
+    /// system/simulator show the true seat layout the API assigned rather than just counts.
+    /// </summary>
+    [HttpGet("events/{externalEventId}/sectors/{sectorCode}/seats")]
+    public async Task<ActionResult<SectorSeatMapDto>> GetSectorSeats(string externalEventId, string sectorCode, CancellationToken ct)
+    {
+        var map = await _ingestion.GetSectorSeatMapAsync(externalEventId, sectorCode, ct);
+        return map == null
+            ? NotFound(new { message = $"No event '{externalEventId}' or sector '{sectorCode}'" })
+            : Ok(map);
+    }
+
+    /// <summary>
+    /// The ticket occupying a specific seat (row/number) of a sector for an event, including its
+    /// generated QR code. Lets the external system/simulator show the real ticket for a clicked
+    /// seat. The QR image is materialised on first request. 404 when the seat has no active ticket.
+    /// </summary>
+    [HttpGet("events/{externalEventId}/sectors/{sectorCode}/seats/{row:int}/{seat:int}/ticket")]
+    public async Task<ActionResult<SeatTicketDto>> GetSeatTicket(string externalEventId, string sectorCode, int row, int seat, CancellationToken ct)
+    {
+        var dto = await _ingestion.GetSeatTicketAsync(externalEventId, sectorCode, row, seat, ct);
+        return dto == null
+            ? NotFound(new { message = $"No active ticket at {sectorCode}-R{row}-S{seat} for event '{externalEventId}'" })
+            : Ok(dto);
+    }
+
+    /// <summary>
     /// Authoritative per-event sales snapshot used by the external system's reconciliation
     /// to detect and heal drift from missed webhooks.
     /// </summary>

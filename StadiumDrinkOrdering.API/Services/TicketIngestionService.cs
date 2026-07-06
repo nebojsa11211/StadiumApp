@@ -15,6 +15,20 @@ public interface ITicketIngestionService
     Task<EventSalesSnapshotDto?> GetEventOccupancyAsync(int eventId, CancellationToken ct = default);
 
     /// <summary>
+    /// Full per-seat map of one sector for an event: every real seat position (row/number) with
+    /// its actual occupancy — free, single-match sold, or held by a season pass. Returns null when
+    /// the event or sector is unknown. Read-only (never allocates seats or backing sections).
+    /// </summary>
+    Task<SectorSeatMapDto?> GetSectorSeatMapAsync(string externalEventId, string sectorCode, CancellationToken ct = default);
+
+    /// <summary>
+    /// The ticket occupying a specific seat (row/number) of a sector for an event, including its
+    /// QR code (generated on demand if not yet materialised). Returns null when the event, sector,
+    /// or seat has no active ticket.
+    /// </summary>
+    Task<SeatTicketDto?> GetSeatTicketAsync(string externalEventId, string sectorCode, int row, int seatNumber, CancellationToken ct = default);
+
+    /// <summary>
     /// Generates the per-event access tickets for every active season pass in the given event's
     /// season (used when an event is created in / linked to a season from the Admin UI). Returns
     /// how many were created.
@@ -41,17 +55,20 @@ public class TicketIngestionService : ITicketIngestionService
     private readonly ApplicationDbContext _context;
     private readonly IHubContext<BartenderHub> _hub;
     private readonly IAnalyticsService _analytics;
+    private readonly IQRCodeService _qrCode;
     private readonly ILogger<TicketIngestionService> _logger;
 
     public TicketIngestionService(
         ApplicationDbContext context,
         IHubContext<BartenderHub> hub,
         IAnalyticsService analytics,
+        IQRCodeService qrCode,
         ILogger<TicketIngestionService> logger)
     {
         _context = context;
         _hub = hub;
         _analytics = analytics;
+        _qrCode = qrCode;
         _logger = logger;
     }
 
@@ -1028,6 +1045,195 @@ public class TicketIngestionService : ITicketIngestionService
         snapshot.TotalSeasonSold = await _context.Tickets.CountAsync(
             t => t.EventId == evt.Id && t.Status != TicketStatuses.Cancelled && t.Kind == TicketKind.Season, ct);
         return snapshot;
+    }
+
+    public async Task<SectorSeatMapDto?> GetSectorSeatMapAsync(string externalEventId, string sectorCode, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(externalEventId) || string.IsNullOrWhiteSpace(sectorCode))
+            return null;
+
+        var evt = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.ExternalEventId == externalEventId, ct);
+        if (evt == null)
+            return null;
+
+        // The overlay (drawing-tool sector) is the source of truth for the seat layout.
+        var overlay = await _context.StadiumSectorOverlays
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.SectorCode == sectorCode && !o.IsDeleted, ct);
+        if (overlay == null)
+            return null;
+
+        var map = new SectorSeatMapDto
+        {
+            ExternalEventId = evt.ExternalEventId ?? string.Empty,
+            EventId = evt.Id,
+            SectionCode = overlay.SectorCode,
+            SectionName = overlay.Name,
+            Rows = overlay.Rows
+        };
+
+        // Read-only resolve of the backing section (tickets bind to Seat → StadiumSection). When
+        // none exists yet, nothing was ever sold/held here, so every seat is free.
+        var sectionId = overlay.StadiumSectionId
+            ?? await _context.StadiumSections
+                .Where(s => s.SectionCode == overlay.SectorCode)
+                .Select(s => (int?)s.Id)
+                .FirstOrDefaultAsync(ct);
+
+        // (row, seat) → occupancy for this event, from the actual seats the API assigned.
+        var occupied = new Dictionary<(int Row, int Seat), SectorSeatDto>();
+        if (sectionId != null)
+        {
+            var held = await _context.Tickets
+                .AsNoTracking()
+                .Where(t => t.EventId == evt.Id
+                            && t.Status != TicketStatuses.Cancelled
+                            && t.SeatId != null
+                            && t.Seat.SectionId == sectionId)
+                .Select(t => new
+                {
+                    t.Seat.RowNumber,
+                    t.Seat.SeatNumber,
+                    t.Kind,
+                    t.ExternalTicketId,
+                    t.CustomerName
+                })
+                .ToListAsync(ct);
+
+            foreach (var h in held)
+            {
+                var isSeason = h.Kind == TicketKind.Season;
+                occupied[(h.RowNumber, h.SeatNumber)] = new SectorSeatDto
+                {
+                    Row = h.RowNumber,
+                    Number = h.SeatNumber,
+                    SeatCode = $"{overlay.SectorCode}-R{h.RowNumber}-S{h.SeatNumber}",
+                    Status = isSeason ? SeatOccupancy.Season : SeatOccupancy.Sold,
+                    ExternalTicketId = isSeason ? null : h.ExternalTicketId,
+                    HolderName = h.CustomerName
+                };
+            }
+        }
+
+        // Walk the sector's real layout (honours variable seating), tagging each position.
+        foreach (var (row, seats) in EnumerateRowLayout(overlay))
+        {
+            for (var seat = 1; seat <= seats; seat++)
+            {
+                if (occupied.Remove((row, seat), out var taken))
+                {
+                    map.Seats.Add(taken);
+                    map.SoldSeats++;
+                    if (taken.Status == SeatOccupancy.Season) map.SeasonSeats++;
+                }
+                else
+                {
+                    map.Seats.Add(new SectorSeatDto
+                    {
+                        Row = row,
+                        Number = seat,
+                        SeatCode = $"{overlay.SectorCode}-R{row}-S{seat}",
+                        Status = SeatOccupancy.Free
+                    });
+                }
+            }
+        }
+
+        // Any held seats outside the current layout (e.g. the sector's size shrank after sale) are
+        // still real occupants — surface them so counts match the snapshot.
+        foreach (var extra in occupied.Values.OrderBy(s => s.Row).ThenBy(s => s.Number))
+        {
+            map.Seats.Add(extra);
+            map.SoldSeats++;
+            if (extra.Status == SeatOccupancy.Season) map.SeasonSeats++;
+        }
+
+        map.TotalSeats = map.Seats.Count;
+        map.FreeSeats = map.TotalSeats - map.SoldSeats;
+        return map;
+    }
+
+    public async Task<SeatTicketDto?> GetSeatTicketAsync(string externalEventId, string sectorCode, int row, int seatNumber, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(externalEventId) || string.IsNullOrWhiteSpace(sectorCode))
+            return null;
+
+        var evt = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.ExternalEventId == externalEventId, ct);
+        if (evt == null)
+            return null;
+
+        var overlay = await _context.StadiumSectorOverlays
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.SectorCode == sectorCode && !o.IsDeleted, ct);
+        if (overlay == null)
+            return null;
+
+        var sectionId = overlay.StadiumSectionId
+            ?? await _context.StadiumSections
+                .Where(s => s.SectionCode == overlay.SectorCode)
+                .Select(s => (int?)s.Id)
+                .FirstOrDefaultAsync(ct);
+        if (sectionId == null)
+            return null; // nothing ever sold here → no ticket at this seat
+
+        // Tracked (not AsNoTracking): the QR service may need to generate + save the image below.
+        var ticket = await _context.Tickets
+            .Include(t => t.Seat)
+            .FirstOrDefaultAsync(t => t.EventId == evt.Id
+                                      && t.Status != TicketStatuses.Cancelled
+                                      && t.SeatId != null
+                                      && t.Seat.SectionId == sectionId
+                                      && t.Seat.RowNumber == row
+                                      && t.Seat.SeatNumber == seatNumber, ct);
+        if (ticket == null)
+            return null; // seat is free
+
+        // Build the QR image for display. Ingested tickets carry a token but no stored image (the
+        // QRCode column can't hold a base64 image), so we render it on demand without persisting.
+        var qrDataUri = await _qrCode.GetQrImageDataUriAsync(ticket);
+
+        return new SeatTicketDto
+        {
+            TicketId = ticket.Id,
+            TicketNumber = ticket.TicketNumber,
+            SectionCode = overlay.SectorCode,
+            Row = row,
+            Number = seatNumber,
+            SeatCode = $"{overlay.SectorCode}-R{row}-S{seatNumber}",
+            Status = ticket.Kind == TicketKind.Season ? SeatOccupancy.Season : SeatOccupancy.Sold,
+            HolderName = ticket.CustomerName,
+            ExternalTicketId = ticket.ExternalTicketId,
+            Price = ticket.Price,
+            PurchaseDate = ticket.PurchaseDate,
+            EventName = ticket.EventName ?? evt.EventName,
+            EventDate = ticket.EventDate ?? evt.EventDate,
+            QRCode = qrDataUri,
+            QRCodeToken = ticket.QRCodeToken
+        };
+    }
+
+    /// <summary>Enumerates (rowNumber, seatsInRow) for a sector, honouring variable-seating patterns.</summary>
+    private static IEnumerable<(int Row, int Seats)> EnumerateRowLayout(StadiumSectorOverlay overlay)
+    {
+        List<RowPattern>? patterns = null;
+        if (overlay.UseVariableSeating && !string.IsNullOrEmpty(overlay.VariableSeatingData))
+        {
+            try { patterns = System.Text.Json.JsonSerializer.Deserialize<List<RowPattern>>(overlay.VariableSeatingData); }
+            catch { patterns = null; }
+        }
+
+        for (var row = 1; row <= overlay.Rows; row++)
+        {
+            var seats = overlay.SeatsPerRow;
+            var pattern = patterns?.FirstOrDefault(p => row >= p.FromRow && row <= p.ToRow);
+            if (pattern != null)
+                seats = pattern.SeatsPerRow;
+            yield return (row, seats);
+        }
     }
 
     /// <summary>

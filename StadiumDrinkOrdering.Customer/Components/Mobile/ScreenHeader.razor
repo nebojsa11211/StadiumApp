@@ -1,0 +1,45 @@
+@inject NavigationManager Nav
+
+@* Reusable top bar for mobile screens: optional back button, title/subtitle, optional live badge. *@
+
+<header class="screen-header">
+    @if (ShowBack)
+    {
+        <button class="iconbtn" @onclick="HandleBack" aria-label="Back">‹</button>
+    }
+    <div class="sh-titles">
+        <div class="sh-title">@Title</div>
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <div class="sh-sub">@Subtitle</div>
+        }
+    </div>
+    @if (Live)
+    {
+        <div class="live-badge"><span class="pulse"></span>@(string.IsNullOrEmpty(LiveText) ? "" : LiveText)</div>
+    }
+    @ChildContent
+</header>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public bool ShowBack { get; set; } = true;
+    [Parameter] public bool Live { get; set; }
+    [Parameter] public string? LiveText { get; set; }
+
+    /// <summary>Where the back button navigates. If null, uses browser history back semantics (falls back to "/").</summary>
+    [Parameter] public string? BackHref { get; set; }
+    [Parameter] public EventCallback OnBack { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private async Task HandleBack()
+    {
+        if (OnBack.HasDelegate)
+        {
+            await OnBack.InvokeAsync();
+            return;
+        }
+        Nav.NavigateTo(string.IsNullOrEmpty(BackHref) ? "/" : BackHref);
+    }
+}

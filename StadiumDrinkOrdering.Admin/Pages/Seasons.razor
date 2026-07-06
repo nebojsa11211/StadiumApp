@@ -139,13 +139,13 @@
                         </p>
                         <table class="table table-sm align-middle" id="admin-season-passes-table">
                             <thead>
-                                <tr><th>@L["Seasons_ColSector"]</th><th>@L["Seasons_ColSeat"]</th><th>@L["Seasons_ColHolder"]</th><th>@L["Seasons_ColPurchased"]</th><th>@L["Seasons_ColSource"]</th></tr>
+                                <tr><th>@L["Seasons_ColSector"]</th><th>@L["Seasons_ColSeat"]</th><th>@L["Seasons_ColHolder"]</th><th>@L["Seasons_ColPurchased"]</th><th>@L["Seasons_ColSource"]</th><th class="text-end">QR</th></tr>
                             </thead>
                             <tbody>
                                 @foreach (var grp in passes.GroupBy(p => p.SectionCode).OrderBy(g => g.Key))
                                 {
                                     <tr class="table-light">
-                                        <td colspan="5"><strong>@grp.Key</strong> <span class="text-muted small">· @L["Seasons_SeatsCount", grp.Count()]</span></td>
+                                        <td colspan="6"><strong>@grp.Key</strong> <span class="text-muted small">· @L["Seasons_SeatsCount", grp.Count()]</span></td>
                                     </tr>
                                     @foreach (var p in grp)
                                     {
@@ -157,6 +157,11 @@
                                             </td>
                                             <td class="small text-nowrap">@p.PurchaseDate.ToLocalTime().ToString("yyyy-MM-dd")</td>
                                             <td class="small text-muted">@p.SourceSystem</td>
+                                            <td class="text-end">
+                                                <button class="pill-btn" @onclick="() => ShowQr(p)" id="admin-season-pass-qr-btn-@p.Id" title="QR za skeniranje">
+                                                    <i class="bi bi-qr-code"></i><span>QR</span>
+                                                </button>
+                                            </td>
                                         </tr>
                                     }
                                 }
@@ -166,6 +171,41 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="() => showPassesModal = false" id="admin-season-passes-close-btn">@L["Seasons_Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showQrModal)
+{
+    <div id="admin-season-qr-modal">
+        <div class="modal-dialog" id="admin-season-qr-dialog">
+            <div class="modal-content" id="admin-season-qr-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="admin-season-qr-title"><i class="bi bi-qr-code"></i> Sezonska propusnica – QR</h5>
+                    <button type="button" class="btn-close" @onclick="() => showQrModal = false" id="admin-season-qr-close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="text-muted">@qrLabel</p>
+                    @if (qrLoading)
+                    {
+                        <div class="loading-state"><span class="loading-spinner"></span></div>
+                    }
+                    else if (qr != null)
+                    {
+                        <img src="@qr.ImageDataUri" alt="QR" id="admin-season-qr-image"
+                             style="width:240px;height:240px;image-rendering:pixelated;background:#fff;padding:10px;border-radius:12px;" />
+                        <p class="mono small mt-3 mb-1" style="word-break:break-all;" id="admin-season-qr-url">@qr.Url</p>
+                        <p class="text-muted small mb-0">Navijač skenira ovaj kôd da naruči na svoje mjesto tijekom utakmice uživo.</p>
+                    }
+                    else
+                    {
+                        <p class="text-danger mb-0">QR nije moguće učitati.</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showQrModal = false" id="admin-season-qr-close-btn">@L["Seasons_Close"]</button>
                 </div>
             </div>
         </div>
@@ -248,6 +288,11 @@
     private bool passesLoading;
     private string passesSeasonName = "";
     private List<SeasonTicketDto> passes = new();
+
+    private bool showQrModal;
+    private bool qrLoading;
+    private string qrLabel = "";
+    private SeasonPassQrDto? qr;
 
     private string alertMessage = "";
     private string alertType = "";
@@ -364,6 +409,28 @@
         finally
         {
             passesLoading = false;
+        }
+    }
+
+    private async Task ShowQr(SeasonTicketDto p)
+    {
+        showQrModal = true;
+        qrLoading = true;
+        qr = null;
+        qrLabel = $"{p.SectionCode} · {L["Seasons_RowSeat", p.RowNumber, p.SeatNumber]}"
+                  + (string.IsNullOrWhiteSpace(p.HolderName) ? "" : $" · {p.HolderName}");
+        StateHasChanged();
+        try
+        {
+            qr = await ApiService.GetAsync<SeasonPassQrDto>($"seasons/tickets/{p.Id}/qr");
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"QR: {ex.Message}", "danger");
+        }
+        finally
+        {
+            qrLoading = false;
         }
     }
 

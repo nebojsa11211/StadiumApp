@@ -1,0 +1,112 @@
+@page "/welcome"
+@layout MobileShell
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Customer.Services
+@inject IApiService Api
+@inject NavigationManager Nav
+
+<PageTitle>HALFTIME</PageTitle>
+
+<div class="welcome">
+    <div class="hero">
+        <div class="glow"></div>
+        <div class="grid-lines"></div>
+        <div class="hero-content">
+            <div class="live-badge"><span class="pulse"></span> Rujevica · večeras uživo</div>
+            <h1 class="display big-mark">
+                <span>NEMA</span>
+                <span class="grad-text">REDOVA.</span>
+                <span>SAMO</span>
+                <span>PIĆE.</span>
+            </h1>
+            <p class="hero-lede">Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.</p>
+        </div>
+    </div>
+
+    @if (_season is not null)
+    {
+        var next = _season.NextEvent;
+        <div class="welcome-info">
+            <div class="season-strip">
+                <span class="label">⭐ Sezona</span>
+                <span class="season-name">@_season.Name</span>
+                @if (_season.EventCount > 0)
+                {
+                    <span class="season-dot">·</span>
+                    <span class="season-sub">@_season.EventCount utakmica</span>
+                }
+            </div>
+
+            @if (next is not null)
+            {
+                <div class="fixture-card" role="button" tabindex="0"
+                     @onclick="@(() => Nav.NavigateTo($"/events/{next.Id}"))"
+                     @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{next.Id}"); })">
+                    <div class="fixture-when">
+                        <span class="fixture-day">@next.EventDate.ToLocalTime().Day</span>
+                        <span class="fixture-mon">@MonthShort(next.EventDate.ToLocalTime())</span>
+                    </div>
+                    <div class="fixture-main">
+                        <span class="label">@(next.IsLive ? "Uživo sada" : "Sljedeća utakmica")</span>
+                        <span class="fixture-name">@next.EventName</span>
+                        <span class="fixture-meta">@RelativeDay(next.EventDate.ToLocalTime()) · @next.EventDate.ToLocalTime().ToString("HH:mm")</span>
+                    </div>
+                    @if (next.IsLive)
+                    {
+                        <span class="fixture-avail fixture-live"><span class="pulse"></span></span>
+                    }
+                    else if (next.AvailableSeats > 0)
+                    {
+                        <span class="fixture-avail">@next.AvailableSeats<span class="fixture-avail-lbl">slobodno</span></span>
+                    }
+                    else
+                    {
+                        <span class="fixture-avail fixture-soldout">Rasprodano</span>
+                    }
+                    <span class="fixture-chevron" aria-hidden="true">›</span>
+                </div>
+            }
+            else
+            {
+                <div class="fixture-empty">Još nema objavljenih utakmica.</div>
+            }
+        </div>
+    }
+
+    <div class="welcome-cta">
+        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">📷&nbsp; Skeniraj ulaznicu</button>
+        <button class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">Imaš pretplatu? Prijavi se</button>
+        <p class="welcome-note">Kupio si pojedinačnu ulaznicu? Samo <a @onclick="@(() => Nav.NavigateTo("/scan"))" @onclick:preventDefault href="#">skeniraj QR kod</a> na njoj.</p>
+    </div>
+</div>
+
+@code {
+    private CurrentSeasonDto? _season;
+
+    private static readonly string[] MonthsHr =
+        { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Anonymous landing — this endpoint is public. Fail silently so the panel is optional
+        // and the landing never breaks if the API is unreachable.
+        try
+        {
+            _season = await Api.GetAsync<CurrentSeasonDto>("seasons/current");
+        }
+        catch { /* ignore — panel is optional */ }
+    }
+
+    private static string MonthShort(DateTime date) => MonthsHr[date.Month - 1];
+
+    private static string RelativeDay(DateTime date)
+    {
+        var days = (date.Date - DateTime.Today).Days;
+        return days switch
+        {
+            <= 0 => "Danas",
+            1 => "Sutra",
+            _ => $"za {days} dana"
+        };
+    }
+}

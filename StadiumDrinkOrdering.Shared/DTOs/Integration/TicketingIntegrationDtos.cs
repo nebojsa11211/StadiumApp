@@ -257,6 +257,96 @@ public class StadiumSectionInfoDto
     public int Capacity { get; set; }
 }
 
+/// <summary>Occupancy state of a single seat in a <see cref="SectorSeatMapDto"/>.</summary>
+public enum SeatOccupancy
+{
+    Free = 0,
+    /// <summary>Held by an ordinary single-match ticket.</summary>
+    Sold = 1,
+    /// <summary>Held by a season pass (a derived per-event access ticket).</summary>
+    Season = 2
+}
+
+/// <summary>A single seat with its real row/number and occupancy for a specific event.</summary>
+public class SectorSeatDto
+{
+    public int Row { get; set; }
+    public int Number { get; set; }
+
+    /// <summary>Positional seat code, e.g. <c>SECT1-R3-S12</c>.</summary>
+    public string SeatCode { get; set; } = string.Empty;
+
+    public SeatOccupancy Status { get; set; }
+
+    /// <summary>External ticket id for a single-match sold seat (null for free/season seats).</summary>
+    public string? ExternalTicketId { get; set; }
+
+    /// <summary>Name on the ticket or season pass holding the seat, if any.</summary>
+    public string? HolderName { get; set; }
+}
+
+/// <summary>
+/// Full per-seat map of one sector for one event: every real seat position with its actual
+/// row/number and whether it's free, single-match sold, or held by a season pass. Lets the
+/// external system/simulator show the true seat layout the API assigned, not just counts.
+/// </summary>
+public class SectorSeatMapDto
+{
+    public string ExternalEventId { get; set; } = string.Empty;
+    public int EventId { get; set; }
+    public string SectionCode { get; set; } = string.Empty;
+    public string SectionName { get; set; } = string.Empty;
+
+    /// <summary>Number of rows in the sector.</summary>
+    public int Rows { get; set; }
+
+    public int TotalSeats { get; set; }
+
+    /// <summary>Occupied seats (single-match + season).</summary>
+    public int SoldSeats { get; set; }
+
+    /// <summary>Of <see cref="SoldSeats"/>, how many are held by season passes.</summary>
+    public int SeasonSeats { get; set; }
+
+    public int FreeSeats { get; set; }
+
+    /// <summary>Every seat position in the sector, ordered by row then seat number.</summary>
+    public List<SectorSeatDto> Seats { get; set; } = new();
+}
+
+/// <summary>
+/// The ticket occupying a specific seat for an event, including its generated QR code, so the
+/// external system/simulator can show the real ticket for a clicked seat. The QR is generated
+/// on demand the first time a seat's ticket is requested.
+/// </summary>
+public class SeatTicketDto
+{
+    public int TicketId { get; set; }
+    public string TicketNumber { get; set; } = string.Empty;
+
+    public string SectionCode { get; set; } = string.Empty;
+    public int Row { get; set; }
+    public int Number { get; set; }
+    public string SeatCode { get; set; } = string.Empty;
+
+    /// <summary><see cref="SeatOccupancy.Sold"/> or <see cref="SeatOccupancy.Season"/>.</summary>
+    public SeatOccupancy Status { get; set; }
+
+    public string? HolderName { get; set; }
+    public string? ExternalTicketId { get; set; }
+    public decimal Price { get; set; }
+    public DateTime PurchaseDate { get; set; }
+
+    public string? EventName { get; set; }
+    public DateTime? EventDate { get; set; }
+
+    /// <summary>Data-URI PNG of the QR code (<c>data:image/png;base64,…</c>).</summary>
+    public string? QRCode { get; set; }
+
+    /// <summary>Opaque validation token encoded in the QR deep link.</summary>
+    public string? QRCodeToken { get; set; }
+}
+
 /// <summary>
 /// Real-time notification broadcast over SignalR when a ticket is sold or refunded,
 /// so the Admin overview can update occupancy live.

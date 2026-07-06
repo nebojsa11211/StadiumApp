@@ -1,0 +1,73 @@
+.welcome{flex:1;display:flex;flex-direction:column}
+
+.hero{
+    position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:0 24px 22px;overflow:hidden;min-height:48dvh;
+}
+.hero .glow{
+    position:absolute;inset:0;z-index:0;
+    background:
+        radial-gradient(80% 50% at 30% 18%,rgba(255,77,46,.5),transparent 60%),
+        radial-gradient(80% 55% at 85% 30%,rgba(255,31,107,.42),transparent 62%),
+        radial-gradient(120% 60% at 50% 110%,rgba(0,226,138,.14),transparent);
+}
+.hero .grid-lines{
+    position:absolute;inset:0;z-index:0;opacity:.5;
+    background-image:
+        linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:34px 34px;
+    -webkit-mask-image:radial-gradient(100% 80% at 50% 40%,#000,transparent 85%);
+            mask-image:radial-gradient(100% 80% at 50% 40%,#000,transparent 85%);
+}
+.hero-content{position:relative;z-index:1;display:flex;flex-direction:column;gap:18px;padding-top:64px}
+
+.big-mark{font-size:clamp(52px,16vw,68px)}
+.big-mark span{display:block}
+
+.hero-lede{color:#D6D8E4;font-size:15px;line-height:1.5;max-width:30ch}
+
+/* ---- current season + next fixture ---- */
+.welcome-info{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px;padding:6px 24px 0}
+
+.season-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.season-strip .label{color:var(--amber)}
+.season-strip .season-name{font-size:13px;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.season-dot{color:var(--muted-2)}
+.season-sub{font-size:12px;font-weight:700;color:var(--muted)}
+
+.fixture-card{
+    display:flex;align-items:center;gap:14px;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:13px 15px;
+    cursor:pointer;transition:transform .18s var(--ease),border-color .18s,background .18s;
+}
+.fixture-card:hover{transform:translateY(-1px);border-color:var(--line-2);background:var(--surface-2)}
+.fixture-card:active{transform:translateY(0) scale(.995)}
+.fixture-card:focus-visible{outline:2px solid var(--live);outline-offset:2px}
+.fixture-when{
+    flex:none;width:52px;height:52px;border-radius:14px;line-height:1;
+    background:var(--brand-soft);border:1px solid rgba(255,45,120,.28);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.fixture-day{font-size:21px;font-weight:900;font-style:italic;color:#fff}
+.fixture-mon{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#FFD9C7;margin-top:3px}
+.fixture-main{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.fixture-main .label{color:var(--muted)}
+.fixture-name{font-size:15px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fixture-meta{font-size:12px;font-weight:700;color:var(--muted)}
+.fixture-avail{flex:none;display:flex;flex-direction:column;align-items:flex-end;font-size:16px;font-weight:900;color:var(--live);line-height:1}
+.fixture-avail-lbl{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.fixture-soldout{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fixture-live{flex:none}
+.fixture-live .pulse{width:10px;height:10px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(0,226,138,.6);animation:pulse 1.8s infinite}
+
+.fixture-chevron{flex:none;font-size:26px;line-height:1;font-weight:700;color:var(--muted-2);margin-left:-2px}
+.fixture-card:hover .fixture-chevron{color:var(--muted)}
+
+.fixture-empty{font-size:13px;font-weight:600;color:var(--muted);
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px}
+
+.welcome-cta{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px;padding:18px 24px 30px}
+.welcome-note{text-align:center;font-size:12px;color:var(--muted);margin-top:2px}
+.welcome-note a{color:var(--live);font-weight:800;cursor:pointer}

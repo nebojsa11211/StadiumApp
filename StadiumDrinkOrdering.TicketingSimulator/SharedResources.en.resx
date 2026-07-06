@@ -316,6 +316,72 @@
   <data name="Index_RefundTooltip" xml:space="preserve">
     <value>Refunds a single-match ticket (season passes are refunded from the season panel)</value>
   </data>
+  <data name="Index_ShowSeatsTooltip" xml:space="preserve">
+    <value>Click to show/hide the seats of this sector</value>
+  </data>
+  <data name="Index_SeatsSingleLabel" xml:space="preserve">
+    <value>single-match</value>
+  </data>
+  <data name="Index_SeatsSeasonLabel" xml:space="preserve">
+    <value>season pass</value>
+  </data>
+  <data name="Index_SeatsFreeLabel" xml:space="preserve">
+    <value>free</value>
+  </data>
+  <data name="Index_SeatRowShort" xml:space="preserve">
+    <value>R</value>
+  </data>
+  <data name="Index_SeatsLoading" xml:space="preserve">
+    <value>Loading seats…</value>
+  </data>
+  <data name="Index_SeatsLoadFailed" xml:space="preserve">
+    <value>Could not load the seats for this sector.</value>
+  </data>
+  <data name="Index_SeatsRealNote" xml:space="preserve">
+    <value>Actual seats assigned by the API. Click an occupied seat to view its ticket QR code.</value>
+  </data>
+  <data name="Index_SeatClickHint" xml:space="preserve">
+    <value>click for QR ticket</value>
+  </data>
+  <data name="Index_SeatTicketTitle" xml:space="preserve">
+    <value>Seat ticket</value>
+  </data>
+  <data name="Index_SeatTicketLoading" xml:space="preserve">
+    <value>Loading ticket…</value>
+  </data>
+  <data name="Index_SeatTicketNotFound" xml:space="preserve">
+    <value>No ticket found for this seat.</value>
+  </data>
+  <data name="Index_SeatTicketNoQr" xml:space="preserve">
+    <value>No QR code available for this ticket.</value>
+  </data>
+  <data name="Index_SeatTicketSeat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Index_SeatTicketNumber" xml:space="preserve">
+    <value>Ticket #</value>
+  </data>
+  <data name="Index_SeatTicketHolder" xml:space="preserve">
+    <value>Holder</value>
+  </data>
+  <data name="Index_SeatTicketExternalId" xml:space="preserve">
+    <value>External ID</value>
+  </data>
+  <data name="Index_SeatTicketEvent" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="Index_SeatTicketPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Index_SeatTicketToken" xml:space="preserve">
+    <value>Token</value>
+  </data>
+  <data name="Index_SeatTicketCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Index_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="Index_DrinksHeader" xml:space="preserve">
     <value>2b. Simulate drink orders</value>
   </data>

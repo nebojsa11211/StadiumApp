@@ -272,8 +272,15 @@ public class TicketAuthService : ITicketAuthService
             CreatedAt = session.CreatedAt,
             ExpiresAt = session.ExpiresAt,
             LastAccessedAt = session.LastAccessedAt,
-            IsActive = session.IsActive
+            IsActive = session.IsActive,
+            CanOrderDrinks = IsEventOrderable(session)
         };
+    }
+
+    private static bool IsEventOrderable(TicketSession session)
+    {
+        var status = (session.Event ?? session.Ticket?.Event)?.Status;
+        return status is not null && EventLifecycle.CanOrderDrinks(status.Value);
     }
 
     private TicketInfoDto MapToTicketInfoDto(Ticket ticket)

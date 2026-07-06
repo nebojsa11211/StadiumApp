@@ -1,0 +1,29 @@
+.resolve{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:100dvh}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:0 30px;text-align:center}
+
+.center p{color:var(--muted);font-size:14px}
+
+.tick{
+    width:96px;height:96px;border-radius:50%;background:rgba(0,226,138,.12);border:1.5px solid rgba(0,226,138,.4);
+    display:grid;place-items:center;color:var(--live);font-size:44px;
+}
+.cross{
+    width:96px;height:96px;border-radius:50%;background:color-mix(in srgb,var(--blaze) 14%,transparent);
+    border:1.5px solid color-mix(in srgb,var(--blaze) 45%,transparent);display:grid;place-items:center;color:var(--blaze);font-size:40px;
+}
+.center h2{font-size:24px;font-weight:900;letter-spacing:-.02em}
+.err{color:#FFC9BC;font-size:14px;max-width:34ch}
+
+.seatcard{
+    background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-md);padding:16px 20px;
+    width:100%;display:flex;flex-direction:column;gap:10px;text-align:left;
+}
+.seatcard .match{font-weight:800;font-size:16px}
+.seatcard .row{display:flex;justify-content:space-between;font-size:13px}
+.seatcard .row span{color:var(--muted)}
+
+.redirecting{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;font-weight:600}
+
+.spinner.big{width:30px;height:30px;border-width:3px}
+
+.center .btn{max-width:300px}

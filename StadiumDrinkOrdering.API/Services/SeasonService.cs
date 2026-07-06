@@ -17,18 +17,31 @@ public interface ISeasonService
     Task<SeasonDto?> SetCurrentAsync(int id, CancellationToken ct = default);
     Task<Dictionary<int, string>> GetSeasonNamesAsync(IEnumerable<int> seasonIds, CancellationToken ct = default);
 
+    /// <summary>
+    /// The current season (or the most recent if none is flagged current) plus its next upcoming
+    /// or live fixture, for the public mobile landing. Null when no season exists.
+    /// </summary>
+    Task<CurrentSeasonDto?> GetCurrentSeasonAsync(CancellationToken ct = default);
+
     /// <summary>Active season passes for a season with their fixed seat, ordered by sector/row/seat.</summary>
     Task<List<SeasonTicketDto>> GetSeasonTicketsAsync(int seasonId, CancellationToken ct = default);
+
+    /// <summary>The scannable QR for a season pass (ensures a stable PassToken on first request).</summary>
+    Task<SeasonPassQrDto?> GetPassQrAsync(int seasonTicketId, CancellationToken ct = default);
 }
 
 public class SeasonService : ISeasonService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IQRCodeService _qrCode;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<SeasonService> _logger;
 
-    public SeasonService(ApplicationDbContext context, ILogger<SeasonService> logger)
+    public SeasonService(ApplicationDbContext context, IQRCodeService qrCode, IConfiguration configuration, ILogger<SeasonService> logger)
     {
         _context = context;
+        _qrCode = qrCode;
+        _configuration = configuration;
         _logger = logger;
     }
 
@@ -140,6 +153,69 @@ public class SeasonService : ISeasonService
         return await GetSeasonAsync(id, ct);
     }
 
+    public async Task<CurrentSeasonDto?> GetCurrentSeasonAsync(CancellationToken ct = default)
+    {
+        // Prefer the flagged-current season; otherwise fall back to the most recently starting one.
+        var season = await _context.Seasons
+            .AsNoTracking()
+            .OrderByDescending(s => s.IsCurrent)
+            .ThenByDescending(s => s.StartDate)
+            .FirstOrDefaultAsync(ct);
+
+        if (season == null)
+            return null;
+
+        var now = DateTime.UtcNow;
+
+        // Next fixture straight from the season's own events (independent of the ticketing list's
+        // IsActive filter): upcoming by date, or currently live even if its start time has passed.
+        // Cancelled/completed matches are excluded.
+        var next = await _context.Events
+            .AsNoTracking()
+            .Where(e => e.SeasonId == season.Id
+                        && e.Status != EventStatus.Cancelled
+                        && e.Status != EventStatus.Completed
+                        && (e.EventDate >= now
+                            || e.Status == EventStatus.Active
+                            || e.Status == EventStatus.InProgress))
+            .OrderBy(e => e.EventDate)
+            .Select(e => new { e.Id, e.EventName, e.EventType, e.EventDate, e.TotalSeats, e.Status })
+            .FirstOrDefaultAsync(ct);
+
+        UpcomingEventDto? nextDto = null;
+        if (next != null)
+        {
+            var sold = await _context.Tickets
+                .CountAsync(t => t.EventId == next.Id && t.Status != TicketStatuses.Cancelled, ct);
+
+            nextDto = new UpcomingEventDto
+            {
+                Id = next.Id,
+                EventName = next.EventName,
+                EventType = next.EventType,
+                EventDate = next.EventDate,
+                TotalSeats = next.TotalSeats,
+                AvailableSeats = Math.Max(0, next.TotalSeats - sold),
+                // "Live" only when the match is in a game-day state AND has actually kicked off —
+                // guards against a fixture that was flipped Active ahead of its date being shown
+                // as live while it is still days away.
+                IsLive = EventLifecycle.CanOrderDrinks(next.Status) && next.EventDate <= now,
+                Status = next.Status.ToString()
+            };
+        }
+
+        return new CurrentSeasonDto
+        {
+            Id = season.Id,
+            Name = season.Name,
+            StartDate = season.StartDate,
+            EndDate = season.EndDate,
+            IsCurrent = season.IsCurrent,
+            EventCount = await _context.Events.CountAsync(e => e.SeasonId == season.Id, ct),
+            NextEvent = nextDto
+        };
+    }
+
     public async Task<Dictionary<int, string>> GetSeasonNamesAsync(IEnumerable<int> seasonIds, CancellationToken ct = default)
     {
         var ids = seasonIds.Distinct().ToList();
@@ -175,6 +251,32 @@ public class SeasonService : ISeasonService
                 SourceSystem = st.SourceSystem
             })
             .ToListAsync(ct);
+    }
+
+    public async Task<SeasonPassQrDto?> GetPassQrAsync(int seasonTicketId, CancellationToken ct = default)
+    {
+        var pass = await _context.SeasonTickets.FirstOrDefaultAsync(st => st.Id == seasonTicketId, ct);
+        if (pass == null)
+            return null;
+
+        // Ensure a stable token exists (covers any pass created after the one-off backfill migration).
+        if (string.IsNullOrEmpty(pass.PassToken))
+        {
+            pass.PassToken = Guid.NewGuid().ToString();
+            await _context.SaveChangesAsync(ct);
+        }
+
+        var baseUrl = (_configuration["CustomerApp:BaseUrl"] ?? "https://localhost:7020").TrimEnd('/');
+        var url = $"{baseUrl}/t/{pass.PassToken}";
+        var png = await _qrCode.GenerateQRCodeImageAsync(url);
+
+        return new SeasonPassQrDto
+        {
+            SeasonTicketId = pass.Id,
+            PassToken = pass.PassToken,
+            Url = url,
+            ImageDataUri = $"data:image/png;base64,{Convert.ToBase64String(png)}"
+        };
     }
 
     private async Task ClearCurrentExceptAsync(Season season, CancellationToken ct)

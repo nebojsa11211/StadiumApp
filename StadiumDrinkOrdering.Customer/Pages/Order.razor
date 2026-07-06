@@ -1,0 +1,151 @@
+@page "/order"
+@layout MobileShell
+@using Microsoft.AspNetCore.WebUtilities
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@inject OrderSessionState State
+@inject IApiService Api
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>Naruči piće — HALFTIME</PageTitle>
+
+@if (!State.HasSession && !_loading)
+{
+    <div class="no-session">
+        <div class="ns-emoji">🎟️</div>
+        <h2>Nema aktivne narudžbe</h2>
+        <p>Skeniraj QR kod sa svoje ulaznice da započneš naručivanje na svoje mjesto.</p>
+        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
+    </div>
+}
+else if (State.HasSession && !State.CanOrderDrinks && !_loading)
+{
+    <div class="no-session">
+        <div class="ns-emoji">⏸️</div>
+        <h2>Naručivanje nije dostupno</h2>
+        <p>Naručivanje pića otvoreno je samo dok utakmica traje. Provjeri ponovno kad utakmica počne.</p>
+        @if (!string.IsNullOrWhiteSpace(State.EventName) || !string.IsNullOrWhiteSpace(State.SeatText))
+        {
+            <p class="ns-seat tnum">@State.EventName · @State.SeatText</p>
+        }
+        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/"))">Početna</button>
+    </div>
+}
+else
+{
+    <div class="order-head">
+        <div class="oh-top">
+            <button class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="Natrag">‹</button>
+            <div class="oh-match">
+                <div class="t">@(string.IsNullOrWhiteSpace(State.EventName) ? "Utakmica" : State.EventName)</div>
+                <div class="s">@State.SeatText</div>
+            </div>
+            <div class="live-badge"><span class="pulse"></span></div>
+        </div>
+        <div class="tabs no-scrollbar">
+            @foreach (var cat in _categories)
+            {
+                <button class="tab @(cat == _selected ? "on" : "")" @onclick="() => _selected = cat">
+                    @DrinkVisuals.Emoji(cat) @DrinkVisuals.Label(cat)
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="body no-scrollbar" style="padding-bottom:120px">
+        @if (_loading)
+        {
+            <div class="loading"><span class="spinner"></span> Učitavam ponudu…</div>
+        }
+        else
+        {
+            <div class="menu-grid">
+                @foreach (var drink in Filtered())
+                {
+                    <DrinkCard Drink="drink"
+                               Qty="State.QtyOf(drink.Id)"
+                               OnAdd="() => QuickAdd(drink)"
+                               OnOpen="() => _sheetDrink = drink" />
+                }
+            </div>
+        }
+    </div>
+
+    <CartBar Count="State.Count" Total="State.Subtotal" OnView="@(() => Nav.NavigateTo("/cart"))" />
+
+    <DrinkSheet Drink="_sheetDrink" OnClose="() => _sheetDrink = null" OnAdd="SheetAdd" />
+}
+
+@code {
+    private bool _loading = true;
+    private List<DrinkDto> _drinks = new();
+    private List<DrinkCategory> _categories = new();
+    private DrinkCategory _selected;
+    private DrinkDto? _sheetDrink;
+
+    protected override async Task OnInitializedAsync()
+    {
+        State.OnChange += StateChanged;
+
+        if (!State.HasSession)
+        {
+            // Direct-entry / testing bootstrap: /order?qr={token} or /order?s={sessionToken}.
+            var q = QueryHelpers.ParseQuery(new Uri(Nav.Uri).Query);
+            if (q.TryGetValue("qr", out var qr) && !string.IsNullOrEmpty(qr))
+                await State.InitFromQrAsync(qr!);
+            else if (q.TryGetValue("s", out var st) && !string.IsNullOrEmpty(st))
+                await State.InitFromTokenAsync(st!);
+        }
+
+        await LoadDrinks();
+        _loading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // Persist the session token so a hard reload can recover it; or restore if we arrived cold.
+        if (State.HasSession)
+        {
+            await JS.InvokeVoidAsync("sessionStorage.setItem", "htSessionToken", State.SessionToken);
+        }
+        else
+        {
+            var token = await JS.InvokeAsync<string?>("sessionStorage.getItem", "htSessionToken");
+            if (!string.IsNullOrEmpty(token) && await State.InitFromTokenAsync(token))
+            {
+                await LoadDrinks();
+                _loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task LoadDrinks()
+    {
+        _drinks = await Api.GetDrinksAsync() ?? new();
+        _categories = _drinks.Where(d => d.IsAvailable).Select(d => d.Category).Distinct().OrderBy(c => c).ToList();
+        if (_categories.Any() && !_categories.Contains(_selected))
+            _selected = _categories.First();
+    }
+
+    private IEnumerable<DrinkDto> Filtered() =>
+        _drinks.Where(d => d.Category == _selected).OrderByDescending(d => d.IsAvailable && d.StockQuantity > 0).ThenBy(d => d.Name);
+
+    private void QuickAdd(DrinkDto drink) => State.AddDrink(drink, 1);
+
+    private void SheetAdd(DrinkOrderRequest req)
+    {
+        var drink = _drinks.FirstOrDefault(d => d.Id == req.DrinkId);
+        if (drink != null) State.AddDrink(drink, req.Quantity, req.Note);
+        _sheetDrink = null;
+    }
+
+    private void StateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => State.OnChange -= StateChanged;
+}

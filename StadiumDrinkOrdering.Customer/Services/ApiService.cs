@@ -56,6 +56,16 @@ public interface IApiService
     Task<ValidateTicketResponse?> ValidateTicketAsync(string qrCodeToken);
     Task<TicketSessionDto?> GetTicketSessionAsync(string sessionToken);
     Task<bool> LogoutTicketAsync(string sessionId);
+
+    // Anonymous, ticket-session-gated drink ordering (walk-up flow)
+    Task<SessionOrderResultDto?> CreateSessionOrderAsync(SessionOrderRequest request);
+    Task<OrderDto?> GetSessionOrderAsync(int orderId, string sessionToken);
+
+    // Season member landing (authenticated)
+    Task<SeasonHomeDto?> GetSeasonHomeAsync();
+
+    // Unified entry resolver — single-event ticket QR or season pass token
+    Task<ValidateTicketResponse?> ResolveAccessAsync(string token);
     
     // Generic HTTP methods
     Task<T?> GetAsync<T>(string endpoint) where T : class;
@@ -829,11 +839,88 @@ public class ApiService : IApiService
         }
     }
 
+    // Anonymous, ticket-session-gated drink ordering (walk-up flow)
+    public async Task<SessionOrderResultDto?> CreateSessionOrderAsync(SessionOrderRequest request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("customer/session/order", content);
+            var body = await response.Content.ReadAsStringAsync();
+
+            // Success and validation/expiry failures both return a SessionOrderResultDto body.
+            try
+            {
+                var result = JsonSerializer.Deserialize<SessionOrderResultDto>(body, _jsonOptions);
+                if (result != null) return result;
+            }
+            catch { /* fall through */ }
+
+            return new SessionOrderResultDto { Success = false, Error = string.IsNullOrWhiteSpace(body) ? "Order failed." : body };
+        }
+        catch (Exception ex)
+        {
+            return new SessionOrderResultDto { Success = false, Error = ex.Message };
+        }
+    }
+
+    public async Task<OrderDto?> GetSessionOrderAsync(int orderId, string sessionToken)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"customer/session/order/{orderId}?sessionToken={Uri.EscapeDataString(sessionToken)}");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<OrderDto>(json, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting session order: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Season member landing (authenticated) — GetAsync injects the bearer token.
+    public async Task<SeasonHomeDto?> GetSeasonHomeAsync()
+        => await GetAsync<SeasonHomeDto>("customer/season/my-tickets");
+
+    // Unified entry resolver: /t/{token} calls this so a single-event ticket QR AND a season pass token
+    // both open an ordering session. Returns a ValidateTicketResponse (success or a friendly error).
+    public async Task<ValidateTicketResponse?> ResolveAccessAsync(string token)
+    {
+        try
+        {
+            var request = new ValidateTicketRequest { QRCodeToken = token };
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("customer/access/resolve", content);
+            var body = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                var result = JsonSerializer.Deserialize<ValidateTicketResponse>(body, _jsonOptions);
+                if (result != null) return result;
+            }
+            catch { /* fall through */ }
+
+            return new ValidateTicketResponse { Success = false, ErrorMessage = string.IsNullOrWhiteSpace(body) ? "Neuspješno." : body };
+        }
+        catch (Exception ex)
+        {
+            return new ValidateTicketResponse { Success = false, ErrorMessage = ex.Message };
+        }
+    }
+
     private void SetAuthorizationHeader()
     {
         if (!string.IsNullOrEmpty(Token))
         {
-            _httpClient.DefaultRequestHeaders.Authorization = 
+            _httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
         }
     }

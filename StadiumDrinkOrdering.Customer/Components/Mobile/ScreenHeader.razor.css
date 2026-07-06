@@ -1,0 +1,14 @@
+.screen-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 18px 12px;
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:linear-gradient(var(--ground),var(--ground) 72%,transparent);
+}
+
+.sh-titles{flex:1;min-width:0}
+.sh-title{font-size:17px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-sub{font-size:12px;color:var(--muted);font-weight:600;margin-top:1px}

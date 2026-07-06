@@ -1,0 +1,18 @@
+@* Sticky cart summary that rises from the bottom when the cart is non-empty. *@
+
+<div class="cartbar @(Count > 0 ? "show" : "")">
+    <div class="inner" @onclick="OnView">
+        <div class="l">
+            <span class="cc tnum">@Count</span>
+            <span class="ct">@Label</span>
+        </div>
+        <div class="r tnum">€@Total.ToString("F2") ›</div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Count { get; set; }
+    [Parameter] public decimal Total { get; set; }
+    [Parameter] public string Label { get; set; } = "Pogledaj košaricu";
+    [Parameter] public EventCallback OnView { get; set; }
+}

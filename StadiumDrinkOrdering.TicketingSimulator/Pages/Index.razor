@@ -289,8 +289,11 @@
                         var pct = s.Capacity > 0 ? (double)occupied / s.Capacity * 100 : 0;
                         var singlePct = s.Capacity > 0 ? (double)single / s.Capacity * 100 : 0;
                         var seasonPct = s.Capacity > 0 ? (double)season / s.Capacity * 100 : 0;
-                        <tr id="simulator-index-sales-row-@s.SectionCode">
-                            <td><strong>@s.SectionCode</strong> <span class="text-muted small">@s.SectionName</span></td>
+                        <tr id="simulator-index-sales-row-@s.SectionCode" class="@(expandedSector == s.SectionCode ? "table-active" : "")" style="cursor:pointer" title="@Localizer["Index_ShowSeatsTooltip"]" @onclick="() => ToggleSectorSeats(s.SectionCode)">
+                            <td>
+                                <i class="bi @(expandedSector == s.SectionCode ? "bi-caret-down-fill" : "bi-caret-right-fill") text-muted small"></i>
+                                <strong>@s.SectionCode</strong> <span class="text-muted small">@s.SectionName</span>
+                            </td>
                             <td>
                                 <div id="simulator-index-sales-progress-@s.SectionCode" class="progress" style="height:14px" title="@single single-match + @season season pass = @occupied / @s.Capacity">
                                     <div class="progress-bar @BarClass(pct)" style="width:@singlePct.ToString("0.##")%"></div>
@@ -308,11 +311,72 @@
                                 }
                             </td>
                             <td class="text-end text-nowrap">
-                                <button id="simulator-index-sales-sell1-btn-@s.SectionCode" class="btn btn-outline-success btn-sm" @onclick="() => SellAsync(s, 1)" disabled="@(busy || !eventCanSell || occupied >= s.Capacity)">@Localizer["Index_Plus1Button"]</button>
-                                <button id="simulator-index-sales-sell5-btn-@s.SectionCode" class="btn btn-outline-success btn-sm" @onclick="() => SellAsync(s, 5)" disabled="@(busy || !eventCanSell || occupied >= s.Capacity)">@Localizer["Index_Plus5Button"]</button>
-                                <button id="simulator-index-sales-refund-btn-@s.SectionCode" class="btn btn-outline-danger btn-sm" @onclick="() => RefundAsync(s)" disabled="@(busy || single == 0)" title="@Localizer["Index_RefundTooltip"]">@Localizer["Index_Minus1Button"]</button>
+                                <button id="simulator-index-sales-sell1-btn-@s.SectionCode" class="btn btn-outline-success btn-sm" @onclick="() => SellAsync(s, 1)" @onclick:stopPropagation="true" disabled="@(busy || !eventCanSell || occupied >= s.Capacity)">@Localizer["Index_Plus1Button"]</button>
+                                <button id="simulator-index-sales-sell5-btn-@s.SectionCode" class="btn btn-outline-success btn-sm" @onclick="() => SellAsync(s, 5)" @onclick:stopPropagation="true" disabled="@(busy || !eventCanSell || occupied >= s.Capacity)">@Localizer["Index_Plus5Button"]</button>
+                                <button id="simulator-index-sales-refund-btn-@s.SectionCode" class="btn btn-outline-danger btn-sm" @onclick="() => RefundAsync(s)" @onclick:stopPropagation="true" disabled="@(busy || single == 0)" title="@Localizer["Index_RefundTooltip"]">@Localizer["Index_Minus1Button"]</button>
                             </td>
                         </tr>
+                        @if (expandedSector == s.SectionCode)
+                        {
+                            <tr id="simulator-index-sales-seats-row-@s.SectionCode" class="table-light">
+                                <td colspan="4">
+                                    @if (loadingSeats)
+                                    {
+                                        <div class="text-muted small"><span class="spinner-border spinner-border-sm"></span> @Localizer["Index_SeatsLoading"]</div>
+                                    }
+                                    else if (expandedSeatMap == null)
+                                    {
+                                        <div class="text-danger small"><i class="bi bi-exclamation-triangle"></i> @Localizer["Index_SeatsLoadFailed"]</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+                                            <div class="fw-bold"><i class="bi bi-grid-3x3-gap"></i> @expandedSeatMap.SectionCode · @expandedSeatMap.SectionName</div>
+                                            <div class="small d-flex align-items-center gap-2">
+                                                <span><span class="badge bg-success">@(expandedSeatMap.SoldSeats - expandedSeatMap.SeasonSeats)</span> @Localizer["Index_SeatsSingleLabel"]</span>
+                                                <span><span class="badge bg-info">@expandedSeatMap.SeasonSeats</span> @Localizer["Index_SeatsSeasonLabel"]</span>
+                                                <span><span class="badge bg-white text-dark border">@expandedSeatMap.FreeSeats</span> @Localizer["Index_SeatsFreeLabel"]</span>
+                                                <button id="simulator-index-sales-seats-refresh-btn-@s.SectionCode" class="btn btn-sm btn-outline-secondary py-0" title="@Localizer["Index_RefreshButton"]" @onclick="RefreshExpandedSeatsAsync" @onclick:stopPropagation="true" disabled="@loadingSeats"><i class="bi bi-arrow-clockwise"></i></button>
+                                            </div>
+                                        </div>
+                                        <div id="simulator-index-sales-seatgrid-@s.SectionCode" class="d-flex flex-column gap-1" style="overflow-x:auto">
+                                            @foreach (var rowGroup in expandedSeatMap.Seats.GroupBy(x => x.Row).OrderBy(g => g.Key))
+                                            {
+                                                <div class="d-flex align-items-center gap-1" style="white-space:nowrap">
+                                                    <span class="text-muted small text-end" style="flex:0 0 40px">@Localizer["Index_SeatRowShort"]@rowGroup.Key</span>
+                                                    @foreach (var seat in rowGroup.OrderBy(x => x.Number))
+                                                    {
+                                                        var seatClass = seat.Status switch
+                                                        {
+                                                            SeatOccupancy.Sold => "bg-success text-white",
+                                                            SeatOccupancy.Season => "bg-info text-white",
+                                                            _ => "bg-white text-muted border"
+                                                        };
+                                                        var statusLabel = seat.Status switch
+                                                        {
+                                                            SeatOccupancy.Sold => Localizer["Index_SeatsSingleLabel"].Value,
+                                                            SeatOccupancy.Season => Localizer["Index_SeatsSeasonLabel"].Value,
+                                                            _ => Localizer["Index_SeatsFreeLabel"].Value
+                                                        };
+                                                        var holder = string.IsNullOrEmpty(seat.HolderName) ? "" : $" · {seat.HolderName}";
+                                                        var ext = string.IsNullOrEmpty(seat.ExternalTicketId) ? "" : $" · {seat.ExternalTicketId}";
+                                                        var clickable = seat.Status != SeatOccupancy.Free;
+                                                        var seatTip = clickable
+                                                            ? $"{seat.SeatCode} · {statusLabel}{holder}{ext} · {Localizer["Index_SeatClickHint"].Value}"
+                                                            : $"{seat.SeatCode} · {statusLabel}";
+                                                        <span class="d-inline-flex align-items-center justify-content-center rounded @seatClass"
+                                                              style="width:28px;height:20px;font-size:0.6rem;flex:0 0 28px;@(clickable ? "cursor:pointer" : "")"
+                                                              title="@seatTip"
+                                                              @onclick="() => ShowSeatTicketAsync(seat)" @onclick:stopPropagation="true">@seat.Number</span>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="small text-muted mt-1">@Localizer["Index_SeatsRealNote"]</div>
+                                    }
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -397,6 +461,93 @@
     </div>
 }
 
+@* ---------- Seat ticket (QR) modal ---------- *@
+@if (showSeatTicket)
+{
+    <div id="simulator-index-seat-ticket-modal" class="modal fade show" style="display:block; background:rgba(0,0,0,.5)" tabindex="-1" @onclick="CloseSeatTicket">
+        <div class="modal-dialog modal-dialog-centered" @onclick:stopPropagation="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-qr-code"></i> @Localizer["Index_SeatTicketTitle"]</h5>
+                    <button id="simulator-index-seat-ticket-close-x" type="button" class="btn-close" @onclick="CloseSeatTicket"></button>
+                </div>
+                <div class="modal-body text-center">
+                    @if (loadingSeatTicket)
+                    {
+                        <div class="text-muted py-4"><span class="spinner-border"></span><div class="mt-2">@Localizer["Index_SeatTicketLoading"]</div></div>
+                    }
+                    else if (seatTicketModal == null)
+                    {
+                        <div class="text-danger py-4"><i class="bi bi-exclamation-triangle"></i> @Localizer["Index_SeatTicketNotFound"]</div>
+                    }
+                    else
+                    {
+                        <div class="mb-2">
+                            <span class="badge @(seatTicketModal.Status == SeatOccupancy.Season ? "bg-info" : "bg-success")">
+                                @(seatTicketModal.Status == SeatOccupancy.Season ? Localizer["Index_SeatsSeasonLabel"] : Localizer["Index_SeatsSingleLabel"])
+                            </span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(seatTicketModal.QRCode))
+                        {
+                            <img id="simulator-index-seat-ticket-qr" src="@seatTicketModal.QRCode" alt="QR code" style="width:220px;height:220px" class="img-fluid border rounded" />
+                        }
+                        else
+                        {
+                            <div class="text-muted small py-3">@Localizer["Index_SeatTicketNoQr"]</div>
+                        }
+                        <table class="table table-sm mt-3 mb-0 text-start">
+                            <tbody>
+                                <tr><th style="width:38%">@Localizer["Index_SeatTicketSeat"]</th><td><code>@seatTicketModal.SeatCode</code></td></tr>
+                                <tr>
+                                    <th>@Localizer["Index_SeatTicketNumber"]</th>
+                                    <td>
+                                        <code>@seatTicketModal.TicketNumber</code>
+                                        <button id="simulator-index-seat-ticket-copy-number" type="button"
+                                                class="btn btn-sm btn-outline-secondary py-0 px-1 ms-1"
+                                                title="@Localizer["Index_SeatTicketCopy"]"
+                                                @onclick="@(() => CopyToClipboard(seatTicketModal.TicketNumber))">
+                                            <i class="bi @(_copiedText == seatTicketModal.TicketNumber ? "bi-check2 text-success" : "bi-clipboard")"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @if (!string.IsNullOrEmpty(seatTicketModal.HolderName))
+                                {
+                                    <tr><th>@Localizer["Index_SeatTicketHolder"]</th><td>@seatTicketModal.HolderName</td></tr>
+                                }
+                                @if (!string.IsNullOrEmpty(seatTicketModal.ExternalTicketId))
+                                {
+                                    <tr><th>@Localizer["Index_SeatTicketExternalId"]</th><td><code>@seatTicketModal.ExternalTicketId</code></td></tr>
+                                }
+                                <tr><th>@Localizer["Index_SeatTicketEvent"]</th><td>@seatTicketModal.EventName</td></tr>
+                                @if (seatTicketModal.Status != SeatOccupancy.Season)
+                                {
+                                    <tr><th>@Localizer["Index_SeatTicketPrice"]</th><td>€@seatTicketModal.Price.ToString("0.00")</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                        @if (!string.IsNullOrEmpty(seatTicketModal.QRCodeToken))
+                        {
+                            <div class="small text-muted mt-2 d-flex align-items-center justify-content-center gap-2">
+                                <span>@Localizer["Index_SeatTicketToken"]:</span>
+                                <code class="text-break">@seatTicketModal.QRCodeToken</code>
+                                <button id="simulator-index-seat-ticket-copy-token" type="button"
+                                        class="btn btn-sm btn-outline-secondary py-0 px-1 flex-shrink-0"
+                                        title="@Localizer["Index_SeatTicketCopy"]"
+                                        @onclick="@(() => CopyToClipboard(seatTicketModal.QRCodeToken))">
+                                    <i class="bi @(_copiedText == seatTicketModal.QRCodeToken ? "bi-check2 text-success" : "bi-clipboard")"></i>
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button id="simulator-index-seat-ticket-close-btn" class="btn btn-secondary" @onclick="CloseSeatTicket">@Localizer["Index_CloseButton"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @* ---------- Activity log ---------- *@
 <div id="simulator-index-log-card" class="card">
     <div id="simulator-index-log-header" class="card-header fw-bold"><i class="bi bi-terminal"></i> @Localizer["Index_ActivityLogHeader"]</div>
@@ -474,6 +625,104 @@
     private CancellationTokenSource? autoCts;
 
     private EventSalesSnapshotDto? snapshot;
+
+    // Which sector's seat grid is expanded in the sales table (null = none), plus the real
+    // per-seat map fetched from the API for it. The map carries each seat's actual row/number and
+    // whether it's free, single-match sold, or held by a season pass.
+    private string? expandedSector;
+    private SectorSeatMapDto? expandedSeatMap;
+    private bool loadingSeats;
+
+    private async Task ToggleSectorSeats(string code)
+    {
+        if (expandedSector == code)
+        {
+            expandedSector = null;
+            expandedSeatMap = null;
+            return;
+        }
+        expandedSector = code;
+        await LoadExpandedSeatsAsync();
+    }
+
+    private Task RefreshExpandedSeatsAsync() => LoadExpandedSeatsAsync();
+
+    // Seat-ticket (QR) modal: the real ticket occupying a clicked occupied seat. The API generates
+    // the QR image on first view for ingested tickets.
+    private bool showSeatTicket;
+    private bool loadingSeatTicket;
+    private SeatTicketDto? seatTicketModal;
+    private string? _copiedText;
+
+    private async Task ShowSeatTicketAsync(SectorSeatDto seat)
+    {
+        if (seat.Status == SeatOccupancy.Free || externalEventId == null || expandedSector == null) return;
+        showSeatTicket = true;
+        loadingSeatTicket = true;
+        seatTicketModal = null;
+        _copiedText = null;
+        try
+        {
+            seatTicketModal = await Api.GetSeatTicketAsync(externalEventId, expandedSector, seat.Row, seat.Number);
+            if (seatTicketModal == null)
+                Log($"⚠ No ticket found for {seat.SeatCode}");
+        }
+        catch (Exception ex)
+        {
+            Log($"⚠ Seat ticket error for {seat.SeatCode}: {ex.Message}");
+        }
+        finally
+        {
+            loadingSeatTicket = false;
+        }
+    }
+
+    private void CloseSeatTicket()
+    {
+        showSeatTicket = false;
+        seatTicketModal = null;
+        _copiedText = null;
+    }
+
+    // Copy a ticket code (number or QR token) to the clipboard so it can be pasted into the customer
+    // app's manual "Unesi kôd s ulaznice" box. Clipboard access can be blocked (permissions); ignore.
+    private async Task CopyToClipboard(string? text)
+    {
+        if (string.IsNullOrEmpty(text)) return;
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+            _copiedText = text;
+        }
+        catch
+        {
+            // Clipboard unavailable (insecure context or denied) — leave the value visible to copy manually.
+        }
+    }
+
+    // Fetches the real per-seat map for the currently-expanded sector from the API. Safe to call
+    // after any sale/refund to keep the open grid in sync; a no-op when nothing is expanded.
+    private async Task LoadExpandedSeatsAsync()
+    {
+        if (expandedSector == null || externalEventId == null) return;
+        loadingSeats = true;
+        expandedSeatMap = null;
+        try
+        {
+            expandedSeatMap = await Api.GetSectorSeatsAsync(externalEventId, expandedSector);
+            if (expandedSeatMap == null)
+                Log($"⚠ Could not load seats for {expandedSector}");
+        }
+        catch (Exception ex)
+        {
+            Log($"⚠ Seat map error for {expandedSector}: {ex.Message}");
+        }
+        finally
+        {
+            loadingSeats = false;
+        }
+    }
+
     private readonly List<string> log = new();
     private readonly Random _rng = new();
 
@@ -692,6 +941,8 @@
                 foreach (var sec in snap.Sectors)
                     if (sec.SeasonSold > 0) seasonCount[sec.SectionCode] = sec.SeasonSold;
             }
+            // Season sales/refunds change which seats are held — keep an open seat grid in sync.
+            if (expandedSector != null) await LoadExpandedSeatsAsync();
         }
         catch (Exception ex)
         {
@@ -757,6 +1008,8 @@
     {
         if (busy) return;
         busy = true;
+        expandedSector = null;
+        expandedSeatMap = null;
         try
         {
             var refs = await Api.GetEventTicketsAsync(summary.ExternalEventId);
@@ -998,6 +1251,7 @@
                 else break;
             }
             if (made > 0) Log($"Sold {made} in {s.SectionCode} (now {OccupiedCount(s.SectionCode)}/{s.Capacity})");
+            if (made > 0 && expandedSector == s.SectionCode) await LoadExpandedSeatsAsync();
         }
         finally
         {
@@ -1082,6 +1336,7 @@
                     soldCount[s.SectionCode] = soldIds[s.SectionCode].Count;
                 }
                 Log($"↩ Refunded 1 in {s.SectionCode} (now {OccupiedCount(s.SectionCode)}/{s.Capacity})");
+                if (expandedSector == s.SectionCode) await LoadExpandedSeatsAsync();
             }
             else
             {
@@ -1342,6 +1597,8 @@
         eventCanSell = true;
         eventLive = false;
         eventStatusName = "";
+        expandedSector = null;
+        expandedSeatMap = null;
         lock (_lock) { soldCount.Clear(); soldIds.Clear(); seasonCount.Clear(); }
         Log("↩ Back to events list — cleared active event");
         await LoadEventsAsync();

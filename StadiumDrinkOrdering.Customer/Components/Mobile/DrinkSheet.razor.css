@@ -1,0 +1,46 @@
+.scrim{
+    position:fixed;inset:0;z-index:50;background:rgba(3,4,7,.68);backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;transition:opacity .28s var(--ease);
+}
+.scrim.show{opacity:1;pointer-events:auto}
+
+.sheet{
+    position:fixed;left:50%;bottom:0;transform:translate(-50%,110%);
+    width:100%;max-width:var(--app-max);z-index:51;
+    background:var(--surface-2);border-top:1px solid var(--line-2);
+    border-radius:26px 26px 0 0;padding:10px 22px calc(26px + var(--safe-bottom));
+    transition:transform .34s var(--ease);
+}
+.sheet.show{transform:translate(-50%,0)}
+
+.grab{width:42px;height:5px;border-radius:3px;background:var(--muted-2);margin:6px auto 16px}
+
+.big-thumb{
+    width:100%;height:130px;border-radius:16px;display:grid;place-items:center;font-size:60px;margin-bottom:16px;
+    background:linear-gradient(150deg,#3a2a08,#241a06);
+}
+.big-thumb.soft{background:linear-gradient(150deg,#3a0c14,#22070c)}
+.big-thumb.water{background:linear-gradient(150deg,#0a2634,#06161f)}
+.big-thumb.coffee{background:linear-gradient(150deg,#2b1a10,#180d07)}
+.big-thumb.snack{background:linear-gradient(150deg,#33260a,#1f1706)}
+
+.sheet h3{font-size:22px;font-weight:900;letter-spacing:-.01em}
+.desc{color:var(--muted);font-size:13px;line-height:1.5;margin:8px 0 18px}
+
+.stepper{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--surface);border:1px solid var(--line-2);border-radius:16px;padding:10px 14px;margin-bottom:14px;
+}
+.stepper .lab{font-weight:800;font-size:14px}
+.stepper .ctrl{display:flex;align-items:center;gap:18px}
+.stepper button{
+    width:34px;height:34px;border-radius:11px;border:1px solid var(--line-2);background:var(--surface-3);
+    color:var(--ink);font-size:20px;cursor:pointer;font-weight:800;
+}
+.stepper .q{font-size:18px;font-weight:900;min-width:20px;text-align:center}
+
+.note-in{
+    width:100%;background:var(--surface);border:1px solid var(--line-2);border-radius:14px;
+    padding:13px 15px;color:var(--ink);font-family:inherit;font-size:14px;margin-bottom:16px;resize:none;outline:none;
+}
+.note-in:focus{border-color:var(--magenta)}

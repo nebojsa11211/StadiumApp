@@ -25,6 +25,15 @@ public class SeasonTicket
     [StringLength(50)]
     public string SeasonTicketNumber { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Stable token encoded in the physical season pass's QR (as <c>{host}/t/{PassToken}</c>). Scanning
+    /// it resolves to the holder's derived ticket for whatever match is live now (see the customer
+    /// access resolver). Distinct from per-event <see cref="Ticket.QRCodeToken"/>s. Backfilled for
+    /// existing passes by migration.
+    /// </summary>
+    [StringLength(100)]
+    public string? PassToken { get; set; }
+
     [StringLength(100)]
     public string? HolderName { get; set; }
 

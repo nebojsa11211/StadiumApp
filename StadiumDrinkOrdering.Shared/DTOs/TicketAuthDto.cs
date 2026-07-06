@@ -37,6 +37,13 @@ public class TicketSessionDto
     public DateTime ExpiresAt { get; set; }
     public DateTime? LastAccessedAt { get; set; }
     public bool IsActive { get; set; }
+
+    /// <summary>
+    /// Whether drink ordering is currently open for this session's event (its status is Active/InProgress).
+    /// A session stays valid after the match ends, but ordering must be blocked — the client uses this to
+    /// gate the menu/checkout UI, matching the server-side enforcement at order placement.
+    /// </summary>
+    public bool CanOrderDrinks { get; set; }
 }
 
 public class TicketInfoDto

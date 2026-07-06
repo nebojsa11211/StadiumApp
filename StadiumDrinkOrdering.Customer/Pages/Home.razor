@@ -1,0 +1,180 @@
+@page "/home"
+@layout MobileShell
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Customer.Services
+@inject ICustomerAuthStateService AuthState
+@inject IApiService Api
+@inject OrderSessionState State
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>Moja sezona — HALFTIME</PageTitle>
+
+@if (_loading)
+{
+    <div class="center"><span class="spinner big"></span></div>
+}
+else if (_home is null || !_home.HasPass)
+{
+    <div class="center pad">
+        <div style="font-size:52px">🎟️</div>
+        <h2>Nemaš sezonsku pretplatu</h2>
+        <p class="muted">Na ovom računu nije pronađena sezonska ulaznica. Došao si na pojedinačnu utakmicu? Skeniraj ulaznicu.</p>
+        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
+        <button class="btn btn-ghost" @onclick="Logout">Odjava</button>
+    </div>
+}
+else
+{
+    <div class="home-hi">
+        <div>
+            <div class="greet">Dobra večer,</div>
+            <div class="name">@FirstName 👋</div>
+        </div>
+        <button class="avatar" @onclick="Logout" title="Odjava">@Initials</button>
+    </div>
+
+    <div class="pass">
+        <div class="info">
+            <div class="t">⭐ Sezonska pretplata</div>
+            <div class="s">@_home.SeatLabel</div>
+            <div class="m tnum">@_home.SeasonName · @_home.PassNumber</div>
+        </div>
+        <span class="chip-seat"><b>Tvoje mjesto</b></span>
+    </div>
+
+    @if (_home.LiveEvent is not null)
+    {
+        <div class="sec-title"><h3>Trenutno uživo</h3></div>
+        <div class="livecard">
+            <div class="glow"></div>
+            <div class="lc-top">
+                <div class="live-badge"><span class="pulse"></span> Uživo</div>
+            </div>
+            <div class="lc-match">@_home.LiveEvent.EventName</div>
+            <div class="lc-meta tnum">@_home.LiveEvent.EventDate.ToLocalTime().ToString("HH:mm")</div>
+            @if (!string.IsNullOrEmpty(_orderError))
+            {
+                <div class="err">@_orderError</div>
+            }
+            <div class="lc-cta">
+                @if (!string.IsNullOrEmpty(_home.LiveEvent.SessionQrToken))
+                {
+                    <button class="btn btn-primary" @onclick="() => StartOrdering(_home.LiveEvent.SessionQrToken!)" disabled="@_starting">
+                        @if (_starting)
+                        {
+                            <span class="spinner"></span> <span>Otvaram meni…</span>
+                        }
+                        else
+                        {
+                            <span>🍺 Naruči na svoje mjesto</span>
+                        }
+                    </button>
+                }
+                else
+                {
+                    <div class="soon">Naručivanje uskoro dostupno</div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="sec-title"><h3>Sljedeća utakmica</h3></div>
+        <div class="nolive">
+            <div class="nl-emoji">⏳</div>
+            <p>Trenutno nema utakmice uživo. Naručivanje se otvara kad utakmica počne.</p>
+        </div>
+    }
+
+    @if (_home.Upcoming.Any())
+    {
+        <div class="sec-title"><h3>Raspored</h3></div>
+        @foreach (var fx in _home.Upcoming)
+        {
+            <div class="fixture-row">
+                <div class="date">
+                    <div class="d tnum">@fx.EventDate.ToLocalTime().Day.ToString("D2")</div>
+                    <div class="mo">@MonthHr(fx.EventDate.ToLocalTime())</div>
+                </div>
+                <div class="fx">
+                    <div class="op">@fx.EventName</div>
+                    <div class="meta tnum">@fx.EventDate.ToLocalTime().ToString("HH:mm")</div>
+                </div>
+                <span class="countdown">@Countdown(fx.EventDate)</span>
+            </div>
+        }
+    }
+
+    <div style="height:24px"></div>
+}
+
+@code {
+    private bool _loading = true;
+    private SeasonHomeDto? _home;
+    private bool _starting;
+    private string? _orderError;
+
+    private string FirstName => (_home?.HolderName ?? "").Split(' ').FirstOrDefault() ?? "Navijaču";
+    private string Initials
+    {
+        get
+        {
+            var n = (_home?.HolderName ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (n.Length == 0) return "🙂";
+            return n.Length == 1 ? n[0][..1].ToUpper() : (n[0][..1] + n[1][..1]).ToUpper();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        await AuthState.InitializeAsync();
+        if (!AuthState.IsAuthenticated)
+        {
+            Nav.NavigateTo("/login?returnUrl=/home");
+            return;
+        }
+
+        _home = await Api.GetSeasonHomeAsync();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task StartOrdering(string token)
+    {
+        if (_starting) return;
+        _starting = true;
+        _orderError = null;
+
+        var (ok, error) = await State.InitFromQrAsync(token);
+        if (ok)
+        {
+            await JS.InvokeVoidAsync("sessionStorage.setItem", "htSessionToken", State.SessionToken);
+            Nav.NavigateTo("/order");
+        }
+        else
+        {
+            _orderError = error;
+            _starting = false;
+        }
+    }
+
+    private async Task Logout()
+    {
+        await AuthState.LogoutAsync();
+        Nav.NavigateTo("/welcome");
+    }
+
+    private static string MonthHr(DateTime d) => new[]
+    {
+        "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro"
+    }[d.Month - 1];
+
+    private static string Countdown(DateTime eventDateUtc)
+    {
+        var days = (eventDateUtc.Date - DateTime.UtcNow.Date).Days;
+        return days <= 0 ? "danas" : days == 1 ? "sutra" : $"za {days} dana";
+    }
+}

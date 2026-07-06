@@ -1,0 +1,38 @@
+.drink{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+    padding:14px;display:flex;flex-direction:column;gap:10px;cursor:pointer;position:relative;
+    transition:transform .16s var(--ease),border-color .16s;
+}
+.drink:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.drink.soldout{opacity:.5}
+
+.thumb{
+    width:100%;aspect-ratio:1.5/1;border-radius:12px;display:grid;place-items:center;font-size:38px;
+    background:radial-gradient(120% 120% at 30% 20%,var(--surface-3),var(--surface-2));
+}
+.thumb.beer{background:linear-gradient(150deg,#3a2a08,#241a06)}
+.thumb.soft{background:linear-gradient(150deg,#3a0c14,#22070c)}
+.thumb.water{background:linear-gradient(150deg,#0a2634,#06161f)}
+.thumb.coffee{background:linear-gradient(150deg,#2b1a10,#180d07)}
+.thumb.snack{background:linear-gradient(150deg,#33260a,#1f1706)}
+
+.dn{font-size:14px;font-weight:800;line-height:1.2}
+.dm{font-size:11px;color:var(--muted);margin-top:-4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drow{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.price{font-size:15px;font-weight:900}
+
+.add{
+    width:34px;height:34px;border-radius:11px;border:0;background:var(--brand);color:#fff;
+    font-size:20px;font-weight:800;cursor:pointer;display:grid;place-items:center;line-height:1;flex:none;
+    transition:transform .15s var(--ease);
+}
+.add:hover{transform:scale(1.08)}
+.add:active{transform:scale(.95)}
+
+.soldout-badge{font-size:11px;font-weight:800;color:var(--muted);background:var(--surface-3);padding:5px 9px;border-radius:8px}
+
+.qty-badge{
+    position:absolute;top:8px;right:8px;background:var(--live);color:#04150E;font-size:12px;font-weight:900;
+    min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;padding:0 6px;
+    box-shadow:0 4px 10px -2px rgba(0,226,138,.6);
+}

@@ -1,0 +1,60 @@
+@using StadiumDrinkOrdering.Shared.DTOs
+@* Bottom sheet for a drink: quantity + special instructions, then add. Visible whenever Drink != null. *@
+
+<div class="scrim @(Drink != null ? "show" : "")" @onclick="OnClose"></div>
+<div class="sheet @(Drink != null ? "show" : "")">
+    @if (Drink != null)
+    {
+        <div class="grab"></div>
+        <div class="big-thumb @DrinkVisuals.Thumb(Drink.Category)">@DrinkVisuals.Emoji(Drink.Category)</div>
+        <h3>@Drink.Name</h3>
+        <div class="desc">@(string.IsNullOrWhiteSpace(Drink.Description) ? "Poslužuje se hladno i donosi na tvoje mjesto." : Drink.Description)</div>
+
+        <div class="stepper">
+            <span class="lab">Količina</span>
+            <div class="ctrl">
+                <button @onclick="Dec" aria-label="Manje">−</button>
+                <span class="q tnum">@_qty</span>
+                <button @onclick="Inc" aria-label="Više">+</button>
+            </div>
+        </div>
+
+        <textarea class="note-in" rows="2" @bind="_note" placeholder="Posebne napomene (npr. bez leda, dodatna čaša)"></textarea>
+
+        <button class="btn btn-primary" @onclick="Submit">Dodaj u košaricu · €@((Drink.Price * _qty).ToString("F2"))</button>
+    }
+</div>
+
+@code {
+    [Parameter] public DrinkDto? Drink { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<DrinkOrderRequest> OnAdd { get; set; }
+
+    private int _qty = 1;
+    private string? _note;
+    private int? _lastId;
+
+    protected override void OnParametersSet()
+    {
+        // Reset when a different drink opens; forget when closed.
+        if (Drink != null && Drink.Id != _lastId)
+        {
+            _qty = 1;
+            _note = null;
+            _lastId = Drink.Id;
+        }
+        else if (Drink == null)
+        {
+            _lastId = null;
+        }
+    }
+
+    private void Inc() => _qty = Math.Min(20, _qty + 1);
+    private void Dec() => _qty = Math.Max(1, _qty - 1);
+
+    private async Task Submit()
+    {
+        if (Drink != null)
+            await OnAdd.InvokeAsync(new DrinkOrderRequest(Drink.Id, _qty, _note));
+    }
+}

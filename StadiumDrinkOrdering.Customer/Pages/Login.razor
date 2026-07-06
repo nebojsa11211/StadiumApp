@@ -1,303 +1,97 @@
 @page "/login"
+@layout MobileShell
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Customer.Services
-@using Microsoft.Extensions.Localization
-@inject IApiService ApiService
-@inject ICustomerAuthStateService AuthStateService
-@inject NavigationManager NavigationManager
-@inject IStringLocalizer<SharedResources> Localizer
+@inject IApiService Api
+@inject ICustomerAuthStateService AuthState
+@inject NavigationManager Nav
 
-<PageTitle>Sign In - Stadium Drinks Premium</PageTitle>
+<PageTitle>Prijava — HALFTIME</PageTitle>
 
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-gray-100">
-    <div class="max-w-md w-full">
-        <!-- Logo and Title -->
-        <div class="text-center mb-10 animate-slide-up">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-stadium-green-500 to-stadium-green-600 rounded-2xl mb-6 shadow-xl">
-                <span class="text-4xl text-white">⚽</span>
-            </div>
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-3">Welcome Back</h1>
-            <p class="text-lg text-gray-600">Sign in to your premium account</p>
-        </div>
+<ScreenHeader Title="Prijava" Subtitle="Pretplatnici" BackHref="/welcome" />
 
-        <!-- Login Card -->
-        <div class="card animate-scale-in shadow-xl border-0">
-            <div class="card-body p-8">
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="alert alert-danger mb-6 animate-fade-in">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span>@errorMessage</span>
-                    </div>
-                }
-
-                <form @onsubmit="HandleLogin" class="space-y-6">
-                    <!-- Email Field -->
-                    <div class="form-group">
-                        <label class="form-label" for="email">Email Address</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
-                                </svg>
-                            </div>
-                            <input 
-                                type="email" 
-                                id="email"
-                                class="form-control pl-10" 
-                                @bind="email" 
-                                required 
-                                placeholder="Enter your email"
-                                autocomplete="email" />
-                        </div>
-                    </div>
-
-                    <!-- Password Field -->
-                    <div class="form-group">
-                        <label class="form-label" for="password">Password</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                </svg>
-                            </div>
-                            <input 
-                                type="password" 
-                                id="password"
-                                class="form-control pl-10" 
-                                @bind="password" 
-                                required 
-                                placeholder="Enter your password"
-                                autocomplete="current-password" />
-                        </div>
-                    </div>
-
-                    <!-- Remember Me & Forgot Password -->
-                    <div class="flex items-center justify-between">
-                        <div class="form-check">
-                            <input 
-                                type="checkbox" 
-                                id="remember"
-                                class="form-check-input" 
-                                @bind="rememberMe" />
-                            <label class="form-check-label" for="remember">
-                                Remember me for 30 days
-                            </label>
-                        </div>
-                        <a href="/forgot-password" class="text-sm text-stadium-green-600 hover:text-stadium-green-700 font-medium">
-                            Forgot password?
-                        </a>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button 
-                        type="submit" 
-                        class="btn btn-primary w-full btn-lg @(isLoading ? "btn-loading" : "")" 
-                        disabled="@isLoading">
-                        @if (isLoading)
-                        {
-                            <span>Signing in...</span>
-                        }
-                        else
-                        {
-                            <span>Sign In to Your Account</span>
-                        }
-                    </button>
-                </form>
-
-                <!-- Divider -->
-                <div class="relative my-8">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-200"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-4 bg-white text-gray-500">Or continue with</span>
-                    </div>
-                </div>
-
-                <!-- Social Login -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <button class="btn btn-outline btn-sm" @onclick='() => HandleSocialLogin("google")'>
-                        <svg class="w-5 h-5" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                        </svg>
-                        <span>Google</span>
-                    </button>
-                    <button class="btn btn-outline btn-sm" @onclick='() => HandleSocialLogin("facebook")'>
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                        </svg>
-                        <span>Facebook</span>
-                    </button>
-                </div>
-
-                <!-- Sign Up Link -->
-                <div class="text-center">
-                    <p class="text-gray-600">
-                        Don't have an account?
-                        <a href="/register" class="text-stadium-green-600 hover:text-stadium-green-700 font-semibold ml-1">
-                            Create one now
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Demo Credentials -->
-        <div class="mt-8 text-center animate-fade-in">
-            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200 max-w-md mx-auto">
-                <div class="flex items-center justify-center mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-premium-gold-400 to-premium-gold-500 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-3">Demo Account</h3>
-                <div class="text-left space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Email:</span>
-                        <span class="text-sm font-mono text-gray-900">demo@stadium.com</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Password:</span>
-                        <span class="text-sm font-mono text-gray-900">Demo123!</span>
-                    </div>
-                </div>
-                <button class="btn btn-secondary btn-sm w-full mt-4" @onclick="FillDemoCredentials">
-                    Use Demo Credentials
-                </button>
-            </div>
-        </div>
+<div class="login-body">
+    <div class="login-hero">
+        <div class="badge">⭐ Sezona</div>
+        <h1 class="display">DOBRO<br /><span class="grad-text">DOŠAO</span></h1>
+        <p>Prijavi se da vidiš svoju sljedeću utakmicu i naručuješ na svoje mjesto.</p>
     </div>
+
+    <EditForm Model="this" OnValidSubmit="HandleLogin" class="login-form">
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="err">@_error</div>
+        }
+
+        <div class="field">
+            <label>Email</label>
+            <input type="email" @bind="_email" @bind:event="oninput" placeholder="ime@email.hr" autocomplete="email" />
+        </div>
+        <div class="field">
+            <label>Lozinka</label>
+            <input type="password" @bind="_password" @bind:event="oninput" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" disabled="@_busy">
+            @if (_busy)
+            {
+                <span class="spinner"></span> <span>Prijavljujem…</span>
+            }
+            else
+            {
+                <span>Prijavi se</span>
+            }
+        </button>
+    </EditForm>
+
+    <p class="alt">Došao si samo na ovu utakmicu? <a @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</a>.</p>
 </div>
 
 @code {
-    private string email = "";
-    private string password = "";
-    private bool rememberMe = false;
-    private string? errorMessage;
-    private bool isLoading;
-    private string? returnUrl;
+    private string _email = "";
+    private string _password = "";
+    private string? _error;
+    private bool _busy;
+    private string? _returnUrl;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        // Parse the return URL first so it is available for any redirect below
-        var uri = new Uri(NavigationManager.Uri);
-        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        returnUrl = query["returnUrl"];
-
-        // If already authenticated, go straight to the requested page
-        if (AuthStateService.IsAuthenticated)
-        {
-            NavigateToReturnUrl();
-        }
-
-        await Task.CompletedTask;
+        var q = System.Web.HttpUtility.ParseQueryString(new Uri(Nav.Uri).Query);
+        _returnUrl = q["returnUrl"];
+        if (AuthState.IsAuthenticated)
+            Nav.NavigateTo(string.IsNullOrEmpty(_returnUrl) ? "/home" : _returnUrl);
     }
 
     private async Task HandleLogin()
     {
-        isLoading = true;
-        errorMessage = null;
-        StateHasChanged();
+        if (_busy) return;
+        _busy = true;
+        _error = null;
 
         try
         {
-            var loginDto = new LoginDto 
-            { 
-                Email = email, 
-                Password = password,
-                RememberMe = rememberMe
-            };
-            
-            var result = await ApiService.LoginAsync(loginDto);
-            
+            var result = await Api.LoginAsync(new LoginDto { Email = _email, Password = _password });
             if (result?.Token != null && result.User != null)
             {
-                await AuthStateService.LoginAsync(result.Token, result.User);
-                await ApiService.LogUserActionAsync("CustomerLogin", "Authentication", $"Customer user {email} logged in successfully");
-                NavigateToReturnUrl();
+                await AuthState.LoginAsync(result.Token, result.User);
+                Nav.NavigateTo(string.IsNullOrEmpty(_returnUrl) ? "/home" : _returnUrl, forceLoad: false);
             }
             else
             {
-                errorMessage = "Invalid email or password. Please try again.";
-                await ApiService.LogUserActionAsync("CustomerLoginFailed", "Authentication", $"Failed login attempt for {email}");
+                _error = "Neispravan email ili lozinka.";
             }
         }
         catch (HttpRequestException)
         {
-            errorMessage = "Unable to connect to the server. Please check your connection and try again.";
+            _error = "Nije moguće spojiti se na poslužitelj.";
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            errorMessage = "An unexpected error occurred. Please try again later.";
-            await ApiService.LogUserActionAsync("CustomerLoginError", "Authentication", $"Login error for {email}: {ex.Message}");
-            Console.WriteLine($"Login error: {ex.Message}");
+            _error = "Došlo je do pogreške. Pokušaj ponovno.";
         }
         finally
         {
-            isLoading = false;
-            StateHasChanged();
+            _busy = false;
         }
-    }
-
-    private void HandleSocialLogin(string provider)
-    {
-        // Placeholder for social login functionality
-        errorMessage = $"{provider} login is not yet implemented. Please use email/password login.";
-    }
-
-    private void FillDemoCredentials()
-    {
-        email = "demo@stadium.com";
-        password = "Demo123!";
-        StateHasChanged();
-    }
-
-    private void NavigateToReturnUrl()
-    {
-        NavigationManager.NavigateTo(ResolveReturnUrl());
-    }
-
-    // Returns the post-login destination, preserving the originally requested page.
-    // Absolute URLs are only honored when same-origin (prevents open-redirect); anything
-    // else (or a loop back to /login or /register) falls back to home.
-    private string ResolveReturnUrl()
-    {
-        if (string.IsNullOrEmpty(returnUrl))
-            return "/";
-
-        string decoded;
-        try
-        {
-            decoded = Uri.UnescapeDataString(returnUrl);
-        }
-        catch
-        {
-            return "/";
-        }
-
-        if (Uri.TryCreate(decoded, UriKind.Absolute, out var absolute))
-        {
-            var sameOrigin = Uri.Compare(absolute, new Uri(NavigationManager.BaseUri),
-                UriComponents.SchemeAndServer, UriFormat.Unescaped, StringComparison.OrdinalIgnoreCase) == 0;
-
-            if (!sameOrigin)
-                return "/";
-
-            decoded = absolute.PathAndQuery; // keep only the local path (e.g. /orders)
-        }
-
-        if (decoded.StartsWith("/login", StringComparison.OrdinalIgnoreCase) ||
-            decoded.StartsWith("/register", StringComparison.OrdinalIgnoreCase))
-            return "/";
-
-        return decoded;
     }
 }

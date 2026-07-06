@@ -1,0 +1,44 @@
+@using StadiumDrinkOrdering.Shared.Models
+@* Live order status as a vertical timeline. Steps map 1:1 to OrderStatus (Pending..Delivered). *@
+
+<div class="timeline">
+    @foreach (var step in _steps)
+    {
+        <div class="step @StepState(step.Value)">
+            <div class="rail"></div>
+            <div class="node">@NodeGlyph(step.Value)</div>
+            <div class="stx">
+                <div class="t">@step.Label</div>
+                @if (!string.IsNullOrEmpty(step.Sub))
+                {
+                    <div class="s">@step.Sub</div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public OrderStatus Status { get; set; }
+    [Parameter] public string? SeatText { get; set; }
+
+    private int Current => (int)Status;
+
+    private record Step(int Value, string Label, string? Sub);
+
+    private List<Step> _steps => new()
+    {
+        new(1, "Narudžba zaprimljena", null),
+        new(2, "Prihvaćeno", null),
+        new(3, "U pripremi", null),
+        new(4, "Spremno", null),
+        new(5, "Dostava u tijeku", null),
+        new(6, string.IsNullOrEmpty(SeatText) ? "Dostavljeno na tvoje mjesto" : $"Dostavljeno · {SeatText}", "Uživaj u utakmici ⚽"),
+    };
+
+    private string StepState(int value) =>
+        Current > value ? "done" : (Current == value ? "current" : "pending");
+
+    private string NodeGlyph(int value) =>
+        Current > value ? "✓" : (Current == value ? "•" : "");
+}

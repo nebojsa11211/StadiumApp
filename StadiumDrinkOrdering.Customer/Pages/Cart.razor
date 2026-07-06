@@ -1,0 +1,171 @@
+@page "/cart"
+@layout MobileShell
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.DTOs
+@inject OrderSessionState State
+@inject IApiService Api
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>Košarica — HALFTIME</PageTitle>
+
+<ScreenHeader Title="Tvoja košarica" Subtitle="@SubtitleText" BackHref="/order" />
+
+<div class="body">
+    @if (State.Count == 0)
+    {
+        <div class="empty">
+            <div class="e-emoji">🛒</div>
+            <p>Košarica je prazna.</p>
+            <button class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
+        </div>
+    }
+    else
+    {
+        <div class="deliver-banner">
+            <span class="ic">📍</span>
+            <div>
+                <div class="t">Dostava na tvoje mjesto</div>
+                <div class="s tnum">@State.SeatText</div>
+            </div>
+        </div>
+
+        <div class="pad">
+            <div class="items">
+                @foreach (var item in State.Items)
+                {
+                    <div class="cart-item">
+                        <div class="th">🥤</div>
+                        <div class="ci">
+                            <div class="n">@item.DrinkName</div>
+                            <div class="p tnum">€@item.UnitPrice.ToString("F2") / kom</div>
+                        </div>
+                        <div class="mini-step">
+                            <button @onclick="() => Change(item.DrinkId, item.Quantity - 1)" aria-label="Manje">−</button>
+                            <span class="q tnum">@item.Quantity</span>
+                            <button @onclick="() => Change(item.DrinkId, item.Quantity + 1)" aria-label="Više">+</button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="label" style="margin:22px 0 12px">Plaćanje</div>
+            <div class="pay-opt @(_pay == "wallet" ? "sel" : "")" @onclick="@(() => _pay = "wallet")">
+                <div class="pic">👛</div>
+                <div class="pb">
+                    <div class="t">HALFTIME novčanik</div>
+                    <div class="s tnum">@WalletText</div>
+                </div>
+                <div class="radio"></div>
+            </div>
+            <div class="pay-opt @(_pay == "card" ? "sel" : "")" @onclick="@(() => _pay = "card")">
+                <div class="pic">💳</div>
+                <div class="pb">
+                    <div class="t">Kartica</div>
+                    <div class="s">Visa · Mastercard</div>
+                </div>
+                <div class="radio"></div>
+            </div>
+
+            <div class="summary">
+                <div class="sr"><span>Međuzbroj</span><b class="tnum">€@State.Subtotal.ToString("F2")</b></div>
+                <div class="sr"><span>Naknada za uslugu</span><b class="tnum">€@ServiceFee.ToString("F2")</b></div>
+                <div class="sr total"><span>Ukupno</span><b class="tnum">€@Total.ToString("F2")</b></div>
+            </div>
+
+            @if (State.HasSession && !State.CanOrderDrinks)
+            {
+                <div class="err">Naručivanje je zatvoreno jer utakmica trenutno ne traje.</div>
+            }
+            @if (!string.IsNullOrEmpty(_error))
+            {
+                <div class="err">@_error</div>
+            }
+        </div>
+    }
+</div>
+
+@if (State.Count > 0)
+{
+    <div class="checkout-foot">
+        <button class="btn btn-primary" @onclick="PlaceOrder" disabled="@(_placing || !State.CanOrderDrinks)">
+            @if (_placing)
+            {
+                <span class="spinner"></span> <span>Šaljem…</span>
+            }
+            else if (!State.CanOrderDrinks)
+            {
+                <span>Naručivanje nije dostupno</span>
+            }
+            else
+            {
+                <span>Naruči · €@Total.ToString("F2")</span>
+            }
+        </button>
+    </div>
+}
+
+@code {
+    private const decimal ServiceFee = 0.50m;
+    private string _pay = "wallet";
+    private bool _placing;
+    private string? _error;
+    private WalletSummaryDto? _wallet;
+
+    private decimal Total => State.Subtotal + (State.Count > 0 ? ServiceFee : 0m);
+    private string SubtitleText => State.Count > 0 ? $"{State.Count} {(State.Count == 1 ? "stavka" : "stavke")}" : "Prazno";
+    private string WalletText => _wallet != null ? $"Stanje €{_wallet.Balance:F2}" : "Novčanik";
+
+    protected override void OnInitialized() => State.OnChange += StateChanged;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        if (!State.HasSession)
+        {
+            var token = await JS.InvokeAsync<string?>("sessionStorage.getItem", "htSessionToken");
+            if (!string.IsNullOrEmpty(token))
+                await State.InitFromTokenAsync(token);
+        }
+
+        // Wallet balance is best-effort; failure just falls back to a generic label.
+        _wallet = await Api.GetWalletSummaryAsync();
+        StateHasChanged();
+    }
+
+    private void Change(int drinkId, int qty) => State.SetQty(drinkId, qty);
+
+    private async Task PlaceOrder()
+    {
+        if (_placing) return;
+        if (!State.CanOrderDrinks)
+        {
+            _error = "Naručivanje je zatvoreno jer utakmica trenutno ne traje.";
+            return;
+        }
+        _placing = true;
+        _error = null;
+
+        // NOTE: payment selection is presentational for walk-up (no wallet); the order is created
+        // unpaid and paid at the bar / on delivery. Wallet/card wiring is a P4 follow-up.
+        // The ticket session is intentionally kept so the fan can track and order again.
+        var result = await State.CheckoutAsync();
+
+        if (result is { Success: true })
+        {
+            Nav.NavigateTo($"/track/{result.OrderId}");
+        }
+        else
+        {
+            _error = result?.Error ?? "Narudžbu nije bilo moguće poslati. Pokušaj ponovno.";
+            _placing = false;
+        }
+    }
+
+    private void StateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => State.OnChange -= StateChanged;
+}

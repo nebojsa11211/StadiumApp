@@ -1,0 +1,57 @@
+/* ---- empty state ---- */
+.co-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:64px 24px 0}
+.co-emoji{font-size:52px}
+.co-empty h2{font-size:20px;font-weight:900}
+.co-empty p{color:var(--muted);font-size:14px;max-width:26ch}
+.co-empty .btn{width:auto;padding-left:28px;padding-right:28px;margin-top:6px}
+
+/* ---- body ---- */
+.co-body{flex:1;overflow-y:auto;padding:16px 20px 110px;display:flex;flex-direction:column;gap:20px}
+
+/* ---- order summary ---- */
+.co-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;display:flex;flex-direction:column;gap:14px}
+.co-card-head{display:flex;flex-direction:column;gap:4px}
+.co-event{font-size:16px;font-weight:900;letter-spacing:-.01em}
+.co-seats{display:flex;flex-direction:column;gap:8px}
+.co-seat{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px}
+.co-seat-l{display:flex;flex-direction:column;gap:2px;min-width:0}
+.co-seat-code{font-size:14px;font-weight:800}
+.co-seat-sec{font-size:12px;font-weight:600;color:var(--muted)}
+.co-seat-price{font-size:14px;font-weight:900;flex:none}
+
+.co-lines{display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--line);padding-top:14px}
+.co-line{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--muted)}
+.co-line span:last-child{color:var(--ink)}
+.co-line-total{font-size:17px;font-weight:900;color:var(--ink);border-top:1px solid var(--line);padding-top:12px;margin-top:2px}
+.co-line-total span{color:var(--ink) !important}
+
+/* ---- form sections ---- */
+.co-section{display:flex;flex-direction:column;gap:12px}
+.co-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.co-section-head .btn{flex:none}
+.co-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.co-err{color:var(--blaze);font-size:12px;font-weight:700}
+
+/* ---- terms ---- */
+.co-terms{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
+.co-terms input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--magenta)}
+.co-terms a{color:var(--live);font-weight:800}
+
+/* ---- sticky pay bar ---- */
+.co-paybar{
+    position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+    width:100%;max-width:var(--app-max);z-index:25;
+    padding:14px 20px calc(18px + var(--safe-bottom));
+    background:linear-gradient(transparent,var(--ground) 30%);
+}
+
+/* ---- processing overlay ---- */
+.co-overlay{position:fixed;inset:0;z-index:60;background:rgba(3,4,7,.8);backdrop-filter:blur(3px);
+    display:grid;place-items:center;padding:24px}
+.co-overlay-box{background:var(--surface-2);border:1px solid var(--line-2);border-radius:var(--r-lg);
+    padding:32px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;
+    max-width:var(--app-max);width:100%}
+.co-overlay-box h3{font-size:18px;font-weight:900}
+.co-overlay-box p{font-size:13px;color:var(--muted)}
+.co-big-spin{width:34px;height:34px;border-width:3px;margin-bottom:4px}

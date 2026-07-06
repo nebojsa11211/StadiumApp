@@ -1,0 +1,7 @@
+.splash{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;min-height:100dvh;
+}
+.wordmark{display:inline-flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.03em;font-size:28px;font-style:italic}
+.wordmark .dot{width:13px;height:13px;border-radius:3px;background:var(--brand);box-shadow:0 0 18px rgba(255,45,120,.7);transform:skewX(-8deg)}
+.wordmark b{background:var(--brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+.splash .spinner{width:26px;height:26px;border-width:3px}

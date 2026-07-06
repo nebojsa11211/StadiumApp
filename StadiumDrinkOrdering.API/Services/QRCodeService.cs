@@ -10,6 +10,15 @@ namespace StadiumDrinkOrdering.API.Services;
 public interface IQRCodeService
 {
     Task<string> GenerateQRCodeAsync(Ticket ticket);
+
+    /// <summary>
+    /// Builds the QR-code image for a ticket as a data-URI PNG WITHOUT persisting the image
+    /// (the <c>Ticket.QRCode</c> column is too small to hold a base64 image). Ensures the ticket
+    /// has a validation token (saving only the short token if it was missing), encodes the same
+    /// deep link as <see cref="GenerateQRCodeAsync"/>, and returns the image for display.
+    /// </summary>
+    Task<string> GetQrImageDataUriAsync(Ticket ticket);
+
     Task<byte[]> GenerateQRCodeImageAsync(string qrData);
     Task<bool> ValidateQRCodeAsync(string qrToken);
     Task<Ticket?> GetTicketByQRTokenAsync(string qrToken);
@@ -19,10 +28,12 @@ public interface IQRCodeService
 public class QRCodeService : IQRCodeService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IConfiguration _configuration;
 
-    public QRCodeService(ApplicationDbContext context)
+    public QRCodeService(ApplicationDbContext context, IConfiguration configuration)
     {
         _context = context;
+        _configuration = configuration;
     }
 
     public async Task<string> GenerateQRCodeAsync(Ticket ticket)
@@ -33,21 +44,13 @@ public class QRCodeService : IQRCodeService
             ticket.QRCodeToken = Guid.NewGuid().ToString();
         }
 
-        // Create QR data payload
-        var qrData = new
-        {
-            TicketId = ticket.Id,
-            Token = ticket.QRCodeToken,
-            EventId = ticket.EventId,
-            SeatId = ticket.SeatId,
-            Timestamp = DateTime.UtcNow,
-            ValidUntil = ticket.Event?.EventDate ?? DateTime.UtcNow.AddDays(1)
-        };
+        // Encode a deep link to the mobile customer app so a phone camera scan opens the ordering
+        // flow directly: {CustomerApp:BaseUrl}/t/{token} -> the resolver validates and forwards to /order.
+        var baseUrl = (_configuration["CustomerApp:BaseUrl"] ?? "https://localhost:7020").TrimEnd('/');
+        var deepLink = $"{baseUrl}/t/{ticket.QRCodeToken}";
 
-        var qrDataJson = System.Text.Json.JsonSerializer.Serialize(qrData);
-        
         // Generate QR code image as base64
-        var qrCodeImage = await GenerateQRCodeImageAsync(qrDataJson);
+        var qrCodeImage = await GenerateQRCodeImageAsync(deepLink);
         var base64String = Convert.ToBase64String(qrCodeImage);
         
         // Store the base64 QR code in the ticket
@@ -56,6 +59,23 @@ public class QRCodeService : IQRCodeService
         await _context.SaveChangesAsync();
         
         return ticket.QRCode;
+    }
+
+    public async Task<string> GetQrImageDataUriAsync(Ticket ticket)
+    {
+        // Ensure a validation token exists (short — fits the column). Ingested tickets already have
+        // one, so this normally saves nothing.
+        if (string.IsNullOrEmpty(ticket.QRCodeToken))
+        {
+            ticket.QRCodeToken = Guid.NewGuid().ToString();
+            await _context.SaveChangesAsync();
+        }
+
+        var baseUrl = (_configuration["CustomerApp:BaseUrl"] ?? "https://localhost:7020").TrimEnd('/');
+        var deepLink = $"{baseUrl}/t/{ticket.QRCodeToken}";
+
+        var qrCodeImage = await GenerateQRCodeImageAsync(deepLink);
+        return $"data:image/png;base64,{Convert.ToBase64String(qrCodeImage)}";
     }
 
     public async Task<byte[]> GenerateQRCodeImageAsync(string qrData)

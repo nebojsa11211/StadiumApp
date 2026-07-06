@@ -45,6 +45,34 @@ public class SimulatorApiClient
                $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/tickets", Json)
            ?? new List<ExternalTicketRefDto>();
 
+    /// <summary>
+    /// Full per-seat map of a sector for an event: every real seat position with its actual
+    /// occupancy (free / single-match sold / season pass). Null if the event or sector is unknown.
+    /// </summary>
+    public async Task<SectorSeatMapDto?> GetSectorSeatsAsync(string externalEventId, string sectorCode)
+    {
+        var path = $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}"
+                   + $"/sectors/{Uri.EscapeDataString(sectorCode)}/seats";
+        var resp = await _http.GetAsync(path);
+        return resp.IsSuccessStatusCode
+            ? await resp.Content.ReadFromJsonAsync<SectorSeatMapDto>(Json)
+            : null;
+    }
+
+    /// <summary>
+    /// The ticket occupying a specific seat, including its generated QR code. Null when the seat
+    /// has no active ticket (free) or the event/sector is unknown.
+    /// </summary>
+    public async Task<SeatTicketDto?> GetSeatTicketAsync(string externalEventId, string sectorCode, int row, int seat)
+    {
+        var path = $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}"
+                   + $"/sectors/{Uri.EscapeDataString(sectorCode)}/seats/{row}/{seat}/ticket";
+        var resp = await _http.GetAsync(path);
+        return resp.IsSuccessStatusCode
+            ? await resp.Content.ReadFromJsonAsync<SeatTicketDto>(Json)
+            : null;
+    }
+
     public async Task<EventSalesSnapshotDto?> GetSnapshotAsync(string externalEventId)
     {
         var resp = await _http.GetAsync($"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/snapshot");

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
+using StadiumDrinkOrdering.Shared.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace StadiumDrinkOrdering.API.Controllers;
@@ -124,7 +125,9 @@ public class TicketAuthController : ControllerBase
                     CreatedAt = session.CreatedAt,
                     ExpiresAt = session.ExpiresAt,
                     LastAccessedAt = session.LastAccessedAt,
-                    IsActive = session.IsActive
+                    IsActive = session.IsActive,
+                    CanOrderDrinks = (session.Event ?? session.Ticket?.Event) is { } evt
+                        && EventLifecycle.CanOrderDrinks(evt.Status)
                 }
             });
         }

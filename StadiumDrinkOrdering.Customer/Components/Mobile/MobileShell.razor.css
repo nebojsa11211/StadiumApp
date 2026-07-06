@@ -1,0 +1,31 @@
+.app-backdrop{
+    min-height:100dvh;
+    display:flex;
+    justify-content:center;
+    background:
+        radial-gradient(120% 80% at 20% -10%,rgba(255,31,107,.14),transparent 60%),
+        radial-gradient(120% 80% at 90% 0%,rgba(255,77,46,.12),transparent 55%),
+        radial-gradient(100% 60% at 50% 120%,rgba(0,226,138,.06),transparent 60%),
+        var(--ground);
+}
+
+.app-frame{
+    position:relative;
+    width:100%;
+    max-width:var(--app-max);
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    background:var(--ground);
+    padding-top:var(--safe-top);
+    padding-bottom:var(--safe-bottom);
+}
+
+/* subtle edge on desktop so the phone-width column reads as a device */
+@media (min-width:520px){
+    .app-frame{
+        border-left:1px solid var(--line);
+        border-right:1px solid var(--line);
+        box-shadow:var(--shadow);
+    }
+}

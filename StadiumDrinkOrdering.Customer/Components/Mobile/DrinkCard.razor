@@ -1,0 +1,35 @@
+@using StadiumDrinkOrdering.Shared.DTOs
+@* Grid tile for a single drink. Whole card opens the detail sheet; the + does a one-tap add. *@
+
+<div class="drink @(Qty > 0 ? "has" : "") @(Available ? "" : "soldout")" @onclick="OnOpen">
+    @if (Qty > 0)
+    {
+        <span class="qty-badge tnum">@Qty</span>
+    }
+    <div class="thumb @DrinkVisuals.Thumb(Drink.Category)">@DrinkVisuals.Emoji(Drink.Category)</div>
+    <div class="dn">@Drink.Name</div>
+    @if (!string.IsNullOrWhiteSpace(Drink.Description))
+    {
+        <div class="dm">@Drink.Description</div>
+    }
+    <div class="drow">
+        <span class="price tnum">€@Drink.Price.ToString("F2")</span>
+        @if (Available)
+        {
+            <button class="add" @onclick="OnAdd" @onclick:stopPropagation="true" aria-label="Dodaj @Drink.Name">+</button>
+        }
+        else
+        {
+            <span class="soldout-badge">Rasprodano</span>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public DrinkDto Drink { get; set; } = default!;
+    [Parameter] public int Qty { get; set; }
+    [Parameter] public EventCallback OnAdd { get; set; }
+    [Parameter] public EventCallback OnOpen { get; set; }
+
+    private bool Available => Drink.IsAvailable && Drink.StockQuantity > 0;
+}

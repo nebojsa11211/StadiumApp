@@ -56,6 +56,10 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 // Add custom services
 builder.Services.AddScoped<ICartService, CartService>();
 
+// Unified drink-ordering session state (mobile rebuild). Scoped => lives for the Blazor
+// circuit, so the active session survives navigation across /order → /cart → /track.
+builder.Services.AddScoped<OrderSessionState>();
+
 // ✅ Add standardized shared authentication services with refresh token support
 builder.Services.AddScoped<CustomerAuthStateService>();
 builder.Services.AddScoped<ICustomerAuthStateService>(provider => provider.GetRequiredService<CustomerAuthStateService>());

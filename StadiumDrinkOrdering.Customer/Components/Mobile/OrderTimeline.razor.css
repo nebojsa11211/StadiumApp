@@ -1,0 +1,22 @@
+.timeline{display:flex;flex-direction:column;padding:14px 4px}
+
+.step{display:flex;gap:16px;position:relative;padding-bottom:22px}
+.step:last-child{padding-bottom:0}
+
+.step .rail{position:absolute;left:13px;top:26px;bottom:0;width:2px;background:var(--line-2)}
+.step.done .rail{background:var(--live)}
+.step:last-child .rail{display:none}
+
+.step .node{
+    width:28px;height:28px;border-radius:50%;border:2px solid var(--line-2);background:var(--ground);
+    display:grid;place-items:center;flex:none;z-index:1;font-size:13px;color:var(--muted-2);
+}
+.step.done .node{background:var(--live);border-color:var(--live);color:#04150E;font-weight:900}
+.step.current .node{
+    border-color:var(--live);color:var(--live);
+    box-shadow:0 0 0 0 rgba(0,226,138,.5);animation:pulse 1.8s infinite;
+}
+
+.step .stx .t{font-size:14px;font-weight:800}
+.step.pending .stx .t{color:var(--muted-2)}
+.step .stx .s{font-size:12px;color:var(--muted);margin-top:2px}

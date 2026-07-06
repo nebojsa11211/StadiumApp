@@ -1,0 +1,13 @@
+.login-body{flex:1;display:flex;flex-direction:column;padding:8px 24px 32px;gap:26px}
+
+.login-hero{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+.login-hero .badge{align-self:flex-start;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);background:rgba(255,176,32,.12);padding:6px 11px;border-radius:8px}
+.login-hero h1{font-size:clamp(40px,13vw,52px)}
+.login-hero p{color:var(--muted);font-size:14px;line-height:1.5;max-width:32ch}
+
+.login-form{display:flex;flex-direction:column;gap:16px}
+.err{background:color-mix(in srgb,var(--blaze) 12%,transparent);border:1px solid color-mix(in srgb,var(--blaze) 40%,transparent);color:#FFC9BC;border-radius:12px;padding:12px 14px;font-size:13px;font-weight:600}
+.login-form .btn{margin-top:6px}
+
+.alt{text-align:center;font-size:13px;color:var(--muted)}
+.alt a{color:var(--live);font-weight:800;cursor:pointer}

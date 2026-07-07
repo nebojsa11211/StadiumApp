@@ -2,20 +2,20 @@
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
-<div class="connection-status @(_connectionStatus.ToLower())" title="Connection: @_connectionStatus">
+<div class="connection-status @(_connectionStatus.ToLower())" id="staff-signalr-connection-status" title="Connection: @_connectionStatus">
     @if (_connectionStatus == "Connected")
     {
-        <span class="connection-indicator connected"></span>
+        <span class="connection-indicator connected" id="staff-signalr-connection-indicator-connected"></span>
     }
     else if (_connectionStatus == "Connecting" || _connectionStatus == "Reconnecting")
     {
-        <span class="connection-indicator connecting"></span>
+        <span class="connection-indicator connecting" id="staff-signalr-connection-indicator-connecting"></span>
     }
     else
     {
-        <span class="connection-indicator disconnected"></span>
+        <span class="connection-indicator disconnected" id="staff-signalr-connection-indicator-disconnected"></span>
     }
-    <span class="connection-text d-none d-sm-inline">@_connectionStatus</span>
+    <span class="connection-text d-none d-sm-inline" id="staff-signalr-connection-text">@_connectionStatus</span>
 </div>
 
 @code {

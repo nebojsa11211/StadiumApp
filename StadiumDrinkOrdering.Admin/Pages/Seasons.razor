@@ -63,13 +63,13 @@
             </div>
             <div class="panel__body">
                 <table class="table align-middle" id="admin-seasons-table">
-                    <thead>
-                        <tr>
-                            <th>@L["Seasons_ColSeason"]</th><th>@L["Seasons_ColWindow"]</th><th class="text-center">@L["Seasons_ColCurrent"]</th>
-                            <th class="text-end">@L["Seasons_ColEvents"]</th><th class="text-end">@L["Seasons_ColPasses"]</th><th class="text-end">@L["Seasons_ColActions"]</th>
+                    <thead id="admin-seasons-thead">
+                        <tr id="admin-seasons-header-row">
+                            <th id="admin-seasons-header-season">@L["Seasons_ColSeason"]</th><th id="admin-seasons-header-window">@L["Seasons_ColWindow"]</th><th class="text-center" id="admin-seasons-header-current">@L["Seasons_ColCurrent"]</th>
+                            <th class="text-end" id="admin-seasons-header-events">@L["Seasons_ColEvents"]</th><th class="text-end" id="admin-seasons-header-passes">@L["Seasons_ColPasses"]</th><th class="text-end" id="admin-seasons-header-actions">@L["Seasons_ColActions"]</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="admin-seasons-tbody">
                         @foreach (var s in seasons.OrderByDescending(x => x.StartDate))
                         {
                             <tr id="admin-season-row-@s.Id">
@@ -138,14 +138,14 @@
                             @L["Seasons_PassesSummary", passes.Count, passes.Select(p => p.SectionCode).Distinct().Count()]
                         </p>
                         <table class="table table-sm align-middle" id="admin-season-passes-table">
-                            <thead>
-                                <tr><th>@L["Seasons_ColSector"]</th><th>@L["Seasons_ColSeat"]</th><th>@L["Seasons_ColHolder"]</th><th>@L["Seasons_ColPurchased"]</th><th>@L["Seasons_ColSource"]</th><th class="text-end">QR</th></tr>
+                            <thead id="admin-season-passes-thead">
+                                <tr id="admin-season-passes-header-row"><th id="admin-season-passes-header-sector">@L["Seasons_ColSector"]</th><th id="admin-season-passes-header-seat">@L["Seasons_ColSeat"]</th><th id="admin-season-passes-header-holder">@L["Seasons_ColHolder"]</th><th id="admin-season-passes-header-purchased">@L["Seasons_ColPurchased"]</th><th id="admin-season-passes-header-source">@L["Seasons_ColSource"]</th><th class="text-end" id="admin-season-passes-header-qr">QR</th></tr>
                             </thead>
-                            <tbody>
+                            <tbody id="admin-season-passes-tbody">
                                 @foreach (var grp in passes.GroupBy(p => p.SectionCode).OrderBy(g => g.Key))
                                 {
-                                    <tr class="table-light">
-                                        <td colspan="6"><strong>@grp.Key</strong> <span class="text-muted small">· @L["Seasons_SeatsCount", grp.Count()]</span></td>
+                                    <tr class="table-light" id="@($"admin-season-pass-group-{grp.Key}")">
+                                        <td colspan="6" id="@($"admin-season-pass-group-label-{grp.Key}")"><strong>@grp.Key</strong> <span class="text-muted small">· @L["Seasons_SeatsCount", grp.Count()]</span></td>
                                     </tr>
                                     @foreach (var p in grp)
                                     {

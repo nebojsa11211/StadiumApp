@@ -9,8 +9,8 @@
 <div id="bar-signalr-status"
      class="connection-status @(SignalRService.IsConnected ? "connected" : "disconnected")"
      title="@(SignalRService.IsConnected ? Localizer["ConnectionStatus_LiveOrderUpdates"] : Localizer["ConnectionStatus_NoConnection"])">
-    <span class="connection-indicator @(SignalRService.IsConnected ? "connected" : "disconnected")"></span>
-    <span class="connection-text d-none d-sm-inline">@(SignalRService.IsConnected ? Localizer["OrderQueue_Live"] : Localizer["OrderQueue_Offline"])</span>
+    <span id="bar-signalr-indicator" class="connection-indicator @(SignalRService.IsConnected ? "connected" : "disconnected")"></span>
+    <span id="bar-signalr-text" class="connection-text d-none d-sm-inline">@(SignalRService.IsConnected ? Localizer["OrderQueue_Live"] : Localizer["OrderQueue_Offline"])</span>
 </div>
 
 @code {

@@ -2,18 +2,21 @@
 @inject IStringLocalizer<SharedResources> L
 
 <div class="sector-modal-overlay"
+     id="sector-detail-modal-overlay"
      @onclick="HandleOverlayClick"
      @onkeydown="HandleModalKeyDown"
      tabindex="-1">
     <div class="sector-modal"
+         id="sector-detail-modal"
          @onclick:stopPropagation
          @ref="modalElement"
          role="dialog"
          aria-modal="true"
          aria-labelledby="sector-modal-title">
-        <div class="sector-modal-header">
+        <div class="sector-modal-header" id="sector-detail-modal-header">
             <h3 id="sector-modal-title" class="sector-modal-title">@SectorName</h3>
             <button class="sector-modal-close"
+                    id="sector-detail-modal-close-btn"
                     @onclick="OnClose"
                     @ref="closeButtonElement"
                     aria-label="Close modal">
@@ -21,26 +24,27 @@
             </button>
         </div>
 
-        <div class="sector-modal-body">
+        <div class="sector-modal-body" id="sector-detail-modal-body">
             @if (isLoading)
             {
-                <div class="stadium-loading">
-                    <div class="loading-spinner"></div>
+                <div class="stadium-loading" id="sector-detail-modal-loading">
+                    <div class="loading-spinner" id="sector-detail-modal-spinner"></div>
                     <p>@L["SectorDetail_Loading"]</p>
                 </div>
             }
             else if (Seats != null && Seats.Any())
             {
-                <div class="sector-info">
+                <div class="sector-info" id="sector-detail-modal-info">
                     <p><strong>@L["SectorDetail_TotalSeatsLabel"]:</strong> @Seats.Count()</p>
                     <p><strong>@L["SectorDetail_ActiveLabel"]:</strong> <span style="color: #22c55e;">@Seats.Count(s => s.IsActive)</span></p>
                     <p><strong>@L["SectorDetail_InactiveLabel"]:</strong> <span style="color: #ef4444;">@Seats.Count(s => !s.IsActive)</span></p>
                 </div>
 
-                <div class="seat-grid">
+                <div class="seat-grid" id="sector-detail-modal-grid">
                     @foreach (var seat in Seats.OrderBy(s => s.RowNumber).ThenBy(s => s.SeatNumber))
                     {
                         <div class="seat @GetSeatClass(seat)"
+                             id="@($"sector-detail-modal-seat-{seat.Id}")"
                              title="@L["SectorDetail_SeatTooltip", seat.RowNumber, seat.SeatNumber]"
                              @onclick="() => HandleSeatClick(seat)">
                             @seat.SeatNumber

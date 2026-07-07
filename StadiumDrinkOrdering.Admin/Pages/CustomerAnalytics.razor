@@ -31,7 +31,7 @@
     }
     else if (errorMessage != null)
     {
-        <div class="console-alert console-alert--danger" role="alert">
+        <div class="console-alert console-alert--danger" role="alert" id="admin-customer-analytics-error-alert">
             <i class="fas fa-exclamation-triangle"></i>
             <span>@errorMessage</span>
             <button type="button" class="pill-btn pill-btn--danger" @onclick="LoadCustomerAnalytics" id="admin-customer-analytics-retry-btn">
@@ -44,7 +44,7 @@
         <!-- Summary Cards -->
         @if (summary != null)
         {
-            <section class="metrics">
+            <section class="metrics" id="admin-customer-analytics-metrics">
                 <article class="metric" id="admin-customer-analytics-metric-total">
                     <div class="metric__head">
                         <span class="metric__label">@L["CustAnalytics_TotalCustomers"]</span>
@@ -92,48 +92,48 @@
         }
 
         <!-- Filters and Search -->
-        <div class="panel filters-panel">
-            <div class="panel__head">
-                <h2 class="panel__title"><i class="fas fa-filter"></i> @L["CustAnalytics_FiltersSearch"]</h2>
+        <div class="panel filters-panel" id="admin-customer-analytics-filters-panel">
+            <div class="panel__head" id="admin-customer-analytics-filters-panel-head">
+                <h2 class="panel__title" id="admin-customer-analytics-filters-title"><i class="fas fa-filter"></i> @L["CustAnalytics_FiltersSearch"]</h2>
                 <button class="icon-btn" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" id="admin-customer-analytics-filters-toggle-btn" title="@L["CustAnalytics_ToggleFilters"]">
                     <i class="fas fa-chevron-down"></i>
                 </button>
             </div>
             <div class="collapse show" id="filtersCollapse">
-                <div class="filters">
-                    <div class="field field--grow">
+                <div class="filters" id="admin-customer-analytics-filters-container">
+                    <div class="field field--grow" id="admin-customer-analytics-filter-search-field">
                         <label class="field__label">@L["CustAnalytics_SearchCustomer"]</label>
-                        <input type="text" class="field__input" placeholder="@L["CustAnalytics_SearchPlaceholder"]"
+                        <input type="text" class="field__input" id="admin-customer-analytics-filter-search-input" placeholder="@L["CustAnalytics_SearchPlaceholder"]"
                                @bind="currentFilter.SearchTerm" @onkeypress="OnSearchKeyPress" />
                     </div>
-                    <div class="field">
+                    <div class="field" id="admin-customer-analytics-filter-min-spent-field">
                         <label class="field__label">@L["CustAnalytics_MinSpent"]</label>
-                        <input type="number" class="field__input" placeholder="0" @bind="currentFilter.MinSpent" />
+                        <input type="number" class="field__input" id="admin-customer-analytics-filter-min-spent-input" placeholder="0" @bind="currentFilter.MinSpent" />
                     </div>
-                    <div class="field">
+                    <div class="field" id="admin-customer-analytics-filter-max-spent-field">
                         <label class="field__label">@L["CustAnalytics_MaxSpent"]</label>
-                        <input type="number" class="field__input" placeholder="10000" @bind="currentFilter.MaxSpent" />
+                        <input type="number" class="field__input" id="admin-customer-analytics-filter-max-spent-input" placeholder="10000" @bind="currentFilter.MaxSpent" />
                     </div>
-                    <div class="field">
+                    <div class="field" id="admin-customer-analytics-filter-sort-by-field">
                         <label class="field__label">@L["CustAnalytics_SortBy"]</label>
-                        <select class="field__input" @bind="currentFilter.SortBy">
+                        <select class="field__input" id="admin-customer-analytics-filter-sort-by-select" @bind="currentFilter.SortBy">
                             <option value="@CustomerSortBy.TotalSpent">@L["CustAnalytics_Sort_TotalSpent"]</option>
                             <option value="@CustomerSortBy.CustomerName">@L["CustAnalytics_Sort_CustomerName"]</option>
                             <option value="@CustomerSortBy.TicketsPurchased">@L["CustAnalytics_Sort_TicketsPurchased"]</option>
                             <option value="@CustomerSortBy.LastPurchaseDate">@L["CustAnalytics_Sort_LastPurchase"]</option>
                         </select>
                     </div>
-                    <div class="field">
+                    <div class="field" id="admin-customer-analytics-filter-order-field">
                         <label class="field__label">@L["CustAnalytics_Order"]</label>
-                        <select class="field__input" @bind="currentFilter.SortDescending">
+                        <select class="field__input" id="admin-customer-analytics-filter-order-select" @bind="currentFilter.SortDescending">
                             <option value="true">@L["CustAnalytics_Descending"]</option>
                             <option value="false">@L["CustAnalytics_Ascending"]</option>
                         </select>
                     </div>
                 </div>
-                <div class="table-foot">
+                <div class="table-foot" id="admin-customer-analytics-filters-footer">
                     <span class="metric__hint">@L["CustAnalytics_RefineList"]</span>
-                    <div class="bulk-actions">
+                    <div class="bulk-actions" id="admin-customer-analytics-filters-actions">
                         <button class="pill-btn pill-btn--primary" @onclick="ApplyFilters" disabled="@isLoading" id="admin-customer-analytics-apply-filters-btn">
                             <i class="fas fa-search"></i><span>@L["CustAnalytics_ApplyFilters"]</span>
                         </button>
@@ -146,18 +146,18 @@
         </div>
 
         <!-- Customer List -->
-        <div class="panel">
-            <div class="panel__head">
-                <h2 class="panel__title">
+        <div class="panel" id="admin-customer-analytics-list-panel">
+            <div class="panel__head" id="admin-customer-analytics-list-panel-head">
+                <h2 class="panel__title" id="admin-customer-analytics-list-title">
                     @L["CustAnalytics_CustomerList"]
                     @if (pagedResult != null)
                     {
                         <span class="panel__count mono">@pagedResult.TotalCount @L["CustAnalytics_Total"]</span>
                     }
                 </h2>
-                <div class="field" style="flex-direction: row; align-items: center; gap: 0.5rem; min-width: auto;">
+                <div class="field" id="admin-customer-analytics-pagesize-selector" style="flex-direction: row; align-items: center; gap: 0.5rem; min-width: auto;">
                     <label class="field__label" style="margin: 0;">@L["CustAnalytics_Show"]</label>
-                    <select class="field__input" style="width: auto; height: 32px;" @onchange="OnPageSizeChanged">
+                    <select class="field__input" id="admin-customer-analytics-pagesize-select" style="width: auto; height: 32px;" @onchange="OnPageSizeChanged">
                         <option value="10">10</option>
                         <option value="20">20</option>
                         <option value="50">50</option>
@@ -168,22 +168,22 @@
 
             @if (customers?.Any() == true)
             {
-                <table class="console-table">
-                    <thead>
-                        <tr>
-                            <th>@L["CustAnalytics_HeaderCustomer"]</th>
-                            <th class="num">@L["CustAnalytics_HeaderTotalSpent"]</th>
-                            <th class="num">@L["CustAnalytics_HeaderTickets"]</th>
-                            <th class="num">@L["CustAnalytics_HeaderEvents"]</th>
-                            <th class="num">@L["CustAnalytics_HeaderAvgTransaction"]</th>
-                            <th>@L["CustAnalytics_HeaderLastPurchase"]</th>
-                            <th class="actions-col">@L["CustAnalytics_HeaderActions"]</th>
+                <table class="console-table" id="admin-customer-analytics-table">
+                    <thead id="admin-customer-analytics-table-head">
+                        <tr id="admin-customer-analytics-table-header-row">
+                            <th id="admin-customer-analytics-table-header-customer">@L["CustAnalytics_HeaderCustomer"]</th>
+                            <th class="num" id="admin-customer-analytics-table-header-spent">@L["CustAnalytics_HeaderTotalSpent"]</th>
+                            <th class="num" id="admin-customer-analytics-table-header-tickets">@L["CustAnalytics_HeaderTickets"]</th>
+                            <th class="num" id="admin-customer-analytics-table-header-events">@L["CustAnalytics_HeaderEvents"]</th>
+                            <th class="num" id="admin-customer-analytics-table-header-avg">@L["CustAnalytics_HeaderAvgTransaction"]</th>
+                            <th id="admin-customer-analytics-table-header-lastpurchase">@L["CustAnalytics_HeaderLastPurchase"]</th>
+                            <th class="actions-col" id="admin-customer-analytics-table-header-actions">@L["CustAnalytics_HeaderActions"]</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="admin-customer-analytics-table-body">
                         @foreach (var customer in customers)
                         {
-                            <tr>
+                            <tr id="@($"admin-customer-analytics-customer-row-{customer.CustomerEmail.Replace("@", "_").Replace(".", "_")}")">
                                 <td>
                                     <div class="console-table__id">@customer.CustomerName</div>
                                     <div class="console-table__muted">@customer.CustomerEmail</div>
@@ -218,11 +218,11 @@
                 <!-- Pagination -->
                 @if (pagedResult != null && pagedResult.TotalPages > 1)
                 {
-                    <div class="table-foot">
-                        <p>
+                    <div class="table-foot" id="admin-customer-analytics-pagination-footer">
+                        <p id="admin-customer-analytics-pagination-info">
                             @L["CustAnalytics_ShowingResults", (pagedResult.Page - 1) * pagedResult.PageSize + 1, Math.Min(pagedResult.Page * pagedResult.PageSize, pagedResult.TotalCount), pagedResult.TotalCount]
                         </p>
-                        <div class="bulk-actions">
+                        <div class="bulk-actions" id="admin-customer-analytics-pagination-buttons">
                             <button class="icon-btn" @onclick="() => GoToPage(pagedResult.Page - 1)" disabled="@(pagedResult.Page == 1 || isLoading)" id="admin-customer-analytics-prev-page-btn" title="@L["CustAnalytics_PreviousPage"]">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
@@ -241,11 +241,11 @@
             }
             else
             {
-                <div class="empty">
+                <div class="empty" id="admin-customer-analytics-empty-state">
                     <i class="fas fa-users"></i>
-                    <p>@L["CustAnalytics_NoCustomersFound"]</p>
-                    <span>@L["CustAnalytics_AdjustFilters"]</span>
-                    <div style="margin-top: 1rem;">
+                    <p id="admin-customer-analytics-empty-title">@L["CustAnalytics_NoCustomersFound"]</p>
+                    <span id="admin-customer-analytics-empty-subtitle">@L["CustAnalytics_AdjustFilters"]</span>
+                    <div style="margin-top: 1rem;" id="admin-customer-analytics-empty-actions">
                         <button class="pill-btn" @onclick="ClearFilters" id="admin-customer-analytics-clear-filters-empty-btn">
                             <i class="fas fa-times"></i><span>@L["CustAnalytics_ClearFilters"]</span>
                         </button>

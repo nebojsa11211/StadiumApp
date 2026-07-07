@@ -15,23 +15,23 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+    <table id="customer-fetchdata-forecasts-table" class="table">
+        <thead id="customer-fetchdata-table-head">
+            <tr id="customer-fetchdata-header-row">
+                <th id="customer-fetchdata-header-date">Date</th>
+                <th id="customer-fetchdata-header-temp-c">Temp. (C)</th>
+                <th id="customer-fetchdata-header-temp-f">Temp. (F)</th>
+                <th id="customer-fetchdata-header-summary">Summary</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="customer-fetchdata-table-body">
             @foreach (var forecast in forecasts)
             {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                <tr id="customer-fetchdata-row-@forecast.Date.Ticks">
+                    <td id="customer-fetchdata-date-@forecast.Date.Ticks">@forecast.Date.ToShortDateString()</td>
+                    <td id="customer-fetchdata-temp-c-@forecast.Date.Ticks">@forecast.TemperatureC</td>
+                    <td id="customer-fetchdata-temp-f-@forecast.Date.Ticks">@forecast.TemperatureF</td>
+                    <td id="customer-fetchdata-summary-@forecast.Date.Ticks">@forecast.Summary</td>
                 </tr>
             }
         </tbody>

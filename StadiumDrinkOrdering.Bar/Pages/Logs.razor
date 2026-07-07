@@ -103,9 +103,9 @@
             @if (logs?.Logs?.Any() == true)
             {
                 <div id="bar-logs-table-wrapper" style="overflow-x:auto;">
-                    <table class="console-table">
-                        <thead>
-                            <tr>
+                    <table id="bar-logs-table" class="console-table">
+                        <thead id="bar-logs-thead">
+                            <tr id="bar-logs-tr-header">
                                 <th>@Localizer["Logs_Timestamp"]</th>
                                 <th>@Localizer["Logs_Level"]</th>
                                 <th>@Localizer["Logs_Action"]</th>
@@ -114,10 +114,10 @@
                                 <th>@Localizer["Logs_Message"]</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="bar-logs-tbody">
                             @foreach (var log in logs.Logs.Take(50))
                             {
-                                <tr class="@GetRowClass(log.Level)">
+                                <tr id="@($"bar-logs-tr-{logs.Logs.IndexOf(log)}")" class="@GetRowClass(log.Level)">
                                     <td class="console-table__time mono">@log.Timestamp.ToLocalTime().ToString("MM-dd HH:mm:ss")</td>
                                     <td>
                                         <span class="badge @GetLevelBadgeClass(log.Level)">@log.Level</span>

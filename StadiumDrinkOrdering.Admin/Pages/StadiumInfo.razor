@@ -12,8 +12,8 @@
 <PageTitle>@L["StadiumInfo_PageTitle"]</PageTitle>
 
 <div id="admin-stadium-info-main-container" class="container-fluid">
-    <div class="row mb-3">
-        <div class="col-12">
+    <div class="row mb-3" id="admin-stadium-info-header-row">
+        <div class="col-12" id="admin-stadium-info-header-col">
             <h1 id="admin-stadium-info-title" class="mb-1">@L["StadiumInfo_Heading"]</h1>
             <p class="text-muted" id="admin-stadium-info-subtitle">@L["StadiumInfo_Subtitle"]</p>
         </div>
@@ -45,17 +45,17 @@
     {
         <!-- Summary cards -->
         <div class="row g-3 mb-4" id="admin-stadium-info-summary-row">
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-3" id="admin-stadium-info-sectors-col">
                 <div class="card h-100" id="admin-stadium-info-card-sectors">
-                    <div class="card-body">
+                    <div class="card-body" id="admin-stadium-info-sectors-body">
                         <h6 class="text-muted mb-1">@L["StadiumInfo_TotalSectors"]</h6>
                         <div class="display-6 fw-bold" id="admin-stadium-info-total-sectors">@sectors.Count</div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-3" id="admin-stadium-info-seats-col">
                 <div class="card h-100" id="admin-stadium-info-card-seats">
-                    <div class="card-body">
+                    <div class="card-body" id="admin-stadium-info-seats-body">
                         <h6 class="text-muted mb-1">@L["StadiumInfo_TotalSeats"]</h6>
                         <div class="display-6 fw-bold" id="admin-stadium-info-total-seats">@TotalSeats.ToString("N0")</div>
                     </div>
@@ -68,17 +68,17 @@
             <div class="card-header">
                 <h5 class="mb-0" id="admin-stadium-info-breakdown-title">@L["StadiumInfo_TypeBreakdownTitle"]</h5>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
+            <div class="card-body" id="admin-stadium-info-breakdown-body">
+                <div class="table-responsive" id="admin-stadium-info-breakdown-responsive">
                     <table class="table table-sm mb-0" id="admin-stadium-info-breakdown-table">
-                        <thead>
-                            <tr>
-                                <th>@L["StadiumInfo_ColType"]</th>
-                                <th class="text-end">@L["StadiumInfo_TotalSectors"]</th>
-                                <th class="text-end">@L["StadiumInfo_ColTotalSeats"]</th>
+                        <thead id="admin-stadium-info-breakdown-thead">
+                            <tr id="admin-stadium-info-breakdown-header-row">
+                                <th id="admin-stadium-info-breakdown-col-type">@L["StadiumInfo_ColType"]</th>
+                                <th class="text-end" id="admin-stadium-info-breakdown-col-sectors">@L["StadiumInfo_TotalSectors"]</th>
+                                <th class="text-end" id="admin-stadium-info-breakdown-col-seats">@L["StadiumInfo_ColTotalSeats"]</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="admin-stadium-info-breakdown-tbody">
                             @foreach (var group in TypeBreakdown)
                             {
                                 <tr id="admin-stadium-info-breakdown-row-@group.Type">
@@ -100,21 +100,21 @@
             <div class="card-header">
                 <h5 class="mb-0" id="admin-stadium-info-sector-list-title">@L["StadiumInfo_SectorListTitle"]</h5>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
+            <div class="card-body" id="admin-stadium-info-sector-body">
+                <div class="table-responsive" id="admin-stadium-info-sector-responsive">
                     <table class="table table-striped table-hover mb-0" id="admin-stadium-info-sector-table">
-                        <thead>
-                            <tr>
-                                <th style="width:2rem;"></th>
-                                <th>@L["StadiumInfo_ColCode"]</th>
-                                <th>@L["StadiumInfo_ColName"]</th>
-                                <th>@L["StadiumInfo_ColType"]</th>
-                                <th class="text-end">@L["StadiumInfo_ColRows"]</th>
-                                <th class="text-end">@L["StadiumInfo_ColSeatsPerRow"]</th>
-                                <th class="text-end">@L["StadiumInfo_ColTotalSeats"]</th>
+                        <thead id="admin-stadium-info-sector-thead">
+                            <tr id="admin-stadium-info-sector-header-row">
+                                <th style="width:2rem;" id="admin-stadium-info-sector-col-expand"></th>
+                                <th id="admin-stadium-info-sector-col-code">@L["StadiumInfo_ColCode"]</th>
+                                <th id="admin-stadium-info-sector-col-name">@L["StadiumInfo_ColName"]</th>
+                                <th id="admin-stadium-info-sector-col-type">@L["StadiumInfo_ColType"]</th>
+                                <th class="text-end" id="admin-stadium-info-sector-col-rows">@L["StadiumInfo_ColRows"]</th>
+                                <th class="text-end" id="admin-stadium-info-sector-col-seatsperrow">@L["StadiumInfo_ColSeatsPerRow"]</th>
+                                <th class="text-end" id="admin-stadium-info-sector-col-totalseats">@L["StadiumInfo_ColTotalSeats"]</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="admin-stadium-info-sector-tbody">
                             @foreach (var sector in sectors)
                             {
                                 var isExpanded = expandedSectorIds.Contains(sector.Id);
@@ -146,11 +146,11 @@
                                     var headSeatCount = persisted ? pInfo!.TotalSeats : sector.TotalSeats;
 
                                     <tr id="admin-stadium-info-sector-detail-@sector.Id" class="admin-stadium-info-sector-detail">
-                                        <td></td>
-                                        <td colspan="6" class="admin-stadium-info-detail-cell">
+                                        <td id="admin-stadium-info-detail-expand-@sector.Id"></td>
+                                        <td colspan="6" class="admin-stadium-info-detail-cell" id="admin-stadium-info-detail-cell-@sector.Id">
 
-                                            <div class="admin-stadium-info-detail-head">
-                                                <div class="admin-stadium-info-detail-title">
+                                            <div class="admin-stadium-info-detail-head" id="admin-stadium-info-detail-head-@sector.Id">
+                                                <div class="admin-stadium-info-detail-title" id="admin-stadium-info-detail-title-@sector.Id">
                                                     <span class="fw-semibold">@L["StadiumInfo_RowDetailTitle", sector.Name]</span>
 
                                                     @if (loadingSummary)
@@ -176,14 +176,14 @@
                                                         </span>
                                                     }
 
-                                                    <span class="admin-stadium-info-detail-sub">
+                                                    <span class="admin-stadium-info-detail-sub" id="admin-stadium-info-detail-sub-@sector.Id">
                                                         @headRowCount&nbsp;@L["StadiumInfo_ColRows"]
-                                                        <span class="admin-stadium-info-dot">·</span>
+                                                        <span class="admin-stadium-info-dot" id="admin-stadium-info-detail-dot-1-@sector.Id">·</span>
                                                         @headSeatCount.ToString("N0")&nbsp;@L["StadiumInfo_ColSeats"]
                                                         @if (persisted)
                                                         {
-                                                            <span class="admin-stadium-info-dot">·</span>
-                                                            <span class="admin-stadium-info-avail">@pInfo!.AvailableSeats.ToString("N0")&nbsp;@L["StadiumInfo_Available"]</span>
+                                                            <span class="admin-stadium-info-dot" id="admin-stadium-info-detail-dot-2-@sector.Id">·</span>
+                                                            <span class="admin-stadium-info-avail" id="admin-stadium-info-detail-avail-@sector.Id">@pInfo!.AvailableSeats.ToString("N0")&nbsp;@L["StadiumInfo_Available"]</span>
                                                         }
                                                     </span>
                                                 </div>
@@ -208,19 +208,19 @@
 
                                             @if (loadingSummary)
                                             {
-                                                <div class="admin-stadium-info-seatgrid-loading">
+                                                <div class="admin-stadium-info-seatgrid-loading" id="admin-stadium-info-loading-@sector.Id">
                                                     <span class="spinner-border spinner-border-sm me-2" role="status"></span>@L["StadiumInfo_CheckingSeats"]
                                                 </div>
                                             }
                                             else if (rows.Count == 0)
                                             {
-                                                <div class="admin-stadium-info-empty-rows text-muted">
+                                                <div class="admin-stadium-info-empty-rows text-muted" id="admin-stadium-info-empty-rows-@sector.Id">
                                                     @L["StadiumInfo_NoRows"]
                                                 </div>
                                             }
                                             else
                                             {
-                                                <div class="admin-stadium-info-rows">
+                                                <div class="admin-stadium-info-rows" id="admin-stadium-info-rows-@sector.Id">
                                                     @foreach (var rd in rows)
                                                     {
                                                         var rowKey = $"{sector.Id}:{rd.RowNumber}";
@@ -239,9 +239,9 @@
                                                                     aria-expanded="@(rowOpen ? "true" : "false")"
                                                                     aria-controls="@seatGridId"
                                                                     @onclick="() => ToggleRow(sector, rd.RowNumber)">
-                                                                <i class="bi @(rowOpen ? "bi-chevron-down" : "bi-chevron-right") admin-stadium-info-row-chevron"></i>
-                                                                <span class="admin-stadium-info-row-label">@L["StadiumInfo_ColRow"]&nbsp;@rd.RowNumber</span>
-                                                                <span class="admin-stadium-info-row-count">@rowCountLabel&nbsp;@L["StadiumInfo_ColSeats"]</span>
+                                                                <i class="bi @(rowOpen ? "bi-chevron-down" : "bi-chevron-right") admin-stadium-info-row-chevron" id="admin-stadium-info-row-chevron-@sector.Id-@rd.RowNumber"></i>
+                                                                <span class="admin-stadium-info-row-label" id="admin-stadium-info-row-label-@sector.Id-@rd.RowNumber">@L["StadiumInfo_ColRow"]&nbsp;@rd.RowNumber</span>
+                                                                <span class="admin-stadium-info-row-count" id="admin-stadium-info-row-count-@sector.Id-@rd.RowNumber">@rowCountLabel&nbsp;@L["StadiumInfo_ColSeats"]</span>
                                                             </button>
 
                                                             @if (rowOpen)
@@ -250,8 +250,8 @@
                                                                 {
                                                                     @if (loadingRowSeats.Contains(rowKey))
                                                                     {
-                                                                        <div class="admin-stadium-info-seatgrid-loading">
-                                                                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>@L["StadiumInfo_LoadingSeats"]
+                                                                        <div class="admin-stadium-info-seatgrid-loading" id="admin-stadium-info-row-loading-@sector.Id-@rd.RowNumber">
+                                                                            <span class="spinner-border spinner-border-sm me-2" role="status" id="admin-stadium-info-row-loading-spinner-@sector.Id-@rd.RowNumber"></span>@L["StadiumInfo_LoadingSeats"]
                                                                         </div>
                                                                     }
                                                                     else if (rowPersistedSeats.TryGetValue(rowKey, out var pSeats) && pSeats.Count > 0)
@@ -267,13 +267,13 @@
                                                                                       style="--sector-color:@sector.Color;"
                                                                                       id="admin-stadium-info-seat-@sector.Id-@seat.RowNumber-@seat.SeatNumber"
                                                                                       title="@(seat.IsAvailable ? seat.UniqueCode : seat.UniqueCode + " — " + L["StadiumInfo_Unavailable"])">
-                                                                                    <span class="admin-stadium-info-seat-num">@seat.SeatNumber</span>
-                                                                                    <span class="admin-stadium-info-seat-code">@seat.UniqueCode</span>
+                                                                                    <span class="admin-stadium-info-seat-num" id="admin-stadium-info-seat-num-@sector.Id-@seat.RowNumber-@seat.SeatNumber">@seat.SeatNumber</span>
+                                                                                    <span class="admin-stadium-info-seat-code" id="admin-stadium-info-seat-code-@sector.Id-@seat.RowNumber-@seat.SeatNumber">@seat.UniqueCode</span>
                                                                                 </span>
                                                                             }
                                                                             @if (pSeats.Count > MaxSeatsPerRowRendered)
                                                                             {
-                                                                                <span class="admin-stadium-info-seat-more">
+                                                                                <span class="admin-stadium-info-seat-more" id="admin-stadium-info-seat-more-@sector.Id-@rd.RowNumber">
                                                                                     @L["StadiumInfo_SeatsShownOf", MaxSeatsPerRowRendered, pSeats.Count]
                                                                                 </span>
                                                                             }
@@ -281,7 +281,7 @@
                                                                     }
                                                                     else
                                                                     {
-                                                                        <div class="admin-stadium-info-empty-rows text-muted">
+                                                                        <div class="admin-stadium-info-empty-rows text-muted" id="admin-stadium-info-row-empty-@sector.Id-@rd.RowNumber">
                                                                             @L["StadiumInfo_NoPersistedRowSeats"]
                                                                         </div>
                                                                     }
@@ -300,13 +300,13 @@
                                                                                   style="--sector-color:@sector.Color;"
                                                                                   id="admin-stadium-info-seat-@sector.Id-@seat.RowNumber-@seat.SeatNumber"
                                                                                   title="@seat.UniqueCode">
-                                                                                <span class="admin-stadium-info-seat-num">@seat.SeatNumber</span>
-                                                                                <span class="admin-stadium-info-seat-code">@seat.UniqueCode</span>
+                                                                                <span class="admin-stadium-info-seat-num" id="admin-stadium-info-seat-num-@sector.Id-@seat.RowNumber-@seat.SeatNumber">@seat.SeatNumber</span>
+                                                                                <span class="admin-stadium-info-seat-code" id="admin-stadium-info-seat-code-@sector.Id-@seat.RowNumber-@seat.SeatNumber">@seat.UniqueCode</span>
                                                                             </span>
                                                                         }
                                                                         @if (rd.Seats > MaxSeatsPerRowRendered)
                                                                         {
-                                                                            <span class="admin-stadium-info-seat-more">
+                                                                            <span class="admin-stadium-info-seat-more" id="admin-stadium-info-seat-more-@sector.Id-@rd.RowNumber">
                                                                                 @L["StadiumInfo_SeatsShownOf", seats.Count, rd.Seats]
                                                                             </span>
                                                                         }
@@ -322,9 +322,9 @@
                                 }
                             }
                         </tbody>
-                        <tfoot>
-                            <tr class="fw-bold">
-                                <td colspan="6" class="text-end">@L["StadiumInfo_TotalSeats"]</td>
+                        <tfoot id="admin-stadium-info-sector-tfoot">
+                            <tr class="fw-bold" id="admin-stadium-info-sector-footer-row">
+                                <td colspan="6" class="text-end" id="admin-stadium-info-sector-footer-label">@L["StadiumInfo_TotalSeats"]</td>
                                 <td class="text-end" id="admin-stadium-info-table-total">@TotalSeats.ToString("N0")</td>
                             </tr>
                         </tfoot>

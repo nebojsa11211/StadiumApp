@@ -5,10 +5,10 @@
 @inject NavigationManager Nav
 @inject IStringLocalizer<SharedResources> Localizer
 
-<div class="runner-shell">
-    <header class="runner-appbar">
+<div class="runner-shell" id="runner-main-layout-shell">
+    <header class="runner-appbar" id="runner-main-layout-header">
         <span class="runner-brand">🏃 @Localizer["Layout_Brand"]</span>
-        <div class="runner-appbar-right">
+        <div class="runner-appbar-right" id="runner-main-layout-appbar-right">
             <span class="runner-appbar-status" aria-live="polite">
                 @if (!Outbox.IsOnline)
                 {
@@ -28,13 +28,13 @@
         </div>
     </header>
 
-    <main class="runner-content">
+    <main class="runner-content" id="runner-main-layout-content">
         @Body
     </main>
 
     @if (Auth.IsAllowed)
     {
-        <nav class="runner-tabbar">
+        <nav class="runner-tabbar" id="runner-main-layout-nav">
             <NavLink class="runner-tab" href="" Match="NavLinkMatch.All">
                 <span class="runner-tab-icon" aria-hidden="true">📋</span><span>@Localizer["Layout_TabPool"]</span>
             </NavLink>

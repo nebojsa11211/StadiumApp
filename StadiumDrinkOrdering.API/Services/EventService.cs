@@ -12,6 +12,11 @@ public interface IEventService
     Task<Event?> GetEventByIdAsync(int id);
     Task<Event> CreateEventAsync(Event eventItem);
     Task<Event?> UpdateEventAsync(int id, Event eventItem);
+    /// <summary>
+    /// True if another event already uses this name (case-insensitive, trimmed). Pass the id of the
+    /// event being edited as <paramref name="excludeEventId"/> so it doesn't clash with itself.
+    /// </summary>
+    Task<bool> IsEventNameTakenAsync(string name, int? excludeEventId = null);
     Task<bool> DeleteEventAsync(int id);
     Task<bool> ActivateEventAsync(int id);
     Task<bool> DeactivateEventAsync(int id);
@@ -145,6 +150,17 @@ public class EventService : IEventService
             .Include(e => e.Season)
             // Temporarily removed .Include(e => e.Analytics) due to database schema mismatch
             .FirstOrDefaultAsync(e => e.Id == id);
+    }
+
+    public async Task<bool> IsEventNameTakenAsync(string name, int? excludeEventId = null)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return false;
+
+        var normalized = name.Trim().ToLower();
+        return await _context.Events
+            .AnyAsync(e => e.EventName.ToLower() == normalized
+                && (excludeEventId == null || e.Id != excludeEventId));
     }
 
     public async Task<Event> CreateEventAsync(Event eventItem)
@@ -318,8 +334,9 @@ public class EventService : IEventService
 
         // Single-live-event invariant: only one event may occupy the Active phase (Active/InProgress)
         // at a time. Block promoting this event into that phase while a different event is already live.
-        if (EventLifecycle.PhaseOf(newStatus) == EventPhase.Active &&
-            EventLifecycle.PhaseOf(current) != EventPhase.Active)
+        var enteringActivePhase = EventLifecycle.PhaseOf(newStatus) == EventPhase.Active &&
+            EventLifecycle.PhaseOf(current) != EventPhase.Active;
+        if (enteringActivePhase)
         {
             var live = await _context.Events
                 .FirstOrDefaultAsync(e => e.Id != id &&
@@ -334,8 +351,23 @@ public class EventService : IEventService
             }
         }
 
+        var now = DateTime.UtcNow;
         eventItem.Status = newStatus;
-        eventItem.UpdatedAt = DateTime.UtcNow;
+        eventItem.UpdatedAt = now;
+
+        // Going live means the event is happening *now*. Slide a still-future window forward to
+        // "now" (preserving its original duration) so drink ordering — which unlocks in the Active
+        // phase and stamps orders at the current time — can never produce orders dated before the
+        // event's own start. Mirrors the external "event went live" webhook path.
+        if (enteringActivePhase && eventItem.EventDate > now)
+        {
+            var window = (eventItem.EventEndDate ?? eventItem.EventDate.AddHours(2)) - eventItem.EventDate;
+            if (window <= TimeSpan.Zero) window = TimeSpan.FromHours(2);
+            eventItem.EventDate = now;
+            eventItem.EventEndDate = now.Add(window);
+            _logger.LogInformation("Event {EventId} went live: start slid to {Start:o} (window {Window})",
+                id, eventItem.EventDate, window);
+        }
 
         // Keep the published/visible flag consistent with the lifecycle: live & sellable states
         // are visible; terminal states drop out of "active"/"upcoming" listings.

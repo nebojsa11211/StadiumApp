@@ -2362,6 +2362,12 @@
   <data name="Orders_AllStatusesOption" xml:space="preserve">
     <value>Svi statusi</value>
   </data>
+  <data name="Orders_EventLabel" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="Orders_AllEventsOption" xml:space="preserve">
+    <value>Svi događaji</value>
+  </data>
   <data name="Orders_PendingOption" xml:space="preserve">
     <value>Na čekanju</value>
   </data>
@@ -2441,7 +2447,7 @@
     <value>Napreduj status</value>
   </data>
   <data name="Orders_ShowingMessage" xml:space="preserve">
-    <value>Prikazujem prvih 50 od {0} ukupnih narudžbi</value>
+    <value>Prikazujem {0} od {1} ukupnih narudžbi</value>
   </data>
   <data name="Orders_LoadMoreButton" xml:space="preserve">
     <value>Učitaj više</value>

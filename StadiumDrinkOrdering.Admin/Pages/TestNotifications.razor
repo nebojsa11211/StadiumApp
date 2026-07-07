@@ -5,16 +5,16 @@
 
 <PageTitle>@L["TestNotif_PageTitle"]</PageTitle>
 
-<h3>🧪 @L["TestNotif_Title"]</h3>
+<h3 id="admin-testnotif-title">🧪 @L["TestNotif_Title"]</h3>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5>@L["TestNotif_CardTitle"]</h5>
+<div class="row" id="admin-testnotif-row">
+    <div class="col-md-12" id="admin-testnotif-col">
+        <div class="card" id="admin-testnotif-card">
+            <div class="card-header" id="admin-testnotif-header">
+                <h5 id="admin-testnotif-card-title">@L["TestNotif_CardTitle"]</h5>
             </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
+            <div class="card-body" id="admin-testnotif-body">
+                <div class="d-grid gap-2" id="admin-testnotif-buttons">
                     <button class="btn btn-danger" @onclick="TestErrorNotification" id="admin-test-notifications-error-btn">
                         🚨 @L["TestNotif_TestErrorNotif"]
                     </button>

@@ -16,58 +16,58 @@
 {
     <div id="customer-order-no-session-1" class="no-session">
         <div id="customer-order-no-session-pass-1" class="pass-blank">
-            <div class="pb-eyebrow">HALFTIME · Ulaznica</div>
+            <div id="customer-order-no-session-eyebrow-1" class="pb-eyebrow">HALFTIME · Ulaznica</div>
             <div id="customer-order-no-session-emoji-1" class="pb-glyph">🎟️</div>
-            <div class="pb-slots">
-                <div class="pb-slot"><span class="k">Sektor</span><span class="v">—</span></div>
-                <div class="pb-slot"><span class="k">Red</span><span class="v">—</span></div>
-                <div class="pb-slot"><span class="k">Sjedalo</span><span class="v">—</span></div>
+            <div id="customer-order-no-session-slots-1" class="pb-slots">
+                <div id="customer-order-no-session-slot-1" class="pb-slot"><span class="k">Sektor</span><span class="v">—</span></div>
+                <div id="customer-order-no-session-slot-2" class="pb-slot"><span class="k">Red</span><span class="v">—</span></div>
+                <div id="customer-order-no-session-slot-3" class="pb-slot"><span class="k">Sjedalo</span><span class="v">—</span></div>
             </div>
-            <div class="pass-tear"></div>
-            <div class="pb-status"><span class="dot"></span>Čeka skeniranje</div>
+            <div id="customer-order-no-session-tear-1" class="pass-tear"></div>
+            <div id="customer-order-no-session-status-1" class="pb-status"><span class="dot"></span>Čeka skeniranje</div>
         </div>
-        <h2>Nema aktivne narudžbe</h2>
-        <p>Skeniraj QR kod s ulaznice pa ti piće stigne točno na tvoje mjesto — bez čekanja u redu.</p>
-        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
+        <h2 id="customer-order-no-session-heading-1">Nema aktivne narudžbe</h2>
+        <p id="customer-order-no-session-message-1">Skeniraj QR kod s ulaznice pa ti piće stigne točno na tvoje mjesto — bez čekanja u redu.</p>
+        <button id="customer-order-scan-btn-1" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
     </div>
 }
 else if (State.HasSession && !State.CanOrderDrinks && !_loading)
 {
     <div id="customer-order-no-session-2" class="no-session">
         <div id="customer-order-no-session-pass-2" class="pass-blank paused">
-            <div class="pb-eyebrow">@(string.IsNullOrWhiteSpace(State.EventName) ? "HALFTIME · Ulaznica" : State.EventName)</div>
+            <div id="customer-order-no-session-eyebrow-2" class="pb-eyebrow">@(string.IsNullOrWhiteSpace(State.EventName) ? "HALFTIME · Ulaznica" : State.EventName)</div>
             <div id="customer-order-no-session-emoji-2" class="pb-glyph">⏸️</div>
-            <div class="pb-slots">
-                <div class="pb-slot"><span class="k">Sektor</span><span class="v tnum">@Coord(State.SeatSection)</span></div>
-                <div class="pb-slot"><span class="k">Red</span><span class="v tnum">@Coord(State.SeatRow)</span></div>
-                <div class="pb-slot"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></div>
+            <div id="customer-order-no-session-slots-2" class="pb-slots">
+                <div id="customer-order-no-session-slot-4" class="pb-slot"><span class="k">Sektor</span><span class="v tnum">@Coord(State.SeatSection)</span></div>
+                <div id="customer-order-no-session-slot-5" class="pb-slot"><span class="k">Red</span><span class="v tnum">@Coord(State.SeatRow)</span></div>
+                <div id="customer-order-no-session-slot-6" class="pb-slot"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></div>
             </div>
-            <div class="pass-tear"></div>
-            <div class="pb-status paused"><span class="dot"></span>Nije uživo</div>
+            <div id="customer-order-no-session-tear-2" class="pass-tear"></div>
+            <div id="customer-order-no-session-status-2" class="pb-status paused"><span class="dot"></span>Nije uživo</div>
         </div>
-        <h2>Naručivanje je na pauzi</h2>
-        <p>Piće možeš naručiti samo dok utakmica traje. Tvoje mjesto te čeka — vrati se kad sudac svira početak.</p>
-        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/"))">Početna</button>
+        <h2 id="customer-order-no-session-heading-2">Naručivanje je na pauzi</h2>
+        <p id="customer-order-no-session-message-2">Piće možeš naručiti samo dok utakmica traje. Tvoje mjesto te čeka — vrati se kad sudac svira početak.</p>
+        <button id="customer-order-home-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/"))">Početna</button>
     </div>
 }
 else
 {
     <div id="customer-order-head" class="order-head">
         <div id="customer-order-top" class="pass">
-            <div class="pass-top">
-                <button class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="Natrag">‹</button>
+            <div id="customer-order-pass-top" class="pass-top">
+                <button id="customer-order-back-btn" class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="Natrag">‹</button>
                 <div id="customer-order-match-info" class="pass-id">
-                    <div class="pass-eyebrow">Piće stiže na tvoje mjesto</div>
-                    <div class="pass-match">@(string.IsNullOrWhiteSpace(State.EventName) ? "Utakmica" : State.EventName)</div>
+                    <div id="customer-order-pass-eyebrow" class="pass-eyebrow">Piće stiže na tvoje mjesto</div>
+                    <div id="customer-order-pass-match" class="pass-match">@(string.IsNullOrWhiteSpace(State.EventName) ? "Utakmica" : State.EventName)</div>
                 </div>
-                <span class="pass-live"><span class="pulse"></span>Uživo</span>
+                <span id="customer-order-pass-live" class="pass-live"><span class="pulse"></span>Uživo</span>
             </div>
             <div id="customer-order-seat-coords" class="coords">
-                <div class="coord"><span class="k">Sektor</span><span class="v tnum">@Coord(State.SeatSection)</span></div>
-                <span class="cdiv"></span>
-                <div class="coord"><span class="k">Red</span><span class="v tnum">@Coord(State.SeatRow)</span></div>
-                <span class="cdiv"></span>
-                <div class="coord seat"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></div>
+                <div id="customer-order-coord-sector" class="coord"><span class="k">Sektor</span><span class="v tnum">@Coord(State.SeatSection)</span></div>
+                <span id="customer-order-cdiv-1" class="cdiv"></span>
+                <div id="customer-order-coord-row" class="coord"><span class="k">Red</span><span class="v tnum">@Coord(State.SeatRow)</span></div>
+                <span id="customer-order-cdiv-2" class="cdiv"></span>
+                <div id="customer-order-coord-seat" class="coord seat"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></div>
             </div>
         </div>
         <div id="customer-order-pass-tear" class="pass-tear"></div>
@@ -75,11 +75,11 @@ else
             @foreach (var cat in _categories)
             {
                 var n = CatCount(cat);
-                <button class="tab @(cat == _selected ? "on" : "")" @onclick="() => _selected = cat">
+                <button id="customer-order-tab-@cat" class="tab @(cat == _selected ? "on" : "")" @onclick="() => _selected = cat">
                     <span class="tab-emoji">@DrinkVisuals.Emoji(cat)</span> @DrinkVisuals.Label(cat)
                     @if (n > 0)
                     {
-                        <span class="cnt tnum">@n</span>
+                        <span id="customer-order-tab-count-@cat" class="cnt tnum">@n</span>
                     }
                 </button>
             }

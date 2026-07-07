@@ -157,17 +157,18 @@ public partial class Events : ComponentBase
                     SeasonId = eventForm.SeasonId
                 };
 
-                var response = await ApiService.Http.PostAsync<EventDto>("events", createDto);
-                if (response != null)
+                var response = await ApiService.Http.PostAsync("events", createDto);
+                if (response.IsSuccessStatusCode)
                 {
                     await LoadEvents();
                     await LoadSeasons();
                     HideEventModal();
-                    ShowAlert($"Event '{response.Name}' created successfully", "success");
+                    ShowAlert($"Event '{createDto.Name}' created successfully", "success");
                 }
                 else
                 {
-                    ShowAlert("Failed to create event", "danger");
+                    var body = await response.Content.ReadAsStringAsync();
+                    ShowAlert(ExtractErrorMessage(body) ?? $"Failed to create event ({(int)response.StatusCode})", "danger");
                 }
             }
             else
@@ -186,17 +187,18 @@ public partial class Events : ComponentBase
                     SeasonId = eventForm.SeasonId
                 };
 
-                var response = await ApiService.Http.PostAsync<EventDto>($"events/{editingEvent.Id}", updateDto);
-                if (response != null)
+                var response = await ApiService.Http.PostAsync($"events/{editingEvent.Id}", updateDto);
+                if (response.IsSuccessStatusCode)
                 {
                     await LoadEvents();
                     await LoadSeasons();
                     HideEventModal();
-                    ShowAlert($"Event '{eventForm.Name}' updated successfully", "success");
+                    ShowAlert($"Event '{updateDto.Name}' updated successfully", "success");
                 }
                 else
                 {
-                    ShowAlert("Failed to update event", "danger");
+                    var body = await response.Content.ReadAsStringAsync();
+                    ShowAlert(ExtractErrorMessage(body) ?? $"Failed to update event ({(int)response.StatusCode})", "danger");
                 }
             }
         }

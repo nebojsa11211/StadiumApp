@@ -2332,6 +2332,12 @@
   <data name="Orders_AllStatusesOption" xml:space="preserve">
     <value>All Statuses</value>
   </data>
+  <data name="Orders_EventLabel" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="Orders_AllEventsOption" xml:space="preserve">
+    <value>All Events</value>
+  </data>
   <data name="Orders_PendingOption" xml:space="preserve">
     <value>Pending</value>
   </data>
@@ -2411,7 +2417,7 @@
     <value>Advance status</value>
   </data>
   <data name="Orders_ShowingMessage" xml:space="preserve">
-    <value>Showing first 50 of {0} total orders</value>
+    <value>Showing {0} of {1} total orders</value>
   </data>
   <data name="Orders_LoadMoreButton" xml:space="preserve">
     <value>Load More</value>

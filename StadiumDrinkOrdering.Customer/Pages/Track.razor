@@ -21,7 +21,7 @@
         <div id="customer-track-not-found" class="tload">
             <div id="customer-track-not-found-icon" style="font-size:44px">🔍</div>
             <p>Narudžbu nije moguće pronaći.</p>
-            <button class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
+            <button id="customer-track-back-btn" class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
         </div>
     }
     else
@@ -62,7 +62,7 @@
         }
 
         <div id="customer-track-foot" class="track-foot">
-            <button class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/order"))">Naruči još</button>
+            <button id="customer-track-order-more-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/order"))">Naruči još</button>
         </div>
     }
 </div>

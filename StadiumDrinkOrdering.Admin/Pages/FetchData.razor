@@ -16,19 +16,19 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>@L["FetchData_Date"]</th>
-                <th>@L["FetchData_TempC"]</th>
-                <th>@L["FetchData_TempF"]</th>
-                <th>@L["FetchData_Summary"]</th>
+    <table class="table" id="admin-fetchdata-table">
+        <thead id="admin-fetchdata-thead">
+            <tr id="admin-fetchdata-header-row">
+                <th id="admin-fetchdata-header-date">@L["FetchData_Date"]</th>
+                <th id="admin-fetchdata-header-tempc">@L["FetchData_TempC"]</th>
+                <th id="admin-fetchdata-header-tempf">@L["FetchData_TempF"]</th>
+                <th id="admin-fetchdata-header-summary">@L["FetchData_Summary"]</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="admin-fetchdata-tbody">
             @foreach (var forecast in forecasts)
             {
-                <tr>
+                <tr id="@($"admin-fetchdata-row-{Array.IndexOf(forecasts, forecast)}")">
                     <td>@forecast.Date.ToShortDateString()</td>
                     <td>@forecast.TemperatureC</td>
                     <td>@forecast.TemperatureF</td>

@@ -22,9 +22,9 @@
         else if (Orders != null && Orders.Any())
         {
             <div id="bar-recentorders-table-responsive" class="table-responsive">
-                <table class="table table-sm orders-table">
-                    <thead>
-                        <tr>
+                <table id="bar-recentorders-table" class="table table-sm orders-table">
+                    <thead id="bar-recentorders-thead">
+                        <tr id="bar-recentorders-tr-header">
                             <th>@Localizer["RecentOrders_OrderNumber"]</th>
                             <th>@Localizer["RecentOrders_Customer"]</th>
                             <th>@Localizer["RecentOrders_Seat"]</th>
@@ -37,24 +37,24 @@
                             }
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="bar-recentorders-tbody">
                         @foreach (var order in Orders.Take(MaxDisplayCount))
                         {
-                            <tr class="order-row" @key="order.Id">
-                                <td class="order-id">#@order.Id</td>
-                                <td class="customer-name">@order.CustomerName</td>
-                                <td class="seat-number">@order.SeatNumber</td>
-                                <td class="items-count">@order.OrderItems.Count @Localizer["RecentOrders_Items"]</td>
-                                <td class="order-status">
+                            <tr id="@($"bar-recentorders-tr-{order.Id}")" class="order-row" @key="order.Id">
+                                <td id="@($"bar-recentorders-td-id-{order.Id}")" class="order-id">#@order.Id</td>
+                                <td id="@($"bar-recentorders-td-customer-{order.Id}")" class="customer-name">@order.CustomerName</td>
+                                <td id="@($"bar-recentorders-td-seat-{order.Id}")" class="seat-number">@order.SeatNumber</td>
+                                <td id="@($"bar-recentorders-td-items-{order.Id}")" class="items-count">@order.OrderItems.Count @Localizer["RecentOrders_Items"]</td>
+                                <td id="@($"bar-recentorders-td-status-{order.Id}")" class="order-status">
                                     <span class="badge @GetStatusBadgeClass(order.Status)">
                                         @order.Status
                                     </span>
                                 </td>
-                                <td class="order-time">@order.OrderDate.ToString("HH:mm")</td>
+                                <td id="@($"bar-recentorders-td-time-{order.Id}")" class="order-time">@order.OrderDate.ToString("HH:mm")</td>
                                 @if (ShowActions)
                                 {
-                                    <td class="order-actions">
-                                        <button class="btn btn-sm btn-outline-primary"
+                                    <td id="@($"bar-recentorders-td-actions-{order.Id}")" class="order-actions">
+                                        <button id="@($"bar-recentorders-btn-view-{order.Id}")" class="btn btn-sm btn-outline-primary"
                                                 @onclick="(() => OnOrderClick.InvokeAsync(order))">
                                             @Localizer["View"]
                                         </button>

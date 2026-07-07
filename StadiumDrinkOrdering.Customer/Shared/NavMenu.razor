@@ -4,15 +4,15 @@
 @inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<nav class="stadium-nav" role="navigation" aria-label="Main navigation">
+<nav class="stadium-nav" role="navigation" aria-label="Main navigation" id="customer-nav-main">
     <div id="customer-nav-container" class="container-fluid">
-        <ul class="nav-links" role="list">
-            <li role="listitem"><a href="/" class="nav-link" aria-label="Navigate to home page">🏠 @Localizer["Home"]</a></li>
-            <li role="listitem"><a href="/events" class="nav-link" aria-label="View available events">🎟️ @Localizer["Events"]</a></li>
-            <li role="listitem"><a href="/menu" class="nav-link" aria-label="Browse drinks menu">🍺 @Localizer["Menu"]</a></li>
+        <ul class="nav-links" role="list" id="customer-nav-links">
+            <li role="listitem"><a id="customer-nav-home-link" href="/" class="nav-link" aria-label="Navigate to home page">🏠 @Localizer["Home"]</a></li>
+            <li role="listitem"><a id="customer-nav-events-link" href="/events" class="nav-link" aria-label="View available events">🎟️ @Localizer["Events"]</a></li>
+            <li role="listitem"><a id="customer-nav-menu-link" href="/menu" class="nav-link" aria-label="Browse drinks menu">🍺 @Localizer["Menu"]</a></li>
             @if (AuthStateService.IsAuthenticated)
             {
-                <li role="listitem"><a href="/orders" class="nav-link" aria-label="View your orders">📋 @Localizer["MyOrders"]</a></li>
+                <li role="listitem"><a id="customer-nav-orders-link" href="/orders" class="nav-link" aria-label="View your orders">📋 @Localizer["MyOrders"]</a></li>
                 <li role="listitem"><a href="/wallet" class="nav-link" id="customer-nav-wallet-link" aria-label="View your wallet">💳 @Localizer["Wallet"]</a></li>
             }
         </ul>

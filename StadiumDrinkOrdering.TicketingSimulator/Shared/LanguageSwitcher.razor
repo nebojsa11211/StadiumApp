@@ -2,8 +2,8 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-<div class="language-switcher">
-    <select class="form-select form-select-sm" @onchange="OnLanguageChange" value="@CurrentCulture">
+<div id="simulator-language-switcher-container" class="language-switcher">
+    <select id="simulator-language-switcher-select" class="form-select form-select-sm" @onchange="OnLanguageChange" value="@CurrentCulture">
         <option value="hr" selected="@(CurrentCulture == "hr")">Hrvatski</option>
         <option value="en" selected="@(CurrentCulture == "en")">English</option>
     </select>

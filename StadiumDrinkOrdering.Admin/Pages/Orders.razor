@@ -74,17 +74,27 @@
     </section>
 
     <!-- Filters -->
-    <div class="panel filters-panel">
-        <div class="panel__head">
-            <h2 class="panel__title">@L["Orders_FiltersTitle"]</h2>
+    <div class="panel filters-panel" id="admin-orders-filters-panel">
+        <div class="panel__head" id="admin-orders-filters-head">
+            <h2 class="panel__title" id="admin-orders-filters-title">@L["Orders_FiltersTitle"]</h2>
             <button class="link-btn" @onclick="ClearFilters" id="admin-orders-clear-filters-btn">
                 <i class="oi oi-x"></i> @L["Orders_ClearButton"]
             </button>
         </div>
-        <div class="filters">
-            <div class="field">
-                <label class="field__label">@L["Orders_StatusLabel"]</label>
-                <select class="field__input" @bind="selectedStatus" @bind:after="FilterOrders">
+        <div class="filters" id="admin-orders-filters-container">
+            <div class="field" id="admin-orders-event-field">
+                <label class="field__label" id="admin-orders-event-label">@L["Orders_EventLabel"]</label>
+                <select class="field__input" id="admin-orders-event-select" @bind="selectedEventId" @bind:after="FilterOrders">
+                    <option value="">@L["Orders_AllEventsOption"]</option>
+                    @foreach (var ev in eventOptions)
+                    {
+                        <option value="@ev.Id">@ev.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="field" id="admin-orders-status-field">
+                <label class="field__label" id="admin-orders-status-label">@L["Orders_StatusLabel"]</label>
+                <select class="field__input" id="admin-orders-status-select" @bind="selectedStatus" @bind:after="FilterOrders">
                     <option value="">@L["Orders_AllStatusesOption"]</option>
                     <option value="Pending">@L["Orders_PendingOption"]</option>
                     <option value="Accepted">@L["Orders_AcceptedOption"]</option>
@@ -95,38 +105,38 @@
                     <option value="Cancelled">@L["Orders_CancelledOption"]</option>
                 </select>
             </div>
-            <div class="field field--grow">
-                <label class="field__label">@L["Orders_CustomerSearchLabel"]</label>
-                <input type="text" class="field__input" placeholder="@L["Orders_SearchPlaceholder"]"
+            <div class="field field--grow" id="admin-orders-search-field">
+                <label class="field__label" id="admin-orders-search-label">@L["Orders_CustomerSearchLabel"]</label>
+                <input type="text" class="field__input" id="admin-orders-search-input" placeholder="@L["Orders_SearchPlaceholder"]"
                        @bind="customerSearch" @oninput="FilterOrders" />
             </div>
-            <div class="field">
-                <label class="field__label">@L["Orders_FromDateLabel"]</label>
-                <input type="date" class="field__input" @bind="fromDate" @bind:after="FilterOrders" />
+            <div class="field" id="admin-orders-fromdate-field">
+                <label class="field__label" id="admin-orders-fromdate-label">@L["Orders_FromDateLabel"]</label>
+                <input type="date" class="field__input" id="admin-orders-fromdate-input" @bind="fromDate" @bind:after="FilterOrders" />
             </div>
-            <div class="field">
-                <label class="field__label">@L["Orders_ToDateLabel"]</label>
-                <input type="date" class="field__input" @bind="toDate" @bind:after="FilterOrders" />
+            <div class="field" id="admin-orders-todate-field">
+                <label class="field__label" id="admin-orders-todate-label">@L["Orders_ToDateLabel"]</label>
+                <input type="date" class="field__input" id="admin-orders-todate-input" @bind="toDate" @bind:after="FilterOrders" />
             </div>
         </div>
     </div>
 
     @if (isLoading)
     {
-        <div class="loading-state">
-            <span class="loading-spinner"></span>
-            <p>@L["Orders_Loading"]</p>
+        <div class="loading-state" id="admin-orders-loading-state">
+            <span class="loading-spinner" id="admin-orders-loading-spinner"></span>
+            <p id="admin-orders-loading-text">@L["Orders_Loading"]</p>
         </div>
     }
     else
     {
         <!-- Orders Table -->
-        <div class="panel">
-            <div class="panel__head">
-                <h2 class="panel__title">@L["Orders_PanelTitle"] <span class="panel__count mono">@filteredOrders.Count</span></h2>
+        <div class="panel" id="admin-orders-table-panel">
+            <div class="panel__head" id="admin-orders-panel-head">
+                <h2 class="panel__title" id="admin-orders-panel-title">@L["Orders_PanelTitle"] <span class="panel__count mono" id="admin-orders-panel-count">@filteredOrders.Count</span></h2>
                 @if (selectedOrderIds.Any())
                 {
-                    <div class="bulk-actions">
+                    <div class="bulk-actions" id="admin-orders-bulk-actions">
                         <button class="pill-btn pill-btn--success" @onclick="BulkAccept" id="admin-orders-bulk-accept-btn">
                             <i class="oi oi-check"></i><span>@L["Orders_AcceptButtonText", selectedOrderIds.Count]</span>
                         </button>
@@ -139,54 +149,54 @@
 
             @if (filteredOrders?.Any() == true)
             {
-                <table class="order-table">
-                    <thead>
-                        <tr>
-                            <th class="check">
-                                <input type="checkbox" class="check-box" @onchange="ToggleSelectAll" />
+                <table class="order-table" id="admin-orders-table">
+                    <thead id="admin-orders-thead">
+                        <tr id="admin-orders-header-row">
+                            <th class="check" id="admin-orders-header-check">
+                                <input type="checkbox" class="check-box" id="admin-orders-select-all-checkbox" @onchange="ToggleSelectAll" />
                             </th>
-                            <th>@L["Orders_OrderHeader"]</th>
-                            <th>@L["Orders_CustomerHeader"]</th>
-                            <th>@L["Orders_ItemsHeader"]</th>
-                            <th class="num">@L["Orders_TotalHeader"]</th>
-                            <th>@L["Orders_StatusHeader"]</th>
-                            <th class="num">@L["Orders_CreatedHeader"]</th>
-                            <th class="actions-col">@L["Orders_ActionsHeader"]</th>
+                            <th id="admin-orders-header-orderid">@L["Orders_OrderHeader"]</th>
+                            <th id="admin-orders-header-customer">@L["Orders_CustomerHeader"]</th>
+                            <th id="admin-orders-header-items">@L["Orders_ItemsHeader"]</th>
+                            <th class="num" id="admin-orders-header-total">@L["Orders_TotalHeader"]</th>
+                            <th id="admin-orders-header-status">@L["Orders_StatusHeader"]</th>
+                            <th class="num" id="admin-orders-header-created">@L["Orders_CreatedHeader"]</th>
+                            <th class="actions-col" id="admin-orders-header-actions">@L["Orders_ActionsHeader"]</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var order in filteredOrders.Take(50))
+                    <tbody id="admin-orders-tbody">
+                        @foreach (var order in filteredOrders.Take(displayCount))
                         {
-                            <tr class="@(selectedOrderIds.Contains(order.Id) ? "is-selected" : "")">
-                                <td class="check">
-                                    <input type="checkbox" class="check-box"
+                            <tr class="@(selectedOrderIds.Contains(order.Id) ? "is-selected" : "")" id="@($"admin-orders-row-{order.Id}")">
+                                <td class="check" id="@($"admin-orders-checkbox-{order.Id}")">
+                                    <input type="checkbox" class="check-box" id="@($"admin-orders-select-{order.Id}")"
                                            checked="@selectedOrderIds.Contains(order.Id)"
                                            @onchange="@((e) => ToggleOrderSelection(order.Id, (bool)e.Value!))" />
                                 </td>
-                                <td class="mono order-table__id">#@order.Id</td>
-                                <td>@order.CustomerName</td>
-                                <td class="order-table__muted">@order.OrderItems.Count @L["Orders_ItemsSuffix"]</td>
-                                <td class="num mono">$@order.TotalAmount.ToString("N2")</td>
-                                <td>
-                                    <span class="status @GetStatusModifier(order.Status)">
+                                <td class="mono order-table__id" id="@($"admin-orders-id-{order.Id}")">#@order.Id</td>
+                                <td id="@($"admin-orders-customer-{order.Id}")">@order.CustomerName</td>
+                                <td class="order-table__muted" id="@($"admin-orders-items-{order.Id}")">@order.OrderItems.Count @L["Orders_ItemsSuffix"]</td>
+                                <td class="num mono" id="@($"admin-orders-total-{order.Id}")">$@order.TotalAmount.ToString("N2")</td>
+                                <td id="@($"admin-orders-status-{order.Id}")">
+                                    <span class="status @GetStatusModifier(order.Status)" id="@($"admin-orders-status-badge-{order.Id}")">
                                         <span class="status__dot"></span>@order.Status
                                     </span>
                                 </td>
-                                <td class="num mono order-table__time">@order.CreatedAt.ToString("MMM dd, HH:mm")</td>
-                                <td class="actions-col">
-                                    <div class="row-actions">
-                                        <button class="row-btn" title="@L["Orders_ViewTitle"]" @onclick="@(() => ViewOrder(order.Id))" id="admin-orders-view-btn-@order.Id">
+                                <td class="num mono order-table__time" id="@($"admin-orders-created-{order.Id}")">@order.CreatedAt.ToString("MMM dd, HH:mm")</td>
+                                <td class="actions-col" id="@($"admin-orders-actions-{order.Id}")">
+                                    <div class="row-actions" id="@($"admin-orders-actions-group-{order.Id}")">
+                                        <button class="row-btn" title="@L["Orders_ViewTitle"]" @onclick="@(() => ViewOrder(order.Id))" id="@($"admin-orders-view-btn-{order.Id}")">
                                             <i class="oi oi-eye"></i>
                                         </button>
                                         @if (order.Status == OrderStatus.Pending)
                                         {
-                                            <button class="row-btn row-btn--ok" title="@L["Orders_AcceptTitle"]" @onclick="@(() => AcceptOrder(order.Id))" id="admin-orders-accept-btn-@order.Id">
+                                            <button class="row-btn row-btn--ok" title="@L["Orders_AcceptTitle"]" @onclick="@(() => AcceptOrder(order.Id))" id="@($"admin-orders-accept-btn-{order.Id}")">
                                                 <i class="oi oi-check"></i>
                                             </button>
                                         }
                                         @if (order.Status != OrderStatus.Delivered && order.Status != OrderStatus.Cancelled)
                                         {
-                                            <button class="row-btn" title="@L["Orders_AdvanceTitle"]" @onclick="@(() => AdvanceOrderStatus(order.Id))" id="admin-orders-advance-btn-@order.Id">
+                                            <button class="row-btn" title="@L["Orders_AdvanceTitle"]" @onclick="@(() => AdvanceOrderStatus(order.Id))" id="@($"admin-orders-advance-btn-{order.Id}")">
                                                 <i class="oi oi-arrow-right"></i>
                                             </button>
                                         }
@@ -197,20 +207,20 @@
                     </tbody>
                 </table>
 
-                @if (filteredOrders.Count > 50)
+                @if (filteredOrders.Count > displayCount)
                 {
-                    <div class="table-foot">
-                        <p>@L["Orders_ShowingMessage", filteredOrders.Count]</p>
+                    <div class="table-foot" id="admin-orders-table-foot">
+                        <p id="admin-orders-showing-message">@L["Orders_ShowingMessage", Math.Min(displayCount, filteredOrders.Count), filteredOrders.Count]</p>
                         <button class="pill-btn" @onclick="LoadMoreOrders" id="admin-orders-load-more-btn">@L["Orders_LoadMoreButton"]</button>
                     </div>
                 }
             }
             else
             {
-                <div class="empty">
-                    <i class="oi oi-inbox"></i>
-                    <p>@L["Orders_NoOrdersFound"]</p>
-                    <span>@L["Orders_NoOrdersMessage"]</span>
+                <div class="empty" id="admin-orders-empty-state">
+                    <i class="oi oi-inbox" id="admin-orders-empty-icon"></i>
+                    <p id="admin-orders-empty-title">@L["Orders_NoOrdersFound"]</p>
+                    <span id="admin-orders-empty-message">@L["Orders_NoOrdersMessage"]</span>
                 </div>
             }
         </div>

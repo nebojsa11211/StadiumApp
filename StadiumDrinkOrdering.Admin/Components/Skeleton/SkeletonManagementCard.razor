@@ -11,16 +11,17 @@
      id="skeleton-management-card-@CardType.ToLowerInvariant()">
 
     <!-- Card header with icon and title -->
-    <div class="skeleton-management-header">
-        <div class="skeleton skeleton-management-icon" aria-hidden="true"></div>
-        <div class="skeleton skeleton-management-title" aria-hidden="true"></div>
+    <div class="skeleton-management-header" id="skeleton-management-card-header">
+        <div class="skeleton skeleton-management-icon" id="skeleton-management-card-icon" aria-hidden="true"></div>
+        <div class="skeleton skeleton-management-title" id="skeleton-management-card-title" aria-hidden="true"></div>
     </div>
 
     <!-- Card content with description lines -->
-    <div class="skeleton-management-content">
+    <div class="skeleton-management-content" id="skeleton-management-card-content">
         @for (int i = 0; i < DescriptionLines; i++)
         {
             <div class="skeleton skeleton-management-description"
+                 id="@($"skeleton-management-card-line-{i}")"
                  style="animation-delay: @((i + 1) * 100)ms; @GetDescriptionWidth(i)"
                  aria-hidden="true"></div>
         }
@@ -29,8 +30,9 @@
     <!-- Card footer with action button -->
     @if (ShowActionButton)
     {
-        <div class="skeleton-management-footer">
+        <div class="skeleton-management-footer" id="skeleton-management-card-footer">
             <div class="skeleton skeleton-management-button"
+                 id="skeleton-management-card-action-btn"
                  style="animation-delay: @((DescriptionLines + 2) * 100)ms;"
                  aria-hidden="true"></div>
         </div>
@@ -42,7 +44,7 @@
     <!-- Optional loading spinner -->
     @if (ShowLoadingIndicator)
     {
-        <div class="skeleton-loading-indicator" aria-hidden="true"></div>
+        <div class="skeleton-loading-indicator" id="skeleton-management-card-spinner" aria-hidden="true"></div>
     }
 </div>
 

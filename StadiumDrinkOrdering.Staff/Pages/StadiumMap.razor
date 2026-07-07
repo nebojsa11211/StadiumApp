@@ -10,22 +10,22 @@
 
 @if (!AuthService.IsAuthenticated)
 {
-    <div class="container mt-5">
-        <div class="alert alert-warning" role="alert">
+    <div class="container mt-5" id="staff-stadiummap-auth-container">
+        <div class="alert alert-warning" role="alert" id="staff-stadiummap-auth-alert">
             @Localizer["StadiumMap_AuthRequired"]
-            <a href="/login" class="btn btn-primary ms-2">@Localizer["Login"]</a>
+            <a href="/login" class="btn btn-primary ms-2" id="staff-stadiummap-login-link">@Localizer["Login"]</a>
         </div>
     </div>
 }
 else
 {
-    <div class="container-fluid">
-        <div class="row mb-4">
-            <div class="col">
-                <h1>@Localizer["StadiumMap_Heading"]</h1>
-                <p class="text-muted">@Localizer["StadiumMap_Subtitle"]</p>
+    <div class="container-fluid" id="staff-stadiummap-main">
+        <div class="row mb-4" id="staff-stadiummap-header-row">
+            <div class="col" id="staff-stadiummap-header-col">
+                <h1 id="staff-stadiummap-heading">@Localizer["StadiumMap_Heading"]</h1>
+                <p class="text-muted" id="staff-stadiummap-subtitle">@Localizer["StadiumMap_Subtitle"]</p>
             </div>
-            <div class="col-auto">
+            <div class="col-auto" id="staff-stadiummap-header-actions">
                 <button class="btn btn-outline-primary" @onclick="RefreshMap" id="staff-stadiummap-refresh-btn">
                     <span class="oi oi-reload me-2"></span>@Localizer["Refresh"]
                 </button>
@@ -33,11 +33,11 @@ else
         </div>
 
         <!-- Map Legend -->
-        <div class="row mb-3">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body py-2">
-                        <div class="row align-items-center">
+        <div class="row mb-3" id="staff-stadiummap-legend-row">
+            <div class="col" id="staff-stadiummap-legend-col">
+                <div class="card" id="staff-stadiummap-legend-card">
+                    <div class="card-body py-2" id="staff-stadiummap-legend-body">
+                        <div class="row align-items-center" id="staff-stadiummap-legend-content">
                             <div class="col-auto">
                                 <strong>@Localizer["StadiumMap_Legend"]</strong>
                             </div>
@@ -61,12 +61,12 @@ else
         </div>
 
         <!-- Stadium Map -->
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="stadium-map-container">
-                            <svg viewBox="0 0 800 600" class="stadium-svg">
+        <div class="row" id="staff-stadiummap-map-row">
+            <div class="col" id="staff-stadiummap-map-col">
+                <div class="card" id="staff-stadiummap-map-card">
+                    <div class="card-body p-0" id="staff-stadiummap-map-body">
+                        <div class="stadium-map-container" id="staff-stadiummap-container">
+                            <svg viewBox="0 0 800 600" class="stadium-svg" id="staff-stadiummap-svg">
                                 <!-- Field/Pitch in the center -->
                                 <rect x="250" y="200" width="300" height="150" 
                                       fill="#2d8a2f" stroke="#1a5f1a" stroke-width="2" rx="10">
@@ -112,22 +112,22 @@ else
         </div>
 
         <!-- Area Summary -->
-        <div class="row mt-4">
+        <div class="row mt-4" id="staff-stadiummap-areas-row">
             @foreach (var area in stadiumLayout.Sections)
             {
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">Area @area.SectionName</h6>
+                <div class="col-lg-3 col-md-6 mb-3" id="@($"staff-stadiummap-area-{area.SectionName}-col")">
+                    <div class="card" id="@($"staff-stadiummap-area-{area.SectionName}-card")">
+                        <div class="card-header" id="@($"staff-stadiummap-area-{area.SectionName}-header")">
+                            <h6 class="mb-0" id="@($"staff-stadiummap-area-{area.SectionName}-title")">Area @area.SectionName</h6>
                         </div>
-                        <div class="card-body">
-                            <div class="row text-center">
-                                <div class="col">
-                                    <div class="h5 text-primary">@area.TotalSeats</div>
+                        <div class="card-body" id="@($"staff-stadiummap-area-{area.SectionName}-body")">
+                            <div class="row text-center" id="@($"staff-stadiummap-area-{area.SectionName}-stats")">
+                                <div class="col" id="@($"staff-stadiummap-area-{area.SectionName}-seats-col")">
+                                    <div class="h5 text-primary" id="@($"staff-stadiummap-area-{area.SectionName}-seats-value")">@area.TotalSeats</div>
                                     <small class="text-muted">Total Seats</small>
                                 </div>
-                                <div class="col">
-                                    <div class="h5 text-warning">@area.ActiveOrders</div>
+                                <div class="col" id="@($"staff-stadiummap-area-{area.SectionName}-orders-col")">
+                                    <div class="h5 text-warning" id="@($"staff-stadiummap-area-{area.SectionName}-orders-value")">@area.ActiveOrders</div>
                                     <small class="text-muted">Active Orders</small>
                                 </div>
                             </div>
@@ -151,14 +151,14 @@ else
     <!-- Seat Details Modal -->
     @if (selectedSeat != null)
     {
-        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Seat @selectedSeat.SeatLabel</h5>
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" id="staff-stadiummap-modal">
+            <div class="modal-dialog" id="staff-stadiummap-modal-dialog">
+                <div class="modal-content" id="staff-stadiummap-modal-content">
+                    <div class="modal-header" id="staff-stadiummap-modal-header">
+                        <h5 class="modal-title" id="staff-stadiummap-modal-title">Seat @selectedSeat.SeatLabel</h5>
                         <button type="button" class="btn-close" @onclick="CloseSeatModal" id="staff-stadiummap-close-modal-btn"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" id="staff-stadiummap-modal-body">
                         @if (selectedSeat.HasActiveOrder && selectedSeat.ActiveOrder != null)
                         {
                             var order = selectedSeat.ActiveOrder;
@@ -197,10 +197,10 @@ else
                             <p class="text-muted">No active orders for this seat.</p>
                         }
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer" id="staff-stadiummap-modal-footer">
                         @if (selectedSeat.HasActiveOrder && selectedSeat.ActiveOrder != null)
                         {
-                            <button type="button" class="btn btn-primary" 
+                            <button type="button" class="btn btn-primary"
                                     @onclick="() => GoToOrderDetails(selectedSeat.ActiveOrder.Id)" id="staff-stadiummap-order-details-btn">
                                 View Order Details
                             </button>

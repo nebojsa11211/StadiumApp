@@ -2,10 +2,10 @@
 
 @* Reusable top bar for mobile screens: optional back button, title/subtitle, optional live badge. *@
 
-<header class="screen-header">
+<header id="customer-screen-header-main" class="screen-header">
     @if (ShowBack)
     {
-        <button class="iconbtn" @onclick="HandleBack" aria-label="Back">‹</button>
+        <button id="customer-screen-header-back-btn" class="iconbtn" @onclick="HandleBack" aria-label="Back">‹</button>
     }
     <div id="customer-screen-header-titles" class="sh-titles">
         <div id="customer-screen-header-title" class="sh-title">@Title</div>

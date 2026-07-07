@@ -9,32 +9,32 @@
     };
 }
 
-<div class="@containerClass">
+<div class="@containerClass" id="staff-loading-skeleton-@Type">
     @if (Type == SkeletonType.Card)
     {
-        <div class="skeleton-card @AdditionalClass">
-            <div class="skeleton-header">
-                <div class="skeleton-text skeleton-title"></div>
-                <div class="skeleton-text skeleton-subtitle"></div>
+        <div class="skeleton-card @AdditionalClass" id="staff-loading-skeleton-card">
+            <div class="skeleton-header" id="staff-loading-skeleton-card-header">
+                <div class="skeleton-text skeleton-title" id="staff-loading-skeleton-card-title"></div>
+                <div class="skeleton-text skeleton-subtitle" id="staff-loading-skeleton-card-subtitle"></div>
             </div>
-            <div class="skeleton-icon"></div>
+            <div class="skeleton-icon" id="staff-loading-skeleton-card-icon"></div>
         </div>
     }
     else if (Type == SkeletonType.Table)
     {
-        <div class="skeleton-table @AdditionalClass">
-            <div class="skeleton-table-header">
+        <div class="skeleton-table @AdditionalClass" id="staff-loading-skeleton-table">
+            <div class="skeleton-table-header" id="staff-loading-skeleton-table-header">
                 @for (int i = 0; i < Columns; i++)
                 {
-                    <div class="skeleton-text skeleton-header-cell"></div>
+                    <div class="skeleton-text skeleton-header-cell" id="staff-loading-skeleton-table-col-@i"></div>
                 }
             </div>
             @for (int row = 0; row < Rows; row++)
             {
-                <div class="skeleton-table-row">
+                <div class="skeleton-table-row" id="staff-loading-skeleton-table-row-@row">
                     @for (int col = 0; col < Columns; col++)
                     {
-                        <div class="skeleton-text skeleton-cell"></div>
+                        <div class="skeleton-text skeleton-cell" id="staff-loading-skeleton-table-cell-@row-@col"></div>
                     }
                 </div>
             }
@@ -44,16 +44,16 @@
     {
         @for (int i = 0; i < Count; i++)
         {
-            <div class="skeleton-button @AdditionalClass mb-2"></div>
+            <div class="skeleton-button @AdditionalClass mb-2" id="staff-loading-skeleton-button-@i"></div>
         }
     }
     else if (Type == SkeletonType.List)
     {
         @for (int i = 0; i < Count; i++)
         {
-            <div class="skeleton-list-item @AdditionalClass mb-3">
-                <div class="skeleton-text skeleton-primary"></div>
-                <div class="skeleton-text skeleton-secondary"></div>
+            <div class="skeleton-list-item @AdditionalClass mb-3" id="staff-loading-skeleton-list-item-@i">
+                <div class="skeleton-text skeleton-primary" id="staff-loading-skeleton-list-primary-@i"></div>
+                <div class="skeleton-text skeleton-secondary" id="staff-loading-skeleton-list-secondary-@i"></div>
             </div>
         }
     }
@@ -61,16 +61,16 @@
     {
         @for (int i = 0; i < Count; i++)
         {
-            <div class="skeleton-text @AdditionalClass mb-2" style="width: @(Width ?? "100%");"></div>
+            <div class="skeleton-text @AdditionalClass mb-2" id="staff-loading-skeleton-text-@i" style="width: @(Width ?? "100%");"></div>
         }
     }
     else if (Type == SkeletonType.Circle)
     {
-        <div class="skeleton-circle @AdditionalClass" style="width: @(Width ?? "40px"); height: @(Width ?? "40px");"></div>
+        <div class="skeleton-circle @AdditionalClass" id="staff-loading-skeleton-circle" style="width: @(Width ?? "40px"); height: @(Width ?? "40px");"></div>
     }
     else
     {
-        <div class="skeleton-placeholder @AdditionalClass" style="height: @(Height ?? "20px"); width: @(Width ?? "100%");"></div>
+        <div class="skeleton-placeholder @AdditionalClass" id="staff-loading-skeleton-placeholder" style="height: @(Height ?? "20px"); width: @(Width ?? "100%");"></div>
     }
 </div>
 

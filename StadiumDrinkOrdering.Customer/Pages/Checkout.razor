@@ -17,7 +17,7 @@
         <div id="customer-checkout-emoji" class="co-emoji">🛒</div>
         <h2>Košarica je prazna</h2>
         <p>Dodaj ulaznice prije plaćanja.</p>
-        <button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">Pregledaj utakmice</button>
+        <button id="customer-checkout-empty-browse-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">Pregledaj utakmice</button>
     </div>
 }
 else
@@ -86,7 +86,7 @@ else
             <div id="customer-checkout-payment-section" class="co-section">
                 <div id="customer-checkout-payment-head" class="co-section-head">
                     <span class="label">Plaćanje karticom</span>
-                    <button type="button" class="btn btn-ghost btn-sm" @onclick="FillSamplePaymentData">Testni podaci</button>
+                    <button id="customer-checkout-sample-data-btn" type="button" class="btn btn-ghost btn-sm" @onclick="FillSamplePaymentData">Testni podaci</button>
                 </div>
                 <div id="customer-checkout-field-cardnumber" class="field">
                     <label>Broj kartice</label>
@@ -113,15 +113,15 @@ else
             </div>
 
             <!-- Terms -->
-            <label class="co-terms">
-                <InputCheckbox @bind-Value="checkoutForm.AgreeToTerms" />
+            <label id="customer-checkout-terms-label" class="co-terms">
+                <InputCheckbox id="customer-checkout-terms-input" @bind-Value="checkoutForm.AgreeToTerms" />
                 <span>Prihvaćam <a href="/terms" target="_blank">uvjete korištenja</a> i <a href="/privacy" target="_blank">pravila privatnosti</a>.</span>
             </label>
             <ValidationMessage For="@(() => checkoutForm.AgreeToTerms)" class="co-err" />
         </div>
 
         <div id="customer-checkout-paybar" class="co-paybar">
-            <button type="submit" class="btn btn-primary" disabled="@isProcessing">
+            <button id="customer-checkout-submit-btn" type="submit" class="btn btn-primary" disabled="@isProcessing">
                 @if (isProcessing)
                 {
                     <span class="spinner"></span> <span>Obrađujem…</span>

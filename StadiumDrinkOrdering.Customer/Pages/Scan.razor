@@ -19,8 +19,8 @@
     <div id="customer-scan-manual" class="manual">
         <div id="customer-scan-manual-label" class="label">Ne možeš skenirati?</div>
         <div id="customer-scan-manual-row" class="manual-row">
-            <input @bind="_code" @bind:event="oninput" placeholder="Unesi kôd s ulaznice" @onkeydown="OnKey" />
-            <button class="btn btn-primary btn-sm" @onclick="Submit" disabled="@string.IsNullOrWhiteSpace(_code)">Nastavi</button>
+            <input id="customer-scan-code-input" @bind="_code" @bind:event="oninput" placeholder="Unesi kôd s ulaznice" @onkeydown="OnKey" />
+            <button id="customer-scan-submit-btn" class="btn btn-primary btn-sm" @onclick="Submit" disabled="@string.IsNullOrWhiteSpace(_code)">Nastavi</button>
         </div>
         @if (_error)
         {

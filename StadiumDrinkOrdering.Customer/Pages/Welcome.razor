@@ -108,11 +108,11 @@
         }
         else
         {
-            <button class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
+            <button id="customer-welcome-scan-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
                 <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M6 9.5v5M18 9.5v5"/></svg>
                 Skeniraj ulaznicu
             </button>
-            <button class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">Imaš pretplatu? Prijavi se</button>
+            <button id="customer-welcome-login-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">Imaš pretplatu? Prijavi se</button>
         }
     </div>
 
@@ -126,9 +126,9 @@
             </button>
         }
         <div id="customer-welcome-lang" class="wl-lang" role="group" aria-label="Jezik">
-            <button class="@(IsHr ? "on" : "")" @onclick='() => SetCulture("hr")'>HR</button>
+            <button id="customer-welcome-lang-hr-btn" class="@(IsHr ? "on" : "")" @onclick='() => SetCulture("hr")'>HR</button>
             <span aria-hidden="true">/</span>
-            <button class="@(IsHr ? "" : "on")" @onclick='() => SetCulture("en")'>EN</button>
+            <button id="customer-welcome-lang-en-btn" class="@(IsHr ? "" : "on")" @onclick='() => SetCulture("en")'>EN</button>
         </div>
     </footer>
 </div>

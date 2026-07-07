@@ -20,14 +20,14 @@
                 <i class="bi bi-cup-straw"></i>
             </div>
             <div id="bar-layout-brand-text" class="dash-brand-text">
-                <span class="dash-brand-name">STADIUM</span>
-                <span class="dash-brand-sub">BAR</span>
+                <span id="bar-layout-brand-name" class="dash-brand-name">STADIUM</span>
+                <span id="bar-layout-brand-sub" class="dash-brand-sub">BAR</span>
             </div>
         </div>
 
-        <div class="dash-clock" id="bar-dashboard-clock">
+        <div id="bar-dashboard-clock" class="dash-clock">
             <div id="bar-layout-clock-time" class="dash-clock-time">@_now.ToString("HH:mm:ss")</div>
-            <div id="bar-layout-clock-date" class="dash-clock-date">@_now.ToString("dd/MM/yy") <span class="dash-clock-hr">HR</span></div>
+            <div id="bar-layout-clock-date" class="dash-clock-date">@_now.ToString("dd/MM/yy") <span id="bar-layout-clock-hr" class="dash-clock-hr">HR</span></div>
         </div>
 
         <nav class="dash-nav" id="bar-dashboard-nav">
@@ -63,8 +63,8 @@
                 </div>
             }
 
-            <div class="dash-lang" id="bar-dashboard-lang">
-                <span class="dash-lang-label">HR/EN</span>
+            <div id="bar-dashboard-lang" class="dash-lang">
+                <span id="bar-layout-lang-label" class="dash-lang-label">HR/EN</span>
                 <div id="bar-layout-lang-switch" class="dash-lang-switch">
                     <button class="@LangClass("hr")" @onclick="@(() => SetLang("hr"))" id="bar-dashboard-lang-hr">HR</button>
                     <button class="@LangClass("en")" @onclick="@(() => SetLang("en"))" id="bar-dashboard-lang-en">EN</button>

@@ -1,7 +1,7 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @inject IStringLocalizer<SharedResources> L
 
-<div class="stadium-svg-renderer animated-renderer">
+<div class="stadium-svg-renderer animated-renderer" id="admin-stadium-svg-renderer">
     @if (Layout != null)
     {
         <svg width="100%" height="100%" viewBox="@Layout.ViewBox.ViewBoxString"
@@ -242,8 +242,8 @@
     }
     else
     {
-        <div class="stadium-loading text-center">
-            <div class="spinner-border text-primary" role="status">
+        <div class="stadium-loading text-center" id="admin-stadium-svg-loading">
+            <div class="spinner-border text-primary" id="admin-stadium-svg-spinner" role="status">
                 <span class="visually-hidden">@L["SvgRender_LoadingHidden"]</span>
             </div>
             <p class="mt-2">@L["SvgRender_LoadingText"]</p>

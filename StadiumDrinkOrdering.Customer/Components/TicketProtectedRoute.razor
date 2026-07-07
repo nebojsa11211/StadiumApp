@@ -22,10 +22,10 @@
             <h2>Access Denied</h2>
             <p>@errorMessage</p>
             <div id="customer-ticket-protected-buttons" class="action-buttons">
-                <button class="btn btn-primary" @onclick="RedirectToScanner">
+                <button id="customer-ticket-protected-scan-btn" class="btn btn-primary" @onclick="RedirectToScanner">
                     📱 Scan Your Ticket
                 </button>
-                <button class="btn btn-secondary" @onclick="GoHome">
+                <button id="customer-ticket-protected-home-btn" class="btn btn-secondary" @onclick="GoHome">
                     🏠 Go Home
                 </button>
             </div>

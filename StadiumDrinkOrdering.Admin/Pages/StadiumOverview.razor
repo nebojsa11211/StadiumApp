@@ -7,9 +7,9 @@
 
 <div class="ops-wrapper" id="admin-overview-wrapper" role="main">
     <header class="ops-header" id="admin-overview-header">
-        <div class="ops-header-title">
-            <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
-            <div>
+        <div class="ops-header-title" id="admin-overview-header-title">
+            <i class="bi bi-graph-up-arrow" aria-hidden="true" id="admin-overview-header-icon"></i>
+            <div id="admin-overview-header-content">
                 <h1 id="admin-overview-title">@L["Overview_Title"]</h1>
                 <p class="ops-subtitle">@L["Overview_Subtitle"]</p>
             </div>
@@ -32,8 +32,8 @@
     }
 
     <div class="card ops-controls" id="admin-overview-controls">
-        <div class="card-body ops-controls-body">
-            <div class="ops-field">
+        <div class="card-body ops-controls-body" id="admin-overview-controls-body">
+            <div class="ops-field" id="admin-overview-event-field">
                 <label for="admin-overview-event-select" class="form-label">@L["Overview_EventLabel"]</label>
                 <select id="admin-overview-event-select" class="form-select" @bind="SelectedEventId" @bind:after="OnEventChanged">
                     <option value="0">@L["Overview_SelectEventOption"]</option>
@@ -43,12 +43,12 @@
                     }
                 </select>
             </div>
-            <div class="ops-field ops-field-sm">
+            <div class="ops-field ops-field-sm" id="admin-overview-liters-field">
                 <label for="admin-overview-liters" class="form-label">@L["Overview_BeerPerAttendeeLabel"]</label>
                 <input id="admin-overview-liters" type="number" step="0.1" min="0" class="form-control"
                        @bind="LitersPerAttendee" @bind:event="oninput" />
             </div>
-            <div class="ops-field ops-field-sm">
+            <div class="ops-field ops-field-sm" id="admin-overview-staff-field">
                 <label for="admin-overview-staff-ratio" class="form-label">@L["Overview_AttendeesPerStaffLabel"]</label>
                 <input id="admin-overview-staff-ratio" type="number" step="1" min="1" class="form-control"
                        @bind="AttendeesPerStaff" @bind:event="oninput" />
@@ -75,10 +75,10 @@
         @* KPI summary cards *@
         <div class="ops-kpis" id="admin-overview-kpis">
             <div class="ops-kpi" id="admin-overview-kpi-attendance">
-                <div class="ops-kpi-label">@L["Overview_KpiAttendance"]</div>
-                <div class="ops-kpi-value">@TotalSold.ToString("N0") <span class="ops-kpi-sub">/ @TotalCapacity.ToString("N0")</span></div>
-                <div class="ops-progress"><div class="ops-progress-bar @OccupancyClass(OverallOccupancy)" style="width:@(OverallOccupancy)%"></div></div>
-                <div class="ops-kpi-foot">
+                <div class="ops-kpi-label" id="admin-overview-kpi-attendance-label">@L["Overview_KpiAttendance"]</div>
+                <div class="ops-kpi-value" id="admin-overview-kpi-attendance-value">@TotalSold.ToString("N0") <span class="ops-kpi-sub">/ @TotalCapacity.ToString("N0")</span></div>
+                <div class="ops-progress" id="admin-overview-kpi-attendance-progress"><div class="ops-progress-bar @OccupancyClass(OverallOccupancy)" style="width:@(OverallOccupancy)%"></div></div>
+                <div class="ops-kpi-foot" id="admin-overview-kpi-attendance-foot">
                     @OverallOccupancy.ToString("0.0")@L["Overview_PercentFull"]
                     @if (TotalSeasonSold > 0)
                     {
@@ -90,32 +90,32 @@
                 </div>
             </div>
             <div class="ops-kpi" id="admin-overview-kpi-beer">
-                <div class="ops-kpi-label">@L["Overview_KpiBeer"]</div>
-                <div class="ops-kpi-value">@BeerLiters.ToString("N0") <span class="ops-kpi-sub">L</span></div>
-                <div class="ops-kpi-foot">≈ @BeerServings.ToString("N0") @L["Overview_Servings"] (@ServingLiters L)</div>
+                <div class="ops-kpi-label" id="admin-overview-kpi-beer-label">@L["Overview_KpiBeer"]</div>
+                <div class="ops-kpi-value" id="admin-overview-kpi-beer-value">@BeerLiters.ToString("N0") <span class="ops-kpi-sub">L</span></div>
+                <div class="ops-kpi-foot" id="admin-overview-kpi-beer-foot">≈ @BeerServings.ToString("N0") @L["Overview_Servings"] (@ServingLiters L)</div>
             </div>
             <div class="ops-kpi" id="admin-overview-kpi-staff">
-                <div class="ops-kpi-label">@L["Overview_KpiStaff"]</div>
-                <div class="ops-kpi-value">@RecommendedStaff.ToString("N0")</div>
-                <div class="ops-kpi-foot">@L["Overview_StaffRatio", AttendeesPerStaff]</div>
+                <div class="ops-kpi-label" id="admin-overview-kpi-staff-label">@L["Overview_KpiStaff"]</div>
+                <div class="ops-kpi-value" id="admin-overview-kpi-staff-value">@RecommendedStaff.ToString("N0")</div>
+                <div class="ops-kpi-foot" id="admin-overview-kpi-staff-foot">@L["Overview_StaffRatio", AttendeesPerStaff]</div>
             </div>
         </div>
 
         @if (Sectors.Any())
         {
-            <h2 class="ops-section-title">@L["Overview_SectorBreakdown"]</h2>
+            <h2 class="ops-section-title" id="admin-overview-sectors-title">@L["Overview_SectorBreakdown"]</h2>
             <div class="ops-sectors" id="admin-overview-sectors">
                 @foreach (var s in Sectors)
                 {
                     var occ = OccupancyOf(s);
                     <div class="ops-sector-card @OccupancyClass(occ)" id="admin-overview-sector-@s.SectionCode">
-                        <div class="ops-sector-head">
-                            <span class="ops-sector-code" title="@s.SectionName">@s.SectionCode</span>
-                            <span class="ops-sector-occ">@occ.ToString("0")%</span>
+                        <div class="ops-sector-head" id="admin-overview-sector-head-@s.SectionCode">
+                            <span class="ops-sector-code" title="@s.SectionName" id="admin-overview-sector-code-@s.SectionCode">@s.SectionCode</span>
+                            <span class="ops-sector-occ" id="admin-overview-sector-occ-@s.SectionCode">@occ.ToString("0")%</span>
                         </div>
-                        <div class="ops-progress"><div class="ops-progress-bar @OccupancyClass(occ)" style="width:@(occ)%"></div></div>
-                        <div class="ops-sector-stats">
-                            <span><strong>@s.Sold.ToString("N0")</strong> / @s.Capacity.ToString("N0") @L["Overview_Seats"]</span>
+                        <div class="ops-progress" id="admin-overview-sector-progress-@s.SectionCode"><div class="ops-progress-bar @OccupancyClass(occ)" style="width:@(occ)%"></div></div>
+                        <div class="ops-sector-stats" id="admin-overview-sector-stats-@s.SectionCode">
+                            <span id="admin-overview-sector-sold-@s.SectionCode"><strong>@s.Sold.ToString("N0")</strong> / @s.Capacity.ToString("N0") @L["Overview_Seats"]</span>
                             @if (s.SeasonSold > 0)
                             {
                                 <span id="admin-overview-sector-season-@s.SectionCode" title="Seats held by season passes"
@@ -124,9 +124,9 @@
                                 </span>
                             }
                         </div>
-                        <div class="ops-sector-plan">
-                            <span title="@L["Overview_SectorBeerTooltip"]"><i class="bi bi-cup-straw"></i> @SectorBeer(s).ToString("N0") L</span>
-                            <span title="@L["Overview_SectorStaffTooltip"]"><i class="bi bi-person-badge"></i> @SectorStaff(s) @L["Overview_Staff"]</span>
+                        <div class="ops-sector-plan" id="admin-overview-sector-plan-@s.SectionCode">
+                            <span id="admin-overview-sector-beer-@s.SectionCode" title="@L["Overview_SectorBeerTooltip"]"><i class="bi bi-cup-straw"></i> @SectorBeer(s).ToString("N0") L</span>
+                            <span id="admin-overview-sector-staff-@s.SectionCode" title="@L["Overview_SectorStaffTooltip"]"><i class="bi bi-person-badge"></i> @SectorStaff(s) @L["Overview_Staff"]</span>
                         </div>
                     </div>
                 }

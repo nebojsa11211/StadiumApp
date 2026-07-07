@@ -11,22 +11,22 @@
      id="skeleton-table-@TableType.ToLowerInvariant()">
 
     <!-- Table header -->
-    <div class="skeleton-table-header">
-        <div class="skeleton skeleton-table-title" aria-hidden="true"></div>
+    <div class="skeleton-table-header" id="skeleton-table-header">
+        <div class="skeleton skeleton-table-title" id="skeleton-table-title" aria-hidden="true"></div>
         @if (ShowActionButton)
         {
-            <div class="skeleton skeleton-table-button" aria-hidden="true"></div>
+            <div class="skeleton skeleton-table-button" id="skeleton-table-action-btn" aria-hidden="true"></div>
         }
     </div>
 
     <!-- Table body with rows -->
-    <div class="skeleton-table-body">
+    <div class="skeleton-table-body" id="skeleton-table-body">
         @if (ShowEmptyState)
         {
             <!-- Empty state skeleton -->
-            <div class="skeleton-table-empty">
-                <div class="skeleton skeleton-table-empty-icon" aria-hidden="true"></div>
-                <div class="skeleton skeleton-table-empty-text" aria-hidden="true"></div>
+            <div class="skeleton-table-empty" id="skeleton-table-empty">
+                <div class="skeleton skeleton-table-empty-icon" id="skeleton-table-empty-icon" aria-hidden="true"></div>
+                <div class="skeleton skeleton-table-empty-text" id="skeleton-table-empty-text" aria-hidden="true"></div>
             </div>
         }
         else
@@ -34,24 +34,24 @@
             <!-- Data rows skeleton -->
             @for (int i = 0; i < RowCount; i++)
             {
-                <div class="skeleton-table-row" style="animation-delay: @(i * 100)ms;">
+                <div class="skeleton-table-row" id="@($"skeleton-table-row-{i}")" style="animation-delay: @(i * 100)ms;">
                     @if (TableType.Equals("Orders", StringComparison.OrdinalIgnoreCase))
                     {
                         <!-- Order-specific column layout -->
-                        <div class="skeleton skeleton-table-cell order-id" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-table-cell customer" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-table-cell amount" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-table-cell status" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-table-cell time" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell order-id" id="@($"skeleton-table-row-{i}-col-id")" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell customer" id="@($"skeleton-table-row-{i}-col-customer")" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell amount" id="@($"skeleton-table-row-{i}-col-amount")" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell status" id="@($"skeleton-table-row-{i}-col-status")" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell time" id="@($"skeleton-table-row-{i}-col-time")" aria-hidden="true"></div>
                     }
                     else if (TableType.Equals("Users", StringComparison.OrdinalIgnoreCase))
                     {
                         <!-- User-specific column layout -->
-                        <div class="skeleton skeleton-table-cell" style="width: 70%;" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-table-cell" style="width: 80%;" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-table-cell status" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-table-cell" style="width: 60%;" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-table-cell" style="width: 50%;" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell" id="@($"skeleton-table-row-{i}-col-0")" style="width: 70%;" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell" id="@($"skeleton-table-row-{i}-col-1")" style="width: 80%;" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell status" id="@($"skeleton-table-row-{i}-col-2")" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell" id="@($"skeleton-table-row-{i}-col-3")" style="width: 60%;" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-table-cell" id="@($"skeleton-table-row-{i}-col-4")" style="width: 50%;" aria-hidden="true"></div>
                     }
                     else
                     {
@@ -59,6 +59,7 @@
                         @for (int j = 0; j < ColumnCount; j++)
                         {
                             <div class="skeleton skeleton-table-cell"
+                                 id="@($"skeleton-table-row-{i}-col-{j}")"
                                  style="width: @GetColumnWidth(j)%;"
                                  aria-hidden="true"></div>
                         }
@@ -74,7 +75,7 @@
     <!-- Optional loading spinner -->
     @if (ShowLoadingIndicator)
     {
-        <div class="skeleton-loading-indicator" aria-hidden="true"></div>
+        <div class="skeleton-loading-indicator" id="skeleton-table-spinner" aria-hidden="true"></div>
     }
 </div>
 

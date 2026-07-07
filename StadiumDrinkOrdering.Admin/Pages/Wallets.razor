@@ -26,30 +26,30 @@
     @if (list == null)
     {
         <div class="loading-state" id="admin-wallets-loading">
-            <span class="loading-spinner"></span><p>@L["Wallets_Loading"]</p>
+            <span class="loading-spinner"></span><p id="admin-wallets-loading-text">@L["Wallets_Loading"]</p>
         </div>
     }
     else if (!list.Wallets.Any())
     {
         <div class="empty" id="admin-wallets-empty">
             <i class="bi bi-wallet2"></i>
-            <p>@L["Wallets_NoneTitle"]</p>
-            <span>@L["Wallets_NoneDesc"]</span>
+            <p id="admin-wallets-empty-title">@L["Wallets_NoneTitle"]</p>
+            <span id="admin-wallets-empty-desc">@L["Wallets_NoneDesc"]</span>
         </div>
     }
     else
     {
-        <div class="table-responsive">
+        <div class="table-responsive" id="admin-wallets-table-responsive">
             <table class="table align-middle" id="admin-wallets-table">
-                <thead>
-                    <tr>
-                        <th>@L["Wallets_ColUser"]</th>
-                        <th class="text-end">@L["Wallets_ColBalance"]</th>
-                        <th>@L["Wallets_ColStatus"]</th>
-                        <th class="text-end">@L["Wallets_ColActions"]</th>
+                <thead id="admin-wallets-thead">
+                    <tr id="admin-wallets-header-row">
+                        <th id="admin-wallets-header-user">@L["Wallets_ColUser"]</th>
+                        <th class="text-end" id="admin-wallets-header-balance">@L["Wallets_ColBalance"]</th>
+                        <th id="admin-wallets-header-status">@L["Wallets_ColStatus"]</th>
+                        <th class="text-end" id="admin-wallets-header-actions">@L["Wallets_ColActions"]</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="admin-wallets-tbody">
                     @foreach (var w in list.Wallets)
                     {
                         <tr id="admin-wallet-row-@w.WalletId">
@@ -107,10 +107,10 @@
                         }
                     </div>
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <div class="card h-100"><div class="card-body">
-                                <h6>@L["Wallets_Adjust"]</h6>
+                    <div class="row g-3 mb-3" id="admin-wallet-modal-actions-row">
+                        <div class="col-md-6" id="admin-wallet-modal-adjust-col">
+                            <div class="card h-100" id="admin-wallet-adjust-card"><div class="card-body" id="admin-wallet-adjust-body">
+                                <h6 id="admin-wallet-adjust-title">@L["Wallets_Adjust"]</h6>
                                 <input type="number" step="0.01" class="form-control mb-2" placeholder="@L["Wallets_AmountSigned"]"
                                        @bind="adjustAmount" id="admin-wallet-adjust-amount" />
                                 <input type="text" class="form-control mb-2" placeholder="@L["Wallets_Reason"]"
@@ -121,9 +121,9 @@
                                 </button>
                             </div></div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="card h-100"><div class="card-body">
-                                <h6>@L["Wallets_Refund"]</h6>
+                        <div class="col-md-6" id="admin-wallet-modal-refund-col">
+                            <div class="card h-100" id="admin-wallet-refund-card"><div class="card-body" id="admin-wallet-refund-body">
+                                <h6 id="admin-wallet-refund-title">@L["Wallets_Refund"]</h6>
                                 <input type="number" step="0.01" min="0.01" class="form-control mb-2" placeholder="@L["Wallets_Amount"]"
                                        @bind="refundAmount" id="admin-wallet-refund-amount" />
                                 <input type="text" class="form-control mb-2" placeholder="@L["Wallets_Reason"]"
@@ -136,10 +136,10 @@
                         </div>
                     </div>
 
-                    <h6>@L["Wallets_Ledger"]</h6>
+                    <h6 id="admin-wallet-ledger-title">@L["Wallets_Ledger"]</h6>
                     @if (ledger == null)
                     {
-                        <p class="text-muted small">@L["Wallets_Loading"]</p>
+                        <p class="text-muted small" id="admin-wallet-ledger-loading">@L["Wallets_Loading"]</p>
                     }
                     else if (ledger.Transactions.Count == 0)
                     {
@@ -147,19 +147,19 @@
                     }
                     else
                     {
-                        <div class="table-responsive" style="max-height:280px;overflow:auto;">
+                        <div class="table-responsive" style="max-height:280px;overflow:auto;" id="admin-wallet-ledger-responsive">
                             <table class="table table-sm" id="admin-wallet-ledger-table">
-                                <thead><tr>
-                                    <th>@L["Wallets_LedgerDate"]</th>
-                                    <th>@L["Wallets_LedgerType"]</th>
-                                    <th>@L["Wallets_Reason"]</th>
-                                    <th class="text-end">@L["Wallets_Amount"]</th>
-                                    <th class="text-end">@L["Wallets_LedgerAfter"]</th>
+                                <thead id="admin-wallet-ledger-thead"><tr id="admin-wallet-ledger-header-row">
+                                    <th id="admin-wallet-ledger-header-date">@L["Wallets_LedgerDate"]</th>
+                                    <th id="admin-wallet-ledger-header-type">@L["Wallets_LedgerType"]</th>
+                                    <th id="admin-wallet-ledger-header-reason">@L["Wallets_Reason"]</th>
+                                    <th class="text-end" id="admin-wallet-ledger-header-amount">@L["Wallets_Amount"]</th>
+                                    <th class="text-end" id="admin-wallet-ledger-header-after">@L["Wallets_LedgerAfter"]</th>
                                 </tr></thead>
-                                <tbody>
+                                <tbody id="admin-wallet-ledger-tbody">
                                     @foreach (var t in ledger.Transactions)
                                     {
-                                        <tr id="admin-wallet-ledger-row-@t.Id">
+                                        <tr id="@($"admin-wallet-ledger-row-{t.Id}")">
                                             <td class="small text-nowrap">@t.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
                                             <td>@t.Type</td>
                                             <td class="small text-muted">@t.Description</td>

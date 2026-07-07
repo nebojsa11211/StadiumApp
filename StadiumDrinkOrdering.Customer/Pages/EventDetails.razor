@@ -1,6 +1,7 @@
 @page "/events/{EventId:int}"
 @layout MobileShell
 @using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Customer.Components.Stadium
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
@@ -19,7 +20,7 @@ else if (eventDetails == null)
         <div id="customer-event-details-emoji" class="ev-emoji">🚫</div>
         <h2>Utakmica nije pronađena</h2>
         <p>Ova utakmica više nije dostupna.</p>
-        <button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/welcome"))">Početna</button>
+        <button id="customer-event-details-notfound-home-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/welcome"))">Početna</button>
     </div>
 }
 else
@@ -59,18 +60,24 @@ else
             </div>
         }
 
-        <div class="ev-section-head">
+        <div id="customer-event-details-section-head" class="ev-section-head">
             <span class="label">Odaberi tribinu</span>
-            <span class="ev-hint">Dodirni za mjesta</span>
+            <span class="ev-hint">Dodirni tribinu na karti ili u popisu</span>
         </div>
 
         @if (eventDetails.SectionAvailability.Any())
         {
+            <div id="customer-event-details-stadium" class="ev-stadium">
+                <StadiumSelectorCanvas @ref="stadiumCanvas"
+                                       Sections="eventDetails.SectionAvailability"
+                                       OnSectorSelected="OnStadiumSectorSelected" />
+            </div>
+
             <div id="customer-event-details-sections" class="ev-sections">
                 @foreach (var sec in eventDetails.SectionAvailability.Values.OrderBy(s => s.SectionName))
                 {
                     var soldOut = sec.AvailableSeats == 0;
-                    <button class="ev-sec @(soldOut ? "sold" : "")" disabled="@soldOut"
+                    <button id="customer-event-details-section-btn-@sec.SectionId" class="ev-sec @(soldOut ? "sold" : "")" disabled="@soldOut"
                             @onclick="@(() => ViewSectionSeats(sec.SectionId))">
                         <div id="customer-event-details-section-left-@sec.SectionId" class="ev-sec-l">
                             <span class="ev-sec-name">@sec.SectionName</span>
@@ -116,7 +123,7 @@ else
                 <div class="sheet-title">@selectedSection.SectionName</div>
                 <div class="sheet-sub">@(string.IsNullOrWhiteSpace(selectedSection.TribuneName) ? "Odaberi mjesta" : selectedSection.TribuneName)</div>
             </div>
-            <button class="iconbtn" @onclick="CloseSeatSheet" aria-label="Zatvori">✕</button>
+            <button id="customer-event-details-sheet-close-seats-btn" class="iconbtn" @onclick="CloseSeatSheet" aria-label="Zatvori">✕</button>
         </div>
 
         @if (isLoadingSeats)
@@ -126,9 +133,9 @@ else
         else if (selectedSection.Seats.Any())
         {
             <div id="customer-event-details-seat-legend" class="seat-legend">
-                <span class="lg"><i class="sw sw-free" aria-hidden="true"></i> Slobodno</span>
-                <span class="lg"><i class="sw sw-sel" aria-hidden="true"></i> Odabrano</span>
-                <span class="lg"><i class="sw sw-taken" aria-hidden="true"></i> Zauzeto</span>
+                <span id="customer-event-details-seat-legend-free" class="lg"><i class="sw sw-free" aria-hidden="true"></i> Slobodno</span>
+                <span id="customer-event-details-seat-legend-selected" class="lg"><i class="sw sw-sel" aria-hidden="true"></i> Odabrano</span>
+                <span id="customer-event-details-seat-legend-taken" class="lg"><i class="sw sw-taken" aria-hidden="true"></i> Zauzeto</span>
             </div>
 
             <div id="customer-event-details-seat-pitch" class="seat-pitch">
@@ -142,14 +149,14 @@ else
                 @foreach (var rowGroup in selectedSection.Seats.GroupBy(s => s.RowNumber).OrderBy(g => g.Key))
                 {
                     <div id="customer-event-details-seat-row-@rowGroup.Key" class="seat-row">
-                        <span class="rl">Red @rowGroup.Key</span>
+                        <span id="customer-event-details-seat-row-label-@rowGroup.Key" class="rl">Red @rowGroup.Key</span>
                         <div id="customer-event-details-seats-@rowGroup.Key" class="seats">
                             @foreach (var seat in rowGroup.OrderBy(s => s.SeatNumber))
                             {
                                 if (seat.IsAvailable)
                                 {
                                     var isSel = selectedSeats.Any(s => s.SectorId == seat.SectorId && s.RowNumber == seat.RowNumber && s.SeatNumber == seat.SeatNumber);
-                                    <button class="seat @(isSel ? "sel" : "")"
+                                    <button id="customer-event-details-seat-@seat.SectorId-r@seat.RowNumber-s@seat.SeatNumber" class="seat @(isSel ? "sel" : "")"
                                             @onclick="@(() => ToggleSeatSelection(seat))"
                                             aria-pressed="@isSel"
                                             aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber}, €{seat.Price.ToString("F0")} — {(isSel ? "odabrano" : "slobodno")}")'
@@ -159,7 +166,7 @@ else
                                 }
                                 else
                                 {
-                                    <button class="seat taken" disabled aria-disabled="true"
+                                    <button id="customer-event-details-seat-@seat.SectorId-r@seat.RowNumber-s@seat.SeatNumber" class="seat taken" disabled aria-disabled="true"
                                             aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber} — zauzeto")'>
                                         @seat.SeatNumber
                                     </button>
@@ -175,12 +182,17 @@ else
             <div id="customer-event-details-empty-seats" class="ev-empty">Nema dostupnih mjesta u ovoj tribini.</div>
         }
 
+        @if (!string.IsNullOrEmpty(seatSheetError))
+        {
+            <div id="customer-event-details-seat-error" class="seat-error" role="alert">@seatSheetError</div>
+        }
+
         @if (selectedSeats.Any())
         {
             <div id="customer-event-details-seat-summary" class="seat-summary no-scrollbar" role="group" aria-label="Odabrana mjesta">
                 @foreach (var seat in selectedSeats.OrderBy(s => s.RowNumber).ThenBy(s => s.SeatNumber))
                 {
-                    <button class="seat-chip" @onclick="@(() => ToggleSeatSelection(seat))"
+                    <button id="customer-event-details-seat-chip-@seat.SectorId-r@seat.RowNumber-s@seat.SeatNumber" class="seat-chip" @onclick="@(() => ToggleSeatSelection(seat))"
                             aria-label='@($"Ukloni: Red {seat.RowNumber}, mjesto {seat.SeatNumber}")'>
                         <span>Red @seat.RowNumber · @seat.SeatNumber</span>
                         <span class="x" aria-hidden="true">✕</span>
@@ -189,7 +201,7 @@ else
             </div>
         }
 
-        <button class="btn btn-primary sheet-cta" disabled="@(!selectedSeats.Any())" @onclick="AddSelectedSeatsToCart">
+        <button id="customer-event-details-add-seats-btn" class="btn btn-primary sheet-cta" disabled="@(!selectedSeats.Any())" @onclick="AddSelectedSeatsToCart">
             @if (selectedSeats.Any())
             {
                 <span>Dodaj @selectedSeats.Count @Seats(selectedSeats.Count) · €@SelectedTotal</span>
@@ -213,7 +225,7 @@ else
                 <div class="sheet-title">Košarica</div>
                 <div class="sheet-sub">@cartItems.Count @Seats(cartItems.Count)</div>
             </div>
-            <button class="iconbtn" @onclick="@(() => showCart = false)" aria-label="Zatvori">✕</button>
+            <button id="customer-event-details-sheet-close-cart-btn" class="iconbtn" @onclick="@(() => showCart = false)" aria-label="Zatvori">✕</button>
         </div>
 
         @if (!cartItems.Any())
@@ -244,8 +256,8 @@ else
                 <span class="tnum">€@CartTotal.ToString("F2")</span>
             </div>
 
-            <button class="btn btn-primary" @onclick="ProceedToCheckout">Nastavi na plaćanje</button>
-            <button class="btn btn-ghost cart-clear" @onclick="ClearCart">Isprazni košaricu</button>
+            <button id="customer-event-details-cart-checkout-btn" class="btn btn-primary" @onclick="ProceedToCheckout">Nastavi na plaćanje</button>
+            <button id="customer-event-details-cart-clear-btn" class="btn btn-ghost cart-clear" @onclick="ClearCart">Isprazni košaricu</button>
         }
     }
 </div>
@@ -259,9 +271,11 @@ else
     private List<CartItemDto> cartItems = new();
     private bool isLoading = true;
     private bool isLoadingSeats = false;
+    private string? seatSheetError;
     private bool showCart = false;
     private string sessionId = "";
     private bool hasInitialized = false;
+    private StadiumSelectorCanvas? stadiumCanvas;
 
     private static readonly string[] MonthsHr =
         { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
@@ -325,12 +339,17 @@ else
         }
     }
 
+    // Clicking a sector on the stadium map opens the same seat sheet as the list. The clicked
+    // overlay id is exactly the section id GetSectionAvailability expects.
+    private Task OnStadiumSectorSelected(int overlaySectorId) => ViewSectionSeats(overlaySectorId);
+
     private async Task ViewSectionSeats(int sectionId)
     {
         if (eventDetails == null) return;
 
         isLoadingSeats = true;
         selectedSeats.Clear();
+        seatSheetError = null;
         selectedSection = new SectionAvailabilityDto(); // open the sheet immediately, then fill
 
         try
@@ -362,9 +381,14 @@ else
     {
         if (!selectedSeats.Any() || eventDetails == null) return;
 
-        foreach (var seat in selectedSeats)
+        seatSheetError = null;
+        CartAddResult? lastFailure = null;
+
+        // Iterate a snapshot: seats that succeed are removed, seats that fail stay selected
+        // so the user can see exactly which ones couldn't be added.
+        foreach (var seat in selectedSeats.ToList())
         {
-            await ApiService.AddSeatToCartAsync(new AddSeatToCartRequest
+            var result = await ApiService.AddSeatToCartAsync(new AddSeatToCartRequest
             {
                 SessionId = sessionId,
                 EventId = EventId,
@@ -373,10 +397,22 @@ else
                 SeatNumber = seat.SeatNumber,
                 Price = seat.Price
             });
+
+            if (result.Success)
+                selectedSeats.Remove(seat);
+            else
+                lastFailure = result;
         }
 
-        selectedSeats.Clear();
         await LoadCart();
+
+        if (lastFailure != null)
+        {
+            // Keep the sheet open with the failed seats still selected and show why.
+            seatSheetError = lastFailure.Message ?? "Neka mjesta nije moguće dodati u košaricu.";
+            return;
+        }
+
         CloseSeatSheet();
     }
 
@@ -410,6 +446,7 @@ else
     {
         selectedSection = null;
         selectedSeats.Clear();
+        seatSheetError = null;
     }
 
     private void ProceedToCheckout() => Navigation.NavigateTo("/checkout?sessionId=" + sessionId);

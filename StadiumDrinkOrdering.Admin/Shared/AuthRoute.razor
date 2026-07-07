@@ -4,9 +4,9 @@
 
 @if (isChecking)
 {
-    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div class="text-center">
-            <div class="spinner-border text-primary mb-3" role="status">
+    <div class="d-flex justify-content-center align-items-center" id="admin-auth-route-checking" style="height: 100vh;">
+        <div class="text-center" id="admin-auth-route-checking-content">
+            <div class="spinner-border text-primary mb-3" id="admin-auth-route-checking-spinner" role="status">
                 <span class="visually-hidden">@L["AuthRoute_CheckingAuth"]</span>
             </div>
             <p class="text-muted">@L["AuthRoute_VerifyingAuth"]</p>
@@ -20,9 +20,9 @@ else if (AuthStateService.IsAuthenticated)
 else
 {
     @* Authentication check failed - redirecting to login automatically *@
-    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div class="text-center">
-            <div class="spinner-border text-primary mb-3" role="status">
+    <div class="d-flex justify-content-center align-items-center" id="admin-auth-route-redirecting" style="height: 100vh;">
+        <div class="text-center" id="admin-auth-route-redirecting-content">
+            <div class="spinner-border text-primary mb-3" id="admin-auth-route-redirecting-spinner" role="status">
                 <span class="visually-hidden">@L["AuthRoute_RedirectingToLogin"]</span>
             </div>
             <p class="text-muted">@L["AuthRoute_RedirectingToLogin"]</p>

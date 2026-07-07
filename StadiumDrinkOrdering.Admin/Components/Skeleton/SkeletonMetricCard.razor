@@ -10,20 +10,20 @@
      tabindex="0"
      id="skeleton-metric-card-@CardType.ToLowerInvariant()">
 
-    <div class="skeleton-metric-header">
-        <div class="skeleton-metric-content">
+    <div class="skeleton-metric-header" id="skeleton-metric-card-header">
+        <div class="skeleton-metric-content" id="skeleton-metric-card-content">
             <!-- Card title skeleton -->
-            <div class="skeleton skeleton-metric-label" aria-hidden="true"></div>
+            <div class="skeleton skeleton-metric-label" id="skeleton-metric-card-label" aria-hidden="true"></div>
 
             <!-- Large metric value skeleton -->
-            <div class="skeleton skeleton-metric-value" aria-hidden="true"></div>
+            <div class="skeleton skeleton-metric-value" id="skeleton-metric-card-value" aria-hidden="true"></div>
 
             <!-- Trend/subtitle skeleton -->
-            <div class="skeleton skeleton-metric-trend" aria-hidden="true"></div>
+            <div class="skeleton skeleton-metric-trend" id="skeleton-metric-card-trend" aria-hidden="true"></div>
         </div>
 
         <!-- Icon placeholder -->
-        <div class="skeleton skeleton-metric-icon" aria-hidden="true"></div>
+        <div class="skeleton skeleton-metric-icon" id="skeleton-metric-card-icon" aria-hidden="true"></div>
     </div>
 
     <!-- Loading indicator for screen readers -->
@@ -32,7 +32,7 @@
     <!-- Optional loading spinner -->
     @if (ShowLoadingIndicator)
     {
-        <div class="skeleton-loading-indicator" aria-hidden="true"></div>
+        <div class="skeleton-loading-indicator" id="skeleton-metric-card-spinner" aria-hidden="true"></div>
     }
 </div>
 

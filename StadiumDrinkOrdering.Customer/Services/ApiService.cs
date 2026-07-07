@@ -6,6 +6,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StadiumDrinkOrdering.Customer.Services;
 
+/// <summary>Why an "add seat to cart" attempt did or didn't succeed, so the UI can show a specific reason.</summary>
+public enum CartAddOutcome { Added, NotOnSale, Unavailable, Error }
+
+/// <summary>Result of <see cref="IApiService.AddSeatToCartAsync"/>. <paramref name="Message"/> is a
+/// user-facing (Croatian) explanation when <paramref name="Success"/> is false.</summary>
+public record CartAddResult(bool Success, CartAddOutcome Outcome, string? Message);
+
 public interface IApiService
 {
     Task<List<DrinkDto>?> GetDrinksAsync();
@@ -42,8 +49,9 @@ public interface IApiService
     Task<List<CustomerEventDto>?> GetAvailableEventsAsync(CustomerEventFilterDto? filter = null);
     Task<CustomerEventDetailsDto?> GetEventDetailsAsync(int eventId);
     Task<SectionAvailabilityDto?> GetSectionAvailabilityAsync(int eventId, int sectionId);
+    Task<List<StadiumSectorOverlay>?> GetStadiumSectorOverlaysAsync();
     Task<ShoppingCartDto?> GetCartAsync(string sessionId);
-    Task<bool> AddSeatToCartAsync(AddSeatToCartRequest request);
+    Task<CartAddResult> AddSeatToCartAsync(AddSeatToCartRequest request);
     Task<bool> RemoveSeatFromCartAsync(RemoveSeatFromCartRequest request);
     Task<bool> ClearCartAsync(string sessionId);
     Task<SeatAvailabilityResponse?> CheckSeatAvailabilityAsync(int eventId, int sectorId, int rowNumber, int seatNumber);
@@ -615,6 +623,26 @@ public class ApiService : IApiService
         return null;
     }
 
+    // Real-stadium sector overlays (the drawing-tool geometry). Used to render the clickable
+    // stadium map on the event page. Auth is intentionally not required on this endpoint.
+    public async Task<List<StadiumSectorOverlay>?> GetStadiumSectorOverlaysAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("api/StadiumSectorOverlay");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<StadiumSectorOverlay>>(json, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting stadium sector overlays: {ex.Message}");
+        }
+        return null;
+    }
+
     public async Task<ShoppingCartDto?> GetCartAsync(string sessionId)
     {
         try
@@ -633,20 +661,38 @@ public class ApiService : IApiService
         return null;
     }
 
-    public async Task<bool> AddSeatToCartAsync(AddSeatToCartRequest request)
+    public async Task<CartAddResult> AddSeatToCartAsync(AddSeatToCartRequest request)
     {
         try
         {
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
+
             var response = await _httpClient.PostAsync("customer/cart/add", content);
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+                return new CartAddResult(true, CartAddOutcome.Added, null);
+
+            var body = await response.Content.ReadAsStringAsync();
+
+            // The API returns 409 Conflict for two distinct reasons; the body text disambiguates them.
+            if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                if (body.Contains("on sale", StringComparison.OrdinalIgnoreCase))
+                    return new CartAddResult(false, CartAddOutcome.NotOnSale,
+                        "Prodaja ulaznica za ovaj događaj trenutno nije otvorena.");
+
+                return new CartAddResult(false, CartAddOutcome.Unavailable,
+                    "Mjesto je u međuvremenu zauzeto.");
+            }
+
+            return new CartAddResult(false, CartAddOutcome.Error,
+                "Došlo je do pogreške pri dodavanju mjesta. Pokušajte ponovno.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error adding seat to cart: {ex.Message}");
-            return false;
+            return new CartAddResult(false, CartAddOutcome.Error,
+                "Nije moguće dohvatiti poslužitelj. Provjerite vezu i pokušajte ponovno.");
         }
     }
 

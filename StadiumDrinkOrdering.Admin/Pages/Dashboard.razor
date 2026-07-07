@@ -30,9 +30,9 @@
     <!-- Loading Progress and Status -->
     @if (isLoading)
     {
-        <div class="status-line">
-            <div class="progress" style="height: 3px;">
-                <div class="progress-bar progress-bar-animated"
+        <div class="status-line" id="admin-dashboard-status-line-loading">
+            <div class="progress" id="admin-dashboard-progress-bar-container" style="height: 3px;">
+                <div class="progress-bar progress-bar-animated" id="admin-dashboard-progress-bar"
                      role="progressbar"
                      style="width: @(loadingProgress)%"
                      aria-valuenow="@loadingProgress"
@@ -41,15 +41,15 @@
                      aria-label="@L["Dash_LoadingProgress"]">
                 </div>
             </div>
-            <div class="status-line__meta">
-                <span>@loadingMessage</span>
-                <span class="mono">@(loadingProgress)%</span>
+            <div class="status-line__meta" id="admin-dashboard-status-line-meta">
+                <span id="admin-dashboard-loading-message">@loadingMessage</span>
+                <span class="mono" id="admin-dashboard-loading-percent">@(loadingProgress)%</span>
             </div>
         </div>
     }
     else if (lastUpdated.HasValue)
     {
-        <div class="status-line status-line--idle">
+        <div class="status-line status-line--idle" id="admin-dashboard-status-line-idle">
             <span class="status-line__pulse"></span>
             <span>@L["Dash_Updated"] <span class="mono">@lastUpdated.Value.ToString("HH:mm:ss")</span> · @L["Dash_AutoRefreshOn"]</span>
         </div>
@@ -63,24 +63,24 @@
     <!-- Key Metrics Cards -->
     @if (isLoadingMetrics)
     {
-        <div class="row g-4 mb-4" role="status" aria-label="@L["Dash_LoadingMetrics"]">
-            <div class="col-lg-3 col-md-6">
+        <div class="row g-4 mb-4" id="admin-dashboard-skeleton-metrics-row" role="status" aria-label="@L["Dash_LoadingMetrics"]">
+            <div class="col-lg-3 col-md-6" id="admin-dashboard-skeleton-metrics-col-1">
                 <SkeletonMetricCard CardType="Orders" AnimationDelayMs="0" />
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-3 col-md-6" id="admin-dashboard-skeleton-metrics-col-2">
                 <SkeletonMetricCard CardType="Active" AnimationDelayMs="100" />
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-3 col-md-6" id="admin-dashboard-skeleton-metrics-col-3">
                 <SkeletonMetricCard CardType="Revenue" AnimationDelayMs="200" />
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-3 col-md-6" id="admin-dashboard-skeleton-metrics-col-4">
                 <SkeletonMetricCard CardType="Health" AnimationDelayMs="300" />
             </div>
         </div>
     }
     else if (!isLoading || totalOrders > 0)
     {
-        <section class="metrics skeleton-fade-in">
+        <section class="metrics skeleton-fade-in" id="admin-dashboard-metrics-section">
             <!-- Total Orders -->
             <article class="metric metric--clickable" @onclick="NavigateToOrders" id="admin-dashboard-metric-orders">
                 <div class="metric__head">
@@ -138,11 +138,11 @@
     <!-- Main Content Row -->
     @if (isLoadingOrders || isLoadingSystemStatus)
     {
-        <div class="row g-4" role="status" aria-label="@L["Dash_LoadingOrdersSystem"]">
-            <div class="col-lg-8">
+        <div class="row g-4" id="admin-dashboard-skeleton-content-row" role="status" aria-label="@L["Dash_LoadingOrdersSystem"]">
+            <div class="col-lg-8" id="admin-dashboard-skeleton-content-col-left">
                 <SkeletonTable TableType="Orders" RowCount="5" ShowActionButton="true" AnimationDelayMs="400" />
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-4" id="admin-dashboard-skeleton-content-col-right">
                 <SkeletonActionButtons SectionType="Dashboard"
                                      ButtonCount="4"
                                      IncludeSystemStatus="true"
@@ -153,40 +153,40 @@
     }
     else if (!isLoading || recentOrders != null)
     {
-        <section class="board skeleton-fade-in">
+        <section class="board skeleton-fade-in" id="admin-dashboard-content-board">
             <!-- Recent Orders -->
-            <div class="panel">
-                <div class="panel__head">
-                    <h2 class="panel__title">@L["Dash_RecentOrders"]</h2>
+            <div class="panel" id="admin-dashboard-recent-orders-panel">
+                <div class="panel__head" id="admin-dashboard-recent-orders-panel-head">
+                    <h2 class="panel__title" id="admin-dashboard-recent-orders-title">@L["Dash_RecentOrders"]</h2>
                     <button class="link-btn" @onclick="NavigateToOrders" id="admin-dashboard-orders-view-all-btn">
                         @L["Dash_ViewAll"] <i class="oi oi-arrow-right"></i>
                     </button>
                 </div>
                 @if (recentOrders?.Any() == true)
                 {
-                    <table class="order-table">
-                        <thead>
-                            <tr>
-                                <th>@L["Dash_HeaderOrder"]</th>
-                                <th>@L["Dash_HeaderCustomer"]</th>
-                                <th class="num">@L["Dash_HeaderAmount"]</th>
-                                <th>@L["Dash_HeaderStatus"]</th>
-                                <th class="num">@L["Dash_HeaderTime"]</th>
+                    <table class="order-table" id="admin-dashboard-recent-orders-table">
+                        <thead id="admin-dashboard-recent-orders-table-head">
+                            <tr id="admin-dashboard-recent-orders-table-header-row">
+                                <th id="admin-dashboard-recent-orders-table-header-order">@L["Dash_HeaderOrder"]</th>
+                                <th id="admin-dashboard-recent-orders-table-header-customer">@L["Dash_HeaderCustomer"]</th>
+                                <th class="num" id="admin-dashboard-recent-orders-table-header-amount">@L["Dash_HeaderAmount"]</th>
+                                <th id="admin-dashboard-recent-orders-table-header-status">@L["Dash_HeaderStatus"]</th>
+                                <th class="num" id="admin-dashboard-recent-orders-table-header-time">@L["Dash_HeaderTime"]</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="admin-dashboard-recent-orders-table-body">
                             @foreach (var order in recentOrders.Take(6))
                             {
-                                <tr @onclick="@(() => NavigateToOrder(order.Id))">
-                                    <td class="mono order-table__id">#@order.Id</td>
-                                    <td>@order.CustomerName</td>
-                                    <td class="num mono">$@order.TotalAmount.ToString("N2")</td>
-                                    <td>
+                                <tr id="@($"admin-dashboard-recent-order-row-{order.Id}")" @onclick="@(() => NavigateToOrder(order.Id))">
+                                    <td class="mono order-table__id" id="@($"admin-dashboard-recent-order-id-{order.Id}")">#@order.Id</td>
+                                    <td id="@($"admin-dashboard-recent-order-customer-{order.Id}")">@order.CustomerName</td>
+                                    <td class="num mono" id="@($"admin-dashboard-recent-order-amount-{order.Id}")">$@order.TotalAmount.ToString("N2")</td>
+                                    <td id="@($"admin-dashboard-recent-order-status-{order.Id}")">
                                         <span class="status @GetStatusModifier(order.Status)">
                                             <span class="status__dot"></span>@order.Status
                                         </span>
                                     </td>
-                                    <td class="num mono order-table__time">@order.CreatedAt.ToString("HH:mm")</td>
+                                    <td class="num mono order-table__time" id="@($"admin-dashboard-recent-order-time-{order.Id}")">@order.CreatedAt.ToString("HH:mm")</td>
                                 </tr>
                             }
                         </tbody>
@@ -203,12 +203,12 @@
             </div>
 
             <!-- Right rail -->
-            <div class="rail">
-                <div class="panel">
-                    <div class="panel__head">
-                        <h2 class="panel__title">@L["Dash_QuickActions"]</h2>
+            <div class="rail" id="admin-dashboard-right-rail">
+                <div class="panel" id="admin-dashboard-quick-actions-panel">
+                    <div class="panel__head" id="admin-dashboard-quick-actions-panel-head">
+                        <h2 class="panel__title" id="admin-dashboard-quick-actions-title">@L["Dash_QuickActions"]</h2>
                     </div>
-                    <div class="actions">
+                    <div class="actions" id="admin-dashboard-quick-actions-list">
                         <button class="action" @onclick="NavigateToOrders" id="admin-dashboard-orders-manage-btn">
                             <i class="oi oi-plus"></i><span>@L["Dash_NewOrder"]</span><i class="oi oi-chevron-right action__go"></i>
                         </button>
@@ -224,24 +224,24 @@
                     </div>
                 </div>
 
-                <div class="panel">
-                    <div class="panel__head">
-                        <h2 class="panel__title">@L["Dash_SystemStatus"]</h2>
+                <div class="panel" id="admin-dashboard-system-status-panel">
+                    <div class="panel__head" id="admin-dashboard-system-status-panel-head">
+                        <h2 class="panel__title" id="admin-dashboard-system-status-title">@L["Dash_SystemStatus"]</h2>
                     </div>
-                    <ul class="statuses">
-                        <li>
+                    <ul class="statuses" id="admin-dashboard-system-status-list">
+                        <li id="admin-dashboard-status-database">
                             <span class="statuses__name">@L["Dash_Database"]</span>
                             <span class="chip chip--ok"><span class="chip__dot"></span>@L["Dash_Connected"]</span>
                         </li>
-                        <li>
+                        <li id="admin-dashboard-status-api">
                             <span class="statuses__name">@L["Dash_APIHealth"]</span>
                             <span class="chip chip--ok"><span class="chip__dot"></span>@L["Dash_Healthy"]</span>
                         </li>
-                        <li>
+                        <li id="admin-dashboard-status-cache">
                             <span class="statuses__name">@L["Dash_Cache"]</span>
                             <span class="chip chip--ok"><span class="chip__dot"></span>@L["Dash_Active"]</span>
                         </li>
-                        <li>
+                        <li id="admin-dashboard-status-background">
                             <span class="statuses__name">@L["Dash_BackgroundServices"]</span>
                             <span class="chip chip--ok"><span class="chip__dot"></span>@L["Dash_Running"]</span>
                         </li>

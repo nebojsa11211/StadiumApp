@@ -26,7 +26,7 @@
                 <div id="customer-resolve-row" class="row"><span>Mjesto</span><b>@State.SeatText</b></div>
             </div>
             <div id="customer-resolve-redirecting" class="redirecting"><span class="spinner"></span> Vodim te na meni…</div>
-            <button class="btn btn-primary" @onclick="Go">Započni naručivanje</button>
+            <button id="customer-resolve-start-order-btn" class="btn btn-primary" @onclick="Go">Započni naručivanje</button>
         </div>
     }
     else
@@ -35,8 +35,8 @@
             <div id="customer-resolve-cross" class="cross">✕</div>
             <h2>Ups…</h2>
             <p class="err">@_error</p>
-            <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ponovno</button>
-            <button class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/welcome"))">Početna</button>
+            <button id="customer-resolve-retry-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ponovno</button>
+            <button id="customer-resolve-home-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/welcome"))">Početna</button>
         </div>
     }
 </div>

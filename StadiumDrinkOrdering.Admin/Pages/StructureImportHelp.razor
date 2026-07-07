@@ -4,32 +4,32 @@
 
 <PageTitle>@L["StructHelp_PageTitle"]</PageTitle>
 
-<div class="container-fluid">
-    <div class="d-flex align-items-center mb-4">
-        <h3 class="mb-0">@L["StructHelp_MainTitle"]</h3>
-        <div class="ms-auto">
-            <a href="/admin/stadium-structure" class="btn btn-outline-primary">
+<div class="container-fluid" id="admin-structure-help-container">
+    <div class="d-flex align-items-center mb-4" id="admin-structure-help-header">
+        <h3 class="mb-0" id="admin-structure-help-title">@L["StructHelp_MainTitle"]</h3>
+        <div class="ms-auto" id="admin-structure-help-actions">
+            <a href="/admin/stadium-structure" class="btn btn-outline-primary" id="admin-structure-help-back-btn">
                 <i class="fas fa-arrow-left me-2"></i>@L["StructHelp_BackButton"]
             </a>
         </div>
     </div>
-    
+
     <!-- Quick Navigation -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>@L["StructHelp_QuickNav"]</h5>
-            <div class="row">
-                <div class="col-md-3">
-                    <a href="#overview" class="btn btn-outline-info btn-sm w-100 mb-2">@L["StructHelp_NavOverview"]</a>
+    <div class="card mb-4" id="admin-structure-help-nav-card">
+        <div class="card-body" id="admin-structure-help-nav-body">
+            <h5 id="admin-structure-help-nav-title">@L["StructHelp_QuickNav"]</h5>
+            <div class="row" id="admin-structure-help-nav-buttons">
+                <div class="col-md-3" id="admin-structure-help-nav-overview-col">
+                    <a href="#overview" class="btn btn-outline-info btn-sm w-100 mb-2" id="admin-structure-help-nav-overview-btn">@L["StructHelp_NavOverview"]</a>
                 </div>
-                <div class="col-md-3">
-                    <a href="#structure" class="btn btn-outline-info btn-sm w-100 mb-2">@L["StructHelp_NavJsonStructure"]</a>
+                <div class="col-md-3" id="admin-structure-help-nav-structure-col">
+                    <a href="#structure" class="btn btn-outline-info btn-sm w-100 mb-2" id="admin-structure-help-nav-structure-btn">@L["StructHelp_NavJsonStructure"]</a>
                 </div>
-                <div class="col-md-3">
-                    <a href="#samples" class="btn btn-outline-info btn-sm w-100 mb-2">@L["StructHelp_NavSamples"]</a>
+                <div class="col-md-3" id="admin-structure-help-nav-samples-col">
+                    <a href="#samples" class="btn btn-outline-info btn-sm w-100 mb-2" id="admin-structure-help-nav-samples-btn">@L["StructHelp_NavSamples"]</a>
                 </div>
-                <div class="col-md-3">
-                    <a href="#validation" class="btn btn-outline-info btn-sm w-100 mb-2">@L["StructHelp_NavValidation"]</a>
+                <div class="col-md-3" id="admin-structure-help-nav-validation-col">
+                    <a href="#validation" class="btn btn-outline-info btn-sm w-100 mb-2" id="admin-structure-help-nav-validation-btn">@L["StructHelp_NavValidation"]</a>
                 </div>
             </div>
         </div>
@@ -37,13 +37,13 @@
 
     <!-- Stadium Structure Overview -->
     <section id="overview" class="mb-5">
-        <div class="card">
-            <div class="card-header">
-                <h4>@L["StructHelp_HierarchyTitle"]</h4>
+        <div class="card" id="admin-structure-help-overview-card">
+            <div class="card-header" id="admin-structure-help-overview-header">
+                <h4 id="admin-structure-help-hierarchy-title">@L["StructHelp_HierarchyTitle"]</h4>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-8">
+            <div class="card-body" id="admin-structure-help-overview-body">
+                <div class="row" id="admin-structure-help-overview-content-row">
+                    <div class="col-md-8" id="admin-structure-help-hierarchy-col">
                         <pre class="bg-light p-3 rounded"><code>                    STADIUM STRUCTURE HIERARCHY
     ┌─────────────────────────────────────────────────────┐
     │                     STADIUM                        │
@@ -79,15 +79,15 @@
     │     ...      │
     └──────────────┘</code></pre>
                     </div>
-                    <div class="col-md-4">
-                        <div class="alert alert-info">
-                            <h6>@L["StructHelp_KeyConcepts"]</h6>
-                            <ul class="mb-0 small">
-                                <li><strong>@L["StructHelp_ConceptStadium"]</strong>: @L["StructHelp_ConceptStadiumDesc"]</li>
-                                <li><strong>@L["StructHelp_ConceptTribunes"]</strong>: @L["StructHelp_ConceptTribunesDesc"]</li>
-                                <li><strong>@L["StructHelp_ConceptRings"]</strong>: @L["StructHelp_ConceptRingsDesc"]</li>
-                                <li><strong>@L["StructHelp_ConceptSectors"]</strong>: @L["StructHelp_ConceptSectorsDesc"]</li>
-                                <li><strong>@L["StructHelp_ConceptSeats"]</strong>: @L["StructHelp_ConceptSeatsDesc"]</li>
+                    <div class="col-md-4" id="admin-structure-help-concepts-col">
+                        <div class="alert alert-info" id="admin-structure-help-concepts-alert">
+                            <h6 id="admin-structure-help-concepts-title">@L["StructHelp_KeyConcepts"]</h6>
+                            <ul class="mb-0 small" id="admin-structure-help-concepts-list">
+                                <li id="admin-structure-help-concept-stadium"><strong>@L["StructHelp_ConceptStadium"]</strong>: @L["StructHelp_ConceptStadiumDesc"]</li>
+                                <li id="admin-structure-help-concept-tribunes"><strong>@L["StructHelp_ConceptTribunes"]</strong>: @L["StructHelp_ConceptTribunesDesc"]</li>
+                                <li id="admin-structure-help-concept-rings"><strong>@L["StructHelp_ConceptRings"]</strong>: @L["StructHelp_ConceptRingsDesc"]</li>
+                                <li id="admin-structure-help-concept-sectors"><strong>@L["StructHelp_ConceptSectors"]</strong>: @L["StructHelp_ConceptSectorsDesc"]</li>
+                                <li id="admin-structure-help-concept-seats"><strong>@L["StructHelp_ConceptSeats"]</strong>: @L["StructHelp_ConceptSeatsDesc"]</li>
                             </ul>
                         </div>
                     </div>
@@ -98,17 +98,17 @@
 
     <!-- JSON Structure Documentation -->
     <section id="structure" class="mb-5">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4>@L["StructHelp_JsonStructureTitle"]</h4>
+        <div class="card" id="admin-structure-help-structure-card">
+            <div class="card-header d-flex justify-content-between align-items-center" id="admin-structure-help-structure-header">
+                <h4 id="admin-structure-help-structure-title">@L["StructHelp_JsonStructureTitle"]</h4>
                 <button class="btn btn-sm btn-outline-secondary" @onclick="CopyJsonStructure" id="admin-structure-help-copy-json-btn">
                     <i class="fas fa-copy me-1"></i>@L["StructHelp_CopyButton"]
                 </button>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12">
-                        <pre class="bg-dark text-light p-3 rounded" style="font-size: 0.85em; overflow-x: auto;"><code id="json-template">{
+            <div class="card-body" id="admin-structure-help-structure-body">
+                <div class="row" id="admin-structure-help-structure-content-row">
+                    <div class="col-12" id="admin-structure-help-structure-code-col">
+                        <pre class="bg-dark text-light p-3 rounded" style="font-size: 0.85em; overflow-x: auto;" id="admin-structure-help-json-pre"><code id="json-template">{
   "name": "Stadium Name",           // Required: Display name (3-100 chars)
   "description": "Description",     // Optional: Stadium description (max 500 chars)
   "capacity": 50000,                // Optional: Total capacity (auto-calculated if omitted)
@@ -148,63 +148,63 @@
                 </div>
                 
                 <!-- Field Descriptions Table -->
-                <div class="mt-4">
-                    <h5>@L["StructHelp_FieldDescTitle"]</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>@L["StructHelp_TableField"]</th>
-                                    <th>@L["StructHelp_TableType"]</th>
-                                    <th>@L["StructHelp_TableRequired"]</th>
-                                    <th>@L["StructHelp_TableConstraints"]</th>
-                                    <th>@L["StructHelp_TableDescription"]</th>
+                <div class="mt-4" id="admin-structure-help-field-descriptions">
+                    <h5 id="admin-structure-help-field-descriptions-title">@L["StructHelp_FieldDescTitle"]</h5>
+                    <div class="table-responsive" id="admin-structure-help-field-table-responsive">
+                        <table class="table table-sm table-striped" id="admin-structure-help-field-table">
+                            <thead class="table-dark" id="admin-structure-help-field-table-head">
+                                <tr id="admin-structure-help-field-table-header-row">
+                                    <th id="admin-structure-help-th-field">@L["StructHelp_TableField"]</th>
+                                    <th id="admin-structure-help-th-type">@L["StructHelp_TableType"]</th>
+                                    <th id="admin-structure-help-th-required">@L["StructHelp_TableRequired"]</th>
+                                    <th id="admin-structure-help-th-constraints">@L["StructHelp_TableConstraints"]</th>
+                                    <th id="admin-structure-help-th-description">@L["StructHelp_TableDescription"]</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
+                            <tbody id="admin-structure-help-field-table-body">
+                                <tr id="admin-structure-help-field-row-name">
                                     <td><code>name</code></td>
                                     <td>string</td>
                                     <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>3-100 chars</td>
                                     <td>@L["StructHelp_NameDesc"]</td>
                                 </tr>
-                                <tr>
+                                <tr id="admin-structure-help-field-row-description">
                                     <td><code>description</code></td>
                                     <td>string</td>
                                     <td><span class="badge bg-secondary">@L["StructHelp_No"]</span></td>
                                     <td>max 500 chars</td>
                                     <td>@L["StructHelp_DescriptionDesc"]</td>
                                 </tr>
-                                <tr>
+                                <tr id="admin-structure-help-field-row-tribune-code">
                                     <td><code>tribunes[].code</code></td>
                                     <td>string</td>
                                     <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>N, S, E, W only</td>
                                     <td>@L["StructHelp_TribuneCodeDesc"]</td>
                                 </tr>
-                                <tr>
+                                <tr id="admin-structure-help-field-row-ring-number">
                                     <td><code>rings[].number</code></td>
                                     <td>int</td>
                                     <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>1-5</td>
                                     <td>@L["StructHelp_RingNumberDesc"]</td>
                                 </tr>
-                                <tr>
+                                <tr id="admin-structure-help-field-row-sector-code">
                                     <td><code>sectors[].code</code></td>
                                     <td>string</td>
                                     <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>Unique, 2-10 chars</td>
                                     <td>@L["StructHelp_SectorCodeDesc"]</td>
                                 </tr>
-                                <tr>
+                                <tr id="admin-structure-help-field-row-rows">
                                     <td><code>sectors[].rows</code></td>
                                     <td>int</td>
                                     <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
                                     <td>1-100</td>
                                     <td>@L["StructHelp_RowsDesc"]</td>
                                 </tr>
-                                <tr>
+                                <tr id="admin-structure-help-field-row-seats-per-row">
                                     <td><code>sectors[].seatsPerRow</code></td>
                                     <td>int</td>
                                     <td><span class="badge bg-danger">@L["StructHelp_Yes"]</span></td>
@@ -221,20 +221,20 @@
 
     <!-- Sample Files -->
     <section id="samples" class="mb-5">
-        <div class="card">
-            <div class="card-header">
-                <h4>@L["StructHelp_SamplesTitle"]</h4>
+        <div class="card" id="admin-structure-help-samples-card">
+            <div class="card-header" id="admin-structure-help-samples-header">
+                <h4 id="admin-structure-help-samples-title">@L["StructHelp_SamplesTitle"]</h4>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="card-body" id="admin-structure-help-samples-body">
+                <div class="row" id="admin-structure-help-samples-row">
                     <!-- Minimal Stadium Sample -->
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header bg-success text-white">
-                                <h6 class="mb-0">@L["StructHelp_MinimalStadium"]</h6>
+                    <div class="col-md-4 mb-3" id="admin-structure-help-minimal-col">
+                        <div class="card h-100" id="admin-structure-help-minimal-card">
+                            <div class="card-header bg-success text-white" id="admin-structure-help-minimal-header">
+                                <h6 class="mb-0" id="admin-structure-help-minimal-title">@L["StructHelp_MinimalStadium"]</h6>
                             </div>
-                            <div class="card-body">
-                                <p class="small">@L["StructHelp_MinimalStadiumDesc"]</p>
+                            <div class="card-body" id="admin-structure-help-minimal-body">
+                                <p class="small" id="admin-structure-help-minimal-desc">@L["StructHelp_MinimalStadiumDesc"]</p>
                                 <pre class="bg-light p-2 rounded small"><code>{
   "name": "Basic Stadium",
   "tribunes": [{
@@ -260,13 +260,13 @@
                     </div>
 
                     <!-- Standard Stadium Sample -->
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header bg-primary text-white">
-                                <h6 class="mb-0">@L["StructHelp_StandardStadium"]</h6>
+                    <div class="col-md-4 mb-3" id="admin-structure-help-standard-col">
+                        <div class="card h-100" id="admin-structure-help-standard-card">
+                            <div class="card-header bg-primary text-white" id="admin-structure-help-standard-header">
+                                <h6 class="mb-0" id="admin-structure-help-standard-title">@L["StructHelp_StandardStadium"]</h6>
                             </div>
-                            <div class="card-body">
-                                <p class="small">@L["StructHelp_StandardStadiumDesc"]</p>
+                            <div class="card-body" id="admin-structure-help-standard-body">
+                                <p class="small" id="admin-structure-help-standard-desc">@L["StructHelp_StandardStadiumDesc"]</p>
                                 <pre class="bg-light p-2 rounded small"><code>{
   "name": "Standard Stadium",
   "description": "Professional stadium",
@@ -304,13 +304,13 @@
                     </div>
 
                     <!-- Complex Stadium Sample -->
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header bg-warning text-dark">
-                                <h6 class="mb-0">@L["StructHelp_ComplexStadium"]</h6>
+                    <div class="col-md-4 mb-3" id="admin-structure-help-complex-col">
+                        <div class="card h-100" id="admin-structure-help-complex-card">
+                            <div class="card-header bg-warning text-dark" id="admin-structure-help-complex-header">
+                                <h6 class="mb-0" id="admin-structure-help-complex-title">@L["StructHelp_ComplexStadium"]</h6>
                             </div>
-                            <div class="card-body">
-                                <p class="small">@L["StructHelp_ComplexStadiumDesc"]</p>
+                            <div class="card-body" id="admin-structure-help-complex-body">
+                                <p class="small" id="admin-structure-help-complex-desc">@L["StructHelp_ComplexStadiumDesc"]</p>
                                 <pre class="bg-light p-2 rounded small"><code>{
   "name": "Premier Stadium",
   "description": "World-class venue",
@@ -351,15 +351,15 @@
 
     <!-- Validation Rules -->
     <section id="validation" class="mb-5">
-        <div class="card">
-            <div class="card-header">
-                <h4>@L["StructHelp_ValidationTitle"]</h4>
+        <div class="card" id="admin-structure-help-validation-card">
+            <div class="card-header" id="admin-structure-help-validation-header">
+                <h4 id="admin-structure-help-validation-title">@L["StructHelp_ValidationTitle"]</h4>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5 class="text-success">@L["StructHelp_RequiredFields"]</h5>
-                        <ul class="list-group list-group-flush">
+            <div class="card-body" id="admin-structure-help-validation-body">
+                <div class="row" id="admin-structure-help-validation-row">
+                    <div class="col-md-6" id="admin-structure-help-required-col">
+                        <h5 class="text-success" id="admin-structure-help-required-title">@L["StructHelp_RequiredFields"]</h5>
+                        <ul class="list-group list-group-flush" id="admin-structure-help-required-list">
                             <li class="list-group-item">
                                 <code>name</code> - @L["StructHelp_ReqFieldName"]
                             </li>
@@ -383,9 +383,9 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="col-md-6">
-                        <h5 class="text-warning">@L["StructHelp_ValidationRules"]</h5>
-                        <ul class="list-group list-group-flush">
+                    <div class="col-md-6" id="admin-structure-help-rules-col">
+                        <h5 class="text-warning" id="admin-structure-help-rules-title">@L["StructHelp_ValidationRules"]</h5>
+                        <ul class="list-group list-group-flush" id="admin-structure-help-rules-list">
                             <li class="list-group-item">
                                 @L["StructHelp_RuleUniqueTribunes"]
                             </li>
@@ -409,39 +409,39 @@
                 </div>
 
                 <!-- Common Errors Table -->
-                <div class="mt-4">
-                    <h5 class="text-danger">@L["StructHelp_CommonErrors"]</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>@L["StructHelp_ErrorMessage"]</th>
-                                    <th>@L["StructHelp_Cause"]</th>
-                                    <th>@L["StructHelp_Solution"]</th>
+                <div class="mt-4" id="admin-structure-help-errors-section">
+                    <h5 class="text-danger" id="admin-structure-help-errors-title">@L["StructHelp_CommonErrors"]</h5>
+                    <div class="table-responsive" id="admin-structure-help-errors-table-responsive">
+                        <table class="table table-sm table-striped" id="admin-structure-help-errors-table">
+                            <thead class="table-dark" id="admin-structure-help-errors-table-head">
+                                <tr id="admin-structure-help-errors-header-row">
+                                    <th id="admin-structure-help-errors-th-message">@L["StructHelp_ErrorMessage"]</th>
+                                    <th id="admin-structure-help-errors-th-cause">@L["StructHelp_Cause"]</th>
+                                    <th id="admin-structure-help-errors-th-solution">@L["StructHelp_Solution"]</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr class="table-danger">
+                            <tbody id="admin-structure-help-errors-table-body">
+                                <tr class="table-danger" id="admin-structure-help-error-row-name-required">
                                     <td>@L["StructHelp_ErrorNameRequired"]</td>
                                     <td>@L["StructHelp_CauseNameRequired"]</td>
                                     <td>@L["StructHelp_SolutionNameRequired"]</td>
                                 </tr>
-                                <tr class="table-danger">
+                                <tr class="table-danger" id="admin-structure-help-error-row-invalid-code">
                                     <td>@L["StructHelp_ErrorInvalidCode"]</td>
                                     <td>@L["StructHelp_CauseInvalidCode"]</td>
                                     <td>@L["StructHelp_SolutionInvalidCode"]</td>
                                 </tr>
-                                <tr class="table-danger">
+                                <tr class="table-danger" id="admin-structure-help-error-row-duplicate">
                                     <td>@L["StructHelp_ErrorDuplicate"]</td>
                                     <td>@L["StructHelp_CauseDuplicate"]</td>
                                     <td>@L["StructHelp_SolutionDuplicate"]</td>
                                 </tr>
-                                <tr class="table-danger">
+                                <tr class="table-danger" id="admin-structure-help-error-row-invalid-json">
                                     <td>@L["StructHelp_ErrorInvalidJson"]</td>
                                     <td>@L["StructHelp_CauseInvalidJson"]</td>
                                     <td>@L["StructHelp_SolutionInvalidJson"]</td>
                                 </tr>
-                                <tr class="table-danger">
+                                <tr class="table-danger" id="admin-structure-help-error-row-too-large">
                                     <td>@L["StructHelp_ErrorTooLarge"]</td>
                                     <td>@L["StructHelp_CauseTooLarge"]</td>
                                     <td>@L["StructHelp_SolutionTooLarge"]</td>
@@ -456,16 +456,16 @@
 
     <!-- JSON Validator Tool -->
     <section id="validator" class="mb-5">
-        <div class="card">
-            <div class="card-header">
-                <h4>@L["StructHelp_ValidatorTitle"]</h4>
+        <div class="card" id="admin-structure-help-validator-card">
+            <div class="card-header" id="admin-structure-help-validator-header">
+                <h4 id="admin-structure-help-validator-title">@L["StructHelp_ValidatorTitle"]</h4>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>@L["StructHelp_PasteJson"]</h6>
-                        <textarea class="form-control" rows="12" @bind="jsonInput" placeholder="@L["StructHelp_JsonPlaceholder"]"></textarea>
-                        <div class="mt-2">
+            <div class="card-body" id="admin-structure-help-validator-body">
+                <div class="row" id="admin-structure-help-validator-row">
+                    <div class="col-md-6" id="admin-structure-help-validator-input-col">
+                        <h6 id="admin-structure-help-validator-input-title">@L["StructHelp_PasteJson"]</h6>
+                        <textarea class="form-control" rows="12" @bind="jsonInput" placeholder="@L["StructHelp_JsonPlaceholder"]" id="admin-structure-help-json-input"></textarea>
+                        <div class="mt-2" id="admin-structure-help-validator-buttons">
                             <button class="btn btn-primary me-2" @onclick="ValidateJson" id="admin-structure-help-validate-btn">
                                 <i class="fas fa-check me-1"></i>@L["StructHelp_ValidateButton"]
                             </button>
@@ -474,40 +474,40 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <h6>@L["StructHelp_ValidationResults"]</h6>
-                        <div class="border rounded p-3" style="min-height: 300px;">
+                    <div class="col-md-6" id="admin-structure-help-validator-results-col">
+                        <h6 id="admin-structure-help-validator-results-title">@L["StructHelp_ValidationResults"]</h6>
+                        <div class="border rounded p-3" style="min-height: 300px;" id="admin-structure-help-validator-results">
                             @if (!string.IsNullOrEmpty(validationResult))
                             {
-                                <div class="@(isValidJson ? "alert alert-success" : "alert alert-danger")">
+                                <div class="@(isValidJson ? "alert alert-success" : "alert alert-danger")" id="admin-structure-help-validation-result-alert">
                                     @if (isValidJson)
                                     {
-                                        <h6 class="alert-heading">@L["StructHelp_ValidJson"]</h6>
+                                        <h6 class="alert-heading" id="admin-structure-help-valid-json-heading">@L["StructHelp_ValidJson"]</h6>
                                     }
                                     else
                                     {
-                                        <h6 class="alert-heading">@L["StructHelp_ValidationFailedHeading"]</h6>
+                                        <h6 class="alert-heading" id="admin-structure-help-validation-failed-heading">@L["StructHelp_ValidationFailedHeading"]</h6>
                                     }
-                                    <pre class="mb-0 small">@validationResult</pre>
+                                    <pre class="mb-0 small" id="admin-structure-help-validation-result-text">@validationResult</pre>
                                 </div>
 
                                 @if (isValidJson && parsedStadium != null)
                                 {
-                                    <div class="mt-3">
-                                        <h6>@L["StructHelp_PreviewHeading"]</h6>
-                                        <ul class="list-unstyled">
-                                            <li><strong>@L["StructHelp_StadiumLabel"]:</strong> @parsedStadium.Name</li>
-                                            <li><strong>@L["StructHelp_TribunesLabel"]:</strong> @parsedStadium.Tribunes?.Count</li>
-                                            <li><strong>@L["StructHelp_EstimatedSeatsLabel"]:</strong> @CalculateTotalSeats(parsedStadium)</li>
+                                    <div class="mt-3" id="admin-structure-help-validation-preview">
+                                        <h6 id="admin-structure-help-preview-heading">@L["StructHelp_PreviewHeading"]</h6>
+                                        <ul class="list-unstyled" id="admin-structure-help-preview-list">
+                                            <li id="admin-structure-help-preview-stadium"><strong>@L["StructHelp_StadiumLabel"]:</strong> @parsedStadium.Name</li>
+                                            <li id="admin-structure-help-preview-tribunes"><strong>@L["StructHelp_TribunesLabel"]:</strong> @parsedStadium.Tribunes?.Count</li>
+                                            <li id="admin-structure-help-preview-seats"><strong>@L["StructHelp_EstimatedSeatsLabel"]:</strong> @CalculateTotalSeats(parsedStadium)</li>
                                         </ul>
                                     </div>
                                 }
                             }
                             else
                             {
-                                <div class="text-muted text-center" style="padding-top: 100px;">
+                                <div class="text-muted text-center" style="padding-top: 100px;" id="admin-structure-help-validator-empty">
                                     <i class="fas fa-clipboard-check fa-3x mb-3"></i>
-                                    <p>@L["StructHelp_EmptyValidatorState"]</p>
+                                    <p id="admin-structure-help-validator-empty-message">@L["StructHelp_EmptyValidatorState"]</p>
                                 </div>
                             }
                         </div>

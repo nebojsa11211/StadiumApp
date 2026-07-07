@@ -54,27 +54,27 @@ else
                     <div id="customer-order-confirmation-details-body" class="card-body">
                         <div id="customer-order-confirmation-details-row-1" class="row mb-3">
                             <div id="customer-order-confirmation-details-col-1-1" class="col-sm-6">
-                                <strong>@Localizer["OrderConfirmation_OrderID"]</strong> #@orderConfirmation.OrderId
+                                <strong id="customer-order-confirmation-order-id-label">@Localizer["OrderConfirmation_OrderID"]</strong> <span id="customer-order-confirmation-order-id">@orderConfirmation.OrderId</span>
                             </div>
                             <div id="customer-order-confirmation-details-col-1-2" class="col-sm-6">
-                                <strong>@Localizer["OrderConfirmation_OrderDate"]</strong> @orderConfirmation.OrderDate.ToString("MMM dd, yyyy - HH:mm")
+                                <strong id="customer-order-confirmation-order-date-label">@Localizer["OrderConfirmation_OrderDate"]</strong> <span id="customer-order-confirmation-order-date">@orderConfirmation.OrderDate.ToString("MMM dd, yyyy - HH:mm")</span>
                             </div>
                         </div>
                         <div id="customer-order-confirmation-details-row-2" class="row mb-3">
                             <div id="customer-order-confirmation-details-col-2-1" class="col-sm-6">
-                                <strong>@Localizer["OrderConfirmation_Customer"]</strong> @orderConfirmation.CustomerName
+                                <strong id="customer-order-confirmation-customer-label">@Localizer["OrderConfirmation_Customer"]</strong> <span id="customer-order-confirmation-customer">@orderConfirmation.CustomerName</span>
                             </div>
                             <div id="customer-order-confirmation-details-col-2-2" class="col-sm-6">
-                                <strong>@Localizer["OrderConfirmation_PaymentStatus"]</strong>
-                                <span class="badge bg-success ms-2">@orderConfirmation.PaymentStatus</span>
+                                <strong id="customer-order-confirmation-payment-label">@Localizer["OrderConfirmation_PaymentStatus"]</strong>
+                                <span id="customer-order-confirmation-payment-badge" class="badge bg-success ms-2">@orderConfirmation.PaymentStatus</span>
                             </div>
                         </div>
                         <div id="customer-order-confirmation-details-row-3" class="row">
                             <div id="customer-order-confirmation-details-col-3-1" class="col-sm-6">
-                                <strong>@Localizer["Checkout_Event"]</strong> @orderConfirmation.EventName
+                                <strong id="customer-order-confirmation-event-label">@Localizer["Checkout_Event"]</strong> <span id="customer-order-confirmation-event">@orderConfirmation.EventName</span>
                             </div>
                             <div id="customer-order-confirmation-details-col-3-2" class="col-sm-6">
-                                <strong>@Localizer["OrderConfirmation_EventDate"]</strong> @orderConfirmation.EventDate.ToString("MMM dd, yyyy - HH:mm")
+                                <strong id="customer-order-confirmation-event-date-label">@Localizer["OrderConfirmation_EventDate"]</strong> <span id="customer-order-confirmation-event-date">@orderConfirmation.EventDate.ToString("MMM dd, yyyy - HH:mm")</span>
                             </div>
                         </div>
                     </div>
@@ -92,18 +92,18 @@ else
                                 <div id="customer-order-confirmation-ticket-col-@ticket.SeatCode.GetHashCode()" class="col-md-6 mb-3">
                                     <div id="customer-order-confirmation-ticket-@ticket.SeatCode.GetHashCode()" class="ticket-card border rounded p-3 bg-light">
                                         <div id="customer-order-confirmation-ticket-header-@ticket.SeatCode.GetHashCode()" class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0"><strong>@ticket.SeatCode</strong></h6>
-                                            <span class="badge bg-primary">$@ticket.Price.ToString("F2")</span>
+                                            <h6 id="customer-order-confirmation-ticket-code-@ticket.SeatCode.GetHashCode()" class="mb-0"><strong>@ticket.SeatCode</strong></h6>
+                                            <span id="customer-order-confirmation-ticket-price-@ticket.SeatCode.GetHashCode()" class="badge bg-primary">$@ticket.Price.ToString("F2")</span>
                                         </div>
                                         <div id="customer-order-confirmation-ticket-sector-@ticket.SeatCode.GetHashCode()" class="mb-2">
-                                            <small class="text-muted">@Localizer["Checkout_Sector"]: @ticket.SectionName</small>
+                                            <small id="customer-order-confirmation-ticket-sector-text-@ticket.SeatCode.GetHashCode()" class="text-muted">@Localizer["Checkout_Sector"]: @ticket.SectionName</small>
                                         </div>
                                         <div id="customer-order-confirmation-ticket-number-@ticket.SeatCode.GetHashCode()" class="mb-2">
-                                            <small class="text-muted">@Localizer["Tickets"]: @ticket.TicketNumber</small>
+                                            <small id="customer-order-confirmation-ticket-number-text-@ticket.SeatCode.GetHashCode()" class="text-muted">@Localizer["Tickets"]: @ticket.TicketNumber</small>
                                         </div>
                                         <div id="customer-order-confirmation-ticket-qr-@ticket.SeatCode.GetHashCode()" class="qr-code-placeholder bg-white border rounded p-2 text-center">
-                                            <i class="fas fa-qrcode fa-2x text-muted"></i>
-                                            <div><small>@Localizer["Tickets"]</small></div>
+                                            <i id="customer-order-confirmation-ticket-qr-icon-@ticket.SeatCode.GetHashCode()" class="fas fa-qrcode fa-2x text-muted"></i>
+                                            <div id="customer-order-confirmation-ticket-qr-label-@ticket.SeatCode.GetHashCode()"><small>@Localizer["Tickets"]</small></div>
                                         </div>
                                     </div>
                                 </div>
@@ -121,39 +121,39 @@ else
                     </div>
                     <div id="customer-order-confirmation-summary-body" class="card-body">
                         <div id="customer-order-confirmation-summary-tickets-row" class="d-flex justify-content-between mb-2">
-                            <span>@Localizer["Tickets"] (@orderConfirmation.Tickets.Count)</span>
-                            <span>$@orderConfirmation.Tickets.Sum(t => t.Price).ToString("F2")</span>
+                            <span id="customer-order-confirmation-summary-tickets-label">@Localizer["Tickets"] (@orderConfirmation.Tickets.Count)</span>
+                            <span id="customer-order-confirmation-summary-tickets-amount">$@orderConfirmation.Tickets.Sum(t => t.Price).ToString("F2")</span>
                         </div>
                         <div id="customer-order-confirmation-summary-service-row" class="d-flex justify-content-between mb-2">
-                            <span>@Localizer["OrderConfirmation_ServiceFee"]</span>
-                            <span>$@(orderConfirmation.Tickets.Sum(t => t.Price) * 0.10m).ToString("F2")</span>
+                            <span id="customer-order-confirmation-summary-service-label">@Localizer["OrderConfirmation_ServiceFee"]</span>
+                            <span id="customer-order-confirmation-summary-service-amount">$@(orderConfirmation.Tickets.Sum(t => t.Price) * 0.10m).ToString("F2")</span>
                         </div>
                         <div id="customer-order-confirmation-summary-processing-row" class="d-flex justify-content-between mb-3">
-                            <span>@Localizer["OrderConfirmation_ProcessingFee"]</span>
-                            <span>$2.50</span>
+                            <span id="customer-order-confirmation-summary-processing-label">@Localizer["OrderConfirmation_ProcessingFee"]</span>
+                            <span id="customer-order-confirmation-summary-processing-amount">$2.50</span>
                         </div>
-                        <hr>
+                        <hr id="customer-order-confirmation-summary-divider-1">
                         <div id="customer-order-confirmation-summary-total-row" class="d-flex justify-content-between fw-bold h5">
-                            <span>@Localizer["Events_From"]</span>
-                            <span class="text-success">$@orderConfirmation.TotalAmount.ToString("F2")</span>
+                            <span id="customer-order-confirmation-summary-total-label">@Localizer["Events_From"]</span>
+                            <span id="customer-order-confirmation-summary-total-amount" class="text-success">$@orderConfirmation.TotalAmount.ToString("F2")</span>
                         </div>
 
                         <!-- Action Buttons -->
                         <div id="customer-order-confirmation-actions" class="d-grid gap-2 mt-4">
-                            <button class="btn btn-primary" @onclick="PrintTickets">
+                            <button id="customer-order-confirmation-print-btn" class="btn btn-primary" @onclick="PrintTickets">
                                 <i class="fas fa-print me-2"></i>@Localizer["OrderConfirmation_PrintTickets"]
                             </button>
-                            <button class="btn btn-outline-secondary" @onclick="DownloadTickets">
+                            <button id="customer-order-confirmation-download-btn" class="btn btn-outline-secondary" @onclick="DownloadTickets">
                                 <i class="fas fa-download me-2"></i>@Localizer["OrderConfirmation_DownloadPDF"]
                             </button>
-                            <button class="btn btn-outline-info" @onclick="EmailTickets">
+                            <button id="customer-order-confirmation-email-btn" class="btn btn-outline-info" @onclick="EmailTickets">
                                 <i class="fas fa-envelope me-2"></i>@Localizer["OrderConfirmation_EmailTickets"]
                             </button>
                         </div>
 
-                        <hr>
+                        <hr id="customer-order-confirmation-summary-divider-2">
                         <div id="customer-order-confirmation-browse" class="text-center">
-                            <a href="/events" class="btn btn-success">
+                            <a id="customer-order-confirmation-browse-link" href="/events" class="btn btn-success">
                                 <i class="fas fa-calendar me-2"></i>@Localizer["OrderConfirmation_BrowseMoreEvents"]
                             </a>
                         </div>
@@ -166,12 +166,12 @@ else
         <div id="customer-order-confirmation-info-row" class="row mt-4">
             <div id="customer-order-confirmation-info-col" class="col-12">
                 <div id="customer-order-confirmation-info-alert" class="alert alert-info">
-                    <h6><i class="fas fa-info-circle me-2"></i>@Localizer["OrderConfirmation_ImportantInformation"]</h6>
-                    <ul class="mb-0">
-                        <li>@Localizer["OrderConfirmation_ArriveInfo"]</li>
-                        <li>@Localizer["OrderConfirmation_QRCodeInfo"]</li>
-                        <li>@Localizer["OrderConfirmation_KeepSafeInfo"]</li>
-                        <li>@Localizer["OrderConfirmation_SupportInfo"]</li>
+                    <h6 id="customer-order-confirmation-info-title"><i class="fas fa-info-circle me-2"></i>@Localizer["OrderConfirmation_ImportantInformation"]</h6>
+                    <ul id="customer-order-confirmation-info-list" class="mb-0">
+                        <li id="customer-order-confirmation-info-item-1">@Localizer["OrderConfirmation_ArriveInfo"]</li>
+                        <li id="customer-order-confirmation-info-item-2">@Localizer["OrderConfirmation_QRCodeInfo"]</li>
+                        <li id="customer-order-confirmation-info-item-3">@Localizer["OrderConfirmation_KeepSafeInfo"]</li>
+                        <li id="customer-order-confirmation-info-item-4">@Localizer["OrderConfirmation_SupportInfo"]</li>
                     </ul>
                 </div>
             </div>

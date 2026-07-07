@@ -2,13 +2,13 @@
 @inject IStringLocalizer<SharedResources> L
 
 <div class="stadium-info-panel premium-panel animated-panel @(IsCollapsed ? "collapsed" : "expanded")" id="stadium-info-panel">
-    <div class="info-panel-header premium-header animated-header">
-        <div class="header-content premium-content animated-content">
-            <div class="header-icon premium-icon animated-icon">
+    <div class="info-panel-header premium-header animated-header" id="admin-info-panel-header">
+        <div class="header-content premium-content animated-content" id="admin-info-panel-header-content">
+            <div class="header-icon premium-icon animated-icon" id="admin-info-panel-icon">
                 <i class="bi bi-building"></i>
-                <div class="icon-glow animated-glow"></div>
+                <div class="icon-glow animated-glow" id="admin-info-panel-icon-glow"></div>
             </div>
-            <div class="header-text premium-text animated-text">
+            <div class="header-text premium-text animated-text" id="admin-info-panel-text">
                 <h4 class="panel-title">@L["InfoPanel_Title"]</h4>
                 <p class="panel-subtitle">@L["InfoPanel_Subtitle"]</p>
             </div>
@@ -29,57 +29,57 @@
 
     @if (!IsCollapsed)
     {
-        <div class="info-panel-content">
+        <div class="info-panel-content" id="admin-info-panel-content">
             @if (Summary != null)
             {
                 <!-- Stadium Overview Cards -->
-                <div class="overview-cards">
-                    <div class="overview-card primary">
-                        <div class="card-icon">
+                <div class="overview-cards" id="admin-info-panel-cards">
+                    <div class="overview-card primary" id="admin-info-panel-card-capacity">
+                        <div class="card-icon" id="admin-info-panel-card-capacity-icon">
                             <i class="bi bi-people-fill"></i>
                         </div>
-                        <div class="card-content">
+                        <div class="card-content" id="admin-info-panel-card-capacity-content">
                             <div class="card-value">@Summary.TotalSeats.ToString("N0")</div>
                             <div class="card-label">@L["InfoPanel_TotalCapacity"]</div>
                         </div>
-                        <div class="card-accent"></div>
+                        <div class="card-accent" id="admin-info-panel-card-capacity-accent"></div>
                     </div>
 
-                    <div class="overview-card secondary">
-                        <div class="card-icon">
+                    <div class="overview-card secondary" id="admin-info-panel-card-sectors">
+                        <div class="card-icon" id="admin-info-panel-card-sectors-icon">
                             <i class="bi bi-grid-3x3-gap"></i>
                         </div>
-                        <div class="card-content">
+                        <div class="card-content" id="admin-info-panel-card-sectors-content">
                             <div class="card-value">@Summary.TotalSectors</div>
                             <div class="card-label">@L["InfoPanel_ActiveSectors"]</div>
                         </div>
-                        <div class="card-accent"></div>
+                        <div class="card-accent" id="admin-info-panel-card-sectors-accent"></div>
                     </div>
                 </div>
 
                 <!-- Detailed Statistics -->
-                <div class="detailed-stats">
-                    <div class="stat-group">
-                        <h6 class="stat-group-title">
+                <div class="detailed-stats" id="admin-info-panel-stats">
+                    <div class="stat-group" id="admin-info-panel-stats-group">
+                        <h6 class="stat-group-title" id="admin-info-panel-stats-title">
                             <i class="bi bi-diagram-3"></i>
                             @L["InfoPanel_StadiumStructure"]
                         </h6>
-                        <div class="stat-grid">
-                            <div class="stat-item modern">
-                                <div class="stat-icon tribune">
+                        <div class="stat-grid" id="admin-info-panel-stats-grid">
+                            <div class="stat-item modern" id="admin-info-panel-stat-tribunes">
+                                <div class="stat-icon tribune" id="admin-info-panel-stat-tribunes-icon">
                                     <i class="bi bi-building"></i>
                                 </div>
-                                <div class="stat-content">
+                                <div class="stat-content" id="admin-info-panel-stat-tribunes-content">
                                     <div class="stat-value">@Summary.TotalTribunes</div>
                                     <div class="stat-label">@L["InfoPanel_Tribunes"]</div>
                                 </div>
                             </div>
 
-                            <div class="stat-item modern">
-                                <div class="stat-icon ring">
+                            <div class="stat-item modern" id="admin-info-panel-stat-rings">
+                                <div class="stat-icon ring" id="admin-info-panel-stat-rings-icon">
                                     <i class="bi bi-bullseye"></i>
                                 </div>
-                                <div class="stat-content">
+                                <div class="stat-content" id="admin-info-panel-stat-rings-content">
                                     <div class="stat-value">@Summary.TotalRings</div>
                                     <div class="stat-label">@L["InfoPanel_Rings"]</div>
                                 </div>
@@ -91,16 +91,16 @@
                 @if (Summary.TotalSeats > 0)
                 {
                     <!-- Real-time Occupancy Analytics -->
-                    <div class="occupancy-analytics">
-                        <h6 class="stat-group-title">
+                    <div class="occupancy-analytics" id="admin-info-panel-occupancy">
+                        <h6 class="stat-group-title" id="admin-info-panel-occupancy-title">
                             <i class="bi bi-graph-up"></i>
                             @L["InfoPanel_LiveOccupancy"]
                         </h6>
 
                         <!-- Occupancy Overview -->
-                        <div class="occupancy-overview">
-                            <div class="occupancy-circle">
-                                <svg width="120" height="120" viewBox="0 0 120 120" class="occupancy-svg">
+                        <div class="occupancy-overview" id="admin-info-panel-occupancy-overview">
+                            <div class="occupancy-circle" id="admin-info-panel-occupancy-circle">
+                                <svg width="120" height="120" viewBox="0 0 120 120" class="occupancy-svg" id="admin-info-panel-occupancy-svg">
                                     <circle cx="60" cy="60" r="50" fill="none" stroke="#e2e8f0" stroke-width="8" class="background-circle"></circle>
                                     <circle cx="60" cy="60" r="50" fill="none" stroke="url(#occupancyGradient)" stroke-width="8"
                                             stroke-dasharray="@(314 * ((double)Summary.OccupiedSeats / Summary.TotalSeats)) @(314 * (1 - ((double)Summary.OccupiedSeats / Summary.TotalSeats)))"
@@ -113,51 +113,51 @@
                                         </linearGradient>
                                     </defs>
                                 </svg>
-                                <div class="occupancy-center">
-                                    <div class="occupancy-percentage">@(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F0"))%</div>
-                                    <div class="occupancy-label">@L["InfoPanel_Occupied"]</div>
+                                <div class="occupancy-center" id="admin-info-panel-occupancy-center">
+                                    <div class="occupancy-percentage" id="admin-info-panel-occupancy-pct">@(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F0"))%</div>
+                                    <div class="occupancy-label" id="admin-info-panel-occupancy-label">@L["InfoPanel_Occupied"]</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Availability Breakdown -->
-                        <div class="availability-breakdown">
-                            <div class="availability-item available-modern">
-                                <div class="availability-icon">
+                        <div class="availability-breakdown" id="admin-info-panel-availability">
+                            <div class="availability-item available-modern" id="admin-info-panel-availability-available">
+                                <div class="availability-icon" id="admin-info-panel-availability-available-icon">
                                     <i class="bi bi-check-circle-fill"></i>
                                 </div>
-                                <div class="availability-content">
+                                <div class="availability-content" id="admin-info-panel-availability-available-content">
                                     <div class="availability-number">@Summary.AvailableSeats.ToString("N0")</div>
                                     <div class="availability-text">@L["InfoPanel_AvailableSeats"]</div>
                                 </div>
-                                <div class="availability-trend up">
+                                <div class="availability-trend up" id="admin-info-panel-availability-available-trend">
                                     <i class="bi bi-arrow-up"></i>
                                 </div>
                             </div>
 
-                            <div class="availability-item occupied-modern">
-                                <div class="availability-icon">
+                            <div class="availability-item occupied-modern" id="admin-info-panel-availability-occupied">
+                                <div class="availability-icon" id="admin-info-panel-availability-occupied-icon">
                                     <i class="bi bi-person-fill"></i>
                                 </div>
-                                <div class="availability-content">
+                                <div class="availability-content" id="admin-info-panel-availability-occupied-content">
                                     <div class="availability-number">@Summary.OccupiedSeats.ToString("N0")</div>
                                     <div class="availability-text">@L["InfoPanel_OccupiedSeats"]</div>
                                 </div>
-                                <div class="availability-trend neutral">
+                                <div class="availability-trend neutral" id="admin-info-panel-availability-occupied-trend">
                                     <i class="bi bi-dash"></i>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Capacity Status Bar -->
-                        <div class="capacity-status">
-                            <div class="capacity-bar-modern">
-                                <div class="capacity-fill" style="width: @(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F1"))%"></div>
+                        <div class="capacity-status" id="admin-info-panel-capacity-status">
+                            <div class="capacity-bar-modern" id="admin-info-panel-capacity-bar">
+                                <div class="capacity-fill" id="admin-info-panel-capacity-fill" style="width: @(((double)Summary.OccupiedSeats / Summary.TotalSeats * 100).ToString("F1"))%"></div>
                             </div>
-                            <div class="capacity-labels">
-                                <span class="capacity-start">0</span>
-                                <span class="capacity-current">@Summary.OccupiedSeats.ToString("N0")</span>
-                                <span class="capacity-end">@Summary.TotalSeats.ToString("N0")</span>
+                            <div class="capacity-labels" id="admin-info-panel-capacity-labels">
+                                <span class="capacity-start" id="admin-info-panel-capacity-start">0</span>
+                                <span class="capacity-current" id="admin-info-panel-capacity-current">@Summary.OccupiedSeats.ToString("N0")</span>
+                                <span class="capacity-end" id="admin-info-panel-capacity-end">@Summary.TotalSeats.ToString("N0")</span>
                             </div>
                         </div>
                     </div>
@@ -165,16 +165,16 @@
             }
             else if (IsLoading)
             {
-                <div class="loading-state-modern">
-                    <div class="loading-animation">
-                        <div class="loading-spinner"></div>
-                        <div class="loading-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                <div class="loading-state-modern" id="admin-info-panel-loading">
+                    <div class="loading-animation" id="admin-info-panel-loading-animation">
+                        <div class="loading-spinner" id="admin-info-panel-loading-spinner"></div>
+                        <div class="loading-dots" id="admin-info-panel-loading-dots">
+                            <span id="admin-info-panel-loading-dot-1"></span>
+                            <span id="admin-info-panel-loading-dot-2"></span>
+                            <span id="admin-info-panel-loading-dot-3"></span>
                         </div>
                     </div>
-                    <div class="loading-text">
+                    <div class="loading-text" id="admin-info-panel-loading-text">
                         <h6>@L["InfoPanel_AnalyzingData"]</h6>
                         <p>@L["InfoPanel_GatheringInsights"]</p>
                     </div>
@@ -182,15 +182,15 @@
             }
             else
             {
-                <div class="no-data-state-modern">
-                    <div class="no-data-icon">
+                <div class="no-data-state-modern" id="admin-info-panel-no-data">
+                    <div class="no-data-icon" id="admin-info-panel-no-data-icon">
                         <i class="bi bi-database-x"></i>
                     </div>
-                    <div class="no-data-content">
+                    <div class="no-data-content" id="admin-info-panel-no-data-content">
                         <h6>@L["InfoPanel_NoDataAvailable"]</h6>
                         <p>@L["InfoPanel_ImportStructureMessage"]</p>
-                        <div class="no-data-action">
-                            <a href="/admin/stadium-structure" class="btn btn-primary btn-sm">
+                        <div class="no-data-action" id="admin-info-panel-no-data-action">
+                            <a href="/admin/stadium-structure" class="btn btn-primary btn-sm" id="admin-info-panel-import-link">
                                 <i class="bi bi-upload"></i>
                                 @L["InfoPanel_ImportStructureBtn"]
                             </a>

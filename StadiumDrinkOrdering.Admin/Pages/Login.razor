@@ -31,7 +31,7 @@
 
                         <div class="field" id="admin-login-password-group" style="margin-bottom:1.25rem;">
                             <label class="field__label" for="admin-login-password-input">@L["Password"]</label>
-                            <div style="position:relative;">
+                            <div style="position:relative;" id="admin-login-password-wrapper">
                                 <input type="@(showPassword ? "text" : "password")" class="field__input" style="padding-right:2.75rem;" @bind="password" required id="admin-login-password-input" />
                                 <button type="button" id="admin-login-password-toggle-btn"
                                         @onclick="TogglePasswordVisibility"

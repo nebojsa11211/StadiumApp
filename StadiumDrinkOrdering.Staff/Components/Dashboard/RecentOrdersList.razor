@@ -1,59 +1,59 @@
 @using StadiumDrinkOrdering.Shared.Models
 
-<div class="card recent-orders-card">
-    <div class="card-header">
-        <h5 class="mb-0">@Title</h5>
+<div class="card recent-orders-card" id="staff-recent-orders-card">
+    <div class="card-header" id="staff-recent-orders-header">
+        <h5 class="mb-0" id="staff-recent-orders-title">@Title</h5>
     </div>
-    <div class="card-body">
+    <div class="card-body" id="staff-recent-orders-body">
         @if (IsLoading)
         {
-            <div class="orders-skeleton">
+            <div class="orders-skeleton" id="staff-recent-orders-skeleton">
                 @for (int i = 0; i < 5; i++)
                 {
-                    <div class="skeleton-row mb-3">
-                        <div class="skeleton-text skeleton-order-id"></div>
-                        <div class="skeleton-text skeleton-customer"></div>
-                        <div class="skeleton-text skeleton-status"></div>
+                    <div class="skeleton-row mb-3" id="staff-recent-orders-skeleton-row-@i">
+                        <div class="skeleton-text skeleton-order-id" id="staff-recent-orders-skeleton-id-@i"></div>
+                        <div class="skeleton-text skeleton-customer" id="staff-recent-orders-skeleton-customer-@i"></div>
+                        <div class="skeleton-text skeleton-status" id="staff-recent-orders-skeleton-status-@i"></div>
                     </div>
                 }
             </div>
         }
         else if (Orders != null && Orders.Any())
         {
-            <div class="table-responsive">
-                <table class="table table-sm orders-table">
-                    <thead>
-                        <tr>
-                            <th>Order #</th>
-                            <th>Customer</th>
-                            <th>Seat</th>
-                            <th>Items</th>
-                            <th>Status</th>
-                            <th>Time</th>
+            <div class="table-responsive" id="staff-recent-orders-table-responsive">
+                <table class="table table-sm orders-table" id="staff-recent-orders-table">
+                    <thead id="staff-recent-orders-thead">
+                        <tr id="staff-recent-orders-header-row">
+                            <th id="staff-recent-orders-th-id">Order #</th>
+                            <th id="staff-recent-orders-th-customer">Customer</th>
+                            <th id="staff-recent-orders-th-seat">Seat</th>
+                            <th id="staff-recent-orders-th-items">Items</th>
+                            <th id="staff-recent-orders-th-status">Status</th>
+                            <th id="staff-recent-orders-th-time">Time</th>
                             @if (ShowActions)
                             {
-                                <th>Actions</th>
+                                <th id="staff-recent-orders-th-actions">Actions</th>
                             }
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="staff-recent-orders-tbody">
                         @foreach (var order in Orders.Take(MaxDisplayCount))
                         {
-                            <tr class="order-row" @key="order.Id">
-                                <td class="order-id">#@order.Id</td>
-                                <td class="customer-name">@order.CustomerName</td>
-                                <td class="seat-number">@order.SeatNumber</td>
-                                <td class="items-count">@order.OrderItems.Count item(s)</td>
-                                <td class="order-status">
-                                    <span class="badge @GetStatusBadgeClass(order.Status)">
+                            <tr class="order-row" id="staff-recent-orders-row-@order.Id" @key="order.Id">
+                                <td class="order-id" id="staff-recent-orders-id-@order.Id">#@order.Id</td>
+                                <td class="customer-name" id="staff-recent-orders-customer-@order.Id">@order.CustomerName</td>
+                                <td class="seat-number" id="staff-recent-orders-seat-@order.Id">@order.SeatNumber</td>
+                                <td class="items-count" id="staff-recent-orders-items-@order.Id">@order.OrderItems.Count item(s)</td>
+                                <td class="order-status" id="staff-recent-orders-status-@order.Id">
+                                    <span class="badge @GetStatusBadgeClass(order.Status)" id="staff-recent-orders-status-badge-@order.Id">
                                         @order.Status
                                     </span>
                                 </td>
-                                <td class="order-time">@order.OrderDate.ToString("HH:mm")</td>
+                                <td class="order-time" id="staff-recent-orders-time-@order.Id">@order.OrderDate.ToString("HH:mm")</td>
                                 @if (ShowActions)
                                 {
-                                    <td class="order-actions">
-                                        <button class="btn btn-sm btn-outline-primary"
+                                    <td class="order-actions" id="staff-recent-orders-actions-@order.Id">
+                                        <button class="btn btn-sm btn-outline-primary" id="staff-recent-orders-view-btn-@order.Id"
                                                 @onclick="(() => OnOrderClick.InvokeAsync(order))">
                                             View
                                         </button>
@@ -66,12 +66,12 @@
             </div>
             @if (Orders.Count() > MaxDisplayCount)
             {
-                <div class="text-center mt-3">
-                    <small class="text-muted">
+                <div class="text-center mt-3" id="staff-recent-orders-pagination">
+                    <small class="text-muted" id="staff-recent-orders-pagination-text">
                         Showing @MaxDisplayCount of @Orders.Count() orders
                         @if (ViewAllUrl != null)
                         {
-                            <a href="@ViewAllUrl" class="ms-2">View All</a>
+                            <a href="@ViewAllUrl" class="ms-2" id="staff-recent-orders-view-all-link">View All</a>
                         }
                     </small>
                 </div>
@@ -79,9 +79,9 @@
         }
         else
         {
-            <div class="empty-state text-center text-muted py-4">
-                <span class="@EmptyStateIcon" style="font-size: 3rem;"></span>
-                <p class="mt-2 mb-0">@EmptyStateMessage</p>
+            <div class="empty-state text-center text-muted py-4" id="staff-recent-orders-empty">
+                <span class="@EmptyStateIcon" id="staff-recent-orders-empty-icon" style="font-size: 3rem;"></span>
+                <p class="mt-2 mb-0" id="staff-recent-orders-empty-text">@EmptyStateMessage</p>
             </div>
         }
     </div>

@@ -241,16 +241,16 @@
                     <h6 class="mt-4" id="customer-order-modal-items-title">Items Ordered</h6>
                     <div class="table-responsive" id="customer-order-modal-items-container">
                         <table class="table" id="customer-order-modal-items-table">
-                            <thead>
-                                <tr>
-                                    <th>Drink</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total</th>
-                                    <th>Instructions</th>
+                            <thead id="customer-order-modal-items-thead">
+                                <tr id="customer-order-modal-items-header-row">
+                                    <th id="customer-order-modal-items-header-drink">Drink</th>
+                                    <th id="customer-order-modal-items-header-quantity">Quantity</th>
+                                    <th id="customer-order-modal-items-header-price">Unit Price</th>
+                                    <th id="customer-order-modal-items-header-total">Total</th>
+                                    <th id="customer-order-modal-items-header-instructions">Instructions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="customer-order-modal-items-tbody">
                                 @foreach (var item in selectedOrder.OrderItems)
                                 {
                                     <tr id="customer-order-modal-item-@item.Id">

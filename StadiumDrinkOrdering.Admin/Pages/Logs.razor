@@ -7,15 +7,15 @@
 <div class="console" id="admin-logs-main-container">
     <!-- Page Header -->
     <header class="console-head" id="admin-logs-header">
-        <div class="console-head__title">
+        <div class="console-head__title" id="admin-logs-header-title">
             <span class="eyebrow">@L["Logs_EyebrowText"]</span>
-            <h1>@L["Logs_MainHeading"]</h1>
-            <p>@L["Logs_Description"]</p>
+            <h1 id="admin-logs-main-heading">@L["Logs_MainHeading"]</h1>
+            <p id="admin-logs-description">@L["Logs_Description"]</p>
         </div>
-        <div class="console-head__actions">
-            <div class="form-check form-switch m-0">
+        <div class="console-head__actions" id="admin-logs-header-actions">
+            <div class="form-check form-switch m-0" id="admin-logs-toggle-group">
                 <input class="form-check-input" type="checkbox" role="switch" id="consoleToSystemToggle" @onchange="ToggleConsoleToSystemLogging" checked="@isConsoleToSystemLoggingEnabled">
-                <label class="form-check-label" for="consoleToSystemToggle">
+                <label class="form-check-label" for="consoleToSystemToggle" id="admin-logs-toggle-label">
                     @L["Logs_ConsoleToggleLabel"]
                 </label>
             </div>
@@ -30,7 +30,7 @@
 
     @if (isLoading)
     {
-        <div class="loading-state">
+        <div class="loading-state" id="admin-logs-loading-state">
             <span class="loading-spinner"></span>
             <p>@L["Logs_LoadingMessage"]</p>
         </div>
@@ -38,7 +38,7 @@
     else if (logSummary != null)
     {
         <!-- Summary Stat Cards -->
-        <section class="metrics">
+        <section class="metrics" id="admin-logs-metrics-section">
             <article class="metric" id="admin-logs-total-card">
                 <div class="metric__head">
                     <span class="metric__label">@L["Logs_TotalLogsLabel"]</span>
@@ -85,15 +85,15 @@
         </section>
 
         <!-- Filters -->
-        <div class="panel filters-panel">
-            <div class="panel__head">
-                <h2 class="panel__title">@L["Logs_FiltersPanelTitle"]</h2>
+        <div class="panel filters-panel" id="admin-logs-filters-panel">
+            <div class="panel__head" id="admin-logs-filters-panel-head">
+                <h2 class="panel__title" id="admin-logs-filters-title">@L["Logs_FiltersPanelTitle"]</h2>
             </div>
-            <div class="panel__body">
+            <div class="panel__body" id="admin-logs-filters-panel-body">
                 <!-- Date Range Filters -->
-                <div class="field">
+                <div class="field" id="admin-logs-date-range-field">
                     <label class="field__label">@L["Logs_TimeRangeLabel"]</label>
-                    <div class="filters">
+                    <div class="filters" id="admin-logs-date-buttons">
                         <button class="pill-btn @(selectedDateRange == "last24hours" ? "pill-btn--primary" : "")"
                                 @onclick="@(() => SetDateRange("last24hours"))" id="admin-logs-filter-24h-btn">
                             <i class="fas fa-clock"></i><span>@L["Logs_Last24HoursButton"]</span>
@@ -124,16 +124,16 @@
                 <!-- Custom Date Range -->
                 @if (showCustomDateRange)
                 {
-                    <div class="filters">
-                        <div class="field">
+                    <div class="filters" id="admin-logs-custom-date-range">
+                        <div class="field" id="admin-logs-from-date-field">
                             <label class="field__label">@L["Logs_FromDateLabel"]</label>
-                            <input type="datetime-local" class="field__input" @bind="customFromDate" />
+                            <input type="datetime-local" class="field__input" @bind="customFromDate" id="admin-logs-from-date-input" />
                         </div>
-                        <div class="field">
+                        <div class="field" id="admin-logs-to-date-field">
                             <label class="field__label">@L["Logs_ToDateLabel"]</label>
-                            <input type="datetime-local" class="field__input" @bind="customToDate" />
+                            <input type="datetime-local" class="field__input" @bind="customToDate" id="admin-logs-to-date-input" />
                         </div>
-                        <div class="field">
+                        <div class="field" id="admin-logs-apply-field">
                             <label class="field__label">&nbsp;</label>
                             <button class="pill-btn pill-btn--primary" @onclick="ApplyCustomDateRange" id="admin-logs-custom-date-apply-btn">
                                 <i class="fas fa-check"></i><span>@L["Logs_ApplyButton"]</span>
@@ -145,7 +145,7 @@
                 <!-- Current Filter Info -->
                 @if (!string.IsNullOrEmpty(currentFilterDescription))
                 {
-                    <div class="console-alert console-alert--info">
+                    <div class="console-alert console-alert--info" id="admin-logs-current-filter-alert">
                         <i class="fas fa-filter"></i> <strong>@L["Logs_CurrentFilterLabel"]</strong> @currentFilterDescription
                         @if (logs != null)
                         {
@@ -155,9 +155,9 @@
                 }
 
                 <!-- Level Filters -->
-                <div class="field">
+                <div class="field" id="admin-logs-level-filter-field">
                     <label class="field__label">@L["Logs_FilterByLevelLabel"]</label>
-                    <div class="filters">
+                    <div class="filters" id="admin-logs-level-filter-buttons">
                         <button class="pill-btn @(selectedLevel == "Error" ? "pill-btn--danger" : "")" @onclick="@(() => FilterByLevel("Error"))" id="admin-logs-filter-error-btn">
                             <span>@L["Logs_ErrorsFilterButton"] (@logSummary.ErrorCount)</span>
                         </button>
@@ -176,51 +176,51 @@
         </div>
 
         <!-- Logs Table -->
-        <div class="panel">
-            <div class="panel__head">
-                <h2 class="panel__title">@L["Logs_LogsPanelTitle"] <span class="panel__count mono">@(logs?.TotalCount ?? 0)</span></h2>
+        <div class="panel" id="admin-logs-table-panel">
+            <div class="panel__head" id="admin-logs-table-panel-head">
+                <h2 class="panel__title" id="admin-logs-table-title">@L["Logs_LogsPanelTitle"] <span class="panel__count mono">@(logs?.TotalCount ?? 0)</span></h2>
             </div>
 
             @if (logs?.Logs?.Any() == true)
             {
-                <table class="console-table">
-                    <thead>
-                        <tr>
-                            <th>@L["Logs_TimeHeader"]</th>
-                            <th>@L["Logs_LevelHeader"]</th>
-                            <th>@L["Logs_ActionHeader"]</th>
-                            <th>@L["Logs_UserHeader"]</th>
-                            <th>@L["Logs_SourceHeader"]</th>
-                            <th>@L["Logs_MessageHeader"]</th>
+                <table class="console-table" id="admin-logs-table">
+                    <thead id="admin-logs-table-head">
+                        <tr id="admin-logs-table-header-row">
+                            <th id="admin-logs-th-time">@L["Logs_TimeHeader"]</th>
+                            <th id="admin-logs-th-level">@L["Logs_LevelHeader"]</th>
+                            <th id="admin-logs-th-action">@L["Logs_ActionHeader"]</th>
+                            <th id="admin-logs-th-user">@L["Logs_UserHeader"]</th>
+                            <th id="admin-logs-th-source">@L["Logs_SourceHeader"]</th>
+                            <th id="admin-logs-th-message">@L["Logs_MessageHeader"]</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="admin-logs-table-body">
                         @foreach (var log in logs.Logs.Take(50))
                         {
-                            <tr>
-                                <td class="mono console-table__time">@log.Timestamp.ToLocalTime().ToString("MM-dd HH:mm:ss")</td>
-                                <td>
+                            <tr id="admin-logs-row-@log.Id">
+                                <td class="mono console-table__time" id="admin-logs-cell-time-@log.Id">@log.Timestamp.ToLocalTime().ToString("MM-dd HH:mm:ss")</td>
+                                <td id="admin-logs-cell-level-@log.Id">
                                     <span class="status @(log.Level switch { "Error" => "is-cancelled", "Critical" => "is-cancelled", "Warning" => "is-pending", "Info" => "is-accepted", _ => "is-delivered" })">
                                         <span class="status__dot"></span>@log.Level
                                     </span>
                                 </td>
-                                <td>@log.Action</td>
-                                <td class="console-table__muted">
+                                <td id="admin-logs-cell-action-@log.Id">@log.Action</td>
+                                <td class="console-table__muted" id="admin-logs-cell-user-@log.Id">
                                     @if (!string.IsNullOrEmpty(log.UserEmail))
                                     {
                                         @log.UserEmail
                                     }
                                 </td>
-                                <td>
+                                <td id="admin-logs-cell-source-@log.Id">
                                     <span class="console-table__muted">@log.Source</span>
                                 </td>
-                                <td style="max-width: 400px;">
+                                <td style="max-width: 400px;" id="admin-logs-cell-message-@log.Id">
                                     @if (!string.IsNullOrEmpty(log.Message))
                                     {
                                         @if (log.Message.Length > 100)
                                         {
-                                            <div class="message-cell">
-                                                <div class="message-preview" @onclick="@(() => ToggleMessage(log.Id))">
+                                            <div class="message-cell" id="admin-logs-message-cell-@log.Id">
+                                                <div class="message-preview" @onclick="@(() => ToggleMessage(log.Id))" id="admin-logs-message-preview-@log.Id">
                                                     <small>@log.Message.Substring(0, 100)...</small>
                                                     <button class="row-btn" title="Expand message" id="admin-logs-expand-message-btn-@log.Id">
                                                         <i class="fas fa-expand-alt"></i>
@@ -228,7 +228,7 @@
                                                 </div>
                                                 @if (expandedMessages.Contains(log.Id))
                                                 {
-                                                    <div class="message-full mt-2 p-2 border rounded" style="background-color: rgba(0,0,0,0.05); word-break: break-word; white-space: pre-wrap;">
+                                                    <div class="message-full mt-2 p-2 border rounded" style="background-color: rgba(0,0,0,0.05); word-break: break-word; white-space: pre-wrap;" id="admin-logs-message-full-@log.Id">
                                                         <small>@log.Message</small>
                                                         <button class="row-btn float-end" title="Collapse message" @onclick="@(() => ToggleMessage(log.Id))" id="admin-logs-collapse-message-btn-@log.Id">
                                                             <i class="fas fa-compress-alt"></i>
@@ -239,7 +239,7 @@
                                         }
                                         else
                                         {
-                                            <small style="word-break: break-word;">@log.Message</small>
+                                            <small style="word-break: break-word;" id="admin-logs-message-short-@log.Id">@log.Message</small>
                                         }
                                     }
                                 </td>
@@ -250,17 +250,17 @@
 
                 @if (logs.TotalCount > 50)
                 {
-                    <div class="table-foot">
-                        <p>@L["Logs_ShowingFirst50", logs.TotalCount]</p>
+                    <div class="table-foot" id="admin-logs-table-footer">
+                        <p id="admin-logs-showing-note">@L["Logs_ShowingFirst50", logs.TotalCount]</p>
                     </div>
                 }
             }
             else
             {
-                <div class="empty">
+                <div class="empty" id="admin-logs-empty-state">
                     <i class="fas fa-inbox"></i>
-                    <p>@L["Logs_NoLogsFound"]</p>
-                    <span>@L["Logs_NoLogsDescription"]</span>
+                    <p id="admin-logs-empty-title">@L["Logs_NoLogsFound"]</p>
+                    <span id="admin-logs-empty-message">@L["Logs_NoLogsDescription"]</span>
                 </div>
             }
         </div>
@@ -268,8 +268,8 @@
 
     @if (!string.IsNullOrEmpty(statusMessage))
     {
-        <div class="console-alert @(isSuccess ? "console-alert--success" : "console-alert--danger")">
-            @statusMessage
+        <div class="console-alert @(isSuccess ? "console-alert--success" : "console-alert--danger")" id="admin-logs-status-alert">
+            <span id="admin-logs-status-message">@statusMessage</span>
         </div>
     }
 </div>

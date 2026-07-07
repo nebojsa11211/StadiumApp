@@ -7,20 +7,22 @@
 <div class="skeleton-container" id="skeleton-action-buttons-@SectionType.ToLowerInvariant()">
     <!-- Quick Actions Card -->
     <div class="skeleton-action-buttons"
+         id="skeleton-action-buttons-card"
          role="status"
          aria-label="Loading action buttons"
          tabindex="0">
 
         <!-- Card header -->
-        <div class="skeleton-action-header">
+        <div class="skeleton-action-header" id="skeleton-action-buttons-header">
             <div class="skeleton skeleton-action-title" aria-hidden="true"></div>
         </div>
 
         <!-- Card body with action buttons -->
-        <div class="skeleton-action-body">
+        <div class="skeleton-action-body" id="skeleton-action-buttons-body">
             @for (int i = 0; i < ButtonCount; i++)
             {
                 <div class="skeleton skeleton-action-button"
+                     id="@($"skeleton-action-buttons-btn-{i}")"
                      style="animation-delay: @(i * 100)ms;"
                      aria-hidden="true"></div>
             }
@@ -29,7 +31,7 @@
         <!-- Optional loading spinner -->
         @if (ShowLoadingIndicator)
         {
-            <div class="skeleton-loading-indicator" aria-hidden="true"></div>
+            <div class="skeleton-loading-indicator" id="skeleton-action-buttons-spinner" aria-hidden="true"></div>
         }
     </div>
 
@@ -37,22 +39,23 @@
     @if (IncludeSystemStatus)
     {
         <div class="skeleton-system-status"
+             id="skeleton-action-buttons-system-status"
              role="status"
              aria-label="Loading system status"
              tabindex="0">
 
             <!-- Status header -->
-            <div class="skeleton-system-header">
+            <div class="skeleton-system-header" id="skeleton-action-buttons-system-header">
                 <div class="skeleton skeleton-system-title" aria-hidden="true"></div>
             </div>
 
             <!-- Status items -->
-            <div class="skeleton-system-body">
+            <div class="skeleton-system-body" id="skeleton-action-buttons-system-body">
                 @for (int i = 0; i < StatusItemCount; i++)
                 {
-                    <div class="skeleton-system-item" style="animation-delay: @((ButtonCount + i) * 100)ms;">
-                        <div class="skeleton skeleton-system-label" aria-hidden="true"></div>
-                        <div class="skeleton skeleton-system-status" aria-hidden="true"></div>
+                    <div class="skeleton-system-item" id="@($"skeleton-action-buttons-status-item-{i}")" style="animation-delay: @((ButtonCount + i) * 100)ms;">
+                        <div class="skeleton skeleton-system-label" id="@($"skeleton-action-buttons-status-label-{i}")" aria-hidden="true"></div>
+                        <div class="skeleton skeleton-system-status" id="@($"skeleton-action-buttons-status-value-{i}")" aria-hidden="true"></div>
                     </div>
                 }
             </div>

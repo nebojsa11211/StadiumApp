@@ -4,15 +4,15 @@
 
 <div id="bar-navmenu-top-row" class="top-row ps-3 navbar navbar-dark">
     <div id="bar-navmenu-container" class="container-fluid">
-        <a class="navbar-brand" href="">@Localizer["NavMenu_StadiumStaff"]</a>
+        <a id="bar-navmenu-brand" class="navbar-brand" href="">@Localizer["NavMenu_StadiumStaff"]</a>
         <button title="@Localizer["NavMenu_NavigationMenu"]" class="navbar-toggler" @onclick="ToggleNavMenu" id="staff-navmenu-toggle-btn">
-            <span class="navbar-toggler-icon"></span>
+            <span id="bar-navmenu-toggle-icon" class="navbar-toggler-icon"></span>
         </button>
     </div>
 </div>
 
 <div id="bar-navmenu-scrollable" class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
+    <nav id="bar-navmenu-nav" class="flex-column">
         <div id="bar-navmenu-item-dashboard" class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-dashboard" aria-hidden="true"></span> @Localizer["Dashboard"]

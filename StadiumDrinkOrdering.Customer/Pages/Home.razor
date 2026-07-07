@@ -20,8 +20,8 @@ else if (_home is null || !_home.HasPass)
         <div id="customer-home-emoji" style="font-size:52px">🎟️</div>
         <h2>Nemaš sezonsku pretplatu</h2>
         <p class="muted">Na ovom računu nije pronađena sezonska ulaznica. Došao si na pojedinačnu utakmicu? Skeniraj ulaznicu.</p>
-        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
-        <button class="btn btn-ghost" @onclick="Logout">Odjava</button>
+        <button id="customer-home-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
+        <button id="customer-home-logout-btn" class="btn btn-ghost" @onclick="Logout">Odjava</button>
     </div>
 }
 else
@@ -31,7 +31,7 @@ else
             <div class="greet">Dobra večer,</div>
             <div class="name">@FirstName 👋</div>
         </div>
-        <button class="avatar" @onclick="Logout" title="Odjava">@Initials</button>
+        <button id="customer-home-avatar-btn" class="avatar" @onclick="Logout" title="Odjava">@Initials</button>
     </div>
 
     <div id="customer-home-pass" class="pass">
@@ -60,7 +60,7 @@ else
             <div id="customer-home-live-cta" class="lc-cta">
                 @if (!string.IsNullOrEmpty(_home.LiveEvent.SessionQrToken))
                 {
-                    <button class="btn btn-primary" @onclick="() => StartOrdering(_home.LiveEvent.SessionQrToken!)" disabled="@_starting">
+                    <button id="customer-home-live-order-btn" class="btn btn-primary" @onclick="() => StartOrdering(_home.LiveEvent.SessionQrToken!)" disabled="@_starting">
                         @if (_starting)
                         {
                             <span class="spinner"></span> <span>Otvaram meni…</span>

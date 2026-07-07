@@ -94,38 +94,38 @@
                     <option value="Customer">@L["Users_RoleCustomer"]</option>
                 </select>
             </div>
-            <div class="field">
+            <div class="field" id="admin-users-status-filter-col">
                 <label class="field__label">@L["Users_StatusFilterLabel"]</label>
-                <select class="field__input" @bind="selectedStatus" @bind:after="FilterUsers">
+                <select class="field__input" @bind="selectedStatus" @bind:after="FilterUsers" id="admin-users-status-filter">
                     <option value="">@L["Users_AllStatusesOption"]</option>
                     <option value="true">@L["Users_ActiveStatusOption"]</option>
                     <option value="false">@L["Users_InactiveStatusOption"]</option>
                 </select>
             </div>
-            <div class="field field--grow">
+            <div class="field field--grow" id="admin-users-search-filter-col">
                 <label class="field__label">@L["Users_SearchUsersLabel"]</label>
                 <input type="text" class="field__input" placeholder="@L["Users_SearchUsersPlaceholder"]"
-                       @bind="searchTerm" @oninput="FilterUsers" />
+                       @bind="searchTerm" @oninput="FilterUsers" id="admin-users-search-input" />
             </div>
         </div>
     </div>
 
     @if (isLoading)
     {
-        <div class="loading-state">
-            <span class="loading-spinner"></span>
-            <p>@L["Users_LoadingMessage"]</p>
+        <div class="loading-state" id="admin-users-loading-state">
+            <span class="loading-spinner" id="admin-users-loading-spinner"></span>
+            <p id="admin-users-loading-text">@L["Users_LoadingMessage"]</p>
         </div>
     }
     else
     {
         <!-- Users Table -->
-        <div class="panel">
-            <div class="panel__head">
-                <h2 class="panel__title">@L["Users_UsersTableTitle"] <span class="panel__count mono">@filteredUsers.Count</span></h2>
+        <div class="panel" id="admin-users-table-panel">
+            <div class="panel__head" id="admin-users-table-head">
+                <h2 class="panel__title" id="admin-users-table-title">@L["Users_UsersTableTitle"] <span class="panel__count mono" id="admin-users-table-count">@filteredUsers.Count</span></h2>
                 @if (selectedUserIds.Any())
                 {
-                    <div class="bulk-actions">
+                    <div class="bulk-actions" id="admin-users-bulk-actions">
                         <button class="pill-btn pill-btn--success" @onclick="BulkActivate" id="admin-users-bulk-activate-btn">
                             <i class="oi oi-circle-check"></i><span>@L["Users_ActivateButtonText", selectedUserIds.Count]</span>
                         </button>
@@ -138,46 +138,46 @@
 
             @if (filteredUsers?.Any() == true)
             {
-                <table class="console-table">
-                    <thead>
-                        <tr>
-                            <th class="check">
-                                <input type="checkbox" class="check-box" @onchange="ToggleSelectAll" />
+                <table class="console-table" id="admin-users-table">
+                    <thead id="admin-users-table-head">
+                        <tr id="admin-users-table-header-row">
+                            <th class="check" id="admin-users-table-col-checkbox">
+                                <input type="checkbox" class="check-box" @onchange="ToggleSelectAll" id="admin-users-select-all-checkbox" />
                             </th>
-                            <th>@L["Users_UserColumnHeader"]</th>
-                            <th>@L["Users_NameColumnHeader"]</th>
-                            <th>@L["Users_UsernameColumnHeader"]</th>
-                            <th>@L["Users_EmailColumnHeader"]</th>
-                            <th>@L["Users_RoleColumnHeader"]</th>
-                            <th>@L["Users_StatusColumnHeader"]</th>
-                            <th class="num">@L["Users_CreatedColumnHeader"]</th>
-                            <th class="actions-col">@L["Users_ActionsColumnHeader"]</th>
+                            <th id="admin-users-table-col-id">@L["Users_UserColumnHeader"]</th>
+                            <th id="admin-users-table-col-name">@L["Users_NameColumnHeader"]</th>
+                            <th id="admin-users-table-col-username">@L["Users_UsernameColumnHeader"]</th>
+                            <th id="admin-users-table-col-email">@L["Users_EmailColumnHeader"]</th>
+                            <th id="admin-users-table-col-role">@L["Users_RoleColumnHeader"]</th>
+                            <th id="admin-users-table-col-status">@L["Users_StatusColumnHeader"]</th>
+                            <th class="num" id="admin-users-table-col-created">@L["Users_CreatedColumnHeader"]</th>
+                            <th class="actions-col" id="admin-users-table-col-actions">@L["Users_ActionsColumnHeader"]</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="admin-users-table-body">
                         @foreach (var user in filteredUsers.Take(50))
                         {
-                            <tr class="@(selectedUserIds.Contains(user.Id) ? "is-selected" : "")">
-                                <td class="check">
+                            <tr class="@(selectedUserIds.Contains(user.Id) ? "is-selected" : "")" id="admin-users-row-@user.Id">
+                                <td class="check" id="admin-users-cell-checkbox-@user.Id">
                                     <input type="checkbox" class="check-box"
                                            checked="@selectedUserIds.Contains(user.Id)"
-                                           @onchange="@((e) => ToggleUserSelection(user.Id, (bool)e.Value!))" />
+                                           @onchange="@((e) => ToggleUserSelection(user.Id, (bool)e.Value!))" id="admin-users-checkbox-@user.Id" />
                                 </td>
-                                <td class="mono console-table__id">#@user.Id</td>
-                                <td>@user.Name</td>
-                                <td>@user.Username</td>
-                                <td class="console-table__muted">@user.Email</td>
-                                <td>
+                                <td class="mono console-table__id" id="admin-users-cell-id-@user.Id">#@user.Id</td>
+                                <td id="admin-users-cell-name-@user.Id">@user.Name</td>
+                                <td id="admin-users-cell-username-@user.Id">@user.Username</td>
+                                <td class="console-table__muted" id="admin-users-cell-email-@user.Id">@user.Email</td>
+                                <td id="admin-users-cell-role-@user.Id">
                                     <span class="badge @GetRoleBadgeClass(user.Role)">@user.Role</span>
                                 </td>
-                                <td>
+                                <td id="admin-users-cell-status-@user.Id">
                                     <span class="status @(user.IsActive ? "is-active" : "is-inactive")">
                                         <span class="status__dot"></span>@(user.IsActive ? L["Users_ActiveStatus"] : L["Users_InactiveStatus"])
                                     </span>
                                 </td>
-                                <td class="num mono console-table__time">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
-                                <td class="actions-col">
-                                    <div class="row-actions">
+                                <td class="num mono console-table__time" id="admin-users-cell-created-@user.Id">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                <td class="actions-col" id="admin-users-cell-actions-@user.Id">
+                                    <div class="row-actions" id="admin-users-actions-@user.Id">
                                         <button class="row-btn" @onclick="@(() => EditUser(user))" id="admin-users-edit-btn-@user.Id" title="@L["Users_EditUserTitle"]">
                                             <i class="oi oi-pencil"></i>
                                         </button>
@@ -211,17 +211,17 @@
 
                 @if (filteredUsers.Count > 50)
                 {
-                    <div class="table-foot">
-                        <p>@L["Users_ShowingFirstMessage"] <span class="mono">50</span> @L["Users_OfTotalMessage"] <span class="mono">@filteredUsers.Count</span> @L["Users_TotalUsersText"]</p>
+                    <div class="table-foot" id="admin-users-table-foot">
+                        <p id="admin-users-table-foot-message">@L["Users_ShowingFirstMessage"] <span class="mono">50</span> @L["Users_OfTotalMessage"] <span class="mono">@filteredUsers.Count</span> @L["Users_TotalUsersText"]</p>
                     </div>
                 }
             }
             else
             {
-                <div class="empty">
-                    <i class="oi oi-info"></i>
-                    <p>@L["Users_NoUsersFound"]</p>
-                    <span>@L["Users_NoUsersFiltersMessage"]</span>
+                <div class="empty" id="admin-users-empty">
+                    <i class="oi oi-info" id="admin-users-empty-icon"></i>
+                    <p id="admin-users-empty-title">@L["Users_NoUsersFound"]</p>
+                    <span id="admin-users-empty-message">@L["Users_NoUsersFiltersMessage"]</span>
                 </div>
             }
         </div>
@@ -238,33 +238,33 @@
                     <h5 class="modal-title" id="admin-users-modal-title">@L["Users_AddNewUserModalTitle"]</h5>
                     <button type="button" class="btn-close" @onclick="CloseCreateModal" id="admin-users-modal-close-btn" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <EditForm Model="newUser" OnValidSubmit="CreateUser">
+                <div class="modal-body" id="admin-users-modal-body">
+                    <EditForm Model="newUser" OnValidSubmit="CreateUser" id="admin-users-modal-form">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_UsernameLabel"] *</label>
+                        <div class="mb-3" id="admin-users-modal-username-group">
+                            <label class="form-label" for="admin-users-modal-username-input">@L["Users_UsernameLabel"] *</label>
                             <InputText class="form-control" @bind-Value="newUser.Username" id="admin-users-modal-username-input" />
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_EmailLabel"] *</label>
+                        <div class="mb-3" id="admin-users-modal-email-group">
+                            <label class="form-label" for="admin-users-modal-email-input">@L["Users_EmailLabel"] *</label>
                             <InputText class="form-control" @bind-Value="newUser.Email" type="email" id="admin-users-modal-email-input" />
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_FullNameLabel"]</label>
+                        <div class="mb-3" id="admin-users-modal-name-group">
+                            <label class="form-label" for="admin-users-modal-name-input">@L["Users_FullNameLabel"]</label>
                             <InputText class="form-control" @bind-Value="newUser.FirstName" id="admin-users-modal-name-input" />
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_PasswordLabel"] *</label>
+                        <div class="mb-3" id="admin-users-modal-password-group">
+                            <label class="form-label" for="admin-users-modal-password-input">@L["Users_PasswordLabel"] *</label>
                             <InputText class="form-control" @bind-Value="newUser.Password" type="password" id="admin-users-modal-password-input" />
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_RoleLabel"] *</label>
+                        <div class="mb-3" id="admin-users-modal-role-group">
+                            <label class="form-label" for="admin-users-modal-role-select">@L["Users_RoleLabel"] *</label>
                             <InputSelect class="form-select" @bind-Value="newUser.Role" id="admin-users-modal-role-select">
                                 <option value="Customer">@L["Users_RoleCustomer"]</option>
                                 <option value="Staff">@L["Users_RoleStaff"]</option>
@@ -272,7 +272,7 @@
                             </InputSelect>
                         </div>
 
-                        <div class="modal-footer">
+                        <div class="modal-footer" id="admin-users-modal-footer">
                             <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal" id="admin-users-modal-cancel-btn">@L["Users_CancelButton"]</button>
                             <button type="submit" class="btn btn-primary" disabled="@isCreatingUser" id="admin-users-modal-submit-btn">
                                 @if (isCreatingUser)
@@ -287,52 +287,52 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show" style="z-index: 1050;"></div>
+    <div class="modal-backdrop fade show" style="z-index: 1050;" id="admin-users-modal-backdrop"></div>
 }
 
 <!-- Edit User Modal -->
 @if (showEditModal)
 {
     <div class="modal fade show" id="admin-users-edit-modal" tabindex="-1" role="dialog" style="display: block; z-index: 1055;" aria-modal="true" aria-labelledby="admin-users-edit-modal-title">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document" id="admin-users-edit-modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" id="admin-users-edit-modal-header">
                     <h5 class="modal-title" id="admin-users-edit-modal-title">@L["Users_EditUserModalTitle"]</h5>
                     <button type="button" class="btn-close" @onclick="CloseEditModal" id="admin-users-edit-modal-close-btn" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <EditForm Model="editUser" OnValidSubmit="UpdateUser">
+                <div class="modal-body" id="admin-users-edit-modal-body">
+                    <EditForm Model="editUser" OnValidSubmit="UpdateUser" id="admin-users-edit-modal-form">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_UsernameLabel"]</label>
+                        <div class="mb-3" id="admin-users-edit-modal-username-group">
+                            <label class="form-label" for="admin-users-edit-modal-username-input">@L["Users_UsernameLabel"]</label>
                             <InputText class="form-control" @bind-Value="editUser.Username" id="admin-users-edit-modal-username-input" />
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_EmailLabel"]</label>
+                        <div class="mb-3" id="admin-users-edit-modal-email-group">
+                            <label class="form-label" for="admin-users-edit-modal-email-input">@L["Users_EmailLabel"]</label>
                             <InputText class="form-control" @bind-Value="editUser.Email" type="email" id="admin-users-edit-modal-email-input" />
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">@L["Users_FirstNameLabel"]</label>
+                        <div class="row" id="admin-users-edit-modal-name-row">
+                            <div class="col-md-6 mb-3" id="admin-users-edit-modal-firstname-col">
+                                <label class="form-label" for="admin-users-edit-modal-firstname-input">@L["Users_FirstNameLabel"]</label>
                                 <InputText class="form-control" @bind-Value="editUser.FirstName" id="admin-users-edit-modal-firstname-input" />
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">@L["Users_LastNameLabel"]</label>
+                            <div class="col-md-6 mb-3" id="admin-users-edit-modal-lastname-col">
+                                <label class="form-label" for="admin-users-edit-modal-lastname-input">@L["Users_LastNameLabel"]</label>
                                 <InputText class="form-control" @bind-Value="editUser.LastName" id="admin-users-edit-modal-lastname-input" />
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_PhoneNumberLabel"]</label>
+                        <div class="mb-3" id="admin-users-edit-modal-phone-group">
+                            <label class="form-label" for="admin-users-edit-modal-phone-input">@L["Users_PhoneNumberLabel"]</label>
                             <InputText class="form-control" @bind-Value="editUser.PhoneNumber" id="admin-users-edit-modal-phone-input" />
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">@L["Users_RoleLabel"]</label>
+                        <div class="mb-3" id="admin-users-edit-modal-role-group">
+                            <label class="form-label" for="admin-users-edit-modal-role-select">@L["Users_RoleLabel"]</label>
                             <InputSelect class="form-select" @bind-Value="editUser.Role" id="admin-users-edit-modal-role-select">
                                 <option value="">@L["Users_SelectRoleOption"]</option>
                                 <option value="@UserRole.Customer">@L["Users_RoleCustomer"]</option>
@@ -341,14 +341,14 @@
                             </InputSelect>
                         </div>
 
-                        <div class="mb-3 form-check">
+                        <div class="mb-3 form-check" id="admin-users-edit-modal-active-group">
                             <input type="checkbox" class="form-check-input" @bind="isActiveChecked" id="admin-users-edit-modal-active-checkbox" />
                             <label class="form-check-label" for="admin-users-edit-modal-active-checkbox">
                                 @L["Users_ActiveCheckboxLabel"]
                             </label>
                         </div>
 
-                        <div class="modal-footer">
+                        <div class="modal-footer" id="admin-users-edit-modal-footer">
                             <button type="button" class="btn btn-secondary" @onclick="CloseEditModal" id="admin-users-edit-modal-cancel-btn">@L["Users_CancelButton"]</button>
                             <button type="submit" class="btn btn-primary" disabled="@isUpdatingUser" id="admin-users-edit-modal-submit-btn">
                                 @if (isUpdatingUser)
@@ -363,7 +363,7 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show" style="z-index: 1050;"></div>
+    <div class="modal-backdrop fade show" style="z-index: 1050;" id="admin-users-edit-modal-backdrop"></div>
 }
 
 

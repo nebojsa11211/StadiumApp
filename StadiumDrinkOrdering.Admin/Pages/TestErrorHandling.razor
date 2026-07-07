@@ -3,19 +3,19 @@
 @using StadiumDrinkOrdering.Admin
 @inject IStringLocalizer<SharedResources> L
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3>🧪 @L["TestError_Title"]</h3>
-                    <p class="mb-0">@L["TestError_Subtitle"]</p>
+<div class="container-fluid" id="admin-testerror-main-container">
+    <div class="row" id="admin-testerror-row">
+        <div class="col-12" id="admin-testerror-col">
+            <div class="card" id="admin-testerror-card">
+                <div class="card-header" id="admin-testerror-header">
+                    <h3 id="admin-testerror-title">🧪 @L["TestError_Title"]</h3>
+                    <p class="mb-0" id="admin-testerror-subtitle">@L["TestError_Subtitle"]</p>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>@L["TestError_ManualTests"]</h4>
-                            <div class="d-grid gap-2">
+                <div class="card-body" id="admin-testerror-body">
+                    <div class="row" id="admin-testerror-content-row">
+                        <div class="col-md-6" id="admin-testerror-manual-col">
+                            <h4 id="admin-testerror-manual-title">@L["TestError_ManualTests"]</h4>
+                            <div class="d-grid gap-2" id="admin-testerror-manual-buttons">
                                 <button class="btn btn-danger" @onclick="TestErrorNotification" id="admin-test-error-btn">
                                     🔴 @L["TestError_TestErrorMsg"]
                                 </button>
@@ -33,9 +33,9 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <h4>@L["TestError_ApiTests"]</h4>
-                            <div class="d-grid gap-2">
+                        <div class="col-md-6" id="admin-testerror-api-col">
+                            <h4 id="admin-testerror-api-title">@L["TestError_ApiTests"]</h4>
+                            <div class="d-grid gap-2" id="admin-testerror-api-buttons">
                                 <button class="btn btn-outline-danger" @onclick="TestApiConnection" id="admin-test-api-connection-btn">
                                     🌐 @L["TestError_TestApiConnection"]
                                 </button>
@@ -49,16 +49,16 @@
                         </div>
                     </div>
 
-                    <hr class="my-4" />
+                    <hr class="my-4" id="admin-testerror-divider" />
 
-                    <div class="alert alert-info">
-                        <h5>📋 @L["TestError_Results"]</h5>
-                        <p>@L["TestError_ResultsNote"]</p>
-                        <ul>
-                            <li>✅ <strong>@L["Success"]</strong>: @L["TestError_SuccessDesc"]</li>
-                            <li>⚠️ <strong>@L["TestError_Warning"]</strong>: @L["TestError_WarningDesc"]</li>
-                            <li>❌ <strong>@L["ErrorOccurred"]</strong>: @L["TestError_ErrorDesc"]</li>
-                            <li>ℹ️ <strong>@L["TestError_Info"]</strong>: @L["TestError_InfoDesc"]</li>
+                    <div class="alert alert-info" id="admin-testerror-results-alert">
+                        <h5 id="admin-testerror-results-title">📋 @L["TestError_Results"]</h5>
+                        <p id="admin-testerror-results-note">@L["TestError_ResultsNote"]</p>
+                        <ul id="admin-testerror-results-list">
+                            <li id="admin-testerror-result-success">✅ <strong>@L["Success"]</strong>: @L["TestError_SuccessDesc"]</li>
+                            <li id="admin-testerror-result-warning">⚠️ <strong>@L["TestError_Warning"]</strong>: @L["TestError_WarningDesc"]</li>
+                            <li id="admin-testerror-result-error">❌ <strong>@L["ErrorOccurred"]</strong>: @L["TestError_ErrorDesc"]</li>
+                            <li id="admin-testerror-result-info">ℹ️ <strong>@L["TestError_Info"]</strong>: @L["TestError_InfoDesc"]</li>
                         </ul>
                     </div>
                 </div>

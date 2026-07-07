@@ -7,9 +7,9 @@
     <!-- Page Header -->
     <header class="console-head" id="admin-tickets-header">
         <div class="console-head__title" id="admin-tickets-title-section">
-            <span class="eyebrow">@L["Tickets_Eyebrow"]</span>
-            <h1>@L["Tickets_Title"]</h1>
-            <p>@L["Tickets_Description"]</p>
+            <span class="eyebrow" id="admin-tickets-eyebrow">@L["Tickets_Eyebrow"]</span>
+            <h1 id="admin-tickets-title">@L["Tickets_Title"]</h1>
+            <p id="admin-tickets-description">@L["Tickets_Description"]</p>
         </div>
     </header>
 
@@ -20,38 +20,38 @@
         {
             <div class="console-alert console-alert--info" id="admin-tickets-event-banner">
                 <i class="bi bi-info-circle"></i>
-                <span>@L["Tickets_ShowingFor"] <strong>@selectedEvent.Name</strong> (@selectedEvent.Date?.ToString("MMM dd, yyyy")) &middot; <a href="/events" class="link-btn">@L["Tickets_BackToEvents"]</a></span>
+                <span id="admin-tickets-event-banner-text">@L["Tickets_ShowingFor"] <strong>@selectedEvent.Name</strong> (@selectedEvent.Date?.ToString("MMM dd, yyyy")) &middot; <a href="/events" class="link-btn" id="admin-tickets-back-to-events-link">@L["Tickets_BackToEvents"]</a></span>
             </div>
         }
     }
 
     @if (isLoading)
     {
-        <div class="loading-state">
+        <div class="loading-state" id="admin-tickets-loading-state">
             <span class="loading-spinner"></span>
-            <p>@L["Tickets_LoadingTickets"]</p>
+            <p id="admin-tickets-loading-message">@L["Tickets_LoadingTickets"]</p>
         </div>
     }
     else if (!string.IsNullOrEmpty(errorMessage))
     {
-        <div class="console-alert console-alert--danger" role="alert">
-            @errorMessage
+        <div class="console-alert console-alert--danger" role="alert" id="admin-tickets-error-alert">
+            <span id="admin-tickets-error-message">@errorMessage</span>
         </div>
     }
     else
     {
         <!-- Filters -->
-        <div class="panel filters-panel">
-            <div class="panel__head">
-                <h2 class="panel__title">@L["Tickets_FiltersPanelTitle"]</h2>
+        <div class="panel filters-panel" id="admin-tickets-filters-panel">
+            <div class="panel__head" id="admin-tickets-filters-header">
+                <h2 class="panel__title" id="admin-tickets-filters-title">@L["Tickets_FiltersPanelTitle"]</h2>
                 <button id="admin-tickets-reset-filters-btn" class="link-btn" @onclick="ResetFilters">
                     <i class="bi bi-arrow-clockwise"></i> @L["Tickets_ResetButton"]
                 </button>
             </div>
-            <div class="filters">
-                <div class="field field--grow">
-                    <label class="field__label">@L["Tickets_FilterByEventLabel"]</label>
-                    <select class="field__input" @onchange="@(async (e) => await FilterByEvent(e.Value?.ToString()))" value="@(selectedEventId?.ToString() ?? "")">
+            <div class="filters" id="admin-tickets-filter-controls">
+                <div class="field field--grow" id="admin-tickets-filter-event-field">
+                    <label class="field__label" for="admin-tickets-event-select">@L["Tickets_FilterByEventLabel"]</label>
+                    <select class="field__input" @onchange="@(async (e) => await FilterByEvent(e.Value?.ToString()))" value="@(selectedEventId?.ToString() ?? "")" id="admin-tickets-event-select">
                         <option value="">@L["Tickets_AllEventsOption"]</option>
                         @if (events != null)
                         {
@@ -62,64 +62,64 @@
                         }
                     </select>
                 </div>
-                <div class="field">
-                    <label class="field__label">@L["Tickets_FilterByStatusLabel"]</label>
-                    <select class="field__input" @onchange="@(async (e) => await FilterByStatus(e.Value?.ToString()))">
+                <div class="field" id="admin-tickets-filter-status-field">
+                    <label class="field__label" for="admin-tickets-status-select">@L["Tickets_FilterByStatusLabel"]</label>
+                    <select class="field__input" @onchange="@(async (e) => await FilterByStatus(e.Value?.ToString()))" id="admin-tickets-status-select">
                         <option value="">@L["Tickets_AllTicketsOption"]</option>
                         <option value="true">@L["Tickets_ActiveOption"]</option>
                         <option value="false">@L["Tickets_InactiveOption"]</option>
                     </select>
                 </div>
-                <div class="field field--grow">
-                    <label class="field__label">@L["Tickets_SearchLabel"]</label>
+                <div class="field field--grow" id="admin-tickets-filter-search-field">
+                    <label class="field__label" for="admin-tickets-search-input">@L["Tickets_SearchLabel"]</label>
                     <input type="text" class="field__input" placeholder="@L["Tickets_SearchPlaceholder"]"
-                           @bind="searchTerm" @bind:event="oninput" @onkeyup="@(async () => await SearchTickets())" />
+                           @bind="searchTerm" @bind:event="oninput" @onkeyup="@(async () => await SearchTickets())" id="admin-tickets-search-input" />
                 </div>
             </div>
         </div>
 
         <!-- Key Metrics Cards -->
-        <section class="metrics">
+        <section class="metrics" id="admin-tickets-metrics-section">
             <article class="metric" id="admin-tickets-total-card">
-                <div class="metric__head">
+                <div class="metric__head" id="admin-tickets-metric-total-head">
                     <span class="metric__label">@L["Tickets_TotalTicketsLabel"]</span>
                     <i class="bi bi-ticket-perforated metric__icon"></i>
                 </div>
-                <div class="metric__value mono">@allTickets?.Count</div>
-                <div class="metric__foot">
+                <div class="metric__value mono" id="admin-tickets-metric-total-value">@allTickets?.Count</div>
+                <div class="metric__foot" id="admin-tickets-metric-total-foot">
                     <span class="metric__hint">@L["Tickets_AllTicketsRecordHint"]</span>
                 </div>
             </article>
 
             <article class="metric metric--accent" id="admin-tickets-active-card">
-                <div class="metric__head">
+                <div class="metric__head" id="admin-tickets-metric-active-head">
                     <span class="metric__label">@L["Tickets_ActiveTicketsLabel"]</span>
                     <i class="bi bi-check-circle metric__icon is-ok"></i>
                 </div>
-                <div class="metric__value mono">@allTickets?.Count(t => t.IsActive)</div>
-                <div class="metric__foot">
+                <div class="metric__value mono" id="admin-tickets-metric-active-value">@allTickets?.Count(t => t.IsActive)</div>
+                <div class="metric__foot" id="admin-tickets-metric-active-foot">
                     <span class="metric__hint">@L["Tickets_CurrentlyValidHint"]</span>
                 </div>
             </article>
 
             <article class="metric" id="admin-tickets-revenue-card">
-                <div class="metric__head">
+                <div class="metric__head" id="admin-tickets-metric-revenue-head">
                     <span class="metric__label">@L["Tickets_TotalRevenueLabel"]</span>
                     <i class="bi bi-currency-dollar metric__icon"></i>
                 </div>
-                <div class="metric__value mono"><span class="metric__unit">$</span>@allTickets?.Sum(t => t.Price).ToString("F2")</div>
-                <div class="metric__foot">
+                <div class="metric__value mono" id="admin-tickets-metric-revenue-value"><span class="metric__unit">$</span>@allTickets?.Sum(t => t.Price).ToString("F2")</div>
+                <div class="metric__foot" id="admin-tickets-metric-revenue-foot">
                     <span class="metric__hint">@L["Tickets_AcrossAllTicketsHint"]</span>
                 </div>
             </article>
 
             <article class="metric" id="admin-tickets-events-card">
-                <div class="metric__head">
+                <div class="metric__head" id="admin-tickets-metric-events-head">
                     <span class="metric__label">@L["Tickets_UniqueEventsLabel"]</span>
                     <i class="bi bi-calendar-event metric__icon"></i>
                 </div>
-                <div class="metric__value mono">@allTickets?.Select(t => t.EventId).Distinct().Count()</div>
-                <div class="metric__foot">
+                <div class="metric__value mono" id="admin-tickets-metric-events-value">@allTickets?.Select(t => t.EventId).Distinct().Count()</div>
+                <div class="metric__foot" id="admin-tickets-metric-events-foot">
                     <span class="metric__hint">@L["Tickets_EventsWithTicketsHint"]</span>
                 </div>
             </article>
@@ -127,44 +127,44 @@
 
         @if (filteredTickets == null || !filteredTickets.Any())
         {
-            <div class="panel">
-                <div class="empty">
+            <div class="panel" id="admin-tickets-empty-panel">
+                <div class="empty" id="admin-tickets-empty-state">
                     <i class="bi bi-ticket-perforated"></i>
-                    <p>@L["Tickets_NoTicketsFound"]</p>
-                    <span>@L["Tickets_NoTicketsFilters"]</span>
+                    <p id="admin-tickets-empty-title">@L["Tickets_NoTicketsFound"]</p>
+                    <span id="admin-tickets-empty-message">@L["Tickets_NoTicketsFilters"]</span>
                 </div>
             </div>
         }
         else
         {
             <!-- Tickets Table -->
-            <div class="panel">
-                <div class="panel__head">
-                    <h2 class="panel__title">@L["Tickets_TicketsPanelTitle"] <span class="panel__count mono">@filteredTickets.Count</span></h2>
+            <div class="panel" id="admin-tickets-table-panel">
+                <div class="panel__head" id="admin-tickets-table-panel-head">
+                    <h2 class="panel__title" id="admin-tickets-table-title">@L["Tickets_TicketsPanelTitle"] <span class="panel__count mono">@filteredTickets.Count</span></h2>
                 </div>
 
-                <table class="console-table">
-                    <thead>
-                        <tr>
-                            <th>@L["Tickets_TicketNumberHeader"]</th>
-                            <th>@L["Tickets_EventHeader"]</th>
-                            <th>@L["Tickets_DateHeader"]</th>
-                            <th>@L["Tickets_SeatHeader"]</th>
-                            <th>@L["Tickets_CustomerHeader"]</th>
-                            <th>@L["Tickets_PurchaseDateHeader"]</th>
-                            <th class="num">@L["Tickets_PriceHeader"]</th>
-                            <th>@L["Tickets_StatusHeader"]</th>
-                            <th class="actions-col">@L["Tickets_ActionsHeader"]</th>
+                <table class="console-table" id="admin-tickets-table">
+                    <thead id="admin-tickets-table-head">
+                        <tr id="admin-tickets-table-header-row">
+                            <th id="admin-tickets-th-number">@L["Tickets_TicketNumberHeader"]</th>
+                            <th id="admin-tickets-th-event">@L["Tickets_EventHeader"]</th>
+                            <th id="admin-tickets-th-date">@L["Tickets_DateHeader"]</th>
+                            <th id="admin-tickets-th-seat">@L["Tickets_SeatHeader"]</th>
+                            <th id="admin-tickets-th-customer">@L["Tickets_CustomerHeader"]</th>
+                            <th id="admin-tickets-th-purchase-date">@L["Tickets_PurchaseDateHeader"]</th>
+                            <th class="num" id="admin-tickets-th-price">@L["Tickets_PriceHeader"]</th>
+                            <th id="admin-tickets-th-status">@L["Tickets_StatusHeader"]</th>
+                            <th class="actions-col" id="admin-tickets-th-actions">@L["Tickets_ActionsHeader"]</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="admin-tickets-table-body">
                         @foreach (var ticket in filteredTickets)
                         {
-                            <tr>
-                                <td class="mono">@ticket.TicketNumber</td>
-                                <td>@ticket.EventName</td>
-                                <td class="mono">@ticket.EventDate?.ToString("MMM dd, yyyy HH:mm")</td>
-                                <td>
+                            <tr id="admin-tickets-row-@ticket.Id">
+                                <td class="mono" id="admin-tickets-cell-number-@ticket.Id">@ticket.TicketNumber</td>
+                                <td id="admin-tickets-cell-event-@ticket.Id">@ticket.EventName</td>
+                                <td class="mono" id="admin-tickets-cell-date-@ticket.Id">@ticket.EventDate?.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td id="admin-tickets-cell-seat-@ticket.Id">
                                     @if (!string.IsNullOrEmpty(ticket.Section))
                                     {
                                         <span>@ticket.Section</span>
@@ -178,30 +178,30 @@
                                         }
                                     }
                                 </td>
-                                <td>
+                                <td id="admin-tickets-cell-customer-@ticket.Id">
                                     @if (!string.IsNullOrEmpty(ticket.CustomerName))
                                     {
-                                        <div>@ticket.CustomerName</div>
+                                        <div id="admin-tickets-customer-name-@ticket.Id">@ticket.CustomerName</div>
                                     }
                                     @if (!string.IsNullOrEmpty(ticket.CustomerEmail))
                                     {
-                                        <small class="text-muted">@ticket.CustomerEmail</small>
+                                        <small class="text-muted" id="admin-tickets-customer-email-@ticket.Id">@ticket.CustomerEmail</small>
                                     }
                                 </td>
-                                <td class="mono">@ticket.PurchaseDate?.ToString("MMM dd, yyyy HH:mm")</td>
-                                <td class="num mono">$@ticket.Price.ToString("F2")</td>
-                                <td>
+                                <td class="mono" id="admin-tickets-cell-purchase-date-@ticket.Id">@ticket.PurchaseDate?.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td class="num mono" id="admin-tickets-cell-price-@ticket.Id">$@ticket.Price.ToString("F2")</td>
+                                <td id="admin-tickets-cell-status-@ticket.Id">
                                     @if (ticket.IsActive)
                                     {
-                                        <span class="status is-active"><span class="status__dot"></span>@L["Tickets_ActiveStatus"]</span>
+                                        <span class="status is-active" id="admin-tickets-status-active-@ticket.Id"><span class="status__dot"></span>@L["Tickets_ActiveStatus"]</span>
                                     }
                                     else
                                     {
-                                        <span class="status is-inactive"><span class="status__dot"></span>@L["Tickets_InactiveStatus"]</span>
+                                        <span class="status is-inactive" id="admin-tickets-status-inactive-@ticket.Id"><span class="status__dot"></span>@L["Tickets_InactiveStatus"]</span>
                                     }
                                 </td>
-                                <td class="actions-col">
-                                    <div class="row-actions">
+                                <td class="actions-col" id="admin-tickets-cell-actions-@ticket.Id">
+                                    <div class="row-actions" id="admin-tickets-row-actions-@ticket.Id">
                                         @if (ticket.OrderId.HasValue)
                                         {
                                             <button id="admin-tickets-view-order-btn-@ticket.Id" class="row-btn" @onclick="() => ViewOrder(ticket.OrderId.Value)"

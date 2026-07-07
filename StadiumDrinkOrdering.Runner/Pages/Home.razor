@@ -8,9 +8,9 @@
 
 <PageTitle>@Localizer["Home_PageTitle"]</PageTitle>
 
-<div class="runner-page @(selected.Count > 0 ? "runner-page-has-bar" : "")">
-    <div class="runner-page-head">
-        <h1 class="runner-page-title">@Localizer["Home_ReadyForPickup"]</h1>
+<div class="runner-page @(selected.Count > 0 ? "runner-page-has-bar" : "")" id="runner-home-page">
+    <div class="runner-page-head" id="runner-home-page-head">
+        <h1 class="runner-page-title" id="runner-home-title">@Localizer["Home_ReadyForPickup"]</h1>
         <button class="runner-refresh" @onclick="Load" aria-label="@Localizer["Home_Refresh"]" id="runner-pool-refresh">↻</button>
     </div>
 
@@ -29,13 +29,13 @@
 
     @if (loading && orders is null)
     {
-        <div class="runner-loading"><div class="runner-cta-spinner"></div></div>
+        <div class="runner-loading" id="runner-home-loading"><div class="runner-cta-spinner" id="runner-home-spinner"></div></div>
     }
     else if (orders is null || orders.Count == 0)
     {
-        <div class="runner-empty">
-            <div class="runner-empty-icon" aria-hidden="true">📋</div>
-            <div class="runner-empty-text">@Localizer["Home_NoOrdersEmpty"]</div>
+        <div class="runner-empty" id="runner-home-empty">
+            <div class="runner-empty-icon" id="runner-home-empty-icon" aria-hidden="true">📋</div>
+            <div class="runner-empty-text" id="runner-home-empty-text">@Localizer["Home_NoOrdersEmpty"]</div>
         </div>
     }
     else
@@ -55,18 +55,18 @@
                  role="button" aria-pressed="@isSelected" tabindex="0"
                  @onclick="() => ToggleSelect(o.Id)"
                  id="runner-pool-card-@o.Id">
-                <div class="runner-card-top">
+                <div class="runner-card-top" id="@($"runner-pool-card-{o.Id}-top")">
                     <span class="runner-seat-label">@Localizer["Home_SeatLabel"]</span>
                     <span class="runner-card-meta">
                         <span class="runner-order-id">#@o.Id</span> · @Localizer["Home_Ready"] @Age(o)
                         <span class="runner-check @(isSelected ? "runner-check-on" : "")" aria-hidden="true">@(isSelected ? "✓" : "")</span>
                     </span>
                 </div>
-                <div class="runner-seat">@SeatText(o)</div>
-                <div class="runner-items">
+                <div class="runner-seat" id="@($"runner-pool-card-{o.Id}-seat")">@SeatText(o)</div>
+                <div class="runner-items" id="@($"runner-pool-card-{o.Id}-items")">
                     @foreach (var it in o.OrderItems)
                     {
-                        <div><span class="runner-qty">@it.Quantity×</span> @it.DrinkName</div>
+                        <div id="@($"runner-pool-card-{o.Id}-item-{o.OrderItems.IndexOf(it)}")"><span class="runner-qty">@it.Quantity×</span> @it.DrinkName</div>
                     }
                 </div>
                 <div class="runner-total" id="runner-pool-total-@o.Id">

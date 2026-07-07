@@ -6,10 +6,10 @@
     <div class="modal fade show" id="sector-edit-modal"
          style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; overflow-y: auto;"
          tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered" style="margin: 1.75rem auto;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
+        <div class="modal-dialog modal-lg modal-dialog-centered" id="admin-sector-edit-dialog" style="margin: 1.75rem auto;">
+            <div class="modal-content" id="admin-sector-edit-content">
+                <div class="modal-header" id="admin-sector-edit-header">
+                    <h5 class="modal-title" id="admin-sector-edit-title">
                         @if (IsNewSector)
                         {
                             <span>🆕 @L["SectorEdit_CreateNewTitle"]</span>
@@ -19,57 +19,59 @@
                             <span>✏️ @L["SectorEdit_EditSectorTitle", Sector?.SectorCode]</span>
                         }
                     </h5>
-                    <button type="button" class="btn-close" @onclick="Cancel"></button>
+                    <button type="button" class="btn-close" id="admin-sector-edit-close-btn" @onclick="Cancel"></button>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body" id="admin-sector-edit-body">
                     @if (Sector != null)
                     {
-                        <form>
+                        <form id="admin-sector-edit-form">
                             <!-- Row 1: Sector Code and Name -->
-                            <div class="row mb-3">
-                                <div class="col-md-4">
+                            <div class="row mb-3" id="admin-sector-edit-row-1">
+                                <div class="col-md-4" id="admin-sector-edit-col-code">
                                     <label class="form-label fw-bold">@L["SectorEdit_SectorCodeLabel"]</label>
                                     <input type="text"
+                                           id="admin-sector-edit-code-input"
                                            class="form-control @(ValidationErrors.ContainsKey(nameof(Sector.SectorCode)) ? "is-invalid" : "")"
                                            @bind="Sector.SectorCode"
                                            placeholder="@L["SectorEdit_SectorCodePlaceholder"]"
                                            maxlength="50" />
                                     @if (ValidationErrors.ContainsKey(nameof(Sector.SectorCode)))
                                     {
-                                        <div class="invalid-feedback d-block">@ValidationErrors[nameof(Sector.SectorCode)]</div>
+                                        <div class="invalid-feedback d-block" id="admin-sector-edit-code-error">@ValidationErrors[nameof(Sector.SectorCode)]</div>
                                     }
                                     <small class="text-muted">@L["SectorEdit_SectorCodeHint"]</small>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-8" id="admin-sector-edit-col-name">
                                     <label class="form-label fw-bold">@L["SectorEdit_SectorNameLabel"]</label>
                                     <input type="text"
+                                           id="admin-sector-edit-name-input"
                                            class="form-control @(ValidationErrors.ContainsKey(nameof(Sector.Name)) ? "is-invalid" : "")"
                                            @bind="Sector.Name"
                                            placeholder="@L["SectorEdit_SectorNamePlaceholder"]"
                                            maxlength="200" />
                                     @if (ValidationErrors.ContainsKey(nameof(Sector.Name)))
                                     {
-                                        <div class="invalid-feedback d-block">@ValidationErrors[nameof(Sector.Name)]</div>
+                                        <div class="invalid-feedback d-block" id="admin-sector-edit-name-error">@ValidationErrors[nameof(Sector.Name)]</div>
                                     }
                                     <small class="text-muted">@L["SectorEdit_SectorNameHint"]</small>
                                 </div>
                             </div>
 
                             <!-- Row 2: Seating Mode -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
+                            <div class="row mb-3" id="admin-sector-edit-row-2">
+                                <div class="col-md-12" id="admin-sector-edit-seating-mode">
                                     <label class="form-label fw-bold">@L["SectorEdit_SeatingModeLabel"]</label>
-                                    <div class="btn-group d-block" role="group">
+                                    <div class="btn-group d-block" id="admin-sector-edit-seating-buttons" role="group">
                                         <input type="radio" class="btn-check" id="uniformMode" checked="@(!Sector.UseVariableSeating)"
                                                @onchange="@(() => ToggleSeatingMode(false))" />
-                                        <label class="btn btn-outline-primary" for="uniformMode">
+                                        <label class="btn btn-outline-primary" id="admin-sector-edit-uniform-label" for="uniformMode">
                                             ⚪ @L["SectorEdit_UniformModeLabel"]
                                         </label>
 
                                         <input type="radio" class="btn-check" id="variableMode" checked="@Sector.UseVariableSeating"
                                                @onchange="@(() => ToggleSeatingMode(true))" />
-                                        <label class="btn btn-outline-success" for="variableMode">
+                                        <label class="btn btn-outline-success" id="admin-sector-edit-variable-label" for="variableMode">
                                             🎯 @L["SectorEdit_VariableModeLabel"]
                                         </label>
                                     </div>
@@ -87,10 +89,11 @@
                             </div>
 
                             <!-- Row 3: Seating Capacity -->
-                            <div class="row mb-3">
-                                <div class="col-md-4">
+                            <div class="row mb-3" id="admin-sector-edit-row-3">
+                                <div class="col-md-4" id="admin-sector-edit-col-rows">
                                     <label class="form-label fw-bold">@L["SectorEdit_RowsLabel"]</label>
                                     <input type="number"
+                                           id="admin-sector-edit-rows-input"
                                            class="form-control @(ValidationErrors.ContainsKey(nameof(Sector.Rows)) ? "is-invalid" : "")"
                                            @bind="Sector.Rows"
                                            min="1"
@@ -99,7 +102,7 @@
                                            @bind:after="UpdateTotalSeats" />
                                     @if (ValidationErrors.ContainsKey(nameof(Sector.Rows)))
                                     {
-                                        <div class="invalid-feedback d-block">@ValidationErrors[nameof(Sector.Rows)]</div>
+                                        <div class="invalid-feedback d-block" id="admin-sector-edit-rows-error">@ValidationErrors[nameof(Sector.Rows)]</div>
                                     }
                                     <small class="text-muted">@L["SectorEdit_RowsHint"]</small>
                                 </div>
@@ -107,9 +110,10 @@
                                 @if (!Sector.UseVariableSeating)
                                 {
                                     <!-- Uniform Mode: Single seats per row input -->
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="admin-sector-edit-col-seats-per-row">
                                         <label class="form-label fw-bold">@L["SectorEdit_SeatsPerRowLabel"]</label>
                                         <input type="number"
+                                               id="admin-sector-edit-seats-per-row-input"
                                                class="form-control @(ValidationErrors.ContainsKey(nameof(Sector.SeatsPerRow)) ? "is-invalid" : "")"
                                                @bind="Sector.SeatsPerRow"
                                                min="1"
@@ -118,13 +122,14 @@
                                                @bind:after="UpdateTotalSeats" />
                                         @if (ValidationErrors.ContainsKey(nameof(Sector.SeatsPerRow)))
                                         {
-                                            <div class="invalid-feedback d-block">@ValidationErrors[nameof(Sector.SeatsPerRow)]</div>
+                                            <div class="invalid-feedback d-block" id="admin-sector-edit-seats-per-row-error">@ValidationErrors[nameof(Sector.SeatsPerRow)]</div>
                                         }
                                         <small class="text-muted">@L["SectorEdit_SeatsPerRowHint"]</small>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="admin-sector-edit-col-total-uniform">
                                         <label class="form-label fw-bold">@L["SectorEdit_TotalSeatsLabel"]</label>
                                         <input type="number"
+                                               id="admin-sector-edit-total-uniform"
                                                class="form-control bg-light"
                                                value="@totalSeats"
                                                readonly />
@@ -134,9 +139,10 @@
                                 else
                                 {
                                     <!-- Variable Mode: Show total only -->
-                                    <div class="col-md-8">
+                                    <div class="col-md-8" id="admin-sector-edit-col-total-variable">
                                         <label class="form-label fw-bold">@L["SectorEdit_TotalSeatsLabel"]</label>
                                         <input type="number"
+                                               id="admin-sector-edit-total-variable"
                                                class="form-control bg-light"
                                                value="@totalSeats"
                                                readonly />
@@ -148,13 +154,13 @@
                             @if (Sector.UseVariableSeating)
                             {
                                 <!-- Row Patterns Editor -->
-                                <div class="row mb-3">
-                                    <div class="col-md-12">
+                                <div class="row mb-3" id="admin-sector-edit-row-patterns">
+                                    <div class="col-md-12" id="admin-sector-edit-col-patterns">
                                         <label class="form-label fw-bold">@L["SectorEdit_RowPatternsLabel"]</label>
-                                        <div class="table-responsive">
-                                            <table class="table table-sm table-bordered">
+                                        <div class="table-responsive" id="admin-sector-edit-patterns-table-wrapper">
+                                            <table class="table table-sm table-bordered" id="admin-sector-edit-patterns-table">
                                                 <thead class="table-light">
-                                                    <tr>
+                                                    <tr id="admin-sector-edit-patterns-header">
                                                         <th style="width: 15%">@L["SectorEdit_TableFromRow"]</th>
                                                         <th style="width: 15%">@L["SectorEdit_TableToRow"]</th>
                                                         <th style="width: 20%">@L["SectorEdit_TableSeatsPerRow"]</th>
@@ -162,32 +168,32 @@
                                                         <th style="width: 15%">@L["SectorEdit_TableAction"]</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="admin-sector-edit-patterns-tbody">
                                                     @foreach (var (pattern, index) in rowPatterns.Select((p, i) => (p, i)))
                                                     {
-                                                        <tr>
-                                                            <td>
-                                                                <input type="number" class="form-control form-control-sm"
+                                                        <tr id="@($"admin-sector-edit-pattern-row-{index}")">
+                                                            <td id="@($"admin-sector-edit-pattern-from-{index}")">
+                                                                <input type="number" id="@($"admin-sector-edit-pattern-from-input-{index}")" class="form-control form-control-sm"
                                                                        @bind="pattern.FromRow" min="1" max="@Sector.Rows"
                                                                        @bind:event="oninput" @bind:after="UpdateTotalSeats" />
                                                             </td>
-                                                            <td>
-                                                                <input type="number" class="form-control form-control-sm"
+                                                            <td id="@($"admin-sector-edit-pattern-to-{index}")">
+                                                                <input type="number" id="@($"admin-sector-edit-pattern-to-input-{index}")" class="form-control form-control-sm"
                                                                        @bind="pattern.ToRow" min="@pattern.FromRow" max="@Sector.Rows"
                                                                        @bind:event="oninput" @bind:after="UpdateTotalSeats" />
                                                             </td>
-                                                            <td>
-                                                                <input type="number" class="form-control form-control-sm"
+                                                            <td id="@($"admin-sector-edit-pattern-seats-{index}")">
+                                                                <input type="number" id="@($"admin-sector-edit-pattern-seats-input-{index}")" class="form-control form-control-sm"
                                                                        @bind="pattern.SeatsPerRow" min="1" max="200"
                                                                        @bind:event="oninput" @bind:after="UpdateTotalSeats" />
                                                             </td>
-                                                            <td>
-                                                                <input type="text" class="form-control form-control-sm bg-light"
+                                                            <td id="@($"admin-sector-edit-pattern-subtotal-{index}")">
+                                                                <input type="text" id="@($"admin-sector-edit-pattern-subtotal-input-{index}")" class="form-control form-control-sm bg-light"
                                                                        value="@((pattern.ToRow - pattern.FromRow + 1) * pattern.SeatsPerRow) @L["SectorEdit_TableSeatUnit"]"
                                                                        readonly />
                                                             </td>
-                                                            <td>
-                                                                <button type="button" class="btn btn-sm btn-danger"
+                                                            <td id="@($"admin-sector-edit-pattern-action-{index}")">
+                                                                <button type="button" id="@($"admin-sector-edit-pattern-delete-{index}")" class="btn btn-sm btn-danger"
                                                                         @onclick="@(() => RemoveRowPattern(index))">
                                                                     <span class="oi oi-trash"></span>
                                                                 </button>
@@ -196,7 +202,7 @@
                                                     }
                                                     @if (rowPatterns.Count == 0)
                                                     {
-                                                        <tr>
+                                                        <tr id="admin-sector-edit-no-patterns-row">
                                                             <td colspan="5" class="text-center text-muted">
                                                                 @L["SectorEdit_NoRowPatterns"]
                                                             </td>
@@ -205,7 +211,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-primary" @onclick="AddRowPattern">
+                                        <button type="button" id="admin-sector-edit-add-pattern-btn" class="btn btn-sm btn-primary" @onclick="AddRowPattern">
                                             <span class="oi oi-plus"></span> @L["SectorEdit_AddRowPattern"]
                                         </button>
                                     </div>
@@ -213,10 +219,10 @@
                             }
 
                             <!-- Row 4: Type, Price and Color -->
-                            <div class="row mb-3">
-                                <div class="col-md-4">
+                            <div class="row mb-3" id="admin-sector-edit-row-4">
+                                <div class="col-md-4" id="admin-sector-edit-col-type">
                                     <label class="form-label fw-bold">@L["SectorEdit_SectorTypeLabel"]</label>
-                                    <select class="form-select" @bind="Sector.Type">
+                                    <select class="form-select" id="admin-sector-edit-type-select" @bind="Sector.Type">
                                         <option value="standard">@L["SectorEdit_TypeStandard"]</option>
                                         <option value="vip">@L["SectorEdit_TypeVip"]</option>
                                         <option value="wheelchair">@L["SectorEdit_TypeWheelchair"]</option>
@@ -225,11 +231,12 @@
                                     </select>
                                     <small class="text-muted">@L["SectorEdit_SectorTypeHint"]</small>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4" id="admin-sector-edit-col-price">
                                     <label class="form-label fw-bold">@L["SectorEdit_SectorPriceLabel"]</label>
-                                    <div class="input-group">
+                                    <div class="input-group" id="admin-sector-edit-price-group">
                                         <span class="input-group-text">€</span>
                                         <input type="number"
+                                               id="admin-sector-edit-price-input"
                                                class="form-control"
                                                @bind="Sector.Price"
                                                min="0"
@@ -239,15 +246,17 @@
                                     </div>
                                     <small class="text-muted">@L["SectorEdit_SectorPriceHint"]</small>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4" id="admin-sector-edit-col-color">
                                     <label class="form-label fw-bold">@L["SectorEdit_DisplayColorLabel"]</label>
-                                    <div class="input-group">
+                                    <div class="input-group" id="admin-sector-edit-color-group">
                                         <input type="color"
+                                               id="admin-sector-edit-color-picker"
                                                class="form-control form-control-color"
                                                @bind="Sector.Color"
                                                title="@L["SectorEdit_DisplayColorTooltip"]"
                                                style="width: 60px;" />
                                         <input type="text"
+                                               id="admin-sector-edit-color-text"
                                                class="form-control"
                                                @bind="Sector.Color"
                                                placeholder="@L["SectorEdit_ColorPlaceholder"]"
@@ -258,27 +267,27 @@
                             </div>
 
                             <!-- Row 4: Position Information (Read-only for context) -->
-                            <div class="row mb-3">
-                                <div class="col-12">
+                            <div class="row mb-3" id="admin-sector-edit-row-position">
+                                <div class="col-12" id="admin-sector-edit-col-position">
                                     <label class="form-label fw-bold">@L["SectorEdit_PositionSizeLabel"]</label>
-                                    <div class="card bg-light">
-                                        <div class="card-body py-2">
-                                            <div class="row text-center">
-                                                <div class="col-3">
+                                    <div class="card bg-light" id="admin-sector-edit-position-card">
+                                        <div class="card-body py-2" id="admin-sector-edit-position-card-body">
+                                            <div class="row text-center" id="admin-sector-edit-position-row">
+                                                <div class="col-3" id="admin-sector-edit-position-left-col">
                                                     <small class="text-muted d-block">@L["SectorEdit_PositionLeft"]</small>
-                                                    <strong>@Sector.LeftPercent.ToString("F1")%</strong>
+                                                    <strong id="admin-sector-edit-position-left-value">@Sector.LeftPercent.ToString("F1")%</strong>
                                                 </div>
-                                                <div class="col-3">
+                                                <div class="col-3" id="admin-sector-edit-position-top-col">
                                                     <small class="text-muted d-block">@L["SectorEdit_PositionTop"]</small>
-                                                    <strong>@Sector.TopPercent.ToString("F1")%</strong>
+                                                    <strong id="admin-sector-edit-position-top-value">@Sector.TopPercent.ToString("F1")%</strong>
                                                 </div>
-                                                <div class="col-3">
+                                                <div class="col-3" id="admin-sector-edit-position-width-col">
                                                     <small class="text-muted d-block">@L["SectorEdit_PositionWidth"]</small>
-                                                    <strong>@Sector.WidthPercent.ToString("F1")%</strong>
+                                                    <strong id="admin-sector-edit-position-width-value">@Sector.WidthPercent.ToString("F1")%</strong>
                                                 </div>
-                                                <div class="col-3">
+                                                <div class="col-3" id="admin-sector-edit-position-height-col">
                                                     <small class="text-muted d-block">@L["SectorEdit_PositionHeight"]</small>
-                                                    <strong>@Sector.HeightPercent.ToString("F1")%</strong>
+                                                    <strong id="admin-sector-edit-position-height-value">@Sector.HeightPercent.ToString("F1")%</strong>
                                                 </div>
                                             </div>
                                         </div>
@@ -290,13 +299,13 @@
                             <!-- Metadata (show for existing sectors) -->
                             @if (!IsNewSector)
                             {
-                                <div class="row mb-2">
-                                    <div class="col-6">
+                                <div class="row mb-2" id="admin-sector-edit-metadata-row">
+                                    <div class="col-6" id="admin-sector-edit-created-col">
                                         <small class="text-muted">
                                             @L["SectorEdit_CreatedLabel"]: @Sector.CreatedDate.ToString("yyyy-MM-dd HH:mm")
                                         </small>
                                     </div>
-                                    <div class="col-6 text-end">
+                                    <div class="col-6 text-end" id="admin-sector-edit-modified-col">
                                         <small class="text-muted">
                                             @L["SectorEdit_ModifiedLabel"]: @Sector.ModifiedDate.ToString("yyyy-MM-dd HH:mm")
                                         </small>
@@ -307,20 +316,20 @@
                     }
                 </div>
 
-                <div class="modal-footer">
+                <div class="modal-footer" id="admin-sector-edit-footer">
                     @if (!IsNewSector)
                     {
-                        <button type="button" class="btn btn-danger me-auto" @onclick="DeleteSector">
+                        <button type="button" id="admin-sector-edit-delete-btn" class="btn btn-danger me-auto" @onclick="DeleteSector">
                             <span class="oi oi-trash"></span> @L["SectorEdit_DeleteButton"]
                         </button>
                     }
-                    <button type="button" class="btn btn-info" @onclick="TogglePreview">
+                    <button type="button" id="admin-sector-edit-preview-btn" class="btn btn-info" @onclick="TogglePreview">
                         <span class="oi oi-eye"></span> @(showPreview ? @L["SectorEdit_PreviewHiddenButton"] : @L["SectorEdit_PreviewButton"])
                     </button>
-                    <button type="button" class="btn btn-secondary" @onclick="Cancel">
+                    <button type="button" id="admin-sector-edit-cancel-btn" class="btn btn-secondary" @onclick="Cancel">
                         <span class="oi oi-x"></span> @L["SectorEdit_CancelButton"]
                     </button>
-                    <button type="button" class="btn btn-primary" @onclick="SaveSector">
+                    <button type="button" id="admin-sector-edit-save-btn" class="btn btn-primary" @onclick="SaveSector">
                         <span class="oi oi-check"></span> @L["SectorEdit_SaveButton"]
                     </button>
                 </div>
@@ -334,58 +343,59 @@
         <div class="modal fade show" id="sector-preview-modal"
              style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; overflow-y: auto;"
              tabindex="-1">
-            <div class="modal-dialog modal-xl modal-dialog-centered" style="margin: 1.75rem auto; max-width: 90%;">
-                <div class="modal-content">
-                    <div class="modal-header bg-dark text-white">
-                        <h5 class="modal-title">
+            <div class="modal-dialog modal-xl modal-dialog-centered" id="admin-sector-preview-dialog" style="margin: 1.75rem auto; max-width: 90%;">
+                <div class="modal-content" id="admin-sector-preview-content">
+                    <div class="modal-header bg-dark text-white" id="admin-sector-preview-header">
+                        <h5 class="modal-title" id="admin-sector-preview-title">
                             🎯 @L["SectorEdit_PreviewTitle", $"{Sector.SectorCode} - {Sector.Name}"]
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" @onclick="TogglePreview"></button>
+                        <button type="button" id="admin-sector-preview-close-btn" class="btn-close btn-close-white" @onclick="TogglePreview"></button>
                     </div>
 
-                    <div class="modal-body" style="background: #1a1a1a;">
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <div class="alert alert-info">
+                    <div class="modal-body" id="admin-sector-preview-body" style="background: #1a1a1a;">
+                        <div class="row mb-3" id="admin-sector-preview-info-row">
+                            <div class="col-md-12" id="admin-sector-preview-info-col">
+                                <div class="alert alert-info" id="admin-sector-preview-info">
                                     <strong>ℹ️ @L["SectorEdit_PreviewInfo", $"{Sector.Rows} x {Sector.SeatsPerRow} = {totalSeats}"]</strong>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card bg-dark text-white">
-                                    <div class="card-body p-4" style="overflow-x: auto;">
-                                        <div class="text-center mb-3">
+                        <div class="row" id="admin-sector-preview-card-row">
+                            <div class="col-md-12" id="admin-sector-preview-card-col">
+                                <div class="card bg-dark text-white" id="admin-sector-preview-card">
+                                    <div class="card-body p-4" id="admin-sector-preview-card-body" style="overflow-x: auto;">
+                                        <div class="text-center mb-3" id="admin-sector-preview-field-label">
                                             <span class="badge bg-success fs-5">@L["SectorEdit_PreviewField"]</span>
                                         </div>
 
-                                        <div class="sector-preview-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                        <div class="sector-preview-container" id="admin-sector-preview-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
                                             @for (int row = 1; row <= Sector.Rows; row++)
                                             {
                                                 var seatsInRow = GetSeatsForRow(row);
-                                                <div class="seat-row" style="display: flex; gap: 4px; align-items: center;">
-                                                    <span class="row-label" style="color: #888; font-size: 12px; width: 40px; text-align: right; margin-right: 8px;">
+                                                <div class="seat-row" id="@($"admin-sector-preview-row-{row}")" style="display: flex; gap: 4px; align-items: center;">
+                                                    <span class="row-label" id="@($"admin-sector-preview-row-label-{row}")" style="color: #888; font-size: 12px; width: 40px; text-align: right; margin-right: 8px;">
                                                         @L["SectorEdit_PreviewRow"] @row
                                                     </span>
                                                     @for (int seat = 1; seat <= seatsInRow; seat++)
                                                     {
                                                         <div class="seat-item"
+                                                             id="@($"admin-sector-preview-seat-{row}-{seat}")"
                                                              style="width: 32px; height: 32px; background: @GetSeatColor(Sector.Type); border: 1px solid #555; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; cursor: pointer; transition: all 0.2s;"
                                                              title="@L["SectorEdit_PreviewSeatTooltip", row, seat]">
                                                             @seat
                                                         </div>
                                                     }
-                                                    <span class="row-label" style="color: #888; font-size: 12px; width: 60px; text-align: left; margin-left: 8px;">
+                                                    <span class="row-label" id="@($"admin-sector-preview-row-count-{row}")" style="color: #888; font-size: 12px; width: 60px; text-align: left; margin-left: 8px;">
                                                         @seatsInRow @L["SectorEdit_PreviewSeats"]
                                                     </span>
                                                 </div>
                                             }
                                         </div>
 
-                                        <div class="text-center mt-3">
+                                        <div class="text-center mt-3" id="admin-sector-preview-legend">
                                             <span class="badge bg-secondary fs-6">@L["SectorEdit_PreviewLegend"]:</span>
-                                            <span class="badge ms-2" style="background: @GetSeatColor(Sector.Type);">@L["SectorEdit_PreviewSeatType", Sector.Type.ToUpper()]</span>
+                                            <span class="badge ms-2" id="admin-sector-preview-legend-badge" style="background: @GetSeatColor(Sector.Type);">@L["SectorEdit_PreviewSeatType", Sector.Type.ToUpper()]</span>
                                         </div>
                                     </div>
                                 </div>
@@ -393,8 +403,8 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="TogglePreview">
+                    <div class="modal-footer" id="admin-sector-preview-footer">
+                        <button type="button" id="admin-sector-preview-close-modal-btn" class="btn btn-secondary" @onclick="TogglePreview">
                             @L["SectorEdit_PreviewClose"]
                         </button>
                     </div>

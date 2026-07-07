@@ -7,9 +7,9 @@
 
 <PageTitle>@Localizer["Logs_Title"]</PageTitle>
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📋 @Localizer["Logs_Title"]</h2>
+<div class="container-fluid" id="staff-logs-main-container">
+    <div class="d-flex justify-content-between align-items-center mb-4" id="staff-logs-header">
+        <h2 id="staff-logs-title">📋 @Localizer["Logs_Title"]</h2>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary" @onclick="RefreshLogs" id="staff-logs-refresh-btn">
                 <i class="fas fa-sync-alt"></i> @Localizer["Refresh"]
@@ -19,63 +19,63 @@
 
     @if (isLoading)
     {
-        <div class="text-center p-4">
-            <div class="spinner-border text-primary" role="status">
+        <div class="text-center p-4" id="staff-logs-loading">
+            <div class="spinner-border text-primary" role="status" id="staff-logs-spinner">
                 <span class="visually-hidden">@Localizer["Loading"]</span>
             </div>
-            <p class="mt-2">@Localizer["Logs_Loading"]</p>
+            <p class="mt-2" id="staff-logs-loading-text">@Localizer["Logs_Loading"]</p>
         </div>
     }
     else if (logSummary != null)
     {
         <!-- Summary Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card bg-info text-white">
+        <div class="row mb-4" id="staff-logs-summary-row">
+            <div class="col-md-3" id="staff-logs-total-col">
+                <div class="card bg-info text-white" id="staff-logs-total-card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title">@Localizer["Logs_TotalLogs"]</h6>
-                                <h3 class="mb-0">@logSummary.TotalLogs</h3>
+                                <h3 class="mb-0" id="staff-logs-total-value">@logSummary.TotalLogs</h3>
                             </div>
                             <i class="fas fa-list fa-2x"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card bg-danger text-white">
+            <div class="col-md-3" id="staff-logs-errors-col">
+                <div class="card bg-danger text-white" id="staff-logs-errors-card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title">@Localizer["Logs_Errors"]</h6>
-                                <h3 class="mb-0">@logSummary.ErrorCount</h3>
+                                <h3 class="mb-0" id="staff-logs-errors-value">@logSummary.ErrorCount</h3>
                             </div>
                             <i class="fas fa-exclamation-triangle fa-2x"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card bg-warning text-white">
+            <div class="col-md-3" id="staff-logs-warnings-col">
+                <div class="card bg-warning text-white" id="staff-logs-warnings-card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title">@Localizer["Logs_Warnings"]</h6>
-                                <h3 class="mb-0">@logSummary.WarningCount</h3>
+                                <h3 class="mb-0" id="staff-logs-warnings-value">@logSummary.WarningCount</h3>
                             </div>
                             <i class="fas fa-exclamation fa-2x"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card bg-success text-white">
+            <div class="col-md-3" id="staff-logs-info-col">
+                <div class="card bg-success text-white" id="staff-logs-info-card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title">@Localizer["Logs_Info"]</h6>
-                                <h3 class="mb-0">@logSummary.InfoCount</h3>
+                                <h3 class="mb-0" id="staff-logs-info-value">@logSummary.InfoCount</h3>
                             </div>
                             <i class="fas fa-info-circle fa-2x"></i>
                         </div>
@@ -85,26 +85,26 @@
         </div>
 
         <!-- Simple Filters -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="card-title">@Localizer["Logs_QuickFilters"]</h6>
-                <div class="row">
-                    <div class="col-md-3">
+        <div class="card mb-4" id="staff-logs-filters-card">
+            <div class="card-body" id="staff-logs-filters-body">
+                <h6 class="card-title" id="staff-logs-filters-title">@Localizer["Logs_QuickFilters"]</h6>
+                <div class="row" id="staff-logs-filters-row">
+                    <div class="col-md-3" id="staff-logs-filter-error-col">
                         <button class="btn @(selectedLevel == "Error" ? "btn-danger" : "btn-outline-danger") me-2" @onclick="@(() => FilterByLevel("Error"))" id="staff-logs-filter-error-btn">
                             @Localizer["Logs_Errors"] (@logSummary.ErrorCount)
                         </button>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" id="staff-logs-filter-warning-col">
                         <button class="btn @(selectedLevel == "Warning" ? "btn-warning" : "btn-outline-warning") me-2" @onclick="@(() => FilterByLevel("Warning"))" id="staff-logs-filter-warning-btn">
                             @Localizer["Logs_Warnings"] (@logSummary.WarningCount)
                         </button>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" id="staff-logs-filter-info-col">
                         <button class="btn @(selectedLevel == "Info" ? "btn-info" : "btn-outline-info") me-2" @onclick="@(() => FilterByLevel("Info"))" id="staff-logs-filter-info-btn">
                             @Localizer["Logs_Info"] (@logSummary.InfoCount)
                         </button>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" id="staff-logs-filter-all-col">
                         <button class="btn @(selectedLevel == "" ? "btn-secondary" : "btn-outline-secondary")" @onclick="@(() => FilterByLevel(""))" id="staff-logs-filter-all-btn">
                             @Localizer["Logs_AllLogs"]
                         </button>
@@ -114,43 +114,43 @@
         </div>
 
         <!-- Logs Table -->
-        <div class="card">
-            <div class="card-body">
+        <div class="card" id="staff-logs-table-card">
+            <div class="card-body" id="staff-logs-table-body">
                 @if (logs?.Logs?.Any() == true)
                 {
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>@Localizer["Logs_TableTime"]</th>
-                                    <th>@Localizer["Logs_TableLevel"]</th>
-                                    <th>@Localizer["Logs_TableAction"]</th>
-                                    <th>@Localizer["Logs_TableUser"]</th>
-                                    <th>@Localizer["Logs_TableSource"]</th>
-                                    <th>@Localizer["Logs_TableMessage"]</th>
+                    <div class="table-responsive" id="staff-logs-table-responsive">
+                        <table class="table table-striped" id="staff-logs-table">
+                            <thead id="staff-logs-table-head">
+                                <tr id="staff-logs-table-header-row">
+                                    <th id="staff-logs-col-time">@Localizer["Logs_TableTime"]</th>
+                                    <th id="staff-logs-col-level">@Localizer["Logs_TableLevel"]</th>
+                                    <th id="staff-logs-col-action">@Localizer["Logs_TableAction"]</th>
+                                    <th id="staff-logs-col-user">@Localizer["Logs_TableUser"]</th>
+                                    <th id="staff-logs-col-source">@Localizer["Logs_TableSource"]</th>
+                                    <th id="staff-logs-col-message">@Localizer["Logs_TableMessage"]</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="staff-logs-table-body-content">
                                 @foreach (var log in logs.Logs.Take(50))
                                 {
-                                    <tr class="@GetRowClass(log.Level)">
-                                        <td>
+                                    <tr class="@GetRowClass(log.Level)" id="@($"staff-logs-row-{log.Id}")">
+                                        <td id="@($"staff-logs-cell-time-{log.Id}")">
                                             <small>@log.Timestamp.ToLocalTime().ToString("MM-dd HH:mm:ss")</small>
                                         </td>
-                                        <td>
+                                        <td id="@($"staff-logs-cell-level-{log.Id}")">
                                             <span class="badge @GetLevelBadgeClass(log.Level)">@log.Level</span>
                                         </td>
-                                        <td>@log.Action</td>
-                                        <td>
+                                        <td id="@($"staff-logs-cell-action-{log.Id}")">@log.Action</td>
+                                        <td id="@($"staff-logs-cell-user-{log.Id}")">
                                             @if (!string.IsNullOrEmpty(log.UserEmail))
                                             {
                                                 <small>@log.UserEmail</small>
                                             }
                                         </td>
-                                        <td>
+                                        <td id="@($"staff-logs-cell-source-{log.Id}")">
                                             <span class="badge bg-secondary">@log.Source</span>
                                         </td>
-                                        <td>
+                                        <td id="@($"staff-logs-cell-message-{log.Id}")">
                                             @if (!string.IsNullOrEmpty(log.Message))
                                             {
                                                 <small>@(log.Message.Length > 80 ? log.Message.Substring(0, 80) + "..." : log.Message)</small>
@@ -164,14 +164,14 @@
 
                     @if (logs.TotalCount > 50)
                     {
-                        <div class="text-center mt-3">
+                        <div class="text-center mt-3" id="staff-logs-count-notice">
                             <small class="text-muted">@string.Format(Localizer["Logs_ShowingFirst"].Value, logs.TotalCount)</small>
                         </div>
                     }
                 }
                 else
                 {
-                    <div class="text-center p-4">
+                    <div class="text-center p-4" id="staff-logs-empty-state">
                         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                         <p class="text-muted">@Localizer["Logs_NoLogsFound"]</p>
                     </div>
@@ -182,7 +182,7 @@
 
     @if (!string.IsNullOrEmpty(statusMessage))
     {
-        <div class="alert @(isSuccess ? "alert-success" : "alert-danger") mt-3">
+        <div class="alert @(isSuccess ? "alert-success" : "alert-danger") mt-3" id="staff-logs-status-alert">
             @statusMessage
         </div>
     }

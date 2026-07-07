@@ -1,0 +1,99 @@
+@using System.Text.Json
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.Models
+@inject IApiService ApiService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+@* Read-only stadium blueprint with clickable sector overlays (the admin drawing-tool canvas,
+   ported for customers). Clicking a sector raises OnSectorSelected with the overlay sector id,
+   which the event page uses to open the seat-selection sheet. *@
+<div id="customer-stadium-canvas-container"
+     style="position:relative;width:100%;border-radius:14px;overflow:hidden;background:#0b0c12;border:1px solid rgba(255,255,255,.08);touch-action:manipulation;">
+    <canvas id="customer-stadium-canvas" width="1170" height="898"
+            style="display:block;width:100%;height:auto;cursor:pointer;"></canvas>
+</div>
+
+@code {
+    /// <summary>Per-event availability keyed by overlay SectorCode (from the event details DTO).
+    /// Used to colour sectors and label them with free-seat counts.</summary>
+    [Parameter] public Dictionary<string, SectionAvailabilityInfo>? Sections { get; set; }
+
+    /// <summary>Raised with the clicked overlay sector id (StadiumSectorOverlay.Id), which is the
+    /// same id the section list / GetSectionAvailability uses.</summary>
+    [Parameter] public EventCallback<int> OnSectorSelected { get; set; }
+
+    private DotNetObjectReference<StadiumSelectorCanvas>? _ref;
+    private bool _initialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _ref = DotNetObjectReference.Create(this);
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("stadiumSelectorInit", "customer-stadium-canvas", _ref);
+            await JSRuntime.InvokeVoidAsync("stadiumSelectorSetBackground", "customer-stadium-canvas", "/images/stadium-blueprint.png");
+            await LoadAndDrawAsync();
+            _initialized = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error initializing stadium selector canvas: " + ex.Message);
+        }
+    }
+
+    /// <summary>Re-fetch and redraw overlays (e.g. after availability changes). No-op before init.</summary>
+    public async Task RefreshAsync()
+    {
+        if (_initialized) await LoadAndDrawAsync();
+    }
+
+    private async Task LoadAndDrawAsync()
+    {
+        var overlays = await ApiService.GetStadiumSectorOverlaysAsync() ?? new List<StadiumSectorOverlay>();
+
+        var payload = overlays.Select(o =>
+        {
+            SectionAvailabilityInfo? info = null;
+            Sections?.TryGetValue(o.SectorCode, out info);
+
+            var soldOut = info != null && info.AvailableSeats == 0;
+            double? availPct = info != null && info.TotalSeats > 0
+                ? (double)info.AvailableSeats / info.TotalSeats
+                : (double?)null;
+            var sub = info == null ? "" : (soldOut ? "Rasprodano" : $"{info.AvailableSeats} slob.");
+
+            return new
+            {
+                o.Id,
+                o.SectorCode,
+                o.Name,
+                o.LeftPercent,
+                o.TopPercent,
+                o.WidthPercent,
+                o.HeightPercent,
+                o.ShapeType,
+                o.ShapeData,
+                o.Type,
+                Label = string.IsNullOrWhiteSpace(o.Name) ? o.SectorCode : o.Name,
+                Sub = sub,
+                SoldOut = soldOut,
+                AvailPct = availPct
+            };
+        }).ToList();
+
+        var json = JsonSerializer.Serialize(payload);
+        await JSRuntime.InvokeVoidAsync("stadiumSelectorDraw", "customer-stadium-canvas", json);
+    }
+
+    [JSInvokable]
+    public async Task OnSectorClicked(string overlayId, string sectorCode)
+    {
+        if (int.TryParse(overlayId, out var id))
+            await OnSectorSelected.InvokeAsync(id);
+    }
+
+    public void Dispose() => _ref?.Dispose();
+}

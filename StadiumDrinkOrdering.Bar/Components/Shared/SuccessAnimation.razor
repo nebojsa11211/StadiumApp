@@ -3,9 +3,9 @@
     <div id="bar-successanimation-container" class="success-animation-container @(Overlay ? "success-overlay" : "")">
         <div id="bar-successanimation-animation" class="success-animation @Size.ToLower()">
             <div id="bar-successanimation-icon" class="success-icon">
-                <svg viewBox="0 0 52 52" class="success-svg">
-                    <circle cx="26" cy="26" r="25" fill="none" class="success-circle"/>
-                    <path fill="none" d="M14,27 l7.5,7.5 L38,18" class="success-check"/>
+                <svg id="bar-successanimation-svg" viewBox="0 0 52 52" class="success-svg">
+                    <circle id="bar-successanimation-circle" cx="26" cy="26" r="25" fill="none" class="success-circle"/>
+                    <path id="bar-successanimation-check" fill="none" d="M14,27 l7.5,7.5 L38,18" class="success-check"/>
                 </svg>
             </div>
             @if (!string.IsNullOrEmpty(Message))

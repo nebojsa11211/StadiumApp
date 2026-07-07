@@ -3,9 +3,9 @@
 @inject IJSRuntime JSRuntime
 
 <div id="bar-languageswitcher-container" class="language-switcher">
-    <select class="form-select form-select-sm" @onchange="OnLanguageChange" value="@CurrentCulture">
-        <option value="hr" selected="@(CurrentCulture == "hr")">Hrvatski</option>
-        <option value="en" selected="@(CurrentCulture == "en")">English</option>
+    <select id="bar-languageswitcher-select" class="form-select form-select-sm" @onchange="OnLanguageChange" value="@CurrentCulture">
+        <option id="bar-languageswitcher-option-hr" value="hr" selected="@(CurrentCulture == "hr")">Hrvatski</option>
+        <option id="bar-languageswitcher-option-en" value="en" selected="@(CurrentCulture == "en")">English</option>
     </select>
 </div>
 

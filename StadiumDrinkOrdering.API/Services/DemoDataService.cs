@@ -110,23 +110,26 @@ public class DemoDataService : IDemoDataService
 
     private async Task GenerateEventsAsync()
     {
+        // UTC-based "today" so every EventDate has Kind=Utc. PostgreSQL 'timestamp with time zone'
+        // rejects Local/Unspecified DateTimes, so DateTime.Today (Local) must not be used here.
+        var today = DateTime.UtcNow.Date;
         var events = new[]
         {
             // Upcoming Events
-            new Event { Id = 10, EventName = "Premier League Derby Match", EventType = "Football", EventDate = DateTime.Today.AddDays(3).AddHours(15), TotalSeats = 350, BaseTicketPrice = 85.00m, Description = "Intense local derby match between city rivals", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-14) },
-            new Event { Id = 11, EventName = "Champions League Semi-Final", EventType = "Football", EventDate = DateTime.Today.AddDays(8).AddHours(20), TotalSeats = 400, BaseTicketPrice = 120.00m, Description = "European Champions League semi-final showdown", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-21) },
-            new Event { Id = 12, EventName = "Rock Legends World Tour", EventType = "Concert", EventDate = DateTime.Today.AddDays(12).AddHours(19), TotalSeats = 280, BaseTicketPrice = 95.00m, Description = "World-famous rock band performing greatest hits", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-28) },
-            new Event { Id = 13, EventName = "NBA Basketball Exhibition", EventType = "Basketball", EventDate = DateTime.Today.AddDays(18).AddHours(19), TotalSeats = 250, BaseTicketPrice = 75.00m, Description = "Professional basketball exhibition match", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-10) },
-            new Event { Id = 14, EventName = "International Rugby Final", EventType = "Rugby", EventDate = DateTime.Today.AddDays(25).AddHours(16), TotalSeats = 320, BaseTicketPrice = 90.00m, Description = "International rugby championship final", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-35) },
+            new Event { Id = 10, EventName = "Premier League Derby Match", EventType = "Football", EventDate = today.AddDays(3).AddHours(15), TotalSeats = 350, BaseTicketPrice = 85.00m, Description = "Intense local derby match between city rivals", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-14) },
+            new Event { Id = 11, EventName = "Champions League Semi-Final", EventType = "Football", EventDate = today.AddDays(8).AddHours(20), TotalSeats = 400, BaseTicketPrice = 120.00m, Description = "European Champions League semi-final showdown", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-21) },
+            new Event { Id = 12, EventName = "Rock Legends World Tour", EventType = "Concert", EventDate = today.AddDays(12).AddHours(19), TotalSeats = 280, BaseTicketPrice = 95.00m, Description = "World-famous rock band performing greatest hits", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-28) },
+            new Event { Id = 13, EventName = "NBA Basketball Exhibition", EventType = "Basketball", EventDate = today.AddDays(18).AddHours(19), TotalSeats = 250, BaseTicketPrice = 75.00m, Description = "Professional basketball exhibition match", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-10) },
+            new Event { Id = 14, EventName = "International Rugby Final", EventType = "Rugby", EventDate = today.AddDays(25).AddHours(16), TotalSeats = 320, BaseTicketPrice = 90.00m, Description = "International rugby championship final", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-35) },
             
             // Recent Past Events (for analytics data)
-            new Event { Id = 15, EventName = "Summer Festival Concert", EventType = "Concert", EventDate = DateTime.Today.AddDays(-5).AddHours(18), TotalSeats = 300, BaseTicketPrice = 65.00m, Description = "Summer music festival main event", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-42) },
-            new Event { Id = 16, EventName = "Cup Quarter-Final", EventType = "Football", EventDate = DateTime.Today.AddDays(-12).AddHours(15), TotalSeats = 280, BaseTicketPrice = 55.00m, Description = "Exciting cup quarter-final match", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-49) },
-            new Event { Id = 17, EventName = "Jazz Night Special", EventType = "Concert", EventDate = DateTime.Today.AddDays(-8).AddHours(20), TotalSeats = 200, BaseTicketPrice = 45.00m, Description = "Special jazz performance evening", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-38) },
+            new Event { Id = 15, EventName = "Summer Festival Concert", EventType = "Concert", EventDate = today.AddDays(-5).AddHours(18), TotalSeats = 300, BaseTicketPrice = 65.00m, Description = "Summer music festival main event", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-42) },
+            new Event { Id = 16, EventName = "Cup Quarter-Final", EventType = "Football", EventDate = today.AddDays(-12).AddHours(15), TotalSeats = 280, BaseTicketPrice = 55.00m, Description = "Exciting cup quarter-final match", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-49) },
+            new Event { Id = 17, EventName = "Jazz Night Special", EventType = "Concert", EventDate = today.AddDays(-8).AddHours(20), TotalSeats = 200, BaseTicketPrice = 45.00m, Description = "Special jazz performance evening", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-38) },
             
             // Far Future Events  
-            new Event { Id = 18, EventName = "Season Finale Championship", EventType = "Football", EventDate = DateTime.Today.AddDays(45).AddHours(17), TotalSeats = 400, BaseTicketPrice = 110.00m, Description = "End of season championship match", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-7) },
-            new Event { Id = 19, EventName = "Pop Stars United Concert", EventType = "Concert", EventDate = DateTime.Today.AddDays(60).AddHours(19), TotalSeats = 350, BaseTicketPrice = 80.00m, Description = "Multiple pop stars collaboration concert", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-14) }
+            new Event { Id = 18, EventName = "Season Finale Championship", EventType = "Football", EventDate = today.AddDays(45).AddHours(17), TotalSeats = 400, BaseTicketPrice = 110.00m, Description = "End of season championship match", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-7) },
+            new Event { Id = 19, EventName = "Pop Stars United Concert", EventType = "Concert", EventDate = today.AddDays(60).AddHours(19), TotalSeats = 350, BaseTicketPrice = 80.00m, Description = "Multiple pop stars collaboration concert", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-14) }
         };
 
         foreach (var evt in events)
@@ -192,19 +195,10 @@ public class DemoDataService : IDemoDataService
 
         await _context.SaveChangesAsync();
 
-        // Generate QR codes for all tickets
-        var tickets = await _context.Tickets.Include(t => t.Event).ToListAsync();
-        foreach (var ticket in tickets.Where(t => string.IsNullOrEmpty(t.QRCode)))
-        {
-            try
-            {
-                await _qrCodeService.GenerateQRCodeAsync(ticket);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to generate QR code for ticket {TicketId}", ticket.Id);
-            }
-        }
+        // QR images are rendered on demand from each ticket's QRCodeToken (already set above) via
+        // IQRCodeService.GetQrImageDataUriAsync. We intentionally do NOT persist a base64 image here:
+        // the Ticket.QRCode column is varchar(500) and a PNG data URI overflows it, which previously
+        // faulted the DbContext and cascaded failures through the rest of demo generation.
     }
 
     public async Task<bool> GenerateStaffAssignmentsAsync()
@@ -254,15 +248,40 @@ public class DemoDataService : IDemoDataService
     {
         try
         {
+            var now = DateTime.UtcNow;
             var customers = await _context.Users.Where(u => u.Role == UserRole.Customer).ToListAsync();
             var drinks = await _context.Drinks.Where(d => d.IsAvailable).ToListAsync();
-            var tickets = await _context.Tickets.Take(10).ToListAsync();
+
+            // Drink ordering is a game-day activity, so demo orders may only attach to events that
+            // have already started. This mirrors the live-event invariant and guarantees no order is
+            // ever dated before its event's start (a future event gets no orders at all).
+            var tickets = await _context.Tickets
+                .Include(t => t.Event)
+                .Where(t => t.Event != null && t.Event.EventDate <= now)
+                .Take(20)
+                .ToListAsync();
+
+            if (tickets.Count == 0)
+            {
+                _logger.LogInformation("No started events found; skipping demo drink order generation.");
+                return true;
+            }
 
             for (int i = 0; i < orderCount; i++)
             {
                 var customer = customers[Random.Shared.Next(customers.Count)];
                 var ticket = tickets[Random.Shared.Next(tickets.Count)];
-                
+                var evt = ticket.Event!;
+
+                // Stamp the order somewhere inside the event's live window: never before the start,
+                // never after the event ended, and never in the future.
+                var windowEnd = evt.EventEndDate ?? evt.EventDate.AddHours(4);
+                if (windowEnd > now) windowEnd = now;
+                var spanSeconds = Math.Max(0, (windowEnd - evt.EventDate).TotalSeconds);
+                var createdAt = DateTime.SpecifyKind(
+                    evt.EventDate.AddSeconds(Random.Shared.NextDouble() * spanSeconds),
+                    DateTimeKind.Utc);
+
                 var order = new Order
                 {
                     TicketNumber = ticket.TicketNumber,
@@ -270,7 +289,7 @@ public class DemoDataService : IDemoDataService
                     CustomerId = customer.Id,
                     TotalAmount = 0, // Will be calculated
                     Status = (OrderStatus)Random.Shared.Next(1, 8),
-                    CreatedAt = DateTime.UtcNow.AddMinutes(-Random.Shared.Next(1, 120)),
+                    CreatedAt = createdAt,
                     EventId = ticket.EventId,
                     SeatId = ticket.SeatId
                 };
@@ -379,7 +398,7 @@ public class DemoDataService : IDemoDataService
             var analytics = new EventAnalytics
             {
                 EventId = evt.Id,
-                TotalTicketsSold = Random.Shared.Next(50, Math.Min(300, evt.TotalSeats / 10)),
+                TotalTicketsSold = Random.Shared.Next(50, Math.Min(300, evt.TotalSeats)),
                 TotalOrders = Random.Shared.Next(20, 100),
                 TotalDrinksSold = Random.Shared.Next(100, 500),
                 TicketRevenue = Random.Shared.Next(3000, 20000),

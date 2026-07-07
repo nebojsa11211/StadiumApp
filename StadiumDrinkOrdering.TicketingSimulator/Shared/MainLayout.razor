@@ -5,7 +5,7 @@
     <header id="simulator-layout-topbar" class="sim-topbar">
         <span id="simulator-layout-brand" class="sim-brand"><i class="bi bi-cpu"></i> @Localizer["Layout_Brand"]</span>
         <span id="simulator-layout-tag" class="sim-tag">@Localizer["Layout_Tag"]</span>
-        <div class="ms-auto"><LanguageSwitcher /></div>
+        <div id="simulator-layout-language-container" class="ms-auto"><LanguageSwitcher /></div>
     </header>
     <main id="simulator-layout-main" class="sim-main">
         @Body
@@ -14,6 +14,6 @@
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+    <a id="simulator-layout-error-reload-link" href="" class="reload">Reload</a>
+    <a id="simulator-layout-error-dismiss-link" class="dismiss">🗙</a>
 </div>

@@ -7,21 +7,21 @@
 
 <PageTitle>@Localizer["MyDeliveries_PageTitle"]</PageTitle>
 
-<div class="runner-page">
-    <div class="runner-page-head">
-        <h1 class="runner-page-title">@Localizer["MyDeliveries_Title"]</h1>
+<div class="runner-page" id="runner-my-deliveries-page">
+    <div class="runner-page-head" id="runner-my-deliveries-page-head">
+        <h1 class="runner-page-title" id="runner-my-deliveries-title">@Localizer["MyDeliveries_Title"]</h1>
         <button class="runner-refresh" @onclick="Load" aria-label="@Localizer["MyDeliveries_Refresh"]" id="runner-mine-refresh">↻</button>
     </div>
 
     @if (loading && mine is null)
     {
-        <div class="runner-loading"><div class="runner-cta-spinner"></div></div>
+        <div class="runner-loading" id="runner-my-deliveries-loading"><div class="runner-cta-spinner" id="runner-my-deliveries-spinner"></div></div>
     }
     else if (active.Count == 0 && syncing.Count == 0)
     {
-        <div class="runner-empty">
-            <div class="runner-empty-icon" aria-hidden="true">✅</div>
-            <div class="runner-empty-text">@Localizer["MyDeliveries_EmptyMessage"] <a href="/">@Localizer["MyDeliveries_PoolLink"]</a>.</div>
+        <div class="runner-empty" id="runner-my-deliveries-empty">
+            <div class="runner-empty-icon" id="runner-my-deliveries-empty-icon" aria-hidden="true">✅</div>
+            <div class="runner-empty-text" id="runner-my-deliveries-empty-text">@Localizer["MyDeliveries_EmptyMessage"] <a href="/" id="runner-my-deliveries-pool-link">@Localizer["MyDeliveries_PoolLink"]</a>.</div>
         </div>
     }
     else
@@ -29,15 +29,15 @@
         @foreach (var o in active)
         {
             <div class="runner-card" id="runner-mine-card-@o.Id">
-                <div class="runner-card-top">
+                <div class="runner-card-top" id="@($"runner-mine-card-{o.Id}-top")">
                     <span class="runner-seat-label">@Localizer["MyDeliveries_SeatLabel"]</span>
                     <span class="runner-card-meta"><span class="runner-order-id">#@o.Id</span></span>
                 </div>
-                <div class="runner-seat">@SeatText(o)</div>
-                <div class="runner-items">
+                <div class="runner-seat" id="@($"runner-mine-card-{o.Id}-seat")">@SeatText(o)</div>
+                <div class="runner-items" id="@($"runner-mine-card-{o.Id}-items")">
                     @foreach (var it in o.OrderItems)
                     {
-                        <div><span class="runner-qty">@it.Quantity×</span> @it.DrinkName</div>
+                        <div id="@($"runner-mine-card-{o.Id}-item-{o.OrderItems.IndexOf(it)}")"><span class="runner-qty">@it.Quantity×</span> @it.DrinkName</div>
                     }
                 </div>
                 <div class="runner-total" id="runner-mine-total-@o.Id">
@@ -53,23 +53,23 @@
 
         @if (syncing.Count > 0)
         {
-            <div class="runner-sync-head">@Localizer["MyDeliveries_DeliveredSection"] (@syncing.Count)</div>
+            <div class="runner-sync-head" id="runner-my-deliveries-sync-head">@Localizer["MyDeliveries_DeliveredSection"] (@syncing.Count)</div>
             @foreach (var o in syncing)
             {
                 <div class="runner-card runner-card-pending" id="runner-mine-pending-@o.Id">
-                    <div class="runner-card-top">
+                    <div class="runner-card-top" id="@($"runner-mine-pending-{o.Id}-top")">
                         <span class="runner-seat-label">@Localizer["MyDeliveries_SeatLabel"]</span>
                         @if (Outbox.IsOnline)
                         {
-                            <span class="runner-pending-badge runner-pending-badge-sync">⏳ @Localizer["MyDeliveries_SyncingBadge"]</span>
+                            <span class="runner-pending-badge runner-pending-badge-sync" id="@($"runner-mine-pending-{o.Id}-sync")">⏳ @Localizer["MyDeliveries_SyncingBadge"]</span>
                         }
                         else
                         {
-                            <span class="runner-pending-badge runner-pending-badge-offline">⚠ @Localizer["MyDeliveries_OfflineBadge"]</span>
+                            <span class="runner-pending-badge runner-pending-badge-offline" id="@($"runner-mine-pending-{o.Id}-offline")">⚠ @Localizer["MyDeliveries_OfflineBadge"]</span>
                         }
                     </div>
-                    <div class="runner-seat">@SeatText(o)</div>
-                    <div class="runner-items">
+                    <div class="runner-seat" id="@($"runner-mine-pending-{o.Id}-seat")">@SeatText(o)</div>
+                    <div class="runner-items" id="@($"runner-mine-pending-{o.Id}-items")">
                         <span class="runner-order-id">#@o.Id</span> · @Localizer["MyDeliveries_MarkedDelivered"]
                     </div>
                 </div>

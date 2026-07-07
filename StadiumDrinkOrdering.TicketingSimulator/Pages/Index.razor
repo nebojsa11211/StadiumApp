@@ -37,34 +37,34 @@
         else
         {
             <div id="simulator-index-stadium-stats" class="row g-2 text-center">
-                <div class="col-6 col-md-3">
-                    <div class="border rounded py-2"><div class="h4 mb-0">@sections.Count</div><div class="small text-muted">@Localizer["Index_StatSectors"]</div></div>
+                <div id="simulator-index-stadium-stat-sectors" class="col-6 col-md-3">
+                    <div id="simulator-index-stadium-stat-sectors-box" class="border rounded py-2"><div id="simulator-index-stadium-stat-sectors-value" class="h4 mb-0">@sections.Count</div><div id="simulator-index-stadium-stat-sectors-label" class="small text-muted">@Localizer["Index_StatSectors"]</div></div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="border rounded py-2"><div class="h4 mb-0">@TotalCapacity.ToString("N0")</div><div class="small text-muted">@Localizer["Index_StatSeats"]</div></div>
+                <div id="simulator-index-stadium-stat-seats" class="col-6 col-md-3">
+                    <div id="simulator-index-stadium-stat-seats-box" class="border rounded py-2"><div id="simulator-index-stadium-stat-seats-value" class="h4 mb-0">@TotalCapacity.ToString("N0")</div><div id="simulator-index-stadium-stat-seats-label" class="small text-muted">@Localizer["Index_StatSeats"]</div></div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="border rounded py-2"><div class="h4 mb-0">@sections.Sum(s => s.Rows).ToString("N0")</div><div class="small text-muted">@Localizer["Index_StatRows"]</div></div>
+                <div id="simulator-index-stadium-stat-rows" class="col-6 col-md-3">
+                    <div id="simulator-index-stadium-stat-rows-box" class="border rounded py-2"><div id="simulator-index-stadium-stat-rows-value" class="h4 mb-0">@sections.Sum(s => s.Rows).ToString("N0")</div><div id="simulator-index-stadium-stat-rows-label" class="small text-muted">@Localizer["Index_StatRows"]</div></div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="border rounded py-2"><div class="h4 mb-0">@StadiumTypeCount</div><div class="small text-muted">@Localizer["Index_StatTypes"]</div></div>
+                <div id="simulator-index-stadium-stat-types" class="col-6 col-md-3">
+                    <div id="simulator-index-stadium-stat-types-box" class="border rounded py-2"><div id="simulator-index-stadium-stat-types-value" class="h4 mb-0">@StadiumTypeCount</div><div id="simulator-index-stadium-stat-types-label" class="small text-muted">@Localizer["Index_StatTypes"]</div></div>
                 </div>
             </div>
 
             @if (showStadiumDetail)
             {
                 <table id="simulator-index-stadium-table" class="table table-sm align-middle mt-3 mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width:1%"></th>
-                            <th>@Localizer["Index_SectorColumn"]</th>
-                            <th>@Localizer["Index_TypeColumn"]</th>
-                            <th class="text-end">@Localizer["Index_RowsColumn"]</th>
-                            <th class="text-end">@Localizer["Index_SeatsPerRowColumn"]</th>
-                            <th class="text-end">@Localizer["Index_CapacityColumn"]</th>
+                    <thead id="simulator-index-stadium-thead" class="table-light">
+                        <tr id="simulator-index-stadium-header-row">
+                            <th id="simulator-index-stadium-th-color" style="width:1%"></th>
+                            <th id="simulator-index-stadium-th-sector">@Localizer["Index_SectorColumn"]</th>
+                            <th id="simulator-index-stadium-th-type">@Localizer["Index_TypeColumn"]</th>
+                            <th id="simulator-index-stadium-th-rows" class="text-end">@Localizer["Index_RowsColumn"]</th>
+                            <th id="simulator-index-stadium-th-seatsperrow" class="text-end">@Localizer["Index_SeatsPerRowColumn"]</th>
+                            <th id="simulator-index-stadium-th-capacity" class="text-end">@Localizer["Index_CapacityColumn"]</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="simulator-index-stadium-tbody">
                         @foreach (var s in sections)
                         {
                             <tr id="simulator-index-stadium-row-@s.SectionCode" class="@(expandedStadiumSector == s.SectionCode ? "table-active" : "")" style="cursor:pointer" title="@Localizer["Index_StadiumRowTooltip"]" @onclick="() => ToggleStadiumSector(s.SectionCode)">
@@ -82,9 +82,9 @@
                             {
                                 <tr id="simulator-index-stadium-detail-@s.SectionCode" class="table-light">
                                     <td colspan="6">
-                                        <div class="row g-3">
-                                            <div class="col-md-5">
-                                                <table class="table table-sm mb-0">
+                                        <div id="simulator-index-stadium-detail-row-@s.SectionCode" class="row g-3">
+                                            <div id="simulator-index-stadium-detail-col-left-@s.SectionCode" class="col-md-5">
+                                                <table id="simulator-index-stadium-detail-table-@s.SectionCode" class="table table-sm mb-0">
                                                     <tbody>
                                                         <tr><th style="width:45%">@Localizer["Index_DetailNameLabel"]</th><td>@s.SectionName</td></tr>
                                                         <tr><th>@Localizer["Index_DetailCodeLabel"]</th><td><code>@s.SectionCode</code></td></tr>
@@ -100,7 +100,7 @@
                                                                 @if (s.UseVariableSeating && s.RowRanges.Count > 0)
                                                                 {
                                                                     <span class="badge bg-info-subtle text-info-emphasis border mb-1">@Localizer["Index_DetailVariableSeating"]</span>
-                                                                    <ul class="mb-0 ps-3 small">
+                                                                    <ul id="simulator-index-stadium-detail-rowranges-@s.SectionCode" class="mb-0 ps-3 small">
                                                                         @foreach (var r in s.RowRanges)
                                                                         {
                                                                             <li>@Localizer["Index_SeatRowShort"]@r.FromRow–@r.ToRow: <strong>@r.SeatsPerRow</strong> @Localizer["Index_DetailSeatsWord"]</li>
@@ -118,17 +118,17 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div class="col-md-7">
-                                                <div class="fw-bold small mb-1"><i class="bi bi-grid-3x3-gap"></i> @Localizer["Index_DetailLayoutTitle"]</div>
+                                            <div id="simulator-index-stadium-detail-col-right-@s.SectionCode" class="col-md-7">
+                                                <div id="simulator-index-stadium-detail-layout-title-@s.SectionCode" class="fw-bold small mb-1"><i class="bi bi-grid-3x3-gap"></i> @Localizer["Index_DetailLayoutTitle"]</div>
                                                 @{
                                                     var layout = SectorRowLayout(s).ToList();
                                                     var rowCap = 24;
                                                     var seatCap = 40;
                                                 }
-                                                <div class="d-flex flex-column gap-1" style="overflow-x:auto">
+                                                <div id="simulator-index-stadium-detail-layout-grid-@s.SectionCode" class="d-flex flex-column gap-1" style="overflow-x:auto">
                                                     @foreach (var row in layout.Take(rowCap))
                                                     {
-                                                        <div class="d-flex align-items-center gap-1" style="white-space:nowrap">
+                                                        <div id="simulator-index-stadium-layout-row-@s.SectionCode-@row.Row" class="d-flex align-items-center gap-1" style="white-space:nowrap">
                                                             <span class="text-muted small text-end" style="flex:0 0 40px">@Localizer["Index_SeatRowShort"]@row.Row</span>
                                                             @foreach (var _ in Enumerable.Range(1, Math.Min(row.Seats, seatCap)))
                                                             {
@@ -152,8 +152,8 @@
                             }
                         }
                     </tbody>
-                    <tfoot>
-                        <tr class="fw-bold table-light">
+                    <tfoot id="simulator-index-stadium-tfoot">
+                        <tr id="simulator-index-stadium-footer-row" class="fw-bold table-light">
                             <td></td>
                             <td>@Localizer["Index_TotalLabel"]</td>
                             <td></td>
@@ -178,25 +178,25 @@
     </div>
     <div id="simulator-index-season-body" class="card-body">
         <div id="simulator-index-season-form-row" class="row g-2 align-items-end mb-3">
-            <div class="col-md-3">
+            <div id="simulator-index-season-name-col" class="col-md-3">
                 <label class="form-label">@Localizer["Index_SeasonNameLabel"]</label>
                 <input id="simulator-index-season-name-input" class="form-control" placeholder="@Localizer["Index_SeasonNamePlaceholder"]" @bind="newSeasonName" />
             </div>
-            <div class="col-md-3">
+            <div id="simulator-index-season-start-col" class="col-md-3">
                 <label class="form-label">@Localizer["Index_StartsLabel"]</label>
                 <input id="simulator-index-season-start-input" type="date" class="form-control" @bind="seasonStart" />
             </div>
-            <div class="col-md-3">
+            <div id="simulator-index-season-end-col" class="col-md-3">
                 <label class="form-label">@Localizer["Index_EndsLabel"]</label>
                 <input id="simulator-index-season-end-input" type="date" class="form-control" @bind="seasonEnd" />
             </div>
-            <div class="col-md-2 mb-1">
-                <div class="form-check">
+            <div id="simulator-index-season-current-col" class="col-md-2 mb-1">
+                <div id="simulator-index-season-current-check" class="form-check">
                     <input id="simulator-index-season-current-input" type="checkbox" class="form-check-input" @bind="seasonIsCurrent" />
                     <label class="form-check-label">@Localizer["Index_SetCurrentCheckbox"]</label>
                 </div>
             </div>
-            <div class="col-md-1">
+            <div id="simulator-index-season-create-col" class="col-md-1">
                 <button id="simulator-index-season-create-btn" class="btn btn-primary w-100" @onclick="CreateSeasonAsync" disabled="@(busy || !connectionOk || string.IsNullOrWhiteSpace(newSeasonName) || seasonEnd <= seasonStart)">
                     <i class="bi bi-broadcast"></i> @Localizer["Index_CreateButton"]
                 </button>
@@ -210,10 +210,10 @@
         else
         {
             <table id="simulator-index-season-table" class="table table-sm mb-0 align-middle">
-                <thead class="table-light">
-                    <tr><th>@Localizer["Index_SeasonColumn"]</th><th>@Localizer["Index_WindowColumn"]</th><th class="text-center">@Localizer["Index_CurrentColumn"]</th><th class="text-end">@Localizer["Index_EventsColumn"]</th><th class="text-end">@Localizer["Index_PassesColumn"]</th><th class="text-end">@Localizer["Index_ActionColumn"]</th></tr>
+                <thead id="simulator-index-season-thead" class="table-light">
+                    <tr id="simulator-index-season-header-row"><th id="simulator-index-season-th-name">@Localizer["Index_SeasonColumn"]</th><th id="simulator-index-season-th-window">@Localizer["Index_WindowColumn"]</th><th id="simulator-index-season-th-current" class="text-center">@Localizer["Index_CurrentColumn"]</th><th id="simulator-index-season-th-events" class="text-end">@Localizer["Index_EventsColumn"]</th><th id="simulator-index-season-th-passes" class="text-end">@Localizer["Index_PassesColumn"]</th><th id="simulator-index-season-th-action" class="text-end">@Localizer["Index_ActionColumn"]</th></tr>
                 </thead>
-                <tbody>
+                <tbody id="simulator-index-season-tbody">
                     @foreach (var se in seasons)
                     {
                         <tr id="simulator-index-season-row-@se.SeasonId" class="@(se.ExternalSeasonId == selectedSeasonExternalId ? "table-primary" : "")">
@@ -240,7 +240,7 @@
             @if (selectedSeasonExternalId != null)
             {
                 <div id="simulator-index-season-ticket-panel" class="border rounded p-2 mt-3 bg-light">
-                    <div class="d-flex align-items-end gap-2 flex-wrap">
+                    <div id="simulator-index-season-ticket-controls" class="d-flex align-items-end gap-2 flex-wrap">
                         <div>
                             <label class="form-label mb-0 small">@Localizer["Index_SeasonTicketSectorLabel"]</label>
                             <select id="simulator-index-season-ticket-sector-select" class="form-select form-select-sm" @bind="seasonTicketSector" style="min-width:170px">
@@ -258,24 +258,24 @@
                         </button>
 
                         <div class="vr mx-1"></div>
-                        <div>
+                        <div id="simulator-index-season-ticket-batch-container">
                             <label class="form-label mb-0 small">@Localizer["Index_BulkLabel"]</label>
-                            <div class="input-group input-group-sm" style="width:auto">
+                            <div id="simulator-index-season-ticket-batch-inputs" class="input-group input-group-sm" style="width:auto">
                                 <input id="simulator-index-season-ticket-batch-input" type="number" min="1" max="1000" class="form-control form-control-sm" style="width:80px" @bind="seasonTicketBatch" />
                                 <button id="simulator-index-season-ticket-batch-btn" class="btn btn-sm btn-primary" @onclick="() => SellSeasonTicketBatchAsync(seasonTicketBatch)" disabled="@(busy || sections.Count == 0)">
                                     <i class="bi bi-people-fill"></i> @Localizer["Index_CreatePassesButton", seasonTicketBatch]
                                 </button>
                             </div>
-                            <div class="btn-group btn-group-sm mt-1" role="group">
+                            <div id="simulator-index-season-ticket-batch-presets" class="btn-group btn-group-sm mt-1" role="group">
                                 <button id="simulator-index-season-ticket-preset-20" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(20)" disabled="@(busy || sections.Count == 0)">@Localizer["Index_Plus20Button"]</button>
                                 <button id="simulator-index-season-ticket-preset-40" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(40)" disabled="@(busy || sections.Count == 0)">@Localizer["Index_Plus40Button"]</button>
                                 <button id="simulator-index-season-ticket-preset-100" class="btn btn-outline-primary" @onclick="() => SellSeasonTicketBatchAsync(100)" disabled="@(busy || sections.Count == 0)">@Localizer["Index_Plus100Button"]</button>
                             </div>
                         </div>
 
-                        <span class="ms-auto small text-muted">@Localizer["Index_SoldThisSession"]: <strong>@seasonTicketIds.Count</strong> @Localizer["Index_PassesFor"] <strong>@selectedSeasonName</strong></span>
+                        <span id="simulator-index-season-ticket-stats" class="ms-auto small text-muted">@Localizer["Index_SoldThisSession"]: <strong>@seasonTicketIds.Count</strong> @Localizer["Index_PassesFor"] <strong>@selectedSeasonName</strong></span>
                     </div>
-                    <div class="small text-muted mt-1">@Localizer["Index_SeasonPassInfo"]</div>
+                    <div id="simulator-index-season-ticket-info" class="small text-muted mt-1">@Localizer["Index_SeasonPassInfo"]</div>
                 </div>
             }
         }
@@ -293,11 +293,11 @@
                     <label class="form-label">@Localizer["Index_EventNameLabel"]</label>
                     <input id="simulator-index-event-name-input" class="form-control" @bind="eventName" />
                 </div>
-                <div id="simulator-index-event-date-col" class="col-md-2">
+                <div id="simulator-index-event-start-col" class="col-md-2">
                     <label class="form-label">@Localizer["Index_StartLabel"]</label>
                     <input id="simulator-index-event-date-input" type="datetime-local" class="form-control" @bind="eventDate" />
                 </div>
-                <div id="simulator-index-event-enddate-col" class="col-md-2">
+                <div id="simulator-index-event-end-col" class="col-md-2">
                     <label class="form-label">@Localizer["Index_EndLabel"]</label>
                     <input id="simulator-index-event-enddate-input" type="datetime-local" class="form-control" @bind="eventEndDate" />
                 </div>
@@ -324,17 +324,17 @@
         }
         else
         {
-            <div id="simulator-index-event-summary" class="d-flex flex-wrap gap-3 align-items-center">
-                <div><span class="text-muted">@Localizer["Index_EventLabel"]</span> <strong>@eventName</strong></div>
-                <div><span class="text-muted">@Localizer["Index_WindowLabel"]</span> <strong>@eventDate.ToString("yyyy-MM-dd HH:mm")</strong> → <strong>@eventEndDate.ToString("HH:mm")</strong></div>
-                <div><span class="text-muted">@Localizer["Index_ExternalIdLabel"]</span> <code>@externalEventId</code></div>
-                <div><span class="text-muted">@Localizer["Index_StadiumEventIdLabel"]</span> <strong>@(internalEventId?.ToString() ?? "?")</strong></div>
-                <div>
+            <div id="simulator-index-event-summary-container" class="d-flex flex-wrap gap-3 align-items-center">
+                <div id="simulator-index-event-summary-name"><span class="text-muted">@Localizer["Index_EventLabel"]</span> <strong>@eventName</strong></div>
+                <div id="simulator-index-event-summary-window"><span class="text-muted">@Localizer["Index_WindowLabel"]</span> <strong>@eventDate.ToString("yyyy-MM-dd HH:mm")</strong> → <strong>@eventEndDate.ToString("HH:mm")</strong></div>
+                <div id="simulator-index-event-summary-extid"><span class="text-muted">@Localizer["Index_ExternalIdLabel"]</span> <code>@externalEventId</code></div>
+                <div id="simulator-index-event-summary-intid"><span class="text-muted">@Localizer["Index_StadiumEventIdLabel"]</span> <strong>@(internalEventId?.ToString() ?? "?")</strong></div>
+                <div id="simulator-index-event-summary-status">
                     <span class="text-muted">@Localizer["Index_StatusLabel"]</span> <strong>@eventStatusName</strong>
                     @if (eventLive) { <span id="simulator-index-event-live-badge" class="badge bg-danger ms-1">@Localizer["Index_LiveBadge"]</span> }
-                    else if (!eventCanSell) { <span class="badge bg-secondary ms-1">@Localizer["Index_SalesClosedBadge"]</span> }
+                    else if (!eventCanSell) { <span id="simulator-index-event-closed-badge" class="badge bg-secondary ms-1">@Localizer["Index_SalesClosedBadge"]</span> }
                 </div>
-                <div><span class="text-muted">@Localizer["Index_TotalOccupiedLabel"]</span> <strong>@TotalOccupied</strong> / @TotalCapacity@if (TotalSeasonSold > 0) { <span class="text-info small"> @Localizer["Index_IncludingSeasonText", TotalSeasonSold]</span> }</div>
+                <div id="simulator-index-event-summary-occupancy"><span class="text-muted">@Localizer["Index_TotalOccupiedLabel"]</span> <strong>@TotalOccupied</strong> / @TotalCapacity@if (TotalSeasonSold > 0) { <span id="simulator-index-event-summary-season" class="text-info small"> @Localizer["Index_IncludingSeasonText", TotalSeasonSold]</span> }</div>
                 <button id="simulator-index-event-golive-btn" class="btn btn-sm btn-danger ms-auto" title="@Localizer["Index_MakeLiveNowTooltip"]" @onclick="MakeEventLiveAsync" disabled="@(busy || !connectionOk || eventLive)">
                     <i class="bi bi-broadcast-pin"></i> @Localizer["Index_MakeLiveNowButton"]
                 </button>
@@ -364,13 +364,13 @@
             else
             {
                 <table id="simulator-index-existing-table" class="table table-sm mb-0 align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>@Localizer["Index_EventColumn"]</th><th>@Localizer["Index_StartColumn"]</th><th>@Localizer["Index_EndColumn"]</th><th>@Localizer["Index_SourceColumn"]</th>
-                            <th class="text-end">@Localizer["Index_SoldCapacityColumn"]</th><th class="text-end">@Localizer["Index_ActionColumn"]</th>
+                    <thead id="simulator-index-existing-thead" class="table-light">
+                        <tr id="simulator-index-existing-header-row">
+                            <th id="simulator-index-existing-th-event">@Localizer["Index_EventColumn"]</th><th id="simulator-index-existing-th-start">@Localizer["Index_StartColumn"]</th><th id="simulator-index-existing-th-end">@Localizer["Index_EndColumn"]</th><th id="simulator-index-existing-th-source">@Localizer["Index_SourceColumn"]</th>
+                            <th id="simulator-index-existing-th-sold" class="text-end">@Localizer["Index_SoldCapacityColumn"]</th><th id="simulator-index-existing-th-action" class="text-end">@Localizer["Index_ActionColumn"]</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="simulator-index-existing-tbody">
                         @foreach (var e in existingEvents)
                         {
                             <tr id="simulator-index-existing-row-@e.EventId">
@@ -404,7 +404,7 @@
     @* ---------- Step 2: sales ---------- *@
     <div id="simulator-index-sales-card" class="card mb-3">
         <div id="simulator-index-sales-header" class="card-header fw-bold d-flex align-items-center">
-            <span><i class="bi bi-cash-coin"></i> @Localizer["Index_SalesHeader"]</span>
+            <span id="simulator-index-sales-title"><i class="bi bi-cash-coin"></i> @Localizer["Index_SalesHeader"]</span>
             <div id="simulator-index-sales-controls" class="ms-auto d-flex align-items-center gap-2">
                 <span class="small text-muted">@Localizer["Index_RateLabel"]</span>
                 <input id="simulator-index-sales-rate-input" type="number" min="1" max="50" class="form-control form-control-sm" style="width:70px" @bind="autoRate" />
@@ -427,10 +427,10 @@
                 </div>
             }
             <table id="simulator-index-sales-table" class="table table-sm mb-0 align-middle">
-                <thead class="table-light">
-                    <tr><th>@Localizer["Index_SectorColumn"]</th><th style="width:45%">@Localizer["Index_OccupancyColumn"]</th><th class="text-end">@Localizer["Index_OccupiedCapacityColumn"]</th><th class="text-end">@Localizer["Index_ActionsColumn"]</th></tr>
+                <thead id="simulator-index-sales-thead" class="table-light">
+                    <tr id="simulator-index-sales-header-row"><th id="simulator-index-sales-th-sector">@Localizer["Index_SectorColumn"]</th><th id="simulator-index-sales-th-occupancy" style="width:45%">@Localizer["Index_OccupancyColumn"]</th><th id="simulator-index-sales-th-capacity" class="text-end">@Localizer["Index_OccupiedCapacityColumn"]</th><th id="simulator-index-sales-th-action" class="text-end">@Localizer["Index_ActionsColumn"]</th></tr>
                 </thead>
-                <tbody>
+                <tbody id="simulator-index-sales-tbody">
                     @foreach (var s in sections)
                     {
                         var single = SoldCount(s.SectionCode);
@@ -480,19 +480,19 @@
                                     }
                                     else
                                     {
-                                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
-                                            <div class="fw-bold"><i class="bi bi-grid-3x3-gap"></i> @expandedSeatMap.SectionCode · @expandedSeatMap.SectionName</div>
-                                            <div class="small d-flex align-items-center gap-2">
-                                                <span><span class="badge bg-success">@(expandedSeatMap.SoldSeats - expandedSeatMap.SeasonSeats)</span> @Localizer["Index_SeatsSingleLabel"]</span>
-                                                <span><span class="badge bg-info">@expandedSeatMap.SeasonSeats</span> @Localizer["Index_SeatsSeasonLabel"]</span>
-                                                <span><span class="badge bg-white text-dark border">@expandedSeatMap.FreeSeats</span> @Localizer["Index_SeatsFreeLabel"]</span>
+                                        <div id="simulator-index-sales-seatgrid-header-@s.SectionCode" class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+                                            <div id="simulator-index-sales-seatgrid-title-@s.SectionCode" class="fw-bold"><i class="bi bi-grid-3x3-gap"></i> @expandedSeatMap.SectionCode · @expandedSeatMap.SectionName</div>
+                                            <div id="simulator-index-sales-seatgrid-info-@s.SectionCode" class="small d-flex align-items-center gap-2">
+                                                <span id="simulator-index-sales-seatgrid-sold-@s.SectionCode"><span id="simulator-index-sales-seatgrid-sold-badge-@s.SectionCode" class="badge bg-success">@(expandedSeatMap.SoldSeats - expandedSeatMap.SeasonSeats)</span> @Localizer["Index_SeatsSingleLabel"]</span>
+                                                <span id="simulator-index-sales-seatgrid-season-@s.SectionCode"><span id="simulator-index-sales-seatgrid-season-badge-@s.SectionCode" class="badge bg-info">@expandedSeatMap.SeasonSeats</span> @Localizer["Index_SeatsSeasonLabel"]</span>
+                                                <span id="simulator-index-sales-seatgrid-free-@s.SectionCode"><span id="simulator-index-sales-seatgrid-free-badge-@s.SectionCode" class="badge bg-white text-dark border">@expandedSeatMap.FreeSeats</span> @Localizer["Index_SeatsFreeLabel"]</span>
                                                 <button id="simulator-index-sales-seats-refresh-btn-@s.SectionCode" class="btn btn-sm btn-outline-secondary py-0" title="@Localizer["Index_RefreshButton"]" @onclick="RefreshExpandedSeatsAsync" @onclick:stopPropagation="true" disabled="@loadingSeats"><i class="bi bi-arrow-clockwise"></i></button>
                                             </div>
                                         </div>
                                         <div id="simulator-index-sales-seatgrid-@s.SectionCode" class="d-flex flex-column gap-1" style="overflow-x:auto">
                                             @foreach (var rowGroup in expandedSeatMap.Seats.GroupBy(x => x.Row).OrderBy(g => g.Key))
                                             {
-                                                <div class="d-flex align-items-center gap-1" style="white-space:nowrap">
+                                                <div id="simulator-index-sales-seatgrid-row-@s.SectionCode-@rowGroup.Key" class="d-flex align-items-center gap-1" style="white-space:nowrap">
                                                     <span class="text-muted small text-end" style="flex:0 0 40px">@Localizer["Index_SeatRowShort"]@rowGroup.Key</span>
                                                     @foreach (var seat in rowGroup.OrderBy(x => x.Number))
                                                     {
@@ -514,7 +514,7 @@
                                                         var seatTip = clickable
                                                             ? $"{seat.SeatCode} · {statusLabel}{holder}{ext} · {Localizer["Index_SeatClickHint"].Value}"
                                                             : $"{seat.SeatCode} · {statusLabel}";
-                                                        <span class="d-inline-flex align-items-center justify-content-center rounded @seatClass"
+                                                        <span id="simulator-index-sales-seat-@s.SectionCode-@seat.Row-@seat.Number" class="d-inline-flex align-items-center justify-content-center rounded @seatClass"
                                                               style="width:28px;height:20px;font-size:0.6rem;flex:0 0 28px;@(clickable ? "cursor:pointer" : "")"
                                                               title="@seatTip"
                                                               @onclick="() => ShowSeatTicketAsync(seat)" @onclick:stopPropagation="true">@seat.Number</span>
@@ -536,9 +536,9 @@
     @* ---------- Step 2b: live drink orders ---------- *@
     <div id="simulator-index-drinks-card" class="card mb-3 @(eventLive ? "border-danger" : "")">
         <div id="simulator-index-drinks-header" class="card-header fw-bold d-flex align-items-center">
-            <span><i class="bi bi-cup-straw"></i> @Localizer["Index_DrinksHeader"]</span>
-            @if (eventLive) { <span class="badge bg-danger ms-2">@Localizer["Index_LiveBadge"]</span> }
-            <span class="ms-auto small text-muted">@Localizer["Index_PlacedThisSession"]: <strong>@drinkOrdersPlaced</strong></span>
+            <span id="simulator-index-drinks-title"><i class="bi bi-cup-straw"></i> @Localizer["Index_DrinksHeader"]</span>
+            @if (eventLive) { <span id="simulator-index-drinks-live-badge" class="badge bg-danger ms-2">@Localizer["Index_LiveBadge"]</span> }
+            <span id="simulator-index-drinks-stats" class="ms-auto small text-muted">@Localizer["Index_PlacedThisSession"]: <strong>@drinkOrdersPlaced</strong></span>
         </div>
         <div id="simulator-index-drinks-body" class="card-body">
             @if (!eventLive)
@@ -549,7 +549,7 @@
             }
             else
             {
-                <div class="d-flex align-items-end gap-2 flex-wrap">
+                <div id="simulator-index-drinks-controls" class="d-flex align-items-end gap-2 flex-wrap">
                     <button id="simulator-index-drinks-order1-btn" class="btn btn-success" @onclick="() => SimulateDrinkOrdersAsync(1)" disabled="@busy">
                         <i class="bi bi-cup-hot"></i> @Localizer["Index_Place1OrderButton"]
                     </button>
@@ -582,19 +582,19 @@
             <i class="bi bi-arrow-repeat"></i> @Localizer["Index_ReconciliationHeader"]
             <button id="simulator-index-reconciliation-verify-btn" class="btn btn-sm btn-outline-secondary ms-2" @onclick="VerifySyncAsync" disabled="@busy">@Localizer["Index_VerifySyncButton"]</button>
             <button id="simulator-index-reconciliation-replay-btn" class="btn btn-sm btn-outline-warning ms-1" @onclick="ReplayAsync" disabled="@busy">@Localizer["Index_ReplayAllSalesButton"]</button>
-            <span class="small text-muted ms-2">@Localizer["Index_ReplayInfo"]</span>
+            <span id="simulator-index-reconciliation-info" class="small text-muted ms-2">@Localizer["Index_ReplayInfo"]</span>
         </div>
         @if (snapshot != null)
         {
             <div id="simulator-index-reconciliation-body" class="card-body">
-                <p class="mb-2">@Localizer["Index_ApiReportsPrefix"] <strong>@snapshot.TotalSold</strong> @Localizer["Index_SoldIncludingPrefix"] <strong>@snapshot.TotalSeasonSold</strong> @Localizer["Index_SeasonSimulatorHoldsText"] <strong>@TotalOccupied</strong>.
-                    <span class="@(snapshot.TotalSold == TotalOccupied ? "text-success" : "text-danger")">
+                <p id="simulator-index-reconciliation-summary" class="mb-2">@Localizer["Index_ApiReportsPrefix"] <strong>@snapshot.TotalSold</strong> @Localizer["Index_SoldIncludingPrefix"] <strong>@snapshot.TotalSeasonSold</strong> @Localizer["Index_SeasonSimulatorHoldsText"] <strong>@TotalOccupied</strong>.
+                    <span id="simulator-index-reconciliation-status" class="@(snapshot.TotalSold == TotalOccupied ? "text-success" : "text-danger")">
                         @(snapshot.TotalSold == TotalOccupied ? Localizer["Index_InSyncText"] : $"{Localizer["Index_DriftText"]}: {TotalOccupied - snapshot.TotalSold}")
                     </span>
                 </p>
                 <table id="simulator-index-reconciliation-table" class="table table-sm">
-                    <thead><tr><th>@Localizer["Index_SectorColumn"]</th><th class="text-end">@Localizer["Index_ApiSoldColumn"]</th><th class="text-end">@Localizer["Index_SimulatorOccupiedColumn"]</th></tr></thead>
-                    <tbody>
+                    <thead id="simulator-index-reconciliation-thead"><tr id="simulator-index-reconciliation-header-row"><th id="simulator-index-reconciliation-th-sector">@Localizer["Index_SectorColumn"]</th><th id="simulator-index-reconciliation-th-api" class="text-end">@Localizer["Index_ApiSoldColumn"]</th><th id="simulator-index-reconciliation-th-simulator" class="text-end">@Localizer["Index_SimulatorOccupiedColumn"]</th></tr></thead>
+                    <tbody id="simulator-index-reconciliation-tbody">
                         @foreach (var sec in snapshot.Sectors)
                         {
                             var local = OccupiedCount(sec.SectionCode);
@@ -615,25 +615,25 @@
 @if (showSeatTicket)
 {
     <div id="simulator-index-seat-ticket-modal" class="modal fade show" style="display:block; background:rgba(0,0,0,.5)" tabindex="-1" @onclick="CloseSeatTicket">
-        <div class="modal-dialog modal-dialog-centered" @onclick:stopPropagation="true">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-qr-code"></i> @Localizer["Index_SeatTicketTitle"]</h5>
+        <div id="simulator-index-seat-ticket-modal-dialog" class="modal-dialog modal-dialog-centered" @onclick:stopPropagation="true">
+            <div id="simulator-index-seat-ticket-modal-content" class="modal-content">
+                <div id="simulator-index-seat-ticket-modal-header" class="modal-header">
+                    <h5 id="simulator-index-seat-ticket-modal-title" class="modal-title"><i class="bi bi-qr-code"></i> @Localizer["Index_SeatTicketTitle"]</h5>
                     <button id="simulator-index-seat-ticket-close-x" type="button" class="btn-close" @onclick="CloseSeatTicket"></button>
                 </div>
-                <div class="modal-body text-center">
+                <div id="simulator-index-seat-ticket-modal-body" class="modal-body text-center">
                     @if (loadingSeatTicket)
                     {
-                        <div class="text-muted py-4"><span class="spinner-border"></span><div class="mt-2">@Localizer["Index_SeatTicketLoading"]</div></div>
+                        <div id="simulator-index-seat-ticket-loading" class="text-muted py-4"><span class="spinner-border"></span><div class="mt-2">@Localizer["Index_SeatTicketLoading"]</div></div>
                     }
                     else if (seatTicketModal == null)
                     {
-                        <div class="text-danger py-4"><i class="bi bi-exclamation-triangle"></i> @Localizer["Index_SeatTicketNotFound"]</div>
+                        <div id="simulator-index-seat-ticket-notfound" class="text-danger py-4"><i class="bi bi-exclamation-triangle"></i> @Localizer["Index_SeatTicketNotFound"]</div>
                     }
                     else
                     {
-                        <div class="mb-2">
-                            <span class="badge @(seatTicketModal.Status == SeatOccupancy.Season ? "bg-info" : "bg-success")">
+                        <div id="simulator-index-seat-ticket-status-badge" class="mb-2">
+                            <span id="simulator-index-seat-ticket-badge" class="badge @(seatTicketModal.Status == SeatOccupancy.Season ? "bg-info" : "bg-success")">
                                 @(seatTicketModal.Status == SeatOccupancy.Season ? Localizer["Index_SeatsSeasonLabel"] : Localizer["Index_SeatsSingleLabel"])
                             </span>
                         </div>
@@ -643,15 +643,15 @@
                         }
                         else
                         {
-                            <div class="text-muted small py-3">@Localizer["Index_SeatTicketNoQr"]</div>
+                            <div id="simulator-index-seat-ticket-noqr" class="text-muted small py-3">@Localizer["Index_SeatTicketNoQr"]</div>
                         }
-                        <table class="table table-sm mt-3 mb-0 text-start">
-                            <tbody>
-                                <tr><th style="width:38%">@Localizer["Index_SeatTicketSeat"]</th><td><code>@seatTicketModal.SeatCode</code></td></tr>
-                                <tr>
+                        <table id="simulator-index-seat-ticket-details-table" class="table table-sm mt-3 mb-0 text-start">
+                            <tbody id="simulator-index-seat-ticket-details-tbody">
+                                <tr id="simulator-index-seat-ticket-row-seat"><th style="width:38%">@Localizer["Index_SeatTicketSeat"]</th><td><code>@seatTicketModal.SeatCode</code></td></tr>
+                                <tr id="simulator-index-seat-ticket-row-number">
                                     <th>@Localizer["Index_SeatTicketNumber"]</th>
-                                    <td>
-                                        <code>@seatTicketModal.TicketNumber</code>
+                                    <td id="simulator-index-seat-ticket-number-cell">
+                                        <code id="simulator-index-seat-ticket-number-code">@seatTicketModal.TicketNumber</code>
                                         <button id="simulator-index-seat-ticket-copy-number" type="button"
                                                 class="btn btn-sm btn-outline-secondary py-0 px-1 ms-1"
                                                 title="@Localizer["Index_SeatTicketCopy"]"
@@ -662,24 +662,24 @@
                                 </tr>
                                 @if (!string.IsNullOrEmpty(seatTicketModal.HolderName))
                                 {
-                                    <tr><th>@Localizer["Index_SeatTicketHolder"]</th><td>@seatTicketModal.HolderName</td></tr>
+                                    <tr id="simulator-index-seat-ticket-row-holder"><th>@Localizer["Index_SeatTicketHolder"]</th><td>@seatTicketModal.HolderName</td></tr>
                                 }
                                 @if (!string.IsNullOrEmpty(seatTicketModal.ExternalTicketId))
                                 {
-                                    <tr><th>@Localizer["Index_SeatTicketExternalId"]</th><td><code>@seatTicketModal.ExternalTicketId</code></td></tr>
+                                    <tr id="simulator-index-seat-ticket-row-extid"><th>@Localizer["Index_SeatTicketExternalId"]</th><td><code>@seatTicketModal.ExternalTicketId</code></td></tr>
                                 }
-                                <tr><th>@Localizer["Index_SeatTicketEvent"]</th><td>@seatTicketModal.EventName</td></tr>
+                                <tr id="simulator-index-seat-ticket-row-event"><th>@Localizer["Index_SeatTicketEvent"]</th><td>@seatTicketModal.EventName</td></tr>
                                 @if (seatTicketModal.Status != SeatOccupancy.Season)
                                 {
-                                    <tr><th>@Localizer["Index_SeatTicketPrice"]</th><td>€@seatTicketModal.Price.ToString("0.00")</td></tr>
+                                    <tr id="simulator-index-seat-ticket-row-price"><th>@Localizer["Index_SeatTicketPrice"]</th><td>€@seatTicketModal.Price.ToString("0.00")</td></tr>
                                 }
                             </tbody>
                         </table>
                         @if (!string.IsNullOrEmpty(seatTicketModal.QRCodeToken))
                         {
-                            <div class="small text-muted mt-2 d-flex align-items-center justify-content-center gap-2">
-                                <span>@Localizer["Index_SeatTicketToken"]:</span>
-                                <code class="text-break">@seatTicketModal.QRCodeToken</code>
+                            <div id="simulator-index-seat-ticket-token-section" class="small text-muted mt-2 d-flex align-items-center justify-content-center gap-2">
+                                <span id="simulator-index-seat-ticket-token-label">@Localizer["Index_SeatTicketToken"]:</span>
+                                <code id="simulator-index-seat-ticket-token-code" class="text-break">@seatTicketModal.QRCodeToken</code>
                                 <button id="simulator-index-seat-ticket-copy-token" type="button"
                                         class="btn btn-sm btn-outline-secondary py-0 px-1 flex-shrink-0"
                                         title="@Localizer["Index_SeatTicketCopy"]"
@@ -690,7 +690,7 @@
                         }
                     }
                 </div>
-                <div class="modal-footer">
+                <div id="simulator-index-seat-ticket-modal-footer" class="modal-footer">
                     <button id="simulator-index-seat-ticket-close-btn" class="btn btn-secondary" @onclick="CloseSeatTicket">@Localizer["Index_CloseButton"]</button>
                 </div>
             </div>
@@ -704,14 +704,16 @@
     <div id="simulator-index-log-body" class="card-body" style="max-height:220px; overflow:auto; font-family:monospace; font-size:0.82rem;">
         @if (log.Count == 0)
         {
-            <span class="text-muted">@Localizer["Index_NoActivityYet"]</span>
+            <span id="simulator-index-log-empty" class="text-muted">@Localizer["Index_NoActivityYet"]</span>
         }
         else
         {
-            @foreach (var line in log)
-            {
-                <div>@line</div>
-            }
+            <div id="simulator-index-log-entries">
+                @foreach (var line in log)
+                {
+                    <div id="simulator-index-log-entry-@log.IndexOf(line)" class="simulator-log-line">@line</div>
+                }
+            </div>
         }
     </div>
 </div>

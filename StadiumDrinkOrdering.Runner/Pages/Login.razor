@@ -36,7 +36,7 @@
 
                                 <div class="field" id="runner-login-password-group" style="margin-bottom:1.25rem;">
                                     <label class="field__label" for="runner-login-password">@Localizer["Login_PasswordLabel"]</label>
-                                    <div style="position:relative;">
+                                    <div id="runner-login-password-wrapper" style="position:relative;">
                                         <input type="@(showPassword ? "text" : "password")" class="field__input" style="padding-right:3.25rem;"
                                                @bind="model.Password" @bind:event="oninput" autocomplete="current-password" required id="runner-login-password" />
                                         <button type="button" id="runner-login-password-toggle-btn"

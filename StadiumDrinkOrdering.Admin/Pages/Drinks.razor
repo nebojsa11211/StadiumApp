@@ -7,12 +7,12 @@
 <div class="console" id="admin-drinks-container">
     <!-- Page Header -->
     <header class="console-head" id="admin-drinks-header">
-        <div class="console-head__title">
+        <div class="console-head__title" id="admin-drinks-header-title">
             <span class="eyebrow">@L["Drinks_EyebrowLabel"]</span>
             <h1 id="admin-drinks-title">@L["Drinks_MainTitle"]</h1>
-            <p>@L["Drinks_Subtitle"]</p>
+            <p id="admin-drinks-subtitle">@L["Drinks_Subtitle"]</p>
         </div>
-        <div class="console-head__actions">
+        <div class="console-head__actions" id="admin-drinks-header-actions">
             <button class="pill-btn pill-btn--primary" @onclick="ShowCreateDrinkModal" id="admin-add-drink-btn">
                 <i class="bi bi-plus"></i><span>@L["Drinks_AddNewDrinkButton"]</span>
             </button>
@@ -45,7 +45,7 @@
             <i class="bi bi-cup-straw"></i>
             <p id="admin-drinks-empty-title">@L["Drinks_NoDrinksFound"]</p>
             <span id="admin-drinks-empty-message">@L["Drinks_StartByAddingMessage"]</span>
-            <div style="margin-top:1rem;">
+            <div style="margin-top:1rem;" id="admin-drinks-empty-button-container">
                 <button class="pill-btn pill-btn--primary" @onclick="ShowCreateDrinkModal" id="admin-add-first-drink-btn">
                     <i class="bi bi-plus"></i><span>@L["Drinks_AddFirstDrinkButton"]</span>
                 </button>
@@ -55,47 +55,47 @@
     else
     {
         <!-- Key Metrics -->
-        <section class="metrics">
-            <article class="metric">
-                <div class="metric__head">
+        <section class="metrics" id="admin-drinks-metrics">
+            <article class="metric" id="admin-drinks-metric-total">
+                <div class="metric__head" id="admin-drinks-metric-total-head">
                     <span class="metric__label">@L["Drinks_TotalDrinksLabel"]</span>
                     <i class="bi bi-cup-straw metric__icon"></i>
                 </div>
-                <div class="metric__value mono">@drinks.Count</div>
-                <div class="metric__foot">
+                <div class="metric__value mono" id="admin-drinks-metric-total-value">@drinks.Count</div>
+                <div class="metric__foot" id="admin-drinks-metric-total-foot">
                     <span class="metric__hint">@L["Drinks_InCatalogHint"]</span>
                 </div>
             </article>
 
-            <article class="metric metric--accent">
-                <div class="metric__head">
+            <article class="metric metric--accent" id="admin-drinks-metric-available">
+                <div class="metric__head" id="admin-drinks-metric-available-head">
                     <span class="metric__label">@L["Drinks_AvailableLabel"]</span>
                     <i class="bi bi-check-circle metric__icon is-ok"></i>
                 </div>
-                <div class="metric__value mono">@drinks.Count(d => d.IsAvailable)</div>
-                <div class="metric__foot">
+                <div class="metric__value mono" id="admin-drinks-metric-available-value">@drinks.Count(d => d.IsAvailable)</div>
+                <div class="metric__foot" id="admin-drinks-metric-available-foot">
                     <span class="metric__hint">@L["Drinks_OrderableNowHint"]</span>
                 </div>
             </article>
 
-            <article class="metric">
-                <div class="metric__head">
+            <article class="metric" id="admin-drinks-metric-lowstock">
+                <div class="metric__head" id="admin-drinks-metric-lowstock-head">
                     <span class="metric__label">@L["Drinks_LowStockLabel"]</span>
                     <i class="bi bi-exclamation-triangle metric__icon"></i>
                 </div>
-                <div class="metric__value mono">@drinks.Count(d => d.StockQuantity < 10)</div>
-                <div class="metric__foot">
+                <div class="metric__value mono" id="admin-drinks-metric-lowstock-value">@drinks.Count(d => d.StockQuantity < 10)</div>
+                <div class="metric__foot" id="admin-drinks-metric-lowstock-foot">
                     <span class="metric__hint">@L["Drinks_BelowUnitsHint"]</span>
                 </div>
             </article>
 
-            <article class="metric">
-                <div class="metric__head">
+            <article class="metric" id="admin-drinks-metric-categories">
+                <div class="metric__head" id="admin-drinks-metric-categories-head">
                     <span class="metric__label">@L["Drinks_CategoriesLabel"]</span>
                     <i class="bi bi-tags metric__icon"></i>
                 </div>
-                <div class="metric__value mono">@drinks.Select(d => d.Category).Distinct().Count()</div>
-                <div class="metric__foot">
+                <div class="metric__value mono" id="admin-drinks-metric-categories-value">@drinks.Select(d => d.Category).Distinct().Count()</div>
+                <div class="metric__foot" id="admin-drinks-metric-categories-foot">
                     <span class="metric__hint">@L["Drinks_DistinctTypesHint"]</span>
                 </div>
             </article>
@@ -107,7 +107,7 @@
                 <h2 class="panel__title" id="admin-drinks-filter-title">@L["Drinks_FilterDrinksTitle"]</h2>
             </div>
             <div class="filters" id="admin-drinks-filter-body">
-                <div class="field">
+                <div class="field" id="admin-drinks-filter-category-field">
                     <label class="field__label" for="admin-category-filter">@L["Drinks_CategoryLabel"]</label>
                     <select class="field__input" @bind="selectedCategory" @bind:after="StateHasChanged" id="admin-category-filter">
                         <option value="">@L["Drinks_AllCategoriesOption"]</option>
@@ -117,7 +117,7 @@
                         }
                     </select>
                 </div>
-                <div class="field">
+                <div class="field" id="admin-drinks-filter-availability-field">
                     <label class="field__label" for="admin-availability-filter">@L["Drinks_AvailabilityLabel"]</label>
                     <select class="field__input" @bind="availabilityFilter" @bind:after="StateHasChanged" id="admin-availability-filter">
                         <option value="">@L["Drinks_AllDrinksOption"]</option>
@@ -126,7 +126,7 @@
                         <option value="lowstock">@L["Drinks_LowStockOption"]</option>
                     </select>
                 </div>
-                <div class="field field--grow">
+                <div class="field field--grow" id="admin-drinks-filter-search-field">
                     <label class="field__label" for="admin-search-filter">@L["Drinks_SearchLabel"]</label>
                     <input type="text" class="field__input" placeholder="@L["Drinks_SearchPlaceholder"]"
                            @bind="searchTerm" @bind:after="StateHasChanged" id="admin-search-filter" />
@@ -135,24 +135,24 @@
         </div>
 
         <!-- Drinks Table -->
-        <div class="panel">
-            <div class="panel__head">
-                <h2 class="panel__title">@L["Drinks_DrinksTableTitle"] <span class="panel__count mono">@FilteredDrinks.Count()</span></h2>
+        <div class="panel" id="admin-drinks-table-panel">
+            <div class="panel__head" id="admin-drinks-table-header">
+                <h2 class="panel__title" id="admin-drinks-table-title">@L["Drinks_DrinksTableTitle"] <span class="panel__count mono">@FilteredDrinks.Count()</span></h2>
             </div>
 
             <table class="console-table" id="admin-drinks-grid">
-                <thead>
-                    <tr>
-                        <th>@L["Drinks_DrinkColumnHeader"]</th>
-                        <th>@L["Drinks_CategoryColumnHeader"]</th>
-                        <th>@L["Drinks_DescriptionColumnHeader"]</th>
-                        <th class="num">@L["Drinks_PriceColumnHeader"]</th>
-                        <th class="num">@L["Drinks_StockColumnHeader"]</th>
-                        <th>@L["Drinks_StatusColumnHeader"]</th>
-                        <th class="actions-col">@L["Drinks_ActionsColumnHeader"]</th>
+                <thead id="admin-drinks-table-head">
+                    <tr id="admin-drinks-table-header-row">
+                        <th id="admin-drinks-th-drink">@L["Drinks_DrinkColumnHeader"]</th>
+                        <th id="admin-drinks-th-category">@L["Drinks_CategoryColumnHeader"]</th>
+                        <th id="admin-drinks-th-description">@L["Drinks_DescriptionColumnHeader"]</th>
+                        <th class="num" id="admin-drinks-th-price">@L["Drinks_PriceColumnHeader"]</th>
+                        <th class="num" id="admin-drinks-th-stock">@L["Drinks_StockColumnHeader"]</th>
+                        <th id="admin-drinks-th-status">@L["Drinks_StatusColumnHeader"]</th>
+                        <th class="actions-col" id="admin-drinks-th-actions">@L["Drinks_ActionsColumnHeader"]</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="admin-drinks-table-body">
                     @foreach (var drink in FilteredDrinks)
                     {
                         <tr id="admin-drink-card-@drink.Id">
@@ -173,7 +173,7 @@
                             <td class="drink-desc" id="admin-drink-description-@drink.Id">@drink.Description</td>
                             <td class="num mono" id="admin-drink-price-@drink.Id">$@drink.Price.ToString("F2")</td>
                             <td class="num mono" id="admin-drink-stock-@drink.Id">@drink.StockQuantity</td>
-                            <td>
+                            <td id="admin-drink-status-cell-@drink.Id">
                                 @if (!drink.IsAvailable)
                                 {
                                     <span class="status is-cancelled" id="admin-drink-status-unavailable-@drink.Id">
@@ -193,8 +193,8 @@
                                     </span>
                                 }
                             </td>
-                            <td class="actions-col">
-                                <div class="row-actions">
+                            <td class="actions-col" id="admin-drink-actions-cell-@drink.Id">
+                                <div class="row-actions" id="admin-drink-row-actions-@drink.Id">
                                     <button class="row-btn row-btn--label"
                                             @onclick="() => ShowEditDrinkModal(drink)"
                                             id="admin-edit-drink-@drink.Id">
@@ -238,30 +238,30 @@
                     <button type="button" class="btn-close" @onclick="HideDrinkModal" id="admin-drink-modal-close-btn"></button>
                 </div>
                 <div class="modal-body" id="admin-drink-modal-body">
-                    <div class="field" style="margin-bottom:1rem;">
+                    <div class="field" style="margin-bottom:1rem;" id="admin-drink-modal-name-field">
                         <label class="field__label" for="admin-drink-name">@L["Drinks_NameLabel"] *</label>
                         <input type="text" class="field__input" @bind="drinkForm.Name" required id="admin-drink-name">
                     </div>
 
-                    <div class="field" style="margin-bottom:1rem;">
+                    <div class="field" style="margin-bottom:1rem;" id="admin-drink-modal-description-field">
                         <label class="field__label" for="admin-drink-description">@L["Drinks_DescriptionLabel"]</label>
                         <textarea class="field__input" rows="3" @bind="drinkForm.Description" id="admin-drink-description"></textarea>
                     </div>
 
-                    <div class="filters" style="padding:0; margin-bottom:1rem;">
-                        <div class="field field--grow">
+                    <div class="filters" style="padding:0; margin-bottom:1rem;" id="admin-drink-modal-number-fields">
+                        <div class="field field--grow" id="admin-drink-modal-price-field">
                             <label class="field__label" for="admin-drink-price">@L["Drinks_PriceLabel"] *</label>
                             <input type="number" class="field__input" @bind="drinkForm.Price"
                                    step="0.01" min="0" required id="admin-drink-price">
                         </div>
-                        <div class="field field--grow">
+                        <div class="field field--grow" id="admin-drink-modal-stock-field">
                             <label class="field__label" for="admin-drink-stock">@L["Drinks_StockQuantityLabel"] *</label>
                             <input type="number" class="field__input" @bind="drinkForm.StockQuantity"
                                    min="0" required id="admin-drink-stock">
                         </div>
                     </div>
 
-                    <div class="field" style="margin-bottom:1rem;">
+                    <div class="field" style="margin-bottom:1rem;" id="admin-drink-modal-category-field">
                         <label class="field__label" for="admin-drink-category">@L["Drinks_CategoryModalLabel"] *</label>
                         <select class="field__input" @bind="drinkForm.Category" required id="admin-drink-category">
                             @foreach (var category in Enum.GetValues<DrinkCategory>())
@@ -271,13 +271,13 @@
                         </select>
                     </div>
 
-                    <div class="field" style="margin-bottom:1rem;">
+                    <div class="field" style="margin-bottom:1rem;" id="admin-drink-modal-image-field">
                         <label class="field__label" for="admin-drink-image">@L["Drinks_ImageUrlLabel"]</label>
                         <input type="url" class="field__input" @bind="drinkForm.ImageUrl"
                                placeholder="@L["Drinks_ImageUrlPlaceholder"]" id="admin-drink-image">
                     </div>
 
-                    <label class="drink-check">
+                    <label class="drink-check" id="admin-drink-available-label">
                         <input type="checkbox" class="check-box" @bind="drinkForm.IsAvailable" id="admin-drink-available">
                         <span>@L["Drinks_AvailableForOrderingLabel"]</span>
                     </label>

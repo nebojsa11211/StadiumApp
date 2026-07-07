@@ -31,7 +31,7 @@
     }
     else if (errorMessage != null)
     {
-        <div class="console-alert console-alert--danger" role="alert">
+        <div class="console-alert console-alert--danger" role="alert" id="admin-analytics-error-alert">
             <i class="fas fa-exclamation-triangle"></i>
             <span>@errorMessage</span>
             <button type="button" class="pill-btn pill-btn--danger" @onclick="LoadAnalyticsData" id="admin-analytics-retry-btn">
@@ -42,38 +42,38 @@
     else
     {
         <!-- Placeholder for Future Analytics -->
-        <div class="console-alert console-alert--info" role="alert">
+        <div class="console-alert console-alert--info" role="alert" id="admin-analytics-info-alert">
             <i class="fas fa-info-circle"></i>
             <span>
                 <strong>@L["Analytics_DashboardTitle"]</strong> &mdash; @L["Analytics_InfoMessage"]
             </span>
         </div>
 
-        <section class="board">
+        <section class="board" id="admin-analytics-board">
             <!-- Available Events -->
             @if (availableEvents?.Any() == true)
             {
-                <div class="panel">
+                <div class="panel" id="admin-analytics-events-panel">
                     <div class="panel__head">
                         <h2 class="panel__title"><i class="fas fa-calendar"></i> @L["Analytics_AvailableEventsTitle"]</h2>
                     </div>
-                    <table class="console-table">
-                        <thead>
-                            <tr>
-                                <th>@L["Analytics_EventNameHeader"]</th>
-                                <th>@L["Analytics_DateHeader"]</th>
-                                <th>@L["Analytics_LocationHeader"]</th>
-                                <th>@L["Analytics_StatusHeader"]</th>
+                    <table class="console-table" id="admin-analytics-events-table">
+                        <thead id="admin-analytics-events-table-head">
+                            <tr id="admin-analytics-events-table-header-row">
+                                <th id="admin-analytics-events-table-header-name">@L["Analytics_EventNameHeader"]</th>
+                                <th id="admin-analytics-events-table-header-date">@L["Analytics_DateHeader"]</th>
+                                <th id="admin-analytics-events-table-header-location">@L["Analytics_LocationHeader"]</th>
+                                <th id="admin-analytics-events-table-header-status">@L["Analytics_StatusHeader"]</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="admin-analytics-events-table-body">
                             @foreach (var evt in availableEvents.Take(10))
                             {
-                                <tr>
-                                    <td class="console-table__id">@evt.Name</td>
-                                    <td class="mono console-table__time">@(evt.Date?.ToString("MMM dd, yyyy") ?? @L["Analytics_TBDLabel"])</td>
-                                    <td>@evt.Location</td>
-                                    <td>
+                                <tr id="@($"admin-analytics-event-row-{evt.Id}")">
+                                    <td class="console-table__id" id="@($"admin-analytics-event-cell-name-{evt.Id}")">@evt.Name</td>
+                                    <td class="mono console-table__time" id="@($"admin-analytics-event-cell-date-{evt.Id}")">@(evt.Date?.ToString("MMM dd, yyyy") ?? @L["Analytics_TBDLabel"])</td>
+                                    <td id="@($"admin-analytics-event-cell-location-{evt.Id}")">@evt.Location</td>
+                                    <td id="@($"admin-analytics-event-cell-status-{evt.Id}")">
                                         @if (evt.IsActive)
                                         {
                                             <span class="status is-active"><span class="status__dot"></span>@L["Analytics_ActiveStatus"]</span>
@@ -91,8 +91,8 @@
             }
 
             <!-- Quick Actions -->
-            <div class="rail">
-                <div class="panel">
+            <div class="rail" id="admin-analytics-quick-actions-rail">
+                <div class="panel" id="admin-analytics-quick-actions-panel">
                     <div class="panel__head">
                         <h2 class="panel__title"><i class="fas fa-tools"></i> @L["Analytics_ReportsTitle"]</h2>
                     </div>

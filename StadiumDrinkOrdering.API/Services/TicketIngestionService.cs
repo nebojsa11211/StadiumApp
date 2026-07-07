@@ -15,6 +15,13 @@ public interface ITicketIngestionService
     Task<EventSalesSnapshotDto?> GetEventOccupancyAsync(int eventId, CancellationToken ct = default);
 
     /// <summary>
+    /// Real physical stadium capacity = sum of the drawing-tool overlay sectors' seats
+    /// (incl. variable seating). Returns 0 when no overlay stadium has been drawn yet, so
+    /// callers can fall back to an event's stored <see cref="Event.TotalSeats"/>.
+    /// </summary>
+    Task<int> GetStadiumCapacityAsync(CancellationToken ct = default);
+
+    /// <summary>
     /// Full per-seat map of one sector for an event: every real seat position (row/number) with
     /// its actual occupancy — free, single-match sold, or held by a season pass. Returns null when
     /// the event or sector is unknown. Read-only (never allocates seats or backing sections).
@@ -137,7 +144,7 @@ public class TicketIngestionService : ITicketIngestionService
             return Rejected("Missing event payload");
 
         var evt = await _context.Events.FirstOrDefaultAsync(e => e.ExternalEventId == dto.ExternalEventId, ct);
-        var totalSeats = dto.TotalSeats > 0 ? dto.TotalSeats : await GetStadiumCapacityAsync(ct);
+        var totalSeats = dto.TotalSeats > 0 ? dto.TotalSeats : await GetStadiumCapacityOrDefaultAsync(ct);
 
         // Resolve the season this event belongs to (if the external system supplied one).
         Season? season = null;
@@ -932,7 +939,7 @@ public class TicketIngestionService : ITicketIngestionService
         result.TotalSoldForEvent = totalSold;
 
         // Total seats = the real stadium capacity (sum of drawing-tool overlay sectors).
-        var totalSeats = await GetStadiumCapacityAsync(ct);
+        var totalSeats = await GetStadiumCapacityOrDefaultAsync(ct);
 
         var soldInSection = 0;
         var sectionCapacity = 0;
@@ -1292,7 +1299,7 @@ public class TicketIngestionService : ITicketIngestionService
             EventName = $"External Event {externalEventId}",
             EventType = "Football",
             EventDate = DateTime.UtcNow,
-            TotalSeats = await GetStadiumCapacityAsync(ct),
+            TotalSeats = await GetStadiumCapacityOrDefaultAsync(ct),
             IsActive = true,
             Status = EventStatus.OnSale,
             CreatedAt = DateTime.UtcNow
@@ -1326,15 +1333,25 @@ public class TicketIngestionService : ITicketIngestionService
                  && sectionSeatIds.Contains(t.SeatId!.Value), ct);
     }
 
-    private async Task<int> GetStadiumCapacityAsync(CancellationToken ct)
+    public async Task<int> GetStadiumCapacityAsync(CancellationToken ct = default)
     {
         // Real stadium capacity = sum of the drawing-tool overlay sectors (TotalSeats is computed,
-        // incl. variable seating, so sum in memory rather than in SQL).
+        // incl. variable seating, so sum in memory rather than in SQL). Returns 0 when no overlay
+        // stadium has been drawn yet.
         var overlays = await _context.StadiumSectorOverlays
             .AsNoTracking()
             .Where(o => !o.IsDeleted)
             .ToListAsync(ct);
-        var cap = overlays.Sum(o => o.TotalSeats);
+        return overlays.Sum(o => o.TotalSeats);
+    }
+
+    /// <summary>
+    /// Stadium capacity for ingestion placeholders — falls back to a sane 1000 when no overlay
+    /// stadium exists yet, so auto-created events aren't seeded with a zero capacity.
+    /// </summary>
+    private async Task<int> GetStadiumCapacityOrDefaultAsync(CancellationToken ct)
+    {
+        var cap = await GetStadiumCapacityAsync(ct);
         return cap > 0 ? cap : 1000;
     }
 

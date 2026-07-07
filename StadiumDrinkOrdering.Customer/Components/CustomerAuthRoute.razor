@@ -24,10 +24,10 @@ else
                             You need to be logged in to purchase tickets and access this feature.
                         </p>
                         <div id="customer-auth-route-buttons" class="d-grid gap-2">
-                            <button class="btn btn-warning btn-lg" @onclick="RedirectToLogin">
+                            <button id="customer-auth-route-signin-btn" class="btn btn-warning btn-lg" @onclick="RedirectToLogin">
                                 <i class="fas fa-sign-in-alt me-2"></i>Sign In
                             </button>
-                            <button class="btn btn-outline-secondary" @onclick="RedirectToRegister">
+                            <button id="customer-auth-route-register-btn" class="btn btn-outline-secondary" @onclick="RedirectToRegister">
                                 <i class="fas fa-user-plus me-2"></i>Create Account
                             </button>
                         </div>

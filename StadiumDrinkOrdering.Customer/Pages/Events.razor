@@ -41,7 +41,7 @@
                     <div id="customer-events-filter-type" class="col-12 col-md-6 col-lg-3">
                         <div id="customer-events-filter-type-group" class="mb-3">
                             <label class="form-label text-white">@Localizer["Events_EventType"]</label>
-                            <select class="form-select premium-form-control" @bind="filterEventType">
+                            <select id="customer-events-filter-type-select" class="form-select premium-form-control" @bind="filterEventType">
                                 <option value="">@Localizer["Events_AllPremium"]</option>
                                 <option value="Football">🏈 @Localizer["Events_Football"]</option>
                                 <option value="Concert">🎵 @Localizer["Events_PremiumConcerts"]</option>
@@ -56,31 +56,31 @@
                     <div id="customer-events-filter-datefrom" class="col-12 col-md-6 col-lg-3">
                         <div id="customer-events-filter-datefrom-group" class="mb-3">
                             <label class="form-label text-white">@Localizer["Events_FromDate"]</label>
-                            <input type="date" class="form-control premium-form-control" @bind="filterDateFrom" />
+                            <input id="customer-events-filter-datefrom-input" type="date" class="form-control premium-form-control" @bind="filterDateFrom" />
                         </div>
                     </div>
                     <div id="customer-events-filter-dateto" class="col-12 col-md-6 col-lg-3">
                         <div id="customer-events-filter-dateto-group" class="mb-3">
                             <label class="form-label text-white">@Localizer["Events_ToDate"]</label>
-                            <input type="date" class="form-control premium-form-control" @bind="filterDateTo" />
+                            <input id="customer-events-filter-dateto-input" type="date" class="form-control premium-form-control" @bind="filterDateTo" />
                         </div>
                     </div>
                     <div id="customer-events-filter-price" class="col-12 col-md-6 col-lg-3">
                         <div id="customer-events-filter-price-group" class="mb-3">
                             <label class="form-label text-white">@Localizer["Events_PriceRange"]</label>
                             <div id="customer-events-filter-price-inputs" class="d-flex gap-2">
-                                <input type="number" class="form-control premium-form-control" placeholder="@Localizer["Events_MinPrice"]" @bind="filterMinPrice" step="10" />
-                                <input type="number" class="form-control premium-form-control" placeholder="@Localizer["Events_MaxPrice"]" @bind="filterMaxPrice" step="10" />
+                                <input id="customer-events-filter-minprice-input" type="number" class="form-control premium-form-control" placeholder="@Localizer["Events_MinPrice"]" @bind="filterMinPrice" step="10" />
+                                <input id="customer-events-filter-maxprice-input" type="number" class="form-control premium-form-control" placeholder="@Localizer["Events_MaxPrice"]" @bind="filterMaxPrice" step="10" />
                             </div>
                         </div>
                     </div>
                 </div>
                 <div id="customer-events-filter-buttons" class="d-flex gap-3 justify-content-end mt-4">
-                    <button class="btn premium-btn-outline" @onclick="ClearFilters">
+                    <button id="customer-events-clear-filters-btn" class="btn premium-btn-outline" @onclick="ClearFilters">
                         <span>🔄</span>
                         <span>@Localizer["Events_ClearFilters"]</span>
                     </button>
-                    <button class="btn premium-btn-primary" @onclick="ApplyFilters" disabled="@isLoading">
+                    <button id="customer-events-apply-filters-btn" class="btn premium-btn-primary" @onclick="ApplyFilters" disabled="@isLoading">
                         @if (isLoading)
                         {
                             <span class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -122,11 +122,11 @@
                     @Localizer["Events_NoEventsMessage"]
                 </p>
                 <div id="customer-events-empty-buttons" class="d-flex gap-3 justify-content-center">
-                    <button class="btn premium-btn-outline" @onclick="ClearFilters">
+                    <button id="customer-events-empty-clear-btn" class="btn premium-btn-outline" @onclick="ClearFilters">
                         <span>🔄</span>
                         <span>@Localizer["Events_ClearAllFilters"]</span>
                     </button>
-                    <a href="/" class="btn premium-btn-primary">
+                    <a id="customer-events-empty-home-link" href="/" class="btn premium-btn-primary">
                         <span>🏠</span>
                         <span>@Localizer["Events_BackToHome"]</span>
                     </a>
@@ -242,6 +242,7 @@
 
                                 <!-- Action Button -->
                                 <button
+                                    id="customer-events-action-btn-@evt.Id"
                                     class="btn @(isSoldOut ? "premium-btn-outline" : "premium-btn-primary") w-100"
                                     @onclick="() => ViewEventDetails(evt.Id)"
                                     disabled="@isSoldOut">

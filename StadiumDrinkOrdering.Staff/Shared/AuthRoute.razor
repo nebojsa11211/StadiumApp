@@ -5,12 +5,12 @@
 
 @if (isChecking)
 {
-    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div class="text-center">
-            <div class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">@Localizer["AuthRoute_Checking"]</span>
+    <div class="d-flex justify-content-center align-items-center" id="staff-authroute-checking" style="height: 100vh;">
+        <div class="text-center" id="staff-authroute-checking-content">
+            <div class="spinner-border text-primary mb-3" id="staff-authroute-checking-spinner" role="status">
+                <span class="visually-hidden" id="staff-authroute-checking-text">@Localizer["AuthRoute_Checking"]</span>
             </div>
-            <p class="text-muted">@Localizer["AuthRoute_Verifying"]</p>
+            <p class="text-muted" id="staff-authroute-checking-message">@Localizer["AuthRoute_Verifying"]</p>
         </div>
     </div>
 }
@@ -20,13 +20,13 @@ else if (AuthStateService.IsAuthenticated)
 }
 else
 {
-    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div class="text-center">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">@Localizer["AuthRoute_Required"]</h5>
-                    <p class="card-text">@Localizer["AuthRoute_Message"]</p>
-                    <button class="btn btn-primary" @onclick="RedirectToLogin" id="staff-authroute-login-btn">
+    <div class="d-flex justify-content-center align-items-center" id="staff-authroute-required" style="height: 100vh;">
+        <div class="text-center" id="staff-authroute-required-content">
+            <div class="card" id="staff-authroute-card">
+                <div class="card-body" id="staff-authroute-card-body">
+                    <h5 class="card-title" id="staff-authroute-card-title">@Localizer["AuthRoute_Required"]</h5>
+                    <p class="card-text" id="staff-authroute-card-text">@Localizer["AuthRoute_Message"]</p>
+                    <button class="btn btn-primary" id="staff-authroute-login-btn" @onclick="RedirectToLogin">
                         @Localizer["Dashboard_GoToLogin"]
                     </button>
                 </div>

@@ -242,31 +242,31 @@
                             <button type="button" class="btn-close" @onclick="CloseOrderDetails" id="bartender-order-modal-close-btn"></button>
                         </div>
                         <div class="modal-body" id="bartender-order-modal-body">
-                            <div class="row">
-                                <div class="col-md-6">
+                            <div class="row" id="bartender-order-modal-row">
+                                <div class="col-md-6" id="bartender-order-modal-col-left">
                                     <h6 id="bartender-order-items-title">@L["Bartender_OrderItemsTitle"]</h6>
                                     <table class="table table-sm" id="bartender-order-items-table">
-                                        <thead>
-                                            <tr>
-                                                <th>@L["Bartender_ItemHeader"]</th>
-                                                <th>@L["Bartender_QtyHeader"]</th>
-                                                <th>@L["Bartender_PriceHeader"]</th>
+                                        <thead id="bartender-order-items-table-head">
+                                            <tr id="bartender-order-items-table-header-row">
+                                                <th id="bartender-order-items-table-header-item">@L["Bartender_ItemHeader"]</th>
+                                                <th id="bartender-order-items-table-header-qty">@L["Bartender_QtyHeader"]</th>
+                                                <th id="bartender-order-items-table-header-price">@L["Bartender_PriceHeader"]</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="bartender-order-items-table-body">
                                             @foreach (var item in selectedOrder.OrderItems)
                                             {
-                                                <tr id="bartender-order-item-row-@item.Id">
-                                                    <td>@item.DrinkName</td>
-                                                    <td>@item.Quantity</td>
-                                                    <td>$@item.TotalPrice.ToString("F2")</td>
+                                                <tr id="@($"bartender-order-item-row-{item.Id}")">
+                                                    <td id="@($"bartender-order-item-cell-name-{item.Id}")">@item.DrinkName</td>
+                                                    <td id="@($"bartender-order-item-cell-qty-{item.Id}")">@item.Quantity</td>
+                                                    <td id="@($"bartender-order-item-cell-price-{item.Id}")">$@item.TotalPrice.ToString("F2")</td>
                                                 </tr>
                                             }
                                         </tbody>
                                     </table>
                                     <p id="bartender-order-total"><strong>Total: $@selectedOrder.TotalAmount.ToString("F2")</strong></p>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6" id="bartender-order-modal-col-right">
                                     <h6 id="bartender-order-details-title">@L["Bartender_OrderDetailsTitle"]</h6>
                                     <p id="bartender-order-ticket"><strong>@L["Bartender_TicketLabel"]</strong> @selectedOrder.TicketNumber</p>
                                     <p id="bartender-order-seat"><strong>@L["Bartender_SeatLabel"]</strong> @selectedOrder.SeatNumber</p>

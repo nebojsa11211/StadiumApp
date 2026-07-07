@@ -26,10 +26,10 @@ else
                         <h4 class="card-title">🔒 Authentication Required</h4>
                         <p class="card-text">You need to sign in to access this page.</p>
                         <div id="customer-auth-guard-buttons" class="d-grid gap-2">
-                            <button class="btn btn-primary" @onclick="RedirectToLogin">
+                            <button id="customer-auth-guard-signin-btn" class="btn btn-primary" @onclick="RedirectToLogin">
                                 Sign In
                             </button>
-                            <a href="/register" class="btn btn-outline-secondary">
+                            <a id="customer-auth-guard-register-link" href="/register" class="btn btn-outline-secondary">
                                 Create Account
                             </a>
                         </div>

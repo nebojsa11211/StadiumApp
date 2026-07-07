@@ -12,39 +12,39 @@
 
 <div id="customer-login-body" class="login-body">
     <div id="customer-login-hero" class="login-hero">
-        <div class="badge">⭐ Sezona</div>
-        <h1 class="display">DOBRO<br /><span class="grad-text">DOŠAO</span></h1>
-        <p>Prijavi se da vidiš svoju sljedeću utakmicu i naručuješ na svoje mjesto.</p>
+        <div id="customer-login-badge" class="badge">⭐ Sezona</div>
+        <h1 id="customer-login-title" class="display">DOBRO<br /><span id="customer-login-title-highlight" class="grad-text">DOŠAO</span></h1>
+        <p id="customer-login-intro-text">Prijavi se da vidiš svoju sljedeću utakmicu i naručuješ na svoje mjesto.</p>
     </div>
 
-    <EditForm Model="this" OnValidSubmit="HandleLogin" class="login-form">
+    <EditForm Model="this" OnValidSubmit="HandleLogin" class="login-form" id="customer-login-form">
         @if (!string.IsNullOrEmpty(_error))
         {
             <div id="customer-login-error" class="err">@_error</div>
         }
 
         <div id="customer-login-email-field" class="field">
-            <label>Email</label>
-            <input type="email" @bind="_email" @bind:event="oninput" placeholder="ime@email.hr" autocomplete="email" />
+            <label for="customer-login-email-input">Email</label>
+            <input id="customer-login-email-input" type="email" @bind="_email" @bind:event="oninput" placeholder="ime@email.hr" autocomplete="email" />
         </div>
         <div id="customer-login-password-field" class="field">
-            <label>Lozinka</label>
-            <input type="password" @bind="_password" @bind:event="oninput" placeholder="••••••••" autocomplete="current-password" />
+            <label for="customer-login-password-input">Lozinka</label>
+            <input id="customer-login-password-input" type="password" @bind="_password" @bind:event="oninput" placeholder="••••••••" autocomplete="current-password" />
         </div>
 
-        <button type="submit" class="btn btn-primary" disabled="@_busy">
+        <button type="submit" class="btn btn-primary" disabled="@_busy" id="customer-login-submit-btn">
             @if (_busy)
             {
-                <span class="spinner"></span> <span>Prijavljujem…</span>
+                <span class="spinner" id="customer-login-spinner"></span> <span id="customer-login-loading-text">Prijavljujem…</span>
             }
             else
             {
-                <span>Prijavi se</span>
+                <span id="customer-login-button-text">Prijavi se</span>
             }
         </button>
     </EditForm>
 
-    <p class="alt">Došao si samo na ovu utakmicu? <a @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</a>.</p>
+    <p class="alt">Došao si samo na ovu utakmicu? <a id="customer-login-scan-link" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</a>.</p>
 </div>
 
 @code {

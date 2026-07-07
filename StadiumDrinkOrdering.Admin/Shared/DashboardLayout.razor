@@ -9,10 +9,10 @@
     @* ============================ SIDEBAR ============================ *@
     <aside class="dash-sidebar" id="admin-dashboard-sidebar">
         <div class="dash-brand" id="admin-dashboard-brand">
-            <div class="dash-brand-logo" aria-hidden="true">
+            <div class="dash-brand-logo" id="admin-dashboard-brand-logo" aria-hidden="true">
                 <i class="bi bi-building"></i>
             </div>
-            <div class="dash-brand-text">
+            <div class="dash-brand-text" id="admin-dashboard-brand-text">
                 <span class="dash-brand-name">STADIUM</span>
                 <span class="dash-brand-sub">ADMIN</span>
             </div>
@@ -75,7 +75,7 @@
             </a>
         </nav>
 
-        <div class="dash-sidebar-footer">
+        <div class="dash-sidebar-footer" id="admin-dashboard-sidebar-footer">
             <div class="dash-logging-panel" id="admin-dashboard-logging-panel">
                 <i class="bi bi-broadcast-pin"></i>
                 <div>
@@ -85,16 +85,16 @@
             </div>
 
             <div class="dash-profile" id="admin-dashboard-profile">
-                <div class="dash-avatar">@GetInitials()</div>
-                <div class="dash-profile-info">
-                    <button class="dash-logout" @onclick="HandleLogout" id="admin-dashboard-logout-btn">@L["Logout"]</button>
+                <div class="dash-avatar" id="admin-dashboard-avatar">@GetInitials()</div>
+                <div class="dash-profile-info" id="admin-dashboard-profile-info">
+                    <button class="dash-logout" id="admin-dashboard-logout-btn" @onclick="HandleLogout">@L["Logout"]</button>
                     <div class="dash-profile-email">@_userEmail</div>
                 </div>
             </div>
 
             <div class="dash-lang" id="admin-dashboard-lang">
                 <span class="dash-lang-label">HR/EN</span>
-                <div class="dash-lang-switch">
+                <div class="dash-lang-switch" id="admin-dashboard-lang-switch">
                     <button class="@LangClass("hr")" @onclick="@(() => SetLang("hr"))" id="admin-dashboard-lang-hr">HR</button>
                     <button class="@LangClass("en")" @onclick="@(() => SetLang("en"))" id="admin-dashboard-lang-en">EN</button>
                 </div>

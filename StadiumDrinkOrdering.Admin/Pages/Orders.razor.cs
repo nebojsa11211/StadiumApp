@@ -12,10 +12,13 @@ public partial class Orders : ComponentBase
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
+    private const int PageSize = 50;
+
     private bool isLoading = false;
     private List<OrderDto> allOrders = new();
     private List<OrderDto> filteredOrders = new();
     private HashSet<int> selectedOrderIds = new();
+    private int displayCount = PageSize;
 
     // Summary data
     private int totalOrders = 0;
@@ -25,9 +28,13 @@ public partial class Orders : ComponentBase
 
     // Filters
     private string selectedStatus = "";
+    private string selectedEventId = "";
     private string customerSearch = "";
     private DateTime? fromDate;
     private DateTime? toDate;
+
+    // Event filter options, derived from the loaded orders (only events that have orders)
+    private List<(int Id, string Name)> eventOptions = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,6 +52,7 @@ public partial class Orders : ComponentBase
             if (orders != null)
             {
                 allOrders = orders.ToList();
+                BuildEventOptions();
 
                 if (allOrders.Count > 0)
                 {
@@ -61,6 +69,26 @@ public partial class Orders : ComponentBase
         {
             isLoading = false;
             StateHasChanged();
+        }
+    }
+
+    private void BuildEventOptions()
+    {
+        eventOptions = allOrders
+            .Where(o => o.EventId.HasValue)
+            .GroupBy(o => o.EventId!.Value)
+            .Select(g => (
+                Id: g.Key,
+                Name: g.Select(o => o.Event?.EventName).FirstOrDefault(n => !string.IsNullOrWhiteSpace(n))
+                      ?? $"Event #{g.Key}"))
+            .OrderBy(e => e.Name)
+            .ToList();
+
+        // Drop a stale selection if that event no longer has orders after a refresh
+        if (!string.IsNullOrEmpty(selectedEventId) &&
+            !eventOptions.Any(e => e.Id.ToString() == selectedEventId))
+        {
+            selectedEventId = "";
         }
     }
 
@@ -85,6 +113,11 @@ public partial class Orders : ComponentBase
             }
         }
 
+        if (!string.IsNullOrWhiteSpace(selectedEventId) && int.TryParse(selectedEventId, out var eventId))
+        {
+            query = query.Where(o => o.EventId == eventId);
+        }
+
         if (!string.IsNullOrWhiteSpace(customerSearch))
         {
             query = query.Where(o => o.CustomerName.Contains(customerSearch, StringComparison.OrdinalIgnoreCase));
@@ -101,6 +134,7 @@ public partial class Orders : ComponentBase
         }
 
         filteredOrders = query.OrderByDescending(o => o.CreatedAt).ToList();
+        displayCount = PageSize;
         StateHasChanged();
     }
 
@@ -113,6 +147,7 @@ public partial class Orders : ComponentBase
     private void ClearFilters()
     {
         selectedStatus = "";
+        selectedEventId = "";
         customerSearch = "";
         fromDate = null;
         toDate = null;
@@ -125,7 +160,7 @@ public partial class Orders : ComponentBase
         selectedOrderIds.Clear();
         if (isSelected)
         {
-            foreach (var order in filteredOrders.Take(50))
+            foreach (var order in filteredOrders.Take(displayCount))
             {
                 selectedOrderIds.Add(order.Id);
             }
@@ -144,14 +179,62 @@ public partial class Orders : ComponentBase
 
     private async Task BulkAccept()
     {
-        await JSRuntime.InvokeVoidAsync("showToast", $"Accepted {selectedOrderIds.Count} orders", "success");
+        var targets = selectedOrderIds
+            .Select(id => allOrders.FirstOrDefault(o => o.Id == id))
+            .Where(o => o != null && o!.Status == OrderStatus.Pending)
+            .Select(o => o!.Id)
+            .ToList();
+
+        int succeeded = 0;
+        try
+        {
+            foreach (var id in targets)
+            {
+                if (await AdminApiService.UpdateOrderStatusAsync(id, OrderStatus.Accepted))
+                    succeeded++;
+            }
+        }
+        catch (Exception)
+        {
+            // fall through to report whatever succeeded
+        }
+
+        if (succeeded > 0)
+            await JSRuntime.InvokeVoidAsync("showToast", $"Accepted {succeeded} order(s)", "success");
+        if (succeeded < targets.Count)
+            await JSRuntime.InvokeVoidAsync("showToast", $"Failed to accept {targets.Count - succeeded} order(s)", "error");
+
         selectedOrderIds.Clear();
         await LoadOrders();
     }
 
     private async Task BulkCancel()
     {
-        await JSRuntime.InvokeVoidAsync("showToast", $"Cancelled {selectedOrderIds.Count} orders", "warning");
+        var targets = selectedOrderIds
+            .Select(id => allOrders.FirstOrDefault(o => o.Id == id))
+            .Where(o => o != null && o!.Status != OrderStatus.Delivered && o!.Status != OrderStatus.Cancelled)
+            .Select(o => o!.Id)
+            .ToList();
+
+        int succeeded = 0;
+        try
+        {
+            foreach (var id in targets)
+            {
+                if (await AdminApiService.UpdateOrderStatusAsync(id, OrderStatus.Cancelled))
+                    succeeded++;
+            }
+        }
+        catch (Exception)
+        {
+            // fall through to report whatever succeeded
+        }
+
+        if (succeeded > 0)
+            await JSRuntime.InvokeVoidAsync("showToast", $"Cancelled {succeeded} order(s)", "warning");
+        if (succeeded < targets.Count)
+            await JSRuntime.InvokeVoidAsync("showToast", $"Failed to cancel {targets.Count - succeeded} order(s)", "error");
+
         selectedOrderIds.Clear();
         await LoadOrders();
     }
@@ -161,10 +244,17 @@ public partial class Orders : ComponentBase
         try
         {
             var order = allOrders.FirstOrDefault(o => o.Id == orderId);
-            if (order != null)
+            if (order == null)
+                return;
+
+            if (await AdminApiService.UpdateOrderStatusAsync(orderId, OrderStatus.Accepted))
             {
                 await JSRuntime.InvokeVoidAsync("showToast", $"Order #{orderId} accepted", "success");
                 await LoadOrders();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "Failed to accept order", "error");
             }
         }
         catch (Exception)
@@ -178,16 +268,45 @@ public partial class Orders : ComponentBase
         try
         {
             var order = allOrders.FirstOrDefault(o => o.Id == orderId);
-            if (order != null)
+            if (order == null)
+                return;
+
+            var nextStatus = GetNextStatus(order.Status);
+            if (nextStatus == order.Status)
             {
-                await JSRuntime.InvokeVoidAsync("showToast", $"Order #{orderId} status updated", "success");
+                await JSRuntime.InvokeVoidAsync("showToast", $"Order #{orderId} cannot be advanced further", "warning");
+                return;
+            }
+
+            if (await AdminApiService.UpdateOrderStatusAsync(orderId, nextStatus))
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", $"Order #{orderId} advanced to {nextStatus}", "success");
                 await LoadOrders();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "Failed to update order status", "error");
             }
         }
         catch (Exception)
         {
             await JSRuntime.InvokeVoidAsync("showToast", "Failed to update order status", "error");
         }
+    }
+
+    // Order fulfillment workflow: Pending -> Accepted -> InPreparation -> Ready -> OutForDelivery -> Delivered.
+    // Terminal states (Delivered, Cancelled) return themselves.
+    private static OrderStatus GetNextStatus(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => OrderStatus.Accepted,
+            OrderStatus.Accepted => OrderStatus.InPreparation,
+            OrderStatus.InPreparation => OrderStatus.Ready,
+            OrderStatus.Ready => OrderStatus.OutForDelivery,
+            OrderStatus.OutForDelivery => OrderStatus.Delivered,
+            _ => status
+        };
     }
 
     private void CreateNewOrder()
@@ -202,7 +321,8 @@ public partial class Orders : ComponentBase
 
     private void LoadMoreOrders()
     {
-        // Implementation for loading more orders
+        displayCount = Math.Min(displayCount + PageSize, filteredOrders.Count);
+        StateHasChanged();
     }
 
     // Console status pill modifier (dot + label) matching the dashboard design

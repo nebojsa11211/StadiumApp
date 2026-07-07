@@ -14,47 +14,47 @@
 
 <PageTitle>Order Queue - Stadium Staff</PageTitle>
 
-<div class="order-queue-container">
+<div class="order-queue-container" id="staff-component-orderqueue-main">
     <!-- Header with Stats -->
-    <div class="queue-header">
-        <div class="header-left">
-            <h1>📋 Order Queue</h1>
-            <div class="queue-stats">
-                <div class="stat-card pending">
-                    <div class="stat-number">@pendingOrders.Count</div>
+    <div class="queue-header" id="staff-component-orderqueue-header">
+        <div class="header-left" id="staff-component-orderqueue-header-left">
+            <h1 id="staff-component-orderqueue-title">📋 Order Queue</h1>
+            <div class="queue-stats" id="staff-component-orderqueue-stats">
+                <div class="stat-card pending" id="staff-component-orderqueue-stat-pending">
+                    <div class="stat-number" id="staff-component-orderqueue-stat-pending-count">@pendingOrders.Count</div>
                     <div class="stat-label">Pending</div>
                 </div>
-                <div class="stat-card active">
-                    <div class="stat-number">@activeOrders.Count</div>
+                <div class="stat-card active" id="staff-component-orderqueue-stat-active">
+                    <div class="stat-number" id="staff-component-orderqueue-stat-active-count">@activeOrders.Count</div>
                     <div class="stat-label">Active</div>
                 </div>
-                <div class="stat-card ready">
-                    <div class="stat-number">@readyOrders.Count</div>
+                <div class="stat-card ready" id="staff-component-orderqueue-stat-ready">
+                    <div class="stat-number" id="staff-component-orderqueue-stat-ready-count">@readyOrders.Count</div>
                     <div class="stat-label">Ready</div>
                 </div>
             </div>
         </div>
-        
-        <div class="header-right">
-            <div class="filter-controls">
-                <button class="filter-btn @(selectedSection == "All" ? "active" : "")" 
+
+        <div class="header-right" id="staff-component-orderqueue-header-right">
+            <div class="filter-controls" id="staff-component-orderqueue-filters">
+                <button class="filter-btn @(selectedSection == "All" ? "active" : "")"
                         @onclick="FilterAllSections" id="staff-orderqueue-filter-all-sections-btn">
                     All Sections
                 </button>
                 @foreach (var section in availableSections)
                 {
-                    <button class="filter-btn @(selectedSection == section ? "active" : "")" 
+                    <button class="filter-btn @(selectedSection == section ? "active" : "")"
                             @onclick="() => FilterBySection(section)" id="staff-orderqueue-filter-section-btn-@(section)">
                         Section @(section)
                     </button>
                 }
             </div>
-            
-            <div class="refresh-controls">
+
+            <div class="refresh-controls" id="staff-component-orderqueue-controls">
                 <button class="btn btn-secondary" @onclick="RefreshOrders" id="staff-orderqueue-refresh-btn">
                     🔄 Refresh
                 </button>
-                <div class="connection-status @(isConnected ? "connected" : "disconnected")">
+                <div class="connection-status @(isConnected ? "connected" : "disconnected")" id="staff-component-orderqueue-connection">
                     @if (isConnected)
                     {
                         <span>🟢 Live Updates</span>
@@ -69,17 +69,17 @@
     </div>
 
     <!-- Order Columns -->
-    <div class="order-columns">
+    <div class="order-columns" id="staff-component-orderqueue-columns">
         <!-- Pending Orders -->
-        <div class="order-column">
-            <div class="column-header pending-header">
-                <h3>🟡 Pending Orders (@pendingOrders.Count)</h3>
-                <small>New orders awaiting acceptance</small>
+        <div class="order-column" id="staff-component-orderqueue-col-pending">
+            <div class="column-header pending-header" id="staff-component-orderqueue-col-pending-header">
+                <h3 id="staff-component-orderqueue-col-pending-title">🟡 Pending Orders (@pendingOrders.Count)</h3>
+                <small id="staff-component-orderqueue-col-pending-subtitle">New orders awaiting acceptance</small>
             </div>
-            <div class="order-cards">
+            <div class="order-cards" id="staff-component-orderqueue-col-pending-cards">
                 @foreach (var order in GetFilteredOrders(pendingOrders))
                 {
-                    <div class="order-card pending @GetPriorityClass(order)" @onclick="() => ShowOrderDetails(order)">
+                    <div class="order-card pending @GetPriorityClass(order)" @onclick="() => ShowOrderDetails(order)" id="@($"staff-component-orderqueue-card-pending-{order.Id}")">
                         <div class="order-header">
                             <div class="order-info">
                                 <strong>Order #@order.Id</strong>
@@ -121,10 +121,10 @@
                         </div>
                     </div>
                 }
-                
+
                 @if (!GetFilteredOrders(pendingOrders).Any())
                 {
-                    <div class="empty-state">
+                    <div class="empty-state" id="staff-component-orderqueue-empty-pending">
                         <div class="empty-icon">🎉</div>
                         <p>No pending orders!</p>
                         <small>Great job staying on top of orders</small>
@@ -134,15 +134,15 @@
         </div>
 
         <!-- In Progress Orders -->
-        <div class="order-column">
-            <div class="column-header active-header">
-                <h3>🔵 In Progress (@activeOrders.Count)</h3>
-                <small>Orders being prepared</small>
+        <div class="order-column" id="staff-component-orderqueue-col-active">
+            <div class="column-header active-header" id="staff-component-orderqueue-col-active-header">
+                <h3 id="staff-component-orderqueue-col-active-title">🔵 In Progress (@activeOrders.Count)</h3>
+                <small id="staff-component-orderqueue-col-active-subtitle">Orders being prepared</small>
             </div>
-            <div class="order-cards">
+            <div class="order-cards" id="staff-component-orderqueue-col-active-cards">
                 @foreach (var order in GetFilteredOrders(activeOrders))
                 {
-                    <div class="order-card active" @onclick="() => ShowOrderDetails(order)">
+                    <div class="order-card active" @onclick="() => ShowOrderDetails(order)" id="@($"staff-component-orderqueue-card-active-{order.Id}")">
                         <div class="order-header">
                             <div class="order-info">
                                 <strong>Order #@order.Id</strong>
@@ -202,10 +202,10 @@
                         </div>
                     </div>
                 }
-                
+
                 @if (!GetFilteredOrders(activeOrders).Any())
                 {
-                    <div class="empty-state">
+                    <div class="empty-state" id="staff-component-orderqueue-empty-active">
                         <div class="empty-icon">⏳</div>
                         <p>No orders in progress</p>
                         <small>Accept pending orders to get started</small>
@@ -215,15 +215,15 @@
         </div>
 
         <!-- Ready for Delivery -->
-        <div class="order-column">
-            <div class="column-header ready-header">
-                <h3>🟢 Ready for Delivery (@readyOrders.Count)</h3>
-                <small>Orders ready to be delivered</small>
+        <div class="order-column" id="staff-component-orderqueue-col-ready">
+            <div class="column-header ready-header" id="staff-component-orderqueue-col-ready-header">
+                <h3 id="staff-component-orderqueue-col-ready-title">🟢 Ready for Delivery (@readyOrders.Count)</h3>
+                <small id="staff-component-orderqueue-col-ready-subtitle">Orders ready to be delivered</small>
             </div>
-            <div class="order-cards">
+            <div class="order-cards" id="staff-component-orderqueue-col-ready-cards">
                 @foreach (var order in GetFilteredOrders(readyOrders))
                 {
-                    <div class="order-card ready" @onclick="() => ShowOrderDetails(order)">
+                    <div class="order-card ready" @onclick="() => ShowOrderDetails(order)" id="@($"staff-component-orderqueue-card-ready-{order.Id}")">
                         <div class="order-header">
                             <div class="order-info">
                                 <strong>Order #@order.Id</strong>
@@ -254,10 +254,10 @@
                         </div>
                     </div>
                 }
-                
+
                 @if (!GetFilteredOrders(readyOrders).Any())
                 {
-                    <div class="empty-state">
+                    <div class="empty-state" id="staff-component-orderqueue-empty-ready">
                         <div class="empty-icon">✅</div>
                         <p>No orders ready</p>
                         <small>Orders will appear here when ready for delivery</small>
@@ -271,24 +271,24 @@
 <!-- Order Details Modal -->
 @if (selectedOrder != null)
 {
-    <div class="modal-overlay" @onclick="CloseOrderDetails">
-        <div class="order-modal" @onclick:stopPropagation="true">
-            <div class="modal-header">
-                <div class="modal-title">
-                    <h3>Order #@selectedOrder.Id</h3>
-                    <span class="status-badge @selectedOrder.Status.ToString().ToLower()">
+    <div class="modal-overlay" @onclick="CloseOrderDetails" id="staff-component-orderqueue-modal-overlay">
+        <div class="order-modal" @onclick:stopPropagation="true" id="staff-component-orderqueue-modal">
+            <div class="modal-header" id="staff-component-orderqueue-modal-header">
+                <div class="modal-title" id="staff-component-orderqueue-modal-title-section">
+                    <h3 id="staff-component-orderqueue-modal-title">Order #@selectedOrder.Id</h3>
+                    <span class="status-badge @selectedOrder.Status.ToString().ToLower()" id="staff-component-orderqueue-modal-status">
                         @selectedOrder.Status.ToString()
                     </span>
                 </div>
                 <button class="btn-close" @onclick="CloseOrderDetails" id="staff-orderqueue-close-details-btn">✕</button>
             </div>
-            
-            <div class="modal-content">
-                <div class="order-details-grid">
+
+            <div class="modal-content" id="staff-component-orderqueue-modal-content">
+                <div class="order-details-grid" id="staff-component-orderqueue-details-grid">
                     <!-- Customer & Seat Info -->
-                    <div class="detail-section">
-                        <h4>📍 Delivery Information</h4>
-                        <div class="detail-card">
+                    <div class="detail-section" id="staff-component-orderqueue-section-delivery">
+                        <h4 id="staff-component-orderqueue-section-delivery-title">📍 Delivery Information</h4>
+                        <div class="detail-card" id="staff-component-orderqueue-delivery-card">
                             <div class="seat-display">
                                 <strong>@GetEnhancedSeatInfo(selectedOrder)</strong>
                                 <span>Section @GetEnhancedSectionInfo(selectedOrder)</span>
@@ -302,11 +302,11 @@
                             }
                         </div>
                     </div>
-                    
+
                     <!-- Order Timeline -->
-                    <div class="detail-section">
-                        <h4>⏱️ Order Timeline</h4>
-                        <div class="timeline">
+                    <div class="detail-section" id="staff-component-orderqueue-section-timeline">
+                        <h4 id="staff-component-orderqueue-section-timeline-title">⏱️ Order Timeline</h4>
+                        <div class="timeline" id="staff-component-orderqueue-timeline">
                             <div class="timeline-item completed">
                                 <div class="timeline-dot"></div>
                                 <div class="timeline-content">
@@ -347,14 +347,14 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Order Items -->
-                <div class="detail-section full-width">
-                    <h4>🍻 Order Items</h4>
-                    <div class="items-list">
+                <div class="detail-section full-width" id="staff-component-orderqueue-section-items">
+                    <h4 id="staff-component-orderqueue-section-items-title">🍻 Order Items</h4>
+                    <div class="items-list" id="staff-component-orderqueue-items-list">
                         @foreach (var item in selectedOrder.OrderItems)
                         {
-                            <div class="item-detail">
+                            <div class="item-detail" id="@($"staff-component-orderqueue-item-{item.Id}")">
                                 <div class="item-info">
                                     <div class="item-name">@item.Drink?.Name</div>
                                     @if (!string.IsNullOrEmpty(item.SpecialInstructions))
@@ -373,9 +373,9 @@
                         <strong>Total: €@selectedOrder.TotalAmount.ToString("F2")</strong>
                     </div>
                 </div>
-                
+
                 <!-- Action Buttons -->
-                <div class="modal-actions">
+                <div class="modal-actions" id="staff-component-orderqueue-modal-actions">
                     @if (selectedOrder.Status == OrderStatus.Pending)
                     {
                         <button class="btn btn-primary btn-large" @onclick="() => AcceptOrder(selectedOrder)" id="staff-orderqueue-modal-accept-btn">

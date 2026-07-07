@@ -119,7 +119,8 @@ public class EventController : ControllerBase
                 return NotFound($"Event with ID {id} not found");
             }
 
-            return Ok(MapEventToDto(eventItem));
+            var stadiumCapacity = await _ingestion.GetStadiumCapacityAsync();
+            return Ok(MapEventToDto(eventItem, stadiumCapacity: stadiumCapacity));
         }
         catch (Exception ex)
         {
@@ -171,9 +172,15 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = windowError });
             }
 
+            var name = request.Name.Trim();
+            if (await _eventService.IsEventNameTakenAsync(name))
+            {
+                return Conflict(new { message = $"An event named \"{name}\" already exists. Event names must be unique." });
+            }
+
             var eventItem = new Event
             {
-                EventName = request.Name,
+                EventName = name,
                 // The admin UI's "Location" maps to Event.EventType (see MapEventToDto).
                 EventType = string.IsNullOrWhiteSpace(request.Location) ? "General" : request.Location,
                 EventDate = request.Date!.Value,
@@ -233,9 +240,15 @@ public class EventController : ControllerBase
             var newSeasonId = request.SeasonId ?? existing.SeasonId;
             var seasonLinkIsNew = newSeasonId != null && newSeasonId != existing.SeasonId;
 
+            var newName = string.IsNullOrWhiteSpace(request.Name) ? existing.EventName : request.Name.Trim();
+            if (await _eventService.IsEventNameTakenAsync(newName, id))
+            {
+                return Conflict(new { message = $"An event named \"{newName}\" already exists. Event names must be unique." });
+            }
+
             var eventItem = new Event
             {
-                EventName = string.IsNullOrWhiteSpace(request.Name) ? existing.EventName : request.Name,
+                EventName = newName,
                 EventType = string.IsNullOrWhiteSpace(request.Location) ? existing.EventType : request.Location,
                 EventDate = newStart,
                 EventEndDate = newEnd,
@@ -384,7 +397,8 @@ public class EventController : ControllerBase
             }
 
             var updated = await _eventService.GetEventByIdAsync(id);
-            return Ok(MapEventToDto(updated!));
+            var stadiumCapacity = await _ingestion.GetStadiumCapacityAsync();
+            return Ok(MapEventToDto(updated!, stadiumCapacity: stadiumCapacity));
         }
         catch (Exception ex)
         {
@@ -408,13 +422,15 @@ public class EventController : ControllerBase
         var seasonSoldCounts = await _eventService.GetSeasonSoldSeatCountsAsync(ids);
         var seasonNames = await _seasonService.GetSeasonNamesAsync(
             eventList.Where(e => e.SeasonId != null).Select(e => e.SeasonId!.Value));
+        var stadiumCapacity = await _ingestion.GetStadiumCapacityAsync();
 
         return eventList
             .Select(e => MapEventToDto(
                 e,
                 soldCounts.GetValueOrDefault(e.Id, 0),
                 e.SeasonId != null ? seasonNames.GetValueOrDefault(e.SeasonId.Value) : null,
-                seasonSoldCounts.GetValueOrDefault(e.Id, 0)))
+                seasonSoldCounts.GetValueOrDefault(e.Id, 0),
+                stadiumCapacity))
             .ToList();
     }
 
@@ -427,7 +443,8 @@ public class EventController : ControllerBase
             var names = await _seasonService.GetSeasonNamesAsync(new[] { evt.SeasonId.Value });
             seasonName = names.GetValueOrDefault(evt.SeasonId.Value);
         }
-        return MapEventToDto(evt, seasonName: seasonName);
+        var stadiumCapacity = await _ingestion.GetStadiumCapacityAsync();
+        return MapEventToDto(evt, seasonName: seasonName, stadiumCapacity: stadiumCapacity);
     }
 
     /// <summary>
@@ -438,12 +455,17 @@ public class EventController : ControllerBase
     /// endpoints use raw SQL that omits it). When null, sold seats are counted from the
     /// loaded Tickets navigation. Both paths funnel through <see cref="TicketStatuses.CountsAsSold"/>.
     /// </param>
-    private EventDto MapEventToDto(Event evt, int? soldSeatsOverride = null, string? seasonName = null, int? seasonSoldOverride = null)
+    private EventDto MapEventToDto(Event evt, int? soldSeatsOverride = null, string? seasonName = null, int? seasonSoldOverride = null, int? stadiumCapacity = null)
     {
         if (evt == null)
         {
             return null;
         }
+
+        // Capacity reflects the REAL stadium (sum of the drawing-tool overlay sectors) whenever a
+        // stadium has been drawn; otherwise fall back to the event's stored TotalSeats. This keeps
+        // the dashboard "od X mjesta" figure in sync with the actual seating layout.
+        int capacity = stadiumCapacity is > 0 ? stadiumCapacity.Value : evt.TotalSeats;
 
         // Calculate available seats based on sold tickets. List endpoints pass an explicit
         // count (their Tickets navigation isn't loaded); single-event endpoints load Tickets.
@@ -465,8 +487,8 @@ public class EventController : ControllerBase
             EndDate = evt.EventEndDate,
             Description = evt.Description,
             Location = evt.EventType ?? "Main Stadium", // Using EventType as location for now
-            Capacity = evt.TotalSeats,
-            AvailableSeats = Math.Max(0, evt.TotalSeats - soldSeats),
+            Capacity = capacity,
+            AvailableSeats = Math.Max(0, capacity - soldSeats),
             SeasonTicketsSold = Math.Min(seasonSold, soldSeats),
             BasePrice = evt.BaseTicketPrice ?? 0m,
             IsActive = evt.IsActive,

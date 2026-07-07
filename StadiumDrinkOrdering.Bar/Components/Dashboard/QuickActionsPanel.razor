@@ -18,11 +18,11 @@
         else if (Actions != null && Actions.Any())
         {
             <div id="bar-quickactions-actions-grid" class="d-grid gap-2">
-                @foreach (var action in Actions)
+                @foreach (var (action, actionIndex) in Actions.Select((a, i) => (a, i)))
                 {
                     @if (!string.IsNullOrEmpty(action.Url))
                     {
-                        <a href="@action.Url" class="btn @action.ButtonClass @(action.IsDisabled ? "disabled" : "")">
+                        <a href="@action.Url" class="btn @action.ButtonClass @(action.IsDisabled ? "disabled" : "")" id="@($"bar-quickactions-action-link-{actionIndex}")">
                             @if (!string.IsNullOrEmpty(action.IconClass))
                             {
                                 <span class="@action.IconClass me-2"></span>
@@ -38,7 +38,8 @@
                     {
                         <button class="btn @action.ButtonClass @(action.IsDisabled ? "disabled" : "")"
                                 @onclick="action.OnClick"
-                                disabled="@action.IsDisabled">
+                                disabled="@action.IsDisabled"
+                                id="@($"bar-quickactions-action-btn-{actionIndex}")">
                             @if (!string.IsNullOrEmpty(action.IconClass))
                             {
                                 <span class="@action.IconClass me-2"></span>

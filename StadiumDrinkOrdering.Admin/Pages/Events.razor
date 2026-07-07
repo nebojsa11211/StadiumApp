@@ -47,7 +47,7 @@
             <i class="bi bi-calendar-event" id="admin-events-empty-icon"></i>
             <p id="admin-events-empty-title">@L["Events_NoEventsFound"]</p>
             <span id="admin-events-empty-message">@L["Events_EmptyMessage"]</span>
-            <div class="mt-3">
+            <div class="mt-3" id="admin-events-empty-actions">
                 <button class="pill-btn pill-btn--primary" @onclick="ShowCreateEventModal" id="admin-events-first-event-btn">
                     <i class="bi bi-plus-circle"></i><span>@L["Events_CreateFirstButton"]</span>
                 </button>
@@ -57,49 +57,49 @@
     else
     {
         <!-- Key Metrics Cards -->
-        <section class="metrics metrics--3">
+        <section class="metrics metrics--3" id="admin-events-metrics">
             <article class="metric" id="admin-events-metric-total">
-                <div class="metric__head">
-                    <span class="metric__label">@L["Events_TotalEventsLabel"]</span>
-                    <i class="bi bi-calendar-event metric__icon"></i>
+                <div class="metric__head" id="admin-events-metric-total-head">
+                    <span class="metric__label" id="admin-events-metric-total-label">@L["Events_TotalEventsLabel"]</span>
+                    <i class="bi bi-calendar-event metric__icon" id="admin-events-metric-total-icon"></i>
                 </div>
-                <div class="metric__value mono">@events.Count</div>
-                <div class="metric__foot">
-                    <span class="metric__hint">@L["Events_TotalEventsHint"]</span>
+                <div class="metric__value mono" id="admin-events-metric-total-value">@events.Count</div>
+                <div class="metric__foot" id="admin-events-metric-total-foot">
+                    <span class="metric__hint" id="admin-events-metric-total-hint">@L["Events_TotalEventsHint"]</span>
                 </div>
             </article>
 
             <article class="metric metric--accent" id="admin-events-metric-active">
-                <div class="metric__head">
-                    <span class="metric__label">@L["Events_OnSaleLabel"]</span>
-                    <i class="bi bi-broadcast metric__icon is-ok"></i>
+                <div class="metric__head" id="admin-events-metric-active-head">
+                    <span class="metric__label" id="admin-events-metric-active-label">@L["Events_OnSaleLabel"]</span>
+                    <i class="bi bi-broadcast metric__icon is-ok" id="admin-events-metric-active-icon"></i>
                 </div>
-                <div class="metric__value mono">@events.Count(e => e.CanSellTickets)</div>
-                <div class="metric__foot">
-                    <span class="metric__hint">@L["Events_OnSaleHint"]</span>
+                <div class="metric__value mono" id="admin-events-metric-active-value">@events.Count(e => e.CanSellTickets)</div>
+                <div class="metric__foot" id="admin-events-metric-active-foot">
+                    <span class="metric__hint" id="admin-events-metric-active-hint">@L["Events_OnSaleHint"]</span>
                 </div>
             </article>
 
             <article class="metric" id="admin-events-metric-capacity">
-                <div class="metric__head">
-                    <span class="metric__label">@L["Events_TotalCapacityLabel"]</span>
-                    <i class="bi bi-people metric__icon"></i>
+                <div class="metric__head" id="admin-events-metric-capacity-head">
+                    <span class="metric__label" id="admin-events-metric-capacity-label">@L["Events_TotalCapacityLabel"]</span>
+                    <i class="bi bi-people metric__icon" id="admin-events-metric-capacity-icon"></i>
                 </div>
-                <div class="metric__value mono">@((events.Any() ? events.Max(e => e.Capacity) : 0).ToString("N0"))</div>
-                <div class="metric__foot">
-                    <span class="metric__hint">@L["Events_TotalCapacityHint"]</span>
+                <div class="metric__value mono" id="admin-events-metric-capacity-value">@((events.Any() ? events.Max(e => e.Capacity) : 0).ToString("N0"))</div>
+                <div class="metric__foot" id="admin-events-metric-capacity-foot">
+                    <span class="metric__hint" id="admin-events-metric-capacity-hint">@L["Events_TotalCapacityHint"]</span>
                 </div>
             </article>
         </section>
 
         <!-- Events Grid -->
         <div class="panel" id="admin-events-panel">
-            <div class="panel__head">
-                <h2 class="panel__title">@L["Events_PanelTitle"] <span class="panel__count mono">@FilteredEvents.Count()</span></h2>
+            <div class="panel__head" id="admin-events-panel-head">
+                <h2 class="panel__title" id="admin-events-panel-title">@L["Events_PanelTitle"] <span class="panel__count mono" id="admin-events-panel-count">@FilteredEvents.Count()</span></h2>
                 @if (seasons != null && seasons.Any())
                 {
-                    <div class="ms-auto d-flex align-items-center gap-2">
-                        <label class="form-label mb-0 small text-muted" for="admin-events-season-filter">Season</label>
+                    <div class="ms-auto d-flex align-items-center gap-2" id="admin-events-season-filter-container">
+                        <label class="form-label mb-0 small text-muted" for="admin-events-season-filter" id="admin-events-season-filter-label">Season</label>
                         <select id="admin-events-season-filter" class="form-select form-select-sm" style="width:auto" @bind="seasonFilterValue">
                             <option value="">All seasons</option>
                             <option value="none">No season</option>
@@ -111,7 +111,7 @@
                     </div>
                 }
             </div>
-            <div class="panel__body">
+            <div class="panel__body" id="admin-events-panel-body">
                 <div class="row" id="admin-events-list">
                     @foreach (var evt in FilteredEvents.OrderBy(e => e.Date ?? DateTime.MaxValue))
                     {
@@ -196,65 +196,65 @@
 <!-- Create/Edit Event Modal -->
 @if (showEventModal)
 {
-    <div id="admin-event-modal">
+    <div id="admin-event-modal" class="modal-backdrop-wrapper">
         <div class="modal-dialog" id="admin-event-modal-dialog">
             <div class="modal-content" id="admin-event-modal-content">
-                <div class="modal-header" id="admin-event-modal-header">
+                <div class="modal-header" id="admin-event-modal-header" role="heading">
                     <h5 class="modal-title" id="admin-event-modal-title">@(editingEvent == null ? @L["Events_CreateModalTitle"] : @L["Events_EditModalTitle"])</h5>
                     <button type="button" class="btn-close" @onclick="HideEventModal" id="admin-event-modal-close"></button>
                 </div>
                 <div class="modal-body" id="admin-event-modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">@L["Events_EventNameLabel"]</label>
+                    <div class="row" id="admin-event-form-name-location-row">
+                        <div class="col-md-6" id="admin-event-form-name-col">
+                            <div class="mb-3" id="admin-event-form-name-group">
+                                <label class="form-label" for="admin-event-form-name">@L["Events_EventNameLabel"]</label>
                                 <input type="text" class="form-control" @bind="eventForm.Name" required id="admin-event-form-name">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">@L["Events_LocationFieldLabel"]</label>
+                        <div class="col-md-6" id="admin-event-form-location-col">
+                            <div class="mb-3" id="admin-event-form-location-group">
+                                <label class="form-label" for="admin-event-form-location">@L["Events_LocationFieldLabel"]</label>
                                 <input type="text" class="form-control" @bind="eventForm.Location" required id="admin-event-form-location">
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">@L["Events_DescriptionFieldLabel"]</label>
+                    <div class="mb-3" id="admin-event-form-description-group">
+                        <label class="form-label" for="admin-event-form-description">@L["Events_DescriptionFieldLabel"]</label>
                         <textarea class="form-control" rows="3" @bind="eventForm.Description" id="admin-event-form-description"></textarea>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">@L["Events_StartDateTimeLabel"]</label>
+                    <div class="row" id="admin-event-form-datetime-row">
+                        <div class="col-md-6" id="admin-event-form-date-col">
+                            <div class="mb-3" id="admin-event-form-date-group">
+                                <label class="form-label" for="admin-event-form-date">@L["Events_StartDateTimeLabel"]</label>
                                 <input type="datetime-local" class="form-control" @bind="eventForm.Date" required id="admin-event-form-date">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">@L["Events_EndDateTimeLabel"]</label>
+                        <div class="col-md-6" id="admin-event-form-end-date-col">
+                            <div class="mb-3" id="admin-event-form-end-date-group">
+                                <label class="form-label" for="admin-event-form-end-date">@L["Events_EndDateTimeLabel"]</label>
                                 <input type="datetime-local" class="form-control" @bind="eventForm.EndDate" required id="admin-event-form-end-date">
                                 @if (eventForm.EndDate <= eventForm.Date)
                                 {
-                                    <div class="text-danger small mt-1">@L["Events_EndAfterStartValidation"]</div>
+                                    <div class="text-danger small mt-1" id="admin-event-form-end-date-error">@L["Events_EndAfterStartValidation"]</div>
                                 }
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">@L["Events_CapacityFieldLabel"]</label>
+                    <div class="row" id="admin-event-form-capacity-price-row">
+                        <div class="col-md-6" id="admin-event-form-capacity-col">
+                            <div class="mb-3" id="admin-event-form-capacity-group">
+                                <label class="form-label" for="admin-event-form-capacity">@L["Events_CapacityFieldLabel"]</label>
                                 <input type="number" class="form-control" @bind="eventForm.Capacity" min="1" required id="admin-event-form-capacity">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">@L["Events_BasePriceFieldLabel"]</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
+                        <div class="col-md-6" id="admin-event-form-price-col">
+                            <div class="mb-3" id="admin-event-form-price-group">
+                                <label class="form-label" for="admin-event-form-price">@L["Events_BasePriceFieldLabel"]</label>
+                                <div class="input-group" id="admin-event-form-price-input-group">
+                                    <span class="input-group-text" id="admin-event-form-price-symbol">$</span>
                                     <input type="number" class="form-control" @bind="eventForm.BasePrice"
                                            step="0.01" min="0" required id="admin-event-form-price">
                                 </div>
@@ -262,21 +262,21 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
+                    <div class="row" id="admin-event-form-status-season-row">
+                        <div class="col-md-6" id="admin-event-form-active-col">
+                            <div class="mb-3" id="admin-event-form-active-group">
                                 <label class="form-label">@L["Events_StatusFieldLabel"]</label>
-                                <div class="form-check form-switch">
+                                <div class="form-check form-switch" id="admin-event-form-active-switch">
                                     <input class="form-check-input" type="checkbox" @bind="eventForm.IsActive" id="admin-event-form-active">
-                                    <label class="form-check-label">
+                                    <label class="form-check-label" for="admin-event-form-active">
                                         @L["Events_ActiveLabel"]
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label"><i class="bi bi-calendar-range"></i> Season</label>
+                        <div class="col-md-6" id="admin-event-form-season-col">
+                            <div class="mb-3" id="admin-event-form-season-group">
+                                <label class="form-label" for="admin-event-form-season"><i class="bi bi-calendar-range"></i> Season</label>
                                 <select class="form-control" @bind="eventForm.SeasonId" id="admin-event-form-season">
                                     <option value="">(no season)</option>
                                     @if (seasons != null)
@@ -287,7 +287,7 @@
                                         }
                                     }
                                 </select>
-                                <div class="form-text">Linking backfills this season's passes with a match ticket.</div>
+                                <div class="form-text" id="admin-event-form-season-hint">Linking backfills this season's passes with a match ticket.</div>
                             </div>
                         </div>
                     </div>

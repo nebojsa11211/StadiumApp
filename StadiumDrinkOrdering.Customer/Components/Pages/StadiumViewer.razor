@@ -57,7 +57,7 @@
                                    @bind="searchSeatCode"
                                    @onkeyup="HandleSearchKeyUp"
                                    aria-describedby="search-help" />
-                            <button class="btn btn-primary" 
+                            <button id="customer-stadium-viewer-search-btn" class="btn btn-primary"
                                     @onclick="SearchSeat"
                                     disabled="@(string.IsNullOrWhiteSpace(searchSeatCode))"
                                     aria-label="Search for seat">
@@ -71,14 +71,14 @@
 
                     <div id="customer-stadium-viewer-view-options" class="view-options">
                         <div id="customer-stadium-viewer-toggle-group" class="toggle-group" role="group" aria-label="Display options">
-                            <button class="btn btn-outline-primary @(showLegend ? "active" : "")"
+                            <button id="customer-stadium-viewer-legend-toggle-btn" class="btn btn-outline-primary @(showLegend ? "active" : "")"
                                     @onclick="() => showLegend = !showLegend"
                                     aria-pressed="@showLegend"
                                     aria-describedby="legend-help">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
                                 @Localizer["StadiumViewer_Legend"]
                             </button>
-                            <button class="btn btn-outline-primary @(showOccupancy ? "active" : "")"
+                            <button id="customer-stadium-viewer-occupancy-toggle-btn" class="btn btn-outline-primary @(showOccupancy ? "active" : "")"
                                     @onclick="() => showOccupancy = !showOccupancy"
                                     aria-pressed="@showOccupancy"
                                     aria-describedby="occupancy-help">
@@ -390,7 +390,7 @@
                     <p class="mb-0">@errorMessage</p>
                 </div>
             </div>
-            <button class="btn btn-outline-danger btn-sm mt-2" @onclick="RetryLoad">
+            <button id="customer-stadium-viewer-retry-btn" class="btn btn-outline-danger btn-sm mt-2" @onclick="RetryLoad">
                 <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
                 @Localizer["StadiumViewer_TryAgain"]
             </button>
@@ -429,8 +429,9 @@
                         @GetSectorMeta(selectedSector)
                     </span>
                 </div>
-                <button type="button" 
-                        class="btn-close" 
+                <button type="button"
+                        id="customer-stadium-viewer-modal-close-x-btn"
+                        class="btn-close"
                         @onclick="CloseSectorModal"
                         aria-label="Close sector details">
                     <i class="bi bi-x" aria-hidden="true"></i>
@@ -450,13 +451,13 @@
                             Your browser does not support the HTML5 canvas element.
                         </canvas>
                         <div id="customer-stadium-viewer-canvas-controls" class="canvas-controls">
-                            <button class="btn btn-secondary" @onclick="ZoomIn" aria-label="@Localizer["StadiumViewer_ZoomIn"]">
+                            <button id="customer-stadium-viewer-zoom-in-btn" class="btn btn-secondary" @onclick="ZoomIn" aria-label="@Localizer["StadiumViewer_ZoomIn"]">
                                 <i class="bi bi-zoom-in" aria-hidden="true"></i>
                             </button>
-                            <button class="btn btn-secondary" @onclick="ZoomOut" aria-label="@Localizer["StadiumViewer_ZoomOut"]">
+                            <button id="customer-stadium-viewer-zoom-out-btn" class="btn btn-secondary" @onclick="ZoomOut" aria-label="@Localizer["StadiumViewer_ZoomOut"]">
                                 <i class="bi bi-zoom-out" aria-hidden="true"></i>
                             </button>
-                            <button class="btn btn-secondary" @onclick="ResetZoom" aria-label="@Localizer["StadiumViewer_ResetZoom"]">
+                            <button id="customer-stadium-viewer-reset-zoom-btn" class="btn btn-secondary" @onclick="ResetZoom" aria-label="@Localizer["StadiumViewer_ResetZoom"]">
                                 <i class="bi bi-arrows-fullscreen" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -472,7 +473,7 @@
                                     {
                                         <div id="customer-stadium-viewer-seat-item-@seat" class="seat-item" role="listitem">
                                             <span class="seat-code">@seat</span>
-                                            <button class="btn btn-sm btn-outline-danger" 
+                                            <button id="customer-stadium-viewer-remove-seat-btn-@seat" class="btn btn-sm btn-outline-danger"
                                                     @onclick="() => RemoveSeat(seat)"
                                                     aria-label="Remove @seat from selection">
                                                 <i class="bi bi-x" aria-hidden="true"></i>
@@ -503,8 +504,9 @@
                 </button>
                 @if (selectedSeats.Any())
                 {
-                    <button type="button" 
-                            class="btn btn-primary" 
+                    <button type="button"
+                            id="customer-stadium-viewer-add-seats-btn"
+                            class="btn btn-primary"
                             @onclick="AddSeatsToCart"
                             aria-describedby="add-seats-help">
                         <i class="bi bi-cart-plus" aria-hidden="true"></i>

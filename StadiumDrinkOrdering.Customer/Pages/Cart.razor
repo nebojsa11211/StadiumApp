@@ -19,7 +19,7 @@
         <div id="customer-cart-empty" class="empty">
             <div id="customer-cart-emoji" class="e-emoji">🛒</div>
             <p>Košarica je prazna.</p>
-            <button class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
+            <button id="customer-cart-back-btn" class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
         </div>
     }
     else
@@ -42,10 +42,10 @@
                             <div id="customer-cart-item-name-@item.DrinkId" class="n">@item.DrinkName</div>
                             <div id="customer-cart-item-price-@item.DrinkId" class="p tnum">€@item.UnitPrice.ToString("F2") / kom</div>
                         </div>
-                        <div class="mini-step">
-                            <button @onclick="() => Change(item.DrinkId, item.Quantity - 1)" aria-label="Manje">−</button>
-                            <span class="q tnum">@item.Quantity</span>
-                            <button @onclick="() => Change(item.DrinkId, item.Quantity + 1)" aria-label="Više">+</button>
+                        <div id="customer-cart-item-step-@item.DrinkId" class="mini-step">
+                            <button id="customer-cart-item-qty-dec-@item.DrinkId" @onclick="() => Change(item.DrinkId, item.Quantity - 1)" aria-label="Manje">−</button>
+                            <span id="customer-cart-item-qty-@item.DrinkId" class="q tnum">@item.Quantity</span>
+                            <button id="customer-cart-item-qty-inc-@item.DrinkId" @onclick="() => Change(item.DrinkId, item.Quantity + 1)" aria-label="Više">+</button>
                         </div>
                     </div>
                 }
@@ -90,7 +90,7 @@
 @if (State.Count > 0)
 {
     <div id="customer-cart-checkout-footer" class="checkout-foot">
-        <button class="btn btn-primary" @onclick="PlaceOrder" disabled="@(_placing || !State.CanOrderDrinks)">
+        <button id="customer-cart-checkout-btn" class="btn btn-primary" @onclick="PlaceOrder" disabled="@(_placing || !State.CanOrderDrinks)">
             @if (_placing)
             {
                 <span class="spinner"></span> <span>Šaljem…</span>

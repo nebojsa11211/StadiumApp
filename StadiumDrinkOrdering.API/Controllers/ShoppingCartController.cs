@@ -91,6 +91,15 @@ public class ShoppingCartController : ControllerBase
                 return BadRequest("Session ID is required");
             }
 
+            // Installation master switch: when direct-to-customer sales are turned off, tickets
+            // arrive only via the external integration, so reject new cart additions.
+            var salesEnabled = await _context.Venues
+                .Select(v => (bool?)v.TicketSalesEnabled).FirstOrDefaultAsync() ?? true;
+            if (!salesEnabled)
+            {
+                return Conflict("Ticket sales are currently disabled.");
+            }
+
             // Phase 1 gate: seats may only be reserved while the event is on sale.
             var eventStatus = await _context.Events
                 .Where(e => e.Id == request.EventId)

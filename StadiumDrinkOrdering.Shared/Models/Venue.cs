@@ -17,6 +17,20 @@ public class Venue
     [StringLength(200)]
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Name of the club the stadium primarily belongs to, shown alongside the stadium identity.
+    /// This is a single free-text label stored on the venue itself, distinct from the richer
+    /// <see cref="Club"/> collection of resident clubs.
+    /// </summary>
+    [StringLength(150)]
+    public string? ClubName { get; set; }
+
+    /// <summary>Optional club logo, stored in-DB (PostgreSQL bytea) alongside its content type.</summary>
+    public byte[]? ClubLogo { get; set; }
+
+    [StringLength(100)]
+    public string? ClubLogoContentType { get; set; }
+
     [StringLength(200)]
     public string? AddressLine1 { get; set; }
 
@@ -57,6 +71,13 @@ public class Venue
 
     [StringLength(100)]
     public string? PhotoContentType { get; set; }
+
+    /// <summary>
+    /// Master switch for this installation's direct-to-customer ticket sales. When false the
+    /// Customer app hides its buy flow and the cart/order API rejects new purchases, so tickets
+    /// enter the system only via the external ticketing integration. Defaults to true.
+    /// </summary>
+    public bool TicketSalesEnabled { get; set; } = true;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }

@@ -72,7 +72,7 @@
                                 <tr id="@($"admin-analytics-event-row-{evt.Id}")">
                                     <td class="console-table__id" id="@($"admin-analytics-event-cell-name-{evt.Id}")">@evt.Name</td>
                                     <td class="mono console-table__time" id="@($"admin-analytics-event-cell-date-{evt.Id}")">@(evt.Date?.ToString("MMM dd, yyyy") ?? @L["Analytics_TBDLabel"])</td>
-                                    <td id="@($"admin-analytics-event-cell-location-{evt.Id}")">@evt.Location</td>
+                                    <td id="@($"admin-analytics-event-cell-location-{evt.Id}")">@DisplayLocation(evt)</td>
                                     <td id="@($"admin-analytics-event-cell-status-{evt.Id}")">
                                         @if (evt.IsActive)
                                         {

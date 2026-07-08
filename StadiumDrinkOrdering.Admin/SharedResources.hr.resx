@@ -535,6 +535,12 @@
   <data name="StadiumInfo_ColTotalSeats" xml:space="preserve">
     <value>Ukupno sjedala</value>
   </data>
+  <data name="StadiumInfo_ColPricePerSeat" xml:space="preserve">
+    <value>Cijena / sjedalo</value>
+  </data>
+  <data name="StadiumInfo_ColSeasonPrice" xml:space="preserve">
+    <value>Sezonska cijena</value>
+  </data>
   <data name="StadiumInfo_RowDetailTitle" xml:space="preserve">
     <value>Redovi u {0}</value>
   </data>
@@ -717,6 +723,15 @@
   </data>
   <data name="SectorEdit_SectorPriceHint" xml:space="preserve">
     <value>Cijena po sjedalu u ovom sektoru. Ostavite prazno za cijenu po tipu.</value>
+  </data>
+  <data name="SectorEdit_SeasonTicketPriceLabel" xml:space="preserve">
+    <value>Cijena sezonske ulaznice</value>
+  </data>
+  <data name="SectorEdit_SeasonTicketPricePlaceholder" xml:space="preserve">
+    <value>Bez sezonske cijene</value>
+  </data>
+  <data name="SectorEdit_SeasonTicketPriceHint" xml:space="preserve">
+    <value>Cijena sezonske ulaznice po sjedalu u ovom sektoru. Ostavite prazno ako se ne prodaje kao sezonska.</value>
   </data>
   <data name="SectorEdit_DisplayColorLabel" xml:space="preserve">
     <value>Boja prikaza</value>
@@ -2254,6 +2269,9 @@
   <data name="Events_EditButton" xml:space="preserve">
     <value>Uredi</value>
   </data>
+  <data name="Events_EditLockedTooltip" xml:space="preserve">
+    <value>Ovaj događaj je već održan i više se ne može uređivati.</value>
+  </data>
   <data name="Events_LiveOccupancyButton" xml:space="preserve">
     <value>Popunjenost uživo</value>
   </data>
@@ -2270,7 +2288,55 @@
     <value>Naziv događaja *</value>
   </data>
   <data name="Events_LocationFieldLabel" xml:space="preserve">
-    <value>Lokacija *</value>
+    <value>Lokacija</value>
+  </data>
+  <data name="Events_LocationVenueHint" xml:space="preserve">
+    <value>Postavlja se u postavkama lokacije — svi se događaji održavaju na ovom stadionu.</value>
+  </data>
+  <data name="Events_TypeFieldLabel" xml:space="preserve">
+    <value>Vrsta događaja</value>
+  </data>
+  <data name="Events_TypeLabel" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="Events_HomeTeamLabel" xml:space="preserve">
+    <value>Domaći tim</value>
+  </data>
+  <data name="Events_AwayTeamLabel" xml:space="preserve">
+    <value>Gostujući tim</value>
+  </data>
+  <data name="Events_AwayTeamPlaceholder" xml:space="preserve">
+    <value>Gostujući tim</value>
+  </data>
+  <data name="Events_SelectHomeTeam" xml:space="preserve">
+    <value>Odaberite domaći tim…</value>
+  </data>
+  <data name="Events_NoClubsWarning" xml:space="preserve">
+    <value>Nema definiranih klubova. </value>
+  </data>
+  <data name="Events_NoClubsLink" xml:space="preserve">
+    <value>Dodajte ga u Postavkama lokacije</value>
+  </data>
+  <data name="Events_MatchupLabel" xml:space="preserve">
+    <value>Timovi</value>
+  </data>
+  <data name="Events_VersusSeparator" xml:space="preserve">
+    <value>–</value>
+  </data>
+  <data name="Events_Type_Match" xml:space="preserve">
+    <value>Utakmica</value>
+  </data>
+  <data name="Events_Type_Concert" xml:space="preserve">
+    <value>Koncert</value>
+  </data>
+  <data name="Events_Type_Other" xml:space="preserve">
+    <value>Ostalo…</value>
+  </data>
+  <data name="Events_TypeCustomLabel" xml:space="preserve">
+    <value>Prilagođena vrsta</value>
+  </data>
+  <data name="Events_TypeCustomPlaceholder" xml:space="preserve">
+    <value>npr. Ceremonija</value>
   </data>
   <data name="Events_DescriptionFieldLabel" xml:space="preserve">
     <value>Opis</value>
@@ -2288,10 +2354,40 @@
     <value>Vrijeme završetka mora biti nakon vremena početka.</value>
   </data>
   <data name="Events_CapacityFieldLabel" xml:space="preserve">
-    <value>Kapacitet *</value>
+    <value>Kapacitet</value>
+  </data>
+  <data name="Events_CapacitySeatsSuffix" xml:space="preserve">
+    <value>mjesta</value>
+  </data>
+  <data name="Events_CapacityAutoHint" xml:space="preserve">
+    <value>Automatski se postavlja prema rasporedu stadiona (ukupan broj nacrtanih mjesta).</value>
   </data>
   <data name="Events_BasePriceFieldLabel" xml:space="preserve">
     <value>Bazna cijena *</value>
+  </data>
+  <data name="Events_SectorPricesLabel" xml:space="preserve">
+    <value>Cijene po sektoru</value>
+  </data>
+  <data name="Events_SectorPricesHint" xml:space="preserve">
+    <value>Postavite cijenu ulaznice po sektoru za ovaj događaj. Ostavite sektor praznim za njegovu zadanu cijenu.</value>
+  </data>
+  <data name="Events_SectorColumn" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="Events_SectorTypeColumn" xml:space="preserve">
+    <value>Tip</value>
+  </data>
+  <data name="Events_SectorDefaultColumn" xml:space="preserve">
+    <value>Zadano</value>
+  </data>
+  <data name="Events_SectorPriceColumn" xml:space="preserve">
+    <value>Cijena događaja</value>
+  </data>
+  <data name="Events_SectorPriceClear" xml:space="preserve">
+    <value>Poništi cijenu</value>
+  </data>
+  <data name="Events_SectorPricesEmpty" xml:space="preserve">
+    <value>Još nije nacrtan nijedan sektor stadiona.</value>
   </data>
   <data name="Events_StatusFieldLabel" xml:space="preserve">
     <value>Status</value>
@@ -3311,6 +3407,10 @@
   <data name="Venue_ContactSection" xml:space="preserve"><value>Kontakt</value></data>
   <data name="Venue_ClubsSection" xml:space="preserve"><value>Klubovi domaćini</value></data>
   <data name="Venue_Name" xml:space="preserve"><value>Naziv stadiona</value></data>
+  <data name="Venue_ClubName" xml:space="preserve"><value>Naziv kluba</value></data>
+  <data name="Venue_ClubLogo" xml:space="preserve"><value>Logo kluba</value></data>
+  <data name="Venue_UploadClubLogo" xml:space="preserve"><value>Učitaj logo</value></data>
+  <data name="Venue_RemoveClubLogo" xml:space="preserve"><value>Ukloni logo</value></data>
   <data name="Venue_AddressLine1" xml:space="preserve"><value>Adresa 1</value></data>
   <data name="Venue_AddressLine2" xml:space="preserve"><value>Adresa 2</value></data>
   <data name="Venue_City" xml:space="preserve"><value>Grad</value></data>
@@ -3319,6 +3419,7 @@
   <data name="Venue_Latitude" xml:space="preserve"><value>Zemljopisna širina</value></data>
   <data name="Venue_Longitude" xml:space="preserve"><value>Zemljopisna dužina</value></data>
   <data name="Venue_OfficialCapacity" xml:space="preserve"><value>Službeni kapacitet</value></data>
+  <data name="Venue_CapacityDerived" xml:space="preserve"><value>Automatski izračunato iz strukture stadiona (ukupan broj sjedala). Nije moguće uređivati.</value></data>
   <data name="Venue_ContactEmail" xml:space="preserve"><value>E-pošta za podršku</value></data>
   <data name="Venue_ContactPhone" xml:space="preserve"><value>Telefon podrške</value></data>
   <data name="Venue_Website" xml:space="preserve"><value>Web stranica</value></data>
@@ -3350,4 +3451,19 @@
   <data name="Venue_ConfirmDeleteClub" xml:space="preserve"><value>Obrisati ovaj klub?</value></data>
   <data name="Venue_ClubSaved" xml:space="preserve"><value>Klub spremljen.</value></data>
   <data name="Venue_ClubDeleted" xml:space="preserve"><value>Klub obrisan.</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Postavke</value></data>
+  <data name="Settings_PageTitle" xml:space="preserve"><value>Postavke</value></data>
+  <data name="Settings_Heading" xml:space="preserve"><value>Postavke</value></data>
+  <data name="Settings_Subtitle" xml:space="preserve"><value>Opcije na razini cijele instalacije.</value></data>
+  <data name="Settings_Loading" xml:space="preserve"><value>Učitavam postavke…</value></data>
+  <data name="Settings_Error" xml:space="preserve"><value>Nije moguće učitati postavke.</value></data>
+  <data name="Settings_Retry" xml:space="preserve"><value>Pokušaj ponovno</value></data>
+  <data name="Settings_Save" xml:space="preserve"><value>Spremi promjene</value></data>
+  <data name="Settings_Saved" xml:space="preserve"><value>Spremljeno.</value></data>
+  <data name="Settings_SaveFailed" xml:space="preserve"><value>Spremanje nije uspjelo.</value></data>
+  <data name="Settings_TicketingSection" xml:space="preserve"><value>Prodaja ulaznica</value></data>
+  <data name="Settings_TicketSalesEnabled" xml:space="preserve"><value>Prodaji ulaznice kupcima u ovoj aplikaciji</value></data>
+  <data name="Settings_TicketSalesEnabledHint" xml:space="preserve"><value>Kada je isključeno, aplikacija za kupce skriva kupnju, a API odbija nove kupnje. Ulaznice tada u sustav ulaze samo putem vanjske integracije.</value></data>
+  <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Prodaja ulaznica je UKLJUČENA — kupci mogu kupovati ulaznice u aplikaciji.</value></data>
+  <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Prodaja ulaznica je ISKLJUČENA — ulaznice dolaze samo iz vanjskog sustava.</value></data>
 </root>

@@ -106,6 +106,45 @@ public class EventController : ControllerBase
     }
 
     /// <summary>
+    /// Real stadium capacity — the sum of the drawing-tool overlay sectors' seats. This is the
+    /// authoritative per-event capacity (every event is held in the same physical stadium), so the
+    /// Admin event form surfaces it read-only rather than letting an arbitrary number be typed.
+    /// Returns 0 when no stadium has been drawn yet.
+    /// </summary>
+    [HttpGet("stadium-capacity")]
+    public async Task<ActionResult<int>> GetStadiumCapacity()
+    {
+        try
+        {
+            return Ok(await _ingestion.GetStadiumCapacityAsync());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving stadium capacity");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// Lists overlay sectors with their default price and the per-event override for each, used by
+    /// the Admin event modal's "Sector prices" editor. Pass <paramref name="eventId"/> to prefill the
+    /// existing event's overrides; omit it for a new (unsaved) event.
+    /// </summary>
+    [HttpGet("sector-prices")]
+    public async Task<ActionResult<List<EventSectorPriceDto>>> GetSectorPrices([FromQuery] int? eventId = null)
+    {
+        try
+        {
+            return Ok(await _eventService.GetSectorPricingAsync(eventId));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving sector prices for event {EventId}", eventId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
     /// Get event by ID
     /// </summary>
     [HttpGet("{id}")]
@@ -178,14 +217,27 @@ public class EventController : ControllerBase
                 return Conflict(new { message = $"An event named \"{name}\" already exists. Event names must be unique." });
             }
 
+            // Capacity is not client-supplied trivia: it is the real stadium seat count (sum of the
+            // drawing-tool overlays). Compute it server-side so the stored TotalSeats always matches
+            // the actual seating layout; only fall back to the request value before a stadium exists.
+            var stadiumCapacity = await _ingestion.GetStadiumCapacityAsync();
+
+            var eventType = string.IsNullOrWhiteSpace(request.EventType) ? "Match" : request.EventType.Trim();
+            if (!ResolveTeams(eventType, request.HomeTeam, request.AwayTeam, out var homeTeam, out var awayTeam, out var teamError))
+            {
+                return BadRequest(new { message = teamError });
+            }
+
             var eventItem = new Event
             {
                 EventName = name,
-                // The admin UI's "Location" maps to Event.EventType (see MapEventToDto).
-                EventType = string.IsNullOrWhiteSpace(request.Location) ? "General" : request.Location,
+                EventType = eventType,
+                HomeTeam = homeTeam,
+                AwayTeam = awayTeam,
+                Location = string.IsNullOrWhiteSpace(request.Location) ? null : request.Location.Trim(),
                 EventDate = request.Date!.Value,
                 EventEndDate = request.EndDate,
-                TotalSeats = request.Capacity,
+                TotalSeats = stadiumCapacity > 0 ? stadiumCapacity : request.Capacity,
                 Description = request.Description,
                 BaseTicketPrice = request.BasePrice,
                 IsActive = request.IsActive,
@@ -193,6 +245,9 @@ public class EventController : ControllerBase
             };
 
             var createdEvent = await _eventService.CreateEventAsync(eventItem);
+
+            // Persist any per-sector price overrides supplied with the new event.
+            await _eventService.SaveSectorPricesAsync(createdEvent.Id, request.SectorPrices);
 
             // If linked to a season, extend existing season passes to cover this new event.
             if (createdEvent.SeasonId != null)
@@ -230,6 +285,12 @@ public class EventController : ControllerBase
                 return NotFound($"Event with ID {id} not found");
             }
 
+            // Past/terminal events are frozen: their record can no longer be edited.
+            if (!EventLifecycle.CanEdit(existing.Status))
+            {
+                return BadRequest(new { message = EventLifecycle.EditBlockedReason(existing.Status) });
+            }
+
             var newStart = request.Date ?? existing.EventDate;
             var newEnd = request.EndDate ?? existing.EventEndDate;
             if (!IsValidWindow(newStart, newEnd, out var windowError))
@@ -246,14 +307,30 @@ public class EventController : ControllerBase
                 return Conflict(new { message = $"An event named \"{newName}\" already exists. Event names must be unique." });
             }
 
+            // Re-derive capacity from the real stadium (sum of overlays) rather than trusting the
+            // request; the Admin form shows it read-only. Fall back to the existing value only when
+            // no stadium has been drawn yet.
+            var stadiumCapacity = await _ingestion.GetStadiumCapacityAsync();
+
+            // Null in the request means "unchanged", so validate the effective (merged) type/teams.
+            var newType = string.IsNullOrWhiteSpace(request.EventType) ? existing.EventType : request.EventType.Trim();
+            if (!ResolveTeams(newType, request.HomeTeam ?? existing.HomeTeam, request.AwayTeam ?? existing.AwayTeam,
+                    out var homeTeam, out var awayTeam, out var teamError))
+            {
+                return BadRequest(new { message = teamError });
+            }
+
             var eventItem = new Event
             {
                 EventName = newName,
-                EventType = string.IsNullOrWhiteSpace(request.Location) ? existing.EventType : request.Location,
+                EventType = newType,
+                HomeTeam = homeTeam,
+                AwayTeam = awayTeam,
+                Location = request.Location ?? existing.Location,
                 EventDate = newStart,
                 EventEndDate = newEnd,
                 VenueId = existing.VenueId,
-                TotalSeats = request.Capacity ?? existing.TotalSeats,
+                TotalSeats = stadiumCapacity > 0 ? stadiumCapacity : (request.Capacity ?? existing.TotalSeats),
                 Description = request.Description ?? existing.Description,
                 ImageUrl = existing.ImageUrl,
                 BaseTicketPrice = request.BasePrice ?? existing.BaseTicketPrice,
@@ -265,6 +342,9 @@ public class EventController : ControllerBase
             {
                 return NotFound($"Event with ID {id} not found");
             }
+
+            // Apply per-sector price overrides (null = leave existing overrides unchanged).
+            await _eventService.SaveSectorPricesAsync(id, request.SectorPrices);
 
             // Newly linking an event to a season backfills its existing season passes.
             if (seasonLinkIsNew)
@@ -434,6 +514,33 @@ public class EventController : ControllerBase
             .ToList();
     }
 
+    /// <summary>
+    /// Normalizes and validates the home/away teams against the event type. A "Match" must carry both
+    /// a home side (a resident club) and an away side; any other type carries no teams (both cleared).
+    /// Returns false with <paramref name="error"/> set when a Match is missing a team.
+    /// </summary>
+    private static bool ResolveTeams(string eventType, string? home, string? away,
+        out string? homeTeam, out string? awayTeam, out string? error)
+    {
+        error = null;
+        if (!string.Equals(eventType, "Match", StringComparison.OrdinalIgnoreCase))
+        {
+            // Non-match events are single-title: never keep stale team labels.
+            homeTeam = null;
+            awayTeam = null;
+            return true;
+        }
+
+        homeTeam = string.IsNullOrWhiteSpace(home) ? null : home.Trim();
+        awayTeam = string.IsNullOrWhiteSpace(away) ? null : away.Trim();
+        if (homeTeam == null || awayTeam == null)
+        {
+            error = "A Match event requires both a home team and an away team.";
+            return false;
+        }
+        return true;
+    }
+
     /// <summary>Maps a single event, resolving its season name (used by create/update responses).</summary>
     private async Task<EventDto> MapEventWithSeasonAsync(Event evt)
     {
@@ -483,10 +590,13 @@ public class EventController : ControllerBase
         {
             Id = evt.Id,
             Name = !string.IsNullOrWhiteSpace(evt.EventName) ? evt.EventName : $"Event {evt.Id}",
+            EventType = string.IsNullOrWhiteSpace(evt.EventType) ? "Match" : evt.EventType,
+            HomeTeam = evt.HomeTeam,
+            AwayTeam = evt.AwayTeam,
             Date = evt.EventDate,
             EndDate = evt.EventEndDate,
             Description = evt.Description,
-            Location = evt.EventType ?? "Main Stadium", // Using EventType as location for now
+            Location = evt.Location,
             Capacity = capacity,
             AvailableSeats = Math.Max(0, capacity - soldSeats),
             SeasonTicketsSold = Math.Min(seasonSold, soldSeats),

@@ -218,9 +218,9 @@
                                 </div>
                             }
 
-                            <!-- Row 4: Type, Price and Color -->
+                            <!-- Row 4: Type, Price, Season Price and Color -->
                             <div class="row mb-3" id="admin-sector-edit-row-4">
-                                <div class="col-md-4" id="admin-sector-edit-col-type">
+                                <div class="col-md-3" id="admin-sector-edit-col-type">
                                     <label class="form-label fw-bold">@L["SectorEdit_SectorTypeLabel"]</label>
                                     <select class="form-select" id="admin-sector-edit-type-select" @bind="Sector.Type">
                                         <option value="standard">@L["SectorEdit_TypeStandard"]</option>
@@ -231,7 +231,7 @@
                                     </select>
                                     <small class="text-muted">@L["SectorEdit_SectorTypeHint"]</small>
                                 </div>
-                                <div class="col-md-4" id="admin-sector-edit-col-price">
+                                <div class="col-md-3" id="admin-sector-edit-col-price">
                                     <label class="form-label fw-bold">@L["SectorEdit_SectorPriceLabel"]</label>
                                     <div class="input-group" id="admin-sector-edit-price-group">
                                         <span class="input-group-text">€</span>
@@ -246,7 +246,22 @@
                                     </div>
                                     <small class="text-muted">@L["SectorEdit_SectorPriceHint"]</small>
                                 </div>
-                                <div class="col-md-4" id="admin-sector-edit-col-color">
+                                <div class="col-md-3" id="admin-sector-edit-col-season-price">
+                                    <label class="form-label fw-bold">@L["SectorEdit_SeasonTicketPriceLabel"]</label>
+                                    <div class="input-group" id="admin-sector-edit-season-price-group">
+                                        <span class="input-group-text">€</span>
+                                        <input type="number"
+                                               id="admin-sector-edit-season-price-input"
+                                               class="form-control"
+                                               @bind="Sector.SeasonTicketPrice"
+                                               min="0"
+                                               max="100000"
+                                               step="0.01"
+                                               placeholder="@L["SectorEdit_SeasonTicketPricePlaceholder"]" />
+                                    </div>
+                                    <small class="text-muted">@L["SectorEdit_SeasonTicketPriceHint"]</small>
+                                </div>
+                                <div class="col-md-3" id="admin-sector-edit-col-color">
                                     <label class="form-label fw-bold">@L["SectorEdit_DisplayColorLabel"]</label>
                                     <div class="input-group" id="admin-sector-edit-color-group">
                                         <input type="color"
@@ -674,6 +689,7 @@
         }
         public string Type { get; set; } = "standard";
         public decimal? Price { get; set; }
+        public decimal? SeasonTicketPrice { get; set; }
         public string Color { get; set; } = "#007bff";
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;

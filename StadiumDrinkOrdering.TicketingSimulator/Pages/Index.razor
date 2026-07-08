@@ -292,9 +292,7 @@
                 <div id="simulator-index-event-type-col" class="col-md-2">
                     <label class="form-label">@Localizer["Index_EventTypeLabel"]</label>
                     <select id="simulator-index-event-type-select" class="form-select" @bind="eventType">
-                        <option value="Football">@Localizer["Index_EventType_Football"]</option>
-                        <option value="Basketball">@Localizer["Index_EventType_Basketball"]</option>
-                        <option value="Hockey">@Localizer["Index_EventType_Hockey"]</option>
+                        <option value="Match">@Localizer["Index_EventType_Match"]</option>
                         <option value="Concert">@Localizer["Index_EventType_Concert"]</option>
                         <option value="Other">@Localizer["Index_EventType_Other"]</option>
                     </select>
@@ -792,12 +790,12 @@
     private string? externalEventId;
     private int? internalEventId;
     private string eventName = "Simulated Match";
-    private string eventType = "Football";
+    private string eventType = "Match";
     private string homeTeam = "Istra";
     private string awayTeam = "Zagreb";
 
-    // Team sports are two-sided (home vs away); concerts / one-offs carry a single title.
-    private static readonly string[] VersusTypes = { "Football", "Basketball", "Baseball", "Hockey", "Tennis", "Boxing" };
+    // A Match is two-sided (home vs away); concerts / one-offs carry a single title.
+    private static readonly string[] VersusTypes = { "Match" };
     private bool IsVersusType => VersusTypes.Contains(eventType, StringComparer.OrdinalIgnoreCase);
 
     // The stored EventName: "Home - Away" for a versus fixture with both sides set, else the free title.

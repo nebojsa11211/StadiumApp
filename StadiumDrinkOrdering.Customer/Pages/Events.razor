@@ -11,6 +11,13 @@
 
 <div id="customer-events-page" class="evl-body no-scrollbar">
 
+    @if (!salesEnabled)
+    {
+        <div id="customer-events-sales-disabled" class="evl-state evl-empty">
+            🎟️ Prodaja ulaznica putem aplikacije trenutno nije dostupna. Događaje možete pregledati u nastavku.
+        </div>
+    }
+
     <!-- Filter bar -->
     <div id="customer-events-filterbar" class="evl-filterbar">
         <button id="customer-events-filter-toggle" class="evl-chip @(showFilters ? "on" : "")" @onclick="() => showFilters = !showFilters">
@@ -29,12 +36,8 @@
                 <label>Vrsta događaja</label>
                 <select id="customer-events-filter-type-select" class="evl-input" @bind="filterEventType">
                     <option value="">Sve vrste</option>
-                    <option value="Football">🏈 Nogomet</option>
+                    <option value="Match">⚽ Utakmica</option>
                     <option value="Concert">🎵 Koncert</option>
-                    <option value="Basketball">🏀 Košarka</option>
-                    <option value="Baseball">⚾ Baseball</option>
-                    <option value="Hockey">🏒 Hokej</option>
-                    <option value="Soccer">⚽ Nogomet</option>
                     <option value="Other">🎭 Ostalo</option>
                 </select>
             </div>
@@ -131,6 +134,7 @@
     private List<CustomerEventDto>? events;
     private bool isLoading = false;
     private bool showFilters = false;
+    private bool salesEnabled = true;
 
     private string filterEventType = "";
     private DateTime? filterDateFrom;
@@ -151,6 +155,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        salesEnabled = await ApiService.GetTicketSalesEnabledAsync();
         await LoadEvents();
     }
 

@@ -43,8 +43,10 @@ public class OverlaySectionSummary
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Type { get; set; } = "standard";
-    /// <summary>Explicit per-sector price if the admin set one; null means fall back to the type multiplier.</summary>
+    /// <summary>Explicit per-sector default price if the admin set one; null means fall back to the type multiplier.</summary>
     public decimal? Price { get; set; }
+    /// <summary>Per-event override for this sector's price, if one exists; wins over <see cref="Price"/>.</summary>
+    public decimal? EventPrice { get; set; }
     public int TotalSeats { get; set; }
     public int SoldSeats { get; set; }
     public int AvailableSeats { get; set; }
@@ -88,6 +90,12 @@ public class OverlaySeatService : IOverlaySeatService
             .Where(s => codes.Contains(s.SectionCode))
             .ToDictionaryAsync(s => s.SectionCode, s => s.Id, ct);
 
+        // Per-event price overrides, keyed by overlay sector id (empty when the event has none).
+        var overrides = await _context.EventSectorPrices
+            .AsNoTracking()
+            .Where(p => p.EventId == eventId)
+            .ToDictionaryAsync(p => p.SectorOverlayId, p => p.Price, ct);
+
         var result = new Dictionary<int, OverlaySectionSummary>();
         foreach (var o in overlays)
         {
@@ -103,6 +111,7 @@ public class OverlaySeatService : IOverlaySeatService
                 Name = o.Name,
                 Type = o.Type,
                 Price = o.Price,
+                EventPrice = overrides.TryGetValue(o.Id, out var ep) ? ep : (decimal?)null,
                 TotalSeats = total,
                 SoldSeats = sold,
                 AvailableSeats = Math.Max(0, total - sold)

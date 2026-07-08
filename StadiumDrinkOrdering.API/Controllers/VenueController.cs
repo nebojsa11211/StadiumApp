@@ -47,6 +47,7 @@ public class VenueController : ControllerBase
         var venue = await GetOrCreateVenueAsync();
 
         venue.Name = dto.Name.Trim();
+        venue.ClubName = dto.ClubName?.Trim();
         venue.AddressLine1 = dto.AddressLine1;
         venue.AddressLine2 = dto.AddressLine2;
         venue.City = dto.City;
@@ -63,6 +64,32 @@ public class VenueController : ControllerBase
 
         await _context.SaveChangesAsync();
         return Ok(ToDto(venue));
+    }
+
+    // ---- App settings --------------------------------------------------------------------
+
+    /// <summary>
+    /// Public read of the installation settings so the Customer app can decide whether to show
+    /// its ticket buy flow. Only the non-sensitive settings are exposed here.
+    /// </summary>
+    [HttpGet("settings")]
+    public async Task<ActionResult<AppSettingsDto>> GetSettings()
+    {
+        var venue = await GetOrCreateVenueAsync();
+        return Ok(new AppSettingsDto { TicketSalesEnabled = venue.TicketSalesEnabled });
+    }
+
+    [HttpPut("settings")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<ActionResult<AppSettingsDto>> UpdateSettings([FromBody] AppSettingsDto dto)
+    {
+        var venue = await GetOrCreateVenueAsync();
+        venue.TicketSalesEnabled = dto.TicketSalesEnabled;
+        venue.UpdatedAt = DateTime.UtcNow;
+        venue.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        await _context.SaveChangesAsync();
+        return Ok(new AppSettingsDto { TicketSalesEnabled = venue.TicketSalesEnabled });
     }
 
     [HttpPost("photo")]
@@ -101,6 +128,46 @@ public class VenueController : ControllerBase
         if (venue?.Photo == null || venue.Photo.Length == 0)
             return NotFound();
         return File(venue.Photo, venue.PhotoContentType ?? "application/octet-stream");
+    }
+
+    // ---- Club logo (venue-level) ---------------------------------------------------------
+
+    [HttpPost("club-logo")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<IActionResult> UploadClubLogo(IFormFile file)
+    {
+        var validation = ValidateImage(file);
+        if (validation != null) return validation;
+
+        var venue = await GetOrCreateVenueAsync();
+        venue.ClubLogo = await ReadFileAsync(file);
+        venue.ClubLogoContentType = file.ContentType;
+        venue.UpdatedAt = DateTime.UtcNow;
+        venue.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpDelete("club-logo")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<IActionResult> DeleteClubLogo()
+    {
+        var venue = await GetOrCreateVenueAsync();
+        venue.ClubLogo = null;
+        venue.ClubLogoContentType = null;
+        venue.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpGet("club-logo")]
+    public async Task<IActionResult> GetClubLogo()
+    {
+        var venue = await _context.Venues.AsNoTracking().FirstOrDefaultAsync();
+        if (venue?.ClubLogo == null || venue.ClubLogo.Length == 0)
+            return NotFound();
+        return File(venue.ClubLogo, venue.ClubLogoContentType ?? "application/octet-stream");
     }
 
     // ---- Resident clubs ------------------------------------------------------------------
@@ -246,6 +313,7 @@ public class VenueController : ControllerBase
     {
         Id = v.Id,
         Name = v.Name,
+        ClubName = v.ClubName,
         AddressLine1 = v.AddressLine1,
         AddressLine2 = v.AddressLine2,
         City = v.City,
@@ -258,6 +326,7 @@ public class VenueController : ControllerBase
         ContactPhone = v.ContactPhone,
         Website = v.Website,
         HasPhoto = v.Photo != null && v.Photo.Length > 0,
+        HasClubLogo = v.ClubLogo != null && v.ClubLogo.Length > 0,
         UpdatedAt = v.UpdatedAt,
         UpdatedBy = v.UpdatedBy,
         Clubs = v.Clubs

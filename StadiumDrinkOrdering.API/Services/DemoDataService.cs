@@ -113,22 +113,25 @@ public class DemoDataService : IDemoDataService
         // UTC-based "today" so every EventDate has Kind=Utc. PostgreSQL 'timestamp with time zone'
         // rejects Local/Unspecified DateTimes, so DateTime.Today (Local) must not be used here.
         var today = DateTime.UtcNow.Date;
+        // A "Match" always has two sides: the home team is the venue's primary resident club
+        // (seeded if the venue has none yet); each away team is a plausible visitor.
+        var homeClub = await EnsureHomeClubAsync();
         var events = new[]
         {
             // Upcoming Events
-            new Event { Id = 10, EventName = "Premier League Derby Match", EventType = "Football", EventDate = today.AddDays(3).AddHours(15), TotalSeats = 350, BaseTicketPrice = 85.00m, Description = "Intense local derby match between city rivals", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-14) },
-            new Event { Id = 11, EventName = "Champions League Semi-Final", EventType = "Football", EventDate = today.AddDays(8).AddHours(20), TotalSeats = 400, BaseTicketPrice = 120.00m, Description = "European Champions League semi-final showdown", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-21) },
+            new Event { Id = 10, EventName = "Premier League Derby Match", EventType = "Match", HomeTeam = homeClub, AwayTeam = "Hajduk Split", EventDate = today.AddDays(3).AddHours(15), TotalSeats = 350, BaseTicketPrice = 85.00m, Description = "Intense local derby match between city rivals", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-14) },
+            new Event { Id = 11, EventName = "Champions League Semi-Final", EventType = "Match", HomeTeam = homeClub, AwayTeam = "Bayern München", EventDate = today.AddDays(8).AddHours(20), TotalSeats = 400, BaseTicketPrice = 120.00m, Description = "European Champions League semi-final showdown", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-21) },
             new Event { Id = 12, EventName = "Rock Legends World Tour", EventType = "Concert", EventDate = today.AddDays(12).AddHours(19), TotalSeats = 280, BaseTicketPrice = 95.00m, Description = "World-famous rock band performing greatest hits", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-28) },
-            new Event { Id = 13, EventName = "NBA Basketball Exhibition", EventType = "Basketball", EventDate = today.AddDays(18).AddHours(19), TotalSeats = 250, BaseTicketPrice = 75.00m, Description = "Professional basketball exhibition match", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-10) },
-            new Event { Id = 14, EventName = "International Rugby Final", EventType = "Rugby", EventDate = today.AddDays(25).AddHours(16), TotalSeats = 320, BaseTicketPrice = 90.00m, Description = "International rugby championship final", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-35) },
+            new Event { Id = 13, EventName = "NBA Basketball Exhibition", EventType = "Match", HomeTeam = homeClub, AwayTeam = "Barcelona", EventDate = today.AddDays(18).AddHours(19), TotalSeats = 250, BaseTicketPrice = 75.00m, Description = "Professional basketball exhibition match", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-10) },
+            new Event { Id = 14, EventName = "International Rugby Final", EventType = "Match", HomeTeam = homeClub, AwayTeam = "Leinster", EventDate = today.AddDays(25).AddHours(16), TotalSeats = 320, BaseTicketPrice = 90.00m, Description = "International rugby championship final", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-35) },
             
             // Recent Past Events (for analytics data)
             new Event { Id = 15, EventName = "Summer Festival Concert", EventType = "Concert", EventDate = today.AddDays(-5).AddHours(18), TotalSeats = 300, BaseTicketPrice = 65.00m, Description = "Summer music festival main event", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-42) },
-            new Event { Id = 16, EventName = "Cup Quarter-Final", EventType = "Football", EventDate = today.AddDays(-12).AddHours(15), TotalSeats = 280, BaseTicketPrice = 55.00m, Description = "Exciting cup quarter-final match", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-49) },
+            new Event { Id = 16, EventName = "Cup Quarter-Final", EventType = "Match", HomeTeam = homeClub, AwayTeam = "HNK Rijeka", EventDate = today.AddDays(-12).AddHours(15), TotalSeats = 280, BaseTicketPrice = 55.00m, Description = "Exciting cup quarter-final match", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-49) },
             new Event { Id = 17, EventName = "Jazz Night Special", EventType = "Concert", EventDate = today.AddDays(-8).AddHours(20), TotalSeats = 200, BaseTicketPrice = 45.00m, Description = "Special jazz performance evening", IsActive = false, CreatedAt = DateTime.UtcNow.AddDays(-38) },
             
             // Far Future Events  
-            new Event { Id = 18, EventName = "Season Finale Championship", EventType = "Football", EventDate = today.AddDays(45).AddHours(17), TotalSeats = 400, BaseTicketPrice = 110.00m, Description = "End of season championship match", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-7) },
+            new Event { Id = 18, EventName = "Season Finale Championship", EventType = "Match", HomeTeam = homeClub, AwayTeam = "NK Osijek", EventDate = today.AddDays(45).AddHours(17), TotalSeats = 400, BaseTicketPrice = 110.00m, Description = "End of season championship match", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-7) },
             new Event { Id = 19, EventName = "Pop Stars United Concert", EventType = "Concert", EventDate = today.AddDays(60).AddHours(19), TotalSeats = 350, BaseTicketPrice = 80.00m, Description = "Multiple pop stars collaboration concert", IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-14) }
         };
 
@@ -143,6 +146,48 @@ public class DemoDataService : IDemoDataService
 
         await _context.SaveChangesAsync();
         _logger.LogInformation("Generated {Count} events with realistic dates", events.Length);
+    }
+
+    /// <summary>
+    /// Returns the name of the venue's home club — its primary club, else its first — to use as the
+    /// home side of the demo fixtures. Seeds a default club (and the singleton venue, if missing) when
+    /// none exist yet, so the demo matches always reference a real resident club.
+    /// </summary>
+    private async Task<string> EnsureHomeClubAsync()
+    {
+        var venue = await _context.Venues.Include(v => v.Clubs).FirstOrDefaultAsync();
+        if (venue == null)
+        {
+            venue = new Venue { Name = "Stadium", CreatedAt = DateTime.UtcNow };
+            _context.Venues.Add(venue);
+            await _context.SaveChangesAsync();
+        }
+
+        var homeClub = venue.Clubs
+            .OrderByDescending(c => c.IsPrimary)
+            .ThenBy(c => c.DisplayOrder)
+            .ThenBy(c => c.Name)
+            .FirstOrDefault();
+
+        if (homeClub == null)
+        {
+            homeClub = new Club
+            {
+                VenueId = venue.Id,
+                Name = "FC Stadium",
+                ShortName = "FCS",
+                IsPrimary = true,
+                DisplayOrder = 0,
+                PrimaryColor = "#1d4ed8",
+                SecondaryColor = "#ffffff",
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Clubs.Add(homeClub);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Seeded default resident club '{Club}' for the venue", homeClub.Name);
+        }
+
+        return homeClub.Name;
     }
 
     private async Task GenerateAdditionalSeatsAsync()

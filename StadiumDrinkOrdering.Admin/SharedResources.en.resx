@@ -505,6 +505,12 @@
   <data name="StadiumInfo_ColTotalSeats" xml:space="preserve">
     <value>Total Seats</value>
   </data>
+  <data name="StadiumInfo_ColPricePerSeat" xml:space="preserve">
+    <value>Price / Seat</value>
+  </data>
+  <data name="StadiumInfo_ColSeasonPrice" xml:space="preserve">
+    <value>Season Price</value>
+  </data>
   <data name="StadiumInfo_RowDetailTitle" xml:space="preserve">
     <value>Rows in {0}</value>
   </data>
@@ -687,6 +693,15 @@
   </data>
   <data name="SectorEdit_SectorPriceHint" xml:space="preserve">
     <value>Price per seat in this sector. Leave empty to price by type.</value>
+  </data>
+  <data name="SectorEdit_SeasonTicketPriceLabel" xml:space="preserve">
+    <value>Season Ticket Price</value>
+  </data>
+  <data name="SectorEdit_SeasonTicketPricePlaceholder" xml:space="preserve">
+    <value>No season price</value>
+  </data>
+  <data name="SectorEdit_SeasonTicketPriceHint" xml:space="preserve">
+    <value>Season pass price per seat in this sector. Leave empty if not sold as a season ticket.</value>
   </data>
   <data name="SectorEdit_DisplayColorLabel" xml:space="preserve">
     <value>Display Color</value>
@@ -2224,6 +2239,9 @@
   <data name="Events_EditButton" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="Events_EditLockedTooltip" xml:space="preserve">
+    <value>This event has already taken place and can no longer be edited.</value>
+  </data>
   <data name="Events_LiveOccupancyButton" xml:space="preserve">
     <value>Live occupancy</value>
   </data>
@@ -2240,7 +2258,55 @@
     <value>Event Name *</value>
   </data>
   <data name="Events_LocationFieldLabel" xml:space="preserve">
-    <value>Location *</value>
+    <value>Location</value>
+  </data>
+  <data name="Events_LocationVenueHint" xml:space="preserve">
+    <value>Set in Venue Settings — every event is held at this stadium.</value>
+  </data>
+  <data name="Events_TypeFieldLabel" xml:space="preserve">
+    <value>Event Type</value>
+  </data>
+  <data name="Events_TypeLabel" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Events_HomeTeamLabel" xml:space="preserve">
+    <value>Home Team</value>
+  </data>
+  <data name="Events_AwayTeamLabel" xml:space="preserve">
+    <value>Away Team</value>
+  </data>
+  <data name="Events_AwayTeamPlaceholder" xml:space="preserve">
+    <value>Visiting team</value>
+  </data>
+  <data name="Events_SelectHomeTeam" xml:space="preserve">
+    <value>Select home team…</value>
+  </data>
+  <data name="Events_NoClubsWarning" xml:space="preserve">
+    <value>No resident clubs configured. </value>
+  </data>
+  <data name="Events_NoClubsLink" xml:space="preserve">
+    <value>Add one in Venue Settings</value>
+  </data>
+  <data name="Events_MatchupLabel" xml:space="preserve">
+    <value>Teams</value>
+  </data>
+  <data name="Events_VersusSeparator" xml:space="preserve">
+    <value>vs</value>
+  </data>
+  <data name="Events_Type_Match" xml:space="preserve">
+    <value>Match</value>
+  </data>
+  <data name="Events_Type_Concert" xml:space="preserve">
+    <value>Concert</value>
+  </data>
+  <data name="Events_Type_Other" xml:space="preserve">
+    <value>Other…</value>
+  </data>
+  <data name="Events_TypeCustomLabel" xml:space="preserve">
+    <value>Custom type</value>
+  </data>
+  <data name="Events_TypeCustomPlaceholder" xml:space="preserve">
+    <value>e.g. Ceremony</value>
   </data>
   <data name="Events_DescriptionFieldLabel" xml:space="preserve">
     <value>Description</value>
@@ -2258,10 +2324,40 @@
     <value>The end time must be after the start time.</value>
   </data>
   <data name="Events_CapacityFieldLabel" xml:space="preserve">
-    <value>Capacity *</value>
+    <value>Capacity</value>
+  </data>
+  <data name="Events_CapacitySeatsSuffix" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="Events_CapacityAutoHint" xml:space="preserve">
+    <value>Set automatically from the stadium layout (total drawn seats).</value>
   </data>
   <data name="Events_BasePriceFieldLabel" xml:space="preserve">
     <value>Base Price *</value>
+  </data>
+  <data name="Events_SectorPricesLabel" xml:space="preserve">
+    <value>Sector prices</value>
+  </data>
+  <data name="Events_SectorPricesHint" xml:space="preserve">
+    <value>Set a ticket price per sector for this event. Leave a sector blank to use its default price.</value>
+  </data>
+  <data name="Events_SectorColumn" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Events_SectorTypeColumn" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Events_SectorDefaultColumn" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Events_SectorPriceColumn" xml:space="preserve">
+    <value>Event price</value>
+  </data>
+  <data name="Events_SectorPriceClear" xml:space="preserve">
+    <value>Clear override</value>
+  </data>
+  <data name="Events_SectorPricesEmpty" xml:space="preserve">
+    <value>No stadium sectors have been drawn yet.</value>
   </data>
   <data name="Events_StatusFieldLabel" xml:space="preserve">
     <value>Status</value>
@@ -3281,6 +3377,10 @@
   <data name="Venue_ContactSection" xml:space="preserve"><value>Contact</value></data>
   <data name="Venue_ClubsSection" xml:space="preserve"><value>Resident clubs</value></data>
   <data name="Venue_Name" xml:space="preserve"><value>Stadium name</value></data>
+  <data name="Venue_ClubName" xml:space="preserve"><value>Club name</value></data>
+  <data name="Venue_ClubLogo" xml:space="preserve"><value>Club logo</value></data>
+  <data name="Venue_UploadClubLogo" xml:space="preserve"><value>Upload logo</value></data>
+  <data name="Venue_RemoveClubLogo" xml:space="preserve"><value>Remove logo</value></data>
   <data name="Venue_AddressLine1" xml:space="preserve"><value>Address line 1</value></data>
   <data name="Venue_AddressLine2" xml:space="preserve"><value>Address line 2</value></data>
   <data name="Venue_City" xml:space="preserve"><value>City</value></data>
@@ -3289,6 +3389,7 @@
   <data name="Venue_Latitude" xml:space="preserve"><value>Latitude</value></data>
   <data name="Venue_Longitude" xml:space="preserve"><value>Longitude</value></data>
   <data name="Venue_OfficialCapacity" xml:space="preserve"><value>Official capacity</value></data>
+  <data name="Venue_CapacityDerived" xml:space="preserve"><value>Calculated automatically from the stadium structure (total seats). Not editable.</value></data>
   <data name="Venue_ContactEmail" xml:space="preserve"><value>Support email</value></data>
   <data name="Venue_ContactPhone" xml:space="preserve"><value>Support phone</value></data>
   <data name="Venue_Website" xml:space="preserve"><value>Website</value></data>
@@ -3320,4 +3421,19 @@
   <data name="Venue_ConfirmDeleteClub" xml:space="preserve"><value>Delete this club?</value></data>
   <data name="Venue_ClubSaved" xml:space="preserve"><value>Club saved.</value></data>
   <data name="Venue_ClubDeleted" xml:space="preserve"><value>Club deleted.</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings_PageTitle" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings_Heading" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings_Subtitle" xml:space="preserve"><value>Installation-wide options for this deployment.</value></data>
+  <data name="Settings_Loading" xml:space="preserve"><value>Loading settings…</value></data>
+  <data name="Settings_Error" xml:space="preserve"><value>Could not load settings.</value></data>
+  <data name="Settings_Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="Settings_Save" xml:space="preserve"><value>Save changes</value></data>
+  <data name="Settings_Saved" xml:space="preserve"><value>Saved.</value></data>
+  <data name="Settings_SaveFailed" xml:space="preserve"><value>Save failed.</value></data>
+  <data name="Settings_TicketingSection" xml:space="preserve"><value>Ticketing</value></data>
+  <data name="Settings_TicketSalesEnabled" xml:space="preserve"><value>Sell tickets to customers in this app</value></data>
+  <data name="Settings_TicketSalesEnabledHint" xml:space="preserve"><value>When off, the customer app hides its buy flow and the API rejects new purchases. Tickets then enter the system only through the external ticketing integration.</value></data>
+  <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Ticket sales are ON — customers can buy tickets in the app.</value></data>
+  <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Ticket sales are OFF — tickets only come from the external system.</value></data>
 </root>

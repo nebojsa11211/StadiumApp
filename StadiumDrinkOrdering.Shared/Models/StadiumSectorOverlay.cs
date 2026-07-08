@@ -190,6 +190,15 @@ public class StadiumSectorOverlay
     public decimal? Price { get; set; }
 
     /// <summary>
+    /// Optional season-ticket price for every seat in this sector. This is the price a customer
+    /// pays for a season pass covering that seat across all of a season's events (as opposed to
+    /// <see cref="Price"/>, which is the single-event ticket price). When null, the sector has no
+    /// dedicated season-ticket price configured.
+    /// </summary>
+    [Range(0, 100000)]
+    public decimal? SeasonTicketPrice { get; set; }
+
+    /// <summary>
     /// Display color for the sector on the canvas (hex color code)
     /// </summary>
     [Required]

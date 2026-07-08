@@ -46,6 +46,9 @@ public interface IApiService
     // Logging methods (limited access for customers)
     Task<bool> LogUserActionAsync(string action, string category, string? details = null);
     
+    // Installation settings (public read) — whether this app sells tickets directly to customers.
+    Task<bool> GetTicketSalesEnabledAsync();
+
     // Customer Ticketing methods
     Task<List<CustomerEventDto>?> GetAvailableEventsAsync(CustomerEventFilterDto? filter = null);
     Task<CustomerEventDetailsDto?> GetEventDetailsAsync(int eventId);
@@ -561,6 +564,25 @@ public class ApiService : IApiService
     }
 
     // Customer Ticketing Implementation
+    public async Task<bool> GetTicketSalesEnabledAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("api/venue/settings");
+            if (!response.IsSuccessStatusCode)
+                return true; // Fail open: the API still enforces the switch on every write.
+
+            var body = await response.Content.ReadAsStringAsync();
+            var settings = JsonSerializer.Deserialize<AppSettingsDto>(body, _jsonOptions);
+            return settings?.TicketSalesEnabled ?? true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading app settings: {ex.Message}");
+            return true; // Fail open — server-side enforcement remains authoritative.
+        }
+    }
+
     public async Task<List<CustomerEventDto>?> GetAvailableEventsAsync(CustomerEventFilterDto? filter = null)
     {
         try
@@ -686,6 +708,10 @@ public class ApiService : IApiService
             // The API returns 409 Conflict for two distinct reasons; the body text disambiguates them.
             if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
+                if (body.Contains("disabled", StringComparison.OrdinalIgnoreCase))
+                    return new CartAddResult(false, CartAddOutcome.NotOnSale,
+                        "Prodaja ulaznica putem aplikacije trenutno nije dostupna.");
+
                 if (body.Contains("on sale", StringComparison.OrdinalIgnoreCase))
                     return new CartAddResult(false, CartAddOutcome.NotOnSale,
                         "Prodaja ulaznica za ovaj događaj trenutno nije otvorena.");

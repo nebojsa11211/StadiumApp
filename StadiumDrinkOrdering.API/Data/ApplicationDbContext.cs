@@ -37,7 +37,10 @@ public class ApplicationDbContext : DbContext
 
     // Stadium Drawing Tool entities
     public DbSet<StadiumSectorOverlay> StadiumSectorOverlays { get; set; }
-    
+
+    // Per-event, per-sector ticket-price overrides
+    public DbSet<EventSectorPrice> EventSectorPrices { get; set; }
+
     // Logging entities
     public DbSet<LogEntry> LogEntries { get; set; }
     
@@ -238,6 +241,28 @@ public class ApplicationDbContext : DbContext
                 .WithMany(s => s.Events)
                 .HasForeignKey(e => e.SeasonId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Per-event, per-sector ticket-price override configuration
+        modelBuilder.Entity<EventSectorPrice>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Price).HasPrecision(10, 2);
+
+            // At most one override per (event, sector).
+            entity.HasIndex(e => new { e.EventId, e.SectorOverlayId }).IsUnique();
+
+            // Overrides are meaningless without their event; remove them with it.
+            entity.HasOne(e => e.Event)
+                .WithMany(ev => ev.SectorPrices)
+                .HasForeignKey(e => e.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Removing a sector clears its per-event overrides.
+            entity.HasOne(e => e.SectorOverlay)
+                .WithMany()
+                .HasForeignKey(e => e.SectorOverlayId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Season configuration
@@ -689,6 +714,10 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.ClubName).HasMaxLength(150);
+            entity.Property(e => e.ClubLogoContentType).HasMaxLength(100);
+            // Existing installations should keep selling once the column is added.
+            entity.Property(e => e.TicketSalesEnabled).HasDefaultValue(true);
         });
 
         // Club configuration (resident clubs at the venue)

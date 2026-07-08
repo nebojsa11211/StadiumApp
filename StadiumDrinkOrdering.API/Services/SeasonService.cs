@@ -162,67 +162,108 @@ public class SeasonService : ISeasonService
             .ThenByDescending(s => s.StartDate)
             .FirstOrDefaultAsync(ct);
 
-        if (season == null)
-            return null;
-
         var now = DateTime.UtcNow;
 
-        // Next fixture straight from the season's own events (independent of the ticketing list's
-        // IsActive filter): either still upcoming, or live right now. A match whose start has passed
-        // only qualifies while it is genuinely live — i.e. in a game-day status AND not yet ended
-        // (closing at EventEndDate, or the end of its start day when no end is set). This stops a
-        // fixture left stuck in Active/InProgress after it finished from lingering as the "next" match.
-        var next = await _context.Events
+        // Upcoming fixtures: prefer the current season's own events; when the season has no upcoming/live
+        // fixture of its own (e.g. events aren't linked to it yet, or it's between seasons) fall back
+        // to the events across the whole stadium so the landing surfaces any published match instead of
+        // sitting empty. Fixtures that aren't in the season are not badged with its name.
+        var rows = season != null ? await QueryUpcomingEventsAsync(season.Id, now, ct) : new();
+        var nextIsInSeason = rows.Count > 0;
+        if (rows.Count == 0)
+            rows = await QueryUpcomingEventsAsync(null, now, ct);
+
+        // Nothing to show at all (no season configured and no events anywhere).
+        if (season == null && rows.Count == 0)
+            return null;
+
+        // Sold counts for every listed fixture in a single grouped query (avoids N per-event counts).
+        var soldByEvent = new Dictionary<int, int>();
+        if (rows.Count > 0)
+        {
+            var ids = rows.Select(r => r.Id).ToList();
+            soldByEvent = await _context.Tickets
+                .Where(t => ids.Contains(t.EventId) && t.Status != TicketStatuses.Cancelled)
+                .GroupBy(t => t.EventId)
+                .Select(g => new { EventId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.EventId, x => x.Count, ct);
+        }
+
+        var upcoming = rows
+            .Select(r => MapUpcoming(r, soldByEvent.GetValueOrDefault(r.Id), now))
+            .ToList();
+
+        return new CurrentSeasonDto
+        {
+            Id = season?.Id ?? 0,
+            // Show the season name only when it's genuinely the context: the empty state, or a
+            // fixture that belongs to the season. A cross-season fallback fixture must not be
+            // mislabelled with the current season's name.
+            Name = (rows.Count == 0 || nextIsInSeason) ? (season?.Name ?? string.Empty) : string.Empty,
+            StartDate = season?.StartDate ?? default,
+            EndDate = season?.EndDate ?? default,
+            IsCurrent = season?.IsCurrent ?? false,
+            EventCount = season != null
+                ? await _context.Events.CountAsync(e => e.SeasonId == season.Id, ct)
+                : 0,
+            NextEvent = upcoming.FirstOrDefault(),
+            UpcomingEvents = upcoming
+        };
+    }
+
+    /// <summary>Maps a fixture row to its landing DTO, computing availability and live state.</summary>
+    private static UpcomingEventDto MapUpcoming(NextEventRow e, int sold, DateTime now) =>
+        new()
+        {
+            Id = e.Id,
+            EventName = e.EventName,
+            EventType = e.EventType,
+            HomeTeam = e.HomeTeam,
+            AwayTeam = e.AwayTeam,
+            EventDate = e.EventDate,
+            EventEndDate = e.EventEndDate,
+            TotalSeats = e.TotalSeats,
+            AvailableSeats = Math.Max(0, e.TotalSeats - sold),
+            // "Live" only when the match is in a game-day state, has actually kicked off, AND has
+            // not yet ended. The kick-off guard stops a fixture flipped Active ahead of its date
+            // from showing as live days early; the end guard (closing at EventEndDate, or the end
+            // of the start day when none is set) stops a finished match from staying "live" forever.
+            IsLive = EventLifecycle.CanOrderDrinks(e.Status)
+                     && e.EventDate <= now
+                     && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date),
+            Status = e.Status.ToString()
+        };
+
+    private sealed record NextEventRow(
+        int Id, string EventName, string EventType, string? HomeTeam, string? AwayTeam,
+        DateTime EventDate, DateTime? EventEndDate, int TotalSeats, EventStatus Status);
+
+    /// <summary>Cap on how many upcoming fixtures the landing strip will surface.</summary>
+    private const int MaxUpcomingFixtures = 20;
+
+    /// <summary>
+    /// The upcoming (and currently live) events in chronological order, optionally scoped to a season.
+    /// Pass <paramref name="seasonId"/> = null to search across every event. "Upcoming" is any non-terminal
+    /// event whose start is still in the future; a started event qualifies only while it is genuinely
+    /// live — in a game-day status and not yet ended (closing at EventEndDate, or the end of its start
+    /// day when no end is set) — so a finished-but-stuck fixture never lingers in the list. The first
+    /// entry is therefore the "next" fixture.
+    /// </summary>
+    private async Task<List<NextEventRow>> QueryUpcomingEventsAsync(int? seasonId, DateTime now, CancellationToken ct) =>
+        await _context.Events
             .AsNoTracking()
-            .Where(e => e.SeasonId == season.Id
+            .Where(e => (seasonId == null || e.SeasonId == seasonId)
                         && e.Status != EventStatus.Cancelled
                         && e.Status != EventStatus.Completed
                         && (e.EventDate >= now
                             || ((e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
                                 && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date))))
             .OrderBy(e => e.EventDate)
-            .Select(e => new { e.Id, e.EventName, e.EventType, e.HomeTeam, e.AwayTeam, e.EventDate, e.EventEndDate, e.TotalSeats, e.Status })
-            .FirstOrDefaultAsync(ct);
-
-        UpcomingEventDto? nextDto = null;
-        if (next != null)
-        {
-            var sold = await _context.Tickets
-                .CountAsync(t => t.EventId == next.Id && t.Status != TicketStatuses.Cancelled, ct);
-
-            nextDto = new UpcomingEventDto
-            {
-                Id = next.Id,
-                EventName = next.EventName,
-                EventType = next.EventType,
-                HomeTeam = next.HomeTeam,
-                AwayTeam = next.AwayTeam,
-                EventDate = next.EventDate,
-                EventEndDate = next.EventEndDate,
-                TotalSeats = next.TotalSeats,
-                AvailableSeats = Math.Max(0, next.TotalSeats - sold),
-                // "Live" only when the match is in a game-day state, has actually kicked off, AND has
-                // not yet ended. The kick-off guard stops a fixture flipped Active ahead of its date
-                // from showing as live days early; the end guard (closing at EventEndDate, or the end
-                // of the start day when none is set) stops a finished match from staying "live" forever.
-                IsLive = EventLifecycle.CanOrderDrinks(next.Status)
-                         && next.EventDate <= now
-                         && (next.EventEndDate.HasValue ? now <= next.EventEndDate.Value : now.Date <= next.EventDate.Date),
-                Status = next.Status.ToString()
-            };
-        }
-
-        return new CurrentSeasonDto
-        {
-            Id = season.Id,
-            Name = season.Name,
-            StartDate = season.StartDate,
-            EndDate = season.EndDate,
-            IsCurrent = season.IsCurrent,
-            EventCount = await _context.Events.CountAsync(e => e.SeasonId == season.Id, ct),
-            NextEvent = nextDto
-        };
-    }
+            .Take(MaxUpcomingFixtures)
+            .Select(e => new NextEventRow(
+                e.Id, e.EventName, e.EventType, e.HomeTeam, e.AwayTeam,
+                e.EventDate, e.EventEndDate, e.TotalSeats, e.Status))
+            .ToListAsync(ct);
 
     public async Task<Dictionary<int, string>> GetSeasonNamesAsync(IEnumerable<int> seasonIds, CancellationToken ct = default)
     {

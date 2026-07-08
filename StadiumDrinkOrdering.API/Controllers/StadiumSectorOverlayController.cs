@@ -392,6 +392,7 @@ public class StadiumSectorOverlayController : ControllerBase
             existingSector.VariableSeatingData = sector.VariableSeatingData;
             existingSector.Type = sector.Type;
             existingSector.Price = sector.Price;
+            existingSector.SeasonTicketPrice = sector.SeasonTicketPrice;
             existingSector.Color = sector.Color;
             existingSector.ModifiedDate = DateTime.UtcNow;
             existingSector.StadiumSectionId = sector.StadiumSectionId;
@@ -501,6 +502,7 @@ public class StadiumSectorOverlayController : ControllerBase
                     existing.VariableSeatingData = sector.VariableSeatingData;
                     existing.Type = sector.Type;
                     existing.Price = sector.Price;
+                    existing.SeasonTicketPrice = sector.SeasonTicketPrice;
                     existing.Color = sector.Color;
                     existing.ModifiedDate = DateTime.UtcNow;
                     existing.StadiumSectionId = sector.StadiumSectionId;

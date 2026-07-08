@@ -10,9 +10,22 @@ public class Event
     [StringLength(200)]
     public string EventName { get; set; } = string.Empty;
     
+    /// <summary>
+    /// The kind of event. Defaults to "Match" (a sporting fixture); other common values are
+    /// "Concert" and "Other" (free text). Externally-ingested events may carry their own value
+    /// (e.g. "Football"). This is the real event type — distinct from <see cref="Location"/>,
+    /// which was historically (and incorrectly) stored in this column by the admin UI.
+    /// </summary>
     [Required]
     [StringLength(50)]
-    public string EventType { get; set; } = string.Empty; // Football, Concert, Basketball, etc.
+    public string EventType { get; set; } = "Match";
+
+    /// <summary>
+    /// Free-text location/venue label shown to customers (e.g. "Stadion Maksimir"). Nullable so
+    /// legacy and externally-ingested events remain valid. Kept separate from <see cref="EventType"/>.
+    /// </summary>
+    [StringLength(200)]
+    public string? Location { get; set; }
 
     /// <summary>
     /// Home side of a versus-style fixture (e.g. "Istra"). Nullable so non-versus events
@@ -96,6 +109,8 @@ public class Event
 
     // Navigation properties
     public virtual Season? Season { get; set; }
+    /// <summary>Per-sector ticket-price overrides for this event (see <see cref="EventSectorPrice"/>).</summary>
+    public virtual ICollection<EventSectorPrice> SectorPrices { get; set; } = new List<EventSectorPrice>();
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     public virtual ICollection<EventStaffAssignment> StaffAssignments { get; set; } = new List<EventStaffAssignment>();

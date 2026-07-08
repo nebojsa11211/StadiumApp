@@ -7,6 +7,7 @@ public class VenueDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string? ClubName { get; set; }
     public string? AddressLine1 { get; set; }
     public string? AddressLine2 { get; set; }
     public string? City { get; set; }
@@ -21,6 +22,9 @@ public class VenueDto
 
     /// <summary>True when a stadium photo is stored; fetch it from the photo endpoint.</summary>
     public bool HasPhoto { get; set; }
+
+    /// <summary>True when a club logo is stored; fetch it from the club-logo endpoint.</summary>
+    public bool HasClubLogo { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public string? UpdatedBy { get; set; }
 
@@ -33,6 +37,9 @@ public class UpdateVenueDto
     [Required]
     [StringLength(200)]
     public string Name { get; set; } = string.Empty;
+
+    [StringLength(150)]
+    public string? ClubName { get; set; }
 
     [StringLength(200)]
     public string? AddressLine1 { get; set; }

@@ -38,10 +38,23 @@ public class CustomerOrdersController : ControllerBase
             if (request?.CustomerInfo == null || request?.PaymentInfo == null || 
                 !request.Items?.Any() == true)
             {
-                return BadRequest(new TicketOrderResultDto 
-                { 
-                    Success = false, 
-                    ErrorMessage = "Invalid order request" 
+                return BadRequest(new TicketOrderResultDto
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid order request"
+                });
+            }
+
+            // Installation master switch: when direct-to-customer sales are turned off, tickets
+            // arrive only via the external integration, so reject new purchases.
+            var salesEnabled = await _context.Venues
+                .Select(v => (bool?)v.TicketSalesEnabled).FirstOrDefaultAsync() ?? true;
+            if (!salesEnabled)
+            {
+                return BadRequest(new TicketOrderResultDto
+                {
+                    Success = false,
+                    ErrorMessage = "Ticket sales are currently disabled."
                 });
             }
 

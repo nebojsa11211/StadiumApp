@@ -61,6 +61,21 @@
 .wl-season{text-align:center;margin:0 auto 10px;font-size:11px;font-weight:800;
     letter-spacing:.18em;text-transform:uppercase;color:#00E28A}
 
+/* Horizontally swipeable strip of upcoming fixtures. Bleeds to the wrap's 24px edges so cards
+   scroll edge-to-edge; snaps each card to centre. A single fixture grows to fill the width so it
+   looks identical to the old single-card layout. */
+.wl-fixture-scroll{
+    display:flex;gap:14px;
+    overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scroll-padding:0 24px;
+    margin:0 -24px;padding:2px 24px 6px;
+    scrollbar-width:none;
+}
+.wl-fixture-scroll::-webkit-scrollbar{display:none}
+.wl-fixture-scroll .vs-card{flex:1 0 min(84%,340px);scroll-snap-align:center}
+
 .vs-card{
     position:relative;overflow:hidden;cursor:pointer;
     border:1px solid rgba(255,255,255,.16);border-radius:20px;
@@ -90,6 +105,9 @@
 .crest-mono{position:absolute;inset:0;display:grid;place-items:center;padding-bottom:8px;
     font-weight:900;font-style:italic;font-size:19px;letter-spacing:-.03em;
     text-shadow:0 1px 3px rgba(0,0,0,.5)}
+/* real uploaded club logo, sat inside the shield (replaces the monogram when present) */
+.crest-logo{position:absolute;inset:0;margin:auto;width:62%;height:62%;
+    margin-top:14%;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))}
 
 .vs-name{font-size:14px;font-weight:800;letter-spacing:-.01em;color:#fff;
     text-align:center;line-height:1.2;max-width:14ch}
@@ -107,10 +125,6 @@
 .vs-solo-title{font-size:19px;font-weight:900;letter-spacing:-.02em;color:#fff;
     text-align:center;line-height:1.15;text-wrap:balance}
 .vs-solo .vs-mid{padding-top:2px}
-
-.vs-foot{margin-top:16px;padding-top:13px;border-top:1px solid rgba(255,255,255,.09);
-    text-align:center;font-size:12px;font-weight:800;letter-spacing:.16em;
-    text-transform:uppercase;color:#7E8496}
 
 .fixture-empty{font-size:13px;font-weight:600;color:var(--muted);
     background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;text-align:center}

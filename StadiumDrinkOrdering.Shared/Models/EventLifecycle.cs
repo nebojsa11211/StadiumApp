@@ -57,6 +57,31 @@ public static class EventLifecycle
         status is EventStatus.Completed or EventStatus.Cancelled;
 
     /// <summary>
+    /// System (time-driven) rule: any non-terminal event whose scheduled window has fully elapsed is
+    /// closed out to <see cref="EventStatus.Completed"/> by the auto-completer — including events that
+    /// never went live (Planned/OnSale/SoldOut). This is deliberately broader than the manual
+    /// <see cref="AllowedTransitions"/>: an admin cannot "complete" a future event by hand, but the
+    /// passage of its date will. Already-terminal events (Completed/Cancelled) are left untouched.
+    /// </summary>
+    public static bool CanAutoComplete(EventStatus status) => !IsTerminal(status);
+
+    /// <summary>
+    /// An event's details (name, date, pricing, etc.) may be edited only while it has not reached a
+    /// terminal state. Once an event is <see cref="EventStatus.Completed"/> (a past event — including
+    /// those auto-closed when their date elapsed) or <see cref="EventStatus.Cancelled"/>, its record
+    /// is frozen for historical/audit integrity.
+    /// </summary>
+    public static bool CanEdit(EventStatus status) => !IsTerminal(status);
+
+    /// <summary>Reason surfaced to the UI/API when an edit is blocked by lifecycle state.</summary>
+    public static string EditBlockedReason(EventStatus status) => status switch
+    {
+        EventStatus.Completed => "This event has already taken place and can no longer be edited.",
+        EventStatus.Cancelled => "This event has been cancelled and can no longer be edited.",
+        _ => "This event is in a terminal state and can no longer be edited."
+    };
+
+    /// <summary>
     /// Phase 1: tickets/seats may be sold only while the event is explicitly on sale.
     /// Planned (not yet published), SoldOut, in-progress and past events cannot sell.
     /// </summary>

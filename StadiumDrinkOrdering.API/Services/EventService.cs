@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Data;
+using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 
 namespace StadiumDrinkOrdering.API.Services;
@@ -20,17 +21,38 @@ public interface IEventService
     Task<bool> DeleteEventAsync(int id);
     Task<bool> ActivateEventAsync(int id);
     Task<bool> DeactivateEventAsync(int id);
-    Task<EventStatusTransitionResult> TransitionEventStatusAsync(int id, EventStatus newStatus);
+    /// <summary>
+    /// Moves an event to <paramref name="newStatus"/>. Manual transitions (default) are validated
+    /// against <see cref="EventLifecycle.AllowedTransitions"/>. Pass <paramref name="systemAutoClose"/>
+    /// = true only from the time-driven auto-completer, which may close any non-terminal event to
+    /// <see cref="EventStatus.Completed"/> once its window has elapsed (see <see cref="EventLifecycle.CanAutoComplete"/>).
+    /// </summary>
+    Task<EventStatusTransitionResult> TransitionEventStatusAsync(int id, EventStatus newStatus, bool systemAutoClose = false);
     Task<EventAnalyticsResponse?> GetEventAnalyticsAsync(int id);
     Task<IEnumerable<Event>> GetActiveEventsAsync();
     /// <summary>
-    /// Transitions any event that is still in a live phase (Active/InProgress) but whose time
-    /// window has already elapsed to <see cref="EventStatus.Completed"/>. Returns the number of
-    /// events closed. Called opportunistically on read so stale-Active events don't linger.
+    /// Transitions any non-terminal event whose time window has already elapsed to
+    /// <see cref="EventStatus.Completed"/> — both stale-live events (Active/InProgress) and ones that
+    /// never went live (Planned/OnSale/SoldOut) but whose date has passed. Returns the number of
+    /// events closed. Called opportunistically on read so past-dated events don't linger.
     /// </summary>
     Task<int> AutoCompleteEndedEventsAsync();
     Task<IEnumerable<Event>> GetUpcomingEventsAsync();
     Task<IEnumerable<Event>> GetPastEventsAsync();
+
+    /// <summary>
+    /// Lists every overlay sector together with its default price and, when <paramref name="eventId"/>
+    /// is supplied, the current per-event price override for that sector. Powers the "Sector prices"
+    /// editor in the Admin event modal. For a new (unsaved) event pass null.
+    /// </summary>
+    Task<List<EventSectorPriceDto>> GetSectorPricingAsync(int? eventId);
+
+    /// <summary>
+    /// Replaces an event's per-sector price overrides with <paramref name="prices"/>: entries with a
+    /// non-null price are stored, everything else is cleared. A null <paramref name="prices"/> is a
+    /// no-op (leaves existing overrides untouched).
+    /// </summary>
+    Task SaveSectorPricesAsync(int eventId, IEnumerable<EventSectorPriceInputDto>? prices);
 }
 
 /// <summary>
@@ -69,13 +91,15 @@ public class EventService : IEventService
     {
         try
         {
-            // Use raw SQL for much better performance
+            // Close out any past-dated events before listing so the admin grid never shows a
+            // finished (or never-started) event still sitting in a future status like Planned.
+            await AutoCompleteEndedEventsAsync();
+
+            // Raw SQL for performance (skips EF LINQ translation and does not load navigations).
+            // Select all columns (e.*) so adding a mapped Event column never breaks materialization —
+            // FromSqlRaw requires every mapped column to be present in the result set.
             var sql = @"
-                SELECT
-                    e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"", e.""EventEndDate"",
-                    e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
-                    e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
-                e.""ExternalEventId"", e.""SourceSystem"", e.""SeasonId""
+                SELECT e.*
                 FROM ""Events"" e
                 {0}
                 ORDER BY e.""EventDate""";
@@ -201,6 +225,9 @@ public class EventService : IEventService
 
         existingEvent.EventName = eventItem.EventName;
         existingEvent.EventType = eventItem.EventType;
+        existingEvent.HomeTeam = eventItem.HomeTeam;
+        existingEvent.AwayTeam = eventItem.AwayTeam;
+        existingEvent.Location = eventItem.Location;
         existingEvent.EventDate = eventItem.EventDate;
         existingEvent.EventEndDate = eventItem.EventEndDate;
         existingEvent.VenueId = eventItem.VenueId;
@@ -214,6 +241,80 @@ public class EventService : IEventService
         await _context.SaveChangesAsync();
         _logger.LogInformation("Updated event: {EventName} (ID: {EventId})", existingEvent.EventName, id);
         return existingEvent;
+    }
+
+    public async Task<List<EventSectorPriceDto>> GetSectorPricingAsync(int? eventId)
+    {
+        var overlays = await _context.StadiumSectorOverlays
+            .AsNoTracking()
+            .Where(o => !o.IsDeleted)
+            .OrderBy(o => o.SectorCode)
+            .ToListAsync();
+
+        var overrides = eventId == null
+            ? new Dictionary<int, decimal>()
+            : await _context.EventSectorPrices
+                .AsNoTracking()
+                .Where(p => p.EventId == eventId.Value)
+                .ToDictionaryAsync(p => p.SectorOverlayId, p => p.Price);
+
+        return overlays.Select(o => new EventSectorPriceDto
+        {
+            SectorOverlayId = o.Id,
+            SectorCode = o.SectorCode,
+            SectorName = o.Name,
+            Type = o.Type,
+            SectorDefaultPrice = o.Price,
+            EventPrice = overrides.TryGetValue(o.Id, out var p) ? p : (decimal?)null
+        }).ToList();
+    }
+
+    public async Task SaveSectorPricesAsync(int eventId, IEnumerable<EventSectorPriceInputDto>? prices)
+    {
+        if (prices == null)
+            return;
+
+        // Keep only the last non-null price per sector (guards against duplicate rows in the payload).
+        var desired = prices
+            .Where(p => p.Price.HasValue)
+            .GroupBy(p => p.SectorOverlayId)
+            .ToDictionary(g => g.Key, g => g.Last().Price!.Value);
+
+        // Only apply overrides to sectors that actually exist, so a stale payload can't create orphans.
+        var validSectorIds = await _context.StadiumSectorOverlays
+            .Where(o => !o.IsDeleted)
+            .Select(o => o.Id)
+            .ToListAsync();
+        var validSet = validSectorIds.ToHashSet();
+
+        var existing = await _context.EventSectorPrices
+            .Where(p => p.EventId == eventId)
+            .ToListAsync();
+        var existingBySector = existing.ToDictionary(p => p.SectorOverlayId);
+
+        // Remove overrides no longer wanted (cleared or for a sector that vanished).
+        foreach (var row in existing)
+        {
+            if (!desired.TryGetValue(row.SectorOverlayId, out var price) || !validSet.Contains(row.SectorOverlayId))
+                _context.EventSectorPrices.Remove(row);
+            else
+                row.Price = price; // Update in place.
+        }
+
+        // Add overrides for sectors that didn't have one yet.
+        foreach (var (sectorId, price) in desired)
+        {
+            if (!validSet.Contains(sectorId) || existingBySector.ContainsKey(sectorId))
+                continue;
+            _context.EventSectorPrices.Add(new EventSectorPrice
+            {
+                EventId = eventId,
+                SectorOverlayId = sectorId,
+                Price = price
+            });
+        }
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task<bool> DeleteEventAsync(int id)
@@ -315,14 +416,18 @@ public class EventService : IEventService
         return true;
     }
 
-    public async Task<EventStatusTransitionResult> TransitionEventStatusAsync(int id, EventStatus newStatus)
+    public async Task<EventStatusTransitionResult> TransitionEventStatusAsync(int id, EventStatus newStatus, bool systemAutoClose = false)
     {
         var eventItem = await _context.Events.FindAsync(id);
         if (eventItem == null)
             return EventStatusTransitionResult.Missing();
 
         var current = eventItem.Status;
-        if (!EventLifecycle.CanTransition(current, newStatus))
+        // Manual transitions follow the state machine; the time-driven auto-completer may additionally
+        // close any non-terminal event straight to Completed once its window has passed.
+        var permitted = EventLifecycle.CanTransition(current, newStatus)
+            || (systemAutoClose && newStatus == EventStatus.Completed && EventLifecycle.CanAutoComplete(current));
+        if (!permitted)
         {
             var allowed = string.Join(", ", EventLifecycle.AllowedNextStatuses(current));
             var message = string.IsNullOrEmpty(allowed)
@@ -463,15 +568,16 @@ public class EventService : IEventService
     {
         var now = DateTime.UtcNow;
 
-        // Pull the (small) set of currently-live events and evaluate the end-of-window in memory
-        // to avoid Npgsql DateTime.Kind pitfalls on timestamptz comparisons. The window mirrors
-        // Event.IsLiveAt exactly: closed at EventEndDate when set, otherwise at end of the start day.
-        var liveEvents = await _context.Events
-            .Where(e => e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
+        // Pull every non-terminal event (including ones that never went live — Planned/OnSale/SoldOut)
+        // and evaluate the end-of-window in memory to avoid Npgsql DateTime.Kind pitfalls on
+        // timestamptz comparisons. The window mirrors Event.IsLiveAt exactly: closed at EventEndDate
+        // when set, otherwise at end of the start day.
+        var openEvents = await _context.Events
+            .Where(e => e.Status != EventStatus.Completed && e.Status != EventStatus.Cancelled)
             .Select(e => new { e.Id, e.EventDate, e.EventEndDate })
             .ToListAsync();
 
-        var endedIds = liveEvents
+        var endedIds = openEvents
             .Where(e => e.EventEndDate.HasValue
                 ? now > e.EventEndDate.Value
                 : now.Date > e.EventDate.Date)
@@ -479,7 +585,7 @@ public class EventService : IEventService
             .ToList();
 
         foreach (var id in endedIds)
-            await TransitionEventStatusAsync(id, EventStatus.Completed);
+            await TransitionEventStatusAsync(id, EventStatus.Completed, systemAutoClose: true);
 
         if (endedIds.Count > 0)
             _logger.LogInformation("Auto-completed {Count} ended event(s): {EventIds}",
@@ -496,11 +602,7 @@ public class EventService : IEventService
 
         // Use raw SQL for better performance
         var sql = @"
-            SELECT
-                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"", e.""EventEndDate"",
-                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
-                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
-                e.""ExternalEventId"", e.""SourceSystem"", e.""SeasonId""
+            SELECT e.*
             FROM ""Events"" e
             WHERE e.""IsActive"" = true
             ORDER BY e.""EventDate""";
@@ -516,11 +618,7 @@ public class EventService : IEventService
         var now = DateTime.UtcNow;
         // Use raw SQL for better performance
         var sql = @"
-            SELECT
-                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"", e.""EventEndDate"",
-                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
-                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
-                e.""ExternalEventId"", e.""SourceSystem"", e.""SeasonId""
+            SELECT e.*
             FROM ""Events"" e
             WHERE e.""IsActive"" = true AND e.""EventDate"" > {0}
             ORDER BY e.""EventDate""";
@@ -536,11 +634,7 @@ public class EventService : IEventService
         var now = DateTime.UtcNow;
         // Use raw SQL for better performance
         var sql = @"
-            SELECT
-                e.""Id"", e.""EventName"", e.""EventType"", e.""EventDate"", e.""EventEndDate"",
-                e.""VenueId"", e.""TotalSeats"", e.""IsActive"", e.""Status"", e.""CreatedAt"",
-                e.""UpdatedAt"", e.""Description"", e.""ImageUrl"", e.""BaseTicketPrice"",
-                e.""ExternalEventId"", e.""SourceSystem"", e.""SeasonId""
+            SELECT e.*
             FROM ""Events"" e
             WHERE e.""EventDate"" < {0}
             ORDER BY e.""EventDate"" DESC";

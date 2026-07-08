@@ -280,14 +280,8 @@
   <data name="Index_AwayTeamLabel" xml:space="preserve">
     <value>Away team</value>
   </data>
-  <data name="Index_EventType_Football" xml:space="preserve">
-    <value>Football</value>
-  </data>
-  <data name="Index_EventType_Basketball" xml:space="preserve">
-    <value>Basketball</value>
-  </data>
-  <data name="Index_EventType_Hockey" xml:space="preserve">
-    <value>Hockey</value>
+  <data name="Index_EventType_Match" xml:space="preserve">
+    <value>Match</value>
   </data>
   <data name="Index_EventType_Concert" xml:space="preserve">
     <value>Concert</value>

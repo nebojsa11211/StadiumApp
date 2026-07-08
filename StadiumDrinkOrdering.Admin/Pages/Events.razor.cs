@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.Shared.Pricing;
 using StadiumDrinkOrdering.Admin.Services;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
@@ -14,6 +15,23 @@ public partial class Events : ComponentBase
 
     private List<EventDto>? events;
     private List<SeasonDto>? seasons;
+    /// <summary>
+    /// The configured venue. Every event is held in this one stadium, so its address is the shared
+    /// event location (events no longer carry a free-typed location). Null while loading / if the
+    /// venue endpoint is unreachable. Also the source of <see cref="venueClubs"/>.
+    /// </summary>
+    private VenueDto? venue;
+    /// <summary>
+    /// The venue's resident clubs, used to populate the Home-team dropdown for "Match" events. Null
+    /// while loading; empty when none are configured (which blocks creating a Match — see SaveEvent).
+    /// </summary>
+    private List<ClubDto>? venueClubs;
+    /// <summary>
+    /// Real stadium capacity (sum of the drawing-tool overlay sectors), loaded once. Every event is
+    /// held in the same physical stadium, so this is shown read-only as the event capacity instead
+    /// of a free-typed number. 0 means no stadium has been drawn yet.
+    /// </summary>
+    private int realStadiumCapacity;
     private string seasonFilterValue = ""; // "" = all, "none" = no season, else season id
     private EventDto? editingEvent;
     private bool showEventModal = false;
@@ -25,10 +43,91 @@ public partial class Events : ComponentBase
 
     private EventFormModel eventForm = new();
 
+    /// <summary>
+    /// Per-sector price rows shown in the modal's "Sector prices" editor. Null while loading. Each
+    /// row's <see cref="EventSectorPriceDto.EventPrice"/> is bound to its input; null there means the
+    /// sector uses its default price for this event.
+    /// </summary>
+    private List<EventSectorPriceDto>? sectorPrices;
+
+    /// <summary>
+    /// Event types offered directly in the dropdown. A value of "Other" (not listed here) reveals a
+    /// free-text box so any other type can be entered. "Match" is the default/typical value.
+    /// </summary>
+    private static readonly string[] KnownEventTypes = { "Match", "Concert" };
+
+    /// <summary>
+    /// The type string to persist: the dropdown selection, unless "Other" is chosen, in which case
+    /// the free-text value is used (falling back to the literal "Other" when left blank).
+    /// </summary>
+    private string ResolveEventType()
+    {
+        if (eventForm.EventType == "Other")
+            return string.IsNullOrWhiteSpace(eventForm.EventTypeCustom) ? "Other" : eventForm.EventTypeCustom.Trim();
+        return string.IsNullOrWhiteSpace(eventForm.EventType) ? "Match" : eventForm.EventType;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await LoadEvents();
         await LoadSeasons();
+        await LoadStadiumCapacity();
+        await LoadVenue();
+    }
+
+    /// <summary>
+    /// Loads the venue: its clubs feed the Match home-team picker, and its address is the shared
+    /// location shown for every event. Never throws.
+    /// </summary>
+    private async Task LoadVenue()
+    {
+        try
+        {
+            venue = await ApiService.GetAsync<VenueDto>("venue");
+            venueClubs = venue?.Clubs ?? new List<ClubDto>();
+        }
+        catch
+        {
+            venue = null;
+            venueClubs = new List<ClubDto>();
+        }
+    }
+
+    /// <summary>
+    /// The shared event location: the venue name plus city from Venue Settings (e.g.
+    /// "Stadion Rujevica · Rijeka"), falling back to just the name, or "—" if the venue is unavailable.
+    /// </summary>
+    private string VenueLocation
+    {
+        get
+        {
+            var name = venue?.Name;
+            if (string.IsNullOrWhiteSpace(name)) return "—";
+            return string.IsNullOrWhiteSpace(venue?.City) ? name : $"{name} · {venue!.City}";
+        }
+    }
+
+    /// <summary>
+    /// The location to display for an event: its own stored value (e.g. an externally-ingested
+    /// event that carries one), otherwise the shared venue location.
+    /// </summary>
+    private string DisplayLocation(EventDto evt) =>
+        string.IsNullOrWhiteSpace(evt.Location) ? VenueLocation : evt.Location!;
+
+    /// <summary>The venue's primary club name, or the first club, used as the default home team.</summary>
+    private string? DefaultHomeTeam =>
+        venueClubs?.FirstOrDefault(c => c.IsPrimary)?.Name ?? venueClubs?.FirstOrDefault()?.Name;
+
+    private async Task LoadStadiumCapacity()
+    {
+        try
+        {
+            realStadiumCapacity = await ApiService.GetAsync<int>("events/stadium-capacity");
+        }
+        catch
+        {
+            realStadiumCapacity = 0;
+        }
     }
 
     private async Task LoadSeasons()
@@ -81,54 +180,112 @@ public partial class Events : ComponentBase
         }
     }
 
-    private void ShowCreateEventModal()
+    private async Task ShowCreateEventModal()
     {
         editingEvent = null;
         eventForm = new EventFormModel
         {
+            EventType = "Match",
+            // Default the home team to the venue's primary/first resident club (a Match is home-hosted).
+            HomeTeam = DefaultHomeTeam,
             Date = DateTime.Now.AddDays(30),
             EndDate = DateTime.Now.AddDays(30).AddHours(2),
             IsActive = true,
-            Capacity = 50000,
+            // Capacity is the real stadium seat count (read-only in the form); server is authoritative.
+            Capacity = realStadiumCapacity,
             BasePrice = 50,
             SeasonId = seasons?.FirstOrDefault(s => s.IsCurrent)?.Id
         };
+        sectorPrices = null;
         showEventModal = true;
+        await LoadSectorPrices(null);
     }
 
-    private void ShowEditEventModal(EventDto evt)
+    private async Task ShowEditEventModal(EventDto evt)
     {
+        // Past/terminal events are frozen — the button is disabled, but guard the entry point too.
+        if (!EventLifecycle.CanEdit(evt.Status))
+        {
+            ShowAlert(EventLifecycle.EditBlockedReason(evt.Status), "danger");
+            return;
+        }
+
         editingEvent = evt;
+        var type = string.IsNullOrWhiteSpace(evt.EventType) ? "Match" : evt.EventType;
+        var isKnownType = KnownEventTypes.Contains(type);
         eventForm = new EventFormModel
         {
             Name = evt.Name,
+            // Known types map to the dropdown; anything else falls under "Other" with the value in the custom box.
+            EventType = isKnownType ? type : "Other",
+            EventTypeCustom = isKnownType ? "" : type,
+            HomeTeam = evt.HomeTeam,
+            AwayTeam = evt.AwayTeam,
             Description = evt.Description,
             Date = evt.Date ?? DateTime.Now,
             EndDate = evt.EndDate ?? (evt.Date ?? DateTime.Now).AddHours(2),
-            Location = evt.Location ?? "",
-            Capacity = evt.Capacity,
+            // Read-only in the form; prefer the live stadium capacity, falling back to the stored value.
+            Capacity = realStadiumCapacity > 0 ? realStadiumCapacity : evt.Capacity,
             BasePrice = evt.BasePrice,
             IsActive = evt.IsActive,
             SeasonId = evt.SeasonId
         };
+        sectorPrices = null;
         showEventModal = true;
+        await LoadSectorPrices(evt.Id);
     }
+
+    /// <summary>
+    /// Loads the sector-price rows (defaults + any per-event overrides) for the modal. Pass the
+    /// event id when editing; null for a new event (defaults only).
+    /// </summary>
+    private async Task LoadSectorPrices(int? eventId)
+    {
+        try
+        {
+            var url = eventId.HasValue ? $"events/sector-prices?eventId={eventId.Value}" : "events/sector-prices";
+            sectorPrices = await ApiService.GetAsync<List<EventSectorPriceDto>>(url) ?? new List<EventSectorPriceDto>();
+        }
+        catch
+        {
+            sectorPrices = new List<EventSectorPriceDto>();
+        }
+    }
+
+    /// <summary>
+    /// The default price shown for a sector row: the sector's own explicit price, or the current
+    /// form base price × the sector-type multiplier. Recomputes live as the admin edits base price.
+    /// </summary>
+    private decimal EffectiveDefault(EventSectorPriceDto row)
+        => SectorPricing.Default(row.SectorDefaultPrice, eventForm.BasePrice, row.Type);
+
+    /// <summary>Maps the editor rows to the price-override payload sent with a save.</summary>
+    private List<EventSectorPriceInputDto>? BuildSectorPriceInputs()
+        => sectorPrices?
+            .Select(r => new EventSectorPriceInputDto { SectorOverlayId = r.SectorOverlayId, Price = r.EventPrice })
+            .ToList();
 
     private void HideEventModal()
     {
         showEventModal = false;
         editingEvent = null;
         eventForm = new();
+        sectorPrices = null;
     }
 
     private async Task SaveEvent()
     {
         if (string.IsNullOrWhiteSpace(eventForm.Name) ||
-            string.IsNullOrWhiteSpace(eventForm.Location) ||
-            eventForm.Capacity <= 0 ||
             eventForm.BasePrice <= 0)
         {
             ShowAlert("Please fill in all required fields", "danger");
+            return;
+        }
+
+        // Capacity is the real stadium seat count (read-only); it is 0 only when no stadium exists yet.
+        if (eventForm.Capacity <= 0)
+        {
+            ShowAlert("The stadium has no seats yet. Draw the stadium layout before creating events.", "danger");
             return;
         }
 
@@ -137,6 +294,25 @@ public partial class Events : ComponentBase
             ShowAlert("The event end time must be after the start time", "danger");
             return;
         }
+
+        // A Match must name both sides; its home team is one of the venue's resident clubs.
+        if (eventForm.EventType == "Match")
+        {
+            if (venueClubs is null || venueClubs.Count == 0)
+            {
+                ShowAlert("Add a resident club in Venue Settings before creating a Match event.", "danger");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(eventForm.HomeTeam) || string.IsNullOrWhiteSpace(eventForm.AwayTeam))
+            {
+                ShowAlert("A Match event requires both a home team and an away team.", "danger");
+                return;
+            }
+        }
+
+        // Teams only belong to a Match; drop them for other types.
+        var homeTeam = eventForm.EventType == "Match" ? eventForm.HomeTeam?.Trim() : null;
+        var awayTeam = eventForm.EventType == "Match" ? eventForm.AwayTeam?.Trim() : null;
 
         isSaving = true;
         try
@@ -147,14 +323,19 @@ public partial class Events : ComponentBase
                 var createDto = new CreateEventDto
                 {
                     Name = eventForm.Name.Trim(),
+                    EventType = ResolveEventType(),
+                    HomeTeam = homeTeam,
+                    AwayTeam = awayTeam,
                     Description = string.IsNullOrWhiteSpace(eventForm.Description) ? null : eventForm.Description.Trim(),
                     Date = eventForm.Date,
                     EndDate = eventForm.EndDate,
-                    Location = eventForm.Location.Trim(),
+                    // Location is intentionally not set: every event is at the one venue, so the UI
+                    // derives it from Venue Settings rather than storing a per-event copy.
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
-                    SeasonId = eventForm.SeasonId
+                    SeasonId = eventForm.SeasonId,
+                    SectorPrices = BuildSectorPriceInputs()
                 };
 
                 var response = await ApiService.Http.PostAsync("events", createDto);
@@ -177,14 +358,19 @@ public partial class Events : ComponentBase
                 var updateDto = new UpdateEventDto
                 {
                     Name = eventForm.Name.Trim(),
+                    EventType = ResolveEventType(),
+                    HomeTeam = homeTeam,
+                    AwayTeam = awayTeam,
                     Description = string.IsNullOrWhiteSpace(eventForm.Description) ? null : eventForm.Description.Trim(),
                     Date = eventForm.Date,
                     EndDate = eventForm.EndDate,
-                    Location = eventForm.Location.Trim(),
+                    // Location left null on purpose: the API preserves any existing value (e.g. an
+                    // externally-ingested location) and the UI otherwise shows the venue location.
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
-                    SeasonId = eventForm.SeasonId
+                    SeasonId = eventForm.SeasonId,
+                    SectorPrices = BuildSectorPriceInputs()
                 };
 
                 var response = await ApiService.Http.PostAsync($"events/{editingEvent.Id}", updateDto);
@@ -346,10 +532,17 @@ public partial class Events : ComponentBase
     private class EventFormModel
     {
         public string Name { get; set; } = "";
+        /// <summary>Dropdown selection: "Match", "Concert", or "Other" (which reveals <see cref="EventTypeCustom"/>).</summary>
+        public string EventType { get; set; } = "Match";
+        /// <summary>Free-text type used only when <see cref="EventType"/> is "Other".</summary>
+        public string EventTypeCustom { get; set; } = "";
+        /// <summary>Home team for a "Match" (a resident club's name). Ignored for other types.</summary>
+        public string? HomeTeam { get; set; }
+        /// <summary>Away/visiting team for a "Match" (free text). Ignored for other types.</summary>
+        public string? AwayTeam { get; set; }
         public string? Description { get; set; }
         public DateTime Date { get; set; } = DateTime.Now.AddDays(30);
         public DateTime EndDate { get; set; } = DateTime.Now.AddDays(30).AddHours(2);
-        public string Location { get; set; } = "";
         public int Capacity { get; set; }
         public decimal BasePrice { get; set; }
         public bool IsActive { get; set; } = true;

@@ -678,7 +678,7 @@ public class DataGridController : ControllerBase
         {
             case "event":
                 var events = new List<Event>();
-                var eventTypes = new[] { "Football", "Basketball", "Concert", "Baseball", "Hockey" };
+                var eventTypes = new[] { "Match", "Concert", "Other" };
                 var eventNames = new[] { "Championship Final", "Season Opener", "Classic Match", "Derby", "Tournament" };
                 
                 for (int i = 0; i < count; i++)

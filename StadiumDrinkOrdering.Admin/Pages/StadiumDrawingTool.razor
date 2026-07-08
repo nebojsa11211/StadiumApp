@@ -414,6 +414,7 @@
                     VariableSeatingData = db.VariableSeatingData,
                     Type = db.Type,
                     Price = db.Price,
+                    SeasonTicketPrice = db.SeasonTicketPrice,
                     Color = db.Color,
                     CreatedDate = db.CreatedDate,
                     ModifiedDate = db.ModifiedDate
@@ -512,6 +513,7 @@
         // Classification
         public string Type { get; set; } = "standard";
         public decimal? Price { get; set; }
+        public decimal? SeasonTicketPrice { get; set; }
         public string Color { get; set; } = "#007bff";
 
         // Metadata
@@ -801,6 +803,7 @@
                     VariableSeatingData = currentSectorData.VariableSeatingData,
                     Type = currentSectorData.Type,
                     Price = currentSectorData.Price,
+                    SeasonTicketPrice = currentSectorData.SeasonTicketPrice,
                     Color = currentSectorData.Color
                 };
 
@@ -965,6 +968,7 @@
                 VariableSeatingData = sector.VariableSeatingData,
                 Type = sector.Type,
                 Price = sector.Price,
+                SeasonTicketPrice = sector.SeasonTicketPrice,
                 Color = sector.Color,
                 CreatedDate = sector.CreatedDate,
                 ModifiedDate = DateTime.UtcNow
@@ -1001,6 +1005,7 @@
                     SeatsPerRow = modifiedSectorData.SeatsPerRow,
                     Type = modifiedSectorData.Type,
                     Price = modifiedSectorData.Price,
+                    SeasonTicketPrice = modifiedSectorData.SeasonTicketPrice,
                     Color = modifiedSectorData.Color
                 };
 
@@ -1073,6 +1078,7 @@
             VariableSeatingData = sector.VariableSeatingData,
             Type = sector.Type,
             Price = sector.Price,
+            SeasonTicketPrice = sector.SeasonTicketPrice,
             Color = sector.Color,
             CreatedDate = sector.CreatedDate,
             ModifiedDate = sector.ModifiedDate
@@ -1098,6 +1104,7 @@
             VariableSeatingData = data.VariableSeatingData,
             Type = data.Type,
             Price = data.Price,
+            SeasonTicketPrice = data.SeasonTicketPrice,
             Color = data.Color,
             CreatedDate = data.CreatedDate,
             ModifiedDate = DateTime.UtcNow
@@ -1114,6 +1121,7 @@
         sector.VariableSeatingData = data.VariableSeatingData;
         sector.Type = data.Type;
         sector.Price = data.Price;
+        sector.SeasonTicketPrice = data.SeasonTicketPrice;
         sector.Color = data.Color;
         sector.ModifiedDate = DateTime.UtcNow;
     }

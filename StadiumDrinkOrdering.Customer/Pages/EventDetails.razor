@@ -60,56 +60,68 @@ else
             </div>
         }
 
-        <div id="customer-event-details-section-head" class="ev-section-head">
-            <span class="label">Odaberi tribinu</span>
-            <span class="ev-hint">Dodirni tribinu na karti ili u popisu</span>
-        </div>
-
-        @if (eventDetails.SectionAvailability.Any())
+        @if (!salesEnabled)
         {
-            <div id="customer-event-details-stadium" class="ev-stadium">
-                <StadiumSelectorCanvas @ref="stadiumCanvas"
-                                       Sections="eventDetails.SectionAvailability"
-                                       OnSectorSelected="OnStadiumSectorSelected" />
-            </div>
-
-            <div id="customer-event-details-sections" class="ev-sections">
-                @foreach (var sec in eventDetails.SectionAvailability.Values.OrderBy(s => s.SectionName))
-                {
-                    var soldOut = sec.AvailableSeats == 0;
-                    <button id="customer-event-details-section-btn-@sec.SectionId" class="ev-sec @(soldOut ? "sold" : "")" disabled="@soldOut"
-                            @onclick="@(() => ViewSectionSeats(sec.SectionId))">
-                        <div id="customer-event-details-section-left-@sec.SectionId" class="ev-sec-l">
-                            <span class="ev-sec-name">@sec.SectionName</span>
-                            <span class="ev-sec-avail @AvailClass(sec.AvailableSeats)">
-                                @if (soldOut)
-                                {
-                                    <span>Rasprodano</span>
-                                }
-                                else
-                                {
-                                    <span>@sec.AvailableSeats / @sec.TotalSeats slobodno</span>
-                                }
-                            </span>
-                        </div>
-                        <div id="customer-event-details-section-right-@sec.SectionId" class="ev-sec-r">
-                            <span class="ev-sec-price tnum">€@sec.BasePrice.ToString("F0")</span>
-                            @if (!soldOut)
-                            {
-                                <span class="ev-sec-chev">›</span>
-                            }
-                        </div>
-                    </button>
-                }
+            <div id="customer-event-details-sales-disabled" class="ev-empty">
+                🎟️ Prodaja ulaznica putem aplikacije trenutno nije dostupna.
             </div>
         }
         else
         {
-            <div id="customer-event-details-empty" class="ev-empty">Još nema objavljenih mjesta za ovu utakmicu.</div>
+            <div id="customer-event-details-section-head" class="ev-section-head">
+                <span class="label">Odaberi tribinu</span>
+                <span class="ev-hint">Dodirni tribinu na karti ili u popisu</span>
+            </div>
+
+            @if (eventDetails.SectionAvailability.Any())
+            {
+                <div id="customer-event-details-stadium" class="ev-stadium">
+                    <StadiumSelectorCanvas @ref="stadiumCanvas"
+                                           Sections="eventDetails.SectionAvailability"
+                                           OnSectorSelected="OnStadiumSectorSelected" />
+                </div>
+
+                <div id="customer-event-details-sections" class="ev-sections">
+                    @foreach (var sec in eventDetails.SectionAvailability.Values.OrderBy(s => s.SectionName))
+                    {
+                        var soldOut = sec.AvailableSeats == 0;
+                        <button id="customer-event-details-section-btn-@sec.SectionId" class="ev-sec @(soldOut ? "sold" : "")" disabled="@soldOut"
+                                @onclick="@(() => ViewSectionSeats(sec.SectionId))">
+                            <div id="customer-event-details-section-left-@sec.SectionId" class="ev-sec-l">
+                                <span class="ev-sec-name">@sec.SectionName</span>
+                                <span class="ev-sec-avail @AvailClass(sec.AvailableSeats)">
+                                    @if (soldOut)
+                                    {
+                                        <span>Rasprodano</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@sec.AvailableSeats / @sec.TotalSeats slobodno</span>
+                                    }
+                                </span>
+                            </div>
+                            <div id="customer-event-details-section-right-@sec.SectionId" class="ev-sec-r">
+                                <span class="ev-sec-price tnum">€@sec.BasePrice.ToString("F0")</span>
+                                @if (!soldOut)
+                                {
+                                    <span class="ev-sec-chev">›</span>
+                                }
+                            </div>
+                        </button>
+                    }
+                </div>
+            }
+            else
+            {
+                <div id="customer-event-details-empty" class="ev-empty">Još nema objavljenih mjesta za ovu utakmicu.</div>
+            }
         }
     </div>
 
-    <CartBar Count="cartItems.Count" Total="CartTotal" Label="Tvoja košarica" OnView="() => showCart = true" />
+    @if (salesEnabled)
+    {
+        <CartBar Count="cartItems.Count" Total="CartTotal" Label="Tvoja košarica" OnView="() => showCart = true" />
+    }
 }
 
 @* ---- Seat selection sheet ---- *@
@@ -271,6 +283,7 @@ else
     private List<CartItemDto> cartItems = new();
     private bool isLoading = true;
     private bool isLoadingSeats = false;
+    private bool salesEnabled = true;
     private string? seatSheetError;
     private bool showCart = false;
     private string sessionId = "";
@@ -289,6 +302,7 @@ else
         if (string.IsNullOrEmpty(sessionId))
             sessionId = Guid.NewGuid().ToString();
 
+        salesEnabled = await ApiService.GetTicketSalesEnabledAsync();
         await LoadEventDetails();
     }
 

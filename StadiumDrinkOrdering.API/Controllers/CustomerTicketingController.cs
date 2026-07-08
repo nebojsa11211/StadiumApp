@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.Shared.Pricing;
 
 namespace StadiumDrinkOrdering.API.Controllers;
 
@@ -179,7 +180,12 @@ public class CustomerTicketingController : ControllerBase
             }
 
             var basePrice = evt.BaseTicketPrice ?? 50.00m;
-            var seatPrice = ResolveSectorPrice(overlay.Price, basePrice, overlay.Type);
+            // Per-event override for this sector (if any) wins over the sector's own default price.
+            var eventSectorPrice = await _context.EventSectorPrices
+                .Where(p => p.EventId == eventId && p.SectorOverlayId == sectionId)
+                .Select(p => (decimal?)p.Price)
+                .FirstOrDefaultAsync();
+            var seatPrice = SectorPricing.Resolve(eventSectorPrice, overlay.Price, basePrice, overlay.Type);
 
             var allSeats = await _overlaySeats.GetAllSeatsAsync(eventId, sectionId);
             var seats = allSeats
@@ -230,29 +236,13 @@ public class CustomerTicketingController : ControllerBase
                 AvailableSeats = summary.AvailableSeats,
                 // One price for the whole sector. This is the same resolution GetSectionAvailability
                 // uses for the individual seats, so the price shown in the sector list matches what
-                // the customer pays per seat.
-                BasePrice = ResolveSectorPrice(summary.Price, baseTicketPrice, summary.Type)
+                // the customer pays per seat. Per-event override → sector default → base×multiplier.
+                BasePrice = SectorPricing.Resolve(summary.EventPrice, summary.Price, baseTicketPrice, summary.Type)
             };
         }
 
         return result;
     }
-
-    /// <summary>
-    /// The price charged for every seat in a sector. An explicit per-sector price set by the admin
-    /// wins; otherwise it falls back to the event's base price scaled by the sector-type multiplier.
-    /// Either way, all seats in the sector get the same price.
-    /// </summary>
-    private static decimal ResolveSectorPrice(decimal? explicitSectorPrice, decimal basePrice, string? sectorType)
-        => explicitSectorPrice ?? CalculateOverlaySeatPrice(basePrice, sectorType);
-
-    private static decimal CalculateOverlaySeatPrice(decimal basePrice, string? sectorType) => (sectorType?.ToLowerInvariant()) switch
-    {
-        "vip" => basePrice * 2.0m,
-        "premium" => basePrice * 1.5m,
-        "family" => basePrice * 1.2m,
-        _ => basePrice
-    };
 
     private static List<PricingTierDto> BuildPricingTiersFromSectors(Dictionary<string, SectionAvailabilityInfo> sections)
     {

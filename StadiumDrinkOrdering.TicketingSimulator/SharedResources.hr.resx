@@ -280,14 +280,8 @@
   <data name="Index_AwayTeamLabel" xml:space="preserve">
     <value>Gost</value>
   </data>
-  <data name="Index_EventType_Football" xml:space="preserve">
-    <value>Nogomet</value>
-  </data>
-  <data name="Index_EventType_Basketball" xml:space="preserve">
-    <value>Košarka</value>
-  </data>
-  <data name="Index_EventType_Hockey" xml:space="preserve">
-    <value>Hokej</value>
+  <data name="Index_EventType_Match" xml:space="preserve">
+    <value>Utakmica</value>
   </data>
   <data name="Index_EventType_Concert" xml:space="preserve">
     <value>Koncert</value>

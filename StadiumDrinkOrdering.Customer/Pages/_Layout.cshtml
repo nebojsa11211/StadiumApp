@@ -69,7 +69,26 @@
     <script src="js/aria-enhancements.js"></script>
     <script src="js/a11y-test.js"></script>
 
-    <!-- PWA Installation -->
-    <script src="js/pwa-install.js"></script>
+    <!-- PWA Installation (service worker) — PRODUCTION ONLY.
+         In Development the SW caches CSS/JS cache-first, so after every rebuild the
+         browser paints stale styles until a hard refresh. We skip registration in dev
+         and actively remove any SW (and its caches) a developer already installed. -->
+    <environment include="Staging,Production">
+        <script src="js/pwa-install.js"></script>
+    </environment>
+    <environment include="Development">
+        <script>
+            // Dev only: unregister any previously-installed service worker and wipe its
+            // caches so rebuilt CSS/JS is always served fresh — no more Ctrl+Shift+R.
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations()
+                    .then(rs => rs.forEach(r => r.unregister()))
+                    .catch(() => { });
+            }
+            if (window.caches) {
+                caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => { });
+            }
+        </script>
+    </environment>
 </body>
 </html>

@@ -35,6 +35,13 @@ public class CurrentSeasonDto
     public int EventCount { get; set; }
     /// <summary>The next upcoming or live fixture, or null if the season has no future events.</summary>
     public UpcomingEventDto? NextEvent { get; set; }
+
+    /// <summary>
+    /// All upcoming (or currently live) fixtures in chronological order, for the scrollable fixture
+    /// strip on the public landing. The first entry is the same fixture as <see cref="NextEvent"/>.
+    /// Empty when the season/stadium has no future events.
+    /// </summary>
+    public List<UpcomingEventDto> UpcomingEvents { get; set; } = new();
 }
 
 /// <summary>A season fixture surfaced on the public landing.</summary>

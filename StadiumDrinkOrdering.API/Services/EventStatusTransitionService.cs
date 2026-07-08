@@ -1,15 +1,16 @@
 namespace StadiumDrinkOrdering.API.Services;
 
 /// <summary>
-/// Periodically closes out events whose time window has elapsed but that are still stuck in a live
-/// phase (Active/InProgress), transitioning them to <see cref="Shared.Models.EventStatus.Completed"/>.
-/// This is the scheduled counterpart to <see cref="IEventService.AutoCompleteEndedEventsAsync"/>,
-/// which otherwise only runs opportunistically on read — so a finished match no longer lingers as
-/// "live" (or as the season's "next fixture") until something happens to query the active set.
+/// Periodically closes out events whose time window has elapsed, transitioning them to
+/// <see cref="Shared.Models.EventStatus.Completed"/>. This covers both events stuck in a live phase
+/// (Active/InProgress) and events that never went live (Planned/OnSale/SoldOut) but whose date has
+/// already passed. It is the scheduled counterpart to <see cref="IEventService.AutoCompleteEndedEventsAsync"/>,
+/// which otherwise only runs opportunistically on read — so a finished (or never-started) event no
+/// longer lingers as "live"/"Planned" (or as the season's "next fixture") until something queries it.
 ///
 /// Enabled by default; gate off with <c>EventLifecycle:AutoCompleteEnabled=false</c>. The work is
-/// cheap (it scans only the handful of currently-live events), and each pass runs in its own DI
-/// scope so it never holds a DbContext/connection open between runs.
+/// cheap (it scans only the non-terminal events, projecting just id + dates), and each pass runs in
+/// its own DI scope so it never holds a DbContext/connection open between runs.
 /// </summary>
 public class EventStatusTransitionService : BackgroundService
 {

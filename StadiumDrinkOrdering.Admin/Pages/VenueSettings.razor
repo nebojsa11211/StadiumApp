@@ -4,8 +4,11 @@
 @using System.Net.Http.Headers
 @using Microsoft.AspNetCore.Components.Forms
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.Authentication.Interfaces
 @inject IHttpClientFactory HttpClientFactory
 @inject IConfiguration Configuration
+@inject ITokenStorageService TokenStorage
 @inject ILogger<VenueSettings> Logger
 @inject IStringLocalizer<SharedResources> L
 
@@ -57,9 +60,46 @@
                             <InputText id="admin-venue-name-input" class="form-control" @bind-Value="form.Name" />
                             <ValidationMessage For="() => form.Name" />
                         </div>
+                        <div class="col-md-6" id="admin-venue-clubname-group">
+                            <label class="form-label" for="admin-venue-clubname-input">@L["Venue_ClubName"]</label>
+                            <InputText id="admin-venue-clubname-input" class="form-control" @bind-Value="form.ClubName" />
+                            <ValidationMessage For="() => form.ClubName" />
+                        </div>
+
+                        <div class="col-12" id="admin-venue-clublogo-group">
+                            <label class="form-label" id="admin-venue-clublogo-label-text">@L["Venue_ClubLogo"]</label>
+                            <div class="d-flex align-items-center gap-3" id="admin-venue-clublogo-body">
+                                <div id="admin-venue-clublogo-preview" style="width:72px;height:72px;background:#f1f3f5;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                                    @if (venue.HasClubLogo)
+                                    {
+                                        <img id="admin-venue-clublogo-img" src="@ImageUrl("club-logo")" alt="club logo" style="max-width:100%;max-height:100%;" />
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-shield" style="color:#adb5bd;"></i>
+                                    }
+                                </div>
+                                <label class="btn btn-outline-primary btn-sm mb-0" id="admin-venue-clublogo-upload-label">
+                                    <InputFile id="admin-venue-clublogo-input" OnChange="@(e => UploadImageAsync(e, "club-logo"))" accept="image/*" class="d-none" />
+                                    @L["Venue_UploadClubLogo"]
+                                </label>
+                                @if (venue.HasClubLogo)
+                                {
+                                    <button type="button" id="admin-venue-clublogo-remove-btn" class="btn btn-outline-danger btn-sm" @onclick="@(() => DeleteImageAsync("club-logo"))">
+                                        @L["Venue_RemoveClubLogo"]
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
                         <div class="col-md-3" id="admin-venue-capacity-group">
                             <label class="form-label" for="admin-venue-capacity-input">@L["Venue_OfficialCapacity"]</label>
-                            <InputNumber id="admin-venue-capacity-input" class="form-control" @bind-Value="form.OfficialCapacity" />
+                            <div class="input-group">
+                                <span class="input-group-text" id="admin-venue-capacity-icon"><i class="bi bi-diagram-3"></i></span>
+                                <input id="admin-venue-capacity-input" class="form-control" type="text" readonly disabled
+                                       value="@(computedCapacity.HasValue ? computedCapacity.Value.ToString("N0") : "—")" />
+                            </div>
+                            <div class="form-text" id="admin-venue-capacity-hint">@L["Venue_CapacityDerived"]</div>
                         </div>
                         <div class="col-md-3" id="admin-venue-website-group">
                             <label class="form-label" for="admin-venue-website-input">@L["Venue_Website"]</label>
@@ -295,10 +335,29 @@
     private string? alertMessage;
     private string alertClass = "alert-success";
 
+    // Official capacity is not entered by hand: it is the live total seat count derived from the
+    // stadium structure (the same figure shown on /admin/stadium-info). Null until resolved.
+    private int? computedCapacity;
+
     // Bumped after each image upload/delete so <img> URLs change and the browser re-fetches.
     private int imgVersion;
 
-    private HttpClient Api => HttpClientFactory.CreateClient("AuthenticatedClient");
+    // The shared "AuthenticatedClient" injects the JWT via AuthenticationHandler, but that handler
+    // runs in a different DI scope than the Blazor circuit, so its scoped token store is empty and
+    // every authorized (write) call comes back 401 — the GET works only because it is anonymous.
+    // Match the pattern the other Admin services use (HttpService/BaseApiService): read the
+    // circuit-scoped token and attach it ourselves before each request.
+    private HttpClient Api
+    {
+        get
+        {
+            var client = HttpClientFactory.CreateClient("AuthenticatedClient");
+            var token = TokenStorage.Token;
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return client;
+        }
+    }
 
     private string ApiBaseUrl =>
         Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
@@ -306,7 +365,34 @@
     // Public image endpoints are read cross-origin by the browser directly (no auth needed).
     private string ImageUrl(string path) => $"{ApiBaseUrl}/api/venue/{path}?v={imgVersion}";
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+        await LoadComputedCapacityAsync();
+    }
+
+    /// <summary>
+    /// Resolves the official capacity from the stadium structure by summing every overlay
+    /// sector's seat count — identical to the total shown on the Stadium Info page — so the
+    /// figure can never drift from the real seat map and is never typed in by hand.
+    /// </summary>
+    private async Task LoadComputedCapacityAsync()
+    {
+        try
+        {
+            var sectors = await Api.GetFromJsonAsync<List<StadiumSectorOverlay>>("api/StadiumSectorOverlay");
+            computedCapacity = sectors?.Sum(s => s.TotalSeats) ?? 0;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to compute venue capacity from stadium structure");
+            computedCapacity = null;
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
 
     private async Task LoadAsync()
     {
@@ -321,6 +407,7 @@
                 form = new UpdateVenueDto
                 {
                     Name = venue.Name,
+                    ClubName = venue.ClubName,
                     AddressLine1 = venue.AddressLine1,
                     AddressLine2 = venue.AddressLine2,
                     City = venue.City,
@@ -352,6 +439,8 @@
         isSaving = true;
         try
         {
+            // Capacity is always the derived seat count, never a hand-entered value.
+            form.OfficialCapacity = computedCapacity;
             var resp = await Api.PutAsJsonAsync("api/venue", form);
             if (resp.IsSuccessStatusCode)
             {

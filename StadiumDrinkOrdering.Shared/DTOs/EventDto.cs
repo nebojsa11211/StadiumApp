@@ -7,6 +7,12 @@ public class EventDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    /// <summary>The kind of event (e.g. "Match", "Concert", "Other").</summary>
+    public string EventType { get; set; } = "Match";
+    /// <summary>Home side of a "Match" fixture (a resident club's name); null for non-match events.</summary>
+    public string? HomeTeam { get; set; }
+    /// <summary>Away/visiting side of a "Match" fixture; null for non-match events.</summary>
+    public string? AwayTeam { get; set; }
     public DateTime? Date { get; set; }
     /// <summary>End of the event window, if set.</summary>
     public DateTime? EndDate { get; set; }

@@ -1,6 +1,7 @@
 @page "/events"
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Pricing
 @inject IStringLocalizer<SharedResources> L
 
 <PageTitle>@L["Events_PageTitle"]</PageTitle>
@@ -127,10 +128,17 @@
                                 </div>
                                 <div class="panel__body" id="admin-event-body-@evt.Id">
                                     <dl class="event-meta" id="admin-event-details-@evt.Id">
+                                        <dt><i class="bi bi-tag"></i> @L["Events_TypeLabel"]</dt>
+                                        <dd id="admin-event-type-@evt.Id">@evt.EventType</dd>
+                                        @if (!string.IsNullOrWhiteSpace(evt.HomeTeam) && !string.IsNullOrWhiteSpace(evt.AwayTeam))
+                                        {
+                                            <dt><i class="bi bi-shield-fill"></i> @L["Events_MatchupLabel"]</dt>
+                                            <dd id="admin-event-teams-@evt.Id">@evt.HomeTeam <span class="text-muted">@L["Events_VersusSeparator"]</span> @evt.AwayTeam</dd>
+                                        }
                                         <dt><i class="bi bi-calendar3"></i> @L["Events_DateLabel"]</dt>
                                         <dd class="mono" id="admin-event-date-@evt.Id">@evt.Date?.ToString("MMM dd, yyyy HH:mm")</dd>
                                         <dt><i class="bi bi-geo-alt"></i> @L["Events_LocationLabel"]</dt>
-                                        <dd id="admin-event-location-@evt.Id">@evt.Location</dd>
+                                        <dd id="admin-event-location-@evt.Id">@DisplayLocation(evt)</dd>
                                         <dt><i class="bi bi-person-fill"></i> @L["Events_CapacityLabel"]</dt>
                                         <dd class="mono" id="admin-event-capacity-@evt.Id">@evt.Capacity.ToString("N0") @L["Events_SeatsLabel"]</dd>
                                         <dt><i class="bi bi-cash"></i> @L["Events_BasePriceLabel"]</dt>
@@ -166,7 +174,10 @@
                                 </div>
                                 <div class="event-card__foot" id="admin-event-footer-@evt.Id">
                                     <div class="event-card__actions" id="admin-event-buttons-@evt.Id">
-                                        <button class="pill-btn" @onclick="() => ShowEditEventModal(evt)" id="admin-event-edit-btn-@evt.Id">
+                                        <button class="pill-btn" @onclick="() => ShowEditEventModal(evt)"
+                                                disabled="@(!EventLifecycle.CanEdit(evt.Status))"
+                                                title="@(EventLifecycle.CanEdit(evt.Status) ? null : L["Events_EditLockedTooltip"].Value)"
+                                                id="admin-event-edit-btn-@evt.Id">
                                             <i class="bi bi-pencil"></i><span>@L["Events_EditButton"]</span>
                                         </button>
                                         <a class="pill-btn" href="admin/stadium-overview?eventId=@evt.Id" id="admin-event-occupancy-btn-@evt.Id">
@@ -204,20 +215,90 @@
                     <button type="button" class="btn-close" @onclick="HideEventModal" id="admin-event-modal-close"></button>
                 </div>
                 <div class="modal-body" id="admin-event-modal-body">
-                    <div class="row" id="admin-event-form-name-location-row">
-                        <div class="col-md-6" id="admin-event-form-name-col">
+                    <div class="row" id="admin-event-form-name-row">
+                        <div class="col-12" id="admin-event-form-name-col">
                             <div class="mb-3" id="admin-event-form-name-group">
                                 <label class="form-label" for="admin-event-form-name">@L["Events_EventNameLabel"]</label>
                                 <input type="text" class="form-control" @bind="eventForm.Name" required id="admin-event-form-name">
                             </div>
                         </div>
-                        <div class="col-md-6" id="admin-event-form-location-col">
+                        <div class="col-12" id="admin-event-form-location-col">
                             <div class="mb-3" id="admin-event-form-location-group">
-                                <label class="form-label" for="admin-event-form-location">@L["Events_LocationFieldLabel"]</label>
-                                <input type="text" class="form-control" @bind="eventForm.Location" required id="admin-event-form-location">
+                                <label class="form-label">@L["Events_LocationFieldLabel"]</label>
+                                <input type="text" class="form-control" value="@VenueLocation" readonly disabled id="admin-event-form-location">
+                                <div class="form-text" id="admin-event-form-location-help">@L["Events_LocationVenueHint"]</div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="row" id="admin-event-form-type-row">
+                        <div class="col-md-6" id="admin-event-form-type-col">
+                            <div class="mb-3" id="admin-event-form-type-group">
+                                <label class="form-label" for="admin-event-form-type">@L["Events_TypeFieldLabel"]</label>
+                                <select class="form-control" @bind="eventForm.EventType" id="admin-event-form-type">
+                                    <option value="Match">@L["Events_Type_Match"]</option>
+                                    <option value="Concert">@L["Events_Type_Concert"]</option>
+                                    <option value="Other">@L["Events_Type_Other"]</option>
+                                </select>
+                            </div>
+                        </div>
+                        @if (eventForm.EventType == "Other")
+                        {
+                            <div class="col-md-6" id="admin-event-form-type-custom-col">
+                                <div class="mb-3" id="admin-event-form-type-custom-group">
+                                    <label class="form-label" for="admin-event-form-type-custom">@L["Events_TypeCustomLabel"]</label>
+                                    <input type="text" class="form-control" @bind="eventForm.EventTypeCustom"
+                                           placeholder="@L["Events_TypeCustomPlaceholder"]" id="admin-event-form-type-custom">
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (eventForm.EventType == "Match")
+                    {
+                        <div class="row" id="admin-event-form-teams-row">
+                            <div class="col-md-6" id="admin-event-form-home-col">
+                                <div class="mb-3" id="admin-event-form-home-group">
+                                    <label class="form-label" for="admin-event-form-home">@L["Events_HomeTeamLabel"]</label>
+                                    @if (venueClubs == null)
+                                    {
+                                        <div class="text-muted small" id="admin-event-form-home-loading">
+                                            <span class="spinner-border spinner-border-sm me-2"></span>@L["Events_Loading"]
+                                        </div>
+                                    }
+                                    else if (venueClubs.Count == 0)
+                                    {
+                                        <div class="alert alert-warning py-2 mb-0" id="admin-event-form-home-noclubs">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>@L["Events_NoClubsWarning"]
+                                            <a href="/admin/venue-settings" id="admin-event-form-home-venue-link">@L["Events_NoClubsLink"]</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <select class="form-control" @bind="eventForm.HomeTeam" id="admin-event-form-home">
+                                            <option value="">@L["Events_SelectHomeTeam"]</option>
+                                            @foreach (var club in venueClubs)
+                                            {
+                                                <option value="@club.Name">@club.Name @(club.IsPrimary ? "★" : "")</option>
+                                            }
+                                            @* Keep an out-of-list stored value selectable (e.g. a club later removed). *@
+                                            @if (!string.IsNullOrWhiteSpace(eventForm.HomeTeam) && !venueClubs.Any(c => c.Name == eventForm.HomeTeam))
+                                            {
+                                                <option value="@eventForm.HomeTeam">@eventForm.HomeTeam</option>
+                                            }
+                                        </select>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="admin-event-form-away-col">
+                                <div class="mb-3" id="admin-event-form-away-group">
+                                    <label class="form-label" for="admin-event-form-away">@L["Events_AwayTeamLabel"]</label>
+                                    <input type="text" class="form-control" @bind="eventForm.AwayTeam"
+                                           placeholder="@L["Events_AwayTeamPlaceholder"]" id="admin-event-form-away">
+                                </div>
+                            </div>
+                        </div>
+                    }
 
                     <div class="mb-3" id="admin-event-form-description-group">
                         <label class="form-label" for="admin-event-form-description">@L["Events_DescriptionFieldLabel"]</label>
@@ -247,7 +328,12 @@
                         <div class="col-md-6" id="admin-event-form-capacity-col">
                             <div class="mb-3" id="admin-event-form-capacity-group">
                                 <label class="form-label" for="admin-event-form-capacity">@L["Events_CapacityFieldLabel"]</label>
-                                <input type="number" class="form-control" @bind="eventForm.Capacity" min="1" required id="admin-event-form-capacity">
+                                <div class="input-group" id="admin-event-form-capacity-input-group">
+                                    <input type="text" class="form-control" readonly tabindex="-1"
+                                           value="@eventForm.Capacity.ToString("N0")" id="admin-event-form-capacity">
+                                    <span class="input-group-text" id="admin-event-form-capacity-suffix">@L["Events_CapacitySeatsSuffix"]</span>
+                                </div>
+                                <div class="form-text" id="admin-event-form-capacity-hint">@L["Events_CapacityAutoHint"]</div>
                             </div>
                         </div>
                         <div class="col-md-6" id="admin-event-form-price-col">
@@ -290,6 +376,67 @@
                                 <div class="form-text" id="admin-event-form-season-hint">Linking backfills this season's passes with a match ticket.</div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mb-3" id="admin-event-form-sector-prices-group">
+                        <label class="form-label"><i class="bi bi-cash-stack"></i> @L["Events_SectorPricesLabel"]</label>
+                        <div class="form-text mb-2" id="admin-event-form-sector-prices-hint">@L["Events_SectorPricesHint"]</div>
+                        @if (sectorPrices == null)
+                        {
+                            <div class="text-muted small" id="admin-event-form-sector-prices-loading">
+                                <span class="spinner-border spinner-border-sm me-2"></span>@L["Events_Loading"]
+                            </div>
+                        }
+                        else if (!sectorPrices.Any())
+                        {
+                            <div class="text-muted small" id="admin-event-form-sector-prices-empty">@L["Events_SectorPricesEmpty"]</div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0" id="admin-event-form-sector-prices-table">
+                                    <thead>
+                                        <tr>
+                                            <th>@L["Events_SectorColumn"]</th>
+                                            <th>@L["Events_SectorTypeColumn"]</th>
+                                            <th class="text-end">@L["Events_SectorDefaultColumn"]</th>
+                                            <th style="width: 12rem;">@L["Events_SectorPriceColumn"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var row in sectorPrices)
+                                        {
+                                            <tr id="admin-event-form-sector-row-@row.SectorOverlayId">
+                                                <td>
+                                                    <span class="fw-medium">@row.SectorName</span>
+                                                    <span class="text-muted small ms-1">@row.SectorCode</span>
+                                                </td>
+                                                <td><span class="text-capitalize">@row.Type</span></td>
+                                                <td class="text-end mono">$@EffectiveDefault(row).ToString("F2")</td>
+                                                <td>
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" step="0.01" min="0" class="form-control"
+                                                               placeholder="@EffectiveDefault(row).ToString("F2")"
+                                                               @bind="row.EventPrice"
+                                                               id="admin-event-form-sector-price-@row.SectorOverlayId">
+                                                        @if (row.EventPrice.HasValue)
+                                                        {
+                                                            <button type="button" class="btn btn-outline-secondary"
+                                                                    title="@L["Events_SectorPriceClear"]"
+                                                                    @onclick="() => row.EventPrice = null"
+                                                                    id="admin-event-form-sector-clear-@row.SectorOverlayId">
+                                                                <i class="bi bi-x"></i>
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
                     </div>
                 </div>
                 <div class="modal-footer" id="admin-event-modal-footer">

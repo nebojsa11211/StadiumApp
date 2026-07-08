@@ -2,8 +2,10 @@
 @layout MobileShell
 @using System.Globalization
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Configuration
 @using StadiumDrinkOrdering.Customer.Services
 @inject IApiService Api
+@inject IConfiguration Configuration
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 @inject OrderSessionState State
@@ -23,7 +25,7 @@
         <div id="customer-welcome-hero-content" class="hero-content">
             <div id="customer-welcome-place" class="wl-place">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c-3.9 0-7 3.1-7 7 0 5 7 13 7 13s7-8 7-13c0-3.9-3.1-7-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>
-                <span>STADION RUJEVICA · RIJEKA</span>
+                <span>@PlaceLabel</span>
             </div>
             <h1 class="display big-mark">
                 <span>NEMA</span>
@@ -34,81 +36,94 @@
         </div>
     </div>
 
-    @if (_season?.NextEvent is { } next)
+    @if (_season?.UpcomingEvents is { Count: > 0 } fixtures)
     {
-        var teams = ResolveTeams(next);
-        var isVersus = !string.IsNullOrWhiteSpace(teams.away);
-        var home = CrestColors(teams.home);
-        var away = CrestColors(teams.away);
         <div id="customer-welcome-fixture-wrap" class="wl-fixture-wrap">
             @if (!string.IsNullOrWhiteSpace(_season!.Name))
             {
                 <div id="customer-welcome-season" class="wl-season">@_season.Name</div>
             }
-            <div id="customer-welcome-vs-card" class="vs-card" role="button" tabindex="0"
-                 @onclick="@(() => Nav.NavigateTo($"/events/{next.Id}"))"
-                 @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{next.Id}"); })">
-                <div id="customer-welcome-vs-label" class="vs-label">@(next.IsLive ? "LIVE NOW" : "NEXT FIXTURE")</div>
-                @{
-                    var start = next.EventDate.ToLocalTime();
-                    var end = next.EventEndDate?.ToLocalTime();
-                }
-                @if (isVersus)
+            @* Horizontally scrollable strip of every upcoming/live fixture; the first is the "next" one. *@
+            <div id="customer-welcome-fixture-scroll" class="wl-fixture-scroll">
+                @for (var i = 0; i < fixtures.Count; i++)
                 {
-                    <div id="customer-welcome-vs-body" class="vs-body">
-                        <div id="customer-welcome-vs-team-home" class="vs-team">
-                            <div id="customer-welcome-crest-home" class="crest" style="--c1:@home.a;--c2:@home.b">
-                                <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
-                                    <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
-                                    <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
-                                </svg>
-                                <span class="crest-mono" style="color:@home.fg">@Initials(teams.home)</span>
+                    var evt = fixtures[i];
+                    var isFirst = i == 0;
+                    var teams = ResolveTeams(evt);
+                    var isVersus = !string.IsNullOrWhiteSpace(teams.away);
+                    var home = CrestColors(teams.home);
+                    var away = CrestColors(teams.away);
+                    var start = evt.EventDate.ToLocalTime();
+                    var end = evt.EventEndDate?.ToLocalTime();
+                    var label = evt.IsLive ? "LIVE NOW" : (isFirst ? "NEXT FIXTURE" : "FIXTURE");
+                    <div id="customer-welcome-vs-card-@evt.Id" class="vs-card" role="button" tabindex="0"
+                         @onclick="@(() => Nav.NavigateTo($"/events/{evt.Id}"))"
+                         @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{evt.Id}"); })">
+                        <div id="customer-welcome-vs-label-@evt.Id" class="vs-label">@label</div>
+                        @if (isVersus)
+                        {
+                            <div id="customer-welcome-vs-body-@evt.Id" class="vs-body">
+                                <div id="customer-welcome-vs-team-home-@evt.Id" class="vs-team">
+                                    <div id="customer-welcome-crest-home-@evt.Id" class="crest" style="--c1:@home.a;--c2:@home.b">
+                                        <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
+                                            <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
+                                            <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
+                                        </svg>
+                                        @if (_venue?.HasClubLogo == true)
+                                        {
+                                            <img id="customer-welcome-crest-home-logo-@evt.Id" class="crest-logo" src="@ClubLogoUrl" alt="@teams.home" />
+                                        }
+                                        else
+                                        {
+                                            <span class="crest-mono" style="color:@home.fg">@Initials(teams.home)</span>
+                                        }
+                                    </div>
+                                    <div id="customer-welcome-vs-name-home-@evt.Id" class="vs-name">@teams.home</div>
+                                </div>
+                                <div id="customer-welcome-vs-mid-@evt.Id" class="vs-mid">
+                                    <span id="customer-welcome-vs-day-@evt.Id" class="vs-when tnum">@DayLabel(start)</span>
+                                    <span id="customer-welcome-vs-time-@evt.Id" class="vs-time tnum">@TimeRange(start, end)</span>
+                                    @if (evt.IsLive)
+                                    {
+                                        <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
+                                    }
+                                </div>
+                                <div id="customer-welcome-vs-team-away-@evt.Id" class="vs-team">
+                                    <div id="customer-welcome-crest-away-@evt.Id" class="crest" style="--c1:@away.a;--c2:@away.b">
+                                        <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
+                                            <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
+                                            <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
+                                        </svg>
+                                        <span class="crest-mono" style="color:@away.fg">@Initials(teams.away)</span>
+                                    </div>
+                                    <div id="customer-welcome-vs-name-away-@evt.Id" class="vs-name">@teams.away</div>
+                                </div>
                             </div>
-                            <div id="customer-welcome-vs-name-home" class="vs-name">@teams.home</div>
-                        </div>
-                        <div id="customer-welcome-vs-mid" class="vs-mid">
-                            <span id="customer-welcome-vs-day" class="vs-when tnum">@DayLabel(start)</span>
-                            <span id="customer-welcome-vs-time" class="vs-time tnum">@TimeRange(start, end)</span>
-                            @if (next.IsLive)
-                            {
-                                <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
-                            }
-                        </div>
-                        <div id="customer-welcome-vs-team-away" class="vs-team">
-                            <div id="customer-welcome-crest-away" class="crest" style="--c1:@away.a;--c2:@away.b">
-                                <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
-                                    <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
-                                    <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
-                                </svg>
-                                <span class="crest-mono" style="color:@away.fg">@Initials(teams.away)</span>
+                        }
+                        else
+                        {
+                            @* Non-versus event (concert, one-off show): a single act/title, no opponent. *@
+                            <div id="customer-welcome-vs-solo-@evt.Id" class="vs-solo">
+                                <div id="customer-welcome-crest-solo-@evt.Id" class="crest" style="--c1:@home.a;--c2:@home.b">
+                                    <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
+                                        <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
+                                        <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
+                                    </svg>
+                                    <span class="crest-mono" style="color:@home.fg">@Initials(teams.home)</span>
+                                </div>
+                                <div id="customer-welcome-vs-solo-title-@evt.Id" class="vs-solo-title">@evt.EventName</div>
+                                <div id="customer-welcome-vs-solo-when-@evt.Id" class="vs-mid">
+                                    <span id="customer-welcome-vs-day-@evt.Id" class="vs-when tnum">@DayLabel(start)</span>
+                                    <span id="customer-welcome-vs-time-@evt.Id" class="vs-time tnum">@TimeRange(start, end)</span>
+                                    @if (evt.IsLive)
+                                    {
+                                        <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
+                                    }
+                                </div>
                             </div>
-                            <div id="customer-welcome-vs-name-away" class="vs-name">@teams.away</div>
-                        </div>
+                        }
                     </div>
                 }
-                else
-                {
-                    @* Non-versus event (concert, one-off show): a single act/title, no opponent. *@
-                    <div id="customer-welcome-vs-solo" class="vs-solo">
-                        <div id="customer-welcome-crest-solo" class="crest" style="--c1:@home.a;--c2:@home.b">
-                            <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
-                                <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
-                                <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
-                            </svg>
-                            <span class="crest-mono" style="color:@home.fg">@Initials(teams.home)</span>
-                        </div>
-                        <div id="customer-welcome-vs-solo-title" class="vs-solo-title">@next.EventName</div>
-                        <div id="customer-welcome-vs-solo-when" class="vs-mid">
-                            <span id="customer-welcome-vs-day" class="vs-when tnum">@DayLabel(start)</span>
-                            <span id="customer-welcome-vs-time" class="vs-time tnum">@TimeRange(start, end)</span>
-                            @if (next.IsLive)
-                            {
-                                <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
-                            }
-                        </div>
-                    </div>
-                }
-                <div id="customer-welcome-vs-foot" class="vs-foot">STADION RUJEVICA</div>
             </div>
         </div>
     }
@@ -163,6 +178,7 @@
 
 @code {
     private CurrentSeasonDto? _season;
+    private VenueDto? _venue;
     private bool _hasSession;
 
     private static readonly string[] MonthsHr =
@@ -170,18 +186,42 @@
 
     private bool IsHr => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "hr";
 
+    // Location line under the hero — driven by the admin Venue Settings (name + city). Falls back
+    // to the stadium's own name if no city is set, and to a sensible default if the venue is
+    // unavailable (public landing must never break when the API is unreachable).
+    private string PlaceLabel
+    {
+        get
+        {
+            var name = string.IsNullOrWhiteSpace(_venue?.Name) ? "Stadion Rujevica" : _venue!.Name;
+            var city = _venue?.City;
+            return string.IsNullOrWhiteSpace(city) ? name : $"{name} · {city}";
+        }
+    }
+
+    // Absolute URL to the venue-level club logo uploaded in admin Venue Settings. Only rendered
+    // when _venue.HasClubLogo is true, so the image endpoint always has content.
+    private string ClubLogoUrl =>
+        $"{AppConfiguration.ResolveApiBaseUrl(Configuration)}/api/venue/club-logo";
+
     protected override async Task OnInitializedAsync()
     {
         // In-circuit session (soft navigation back to /welcome after a scan) is known immediately.
         _hasSession = State.HasSession;
 
-        // Anonymous landing — this endpoint is public. Fail silently so the panel is optional
+        // Anonymous landing — these endpoints are public. Fail silently so the panels are optional
         // and the landing never breaks if the API is unreachable.
         try
         {
             _season = await Api.GetAsync<CurrentSeasonDto>("seasons/current");
         }
         catch { /* ignore — panel is optional */ }
+
+        try
+        {
+            _venue = await Api.GetAsync<VenueDto>("api/venue");
+        }
+        catch { /* ignore — branding falls back to defaults */ }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

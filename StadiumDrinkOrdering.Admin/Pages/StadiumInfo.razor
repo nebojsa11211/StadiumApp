@@ -112,6 +112,8 @@
                                 <th class="text-end" id="admin-stadium-info-sector-col-rows">@L["StadiumInfo_ColRows"]</th>
                                 <th class="text-end" id="admin-stadium-info-sector-col-seatsperrow">@L["StadiumInfo_ColSeatsPerRow"]</th>
                                 <th class="text-end" id="admin-stadium-info-sector-col-totalseats">@L["StadiumInfo_ColTotalSeats"]</th>
+                                <th class="text-end" id="admin-stadium-info-sector-col-price">@L["StadiumInfo_ColPricePerSeat"]</th>
+                                <th class="text-end" id="admin-stadium-info-sector-col-seasonprice">@L["StadiumInfo_ColSeasonPrice"]</th>
                             </tr>
                         </thead>
                         <tbody id="admin-stadium-info-sector-tbody">
@@ -133,6 +135,8 @@
                                     <td class="text-end">@sector.Rows</td>
                                     <td class="text-end">@sector.SeatsPerRow</td>
                                     <td class="text-end">@sector.TotalSeats.ToString("N0")</td>
+                                    <td class="text-end">@FormatPrice(sector.Price)</td>
+                                    <td class="text-end">@FormatPrice(sector.SeasonTicketPrice)</td>
                                 </tr>
                                 @if (isExpanded)
                                 {
@@ -147,7 +151,7 @@
 
                                     <tr id="admin-stadium-info-sector-detail-@sector.Id" class="admin-stadium-info-sector-detail">
                                         <td id="admin-stadium-info-detail-expand-@sector.Id"></td>
-                                        <td colspan="6" class="admin-stadium-info-detail-cell" id="admin-stadium-info-detail-cell-@sector.Id">
+                                        <td colspan="8" class="admin-stadium-info-detail-cell" id="admin-stadium-info-detail-cell-@sector.Id">
 
                                             <div class="admin-stadium-info-detail-head" id="admin-stadium-info-detail-head-@sector.Id">
                                                 <div class="admin-stadium-info-detail-title" id="admin-stadium-info-detail-title-@sector.Id">
@@ -326,6 +330,8 @@
                             <tr class="fw-bold" id="admin-stadium-info-sector-footer-row">
                                 <td colspan="6" class="text-end" id="admin-stadium-info-sector-footer-label">@L["StadiumInfo_TotalSeats"]</td>
                                 <td class="text-end" id="admin-stadium-info-table-total">@TotalSeats.ToString("N0")</td>
+                                <td class="text-end" id="admin-stadium-info-table-total-price"></td>
+                                <td class="text-end" id="admin-stadium-info-table-total-seasonprice"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -529,6 +535,12 @@
     }
 
     private int TotalSeats => sectors.Sum(s => s.TotalSeats);
+
+    // Formats an optional per-seat price for the sector table. A null price means the sector has
+    // no explicit price set (single-event pricing falls back to the event base × type multiplier;
+    // season pricing simply isn't configured), shown as a muted dash.
+    private string FormatPrice(decimal? price) =>
+        price.HasValue ? $"€{price.Value:N2}" : "—";
 
     private IEnumerable<TypeGroup> TypeBreakdown =>
         sectors

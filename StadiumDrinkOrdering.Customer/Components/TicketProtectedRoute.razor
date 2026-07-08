@@ -4,133 +4,28 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 
-<div id="customer-ticket-protected-route" class="ticket-protected-route">
-    @if (isLoading)
-    {
-        <div id="customer-ticket-protected-loading" class="loading-container">
-            <div id="customer-ticket-protected-spinner-wrapper" class="loading-spinner">
-                <div id="customer-ticket-protected-spinner" class="spinner"></div>
-            </div>
-            <h3>Verifying Access...</h3>
-            <p>Please wait while we verify your ticket session</p>
+@if (isLoading)
+{
+    <div id="customer-ticket-protected-loading" class="gate-loading">
+        <span id="customer-ticket-protected-spinner" class="spinner"></span> Provjeravam pristup…
+    </div>
+}
+else if (isAccessDenied)
+{
+    <div id="customer-ticket-protected-denied" class="gate">
+        <div id="customer-ticket-protected-denied-icon" class="gate-icon">🎫</div>
+        <h2>Nema aktivne ulaznice</h2>
+        <p id="customer-ticket-protected-message">@errorMessage</p>
+        <div id="customer-ticket-protected-buttons" class="gate-actions">
+            <button id="customer-ticket-protected-scan-btn" class="btn btn-primary" @onclick="RedirectToScanner">📱 Skeniraj ulaznicu</button>
+            <button id="customer-ticket-protected-home-btn" class="btn btn-ghost" @onclick="GoHome">🏠 Početna</button>
         </div>
-    }
-    else if (isAccessDenied)
-    {
-        <div id="customer-ticket-protected-denied" class="access-denied-container">
-            <div id="customer-ticket-protected-denied-icon" class="access-denied-icon">🚫</div>
-            <h2>Access Denied</h2>
-            <p>@errorMessage</p>
-            <div id="customer-ticket-protected-buttons" class="action-buttons">
-                <button id="customer-ticket-protected-scan-btn" class="btn btn-primary" @onclick="RedirectToScanner">
-                    📱 Scan Your Ticket
-                </button>
-                <button id="customer-ticket-protected-home-btn" class="btn btn-secondary" @onclick="GoHome">
-                    🏠 Go Home
-                </button>
-            </div>
-        </div>
-    }
-    else
-    {
-        @ChildContent
-    }
-</div>
-
-<style>
-    .ticket-protected-route {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .loading-container,
-    .access-denied-container {
-        text-align: center;
-        padding: 40px;
-        max-width: 400px;
-        width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 15px;
-        color: white;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .loading-spinner {
-        margin-bottom: 20px;
-    }
-
-    .spinner {
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top: 4px solid #fff;
-        width: 60px;
-        height: 60px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto;
-    }
-
-    .access-denied-icon {
-        font-size: 4rem;
-        margin-bottom: 20px;
-    }
-
-    .action-buttons {
-        margin-top: 30px;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .btn-primary {
-        background: #ff6b6b;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #ee5a5a;
-        transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
-    }
-
-    @@keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    /* Mobile Optimizations */
-    @@media (max-width: 768px) {
-        .loading-container,
-        .access-denied-container {
-            margin: 20px;
-            padding: 30px 20px;
-        }
-    }
-</style>
+    </div>
+}
+else
+{
+    @ChildContent
+}
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
@@ -175,7 +70,7 @@
             if (string.IsNullOrEmpty(sessionToken))
             {
                 isAccessDenied = true;
-                errorMessage = "No active ticket session found. Please scan your ticket to access the ordering system.";
+                errorMessage = "Nije pronađena aktivna ulaznica. Skeniraj ulaznicu za pristup naručivanju.";
                 return;
             }
 
@@ -185,9 +80,9 @@
             if (currentSession == null || !currentSession.IsActive)
             {
                 isAccessDenied = true;
-                errorMessage = currentSession == null ? 
-                    "Invalid or expired session. Please scan your ticket again." :
-                    "Your session has expired. Please scan your ticket again.";
+                errorMessage = currentSession == null ?
+                    "Neispravna ili istekla sesija. Skeniraj ulaznicu ponovno." :
+                    "Sesija je istekla. Skeniraj ulaznicu ponovno.";
                 
                 // Clear invalid session from storage
                 try
@@ -203,7 +98,7 @@
             if (currentSession.ExpiresAt <= DateTime.UtcNow.AddMinutes(5))
             {
                 isAccessDenied = true;
-                errorMessage = "Your ticket session is about to expire. Please scan your ticket again to continue ordering.";
+                errorMessage = "Sesija ulaznice uskoro istječe. Skeniraj ulaznicu ponovno za nastavak naručivanja.";
                 return;
             }
 
@@ -214,7 +109,7 @@
         catch (Exception ex)
         {
             isAccessDenied = true;
-            errorMessage = "Unable to verify your ticket session. Please try scanning your ticket again.";
+            errorMessage = "Nije moguće provjeriti sesiju ulaznice. Pokušaj skenirati ulaznicu ponovno.";
         }
         finally
         {

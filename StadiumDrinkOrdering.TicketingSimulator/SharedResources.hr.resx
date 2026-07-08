@@ -271,6 +271,30 @@
   <data name="Index_EventNameLabel" xml:space="preserve">
     <value>Naziv događaja</value>
   </data>
+  <data name="Index_EventTypeLabel" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="Index_HomeTeamLabel" xml:space="preserve">
+    <value>Domaćin</value>
+  </data>
+  <data name="Index_AwayTeamLabel" xml:space="preserve">
+    <value>Gost</value>
+  </data>
+  <data name="Index_EventType_Football" xml:space="preserve">
+    <value>Nogomet</value>
+  </data>
+  <data name="Index_EventType_Basketball" xml:space="preserve">
+    <value>Košarka</value>
+  </data>
+  <data name="Index_EventType_Hockey" xml:space="preserve">
+    <value>Hokej</value>
+  </data>
+  <data name="Index_EventType_Concert" xml:space="preserve">
+    <value>Koncert</value>
+  </data>
+  <data name="Index_EventType_Other" xml:space="preserve">
+    <value>Ostalo</value>
+  </data>
   <data name="Index_StartLabel" xml:space="preserve">
     <value>Početak</value>
   </data>
@@ -321,6 +345,12 @@
   </data>
   <data name="Index_MakeLiveNowButton" xml:space="preserve">
     <value>Postavi uživo sada</value>
+  </data>
+  <data name="Index_EndEventTooltip" xml:space="preserve">
+    <value>Završi ovaj događaj sada: zatvori njegov termin i postavi status na Završeno, kako se više ne bi prikazivao kao uživo.</value>
+  </data>
+  <data name="Index_EndEventButton" xml:space="preserve">
+    <value>Završi događaj sada</value>
   </data>
   <data name="Index_BackToEventsButton" xml:space="preserve">
     <value>Povratak na događaje</value>

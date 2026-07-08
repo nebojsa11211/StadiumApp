@@ -375,6 +375,11 @@ builder.Services.Configure<SecurityHeadersOptions>(builder.Configuration.GetSect
 // it is safe: it no-ops unless explicitly enabled. Read-only (verifies Balance == Σ ledger).
 builder.Services.AddHostedService<WalletReconciliationBackgroundService>();
 
+// Event auto-completion: closes ended-but-still-live events to Completed on a schedule (default every
+// 5 min). Gated on EventLifecycle:AutoCompleteEnabled (default true); scans only the few live events
+// per pass, so it is far lighter than the log/rate cleanup services that were disabled above.
+builder.Services.AddHostedService<EventStatusTransitionService>();
+
 // Stripe Configuration
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
 

@@ -3266,4 +3266,58 @@
   <data name="Wallets_LedgerAfter" xml:space="preserve"><value>Balance after</value></data>
   <data name="Wallets_Close" xml:space="preserve"><value>Close</value></data>
   <data name="Wallets_ActionFailed" xml:space="preserve"><value>Action failed.</value></data>
+  <data name="Nav_Venue" xml:space="preserve"><value>Venue &amp; Branding</value></data>
+  <data name="Venue_PageTitle" xml:space="preserve"><value>Venue &amp; Branding</value></data>
+  <data name="Venue_Heading" xml:space="preserve"><value>Venue &amp; Branding</value></data>
+  <data name="Venue_Subtitle" xml:space="preserve"><value>Stadium identity and the clubs resident here.</value></data>
+  <data name="Venue_Loading" xml:space="preserve"><value>Loading venue…</value></data>
+  <data name="Venue_Error" xml:space="preserve"><value>Could not load the venue profile.</value></data>
+  <data name="Venue_Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="Venue_Saved" xml:space="preserve"><value>Saved.</value></data>
+  <data name="Venue_SaveFailed" xml:space="preserve"><value>Save failed.</value></data>
+  <data name="Venue_Save" xml:space="preserve"><value>Save changes</value></data>
+  <data name="Venue_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Venue_StadiumSection" xml:space="preserve"><value>Stadium</value></data>
+  <data name="Venue_ContactSection" xml:space="preserve"><value>Contact</value></data>
+  <data name="Venue_ClubsSection" xml:space="preserve"><value>Resident clubs</value></data>
+  <data name="Venue_Name" xml:space="preserve"><value>Stadium name</value></data>
+  <data name="Venue_AddressLine1" xml:space="preserve"><value>Address line 1</value></data>
+  <data name="Venue_AddressLine2" xml:space="preserve"><value>Address line 2</value></data>
+  <data name="Venue_City" xml:space="preserve"><value>City</value></data>
+  <data name="Venue_PostalCode" xml:space="preserve"><value>Postal code</value></data>
+  <data name="Venue_Country" xml:space="preserve"><value>Country</value></data>
+  <data name="Venue_Latitude" xml:space="preserve"><value>Latitude</value></data>
+  <data name="Venue_Longitude" xml:space="preserve"><value>Longitude</value></data>
+  <data name="Venue_OfficialCapacity" xml:space="preserve"><value>Official capacity</value></data>
+  <data name="Venue_ContactEmail" xml:space="preserve"><value>Support email</value></data>
+  <data name="Venue_ContactPhone" xml:space="preserve"><value>Support phone</value></data>
+  <data name="Venue_Website" xml:space="preserve"><value>Website</value></data>
+  <data name="Venue_Photo" xml:space="preserve"><value>Stadium photo</value></data>
+  <data name="Venue_UploadPhoto" xml:space="preserve"><value>Upload photo</value></data>
+  <data name="Venue_RemovePhoto" xml:space="preserve"><value>Remove photo</value></data>
+  <data name="Venue_NoPhoto" xml:space="preserve"><value>No photo uploaded.</value></data>
+  <data name="Venue_UpdatedInfo" xml:space="preserve"><value>Last saved {0} by {1}</value></data>
+  <data name="Venue_AddClub" xml:space="preserve"><value>Add club</value></data>
+  <data name="Venue_NewClub" xml:space="preserve"><value>New club</value></data>
+  <data name="Venue_EditClub" xml:space="preserve"><value>Edit club</value></data>
+  <data name="Venue_NoClubs" xml:space="preserve"><value>No clubs added yet.</value></data>
+  <data name="Venue_ClubName" xml:space="preserve"><value>Club name</value></data>
+  <data name="Venue_ClubShortName" xml:space="preserve"><value>Short name</value></data>
+  <data name="Venue_ClubPrimaryColor" xml:space="preserve"><value>Primary colour</value></data>
+  <data name="Venue_ClubSecondaryColor" xml:space="preserve"><value>Secondary colour</value></data>
+  <data name="Venue_ClubFounded" xml:space="preserve"><value>Founded year</value></data>
+  <data name="Venue_ClubWebsite" xml:space="preserve"><value>Website</value></data>
+  <data name="Venue_ClubIsPrimary" xml:space="preserve"><value>Primary (home) club</value></data>
+  <data name="Venue_ClubDisplayOrder" xml:space="preserve"><value>Display order</value></data>
+  <data name="Venue_ClubLogo" xml:space="preserve"><value>Logo</value></data>
+  <data name="Venue_UploadLogo" xml:space="preserve"><value>Upload logo</value></data>
+  <data name="Venue_RemoveLogo" xml:space="preserve"><value>Remove logo</value></data>
+  <data name="Venue_NoLogo" xml:space="preserve"><value>No logo</value></data>
+  <data name="Venue_PrimaryBadge" xml:space="preserve"><value>Primary</value></data>
+  <data name="Venue_Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Venue_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Venue_Save2" xml:space="preserve"><value>Save</value></data>
+  <data name="Venue_ConfirmDeleteClub" xml:space="preserve"><value>Delete this club?</value></data>
+  <data name="Venue_ClubSaved" xml:space="preserve"><value>Club saved.</value></data>
+  <data name="Venue_ClubDeleted" xml:space="preserve"><value>Club deleted.</value></data>
 </root>

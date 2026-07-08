@@ -43,7 +43,13 @@ public class UpcomingEventDto
     public int Id { get; set; }
     public string EventName { get; set; } = string.Empty;
     public string EventType { get; set; } = string.Empty;
+    /// <summary>Home side of a versus-style fixture, or null for non-versus events.</summary>
+    public string? HomeTeam { get; set; }
+    /// <summary>Away side of a versus-style fixture, or null for non-versus events.</summary>
+    public string? AwayTeam { get; set; }
     public DateTime EventDate { get; set; }
+    /// <summary>End of the fixture window, or null when no explicit end time is set.</summary>
+    public DateTime? EventEndDate { get; set; }
     public int TotalSeats { get; set; }
     public int AvailableSeats { get; set; }
     /// <summary>True when the event is live right now (drink ordering open).</summary>

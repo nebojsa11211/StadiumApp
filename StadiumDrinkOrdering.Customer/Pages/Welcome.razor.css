@@ -96,10 +96,17 @@
 
 .vs-mid{align-self:center;display:flex;flex-direction:column;align-items:center;padding-top:16px}
 .vs-when{font-size:16px;font-weight:900;color:#fff;white-space:nowrap;text-align:center;text-transform:uppercase}
-.vs-live{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:900;
+.vs-time{margin-top:3px;font-size:13px;font-weight:800;color:#9AA0B2;white-space:nowrap;text-align:center}
+.vs-live{margin-top:7px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:900;
     letter-spacing:.12em;color:var(--live)}
 .vs-live .pulse{width:9px;height:9px;border-radius:50%;background:var(--live);
     box-shadow:0 0 0 0 rgba(0,226,138,.6);animation:pulse 1.8s infinite}
+
+/* non-versus (concert / one-off): single centred crest + title */
+.vs-solo{display:flex;flex-direction:column;align-items:center;gap:12px}
+.vs-solo-title{font-size:19px;font-weight:900;letter-spacing:-.02em;color:#fff;
+    text-align:center;line-height:1.15;text-wrap:balance}
+.vs-solo .vs-mid{padding-top:2px}
 
 .vs-foot{margin-top:16px;padding-top:13px;border-top:1px solid rgba(255,255,255,.09);
     text-align:center;font-size:12px;font-weight:800;letter-spacing:.16em;

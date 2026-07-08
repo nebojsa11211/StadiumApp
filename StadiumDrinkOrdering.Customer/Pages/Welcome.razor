@@ -36,7 +36,8 @@
 
     @if (_season?.NextEvent is { } next)
     {
-        var teams = SplitTeams(next.EventName);
+        var teams = ResolveTeams(next);
+        var isVersus = !string.IsNullOrWhiteSpace(teams.away);
         var home = CrestColors(teams.home);
         var away = CrestColors(teams.away);
         <div id="customer-welcome-fixture-wrap" class="wl-fixture-wrap">
@@ -48,38 +49,65 @@
                  @onclick="@(() => Nav.NavigateTo($"/events/{next.Id}"))"
                  @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{next.Id}"); })">
                 <div id="customer-welcome-vs-label" class="vs-label">@(next.IsLive ? "LIVE NOW" : "NEXT FIXTURE")</div>
-                <div id="customer-welcome-vs-body" class="vs-body">
-                    <div id="customer-welcome-vs-team-home" class="vs-team">
-                        <div id="customer-welcome-crest-home" class="crest" style="--c1:@home.a;--c2:@home.b">
+                @{
+                    var start = next.EventDate.ToLocalTime();
+                    var end = next.EventEndDate?.ToLocalTime();
+                }
+                @if (isVersus)
+                {
+                    <div id="customer-welcome-vs-body" class="vs-body">
+                        <div id="customer-welcome-vs-team-home" class="vs-team">
+                            <div id="customer-welcome-crest-home" class="crest" style="--c1:@home.a;--c2:@home.b">
+                                <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
+                                    <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
+                                    <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
+                                </svg>
+                                <span class="crest-mono" style="color:@home.fg">@Initials(teams.home)</span>
+                            </div>
+                            <div id="customer-welcome-vs-name-home" class="vs-name">@teams.home</div>
+                        </div>
+                        <div id="customer-welcome-vs-mid" class="vs-mid">
+                            <span id="customer-welcome-vs-day" class="vs-when tnum">@DayLabel(start)</span>
+                            <span id="customer-welcome-vs-time" class="vs-time tnum">@TimeRange(start, end)</span>
+                            @if (next.IsLive)
+                            {
+                                <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
+                            }
+                        </div>
+                        <div id="customer-welcome-vs-team-away" class="vs-team">
+                            <div id="customer-welcome-crest-away" class="crest" style="--c1:@away.a;--c2:@away.b">
+                                <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
+                                    <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
+                                    <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
+                                </svg>
+                                <span class="crest-mono" style="color:@away.fg">@Initials(teams.away)</span>
+                            </div>
+                            <div id="customer-welcome-vs-name-away" class="vs-name">@teams.away</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @* Non-versus event (concert, one-off show): a single act/title, no opponent. *@
+                    <div id="customer-welcome-vs-solo" class="vs-solo">
+                        <div id="customer-welcome-crest-solo" class="crest" style="--c1:@home.a;--c2:@home.b">
                             <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
                                 <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
                                 <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
                             </svg>
                             <span class="crest-mono" style="color:@home.fg">@Initials(teams.home)</span>
                         </div>
-                        <div id="customer-welcome-vs-name-home" class="vs-name">@teams.home</div>
-                    </div>
-                    <div id="customer-welcome-vs-mid" class="vs-mid">
-                        @if (next.IsLive)
-                        {
-                            <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
-                        }
-                        else
-                        {
-                            <span class="vs-when tnum">@WhenLabel(next.EventDate.ToLocalTime())</span>
-                        }
-                    </div>
-                    <div id="customer-welcome-vs-team-away" class="vs-team">
-                        <div id="customer-welcome-crest-away" class="crest" style="--c1:@away.a;--c2:@away.b">
-                            <svg class="crest-svg" viewBox="0 0 72 84" aria-hidden="true">
-                                <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
-                                <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
-                            </svg>
-                            <span class="crest-mono" style="color:@away.fg">@Initials(teams.away)</span>
+                        <div id="customer-welcome-vs-solo-title" class="vs-solo-title">@next.EventName</div>
+                        <div id="customer-welcome-vs-solo-when" class="vs-mid">
+                            <span id="customer-welcome-vs-day" class="vs-when tnum">@DayLabel(start)</span>
+                            <span id="customer-welcome-vs-time" class="vs-time tnum">@TimeRange(start, end)</span>
+                            @if (next.IsLive)
+                            {
+                                <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
+                            }
                         </div>
-                        <div id="customer-welcome-vs-name-away" class="vs-name">@teams.away</div>
                     </div>
-                </div>
+                }
                 <div id="customer-welcome-vs-foot" class="vs-foot">STADION RUJEVICA</div>
             </div>
         </div>
@@ -188,7 +216,17 @@
         Nav.NavigateTo(Nav.Uri, forceLoad: true);
     }
 
-    // The fixture DTO carries a single "Home – Away" title; split it so each side gets its own crest.
+    // Prefer the event's explicit team fields; fall back to parsing the title for legacy events that
+    // predate the HomeTeam/AwayTeam columns. A non-versus event (concert, one-off) yields an empty
+    // away side, which drives the single-title layout.
+    private static (string home, string away) ResolveTeams(UpcomingEventDto e)
+    {
+        if (!string.IsNullOrWhiteSpace(e.HomeTeam) || !string.IsNullOrWhiteSpace(e.AwayTeam))
+            return (e.HomeTeam?.Trim() ?? "", e.AwayTeam?.Trim() ?? "");
+        return SplitTeams(e.EventName);
+    }
+
+    // Legacy fallback: the DTO carries a single "Home – Away" title; split it so each side gets a crest.
     private static (string home, string away) SplitTeams(string eventName)
     {
         var seps = new[] { " - ", " – ", " — ", " vs ", " VS ", " v ", " x " };
@@ -228,10 +266,22 @@
         return ("#3A5B87", "#1A2942", "#FFFFFF");
     }
 
-    private static string WhenLabel(DateTime local)
+    // The day portion of the fixture label. "Jučer"/"Danas"/"Sutra" only for the exact adjacent
+    // days (a night match that kicked off yesterday is still "Jučer", never "Danas"); every other
+    // date is shown explicitly as "6. srp 2026".
+    private static string DayLabel(DateTime local)
     {
         var days = (local.Date - DateTime.Today).Days;
-        var day = days switch { <= 0 => "Danas", 1 => "Sutra", _ => $"{local.Day}. {MonthsHr[local.Month - 1]}" };
-        return $"{day}, {local:HH:mm}";
+        return days switch
+        {
+            -1 => "Jučer",
+            0 => "Danas",
+            1 => "Sutra",
+            _ => $"{local.Day}. {MonthsHr[local.Month - 1]} {local.Year}"
+        };
     }
+
+    // Kick-off time, plus the end time as a range when the fixture has an explicit end ("19:00 – 21:00").
+    private static string TimeRange(DateTime start, DateTime? end)
+        => end is { } e ? $"{start:HH:mm} – {e:HH:mm}" : start.ToString("HH:mm");
 }

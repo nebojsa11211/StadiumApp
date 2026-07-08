@@ -1,0 +1,24 @@
+.reg-body{flex:1;display:flex;flex-direction:column;padding:8px 24px 40px;gap:24px}
+
+.reg-hero{display:flex;flex-direction:column;gap:12px;padding-top:8px}
+.reg-hero .badge{align-self:flex-start;font-size:11px;font-weight:900;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--amber);background:rgba(255,176,32,.12);padding:6px 11px;border-radius:8px}
+.reg-hero h1{font-size:clamp(36px,12vw,48px)}
+.reg-hero p{color:var(--muted);font-size:14px;line-height:1.5;max-width:32ch}
+
+.reg-form{display:flex;flex-direction:column;gap:15px}
+.reg-form .btn{margin-top:6px}
+.reg-hint{font-size:12px;color:var(--muted-2);font-weight:600}
+.verr{color:var(--blaze);font-size:12px;font-weight:700}
+
+.err{background:color-mix(in srgb,var(--blaze) 12%,transparent);border:1px solid color-mix(in srgb,var(--blaze) 40%,transparent);
+    color:#FFC9BC;border-radius:12px;padding:12px 14px;font-size:13px;font-weight:600}
+.ok{background:rgba(0,226,138,.12);border:1px solid rgba(0,226,138,.4);
+    color:#8CFFCE;border-radius:12px;padding:12px 14px;font-size:13px;font-weight:700}
+
+.reg-terms{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
+.reg-terms input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--magenta)}
+.reg-terms a{color:var(--live);font-weight:800}
+
+.alt{text-align:center;font-size:13px;color:var(--muted)}
+.alt a{color:var(--live);font-weight:800;cursor:pointer}

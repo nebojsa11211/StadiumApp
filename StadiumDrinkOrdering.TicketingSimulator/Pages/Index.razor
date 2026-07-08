@@ -289,10 +289,34 @@
         @if (externalEventId == null)
         {
             <div id="simulator-index-event-form-row" class="row g-2 align-items-end">
-                <div id="simulator-index-event-name-col" class="col-md-3">
-                    <label class="form-label">@Localizer["Index_EventNameLabel"]</label>
-                    <input id="simulator-index-event-name-input" class="form-control" @bind="eventName" />
+                <div id="simulator-index-event-type-col" class="col-md-2">
+                    <label class="form-label">@Localizer["Index_EventTypeLabel"]</label>
+                    <select id="simulator-index-event-type-select" class="form-select" @bind="eventType">
+                        <option value="Football">@Localizer["Index_EventType_Football"]</option>
+                        <option value="Basketball">@Localizer["Index_EventType_Basketball"]</option>
+                        <option value="Hockey">@Localizer["Index_EventType_Hockey"]</option>
+                        <option value="Concert">@Localizer["Index_EventType_Concert"]</option>
+                        <option value="Other">@Localizer["Index_EventType_Other"]</option>
+                    </select>
                 </div>
+                @if (IsVersusType)
+                {
+                    <div id="simulator-index-event-home-col" class="col-md-2">
+                        <label class="form-label">@Localizer["Index_HomeTeamLabel"]</label>
+                        <input id="simulator-index-event-home-input" class="form-control" @bind="homeTeam" />
+                    </div>
+                    <div id="simulator-index-event-away-col" class="col-md-2">
+                        <label class="form-label">@Localizer["Index_AwayTeamLabel"]</label>
+                        <input id="simulator-index-event-away-input" class="form-control" @bind="awayTeam" />
+                    </div>
+                }
+                else
+                {
+                    <div id="simulator-index-event-name-col" class="col-md-4">
+                        <label class="form-label">@Localizer["Index_EventNameLabel"]</label>
+                        <input id="simulator-index-event-name-input" class="form-control" @bind="eventName" />
+                    </div>
+                }
                 <div id="simulator-index-event-start-col" class="col-md-2">
                     <label class="form-label">@Localizer["Index_StartLabel"]</label>
                     <input id="simulator-index-event-date-input" type="datetime-local" class="form-control" @bind="eventDate" />
@@ -337,6 +361,9 @@
                 <div id="simulator-index-event-summary-occupancy"><span class="text-muted">@Localizer["Index_TotalOccupiedLabel"]</span> <strong>@TotalOccupied</strong> / @TotalCapacity@if (TotalSeasonSold > 0) { <span id="simulator-index-event-summary-season" class="text-info small"> @Localizer["Index_IncludingSeasonText", TotalSeasonSold]</span> }</div>
                 <button id="simulator-index-event-golive-btn" class="btn btn-sm btn-danger ms-auto" title="@Localizer["Index_MakeLiveNowTooltip"]" @onclick="MakeEventLiveAsync" disabled="@(busy || !connectionOk || eventLive)">
                     <i class="bi bi-broadcast-pin"></i> @Localizer["Index_MakeLiveNowButton"]
+                </button>
+                <button id="simulator-index-event-end-btn" class="btn btn-sm btn-outline-dark @(eventLive ? "" : "ms-auto")" title="@Localizer["Index_EndEventTooltip"]" @onclick="EndEventAsync" disabled="@(busy || !connectionOk || !eventLive)">
+                    <i class="bi bi-stop-circle"></i> @Localizer["Index_EndEventButton"]
                 </button>
                 <button id="simulator-index-event-back-btn" class="btn btn-sm btn-outline-secondary" @onclick="ResetEvent">
                     <i class="bi bi-arrow-left"></i> @Localizer["Index_BackToEventsButton"]
@@ -765,6 +792,20 @@
     private string? externalEventId;
     private int? internalEventId;
     private string eventName = "Simulated Match";
+    private string eventType = "Football";
+    private string homeTeam = "Istra";
+    private string awayTeam = "Zagreb";
+
+    // Team sports are two-sided (home vs away); concerts / one-offs carry a single title.
+    private static readonly string[] VersusTypes = { "Football", "Basketball", "Baseball", "Hockey", "Tennis", "Boxing" };
+    private bool IsVersusType => VersusTypes.Contains(eventType, StringComparer.OrdinalIgnoreCase);
+
+    // The stored EventName: "Home - Away" for a versus fixture with both sides set, else the free title.
+    private string ComposedEventName =>
+        IsVersusType && !string.IsNullOrWhiteSpace(homeTeam) && !string.IsNullOrWhiteSpace(awayTeam)
+            ? $"{homeTeam.Trim()} - {awayTeam.Trim()}"
+            : eventName.Trim();
+
     private DateTime eventDate = DateTime.Today.AddDays(7).AddHours(18);
     private DateTime eventEndDate = DateTime.Today.AddDays(7).AddHours(20);
     private const decimal basePrice = 45m;
@@ -1214,6 +1255,9 @@
             externalEventId = summary.ExternalEventId;
             internalEventId = summary.EventId;
             eventName = summary.EventName;
+            if (!string.IsNullOrWhiteSpace(summary.EventType)) eventType = summary.EventType;
+            homeTeam = summary.HomeTeam ?? "";
+            awayTeam = summary.AwayTeam ?? "";
             eventDate = summary.EventDate.ToLocalTime();
             if (summary.EventEndDate is DateTime end) eventEndDate = end.ToLocalTime();
             ApplyEventState(summary);
@@ -1312,8 +1356,10 @@
                 Event = new ExternalEventDto
                 {
                     ExternalEventId = extId,
-                    EventName = eventName,
-                    EventType = "Football",
+                    EventName = ComposedEventName,
+                    EventType = eventType,
+                    HomeTeam = IsVersusType && !string.IsNullOrWhiteSpace(homeTeam) ? homeTeam.Trim() : null,
+                    AwayTeam = IsVersusType && !string.IsNullOrWhiteSpace(awayTeam) ? awayTeam.Trim() : null,
                     EventDate = DateTime.SpecifyKind(eventDate, DateTimeKind.Utc),
                     EventEndDate = DateTime.SpecifyKind(eventEndDate, DateTimeKind.Utc),
                     TotalSeats = TotalCapacity,
@@ -1408,6 +1454,54 @@
         catch (Exception ex)
         {
             Log($"❌ Make-live failed: {ex.Message}");
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
+    private async Task EndEventAsync()
+    {
+        if (busy || externalEventId == null) return;
+        busy = true;
+        try
+        {
+            var envelope = new TicketingWebhookEnvelope
+            {
+                EventType = TicketingEventTypes.EventEnded,
+                IdempotencyKey = Guid.NewGuid().ToString(),
+                OccurredAt = DateTime.UtcNow,
+                SourceSystem = Api.SourceSystem,
+                Event = new ExternalEventDto
+                {
+                    ExternalEventId = externalEventId!,
+                    EventName = eventName
+                }
+            };
+
+            var result = await Api.SendAsync(envelope);
+            if (result.Accepted)
+            {
+                // Mirror the closed window locally so the UI reads as finished immediately.
+                eventEndDate = DateTime.Now;
+
+                // Any running live simulation is moot once the event ends.
+                if (autoOrdering) { autoOrdering = false; autoOrderCts?.Cancel(); }
+                if (autoSelling) { autoSelling = false; autoCts?.Cancel(); }
+
+                Log($"⏹ Event ended — status Completed, {result.Message}");
+                await LoadEventsAsync();
+                ApplyEventState(existingEvents.FirstOrDefault(e => e.ExternalEventId == externalEventId));
+            }
+            else
+            {
+                Log($"❌ Could not end event: {result.Message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"❌ End-event failed: {ex.Message}");
         }
         finally
         {

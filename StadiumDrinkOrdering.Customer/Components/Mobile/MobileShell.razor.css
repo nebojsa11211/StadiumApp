@@ -21,11 +21,45 @@
     padding-bottom:var(--safe-bottom);
 }
 
-/* subtle edge on desktop so the phone-width column reads as a device */
+/* On desktop the phone-width column would otherwise sit stranded in a flat black
+   field. Enrich the surrounding backdrop and give the frame a defined device edge +
+   soft screen glow so it reads as an intentional "app", not an unstyled column.
+   The frame stays full-height & horizontally centred because the cart bar, seat
+   sheet and scrim are position:fixed and centred to the viewport (max-width:--app-max);
+   adding vertical margins or rounding the bottom here would detach them. */
 @media (min-width:520px){
+    /* Darker than the frame so the centred column clearly separates from the field
+       instead of blending into one black expanse; brand light gives the sides life. */
+    .app-backdrop{
+        background:
+            radial-gradient(115% 75% at 14% -6%,rgba(255,31,107,.24),transparent 55%),
+            radial-gradient(115% 78% at 88% 0%,rgba(255,77,46,.22),transparent 54%),
+            radial-gradient(100% 70% at 50% 116%,rgba(0,226,138,.12),transparent 60%),
+            #050609;
+    }
     .app-frame{
-        border-left:1px solid var(--line);
-        border-right:1px solid var(--line);
-        box-shadow:var(--shadow);
+        /* lifted a step above the backdrop + a defined bezel, rounded top and drop
+           shadow so it reads as an intentional device screen, not an unstyled column.
+           Bottom stays square/full-height because the cart bar, seat sheet and scrim
+           are position:fixed to the viewport bottom and must align with the frame. */
+        background:var(--ground-2);
+        border:1px solid var(--line-2);
+        border-bottom:none;
+        border-radius:22px 22px 0 0;
+        overflow:hidden;
+        box-shadow:
+            0 0 0 1px rgba(0,0,0,.55),
+            0 34px 100px -22px rgba(0,0,0,.92),
+            0 0 110px -26px rgba(255,45,120,.20);
+    }
+}
+
+/* On large monitors give the device a touch more presence */
+@media (min-width:1100px){
+    .app-frame{
+        box-shadow:
+            0 0 0 1px rgba(0,0,0,.55),
+            0 44px 130px -24px rgba(0,0,0,.94),
+            0 0 140px -26px rgba(255,45,120,.24);
     }
 }

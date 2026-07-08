@@ -223,9 +223,20 @@ public class CustomerOrdersController : ControllerBase
                 return NotFound();
             }
 
-            // Find tickets by transaction ID or payment date
+            // Tickets aren't linked to their Payment by a foreign key, so we can't ask for
+            // "this order's tickets" directly. Matching by whole day (the previous behaviour)
+            // swept in every ticket sold that day — including all externally-ingested/season
+            // tickets — so a 2-seat order showed dozens of unrelated tickets.
+            // An order's tickets are all created in the same request, a few ms after its Payment
+            // row, and customer purchases have SourceSystem == null (external ones are tagged,
+            // e.g. "TicketingSimulator"). Correlate on that tight purchase-time burst instead.
+            // TODO: add Ticket.PaymentId for a robust link and drop this heuristic.
+            var windowStart = payment.CreatedAt.AddSeconds(-2);
+            var windowEnd = payment.CreatedAt.AddSeconds(10);
             var tickets = await _context.Tickets
-                .Where(t => t.PurchaseDate.Date == payment.CreatedAt.Date)
+                .Where(t => t.SourceSystem == null
+                            && t.PurchaseDate >= windowStart
+                            && t.PurchaseDate <= windowEnd)
                 .OrderBy(t => t.PurchaseDate)
                 .ToListAsync();
 

@@ -168,18 +168,20 @@ public class SeasonService : ISeasonService
         var now = DateTime.UtcNow;
 
         // Next fixture straight from the season's own events (independent of the ticketing list's
-        // IsActive filter): upcoming by date, or currently live even if its start time has passed.
-        // Cancelled/completed matches are excluded.
+        // IsActive filter): either still upcoming, or live right now. A match whose start has passed
+        // only qualifies while it is genuinely live — i.e. in a game-day status AND not yet ended
+        // (closing at EventEndDate, or the end of its start day when no end is set). This stops a
+        // fixture left stuck in Active/InProgress after it finished from lingering as the "next" match.
         var next = await _context.Events
             .AsNoTracking()
             .Where(e => e.SeasonId == season.Id
                         && e.Status != EventStatus.Cancelled
                         && e.Status != EventStatus.Completed
                         && (e.EventDate >= now
-                            || e.Status == EventStatus.Active
-                            || e.Status == EventStatus.InProgress))
+                            || ((e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
+                                && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date))))
             .OrderBy(e => e.EventDate)
-            .Select(e => new { e.Id, e.EventName, e.EventType, e.EventDate, e.TotalSeats, e.Status })
+            .Select(e => new { e.Id, e.EventName, e.EventType, e.HomeTeam, e.AwayTeam, e.EventDate, e.EventEndDate, e.TotalSeats, e.Status })
             .FirstOrDefaultAsync(ct);
 
         UpcomingEventDto? nextDto = null;
@@ -193,13 +195,19 @@ public class SeasonService : ISeasonService
                 Id = next.Id,
                 EventName = next.EventName,
                 EventType = next.EventType,
+                HomeTeam = next.HomeTeam,
+                AwayTeam = next.AwayTeam,
                 EventDate = next.EventDate,
+                EventEndDate = next.EventEndDate,
                 TotalSeats = next.TotalSeats,
                 AvailableSeats = Math.Max(0, next.TotalSeats - sold),
-                // "Live" only when the match is in a game-day state AND has actually kicked off —
-                // guards against a fixture that was flipped Active ahead of its date being shown
-                // as live while it is still days away.
-                IsLive = EventLifecycle.CanOrderDrinks(next.Status) && next.EventDate <= now,
+                // "Live" only when the match is in a game-day state, has actually kicked off, AND has
+                // not yet ended. The kick-off guard stops a fixture flipped Active ahead of its date
+                // from showing as live days early; the end guard (closing at EventEndDate, or the end
+                // of the start day when none is set) stops a finished match from staying "live" forever.
+                IsLive = EventLifecycle.CanOrderDrinks(next.Status)
+                         && next.EventDate <= now
+                         && (next.EventEndDate.HasValue ? now <= next.EventEndDate.Value : now.Date <= next.EventDate.Date),
                 Status = next.Status.ToString()
             };
         }

@@ -1,189 +1,120 @@
 @page "/order-confirmation/{orderId}"
+@layout MobileShell
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Shared.DTOs
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>@Localizer["OrderConfirmation_PageTitle"]</PageTitle>
+<PageTitle>Potvrda narudžbe — HALFTIME</PageTitle>
+
+<ScreenHeader Title="Potvrda narudžbe" Subtitle="Ulaznice" OnBack="GoBack" />
 
 @if (isLoading)
 {
-    <div id="customer-order-confirmation-loading-container" class="container-fluid py-5">
-        <div id="customer-order-confirmation-loading-center" class="text-center">
-            <div id="customer-order-confirmation-spinner" class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="visually-hidden">@Localizer["Loading"]</span>
-            </div>
-            <p class="mt-3">@Localizer["OrderConfirmation_LoadingConfirmation"]</p>
-        </div>
+    <div id="customer-order-confirmation-loading" class="oc-state">
+        <span class="spinner"></span> Učitavam potvrdu…
     </div>
 }
 else if (orderConfirmation == null)
 {
-    <div id="customer-order-confirmation-error-container" class="container-fluid py-5">
-        <div id="customer-order-confirmation-error-alert" class="alert alert-danger text-center">
-            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
-            <h4>@Localizer["OrderConfirmation_OrderNotFound"]</h4>
-            <p>@Localizer["OrderConfirmation_OrderNotFoundMessage"]</p>
-            <a href="/events" class="btn btn-primary">@Localizer["Events_BackToHome"]</a>
-        </div>
+    <div id="customer-order-confirmation-notfound" class="oc-state oc-notfound">
+        <div id="customer-order-confirmation-emoji" class="oc-emoji">🚫</div>
+        <h2>Narudžba nije pronađena</h2>
+        <p>Ne možemo pronaći ovu narudžbu. Provjeri poveznicu ili pokušaj ponovno.</p>
+        <button id="customer-order-confirmation-notfound-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">Pregledaj utakmice</button>
     </div>
 }
 else
 {
-    <div id="customer-order-confirmation-container" class="container-fluid py-4">
-        <!-- Success Header -->
-        <div id="customer-order-confirmation-header-row" class="row mb-4">
-            <div id="customer-order-confirmation-header-col" class="col-12 text-center">
-                <div id="customer-order-confirmation-success-alert" class="alert alert-success shadow-sm">
-                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
-                    <h2 class="text-success mb-2">@Localizer["OrderConfirmation_PaymentSuccessful"]</h2>
-                    <p class="lead mb-0">@Localizer["OrderConfirmation_ConfirmedReady"]</p>
-                </div>
+    <div id="customer-order-confirmation-body" class="oc-body no-scrollbar">
+
+        <!-- Success hero -->
+        <div id="customer-order-confirmation-hero" class="oc-hero">
+            <div id="customer-order-confirmation-check" class="oc-check">✓</div>
+            <h2 id="customer-order-confirmation-hero-title">Plaćanje uspješno!</h2>
+            <p id="customer-order-confirmation-hero-sub">Tvoje ulaznice su potvrđene i spremne.</p>
+        </div>
+
+        <!-- Order meta -->
+        <div id="customer-order-confirmation-details-card" class="oc-card">
+            <span class="label">Detalji narudžbe</span>
+            <div id="customer-order-confirmation-meta" class="oc-meta">
+                <div class="oc-meta-row"><span>Narudžba</span><span id="customer-order-confirmation-order-id" class="v tnum">#@orderConfirmation.OrderId</span></div>
+                <div class="oc-meta-row"><span>Datum</span><span id="customer-order-confirmation-order-date" class="v">@orderConfirmation.OrderDate.ToString("dd.MM.yyyy · HH:mm")</span></div>
+                <div class="oc-meta-row"><span>Kupac</span><span id="customer-order-confirmation-customer" class="v">@orderConfirmation.CustomerName</span></div>
+                <div class="oc-meta-row"><span>Plaćanje</span><span id="customer-order-confirmation-payment-badge" class="oc-badge">@orderConfirmation.PaymentStatus</span></div>
+                <div class="oc-meta-row"><span>Utakmica</span><span id="customer-order-confirmation-event" class="v">@orderConfirmation.EventName</span></div>
+                <div class="oc-meta-row"><span>Termin</span><span id="customer-order-confirmation-event-date" class="v">@orderConfirmation.EventDate.ToString("dd.MM.yyyy · HH:mm")</span></div>
             </div>
         </div>
 
-        <div id="customer-order-confirmation-content-row" class="row">
-            <!-- Order Details -->
-            <div id="customer-order-confirmation-details-col" class="col-lg-8 mb-4">
-                <div id="customer-order-confirmation-details-card" class="card shadow-sm">
-                    <div id="customer-order-confirmation-details-header" class="card-header bg-primary text-white">
-                        <h4 class="mb-0"><i class="fas fa-receipt me-2"></i>@Localizer["OrderConfirmation_OrderDetails"]</h4>
-                    </div>
-                    <div id="customer-order-confirmation-details-body" class="card-body">
-                        <div id="customer-order-confirmation-details-row-1" class="row mb-3">
-                            <div id="customer-order-confirmation-details-col-1-1" class="col-sm-6">
-                                <strong id="customer-order-confirmation-order-id-label">@Localizer["OrderConfirmation_OrderID"]</strong> <span id="customer-order-confirmation-order-id">@orderConfirmation.OrderId</span>
+        <!-- Tickets -->
+        <div id="customer-order-confirmation-tickets" class="oc-section">
+            <span class="label">Ulaznice (@orderConfirmation.Tickets.Count)</span>
+            <div id="customer-order-confirmation-tickets-list" class="oc-tickets">
+                @foreach (var ticket in orderConfirmation.Tickets)
+                {
+                    var _k = ticket.SeatCode.GetHashCode();
+                    <div id="customer-order-confirmation-ticket-@_k" class="oc-ticket">
+                        <div id="customer-order-confirmation-ticket-info-@_k" class="oc-ticket-info">
+                            <div class="oc-ticket-top">
+                                <span id="customer-order-confirmation-ticket-code-@_k" class="oc-ticket-code">@ticket.SeatCode</span>
+                                <span id="customer-order-confirmation-ticket-price-@_k" class="oc-ticket-price tnum">€@ticket.Price.ToString("F2")</span>
                             </div>
-                            <div id="customer-order-confirmation-details-col-1-2" class="col-sm-6">
-                                <strong id="customer-order-confirmation-order-date-label">@Localizer["OrderConfirmation_OrderDate"]</strong> <span id="customer-order-confirmation-order-date">@orderConfirmation.OrderDate.ToString("MMM dd, yyyy - HH:mm")</span>
-                            </div>
+                            <span id="customer-order-confirmation-ticket-sector-@_k" class="oc-ticket-sub">Sektor · @ticket.SectionName</span>
+                            <span id="customer-order-confirmation-ticket-number-@_k" class="oc-ticket-sub tnum">@ticket.TicketNumber</span>
                         </div>
-                        <div id="customer-order-confirmation-details-row-2" class="row mb-3">
-                            <div id="customer-order-confirmation-details-col-2-1" class="col-sm-6">
-                                <strong id="customer-order-confirmation-customer-label">@Localizer["OrderConfirmation_Customer"]</strong> <span id="customer-order-confirmation-customer">@orderConfirmation.CustomerName</span>
-                            </div>
-                            <div id="customer-order-confirmation-details-col-2-2" class="col-sm-6">
-                                <strong id="customer-order-confirmation-payment-label">@Localizer["OrderConfirmation_PaymentStatus"]</strong>
-                                <span id="customer-order-confirmation-payment-badge" class="badge bg-success ms-2">@orderConfirmation.PaymentStatus</span>
-                            </div>
-                        </div>
-                        <div id="customer-order-confirmation-details-row-3" class="row">
-                            <div id="customer-order-confirmation-details-col-3-1" class="col-sm-6">
-                                <strong id="customer-order-confirmation-event-label">@Localizer["Checkout_Event"]</strong> <span id="customer-order-confirmation-event">@orderConfirmation.EventName</span>
-                            </div>
-                            <div id="customer-order-confirmation-details-col-3-2" class="col-sm-6">
-                                <strong id="customer-order-confirmation-event-date-label">@Localizer["OrderConfirmation_EventDate"]</strong> <span id="customer-order-confirmation-event-date">@orderConfirmation.EventDate.ToString("MMM dd, yyyy - HH:mm")</span>
-                            </div>
-                        </div>
+                        <div id="customer-order-confirmation-ticket-qr-@_k" class="oc-qr" title="QR kod ulaznice" aria-label="QR kod ulaznice"></div>
                     </div>
-                </div>
-
-                <!-- Tickets -->
-                <div id="customer-order-confirmation-tickets-card" class="card shadow-sm mt-4">
-                    <div id="customer-order-confirmation-tickets-header" class="card-header bg-success text-white">
-                        <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>@string.Format(Localizer["OrderConfirmation_Tickets"], orderConfirmation.Tickets.Count)</h4>
-                    </div>
-                    <div id="customer-order-confirmation-tickets-body" class="card-body">
-                        <div id="customer-order-confirmation-tickets-row" class="row">
-                            @foreach (var ticket in orderConfirmation.Tickets)
-                            {
-                                <div id="customer-order-confirmation-ticket-col-@ticket.SeatCode.GetHashCode()" class="col-md-6 mb-3">
-                                    <div id="customer-order-confirmation-ticket-@ticket.SeatCode.GetHashCode()" class="ticket-card border rounded p-3 bg-light">
-                                        <div id="customer-order-confirmation-ticket-header-@ticket.SeatCode.GetHashCode()" class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 id="customer-order-confirmation-ticket-code-@ticket.SeatCode.GetHashCode()" class="mb-0"><strong>@ticket.SeatCode</strong></h6>
-                                            <span id="customer-order-confirmation-ticket-price-@ticket.SeatCode.GetHashCode()" class="badge bg-primary">$@ticket.Price.ToString("F2")</span>
-                                        </div>
-                                        <div id="customer-order-confirmation-ticket-sector-@ticket.SeatCode.GetHashCode()" class="mb-2">
-                                            <small id="customer-order-confirmation-ticket-sector-text-@ticket.SeatCode.GetHashCode()" class="text-muted">@Localizer["Checkout_Sector"]: @ticket.SectionName</small>
-                                        </div>
-                                        <div id="customer-order-confirmation-ticket-number-@ticket.SeatCode.GetHashCode()" class="mb-2">
-                                            <small id="customer-order-confirmation-ticket-number-text-@ticket.SeatCode.GetHashCode()" class="text-muted">@Localizer["Tickets"]: @ticket.TicketNumber</small>
-                                        </div>
-                                        <div id="customer-order-confirmation-ticket-qr-@ticket.SeatCode.GetHashCode()" class="qr-code-placeholder bg-white border rounded p-2 text-center">
-                                            <i id="customer-order-confirmation-ticket-qr-icon-@ticket.SeatCode.GetHashCode()" class="fas fa-qrcode fa-2x text-muted"></i>
-                                            <div id="customer-order-confirmation-ticket-qr-label-@ticket.SeatCode.GetHashCode()"><small>@Localizer["Tickets"]</small></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order Summary & Actions -->
-            <div id="customer-order-confirmation-summary-col" class="col-lg-4">
-                <div id="customer-order-confirmation-summary-card" class="card shadow-sm sticky-top" style="top: 20px;">
-                    <div id="customer-order-confirmation-summary-header" class="card-header bg-dark text-white">
-                        <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>@Localizer["Checkout_OrderSummary"]</h5>
-                    </div>
-                    <div id="customer-order-confirmation-summary-body" class="card-body">
-                        <div id="customer-order-confirmation-summary-tickets-row" class="d-flex justify-content-between mb-2">
-                            <span id="customer-order-confirmation-summary-tickets-label">@Localizer["Tickets"] (@orderConfirmation.Tickets.Count)</span>
-                            <span id="customer-order-confirmation-summary-tickets-amount">$@orderConfirmation.Tickets.Sum(t => t.Price).ToString("F2")</span>
-                        </div>
-                        <div id="customer-order-confirmation-summary-service-row" class="d-flex justify-content-between mb-2">
-                            <span id="customer-order-confirmation-summary-service-label">@Localizer["OrderConfirmation_ServiceFee"]</span>
-                            <span id="customer-order-confirmation-summary-service-amount">$@(orderConfirmation.Tickets.Sum(t => t.Price) * 0.10m).ToString("F2")</span>
-                        </div>
-                        <div id="customer-order-confirmation-summary-processing-row" class="d-flex justify-content-between mb-3">
-                            <span id="customer-order-confirmation-summary-processing-label">@Localizer["OrderConfirmation_ProcessingFee"]</span>
-                            <span id="customer-order-confirmation-summary-processing-amount">$2.50</span>
-                        </div>
-                        <hr id="customer-order-confirmation-summary-divider-1">
-                        <div id="customer-order-confirmation-summary-total-row" class="d-flex justify-content-between fw-bold h5">
-                            <span id="customer-order-confirmation-summary-total-label">@Localizer["Events_From"]</span>
-                            <span id="customer-order-confirmation-summary-total-amount" class="text-success">$@orderConfirmation.TotalAmount.ToString("F2")</span>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div id="customer-order-confirmation-actions" class="d-grid gap-2 mt-4">
-                            <button id="customer-order-confirmation-print-btn" class="btn btn-primary" @onclick="PrintTickets">
-                                <i class="fas fa-print me-2"></i>@Localizer["OrderConfirmation_PrintTickets"]
-                            </button>
-                            <button id="customer-order-confirmation-download-btn" class="btn btn-outline-secondary" @onclick="DownloadTickets">
-                                <i class="fas fa-download me-2"></i>@Localizer["OrderConfirmation_DownloadPDF"]
-                            </button>
-                            <button id="customer-order-confirmation-email-btn" class="btn btn-outline-info" @onclick="EmailTickets">
-                                <i class="fas fa-envelope me-2"></i>@Localizer["OrderConfirmation_EmailTickets"]
-                            </button>
-                        </div>
-
-                        <hr id="customer-order-confirmation-summary-divider-2">
-                        <div id="customer-order-confirmation-browse" class="text-center">
-                            <a id="customer-order-confirmation-browse-link" href="/events" class="btn btn-success">
-                                <i class="fas fa-calendar me-2"></i>@Localizer["OrderConfirmation_BrowseMoreEvents"]
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
 
-        <!-- Important Information -->
-        <div id="customer-order-confirmation-info-row" class="row mt-4">
-            <div id="customer-order-confirmation-info-col" class="col-12">
-                <div id="customer-order-confirmation-info-alert" class="alert alert-info">
-                    <h6 id="customer-order-confirmation-info-title"><i class="fas fa-info-circle me-2"></i>@Localizer["OrderConfirmation_ImportantInformation"]</h6>
-                    <ul id="customer-order-confirmation-info-list" class="mb-0">
-                        <li id="customer-order-confirmation-info-item-1">@Localizer["OrderConfirmation_ArriveInfo"]</li>
-                        <li id="customer-order-confirmation-info-item-2">@Localizer["OrderConfirmation_QRCodeInfo"]</li>
-                        <li id="customer-order-confirmation-info-item-3">@Localizer["OrderConfirmation_KeepSafeInfo"]</li>
-                        <li id="customer-order-confirmation-info-item-4">@Localizer["OrderConfirmation_SupportInfo"]</li>
-                    </ul>
-                </div>
+        <!-- Summary -->
+        <div id="customer-order-confirmation-summary-card" class="oc-card">
+            <span class="label">Sažetak</span>
+            <div class="oc-lines">
+                <div class="oc-line"><span>Ulaznice (@orderConfirmation.Tickets.Count)</span><span class="tnum">€@ticketsSubtotal.ToString("F2")</span></div>
+                <div class="oc-line"><span>Naknada za uslugu</span><span class="tnum">€@serviceFee.ToString("F2")</span></div>
+                <div class="oc-line"><span>Naknada za obradu</span><span class="tnum">€@processingFee.ToString("F2")</span></div>
+                <div class="oc-line oc-line-total"><span>Ukupno</span><span id="customer-order-confirmation-total" class="tnum">€@orderConfirmation.TotalAmount.ToString("F2")</span></div>
             </div>
         </div>
+
+        <!-- Ticket actions -->
+        <div id="customer-order-confirmation-actions" class="oc-actions">
+            <button id="customer-order-confirmation-print-btn" class="btn btn-ghost" @onclick="PrintTickets">🖨️ Ispiši</button>
+            <button id="customer-order-confirmation-download-btn" class="btn btn-ghost" @onclick="DownloadTickets">⬇️ PDF</button>
+            <button id="customer-order-confirmation-email-btn" class="btn btn-ghost" @onclick="EmailTickets">✉️ Email</button>
+        </div>
+
+        <!-- Important info -->
+        <div id="customer-order-confirmation-info" class="oc-info">
+            <span class="oc-info-title">ℹ️ Važne informacije</span>
+            <ul id="customer-order-confirmation-info-list">
+                <li>Dođi barem 30 minuta prije početka utakmice.</li>
+                <li>Pokaži QR kod ulaznice na ulazu.</li>
+                <li>Čuvaj ulaznice — svaki QR kod vrijedi samo jednom.</li>
+                <li>Za pomoć se javi našoj podršci.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="customer-order-confirmation-cta" class="oc-cta">
+        <button id="customer-order-confirmation-browse-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">Pregledaj još utakmica</button>
     </div>
 }
 
 @code {
     [Parameter] public string OrderId { get; set; } = string.Empty;
-    
+
     private OrderConfirmationDto? orderConfirmation;
     private bool isLoading = true;
+
+    private decimal ticketsSubtotal => orderConfirmation?.Tickets.Sum(t => t.Price) ?? 0;
+    private decimal serviceFee => ticketsSubtotal * 0.10m;
+    private decimal processingFee => 2.50m;
 
     protected override async Task OnInitializedAsync()
     {
@@ -206,59 +137,13 @@ else
         }
     }
 
-    private async Task PrintTickets()
-    {
-        await JSRuntime.InvokeVoidAsync("window.print");
-    }
+    private async Task PrintTickets() => await JSRuntime.InvokeVoidAsync("window.print");
 
-    private async Task DownloadTickets()
-    {
-        await JSRuntime.InvokeVoidAsync("alert", "PDF download functionality will be implemented soon!");
-    }
+    private async Task DownloadTickets() =>
+        await JSRuntime.InvokeVoidAsync("alert", "Preuzimanje PDF-a bit će uskoro dostupno.");
 
-    private async Task EmailTickets()
-    {
-        await JSRuntime.InvokeVoidAsync("alert", "Tickets have been sent to your email address!");
-    }
+    private async Task EmailTickets() =>
+        await JSRuntime.InvokeVoidAsync("alert", "Ulaznice su poslane na tvoju email adresu.");
+
+    private void GoBack() => Navigation.NavigateTo("/events");
 }
-
-<style>
-    .ticket-card {
-        transition: transform 0.2s;
-    }
-
-    .ticket-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .qr-code-placeholder {
-        min-height: 80px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .sticky-top {
-        position: -webkit-sticky;
-        position: sticky;
-    }
-
-    @@media print {
-        .btn, .alert-info {
-            display: none !important;
-        }
-        
-        .ticket-card {
-            page-break-inside: avoid;
-            margin-bottom: 20px;
-        }
-    }
-
-    @@media (max-width: 991.98px) {
-        .sticky-top {
-            position: static;
-        }
-    }
-</style>

@@ -13,6 +13,8 @@ public static class TicketingEventTypes
     public const string EventUpdated = "EventUpdated";
     /// <summary>Slides the event window to "now" and moves its lifecycle to Active (game-day) so live-only features unlock.</summary>
     public const string EventWentLive = "EventWentLive";
+    /// <summary>Ends a live event: closes its window at "now" and moves its lifecycle to Completed (past).</summary>
+    public const string EventEnded = "EventEnded";
     public const string TicketSold = "TicketSold";
     public const string TicketRefunded = "TicketRefunded";
 
@@ -59,6 +61,12 @@ public class ExternalEventDto
     public string ExternalEventId { get; set; } = string.Empty;
     public string EventName { get; set; } = string.Empty;
     public string EventType { get; set; } = "Football";
+
+    /// <summary>Home side of a versus-style fixture, when the external system distinguishes teams.</summary>
+    public string? HomeTeam { get; set; }
+    /// <summary>Away side of a versus-style fixture. Null for non-versus events (e.g. concerts).</summary>
+    public string? AwayTeam { get; set; }
+
     public DateTime EventDate { get; set; }
     /// <summary>End of the event window, if the external system supplies one.</summary>
     public DateTime? EventEndDate { get; set; }
@@ -177,6 +185,8 @@ public class ExternalEventSummaryDto
     public string ExternalEventId { get; set; } = string.Empty;
     public string EventName { get; set; } = string.Empty;
     public string EventType { get; set; } = string.Empty;
+    public string? HomeTeam { get; set; }
+    public string? AwayTeam { get; set; }
     public DateTime EventDate { get; set; }
     public DateTime? EventEndDate { get; set; }
     public string? SourceSystem { get; set; }

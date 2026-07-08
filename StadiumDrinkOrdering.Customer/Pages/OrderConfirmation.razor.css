@@ -1,0 +1,90 @@
+/* ---- states ---- */
+.oc-state{display:flex;align-items:center;justify-content:center;gap:10px;
+    color:var(--muted);font-weight:700;font-size:14px;padding:40px 24px}
+.oc-notfound{flex-direction:column;text-align:center;gap:14px;padding-top:64px}
+.oc-notfound h2{font-size:20px;font-weight:900}
+.oc-notfound p{color:var(--muted);font-size:14px;max-width:28ch}
+.oc-emoji{font-size:52px}
+.oc-notfound .btn{width:auto;padding-left:28px;padding-right:28px;margin-top:6px}
+
+/* ---- body ---- */
+.oc-body{flex:1;overflow-y:auto;padding:14px 20px 108px;display:flex;flex-direction:column;gap:18px}
+
+/* ---- success hero ---- */
+.oc-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:12px 8px 4px}
+.oc-check{
+    width:66px;height:66px;border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-size:32px;font-weight:900;color:#04120C;
+    background:radial-gradient(120% 120% at 30% 20%,#5BFFC0,#00E28A 70%);
+    box-shadow:0 14px 34px -12px rgba(0,226,138,.7),0 0 0 6px rgba(0,226,138,.12);
+    margin-bottom:4px;
+}
+.oc-hero h2{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.oc-hero p{font-size:13.5px;font-weight:600;color:var(--muted)}
+
+/* ---- cards ---- */
+.oc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+    padding:16px;display:flex;flex-direction:column;gap:13px}
+
+/* ---- order meta ---- */
+.oc-meta{display:flex;flex-direction:column;gap:9px}
+.oc-meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    font-size:13px;font-weight:700;color:var(--muted)}
+.oc-meta-row .v{color:var(--ink);font-weight:800;text-align:right;min-width:0}
+.oc-badge{flex:none;font-size:11px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;
+    color:var(--live);background:rgba(0,226,138,.12);border:1px solid rgba(0,226,138,.35);
+    border-radius:999px;padding:4px 10px}
+
+/* ---- tickets ---- */
+.oc-tickets{display:flex;flex-direction:column;gap:10px}
+.oc-ticket{display:flex;align-items:center;gap:14px;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 15px;
+    transition:transform .16s var(--ease),border-color .16s}
+.oc-ticket:hover{transform:translateY(-1px);border-color:var(--line-2)}
+.oc-ticket-info{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.oc-ticket-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.oc-ticket-code{font-size:16px;font-weight:900;letter-spacing:-.01em}
+.oc-ticket-price{font-size:14px;font-weight:900;color:var(--live);flex:none}
+.oc-ticket-sub{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* faux QR placeholder — white scannable area so it reads as a real ticket code */
+.oc-qr{
+    width:62px;height:62px;flex:none;border-radius:10px;
+    background-color:#fff;
+    background-image:repeating-conic-gradient(#0A0B10 0% 25%,#fff 0% 50%);
+    background-size:9px 9px;background-position:center;
+    border:4px solid #fff;box-shadow:0 0 0 1px var(--line-2);
+}
+
+/* ---- summary lines ---- */
+.oc-lines{display:flex;flex-direction:column;gap:9px}
+.oc-line{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--muted)}
+.oc-line span:last-child{color:var(--ink)}
+.oc-line-total{font-size:17px;font-weight:900;color:var(--ink);border-top:1px solid var(--line);padding-top:12px;margin-top:3px}
+.oc-line-total span{color:var(--ink) !important}
+
+/* ---- ticket action row ---- */
+.oc-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.oc-actions .btn{width:100%}
+
+/* ---- important info ---- */
+.oc-info{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);
+    padding:15px 16px;display:flex;flex-direction:column;gap:9px}
+.oc-info-title{font-size:13px;font-weight:800;color:var(--ink)}
+.oc-info ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.oc-info li{position:relative;padding-left:16px;font-size:12.5px;font-weight:600;color:var(--muted);line-height:1.5}
+.oc-info li::before{content:"";position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--magenta)}
+
+/* ---- fixed bottom CTA ---- */
+.oc-cta{
+    position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+    width:100%;max-width:var(--app-max);z-index:25;
+    padding:14px 20px calc(18px + var(--safe-bottom));
+    background:linear-gradient(transparent,var(--ground) 34%);
+}
+
+@media print{
+    .oc-cta,.oc-actions{display:none !important}
+    .oc-ticket{page-break-inside:avoid}
+}

@@ -13,7 +13,19 @@ public class Event
     [Required]
     [StringLength(50)]
     public string EventType { get; set; } = string.Empty; // Football, Concert, Basketball, etc.
-    
+
+    /// <summary>
+    /// Home side of a versus-style fixture (e.g. "Istra"). Nullable so non-versus events
+    /// (concerts, one-off shows) and legacy events remain valid. When both teams are set the
+    /// landing renders a two-crest card; otherwise it shows a single title.
+    /// </summary>
+    [StringLength(100)]
+    public string? HomeTeam { get; set; }
+
+    /// <summary>Away side of a versus-style fixture (e.g. "Zagreb"). Null for non-versus events.</summary>
+    [StringLength(100)]
+    public string? AwayTeam { get; set; }
+
     /// <summary>Start of the event (kept as the historical <c>EventDate</c> column).</summary>
     [Required]
     public DateTime EventDate { get; set; }

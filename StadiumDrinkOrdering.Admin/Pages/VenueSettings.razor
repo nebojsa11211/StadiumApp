@@ -1,0 +1,528 @@
+@page "/admin/venue-settings"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Net.Http.Headers
+@using Microsoft.AspNetCore.Components.Forms
+@using StadiumDrinkOrdering.Shared.DTOs
+@inject IHttpClientFactory HttpClientFactory
+@inject IConfiguration Configuration
+@inject ILogger<VenueSettings> Logger
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@L["Venue_PageTitle"]</PageTitle>
+
+<div id="admin-venue-main-container" class="container-fluid">
+    <div class="row mb-3" id="admin-venue-header-row">
+        <div class="col-12" id="admin-venue-header-col">
+            <h1 id="admin-venue-title" class="mb-1">@L["Venue_Heading"]</h1>
+            <p class="text-muted" id="admin-venue-subtitle">@L["Venue_Subtitle"]</p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(alertMessage))
+    {
+        <div id="admin-venue-alert" class="alert @alertClass alert-dismissible d-flex justify-content-between align-items-center" role="alert">
+            <span id="admin-venue-alert-text">@alertMessage</span>
+            <button type="button" id="admin-venue-alert-close" class="btn-close" @onclick="() => alertMessage = null"></button>
+        </div>
+    }
+
+    @if (isLoading)
+    {
+        <div id="admin-venue-loading" class="d-flex align-items-center text-muted">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            <span>@L["Venue_Loading"]</span>
+        </div>
+    }
+    else if (loadError || venue is null)
+    {
+        <div id="admin-venue-error" class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+            <span>@L["Venue_Error"]</span>
+            <button id="admin-venue-retry-btn" class="btn btn-sm btn-outline-danger" @onclick="LoadAsync">@L["Venue_Retry"]</button>
+        </div>
+    }
+    else
+    {
+        <!-- Stadium identity -->
+        <div class="card mb-4" id="admin-venue-stadium-card">
+            <div class="card-header">
+                <h5 class="mb-0" id="admin-venue-stadium-title">@L["Venue_StadiumSection"]</h5>
+            </div>
+            <div class="card-body" id="admin-venue-stadium-body">
+                <EditForm Model="form" OnValidSubmit="SaveVenueAsync" id="admin-venue-form">
+                    <DataAnnotationsValidator />
+                    <div class="row g-3">
+                        <div class="col-md-6" id="admin-venue-name-group">
+                            <label class="form-label" for="admin-venue-name-input">@L["Venue_Name"]</label>
+                            <InputText id="admin-venue-name-input" class="form-control" @bind-Value="form.Name" />
+                            <ValidationMessage For="() => form.Name" />
+                        </div>
+                        <div class="col-md-3" id="admin-venue-capacity-group">
+                            <label class="form-label" for="admin-venue-capacity-input">@L["Venue_OfficialCapacity"]</label>
+                            <InputNumber id="admin-venue-capacity-input" class="form-control" @bind-Value="form.OfficialCapacity" />
+                        </div>
+                        <div class="col-md-3" id="admin-venue-website-group">
+                            <label class="form-label" for="admin-venue-website-input">@L["Venue_Website"]</label>
+                            <InputText id="admin-venue-website-input" class="form-control" @bind-Value="form.Website" />
+                        </div>
+
+                        <div class="col-md-6" id="admin-venue-address1-group">
+                            <label class="form-label" for="admin-venue-address1-input">@L["Venue_AddressLine1"]</label>
+                            <InputText id="admin-venue-address1-input" class="form-control" @bind-Value="form.AddressLine1" />
+                        </div>
+                        <div class="col-md-6" id="admin-venue-address2-group">
+                            <label class="form-label" for="admin-venue-address2-input">@L["Venue_AddressLine2"]</label>
+                            <InputText id="admin-venue-address2-input" class="form-control" @bind-Value="form.AddressLine2" />
+                        </div>
+
+                        <div class="col-md-4" id="admin-venue-city-group">
+                            <label class="form-label" for="admin-venue-city-input">@L["Venue_City"]</label>
+                            <InputText id="admin-venue-city-input" class="form-control" @bind-Value="form.City" />
+                        </div>
+                        <div class="col-md-4" id="admin-venue-postal-group">
+                            <label class="form-label" for="admin-venue-postal-input">@L["Venue_PostalCode"]</label>
+                            <InputText id="admin-venue-postal-input" class="form-control" @bind-Value="form.PostalCode" />
+                        </div>
+                        <div class="col-md-4" id="admin-venue-country-group">
+                            <label class="form-label" for="admin-venue-country-input">@L["Venue_Country"]</label>
+                            <InputText id="admin-venue-country-input" class="form-control" @bind-Value="form.Country" />
+                        </div>
+
+                        <div class="col-md-3" id="admin-venue-lat-group">
+                            <label class="form-label" for="admin-venue-lat-input">@L["Venue_Latitude"]</label>
+                            <InputNumber id="admin-venue-lat-input" class="form-control" @bind-Value="form.Latitude" />
+                        </div>
+                        <div class="col-md-3" id="admin-venue-lng-group">
+                            <label class="form-label" for="admin-venue-lng-input">@L["Venue_Longitude"]</label>
+                            <InputNumber id="admin-venue-lng-input" class="form-control" @bind-Value="form.Longitude" />
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h6 id="admin-venue-contact-title">@L["Venue_ContactSection"]</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6" id="admin-venue-email-group">
+                            <label class="form-label" for="admin-venue-email-input">@L["Venue_ContactEmail"]</label>
+                            <InputText id="admin-venue-email-input" class="form-control" @bind-Value="form.ContactEmail" />
+                        </div>
+                        <div class="col-md-6" id="admin-venue-phone-group">
+                            <label class="form-label" for="admin-venue-phone-input">@L["Venue_ContactPhone"]</label>
+                            <InputText id="admin-venue-phone-input" class="form-control" @bind-Value="form.ContactPhone" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 mt-4">
+                        <button type="submit" id="admin-venue-save-btn" class="btn btn-primary" disabled="@isSaving">
+                            @if (isSaving)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            @L["Venue_Save"]
+                        </button>
+                        @if (venue.UpdatedAt.HasValue)
+                        {
+                            <span class="text-muted small" id="admin-venue-updated-info">
+                                @L["Venue_UpdatedInfo", venue.UpdatedAt.Value.ToLocalTime().ToString("g"), venue.UpdatedBy ?? "-"]
+                            </span>
+                        }
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+
+        <!-- Stadium photo -->
+        <div class="card mb-4" id="admin-venue-photo-card">
+            <div class="card-header">
+                <h5 class="mb-0" id="admin-venue-photo-title">@L["Venue_Photo"]</h5>
+            </div>
+            <div class="card-body d-flex align-items-center gap-4" id="admin-venue-photo-body">
+                <div id="admin-venue-photo-preview" style="width:180px;height:110px;background:#f1f3f5;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                    @if (venue.HasPhoto)
+                    {
+                        <img id="admin-venue-photo-img" src="@ImageUrl("photo")" alt="stadium" style="max-width:100%;max-height:100%;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted small" id="admin-venue-photo-none">@L["Venue_NoPhoto"]</span>
+                    }
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    <label class="btn btn-outline-primary btn-sm mb-0" id="admin-venue-photo-upload-label">
+                        <InputFile id="admin-venue-photo-input" OnChange="@(e => UploadImageAsync(e, "photo"))" accept="image/*" class="d-none" />
+                        @L["Venue_UploadPhoto"]
+                    </label>
+                    @if (venue.HasPhoto)
+                    {
+                        <button type="button" id="admin-venue-photo-remove-btn" class="btn btn-outline-danger btn-sm" @onclick="@(() => DeleteImageAsync("photo"))">
+                            @L["Venue_RemovePhoto"]
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Resident clubs -->
+        <div class="card" id="admin-venue-clubs-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0" id="admin-venue-clubs-title">@L["Venue_ClubsSection"]</h5>
+                <button type="button" id="admin-venue-add-club-btn" class="btn btn-sm btn-primary" @onclick="StartAddClub" disabled="@(editingClub is not null)">
+                    <i class="bi bi-plus-lg me-1"></i>@L["Venue_AddClub"]
+                </button>
+            </div>
+            <div class="card-body" id="admin-venue-clubs-body">
+
+                @if (editingClub is not null)
+                {
+                    <div class="border rounded p-3 mb-3" id="admin-venue-club-editor">
+                        <h6 id="admin-venue-club-editor-title">@(editingClubId is null ? L["Venue_NewClub"] : L["Venue_EditClub"])</h6>
+                        <EditForm Model="editingClub" OnValidSubmit="SaveClubAsync" id="admin-venue-club-form">
+                            <DataAnnotationsValidator />
+                            <div class="row g-3">
+                                <div class="col-md-5" id="admin-venue-club-name-group">
+                                    <label class="form-label" for="admin-venue-club-name-input">@L["Venue_ClubName"]</label>
+                                    <InputText id="admin-venue-club-name-input" class="form-control" @bind-Value="editingClub.Name" />
+                                    <ValidationMessage For="() => editingClub.Name" />
+                                </div>
+                                <div class="col-md-3" id="admin-venue-club-short-group">
+                                    <label class="form-label" for="admin-venue-club-short-input">@L["Venue_ClubShortName"]</label>
+                                    <InputText id="admin-venue-club-short-input" class="form-control" @bind-Value="editingClub.ShortName" />
+                                </div>
+                                <div class="col-md-2" id="admin-venue-club-founded-group">
+                                    <label class="form-label" for="admin-venue-club-founded-input">@L["Venue_ClubFounded"]</label>
+                                    <InputNumber id="admin-venue-club-founded-input" class="form-control" @bind-Value="editingClub.FoundedYear" />
+                                </div>
+                                <div class="col-md-2" id="admin-venue-club-order-group">
+                                    <label class="form-label" for="admin-venue-club-order-input">@L["Venue_ClubDisplayOrder"]</label>
+                                    <InputNumber id="admin-venue-club-order-input" class="form-control" @bind-Value="editingClub.DisplayOrder" />
+                                </div>
+
+                                <div class="col-md-3" id="admin-venue-club-primarycolor-group">
+                                    <label class="form-label" for="admin-venue-club-primarycolor-input">@L["Venue_ClubPrimaryColor"]</label>
+                                    <InputText id="admin-venue-club-primarycolor-input" type="color" class="form-control form-control-color" @bind-Value="editingClub.PrimaryColor" />
+                                </div>
+                                <div class="col-md-3" id="admin-venue-club-secondarycolor-group">
+                                    <label class="form-label" for="admin-venue-club-secondarycolor-input">@L["Venue_ClubSecondaryColor"]</label>
+                                    <InputText id="admin-venue-club-secondarycolor-input" type="color" class="form-control form-control-color" @bind-Value="editingClub.SecondaryColor" />
+                                </div>
+                                <div class="col-md-4" id="admin-venue-club-cweb-group">
+                                    <label class="form-label" for="admin-venue-club-cweb-input">@L["Venue_ClubWebsite"]</label>
+                                    <InputText id="admin-venue-club-cweb-input" class="form-control" @bind-Value="editingClub.Website" />
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end" id="admin-venue-club-primary-group">
+                                    <div class="form-check">
+                                        <InputCheckbox id="admin-venue-club-primary-input" class="form-check-input" @bind-Value="editingClub.IsPrimary" />
+                                        <label class="form-check-label" for="admin-venue-club-primary-input">@L["Venue_ClubIsPrimary"]</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <button type="submit" id="admin-venue-club-save-btn" class="btn btn-primary btn-sm" disabled="@isSaving">@L["Venue_Save2"]</button>
+                                <button type="button" id="admin-venue-club-cancel-btn" class="btn btn-outline-secondary btn-sm" @onclick="CancelClubEdit">@L["Venue_Cancel"]</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                }
+
+                @if (venue.Clubs.Count == 0)
+                {
+                    <div class="text-muted" id="admin-venue-clubs-empty">@L["Venue_NoClubs"]</div>
+                }
+                else
+                {
+                    <div class="table-responsive" id="admin-venue-clubs-responsive">
+                        <table class="table align-middle mb-0" id="admin-venue-clubs-table">
+                            <tbody id="admin-venue-clubs-tbody">
+                                @foreach (var club in venue.Clubs)
+                                {
+                                    <tr id="admin-venue-club-row-@club.Id">
+                                        <td style="width:64px;">
+                                            <div id="admin-venue-club-logo-@club.Id" style="width:48px;height:48px;border-radius:8px;background:#f1f3f5;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                                                @if (club.HasLogo)
+                                                {
+                                                    <img id="admin-venue-club-logo-img-@club.Id" src="@ImageUrl($"clubs/{club.Id}/logo")" alt="@club.Name" style="max-width:100%;max-height:100%;" />
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-shield" style="color:#adb5bd;"></i>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold" id="admin-venue-club-name-@club.Id">
+                                                @club.Name
+                                                @if (club.IsPrimary)
+                                                {
+                                                    <span class="badge text-bg-success ms-1" id="admin-venue-club-primary-badge-@club.Id">@L["Venue_PrimaryBadge"]</span>
+                                                }
+                                            </div>
+                                            <div class="text-muted small" id="admin-venue-club-meta-@club.Id">
+                                                @club.ShortName@(club.FoundedYear.HasValue ? $" · {club.FoundedYear}" : "")
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <label class="btn btn-outline-secondary btn-sm mb-0 me-1" id="admin-venue-club-logo-label-@club.Id">
+                                                <InputFile id="@($"admin-venue-club-logo-input-{club.Id}")" OnChange="@(e => UploadImageAsync(e, $"clubs/{club.Id}/logo"))" accept="image/*" class="d-none" />
+                                                @L["Venue_UploadLogo"]
+                                            </label>
+                                            @if (club.HasLogo)
+                                            {
+                                                <button type="button" id="admin-venue-club-logo-remove-@club.Id" class="btn btn-outline-secondary btn-sm me-1" @onclick="@(() => DeleteImageAsync($"clubs/{club.Id}/logo"))">@L["Venue_RemoveLogo"]</button>
+                                            }
+                                            <button type="button" id="admin-venue-club-edit-btn-@club.Id" class="btn btn-outline-primary btn-sm me-1" @onclick="@(() => StartEditClub(club))">@L["Venue_Edit"]</button>
+                                            <button type="button" id="admin-venue-club-delete-btn-@club.Id" class="btn btn-outline-danger btn-sm" @onclick="@(() => DeleteClubAsync(club))">@L["Venue_Delete"]</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private bool loadError;
+    private bool isSaving;
+    private VenueDto? venue;
+    private UpdateVenueDto form = new();
+
+    private ClubUpsertDto? editingClub;
+    private int? editingClubId;
+
+    private string? alertMessage;
+    private string alertClass = "alert-success";
+
+    // Bumped after each image upload/delete so <img> URLs change and the browser re-fetches.
+    private int imgVersion;
+
+    private HttpClient Api => HttpClientFactory.CreateClient("AuthenticatedClient");
+
+    private string ApiBaseUrl =>
+        Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+
+    // Public image endpoints are read cross-origin by the browser directly (no auth needed).
+    private string ImageUrl(string path) => $"{ApiBaseUrl}/api/venue/{path}?v={imgVersion}";
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        isLoading = true;
+        loadError = false;
+        StateHasChanged();
+        try
+        {
+            venue = await Api.GetFromJsonAsync<VenueDto>("api/venue");
+            if (venue is not null)
+            {
+                form = new UpdateVenueDto
+                {
+                    Name = venue.Name,
+                    AddressLine1 = venue.AddressLine1,
+                    AddressLine2 = venue.AddressLine2,
+                    City = venue.City,
+                    PostalCode = venue.PostalCode,
+                    Country = venue.Country,
+                    Latitude = venue.Latitude,
+                    Longitude = venue.Longitude,
+                    OfficialCapacity = venue.OfficialCapacity,
+                    ContactEmail = venue.ContactEmail,
+                    ContactPhone = venue.ContactPhone,
+                    Website = venue.Website
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load venue profile");
+            loadError = true;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveVenueAsync()
+    {
+        isSaving = true;
+        try
+        {
+            var resp = await Api.PutAsJsonAsync("api/venue", form);
+            if (resp.IsSuccessStatusCode)
+            {
+                venue = await resp.Content.ReadFromJsonAsync<VenueDto>();
+                ShowAlert(L["Venue_Saved"], true);
+            }
+            else
+            {
+                ShowAlert(L["Venue_SaveFailed"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save venue profile");
+            ShowAlert(L["Venue_SaveFailed"], false);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void StartAddClub()
+    {
+        editingClubId = null;
+        editingClub = new ClubUpsertDto { DisplayOrder = venue?.Clubs.Count ?? 0, PrimaryColor = "#1d4ed8", SecondaryColor = "#0f172a" };
+    }
+
+    private void StartEditClub(ClubDto club)
+    {
+        editingClubId = club.Id;
+        editingClub = new ClubUpsertDto
+        {
+            Name = club.Name,
+            ShortName = club.ShortName,
+            PrimaryColor = club.PrimaryColor ?? "#1d4ed8",
+            SecondaryColor = club.SecondaryColor ?? "#0f172a",
+            FoundedYear = club.FoundedYear,
+            Website = club.Website,
+            IsPrimary = club.IsPrimary,
+            DisplayOrder = club.DisplayOrder
+        };
+    }
+
+    private void CancelClubEdit()
+    {
+        editingClub = null;
+        editingClubId = null;
+    }
+
+    private async Task SaveClubAsync()
+    {
+        if (editingClub is null) return;
+        isSaving = true;
+        try
+        {
+            var resp = editingClubId is null
+                ? await Api.PostAsJsonAsync("api/venue/clubs", editingClub)
+                : await Api.PutAsJsonAsync($"api/venue/clubs/{editingClubId}", editingClub);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                CancelClubEdit();
+                await ReloadVenueAsync();
+                ShowAlert(L["Venue_ClubSaved"], true);
+            }
+            else
+            {
+                ShowAlert(L["Venue_SaveFailed"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save club");
+            ShowAlert(L["Venue_SaveFailed"], false);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task DeleteClubAsync(ClubDto club)
+    {
+        try
+        {
+            var resp = await Api.DeleteAsync($"api/venue/clubs/{club.Id}");
+            if (resp.IsSuccessStatusCode)
+            {
+                await ReloadVenueAsync();
+                ShowAlert(L["Venue_ClubDeleted"], true);
+            }
+            else
+            {
+                ShowAlert(L["Venue_SaveFailed"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete club");
+            ShowAlert(L["Venue_SaveFailed"], false);
+        }
+    }
+
+    private async Task UploadImageAsync(InputFileChangeEventArgs e, string path)
+    {
+        var file = e.File;
+        if (file is null) return;
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            var stream = file.OpenReadStream(maxAllowedSize: 4 * 1024 * 1024);
+            var streamContent = new StreamContent(stream);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(string.IsNullOrEmpty(file.ContentType) ? "application/octet-stream" : file.ContentType);
+            content.Add(streamContent, "file", file.Name);
+
+            var resp = await Api.PostAsync($"api/venue/{path}", content);
+            if (resp.IsSuccessStatusCode)
+            {
+                imgVersion++;
+                await ReloadVenueAsync();
+                ShowAlert(L["Venue_Saved"], true);
+            }
+            else
+            {
+                ShowAlert(L["Venue_SaveFailed"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to upload image {Path}", path);
+            ShowAlert(L["Venue_SaveFailed"], false);
+        }
+    }
+
+    private async Task DeleteImageAsync(string path)
+    {
+        try
+        {
+            var resp = await Api.DeleteAsync($"api/venue/{path}");
+            if (resp.IsSuccessStatusCode)
+            {
+                imgVersion++;
+                await ReloadVenueAsync();
+                ShowAlert(L["Venue_Saved"], true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete image {Path}", path);
+            ShowAlert(L["Venue_SaveFailed"], false);
+        }
+    }
+
+    // Refresh only the read model (keeps the venue form edits intact isn't needed here — reload is fine).
+    private async Task ReloadVenueAsync()
+    {
+        try
+        {
+            venue = await Api.GetFromJsonAsync<VenueDto>("api/venue");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to reload venue after change");
+        }
+        StateHasChanged();
+    }
+
+    private void ShowAlert(string message, bool success)
+    {
+        alertMessage = message;
+        alertClass = success ? "alert-success" : "alert-danger";
+    }
+}

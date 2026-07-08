@@ -3296,4 +3296,58 @@
   <data name="Wallets_LedgerAfter" xml:space="preserve"><value>Stanje nakon</value></data>
   <data name="Wallets_Close" xml:space="preserve"><value>Zatvori</value></data>
   <data name="Wallets_ActionFailed" xml:space="preserve"><value>Radnja nije uspjela.</value></data>
+  <data name="Nav_Venue" xml:space="preserve"><value>Stadion i brend</value></data>
+  <data name="Venue_PageTitle" xml:space="preserve"><value>Stadion i brend</value></data>
+  <data name="Venue_Heading" xml:space="preserve"><value>Stadion i brend</value></data>
+  <data name="Venue_Subtitle" xml:space="preserve"><value>Identitet stadiona i klubovi koji ovdje nastupaju.</value></data>
+  <data name="Venue_Loading" xml:space="preserve"><value>Učitavanje stadiona…</value></data>
+  <data name="Venue_Error" xml:space="preserve"><value>Nije moguće učitati profil stadiona.</value></data>
+  <data name="Venue_Retry" xml:space="preserve"><value>Pokušaj ponovno</value></data>
+  <data name="Venue_Saved" xml:space="preserve"><value>Spremljeno.</value></data>
+  <data name="Venue_SaveFailed" xml:space="preserve"><value>Spremanje nije uspjelo.</value></data>
+  <data name="Venue_Save" xml:space="preserve"><value>Spremi promjene</value></data>
+  <data name="Venue_Cancel" xml:space="preserve"><value>Odustani</value></data>
+  <data name="Venue_StadiumSection" xml:space="preserve"><value>Stadion</value></data>
+  <data name="Venue_ContactSection" xml:space="preserve"><value>Kontakt</value></data>
+  <data name="Venue_ClubsSection" xml:space="preserve"><value>Klubovi domaćini</value></data>
+  <data name="Venue_Name" xml:space="preserve"><value>Naziv stadiona</value></data>
+  <data name="Venue_AddressLine1" xml:space="preserve"><value>Adresa 1</value></data>
+  <data name="Venue_AddressLine2" xml:space="preserve"><value>Adresa 2</value></data>
+  <data name="Venue_City" xml:space="preserve"><value>Grad</value></data>
+  <data name="Venue_PostalCode" xml:space="preserve"><value>Poštanski broj</value></data>
+  <data name="Venue_Country" xml:space="preserve"><value>Država</value></data>
+  <data name="Venue_Latitude" xml:space="preserve"><value>Zemljopisna širina</value></data>
+  <data name="Venue_Longitude" xml:space="preserve"><value>Zemljopisna dužina</value></data>
+  <data name="Venue_OfficialCapacity" xml:space="preserve"><value>Službeni kapacitet</value></data>
+  <data name="Venue_ContactEmail" xml:space="preserve"><value>E-pošta za podršku</value></data>
+  <data name="Venue_ContactPhone" xml:space="preserve"><value>Telefon podrške</value></data>
+  <data name="Venue_Website" xml:space="preserve"><value>Web stranica</value></data>
+  <data name="Venue_Photo" xml:space="preserve"><value>Fotografija stadiona</value></data>
+  <data name="Venue_UploadPhoto" xml:space="preserve"><value>Učitaj fotografiju</value></data>
+  <data name="Venue_RemovePhoto" xml:space="preserve"><value>Ukloni fotografiju</value></data>
+  <data name="Venue_NoPhoto" xml:space="preserve"><value>Fotografija nije učitana.</value></data>
+  <data name="Venue_UpdatedInfo" xml:space="preserve"><value>Zadnje spremljeno {0}, {1}</value></data>
+  <data name="Venue_AddClub" xml:space="preserve"><value>Dodaj klub</value></data>
+  <data name="Venue_NewClub" xml:space="preserve"><value>Novi klub</value></data>
+  <data name="Venue_EditClub" xml:space="preserve"><value>Uredi klub</value></data>
+  <data name="Venue_NoClubs" xml:space="preserve"><value>Još nema dodanih klubova.</value></data>
+  <data name="Venue_ClubName" xml:space="preserve"><value>Naziv kluba</value></data>
+  <data name="Venue_ClubShortName" xml:space="preserve"><value>Skraćeni naziv</value></data>
+  <data name="Venue_ClubPrimaryColor" xml:space="preserve"><value>Primarna boja</value></data>
+  <data name="Venue_ClubSecondaryColor" xml:space="preserve"><value>Sekundarna boja</value></data>
+  <data name="Venue_ClubFounded" xml:space="preserve"><value>Godina osnutka</value></data>
+  <data name="Venue_ClubWebsite" xml:space="preserve"><value>Web stranica</value></data>
+  <data name="Venue_ClubIsPrimary" xml:space="preserve"><value>Glavni (domaći) klub</value></data>
+  <data name="Venue_ClubDisplayOrder" xml:space="preserve"><value>Redoslijed prikaza</value></data>
+  <data name="Venue_ClubLogo" xml:space="preserve"><value>Logo</value></data>
+  <data name="Venue_UploadLogo" xml:space="preserve"><value>Učitaj logo</value></data>
+  <data name="Venue_RemoveLogo" xml:space="preserve"><value>Ukloni logo</value></data>
+  <data name="Venue_NoLogo" xml:space="preserve"><value>Nema logotipa</value></data>
+  <data name="Venue_PrimaryBadge" xml:space="preserve"><value>Glavni</value></data>
+  <data name="Venue_Edit" xml:space="preserve"><value>Uredi</value></data>
+  <data name="Venue_Delete" xml:space="preserve"><value>Obriši</value></data>
+  <data name="Venue_Save2" xml:space="preserve"><value>Spremi</value></data>
+  <data name="Venue_ConfirmDeleteClub" xml:space="preserve"><value>Obrisati ovaj klub?</value></data>
+  <data name="Venue_ClubSaved" xml:space="preserve"><value>Klub spremljen.</value></data>
+  <data name="Venue_ClubDeleted" xml:space="preserve"><value>Klub obrisan.</value></data>
 </root>

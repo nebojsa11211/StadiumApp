@@ -5,14 +5,22 @@
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <AuthenticationInitializer>
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MobileShell)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </AuthenticationInitializer>
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+        <PageTitle>Stranica nije pronađena — HALFTIME</PageTitle>
+        <LayoutView Layout="@typeof(MobileShell)">
+            <ScreenHeader Title="Nije pronađeno" BackHref="/" />
+            <div class="gate" role="alert">
+                <div class="gate-icon">🔍</div>
+                <h2>Ništa ovdje</h2>
+                <p>Stranica koju tražiš ne postoji ili je premještena.</p>
+                <div class="gate-actions">
+                    <a class="btn btn-primary" href="/">Početna</a>
+                </div>
+            </div>
         </LayoutView>
     </NotFound>
 </Router>

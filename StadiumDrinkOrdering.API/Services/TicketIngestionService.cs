@@ -111,6 +111,8 @@ public class TicketIngestionService : ITicketIngestionService
                     => await HandleEventUpsertAsync(envelope, ct),
                 TicketingEventTypes.EventWentLive
                     => await HandleEventWentLiveAsync(envelope, ct),
+                TicketingEventTypes.EventEnded
+                    => await HandleEventEndedAsync(envelope, ct),
                 TicketingEventTypes.TicketSold
                     => await HandleTicketSoldAsync(envelope, ct),
                 TicketingEventTypes.TicketRefunded
@@ -154,20 +156,32 @@ public class TicketIngestionService : ITicketIngestionService
 
         if (evt == null)
         {
+            var startUtc = EnsureUtc(dto.EventDate);
+            var endUtc = dto.EventEndDate.HasValue ? EnsureUtc(dto.EventEndDate.Value) : (DateTime?)null;
+
+            // An event ingested with a window that has already elapsed is historical — create it as
+            // Completed (past) rather than OnSale, so a back-dated fixture never starts life "sellable"
+            // and stuck. Mirrors Event.IsLiveAt's end-of-window rule (explicit end, else end of start day).
+            var now = DateTime.UtcNow;
+            var alreadyEnded = endUtc.HasValue ? endUtc.Value < now : startUtc.Date < now.Date;
+
             evt = new Event
             {
                 ExternalEventId = dto.ExternalEventId,
                 SourceSystem = envelope.SourceSystem,
                 EventName = string.IsNullOrWhiteSpace(dto.EventName) ? $"External Event {dto.ExternalEventId}" : dto.EventName,
                 EventType = string.IsNullOrWhiteSpace(dto.EventType) ? "Football" : dto.EventType,
-                EventDate = EnsureUtc(dto.EventDate),
-                EventEndDate = dto.EventEndDate.HasValue ? EnsureUtc(dto.EventEndDate.Value) : null,
+                HomeTeam = string.IsNullOrWhiteSpace(dto.HomeTeam) ? null : dto.HomeTeam.Trim(),
+                AwayTeam = string.IsNullOrWhiteSpace(dto.AwayTeam) ? null : dto.AwayTeam.Trim(),
+                EventDate = startUtc,
+                EventEndDate = endUtc,
                 TotalSeats = totalSeats,
                 BaseTicketPrice = dto.BaseTicketPrice,
                 Description = dto.Description,
                 SeasonId = season?.Id,
-                IsActive = true,
-                Status = EventStatus.OnSale, // externally-created events are sellable so ingested sales apply
+                IsActive = !alreadyEnded,
+                // Future/current events are sellable (OnSale) so ingested sales apply; past events land as Completed.
+                Status = alreadyEnded ? EventStatus.Completed : EventStatus.OnSale,
                 CreatedAt = DateTime.UtcNow
             };
             _context.Events.Add(evt);
@@ -176,6 +190,8 @@ public class TicketIngestionService : ITicketIngestionService
         {
             evt.EventName = string.IsNullOrWhiteSpace(dto.EventName) ? evt.EventName : dto.EventName;
             evt.EventType = string.IsNullOrWhiteSpace(dto.EventType) ? evt.EventType : dto.EventType;
+            evt.HomeTeam = string.IsNullOrWhiteSpace(dto.HomeTeam) ? evt.HomeTeam : dto.HomeTeam.Trim();
+            evt.AwayTeam = string.IsNullOrWhiteSpace(dto.AwayTeam) ? evt.AwayTeam : dto.AwayTeam.Trim();
             evt.EventDate = EnsureUtc(dto.EventDate);
             if (dto.EventEndDate.HasValue)
                 evt.EventEndDate = EnsureUtc(dto.EventEndDate.Value);
@@ -257,6 +273,61 @@ public class TicketIngestionService : ITicketIngestionService
 
         _logger.LogInformation("Event {ExternalId} -> internal {EventId} made live: status={Status}, window {Start:o}..{End:o}",
             dto.ExternalEventId, evt.Id, evt.Status, evt.EventDate, evt.EventEndDate);
+
+        return new TicketingWebhookResult
+        {
+            Accepted = true,
+            Message = $"{envelope.EventType}:{evt.Status}",
+            EventId = evt.Id,
+            TotalSoldForEvent = await CountEventSoldAsync(evt.Id, ct)
+        };
+    }
+
+    /// <summary>
+    /// Counterpart to <see cref="HandleEventWentLiveAsync"/>: ends a live event by closing its window
+    /// at "now" and moving its lifecycle to <see cref="EventStatus.Completed"/>. Idempotent — a repeat
+    /// for an already-terminal event is accepted as a no-op rather than rejected.
+    /// </summary>
+    private async Task<TicketingWebhookResult> HandleEventEndedAsync(TicketingWebhookEnvelope envelope, CancellationToken ct)
+    {
+        var dto = envelope.Event;
+        if (dto == null || string.IsNullOrWhiteSpace(dto.ExternalEventId))
+            return Rejected("Missing event payload");
+
+        var evt = await _context.Events.FirstOrDefaultAsync(e => e.ExternalEventId == dto.ExternalEventId, ct);
+        if (evt == null)
+            return Rejected($"No event mapped to external id '{dto.ExternalEventId}'");
+
+        // Already finished/cancelled — nothing to do. Accept so a duplicate/late signal is harmless.
+        if (EventLifecycle.IsTerminal(evt.Status))
+        {
+            RecordInbox(envelope);
+            await _context.SaveChangesAsync(ct);
+            return new TicketingWebhookResult
+            {
+                Accepted = true,
+                Message = $"Already {evt.Status}",
+                EventId = evt.Id,
+                TotalSoldForEvent = await CountEventSoldAsync(evt.Id, ct)
+            };
+        }
+
+        if (!EventLifecycle.CanTransition(evt.Status, EventStatus.Completed))
+            return Rejected($"Event is {evt.Status} and cannot be ended — it must be live (Active/InProgress) first.");
+
+        var now = DateTime.UtcNow;
+        evt.Status = EventStatus.Completed;
+        // Close the window at "now" so it reads as finished immediately (never leave an end in the future).
+        if (!evt.EventEndDate.HasValue || evt.EventEndDate.Value > now)
+            evt.EventEndDate = now;
+        evt.IsActive = false; // no longer live/sellable
+        evt.UpdatedAt = now;
+
+        RecordInbox(envelope);
+        await _context.SaveChangesAsync(ct);
+
+        _logger.LogInformation("Event {ExternalId} -> internal {EventId} ended: status=Completed, endedAt={Now:o}",
+            dto.ExternalEventId, evt.Id, now);
 
         return new TicketingWebhookResult
         {

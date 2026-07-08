@@ -64,6 +64,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<Wallet> Wallets { get; set; }
     public DbSet<WalletTransaction> WalletTransactions { get; set; }
 
+    // Venue / resident-club identity (branding surfaced to customers)
+    public DbSet<Venue> Venues { get; set; }
+    public DbSet<Club> Clubs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -680,6 +684,26 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Notes).HasMaxLength(500);
         });
 
+        // Venue configuration (singleton stadium identity)
+        modelBuilder.Entity<Venue>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+        });
+
+        // Club configuration (resident clubs at the venue)
+        modelBuilder.Entity<Club>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.VenueId);
+            entity.Property(e => e.Name).HasMaxLength(150).IsRequired();
+
+            entity.HasOne(e => e.Venue)
+                .WithMany(v => v.Clubs)
+                .HasForeignKey(e => e.VenueId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         // Seed data
         SeedData(modelBuilder);
     }
@@ -696,6 +720,18 @@ public class ApplicationDbContext : DbContext
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
                 Role = UserRole.Admin,
                 CreatedAt = DateTime.UtcNow
+            }
+        );
+
+        // Seed the singleton venue so the branding profile always exists to edit.
+        // Fixed timestamp (not DateTime.UtcNow) so re-scaffolded migrations don't churn.
+        modelBuilder.Entity<Venue>().HasData(
+            new Venue
+            {
+                Id = 1,
+                Name = "Stadium",
+                Country = "Croatia",
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
         );
 

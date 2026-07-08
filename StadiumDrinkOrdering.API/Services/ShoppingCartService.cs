@@ -60,11 +60,20 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<bool> AddSeatToCartAsync(string sessionId, int eventId, int sectorId, int rowNumber, int seatNumber, decimal price, int? userId = null)
     {
-        using var transaction = await _context.Database.BeginTransactionAsync();
+        // The API enables EnableRetryOnFailure (NpgsqlRetryingExecutionStrategy), which forbids a
+        // manually-opened transaction unless the whole begin→work→commit runs through the strategy.
+        // Without this wrapper BeginTransactionAsync throws every call, the catch swallows it, and the
+        // caller sees a bogus "seat taken" ("Mjesto je u međuvremenu zauzeto.").
+        var strategy = _context.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+        _context.ChangeTracker.Clear();
+        await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            // Check if seat is available
-            if (!await IsSeatAvailableAsync(eventId, sectorId, rowNumber, seatNumber))
+            // Check if seat is available. Pass sessionId so a hold this same session already owns
+            // (e.g. re-adding a seat that's already in the cart) doesn't count as "taken".
+            if (!await IsSeatAvailableAsync(eventId, sectorId, rowNumber, seatNumber, sessionId))
             {
                 return false;
             }
@@ -117,11 +126,18 @@ public class ShoppingCartService : IShoppingCartService
             _logger.LogError(ex, "Error adding seat to cart for session {SessionId}", sessionId);
             return false;
         }
+        });
     }
 
     public async Task<bool> RemoveSeatFromCartAsync(string sessionId, int eventId, int sectorId, int rowNumber, int seatNumber)
     {
-        using var transaction = await _context.Database.BeginTransactionAsync();
+        // See AddSeatToCartAsync: the retrying execution strategy requires the transaction to run
+        // through CreateExecutionStrategy(), otherwise BeginTransactionAsync throws.
+        var strategy = _context.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+        _context.ChangeTracker.Clear();
+        await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
             var cart = await _context.ShoppingCarts
@@ -156,6 +172,7 @@ public class ShoppingCartService : IShoppingCartService
             _logger.LogError(ex, "Error removing seat from cart for session {SessionId}", sessionId);
             return false;
         }
+        });
     }
 
     public async Task<ShoppingCart?> GetCartAsync(string sessionId)
@@ -282,7 +299,7 @@ public class ShoppingCartService : IShoppingCartService
         }
     }
 
-    public async Task<bool> IsSeatAvailableAsync(int eventId, int sectorId, int rowNumber, int seatNumber)
+    public async Task<bool> IsSeatAvailableAsync(int eventId, int sectorId, int rowNumber, int seatNumber, string? sessionId = null)
     {
         // "sold" is resolved against the real overlay stadium: any non-cancelled ticket occupying
         // this seat for the event — including a season pass's derived ticket — makes it unavailable.
@@ -290,14 +307,18 @@ public class ShoppingCartService : IShoppingCartService
         if (await _overlaySeats.IsSeatSoldAsync(eventId, sectorId, rowNumber, seatNumber))
             return false;
 
-        // Check if seat is currently reserved by another session
+        // Check if the seat is currently reserved by *another* session. A hold owned by the caller's
+        // own session (sessionId) is not a conflict — re-adding a seat you already hold is idempotent
+        // and ReserveSeatAsync extends the existing hold. Without this, your own reservation would
+        // make the seat report as "taken" ("Mjesto je u međuvremenu zauzeto.").
         var isReserved = await _context.SeatReservations
             .AnyAsync(r => r.EventId == eventId &&
                           r.SectorId == sectorId &&
                           r.RowNumber == rowNumber &&
                           r.SeatNumber == seatNumber &&
                           r.Status == ReservationStatus.Active &&
-                          r.ReservedUntil > DateTime.UtcNow);
+                          r.ReservedUntil > DateTime.UtcNow &&
+                          (sessionId == null || r.SessionId != sessionId));
 
         return !isReserved;
     }

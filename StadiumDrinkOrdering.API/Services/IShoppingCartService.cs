@@ -11,7 +11,7 @@ public interface IShoppingCartService
     Task<bool> ClearCartAsync(string sessionId);
     Task<bool> ReserveSeatAsync(string sessionId, int eventId, int sectorId, int rowNumber, int seatNumber, int? userId = null);
     Task<bool> ReleaseSeatAsync(string sessionId, int eventId, int sectorId, int rowNumber, int seatNumber);
-    Task<bool> IsSeatAvailableAsync(int eventId, int sectorId, int rowNumber, int seatNumber);
+    Task<bool> IsSeatAvailableAsync(int eventId, int sectorId, int rowNumber, int seatNumber, string? sessionId = null);
     Task CleanupExpiredReservationsAsync();
     Task<decimal> CalculateCartTotalAsync(string sessionId);
 }

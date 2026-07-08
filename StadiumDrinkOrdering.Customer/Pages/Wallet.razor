@@ -1,127 +1,100 @@
 @page "/wallet"
+@layout MobileShell
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
-@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>@Localizer["Wallet_PageTitle"]</PageTitle>
+<PageTitle>Novčanik — HALFTIME</PageTitle>
+
+<ScreenHeader Title="Novčanik" Subtitle="Stanje & transakcije" ShowBack="false" />
 
 <AuthenticationGuard>
-    <div class="container" id="customer-wallet-container">
-        <h1 class="mb-4" id="customer-wallet-title">💳 @Localizer["Wallet_PageTitle"]</h1>
+    <div id="customer-wallet-container" class="wal-body no-scrollbar">
 
         @if (summary == null)
         {
-            <div class="text-center" id="customer-wallet-loading">
-                <div class="spinner-border" role="status"><span class="visually-hidden">@Localizer["Loading"]</span></div>
-            </div>
+            <div id="customer-wallet-loading" class="wal-state"><span class="spinner"></span> Učitavam novčanik…</div>
         }
         else if (!summary.Exists && !summary.IsEligible)
         {
-            <div class="text-center py-5" id="customer-wallet-not-eligible">
-                <div class="mb-3"><span style="font-size: 4rem;">🎟️</span></div>
-                <h3 id="customer-wallet-not-eligible-title">@Localizer["Wallet_NotEligibleTitle"]</h3>
-                <p class="text-muted" id="customer-wallet-not-eligible-message">@Localizer["Wallet_NotEligibleMessage"]</p>
+            <div id="customer-wallet-not-eligible" class="wal-state wal-empty">
+                <div class="wal-emoji">🎟️</div>
+                <h2>Novčanik nije dostupan</h2>
+                <p id="customer-wallet-not-eligible-message">Novčanik je dostupan samo vlasnicima sezonske ulaznice.</p>
             </div>
         }
         else
         {
-            <div id="customer-wallet-main-row" class="row g-4">
-                <div id="customer-wallet-left-col" class="col-lg-5">
-                    <div class="card shadow-sm" id="customer-wallet-balance-card">
-                        <div class="card-body text-center">
-                            <div class="text-muted text-uppercase small" id="customer-wallet-balance-label">@Localizer["Wallet_Balance"]</div>
-                            <div class="display-5 fw-bold text-primary my-2" id="customer-wallet-balance-amount">
-                                @FormatMoney(summary.Balance)
-                            </div>
-                            @if (summary.Status == WalletStatus.Frozen)
-                            {
-                                <span class="badge bg-danger" id="customer-wallet-frozen-badge">@Localizer["Wallet_Frozen"]</span>
-                            }
-                        </div>
-                    </div>
-
-                    <div class="card shadow-sm mt-4" id="customer-wallet-deposit-card">
-                        <div class="card-header" id="customer-wallet-deposit-header">@Localizer["Wallet_AddFunds"]</div>
-                        <div id="customer-wallet-deposit-body" class="card-body">
-                            <div class="mb-3">
-                                <label class="form-label" for="customer-wallet-deposit-amount">@Localizer["Wallet_Amount"] (@summary.Currency)</label>
-                                <input type="number" min="0.01" step="0.01" class="form-control"
-                                       id="customer-wallet-deposit-amount" @bind="depositAmount" />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="customer-wallet-deposit-method">@Localizer["Wallet_Method"]</label>
-                                <select class="form-select" id="customer-wallet-deposit-method" @bind="depositMethod">
-                                    <option value="CreditCard">Credit Card</option>
-                                    <option value="PayPal">PayPal</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-primary w-100" id="customer-wallet-deposit-btn"
-                                    @onclick="Deposit" disabled="@(isDepositing || depositAmount <= 0)">
-                                @if (isDepositing)
-                                {
-                                    <span class="spinner-border spinner-border-sm" id="customer-wallet-deposit-spinner"></span>
-                                }
-                                @Localizer["Wallet_Deposit"]
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="customer-wallet-right-col" class="col-lg-7">
-                    <div class="card shadow-sm" id="customer-wallet-transactions-card">
-                        <div class="card-header" id="customer-wallet-transactions-header">@Localizer["Wallet_Transactions"]</div>
-                        <div class="card-body p-0">
-                            @if (transactions == null || transactions.Transactions.Count == 0)
-                            {
-                                <p class="text-muted text-center py-4 m-0" id="customer-wallet-transactions-empty">
-                                    @Localizer["Wallet_NoTransactions"]
-                                </p>
-                            }
-                            else
-                            {
-                                <div id="customer-wallet-table-responsive" class="table-responsive">
-                                    <table class="table table-sm mb-0" id="customer-wallet-transactions-table">
-                                        <thead>
-                                            <tr>
-                                                <th>@Localizer["Wallet_Date"]</th>
-                                                <th>@Localizer["Wallet_Type"]</th>
-                                                <th class="text-end">@Localizer["Wallet_Amount"]</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var t in transactions.Transactions)
-                                            {
-                                                <tr id="customer-wallet-txn-@t.Id">
-                                                    <td id="customer-wallet-txn-date-@t.Id">@t.CreatedAt.ToLocalTime().ToString("MMM dd, HH:mm")</td>
-                                                    <td id="customer-wallet-txn-type-@t.Id">@t.Type</td>
-                                                    <td class="text-end fw-bold @(t.Amount < 0 ? "text-danger" : "text-success")" id="customer-wallet-txn-amount-@t.Id">
-                                                        @(t.Amount < 0 ? "" : "+")@FormatMoney(t.Amount)
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
+            <div id="customer-wallet-balance-card" class="wal-balance">
+                <span class="wal-balance-label">Stanje</span>
+                <span id="customer-wallet-balance-amount" class="wal-balance-amount tnum">@FormatMoney(summary.Balance)</span>
+                @if (summary.Status == WalletStatus.Frozen)
+                {
+                    <span id="customer-wallet-frozen-badge" class="wal-frozen">❄ Zamrznut</span>
+                }
             </div>
-        }
 
-        @if (!string.IsNullOrEmpty(alertMessage))
-        {
-            <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="customer-wallet-alert-container">
-                <div class="alert @(alertType == "success" ? "alert-success" : alertType == "info" ? "alert-info" : "alert-danger") alert-dismissible fade show" id="customer-wallet-alert">
-                    @alertMessage
-                    <button type="button" class="btn-close" @onclick="() => alertMessage = string.Empty" id="customer-wallet-alert-close"></button>
+            <div id="customer-wallet-deposit-card" class="wal-card">
+                <span class="label">Dodaj sredstva</span>
+                <div class="field">
+                    <label for="customer-wallet-deposit-amount">Iznos (@summary.Currency)</label>
+                    <input id="customer-wallet-deposit-amount" type="number" min="0.01" step="0.01" @bind="depositAmount" />
                 </div>
+                <div class="field">
+                    <label for="customer-wallet-deposit-method">Način plaćanja</label>
+                    <select id="customer-wallet-deposit-method" class="wal-select" @bind="depositMethod">
+                        <option value="CreditCard">Kreditna kartica</option>
+                        <option value="PayPal">PayPal</option>
+                    </select>
+                </div>
+                <button id="customer-wallet-deposit-btn" class="btn btn-primary" @onclick="Deposit" disabled="@(isDepositing || depositAmount <= 0 || summary.Status == WalletStatus.Frozen)">
+                    @if (isDepositing)
+                    {
+                        <span class="spinner"></span> <span>Obrađujem…</span>
+                    }
+                    else
+                    {
+                        <span>Uplati</span>
+                    }
+                </button>
+            </div>
+
+            <div id="customer-wallet-transactions-card" class="wal-card">
+                <span class="label">Transakcije</span>
+                @if (transactions == null || transactions.Transactions.Count == 0)
+                {
+                    <p id="customer-wallet-transactions-empty" class="wal-tx-empty">Još nema transakcija.</p>
+                }
+                else
+                {
+                    <div class="wal-tx-list">
+                        @foreach (var t in transactions.Transactions)
+                        {
+                            <div id="customer-wallet-txn-@t.Id" class="wal-tx">
+                                <div class="wal-tx-l">
+                                    <span id="customer-wallet-txn-type-@t.Id" class="wal-tx-type">@t.Type</span>
+                                    <span id="customer-wallet-txn-date-@t.Id" class="wal-tx-date">@t.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy · HH:mm")</span>
+                                </div>
+                                <span id="customer-wallet-txn-amount-@t.Id" class="wal-tx-amount tnum @(t.Amount < 0 ? "neg" : "pos")">
+                                    @(t.Amount < 0 ? "−" : "+")@FormatMoney(t.Amount)
+                                </span>
+                            </div>
+                        }
+                    </div>
+                }
             </div>
         }
     </div>
+
+    @if (!string.IsNullOrEmpty(alertMessage))
+    {
+        <div id="customer-wallet-alert-container" class="wal-toast @(alertType == "success" ? "ok" : alertType == "info" ? "info" : "bad")">
+            <span>@alertMessage</span>
+            <button id="customer-wallet-alert-close" class="wal-toast-x" @onclick="() => alertMessage = string.Empty" aria-label="Zatvori">✕</button>
+        </div>
+    }
 </AuthenticationGuard>
 
 @code {
@@ -139,9 +112,7 @@
     {
         summary = await ApiService.GetWalletSummaryAsync();
         if (summary is { Exists: true })
-        {
             transactions = await ApiService.GetWalletTransactionsAsync(1, 25);
-        }
     }
 
     private async Task Deposit()
@@ -159,19 +130,16 @@
             var result = await ApiService.DepositToWalletAsync(dto);
             if (result is { RequiresAction: true })
             {
-                // Async gateway (Stripe): the browser must confirm the card with result.ClientSecret via
-                // Stripe Elements before the webhook credits the wallet. Elements wiring is pending live keys;
-                // the mock gateway (default) credits synchronously and hits the success branch below.
-                ShowAlert(Localizer["Wallet_ConfirmationRequired"], "info");
+                ShowAlert("Potrebna je potvrda plaćanja.", "info");
             }
             else if (result is { Success: true })
             {
-                ShowAlert(Localizer["Wallet_DepositSuccess"], "success");
+                ShowAlert("Uplata je uspješna.", "success");
                 await Load();
             }
             else
             {
-                ShowAlert(Localizer["Wallet_DepositFailed"], "danger");
+                ShowAlert("Uplata nije uspjela.", "danger");
             }
         }
         catch (Exception ex)

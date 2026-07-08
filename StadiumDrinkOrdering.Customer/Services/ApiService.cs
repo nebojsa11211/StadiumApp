@@ -1,5 +1,6 @@
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using System.Text.Json;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
@@ -86,12 +87,17 @@ public class ApiService : IApiService
 {
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonOptions;
+    // Scoped, shared across the circuit. ApiService is a transient typed-HttpClient, so the per-instance
+    // Token below is NOT shared between the auth service's instance and each page's instance — reading the
+    // token from the scoped storage is what makes authenticated calls work regardless of which instance runs.
+    private readonly ITokenStorageService? _tokenStorage;
 
     public string? Token { get; set; }
 
-    public ApiService(HttpClient httpClient)
+    public ApiService(HttpClient httpClient, ITokenStorageService? tokenStorage = null)
     {
         _httpClient = httpClient;
+        _tokenStorage = tokenStorage;
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -262,6 +268,7 @@ public class ApiService : IApiService
     {
         try
         {
+            SetAuthorizationHeader();
             var response = await _httpClient.GetAsync("orders/my-orders");
             if (response.IsSuccessStatusCode)
             {
@@ -298,6 +305,7 @@ public class ApiService : IApiService
     {
         try
         {
+            SetAuthorizationHeader();
             var response = await _httpClient.PostAsync($"orders/{id}/cancel", null);
             return response.IsSuccessStatusCode;
         }
@@ -540,7 +548,8 @@ public class ApiService : IApiService
 
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
+
+            SetAuthorizationHeader();
             var response = await _httpClient.PostAsync("logs/log-action", content);
             return response.IsSuccessStatusCode;
         }
@@ -811,6 +820,7 @@ public class ApiService : IApiService
     {
         try
         {
+            SetAuthorizationHeader();
             var response = await _httpClient.GetAsync($"auth/users/{userId}");
             if (response.IsSuccessStatusCode)
             {
@@ -852,6 +862,7 @@ public class ApiService : IApiService
     {
         try
         {
+            SetAuthorizationHeader();
             var response = await _httpClient.GetAsync($"TicketAuth/session/{sessionToken}");
             if (response.IsSuccessStatusCode)
             {
@@ -964,11 +975,11 @@ public class ApiService : IApiService
 
     private void SetAuthorizationHeader()
     {
-        if (!string.IsNullOrEmpty(Token))
-        {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-        }
+        // Prefer the circuit-shared token from scoped storage; fall back to the legacy per-instance Token.
+        var token = _tokenStorage?.Token ?? Token;
+        _httpClient.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(token)
+            ? null
+            : new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
 
     // Generic HTTP methods

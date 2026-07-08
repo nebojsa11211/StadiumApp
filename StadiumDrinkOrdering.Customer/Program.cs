@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Localization;
-using StadiumDrinkOrdering.Customer.Data;
 using StadiumDrinkOrdering.Customer.Services;
 using StadiumDrinkOrdering.Shared.Services;
 using StadiumDrinkOrdering.Shared.Authentication.Extensions;
@@ -23,7 +22,6 @@ if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 // Add localization services
 builder.Services.AddLocalization();

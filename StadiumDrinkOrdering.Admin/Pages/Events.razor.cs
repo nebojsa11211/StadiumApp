@@ -259,10 +259,16 @@ public partial class Events : ComponentBase
     private decimal EffectiveDefault(EventSectorPriceDto row)
         => SectorPricing.Default(row.SectorDefaultPrice, eventForm.BasePrice, row.Type);
 
-    /// <summary>Maps the editor rows to the price-override payload sent with a save.</summary>
+    /// <summary>Maps the editor rows to the per-sector config payload (price override + disabled) sent with a save.</summary>
     private List<EventSectorPriceInputDto>? BuildSectorPriceInputs()
         => sectorPrices?
-            .Select(r => new EventSectorPriceInputDto { SectorOverlayId = r.SectorOverlayId, Price = r.EventPrice })
+            .Select(r => new EventSectorPriceInputDto
+            {
+                SectorOverlayId = r.SectorOverlayId,
+                // A disabled sector is closed regardless of price, so don't also persist a stale override for it.
+                Price = r.IsDisabled ? null : r.EventPrice,
+                IsDisabled = r.IsDisabled
+            })
             .ToList();
 
     private void HideEventModal()

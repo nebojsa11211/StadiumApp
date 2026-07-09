@@ -63,6 +63,7 @@ public class TicketIngestionService : ITicketIngestionService
     private readonly IHubContext<BartenderHub> _hub;
     private readonly IAnalyticsService _analytics;
     private readonly IQRCodeService _qrCode;
+    private readonly IOrderService _orderService;
     private readonly ILogger<TicketIngestionService> _logger;
 
     public TicketIngestionService(
@@ -70,12 +71,14 @@ public class TicketIngestionService : ITicketIngestionService
         IHubContext<BartenderHub> hub,
         IAnalyticsService analytics,
         IQRCodeService qrCode,
+        IOrderService orderService,
         ILogger<TicketIngestionService> logger)
     {
         _context = context;
         _hub = hub;
         _analytics = analytics;
         _qrCode = qrCode;
+        _orderService = orderService;
         _logger = logger;
     }
 
@@ -325,6 +328,15 @@ public class TicketIngestionService : ITicketIngestionService
 
         RecordInbox(envelope);
         await _context.SaveChangesAsync(ct);
+
+        // Close out any still-in-flight drink orders so none lingers (e.g. as OutForDelivery) after the
+        // event has ended. Runs after the status commit because the wallet refunds inside the sweep clear
+        // EF's change tracker. Mirrors the manual/auto path in EventService.TransitionEventStatusAsync.
+        var cancelledOrders = await _orderService.CancelOpenOrdersForEventAsync(
+            evt.Id, $"Auto-cancelled: event ended (event #{evt.Id})");
+        if (cancelledOrders > 0)
+            _logger.LogInformation("Cancelled {Count} in-flight order(s) while ending event {EventId}",
+                cancelledOrders, evt.Id);
 
         _logger.LogInformation("Event {ExternalId} -> internal {EventId} ended: status=Completed, endedAt={Now:o}",
             dto.ExternalEventId, evt.Id, now);

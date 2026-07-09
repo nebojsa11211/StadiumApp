@@ -121,6 +121,98 @@
         </div>
     </div>
 
+    <!-- Statistics (reflect the current filter selection) -->
+    @if (!isLoading && allOrders.Count > 0)
+    {
+        <div class="panel stats-panel" id="admin-orders-stats-panel">
+            <div class="panel__head" id="admin-orders-stats-head">
+                <h2 class="panel__title" id="admin-orders-stats-title">@L["Statistics_Title"]</h2>
+                <span class="stats-scope" id="admin-orders-stats-scope">@L["Statistics_Subtitle"]</span>
+            </div>
+
+            @if (statOrderCount > 0)
+            {
+                <div class="stats-body" id="admin-orders-stats-body">
+                    <div class="stat-figures" id="admin-orders-stat-figures">
+                        <div class="stat-fig" id="admin-orders-stat-revenue">
+                            <span class="stat-fig__label">@L["Statistics_Revenue"]</span>
+                            <span class="stat-fig__value mono"><span class="metric__unit">$</span>@statRevenue.ToString("N2")</span>
+                        </div>
+                        <div class="stat-fig" id="admin-orders-stat-avg">
+                            <span class="stat-fig__label">@L["Statistics_AvgOrder"]</span>
+                            <span class="stat-fig__value mono"><span class="metric__unit">$</span>@statAvgOrder.ToString("N2")</span>
+                        </div>
+                        <div class="stat-fig" id="admin-orders-stat-items">
+                            <span class="stat-fig__label">@L["Statistics_ItemsSold"]</span>
+                            <span class="stat-fig__value mono">@statItemsSold</span>
+                        </div>
+                        <div class="stat-fig" id="admin-orders-stat-customers">
+                            <span class="stat-fig__label">@L["Statistics_Customers"]</span>
+                            <span class="stat-fig__value mono">@statUniqueCustomers</span>
+                        </div>
+                    </div>
+
+                    <div class="stats-cols">
+                        <!-- Status distribution -->
+                        <div class="stats-block" id="admin-orders-stats-status-block">
+                            <h3 class="stats-block__title">@L["Statistics_StatusDistribution"]</h3>
+                            <div class="stat-bar" id="admin-orders-stat-bar">
+                                @foreach (var s in statusBreakdown)
+                                {
+                                    <div class="stat-bar__seg @GetStatusModifier(s.Status)"
+                                         style="width:@s.Percent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"
+                                         title="@GetStatusLabel(s.Status): @s.Count"></div>
+                                }
+                            </div>
+                            <ul class="stat-legend" id="admin-orders-stat-legend">
+                                @foreach (var s in statusBreakdown)
+                                {
+                                    <li class="stat-legend__item">
+                                        <span class="status @GetStatusModifier(s.Status)">
+                                            <span class="status__dot"></span>@GetStatusLabel(s.Status)
+                                        </span>
+                                        <span class="stat-legend__val mono">@s.Count<span class="stat-legend__pct">@s.Percent.ToString("0")%</span></span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+
+                        <!-- Top drinks -->
+                        <div class="stats-block" id="admin-orders-stats-drinks-block">
+                            <h3 class="stats-block__title">@L["Statistics_TopDrinks"]</h3>
+                            @if (topDrinks.Any())
+                            {
+                                var maxQty = topDrinks.Max(d => d.Quantity);
+                                <ul class="stat-rank" id="admin-orders-stat-drinks-list">
+                                    @foreach (var d in topDrinks)
+                                    {
+                                        <li class="stat-rank__item">
+                                            <span class="stat-rank__name" title="@d.Name">@d.Name</span>
+                                            <span class="stat-rank__track">
+                                                <span class="stat-rank__fill" style="width:@((maxQty > 0 ? (double)d.Quantity / maxQty * 100 : 0).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))%"></span>
+                                            </span>
+                                            <span class="stat-rank__val mono">@d.Quantity</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="stat-empty">@L["Statistics_NoData"]</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="stats-body">
+                    <p class="stat-empty" id="admin-orders-stats-empty">@L["Statistics_NoData"]</p>
+                </div>
+            }
+        </div>
+    }
+
     @if (isLoading)
     {
         <div class="loading-state" id="admin-orders-loading-state">
@@ -225,4 +317,128 @@
             }
         </div>
     }
+
+@if (viewOrder != null)
+{
+    <div class="detail-modal-scrim" id="admin-orders-detail-scrim" @onclick="CloseOrderModal">
+        <div class="detail-modal" id="admin-orders-detail-modal" @onclick:stopPropagation="true">
+            <div class="detail-modal__head" id="admin-orders-detail-head">
+                <div>
+                    <span class="eyebrow">@L["Orders_DetailEyebrow"]</span>
+                    <h2 class="detail-modal__title mono" id="admin-orders-detail-title">
+                        #@viewOrder.Id
+                        @if (isLoadingDetail)
+                        {
+                            <i class="oi oi-reload spin" id="admin-orders-detail-loading"></i>
+                        }
+                    </h2>
+                </div>
+                <div class="detail-modal__head-right">
+                    <span class="status @GetStatusModifier(viewOrder.Status)" id="admin-orders-detail-status">
+                        <span class="status__dot"></span>@viewOrder.Status
+                    </span>
+                    <button class="icon-btn" title="@L["Orders_CloseTitle"]" @onclick="CloseOrderModal" id="admin-orders-detail-close-btn">
+                        <i class="oi oi-x"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="detail-modal__body" id="admin-orders-detail-body">
+                <dl class="detail-grid" id="admin-orders-detail-meta">
+                    <div class="detail-cell">
+                        <dt>@L["Orders_CustomerHeader"]</dt>
+                        <dd>@viewOrder.CustomerName</dd>
+                    </div>
+                    <div class="detail-cell">
+                        <dt>@L["Orders_EventLabel"]</dt>
+                        <dd>@(viewOrder.Event?.EventName ?? "—")</dd>
+                    </div>
+                    <div class="detail-cell">
+                        <dt>@L["Orders_SeatLabel"]</dt>
+                        <dd>@(!string.IsNullOrWhiteSpace(viewOrder.SeatPath) ? viewOrder.SeatPath
+                              : !string.IsNullOrWhiteSpace(viewOrder.SeatNumber) ? viewOrder.SeatNumber : "—")</dd>
+                    </div>
+                    <div class="detail-cell">
+                        <dt>@L["Orders_TicketLabel"]</dt>
+                        <dd class="mono">@(string.IsNullOrWhiteSpace(viewOrder.TicketNumber) ? "—" : viewOrder.TicketNumber)</dd>
+                    </div>
+                    <div class="detail-cell">
+                        <dt>@L["Orders_CreatedHeader"]</dt>
+                        <dd>@viewOrder.CreatedAt.ToString("MMM dd, yyyy HH:mm")</dd>
+                    </div>
+                </dl>
+
+                <h3 class="detail-section-title">@L["Orders_ItemsHeader"]</h3>
+                @if (viewOrder.OrderItems.Any())
+                {
+                    <table class="detail-table" id="admin-orders-detail-items">
+                        <thead>
+                            <tr>
+                                <th>@L["Orders_ItemNameHeader"]</th>
+                                <th class="num">@L["Orders_QtyHeader"]</th>
+                                <th class="num">@L["Orders_UnitHeader"]</th>
+                                <th class="num">@L["Orders_TotalHeader"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in viewOrder.OrderItems)
+                            {
+                                <tr>
+                                    <td>@item.DrinkName</td>
+                                    <td class="num mono">@item.Quantity</td>
+                                    <td class="num mono">$@item.UnitPrice.ToString("N2")</td>
+                                    <td class="num mono">$@item.TotalPrice.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="num">@L["Orders_TotalHeader"]</td>
+                                <td class="num mono detail-total">$@viewOrder.TotalAmount.ToString("N2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                }
+                else
+                {
+                    <p class="detail-empty">@L["Orders_NoItems"]</p>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(viewOrder.CustomerNotes) || !string.IsNullOrWhiteSpace(viewOrder.Notes))
+                {
+                    <h3 class="detail-section-title">@L["Orders_NotesLabel"]</h3>
+                    @if (!string.IsNullOrWhiteSpace(viewOrder.CustomerNotes))
+                    {
+                        <p class="detail-note">@viewOrder.CustomerNotes</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(viewOrder.Notes))
+                    {
+                        <p class="detail-note">@viewOrder.Notes</p>
+                    }
+                }
+
+                <h3 class="detail-section-title">@L["Orders_TimelineLabel"]</h3>
+                @{
+                    var steps = new (string Label, DateTime? At, string? By)[]
+                    {
+                        (L["Orders_AcceptedOption"], viewOrder.AcceptedAt, viewOrder.AcceptedByUserName),
+                        (L["Orders_InPreparationOption"], viewOrder.InPreparationAt, viewOrder.InPreparationByUserName),
+                        (L["Orders_ReadyOption"], viewOrder.PreparedAt, viewOrder.PreparedByUserName),
+                        (L["Orders_DeliveredOption"], viewOrder.DeliveredAt, viewOrder.DeliveredByUserName),
+                    };
+                }
+                <ul class="detail-timeline" id="admin-orders-detail-timeline">
+                    @foreach (var s in steps)
+                    {
+                        <li class="@(s.At.HasValue ? "is-done" : "")">
+                            <span class="detail-timeline__dot"></span>
+                            <span class="detail-timeline__label">@s.Label</span>
+                            <span class="detail-timeline__time mono">@(s.At.HasValue ? s.At.Value.ToString("MMM dd, HH:mm") : "—")@(string.IsNullOrWhiteSpace(s.By) ? "" : $" · {s.By}")</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
 </div>

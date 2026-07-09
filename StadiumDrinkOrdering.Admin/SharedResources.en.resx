@@ -2339,7 +2339,13 @@
     <value>Sector prices</value>
   </data>
   <data name="Events_SectorPricesHint" xml:space="preserve">
-    <value>Set a ticket price per sector for this event. Leave a sector blank to use its default price.</value>
+    <value>Set a ticket price per sector for this event. Leave a sector blank to use its default price, or tick "Disabled" to close it for this event only.</value>
+  </data>
+  <data name="Events_SectorDisabledColumn" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Events_SectorDisabledTitle" xml:space="preserve">
+    <value>Close this sector for this event only (no seats can be sold)</value>
   </data>
   <data name="Events_SectorColumn" xml:space="preserve">
     <value>Sector</value>
@@ -2415,6 +2421,33 @@
   </data>
   <data name="Orders_RevenueHint" xml:space="preserve">
     <value>Delivered orders</value>
+  </data>
+  <data name="Statistics_Title" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="Statistics_Subtitle" xml:space="preserve">
+    <value>Based on current filters</value>
+  </data>
+  <data name="Statistics_Revenue" xml:space="preserve">
+    <value>Revenue</value>
+  </data>
+  <data name="Statistics_AvgOrder" xml:space="preserve">
+    <value>Avg. Order</value>
+  </data>
+  <data name="Statistics_ItemsSold" xml:space="preserve">
+    <value>Items Sold</value>
+  </data>
+  <data name="Statistics_Customers" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="Statistics_StatusDistribution" xml:space="preserve">
+    <value>Status Distribution</value>
+  </data>
+  <data name="Statistics_TopDrinks" xml:space="preserve">
+    <value>Top Drinks</value>
+  </data>
+  <data name="Statistics_NoData" xml:space="preserve">
+    <value>No data for the current selection</value>
   </data>
   <data name="Orders_FiltersTitle" xml:space="preserve">
     <value>Filters</value>
@@ -2523,6 +2556,36 @@
   </data>
   <data name="Orders_NoOrdersMessage" xml:space="preserve">
     <value>No orders match your current filters.</value>
+  </data>
+  <data name="Orders_DetailEyebrow" xml:space="preserve">
+    <value>Order detail</value>
+  </data>
+  <data name="Orders_CloseTitle" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Orders_SeatLabel" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Orders_TicketLabel" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="Orders_ItemNameHeader" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="Orders_QtyHeader" xml:space="preserve">
+    <value>Qty</value>
+  </data>
+  <data name="Orders_UnitHeader" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="Orders_NoItems" xml:space="preserve">
+    <value>No items on this order.</value>
+  </data>
+  <data name="Orders_NotesLabel" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Orders_TimelineLabel" xml:space="preserve">
+    <value>Timeline</value>
   </data>
   <data name="Analytics_PageTitle" xml:space="preserve">
     <value>Analytics</value>

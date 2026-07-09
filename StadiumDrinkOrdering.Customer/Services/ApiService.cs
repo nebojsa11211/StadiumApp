@@ -1113,6 +1113,8 @@ public class SectionAvailabilityInfo
     public int TotalSeats { get; set; }
     public int AvailableSeats { get; set; }
     public decimal BasePrice { get; set; }
+    /// <summary>True when the sector is disabled for this event (closed by the admin), not merely sold out.</summary>
+    public bool IsDisabled { get; set; }
 }
 
 public class SectionAvailabilityDto

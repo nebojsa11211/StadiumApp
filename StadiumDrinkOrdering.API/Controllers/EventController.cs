@@ -291,6 +291,14 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = EventLifecycle.EditBlockedReason(existing.Status) });
             }
 
+            // A sector with tickets already sold for this event can't be disabled (would orphan buyers).
+            // Validate before persisting anything so a rejected disable leaves the event untouched.
+            var disableBlock = await _eventService.ValidateSectorDisablesAsync(id, request.SectorPrices);
+            if (disableBlock != null)
+            {
+                return BadRequest(new { message = disableBlock });
+            }
+
             var newStart = request.Date ?? existing.EventDate;
             var newEnd = request.EndDate ?? existing.EventEndDate;
             if (!IsValidWindow(newStart, newEnd, out var windowError))

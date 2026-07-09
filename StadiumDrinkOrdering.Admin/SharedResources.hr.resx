@@ -2369,7 +2369,13 @@
     <value>Cijene po sektoru</value>
   </data>
   <data name="Events_SectorPricesHint" xml:space="preserve">
-    <value>Postavite cijenu ulaznice po sektoru za ovaj događaj. Ostavite sektor praznim za njegovu zadanu cijenu.</value>
+    <value>Postavite cijenu ulaznice po sektoru za ovaj događaj. Ostavite sektor praznim za njegovu zadanu cijenu ili označite "Onemogućeno" da ga zatvorite samo za ovaj događaj.</value>
+  </data>
+  <data name="Events_SectorDisabledColumn" xml:space="preserve">
+    <value>Onemogućeno</value>
+  </data>
+  <data name="Events_SectorDisabledTitle" xml:space="preserve">
+    <value>Zatvorite ovaj sektor samo za ovaj događaj (nije moguća prodaja mjesta)</value>
   </data>
   <data name="Events_SectorColumn" xml:space="preserve">
     <value>Sektor</value>
@@ -2445,6 +2451,33 @@
   </data>
   <data name="Orders_RevenueHint" xml:space="preserve">
     <value>Dostavljene narudžbe</value>
+  </data>
+  <data name="Statistics_Title" xml:space="preserve">
+    <value>Statistika</value>
+  </data>
+  <data name="Statistics_Subtitle" xml:space="preserve">
+    <value>Na temelju trenutnih filtera</value>
+  </data>
+  <data name="Statistics_Revenue" xml:space="preserve">
+    <value>Prihod</value>
+  </data>
+  <data name="Statistics_AvgOrder" xml:space="preserve">
+    <value>Prosj. narudžba</value>
+  </data>
+  <data name="Statistics_ItemsSold" xml:space="preserve">
+    <value>Prodano stavki</value>
+  </data>
+  <data name="Statistics_Customers" xml:space="preserve">
+    <value>Kupci</value>
+  </data>
+  <data name="Statistics_StatusDistribution" xml:space="preserve">
+    <value>Raspodjela statusa</value>
+  </data>
+  <data name="Statistics_TopDrinks" xml:space="preserve">
+    <value>Najprodavanija pića</value>
+  </data>
+  <data name="Statistics_NoData" xml:space="preserve">
+    <value>Nema podataka za trenutni odabir</value>
   </data>
   <data name="Orders_FiltersTitle" xml:space="preserve">
     <value>Filtri</value>
@@ -2553,6 +2586,36 @@
   </data>
   <data name="Orders_NoOrdersMessage" xml:space="preserve">
     <value>Nema narudžbi koje se podudaraju s vašim trenutnim filtrima.</value>
+  </data>
+  <data name="Orders_DetailEyebrow" xml:space="preserve">
+    <value>Detalji narudžbe</value>
+  </data>
+  <data name="Orders_CloseTitle" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Orders_SeatLabel" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="Orders_TicketLabel" xml:space="preserve">
+    <value>Ulaznica</value>
+  </data>
+  <data name="Orders_ItemNameHeader" xml:space="preserve">
+    <value>Stavka</value>
+  </data>
+  <data name="Orders_QtyHeader" xml:space="preserve">
+    <value>Kol.</value>
+  </data>
+  <data name="Orders_UnitHeader" xml:space="preserve">
+    <value>Cijena</value>
+  </data>
+  <data name="Orders_NoItems" xml:space="preserve">
+    <value>Ova narudžba nema stavki.</value>
+  </data>
+  <data name="Orders_NotesLabel" xml:space="preserve">
+    <value>Napomene</value>
+  </data>
+  <data name="Orders_TimelineLabel" xml:space="preserve">
+    <value>Tijek</value>
   </data>
   <data name="Analytics_PageTitle" xml:space="preserve">
     <value>Analitika</value>

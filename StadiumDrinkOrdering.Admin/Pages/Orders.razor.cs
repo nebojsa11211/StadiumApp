@@ -20,11 +20,27 @@ public partial class Orders : ComponentBase
     private HashSet<int> selectedOrderIds = new();
     private int displayCount = PageSize;
 
+    // Order detail modal (opened by the row "view" button)
+    private OrderDto? viewOrder;
+    private bool isLoadingDetail;
+
     // Summary data
     private int totalOrders = 0;
     private int pendingOrders = 0;
     private int completedToday = 0;
     private decimal revenueToday = 0;
+
+    // Statistics — recomputed on every filter change so they describe the current selection
+    private int statOrderCount = 0;
+    private decimal statRevenue = 0;
+    private decimal statAvgOrder = 0;
+    private int statItemsSold = 0;
+    private int statUniqueCustomers = 0;
+    private List<StatusSlice> statusBreakdown = new();
+    private List<DrinkStat> topDrinks = new();
+
+    private record StatusSlice(OrderStatus Status, int Count, double Percent);
+    private record DrinkStat(string Name, int Quantity);
 
     // Filters
     private string selectedStatus = "";
@@ -135,8 +151,57 @@ public partial class Orders : ComponentBase
 
         filteredOrders = query.OrderByDescending(o => o.CreatedAt).ToList();
         displayCount = PageSize;
+        CalculateStatistics();
         StateHasChanged();
     }
+
+    // Statistics describe the currently filtered set, so picking an event / date range / status
+    // narrows the figures, the status distribution and the top-drinks ranking accordingly.
+    private void CalculateStatistics()
+    {
+        statOrderCount = filteredOrders.Count;
+
+        // Revenue and item counts exclude cancelled orders (no money changes hands on those).
+        var billable = filteredOrders.Where(o => o.Status != OrderStatus.Cancelled).ToList();
+        statRevenue = billable.Sum(o => o.TotalAmount);
+        statAvgOrder = billable.Count > 0 ? statRevenue / billable.Count : 0m;
+        statItemsSold = billable.Sum(o => o.OrderItems.Sum(i => i.Quantity));
+        statUniqueCustomers = filteredOrders
+            .Where(o => !string.IsNullOrWhiteSpace(o.CustomerName))
+            .Select(o => o.CustomerName.Trim().ToLowerInvariant())
+            .Distinct()
+            .Count();
+
+        statusBreakdown = filteredOrders
+            .GroupBy(o => o.Status)
+            .Select(g => new StatusSlice(
+                g.Key,
+                g.Count(),
+                statOrderCount > 0 ? (double)g.Count() / statOrderCount * 100 : 0))
+            .OrderByDescending(s => s.Count)
+            .ToList();
+
+        topDrinks = filteredOrders
+            .SelectMany(o => o.OrderItems)
+            .Where(i => !string.IsNullOrWhiteSpace(i.DrinkName))
+            .GroupBy(i => i.DrinkName)
+            .Select(g => new DrinkStat(g.Key, g.Sum(i => i.Quantity)))
+            .OrderByDescending(d => d.Quantity)
+            .Take(5)
+            .ToList();
+    }
+
+    private string GetStatusLabel(OrderStatus status) => status switch
+    {
+        OrderStatus.Pending => L["Orders_PendingOption"].Value,
+        OrderStatus.Accepted => L["Orders_AcceptedOption"].Value,
+        OrderStatus.InPreparation => L["Orders_InPreparationOption"].Value,
+        OrderStatus.Ready => L["Orders_ReadyOption"].Value,
+        OrderStatus.OutForDelivery => L["Orders_OutForDeliveryOption"].Value,
+        OrderStatus.Delivered => L["Orders_DeliveredOption"].Value,
+        OrderStatus.Cancelled => L["Orders_CancelledOption"].Value,
+        _ => status.ToString()
+    };
 
     private async Task RefreshData()
     {
@@ -314,9 +379,38 @@ public partial class Orders : ComponentBase
         Navigation.NavigateTo("/orders/new");
     }
 
-    private void ViewOrder(int orderId)
+    private async Task ViewOrder(int orderId)
     {
-        Navigation.NavigateTo($"/orders/{orderId}");
+        // Show immediately with the row data we already have, then enrich from the API
+        // (full detail carries the status timeline, payment and notes the list query omits).
+        viewOrder = allOrders.FirstOrDefault(o => o.Id == orderId);
+        if (viewOrder == null)
+            return;
+
+        isLoadingDetail = true;
+        StateHasChanged();
+
+        try
+        {
+            var detail = await AdminApiService.GetOrderAsync(orderId);
+            if (detail != null)
+                viewOrder = detail;
+        }
+        catch (Exception)
+        {
+            // Keep the row-level data already on screen if the detail fetch fails.
+        }
+        finally
+        {
+            isLoadingDetail = false;
+            StateHasChanged();
+        }
+    }
+
+    private void CloseOrderModal()
+    {
+        viewOrder = null;
+        isLoadingDetail = false;
     }
 
     private void LoadMoreOrders()

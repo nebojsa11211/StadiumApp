@@ -74,7 +74,7 @@
     scrollbar-width:none;
 }
 .wl-fixture-scroll::-webkit-scrollbar{display:none}
-.wl-fixture-scroll .vs-card{flex:1 0 min(84%,340px);scroll-snap-align:center}
+.wl-fixture-scroll .vs-card{flex:0 0 100%;scroll-snap-align:center}
 
 .vs-card{
     position:relative;overflow:hidden;cursor:pointer;

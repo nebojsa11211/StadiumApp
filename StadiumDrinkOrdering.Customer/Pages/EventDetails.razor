@@ -84,13 +84,19 @@ else
                 <div id="customer-event-details-sections" class="ev-sections">
                     @foreach (var sec in eventDetails.SectionAvailability.Values.OrderBy(s => s.SectionName))
                     {
-                        var soldOut = sec.AvailableSeats == 0;
-                        <button id="customer-event-details-section-btn-@sec.SectionId" class="ev-sec @(soldOut ? "sold" : "")" disabled="@soldOut"
+                        var isDisabled = sec.IsDisabled;
+                        var soldOut = !isDisabled && sec.AvailableSeats == 0;
+                        var blocked = isDisabled || soldOut;
+                        <button id="customer-event-details-section-btn-@sec.SectionId" class="ev-sec @(blocked ? "sold" : "")" disabled="@blocked"
                                 @onclick="@(() => ViewSectionSeats(sec.SectionId))">
                             <div id="customer-event-details-section-left-@sec.SectionId" class="ev-sec-l">
                                 <span class="ev-sec-name">@sec.SectionName</span>
                                 <span class="ev-sec-avail @AvailClass(sec.AvailableSeats)">
-                                    @if (soldOut)
+                                    @if (isDisabled)
+                                    {
+                                        <span>Nedostupno</span>
+                                    }
+                                    else if (soldOut)
                                     {
                                         <span>Rasprodano</span>
                                     }
@@ -102,7 +108,7 @@ else
                             </div>
                             <div id="customer-event-details-section-right-@sec.SectionId" class="ev-sec-r">
                                 <span class="ev-sec-price tnum">€@sec.BasePrice.ToString("F0")</span>
-                                @if (!soldOut)
+                                @if (!blocked)
                                 {
                                     <span class="ev-sec-chev">›</span>
                                 }

@@ -301,6 +301,14 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<bool> IsSeatAvailableAsync(int eventId, int sectorId, int rowNumber, int seatNumber, string? sessionId = null)
     {
+        // A sector disabled for this event is closed for sale: no seat in it is bookable. This is the
+        // server-side chokepoint — both the add-to-cart path and the availability check funnel through
+        // here — so a disabled sector can't be sold even if a client bypasses the greyed-out UI.
+        var sectorDisabled = await _context.EventSectorPrices
+            .AnyAsync(p => p.EventId == eventId && p.SectorOverlayId == sectorId && p.IsDisabled);
+        if (sectorDisabled)
+            return false;
+
         // "sold" is resolved against the real overlay stadium: any non-cancelled ticket occupying
         // this seat for the event — including a season pass's derived ticket — makes it unavailable.
         // (sectorId is the overlay sector id, StadiumSectorOverlay.Id.)

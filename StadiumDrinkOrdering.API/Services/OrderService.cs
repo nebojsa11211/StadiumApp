@@ -17,6 +17,15 @@ public interface IOrderService
     Task<BatchClaimResultDto> ClaimOrdersForDeliveryAsync(IEnumerable<int> orderIds, int staffId);
     Task<bool> UpdateOrderStatusAsync(int orderId, UpdateOrderStatusDto updateDto, int userId);
     Task<bool> CancelOrderAsync(int orderId, int userId);
+
+    /// <summary>
+    /// Cancels every still-in-flight (non-terminal) order for an event. Called when the event reaches a
+    /// terminal lifecycle state so no order is left stranded (e.g. as OutForDelivery) after the event is
+    /// over. Mirrors <see cref="CancelOrderAsync"/> for each order: restores drink stock, stamps the
+    /// cancellation with <paramref name="reason"/>, and refunds any wallet-funded payment (idempotently).
+    /// Returns the number of orders cancelled. <paramref name="actorUserId"/> is null for system sweeps.
+    /// </summary>
+    Task<int> CancelOpenOrdersForEventAsync(int eventId, string reason, int? actorUserId = null);
 }
 
 /// <summary>Result of a Runner attempting to claim a Ready order from the shared delivery pool.</summary>
@@ -93,6 +102,24 @@ public class OrderService : IOrderService
         if (ticket == null)
         {
             return CreateOrderResult.Fail(CreateOrderOutcome.ValidationFailed, "Ticket not found or inactive.");
+        }
+
+        // Enforce the live-event rule centrally: a drink order may be placed only while its event is in a
+        // drink-ordering phase (Active/InProgress). This backstops every caller — including the legacy
+        // OrdersController path — so an order can't be created for a not-yet-live, already-finished, or
+        // unlinked event, which is what previously left orders stranded (e.g. OutForDelivery) after close.
+        var orderEventId = ticketSession?.EventId ?? ticket.EventId;
+        var orderEventStatus = ticketSession?.Event?.Status
+            ?? await _context.Events
+                .Where(e => e.Id == orderEventId)
+                .Select(e => (EventStatus?)e.Status)
+                .FirstOrDefaultAsync();
+        if (orderEventStatus is null || !EventLifecycle.CanOrderDrinks(orderEventStatus.Value))
+        {
+            return CreateOrderResult.Fail(CreateOrderOutcome.ValidationFailed,
+                orderEventStatus is not null
+                    ? EventLifecycle.OrderingBlockedReason(orderEventStatus.Value)
+                    : "Drink ordering is unavailable: this ticket is not linked to a live event.");
         }
 
         // Validate drinks and calculate total
@@ -513,6 +540,77 @@ public class OrderService : IOrderService
         }
 
         return true;
+    }
+
+    public async Task<int> CancelOpenOrdersForEventAsync(int eventId, string reason, int? actorUserId = null)
+    {
+        var openStatuses = new[]
+        {
+            OrderStatus.Pending, OrderStatus.Accepted, OrderStatus.InPreparation,
+            OrderStatus.Ready, OrderStatus.OutForDelivery
+        };
+
+        var orders = await _context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Drink)
+            .Where(o => o.EventId == eventId && openStatuses.Contains(o.Status))
+            .ToListAsync();
+
+        if (orders.Count == 0)
+            return 0;
+
+        var orderIds = orders.Select(o => o.Id).ToList();
+
+        // Detect wallet funding for every affected order before mutating anything, so refunds can be
+        // issued after the cancellations commit (WalletService clears the change tracker).
+        var walletPayments = await _context.Payments.AsNoTracking()
+            .Where(p => p.OrderId != null && orderIds.Contains(p.OrderId.Value)
+                && p.PaymentMethod == "DigitalWallet"
+                && p.Status == "Completed")
+            .ToListAsync();
+        var paymentByOrderId = walletPayments
+            .GroupBy(p => p.OrderId!.Value)
+            .ToDictionary(g => g.Key, g => g.First());
+        var customerByOrderId = orders.ToDictionary(o => o.Id, o => o.CustomerId);
+
+        var now = DateTime.UtcNow;
+        foreach (var order in orders)
+        {
+            // Restore reserved stock for the cancelled order.
+            foreach (var item in order.OrderItems)
+                item.Drink.StockQuantity += item.Quantity;
+
+            order.Status = OrderStatus.Cancelled;
+            order.CancelledAt = now;
+            order.Notes = AppendNote(order.Notes, reason);
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Refund wallet-funded orders after the cancellations are committed. Each refund is idempotent
+        // (key refund-order-{id}) so a retry can't double-credit; a failure here leaves the order
+        // cancelled-but-unrefunded for reconciliation rather than blocking the whole sweep.
+        foreach (var (orderId, payment) in paymentByOrderId)
+        {
+            var wallet = await _context.Wallets.AsNoTracking()
+                .FirstOrDefaultAsync(w => w.UserId == customerByOrderId[orderId]);
+            if (wallet != null)
+            {
+                await _walletService.RefundAsync(
+                    wallet.Id, payment.Amount, idempotencyKey: $"refund-order-{orderId}",
+                    referenceType: "Order", referenceId: orderId,
+                    description: $"Refund for order #{orderId} ({reason})", actorUserId: actorUserId);
+            }
+        }
+
+        return orders.Count;
+    }
+
+    // Appends a system note to an order's existing note, keeping within the Notes column's 500-char limit.
+    private static string AppendNote(string? existing, string note)
+    {
+        var combined = string.IsNullOrWhiteSpace(existing) ? note : $"{existing} | {note}";
+        return combined.Length > 500 ? combined[..500] : combined;
     }
 
     // Full seat location for staff-facing views (Runner/Bar): section + row + seat when the order is

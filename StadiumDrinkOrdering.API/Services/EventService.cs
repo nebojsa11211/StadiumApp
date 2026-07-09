@@ -42,17 +42,24 @@ public interface IEventService
 
     /// <summary>
     /// Lists every overlay sector together with its default price and, when <paramref name="eventId"/>
-    /// is supplied, the current per-event price override for that sector. Powers the "Sector prices"
-    /// editor in the Admin event modal. For a new (unsaved) event pass null.
+    /// is supplied, the current per-event price override and disabled flag for that sector. Powers the
+    /// "Sector prices" editor in the Admin event modal. For a new (unsaved) event pass null.
     /// </summary>
     Task<List<EventSectorPriceDto>> GetSectorPricingAsync(int? eventId);
 
     /// <summary>
-    /// Replaces an event's per-sector price overrides with <paramref name="prices"/>: entries with a
-    /// non-null price are stored, everything else is cleared. A null <paramref name="prices"/> is a
-    /// no-op (leaves existing overrides untouched).
+    /// Replaces an event's per-sector configuration with <paramref name="prices"/>: a row is kept for
+    /// each entry that carries a non-null price and/or a disable; everything else is cleared. A null
+    /// <paramref name="prices"/> is a no-op (leaves existing configuration untouched).
     /// </summary>
     Task SaveSectorPricesAsync(int eventId, IEnumerable<EventSectorPriceInputDto>? prices);
+
+    /// <summary>
+    /// Returns a human-readable error when <paramref name="prices"/> would disable a sector that already
+    /// has sold tickets for the event (which would orphan paid customers), or null when every requested
+    /// disable is safe. A null <paramref name="prices"/> returns null. Call before persisting.
+    /// </summary>
+    Task<string?> ValidateSectorDisablesAsync(int eventId, IEnumerable<EventSectorPriceInputDto>? prices);
 }
 
 /// <summary>
@@ -79,11 +86,15 @@ public class EventStatusTransitionResult
 public class EventService : IEventService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IOverlaySeatService _overlaySeats;
+    private readonly IOrderService _orderService;
     private readonly ILogger<EventService> _logger;
 
-    public EventService(ApplicationDbContext context, ILogger<EventService> logger)
+    public EventService(ApplicationDbContext context, IOverlaySeatService overlaySeats, IOrderService orderService, ILogger<EventService> logger)
     {
         _context = context;
+        _overlaySeats = overlaySeats;
+        _orderService = orderService;
         _logger = logger;
     }
 
@@ -252,20 +263,25 @@ public class EventService : IEventService
             .ToListAsync();
 
         var overrides = eventId == null
-            ? new Dictionary<int, decimal>()
+            ? new Dictionary<int, EventSectorPrice>()
             : await _context.EventSectorPrices
                 .AsNoTracking()
                 .Where(p => p.EventId == eventId.Value)
-                .ToDictionaryAsync(p => p.SectorOverlayId, p => p.Price);
+                .ToDictionaryAsync(p => p.SectorOverlayId);
 
-        return overlays.Select(o => new EventSectorPriceDto
+        return overlays.Select(o =>
         {
-            SectorOverlayId = o.Id,
-            SectorCode = o.SectorCode,
-            SectorName = o.Name,
-            Type = o.Type,
-            SectorDefaultPrice = o.Price,
-            EventPrice = overrides.TryGetValue(o.Id, out var p) ? p : (decimal?)null
+            overrides.TryGetValue(o.Id, out var cfg);
+            return new EventSectorPriceDto
+            {
+                SectorOverlayId = o.Id,
+                SectorCode = o.SectorCode,
+                SectorName = o.Name,
+                Type = o.Type,
+                SectorDefaultPrice = o.Price,
+                EventPrice = cfg?.Price,
+                IsDisabled = cfg?.IsDisabled ?? false
+            };
         }).ToList();
     }
 
@@ -274,13 +290,16 @@ public class EventService : IEventService
         if (prices == null)
             return;
 
-        // Keep only the last non-null price per sector (guards against duplicate rows in the payload).
+        // Keep the last entry per sector (guards against duplicate rows in the payload), and only those
+        // that actually carry configuration — a price override, a disable, or both. An entry with neither
+        // clears the sector's row.
         var desired = prices
-            .Where(p => p.Price.HasValue)
             .GroupBy(p => p.SectorOverlayId)
-            .ToDictionary(g => g.Key, g => g.Last().Price!.Value);
+            .Select(g => g.Last())
+            .Where(p => p.Price.HasValue || p.IsDisabled)
+            .ToDictionary(p => p.SectorOverlayId);
 
-        // Only apply overrides to sectors that actually exist, so a stale payload can't create orphans.
+        // Only apply configuration to sectors that actually exist, so a stale payload can't create orphans.
         var validSectorIds = await _context.StadiumSectorOverlays
             .Where(o => !o.IsDeleted)
             .Select(o => o.Id)
@@ -292,17 +311,22 @@ public class EventService : IEventService
             .ToListAsync();
         var existingBySector = existing.ToDictionary(p => p.SectorOverlayId);
 
-        // Remove overrides no longer wanted (cleared or for a sector that vanished).
+        // Remove rows no longer wanted (cleared, or for a sector that vanished).
         foreach (var row in existing)
         {
-            if (!desired.TryGetValue(row.SectorOverlayId, out var price) || !validSet.Contains(row.SectorOverlayId))
+            if (!desired.TryGetValue(row.SectorOverlayId, out var input) || !validSet.Contains(row.SectorOverlayId))
+            {
                 _context.EventSectorPrices.Remove(row);
+            }
             else
-                row.Price = price; // Update in place.
+            {
+                row.Price = input.Price; // Update in place.
+                row.IsDisabled = input.IsDisabled;
+            }
         }
 
-        // Add overrides for sectors that didn't have one yet.
-        foreach (var (sectorId, price) in desired)
+        // Add rows for sectors that didn't have one yet.
+        foreach (var (sectorId, input) in desired)
         {
             if (!validSet.Contains(sectorId) || existingBySector.ContainsKey(sectorId))
                 continue;
@@ -310,11 +334,41 @@ public class EventService : IEventService
             {
                 EventId = eventId,
                 SectorOverlayId = sectorId,
-                Price = price
+                Price = input.Price,
+                IsDisabled = input.IsDisabled
             });
         }
 
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<string?> ValidateSectorDisablesAsync(int eventId, IEnumerable<EventSectorPriceInputDto>? prices)
+    {
+        if (prices == null)
+            return null;
+
+        var toDisable = prices
+            .Where(p => p.IsDisabled)
+            .Select(p => p.SectorOverlayId)
+            .ToHashSet();
+        if (toDisable.Count == 0)
+            return null;
+
+        // "Sold" = any non-cancelled ticket (incl. season passes) occupying a seat in the sector for this
+        // event. Reuse the customer flow's per-sector summary so the count matches what buyers actually see.
+        var summaries = await _overlaySeats.GetSectionSummariesAsync(eventId);
+        var blocked = toDisable
+            .Where(id => summaries.TryGetValue(id, out var s) && s.SoldSeats > 0)
+            .Select(id => summaries[id].Code)
+            .OrderBy(code => code)
+            .ToList();
+
+        if (blocked.Count == 0)
+            return null;
+
+        return blocked.Count == 1
+            ? $"Cannot disable sector {blocked[0]}: it already has tickets sold for this event."
+            : $"Cannot disable sectors {string.Join(", ", blocked)}: they already have tickets sold for this event.";
     }
 
     public async Task<bool> DeleteEventAsync(int id)
@@ -497,6 +551,19 @@ public class EventService : IEventService
 
         await _context.SaveChangesAsync();
         _logger.LogInformation("Event {EventId} status transition: {From} -> {To}", id, current, newStatus);
+
+        // Phase 3 closure (cont.): close out any still-in-flight drink orders for a now-terminal event so
+        // none lingers (e.g. as OutForDelivery) after the event is over. Runs after the transition is
+        // committed above because the wallet refunds inside the sweep clear EF's change tracker.
+        if (EventLifecycle.IsTerminal(newStatus))
+        {
+            var reason = $"Auto-cancelled: event {(newStatus == EventStatus.Cancelled ? "cancelled" : "completed")} (event #{id})";
+            var cancelledOrders = await _orderService.CancelOpenOrdersForEventAsync(id, reason);
+            if (cancelledOrders > 0)
+                _logger.LogInformation("Cancelled {Count} in-flight order(s) while closing event {EventId}",
+                    cancelledOrders, id);
+        }
+
         return EventStatusTransitionResult.Ok(current, newStatus);
     }
 

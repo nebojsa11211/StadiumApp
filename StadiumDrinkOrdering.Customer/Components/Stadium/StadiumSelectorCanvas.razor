@@ -59,11 +59,12 @@
             SectionAvailabilityInfo? info = null;
             Sections?.TryGetValue(o.SectorCode, out info);
 
-            var soldOut = info != null && info.AvailableSeats == 0;
+            var isDisabled = info != null && info.IsDisabled;
+            var soldOut = info != null && !isDisabled && info.AvailableSeats == 0;
             double? availPct = info != null && info.TotalSeats > 0
                 ? (double)info.AvailableSeats / info.TotalSeats
                 : (double?)null;
-            var sub = info == null ? "" : (soldOut ? "Rasprodano" : $"{info.AvailableSeats} slob.");
+            var sub = info == null ? "" : (isDisabled ? "Nedostupno" : soldOut ? "Rasprodano" : $"{info.AvailableSeats} slob.");
 
             return new
             {
@@ -79,7 +80,8 @@
                 o.Type,
                 Label = string.IsNullOrWhiteSpace(o.Name) ? o.SectorCode : o.Name,
                 Sub = sub,
-                SoldOut = soldOut,
+                // A disabled sector is blocked on the map too (drawn like sold-out — not selectable).
+                SoldOut = soldOut || isDisabled,
                 AvailPct = availPct
             };
         }).ToList();

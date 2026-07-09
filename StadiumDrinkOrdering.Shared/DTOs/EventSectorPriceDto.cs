@@ -26,11 +26,18 @@ public class EventSectorPriceDto
     /// The per-event override for this sector, if one exists. Null means "use the sector default".
     /// </summary>
     public decimal? EventPrice { get; set; }
+
+    /// <summary>
+    /// True when this sector is disabled (closed for sale) for this event. False for a new event.
+    /// </summary>
+    public bool IsDisabled { get; set; }
 }
 
 /// <summary>
-/// A per-event sector price supplied by the Admin form when saving an event. A null
-/// <see cref="Price"/> clears any existing override for that sector (falls back to the default).
+/// A per-event sector configuration supplied by the Admin form when saving an event. A null
+/// <see cref="Price"/> clears any existing price override for that sector (falls back to the default);
+/// <see cref="IsDisabled"/> closes the sector for this event. A row with neither a price nor a disable
+/// carries no configuration and is removed on save.
 /// </summary>
 public class EventSectorPriceInputDto
 {
@@ -38,4 +45,7 @@ public class EventSectorPriceInputDto
 
     [Range(0, 100000)]
     public decimal? Price { get; set; }
+
+    /// <summary>When true, disable (close for sale) this sector for the event being saved.</summary>
+    public bool IsDisabled { get; set; }
 }

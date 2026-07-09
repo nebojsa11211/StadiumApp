@@ -233,6 +233,153 @@
 
 .metric__hint { color: var(--muted); }
 
+/* ----- Statistics ---------------------------------------------------------- */
+.stats-scope {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.stats-body { padding: 1.25rem; }
+
+.stat-figures {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+}
+
+.stat-fig {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--stadium-gray-50);
+}
+
+.stat-fig__label {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.stat-fig__value {
+    font-size: 1.4rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+}
+
+.stats-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+}
+
+.stats-block__title {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-500);
+    margin: 0 0 0.9rem;
+}
+
+/* status distribution bar */
+.stat-bar {
+    display: flex;
+    height: 12px;
+    border-radius: 99px;
+    overflow: hidden;
+    background: var(--stadium-gray-100);
+    margin-bottom: 1rem;
+}
+
+.stat-bar__seg { height: 100%; background: var(--stadium-gray-400); transition: width 0.2s ease; }
+.stat-bar__seg.is-pending { background: var(--stadium-accent); }
+.stat-bar__seg.is-accepted,
+.stat-bar__seg.is-preparing { background: var(--stadium-info); }
+.stat-bar__seg.is-ready { background: var(--pitch); }
+.stat-bar__seg.is-delivered { background: var(--stadium-gray-400); }
+.stat-bar__seg.is-cancelled { background: var(--stadium-danger); }
+
+.stat-legend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.stat-legend__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.stat-legend__val { font-size: 0.82rem; color: var(--ink); font-weight: 600; }
+.stat-legend__pct { color: var(--muted); font-weight: 500; margin-left: 0.4rem; }
+
+/* top drinks ranking */
+.stat-rank {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.stat-rank__item {
+    display: grid;
+    grid-template-columns: minmax(80px, 1fr) 2fr auto;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.stat-rank__name {
+    font-size: 0.82rem;
+    color: var(--stadium-gray-700);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stat-rank__track {
+    height: 8px;
+    border-radius: 99px;
+    background: var(--stadium-gray-100);
+    overflow: hidden;
+}
+
+.stat-rank__fill {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: var(--pitch);
+    transition: width 0.2s ease;
+}
+
+.stat-rank__val { font-size: 0.82rem; color: var(--ink); font-weight: 600; text-align: right; }
+
+.stat-empty {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
 /* ----- Panel --------------------------------------------------------------- */
 .panel {
     background: var(--surface);
@@ -527,6 +674,11 @@ select.field__input { cursor: pointer; }
     .metrics { grid-template-columns: repeat(2, 1fr); }
 }
 
+@media (max-width: 900px) {
+    .stat-figures { grid-template-columns: repeat(2, 1fr); }
+    .stats-cols { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+
 @media (max-width: 768px) {
     .order-table { display: block; overflow-x: auto; white-space: nowrap; }
 }
@@ -536,8 +688,191 @@ select.field__input { cursor: pointer; }
     .metrics { grid-template-columns: 1fr; }
     .metric__value { font-size: 1.85rem; }
     .field { min-width: 100%; }
+    .stat-figures { grid-template-columns: 1fr; }
+}
+
+/* ----- Order detail modal -------------------------------------------------- */
+/* NB: class names are deliberately NOT ".modal" — the Admin app ships global
+   Bootstrap CSS whose ".modal { display:none }" would hide this overlay. */
+.detail-modal-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4vh 1rem;
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+.detail-modal {
+    display: block;
+    width: 100%;
+    max-width: 620px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+    overflow: hidden;
+    animation: detail-modal-in 0.15s ease;
+}
+
+@keyframes detail-modal-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-modal__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.35rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.detail-modal__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0.15rem 0 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.detail-modal__title .oi { font-size: 0.8rem; color: var(--muted); }
+
+.detail-modal__head-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+.detail-modal__body {
+    padding: 1.35rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem 1.5rem;
+    margin: 0;
+}
+
+.detail-cell dt {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-500);
+    margin-bottom: 0.25rem;
+}
+
+.detail-cell dd {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ink);
+}
+
+.detail-section-title {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-500);
+    margin: 1.35rem 0 0.75rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--stadium-gray-100);
+}
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-table th {
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-400);
+    border-bottom: 1px solid var(--line);
+}
+
+.detail-table th.num,
+.detail-table td.num { text-align: right; }
+
+.detail-table td {
+    padding: 0.55rem 0.6rem;
+    font-size: 0.86rem;
+    color: var(--stadium-gray-700);
+    border-bottom: 1px solid var(--stadium-gray-100);
+}
+
+.detail-table tfoot td {
+    border-bottom: none;
+    border-top: 1px solid var(--line);
+    font-weight: 600;
+    color: var(--muted);
+    padding-top: 0.6rem;
+}
+
+.detail-total { color: var(--ink); font-size: 0.95rem; }
+
+.detail-empty,
+.detail-note {
+    margin: 0 0 0.5rem;
+    font-size: 0.86rem;
+    color: var(--muted);
+}
+
+.detail-note { color: var(--stadium-gray-700); }
+
+.detail-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.detail-timeline li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.detail-timeline__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--stadium-gray-300);
+    flex-shrink: 0;
+}
+
+.detail-timeline li.is-done { color: var(--ink); }
+.detail-timeline li.is-done .detail-timeline__dot { background: var(--pitch); }
+
+.detail-timeline__label { flex: 1; }
+.detail-timeline__time { color: var(--muted); font-size: 0.78rem; }
+
+@media (max-width: 560px) {
+    .detail-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .spin, .loading-spinner { animation: none; }
+    .detail-modal { animation: none; }
 }

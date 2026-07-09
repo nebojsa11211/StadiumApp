@@ -180,12 +180,13 @@ public class CustomerTicketingController : ControllerBase
             }
 
             var basePrice = evt.BaseTicketPrice ?? 50.00m;
-            // Per-event override for this sector (if any) wins over the sector's own default price.
-            var eventSectorPrice = await _context.EventSectorPrices
+            // Per-event config for this sector: price override (wins over the sector default) + disabled flag.
+            var perEvent = await _context.EventSectorPrices
                 .Where(p => p.EventId == eventId && p.SectorOverlayId == sectionId)
-                .Select(p => (decimal?)p.Price)
+                .Select(p => new { p.Price, p.IsDisabled })
                 .FirstOrDefaultAsync();
-            var seatPrice = SectorPricing.Resolve(eventSectorPrice, overlay.Price, basePrice, overlay.Type);
+            var seatPrice = SectorPricing.Resolve(perEvent?.Price, overlay.Price, basePrice, overlay.Type);
+            var sectorDisabled = perEvent?.IsDisabled ?? false;
 
             var allSeats = await _overlaySeats.GetAllSeatsAsync(eventId, sectionId);
             var seats = allSeats
@@ -196,7 +197,8 @@ public class CustomerTicketingController : ControllerBase
                     SeatNumber = s.SeatNumber,
                     Price = seatPrice,
                     SeatCode = s.SeatCode,
-                    IsAvailable = s.IsAvailable
+                    // A disabled sector offers no bookable seats, even if none are sold.
+                    IsAvailable = s.IsAvailable && !sectorDisabled
                 })
                 .ToList();
 
@@ -233,7 +235,9 @@ public class CustomerTicketingController : ControllerBase
                 SectionName = summary.Name,
                 SectionType = summary.Type,
                 TotalSeats = summary.TotalSeats,
+                // Disabled sectors already report 0 available from the summary; the flag lets the UI grey them out.
                 AvailableSeats = summary.AvailableSeats,
+                IsDisabled = summary.IsDisabled,
                 // One price for the whole sector. This is the same resolution GetSectionAvailability
                 // uses for the individual seats, so the price shown in the sector list matches what
                 // the customer pays per seat. Per-event override → sector default → base×multiplier.
@@ -325,6 +329,8 @@ public class SectionAvailabilityInfo
     public int TotalSeats { get; set; }
     public int AvailableSeats { get; set; }
     public decimal BasePrice { get; set; }
+    /// <summary>True when this sector is disabled for the event: show it as unavailable (no seats bookable).</summary>
+    public bool IsDisabled { get; set; }
 }
 
 public class SectionAvailabilityDto

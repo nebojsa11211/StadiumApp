@@ -50,6 +50,8 @@ public class OverlaySectionSummary
     public int TotalSeats { get; set; }
     public int SoldSeats { get; set; }
     public int AvailableSeats { get; set; }
+    /// <summary>True when this sector is disabled (closed for sale) for the event — no seats bookable.</summary>
+    public bool IsDisabled { get; set; }
 }
 
 public class OverlaySeatInfo
@@ -90,11 +92,12 @@ public class OverlaySeatService : IOverlaySeatService
             .Where(s => codes.Contains(s.SectionCode))
             .ToDictionaryAsync(s => s.SectionCode, s => s.Id, ct);
 
-        // Per-event price overrides, keyed by overlay sector id (empty when the event has none).
-        var overrides = await _context.EventSectorPrices
+        // Per-event sector configuration (price override + disabled flag), keyed by overlay sector id
+        // (empty when the event has none).
+        var perEvent = await _context.EventSectorPrices
             .AsNoTracking()
             .Where(p => p.EventId == eventId)
-            .ToDictionaryAsync(p => p.SectorOverlayId, p => p.Price, ct);
+            .ToDictionaryAsync(p => p.SectorOverlayId, ct);
 
         var result = new Dictionary<int, OverlaySectionSummary>();
         foreach (var o in overlays)
@@ -104,6 +107,9 @@ public class OverlaySeatService : IOverlaySeatService
             if (backing.TryGetValue(o.SectorCode, out var sectionId))
                 sold = await CountSectionSoldAsync(eventId, sectionId, ct);
 
+            perEvent.TryGetValue(o.Id, out var cfg);
+            var disabled = cfg?.IsDisabled ?? false;
+
             result[o.Id] = new OverlaySectionSummary
             {
                 OverlayId = o.Id,
@@ -111,10 +117,12 @@ public class OverlaySeatService : IOverlaySeatService
                 Name = o.Name,
                 Type = o.Type,
                 Price = o.Price,
-                EventPrice = overrides.TryGetValue(o.Id, out var ep) ? ep : (decimal?)null,
+                EventPrice = cfg?.Price,
                 TotalSeats = total,
                 SoldSeats = sold,
-                AvailableSeats = Math.Max(0, total - sold)
+                // A disabled sector has no bookable seats for this event, regardless of how many are sold.
+                AvailableSeats = disabled ? 0 : Math.Max(0, total - sold),
+                IsDisabled = disabled
             };
         }
         return result;

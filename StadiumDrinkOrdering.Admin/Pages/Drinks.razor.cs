@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Common;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
 
@@ -22,8 +24,34 @@ public partial class Drinks : ComponentBase
     private string alertType = "";
     private bool loadingFailed = false;
     private string loadingError = "";
+    private bool isUploadingImage = false;
+    private string imageError = "";
+
+    // Upload guardrails: reject anything over 5 MB before we touch it, then downscale the picked
+    // image to a thumbnail so the stored data URL stays small (ImageUrl is a text column, so the
+    // image travels inline with the drink — no separate storage or migration needed).
+    private const long MaxImageBytes = 5 * 1024 * 1024;
+    private const int ImageMaxDimension = 400;
 
     private DrinkFormModel drinkForm = new();
+
+    // Sorting
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<DrinkDto, object?>> SortSelectors = new()
+    {
+        ["name"] = d => d.Name,
+        ["category"] = d => d.Category,
+        ["description"] = d => d.Description,
+        ["price"] = d => d.Price,
+        ["stock"] = d => d.StockQuantity,
+        ["status"] = d => d.IsAvailable,
+    };
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,7 +118,10 @@ public partial class Drinks : ComponentBase
                     (d.Description?.ToLower().Contains(search) ?? false));
             }
 
-            return filtered.OrderBy(d => d.Category).ThenBy(d => d.Name);
+            var ordered = sortState.Column is null
+                ? filtered.OrderBy(d => d.Category).ThenBy(d => d.Name)
+                : sortState.Apply(filtered, SortSelectors);
+            return ordered;
         }
     }
 
@@ -98,6 +129,7 @@ public partial class Drinks : ComponentBase
     {
         editingDrink = null;
         drinkForm = new DrinkFormModel { IsAvailable = true };
+        imageError = "";
         showDrinkModal = true;
     }
 
@@ -114,6 +146,7 @@ public partial class Drinks : ComponentBase
             Category = drink.Category,
             IsAvailable = drink.IsAvailable
         };
+        imageError = "";
         showDrinkModal = true;
     }
 
@@ -202,6 +235,46 @@ public partial class Drinks : ComponentBase
         {
             isSaving = false;
         }
+    }
+
+    private async Task OnImageSelected(InputFileChangeEventArgs e)
+    {
+        imageError = "";
+        var file = e.File;
+        if (file == null)
+            return;
+
+        if (file.Size > MaxImageBytes)
+        {
+            imageError = "Image is too large (max 5 MB).";
+            return;
+        }
+
+        isUploadingImage = true;
+        try
+        {
+            // Blazor resizes the image for us (no JS needed); we then inline it as a data URL.
+            var resized = await file.RequestImageFileAsync("image/jpeg", ImageMaxDimension, ImageMaxDimension);
+            await using var stream = resized.OpenReadStream(MaxImageBytes);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var base64 = Convert.ToBase64String(ms.ToArray());
+            drinkForm.ImageUrl = $"data:image/jpeg;base64,{base64}";
+        }
+        catch (Exception ex)
+        {
+            imageError = $"Could not read image: {ex.Message}";
+        }
+        finally
+        {
+            isUploadingImage = false;
+        }
+    }
+
+    private void ClearImage()
+    {
+        drinkForm.ImageUrl = null;
+        imageError = "";
     }
 
     private async Task ToggleAvailability(DrinkDto drink)

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using StadiumDrinkOrdering.Admin.Common;
 using StadiumDrinkOrdering.Admin.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.DTOs.Integration;
@@ -42,6 +43,28 @@ public partial class Index : ComponentBase, IDisposable
     private decimal _eventRevenue;
     private int _activeDrinkOrders;
     private List<OrderDto> _recentOrders = new();
+
+    // Sorting for the recent-orders table.
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<OrderDto, object?>> SortSelectors = new()
+    {
+        ["id"] = o => o.Id,
+        ["seat"] = o => o.SeatNumber,
+        ["amount"] = o => o.TotalAmount,
+        ["status"] = o => o.Status,
+    };
+
+    // Displayed orders: keep today's default order (newest-first) until a column is picked.
+    private IEnumerable<OrderDto> DisplayedRecentOrders =>
+        sortState.Column is null
+            ? _recentOrders
+            : sortState.Apply(_recentOrders, SortSelectors);
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        StateHasChanged();
+    }
 
     // SignalR event group we've currently joined (0 = none).
     private int _joinedEventId;

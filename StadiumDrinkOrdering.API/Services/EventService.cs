@@ -29,6 +29,13 @@ public interface IEventService
     /// </summary>
     Task<EventStatusTransitionResult> TransitionEventStatusAsync(int id, EventStatus newStatus, bool systemAutoClose = false);
     Task<EventAnalyticsResponse?> GetEventAnalyticsAsync(int id);
+
+    /// <summary>
+    /// Post-event statistics (ticketing/occupancy + drink ordering + combined revenue) for a single
+    /// event, computed live from tickets and orders. Returns null when the event does not exist.
+    /// Excludes cancelled tickets and cancelled orders so the figures reflect realised sales.
+    /// </summary>
+    Task<EventStatisticsDto?> GetEventStatisticsAsync(int id);
     Task<IEnumerable<Event>> GetActiveEventsAsync();
     /// <summary>
     /// Transitions any non-terminal event whose time window has already elapsed to
@@ -238,7 +245,6 @@ public class EventService : IEventService
         existingEvent.EventType = eventItem.EventType;
         existingEvent.HomeTeam = eventItem.HomeTeam;
         existingEvent.AwayTeam = eventItem.AwayTeam;
-        existingEvent.Location = eventItem.Location;
         existingEvent.EventDate = eventItem.EventDate;
         existingEvent.EventEndDate = eventItem.EventEndDate;
         existingEvent.VenueId = eventItem.VenueId;
@@ -629,6 +635,75 @@ public class EventService : IEventService
         await _context.SaveChangesAsync();
         return analytics;
         */
+    }
+
+    public async Task<EventStatisticsDto?> GetEventStatisticsAsync(int id)
+    {
+        var evt = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
+        if (evt == null)
+            return null;
+
+        // Ticketing / occupancy — non-cancelled tickets only (they still occupy a seat).
+        var tickets = await _context.Tickets
+            .AsNoTracking()
+            .Where(t => t.EventId == id && t.Status != TicketStatuses.Cancelled)
+            .Select(t => new { t.Kind, t.Price })
+            .ToListAsync();
+
+        var totalTicketsSold = tickets.Count;
+        var seasonTicketsSold = tickets.Count(t => t.Kind == TicketKind.Season);
+        var ticketRevenue = tickets.Sum(t => t.Price);
+
+        // Physical capacity = sum of drawn overlay sectors' seats (mirrors ITicketIngestionService).
+        var overlays = await _context.StadiumSectorOverlays
+            .AsNoTracking()
+            .Where(o => !o.IsDeleted)
+            .ToListAsync();
+        var totalCapacity = overlays.Sum(o => o.TotalSeats);
+        var occupancyPercent = totalCapacity > 0
+            ? Math.Round((decimal)totalTicketsSold / totalCapacity * 100m, 1)
+            : 0m;
+
+        // Drink ordering — exclude cancelled orders so revenue reflects realised sales.
+        var orders = await _context.Orders
+            .AsNoTracking()
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Drink)
+            .Where(o => o.EventId == id && o.Status != OrderStatus.Cancelled)
+            .ToListAsync();
+
+        var totalOrders = orders.Count;
+        var orderItems = orders.SelectMany(o => o.OrderItems).ToList();
+        var totalDrinksSold = orderItems.Sum(oi => oi.Quantity);
+        var drinksRevenue = orders.Sum(o => o.TotalAmount);
+        var averageOrderValue = totalOrders > 0 ? Math.Round(drinksRevenue / totalOrders, 2) : 0m;
+
+        var mostPopularDrink = orderItems
+            .GroupBy(oi => oi.Drink != null ? oi.Drink.Name : "Unknown")
+            .OrderByDescending(g => g.Sum(x => x.Quantity))
+            .FirstOrDefault()?.Key;
+
+        return new EventStatisticsDto
+        {
+            EventId = evt.Id,
+            EventName = evt.EventName,
+            EventDate = evt.EventDate,
+            Status = evt.Status.ToString(),
+            TotalTicketsSold = totalTicketsSold,
+            SeasonTicketsSold = seasonTicketsSold,
+            TotalCapacity = totalCapacity,
+            OccupancyPercent = occupancyPercent,
+            TicketRevenue = ticketRevenue,
+            TotalOrders = totalOrders,
+            TotalDrinksSold = totalDrinksSold,
+            DrinksRevenue = drinksRevenue,
+            AverageOrderValue = averageOrderValue,
+            MostPopularDrink = mostPopularDrink,
+            TotalRevenue = ticketRevenue + drinksRevenue,
+            CalculatedAt = DateTime.UtcNow
+        };
     }
 
     public async Task<int> AutoCompleteEndedEventsAsync()

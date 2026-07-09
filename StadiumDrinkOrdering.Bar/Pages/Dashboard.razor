@@ -65,10 +65,6 @@ else
                     <span class="eyebrow">@Localizer["Dashboard_CurrentEvent"]</span>
                     <h2 id="bar-dashboard-current-event-name">@currentEvent.Name</h2>
                     <div class="current-event-banner__meta">
-                        @if (!string.IsNullOrWhiteSpace(currentEvent.Location))
-                        {
-                            <span><i class="bi bi-geo-alt"></i> @currentEvent.Location</span>
-                        }
                         @if (currentEvent.Date is { } date)
                         {
                             <span><i class="bi bi-clock"></i> @date.ToLocalTime().ToString("ddd d MMM, HH:mm")</span>

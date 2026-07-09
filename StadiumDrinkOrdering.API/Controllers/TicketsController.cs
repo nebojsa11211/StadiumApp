@@ -52,7 +52,8 @@ public class TicketsController : ControllerBase
                 PurchaseDate = t.PurchaseDate,
                 CustomerEmail = t.CustomerEmail,
                 CustomerName = t.CustomerName,
-                Price = t.Price
+                Price = t.Price,
+                Kind = t.Kind
             })
             .ToListAsync();
 
@@ -157,7 +158,8 @@ public class TicketsController : ControllerBase
             PurchaseDate = ticket.PurchaseDate,
             CustomerEmail = ticket.CustomerEmail,
             CustomerName = ticket.CustomerName,
-            Price = ticket.Price
+            Price = ticket.Price,
+            Kind = ticket.Kind
         };
 
         return Ok(ticketDto);

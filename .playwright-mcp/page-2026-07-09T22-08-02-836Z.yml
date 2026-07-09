@@ -1,0 +1,272 @@
+- generic [ref=e9]:
+  - complementary [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e13]: 
+      - generic [ref=e14]:
+        - generic [ref=e15]: STADIUM
+        - generic [ref=e16]: ADMIN
+    - generic [ref=e17]:
+      - generic [ref=e18]: 00:08:02
+      - generic [ref=e19]: 10. 07. 26 HR
+    - navigation [ref=e20]:
+      - link " Nadzorna ploča" [ref=e21] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e22]: 
+        - generic [ref=e23]: Nadzorna ploča
+      - generic [ref=e24]: Poslovanje
+      - link " Narudžbe" [ref=e25] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e26]: 
+        - generic [ref=e27]: Narudžbe
+      - link " Pića" [ref=e28] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e29]: 
+        - generic [ref=e30]: Pića
+      - link " Novčanici" [ref=e31] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=e32]: 
+        - generic [ref=e33]: Novčanici
+      - generic [ref=e34]: Događaji i karte
+      - link " Događaji" [ref=e35] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e36]: 
+        - generic [ref=e37]: Događaji
+      - link " Sezone" [ref=e38] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=e39]: 
+        - generic [ref=e40]: Sezone
+      - link " Karte" [ref=e41] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e42]: 
+        - generic [ref=e43]: Karte
+      - generic [ref=e44]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=e45] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e46]: 👁
+        - generic [ref=e47]: Pregled
+      - link " Alat za crtanje" [ref=e48] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e49]: 
+        - generic [ref=e50]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=e51] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=e52]: 
+        - generic [ref=e53]: Informacije o stadionu
+      - link " Stadion i brend" [ref=e54] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=e55]: 
+        - generic [ref=e56]: Stadion i brend
+      - generic [ref=e57]: Analitika
+      - link " Analitika" [ref=e58] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e59]: 
+        - generic [ref=e60]: Analitika
+      - link " Kupci" [ref=e61] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=e62]: 
+        - generic [ref=e63]: Kupci
+      - link " Korisnička analitika" [ref=e64] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e65]: 
+        - generic [ref=e66]: Korisnička analitika
+      - generic [ref=e67]: Sustav
+      - link " Timski računi" [ref=e68] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e69]: 
+        - generic [ref=e70]: Timski računi
+      - link " Zapisi" [ref=e71] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e72]: 
+        - generic [ref=e73]: Zapisi
+      - link " Baza podataka" [ref=e74] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e75]: 
+        - generic [ref=e76]: Baza podataka
+      - link " Postavke" [ref=e77] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=e78]: 
+        - generic [ref=e79]: Postavke
+    - generic [ref=e80]:
+      - generic [ref=e81]:
+        - generic [ref=e82]: 
+        - generic [ref=e83]:
+          - generic [ref=e84]: Centralizirani Logging
+          - generic [ref=e85]: "Zadnja objava: 00:08"
+      - generic [ref=e86]:
+        - generic [ref=e87]: "N"
+        - generic [ref=e88]:
+          - button "Odjava" [ref=e89] [cursor=pointer]
+          - generic [ref=e90]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=e91]:
+        - generic [ref=e92]: HR/EN
+        - generic [ref=e93]:
+          - button "HR" [ref=e94] [cursor=pointer]
+          - button "EN" [ref=e95] [cursor=pointer]
+  - main [ref=e96]:
+    - generic [ref=e97]:
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - generic [ref=e100]: Tim
+          - heading "Timski i djelatnički računi" [active] [level=1] [ref=e101]
+          - paragraph [ref=e102]: Upravljajte internim računima tima (Administratori i osoblje) i njihovim ulogama
+        - generic [ref=e103]:
+          - button " Dodaj korisnika" [ref=e104] [cursor=pointer]:
+            - generic [ref=e105]: 
+            - generic [ref=e106]: Dodaj korisnika
+          - button " Kreiraj 20 primjer korisnika" [ref=e107] [cursor=pointer]:
+            - generic [ref=e108]: 
+            - generic [ref=e109]: Kreiraj 20 primjer korisnika
+          - button "" [ref=e110] [cursor=pointer]:
+            - generic [ref=e111]: 
+      - generic [ref=e112]:
+        - article [ref=e113]:
+          - generic [ref=e114]:
+            - generic [ref=e115]: Ukupno korisnika
+            - generic [ref=e116]: 
+          - generic [ref=e117]: "4"
+          - generic [ref=e119]: Svi registrirani korisnici
+        - article [ref=e120]:
+          - generic [ref=e121]:
+            - generic [ref=e122]: Aktivni korisnici
+            - generic [ref=e123]: 
+          - generic [ref=e124]: "4"
+          - generic [ref=e126]: Trenutno omogućeni računi
+        - article [ref=e127]:
+          - generic [ref=e128]:
+            - generic [ref=e129]: Novo ovaj mjesec
+            - generic [ref=e130]: 
+          - generic [ref=e131]: "4"
+          - generic [ref=e133]: Registrirani od 1. dana
+        - article [ref=e134]:
+          - generic [ref=e135]:
+            - generic [ref=e136]: Admin korisnici
+            - generic [ref=e137]: 
+          - generic [ref=e138]: "1"
+          - generic [ref=e140]: Privilegirani računi
+      - generic [ref=e141]:
+        - generic [ref=e142]:
+          - heading "Filtri" [level=2] [ref=e143]
+          - button " Očisti" [ref=e144] [cursor=pointer]:
+            - generic [ref=e145]: 
+            - text: Očisti
+        - generic [ref=e146]:
+          - generic [ref=e147]:
+            - generic [ref=e148]: Filter uloge
+            - combobox [ref=e149] [cursor=pointer]:
+              - option "Sve uloge" [selected]
+              - option "Administrator"
+              - option "Konobar za šankom"
+              - option "Konobar"
+          - generic [ref=e150]:
+            - generic [ref=e151]: Filter stanja
+            - combobox [ref=e152] [cursor=pointer]:
+              - option "Sva stanja" [selected]
+              - option "Aktivno"
+              - option "Neaktivno"
+          - generic [ref=e153]:
+            - generic [ref=e154]: Pretraži korisnike
+            - textbox "Pretraži po imenu, korisničkom imenu ili e-pošti" [ref=e155]
+      - generic [ref=e156]:
+        - heading "Korisnici 4" [level=2] [ref=e158]:
+          - text: Korisnici
+          - generic [ref=e159]: "4"
+        - table [ref=e160]:
+          - rowgroup [ref=e161]:
+            - row "Korisnik Ime Korisničko ime E-pošta Uloga Stanje Kreirano Akcije" [ref=e162]:
+              - columnheader [ref=e163]:
+                - checkbox [ref=e164] [cursor=pointer]
+              - columnheader "Korisnik" [ref=e165]
+              - columnheader "Ime" [ref=e166]
+              - columnheader "Korisničko ime" [ref=e167]
+              - columnheader "E-pošta" [ref=e168]
+              - columnheader "Uloga" [ref=e169]
+              - columnheader "Stanje" [ref=e170]
+              - columnheader "Kreirano" [ref=e171]
+              - columnheader "Akcije" [ref=e172]
+          - rowgroup [ref=e173]:
+            - row "#1 nebojsa.medancic+adminStadion@gmail.com nebojsa.medancic+adminStadion@gmail.com Admin Aktivno srp 09, 2026   " [ref=e174]:
+              - cell [ref=e175]:
+                - checkbox [ref=e176] [cursor=pointer]
+              - cell "#1" [ref=e177]
+              - cell [ref=e178]
+              - cell "nebojsa.medancic+adminStadion@gmail.com" [ref=e179]
+              - cell "nebojsa.medancic+adminStadion@gmail.com" [ref=e180]
+              - cell "Admin" [ref=e181]:
+                - generic [ref=e182]: Admin
+              - cell "Aktivno" [ref=e183]:
+                - generic [ref=e184]: Aktivno
+              - cell "srp 09, 2026" [ref=e186]
+              - cell "  " [ref=e187]:
+                - generic [ref=e188]:
+                  - button "" [ref=e189] [cursor=pointer]:
+                    - generic [ref=e190]: 
+                  - button "" [ref=e191] [cursor=pointer]:
+                    - generic [ref=e192]: 
+                  - button "" [ref=e193] [cursor=pointer]:
+                    - generic [ref=e194]: 
+            - row "#6 nebojsa.medancic+runner@gmail.com nebojsa.medancic+runner@gmail.com Waiter Aktivno srp 04, 2026    " [ref=e195]:
+              - cell [ref=e196]:
+                - checkbox [ref=e197] [cursor=pointer]
+              - cell "#6" [ref=e198]
+              - cell [ref=e199]
+              - cell "nebojsa.medancic+runner@gmail.com" [ref=e200]
+              - cell "nebojsa.medancic+runner@gmail.com" [ref=e201]
+              - cell "Waiter" [ref=e202]:
+                - generic [ref=e203]: Waiter
+              - cell "Aktivno" [ref=e204]:
+                - generic [ref=e205]: Aktivno
+              - cell "srp 04, 2026" [ref=e207]
+              - cell "   " [ref=e208]:
+                - generic [ref=e209]:
+                  - button "" [ref=e210] [cursor=pointer]:
+                    - generic [ref=e211]: 
+                  - button "" [ref=e212] [cursor=pointer]:
+                    - generic [ref=e213]: 
+                  - button "" [ref=e214] [cursor=pointer]:
+                    - generic [ref=e215]: 
+                  - button "" [ref=e216] [cursor=pointer]:
+                    - generic [ref=e217]: 
+            - row "#4 nebojsa.medancic+waiter1@gmail.com nebojsa.medancic+waiter1@gmail.com Waiter Aktivno srp 04, 2026    " [ref=e218]:
+              - cell [ref=e219]:
+                - checkbox [ref=e220] [cursor=pointer]
+              - cell "#4" [ref=e221]
+              - cell [ref=e222]
+              - cell "nebojsa.medancic+waiter1@gmail.com" [ref=e223]
+              - cell "nebojsa.medancic+waiter1@gmail.com" [ref=e224]
+              - cell "Waiter" [ref=e225]:
+                - generic [ref=e226]: Waiter
+              - cell "Aktivno" [ref=e227]:
+                - generic [ref=e228]: Aktivno
+              - cell "srp 04, 2026" [ref=e230]
+              - cell "   " [ref=e231]:
+                - generic [ref=e232]:
+                  - button "" [ref=e233] [cursor=pointer]:
+                    - generic [ref=e234]: 
+                  - button "" [ref=e235] [cursor=pointer]:
+                    - generic [ref=e236]: 
+                  - button "" [ref=e237] [cursor=pointer]:
+                    - generic [ref=e238]: 
+                  - button "" [ref=e239] [cursor=pointer]:
+                    - generic [ref=e240]: 
+            - row "#3 nebojsa.medancic+staff1@gmail.com nebojsa.medancic+staff1@gmail.com Bartender Aktivno srp 04, 2026    " [ref=e241]:
+              - cell [ref=e242]:
+                - checkbox [ref=e243] [cursor=pointer]
+              - cell "#3" [ref=e244]
+              - cell [ref=e245]
+              - cell "nebojsa.medancic+staff1@gmail.com" [ref=e246]
+              - cell "nebojsa.medancic+staff1@gmail.com" [ref=e247]
+              - cell "Bartender" [ref=e248]:
+                - generic [ref=e249]: Bartender
+              - cell "Aktivno" [ref=e250]:
+                - generic [ref=e251]: Aktivno
+              - cell "srp 04, 2026" [ref=e253]
+              - cell "   " [ref=e254]:
+                - generic [ref=e255]:
+                  - button "" [ref=e256] [cursor=pointer]:
+                    - generic [ref=e257]: 
+                  - button "" [ref=e258] [cursor=pointer]:
+                    - generic [ref=e259]: 
+                  - button "" [ref=e260] [cursor=pointer]:
+                    - generic [ref=e261]: 
+                  - button "" [ref=e262] [cursor=pointer]:
+                    - generic [ref=e263]: 

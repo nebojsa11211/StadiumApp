@@ -229,9 +229,6 @@
                 @if (selectedOrderIds.Any())
                 {
                     <div class="bulk-actions" id="admin-orders-bulk-actions">
-                        <button class="pill-btn pill-btn--success" @onclick="BulkAccept" id="admin-orders-bulk-accept-btn">
-                            <i class="oi oi-check"></i><span>@L["Orders_AcceptButtonText", selectedOrderIds.Count]</span>
-                        </button>
                         <button class="pill-btn pill-btn--danger" @onclick="BulkCancel" id="admin-orders-bulk-cancel-btn">
                             <i class="oi oi-x"></i><span>@L["Orders_CancelBulkButton"]</span>
                         </button>
@@ -247,12 +244,12 @@
                             <th class="check" id="admin-orders-header-check">
                                 <input type="checkbox" class="check-box" id="admin-orders-select-all-checkbox" @onchange="ToggleSelectAll" />
                             </th>
-                            <th id="admin-orders-header-orderid">@L["Orders_OrderHeader"]</th>
-                            <th id="admin-orders-header-customer">@L["Orders_CustomerHeader"]</th>
-                            <th id="admin-orders-header-items">@L["Orders_ItemsHeader"]</th>
-                            <th class="num" id="admin-orders-header-total">@L["Orders_TotalHeader"]</th>
-                            <th id="admin-orders-header-status">@L["Orders_StatusHeader"]</th>
-                            <th class="num" id="admin-orders-header-created">@L["Orders_CreatedHeader"]</th>
+                            <th class="sortable @(sortState.IsSorted("order") ? "is-sorted" : "")" @onclick='() => SortBy("order")' id="admin-orders-header-orderid">@L["Orders_OrderHeader"]<span class="sort-ind">@sortState.Indicator("order")</span></th>
+                            <th class="sortable @(sortState.IsSorted("customer") ? "is-sorted" : "")" @onclick='() => SortBy("customer")' id="admin-orders-header-customer">@L["Orders_CustomerHeader"]<span class="sort-ind">@sortState.Indicator("customer")</span></th>
+                            <th class="sortable @(sortState.IsSorted("items") ? "is-sorted" : "")" @onclick='() => SortBy("items")' id="admin-orders-header-items">@L["Orders_ItemsHeader"]<span class="sort-ind">@sortState.Indicator("items")</span></th>
+                            <th class="num sortable @(sortState.IsSorted("total") ? "is-sorted" : "")" @onclick='() => SortBy("total")' id="admin-orders-header-total">@L["Orders_TotalHeader"]<span class="sort-ind">@sortState.Indicator("total")</span></th>
+                            <th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")' id="admin-orders-header-status">@L["Orders_StatusHeader"]<span class="sort-ind">@sortState.Indicator("status")</span></th>
+                            <th class="num sortable @(sortState.IsSorted("created") ? "is-sorted" : "")" @onclick='() => SortBy("created")' id="admin-orders-header-created">@L["Orders_CreatedHeader"]<span class="sort-ind">@sortState.Indicator("created")</span></th>
                             <th class="actions-col" id="admin-orders-header-actions">@L["Orders_ActionsHeader"]</th>
                         </tr>
                     </thead>
@@ -280,18 +277,6 @@
                                         <button class="row-btn" title="@L["Orders_ViewTitle"]" @onclick="@(() => ViewOrder(order.Id))" id="@($"admin-orders-view-btn-{order.Id}")">
                                             <i class="oi oi-eye"></i>
                                         </button>
-                                        @if (order.Status == OrderStatus.Pending)
-                                        {
-                                            <button class="row-btn row-btn--ok" title="@L["Orders_AcceptTitle"]" @onclick="@(() => AcceptOrder(order.Id))" id="@($"admin-orders-accept-btn-{order.Id}")">
-                                                <i class="oi oi-check"></i>
-                                            </button>
-                                        }
-                                        @if (order.Status != OrderStatus.Delivered && order.Status != OrderStatus.Cancelled)
-                                        {
-                                            <button class="row-btn" title="@L["Orders_AdvanceTitle"]" @onclick="@(() => AdvanceOrderStatus(order.Id))" id="@($"admin-orders-advance-btn-{order.Id}")">
-                                                <i class="oi oi-arrow-right"></i>
-                                            </button>
-                                        }
                                     </div>
                                 </td>
                             </tr>

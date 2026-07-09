@@ -1,0 +1,239 @@
+@page "/customers"
+@using StadiumDrinkOrdering.Shared.Models
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@L["Customers_PageTitle"]</PageTitle>
+
+<div class="console" id="admin-customers-main-container">
+    <!-- Page Header -->
+    <header class="console-head" id="admin-customers-header">
+        <div class="console-head__title" id="admin-customers-title-section">
+            <span class="eyebrow">@L["Customers_EyebrowLabel"]</span>
+            <h1>@L["Customers_MainTitle"]</h1>
+            <p>@L["Customers_Subtitle"]</p>
+        </div>
+        <div class="console-head__actions" id="admin-customers-action-buttons">
+            <button class="icon-btn" @onclick="RefreshData" disabled="@isLoading" id="admin-customers-refresh-btn" title="@L["Users_RefreshButtonTooltip"]">
+                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Key Metrics Cards -->
+    <section class="metrics" id="admin-customers-summary-cards">
+        <!-- Total Customers -->
+        <article class="metric" id="admin-customers-total-card">
+            <div class="metric__head" id="admin-customers-total-card-content">
+                <span class="metric__label" id="admin-customers-total-stats">@L["Customers_TotalLabel"]</span>
+                <i class="oi oi-people metric__icon" id="admin-customers-total-icon"></i>
+            </div>
+            <div class="metric__value mono" id="admin-customers-total-card-inner">@totalCustomers</div>
+            <div class="metric__foot" id="admin-customers-total-card-body">
+                <span class="metric__hint">@L["Customers_TotalHint"]</span>
+            </div>
+        </article>
+
+        <!-- Active Customers (accent) -->
+        <article class="metric metric--accent" id="admin-customers-active-card">
+            <div class="metric__head" id="admin-customers-active-card-content">
+                <span class="metric__label" id="admin-customers-active-stats">@L["Users_ActiveUsersLabel"]</span>
+                <i class="oi oi-circle-check metric__icon is-ok" id="admin-customers-active-icon"></i>
+            </div>
+            <div class="metric__value mono" id="admin-customers-active-card-inner">@activeCustomers</div>
+            <div class="metric__foot" id="admin-customers-active-card-body">
+                <span class="metric__hint">@L["Users_ActiveUsersHint"]</span>
+            </div>
+        </article>
+
+        <!-- New This Month -->
+        <article class="metric" id="admin-customers-new-card">
+            <div class="metric__head" id="admin-customers-new-card-content">
+                <span class="metric__label" id="admin-customers-new-stats">@L["Users_NewThisMonthLabel"]</span>
+                <i class="oi oi-person metric__icon" id="admin-customers-new-icon"></i>
+            </div>
+            <div class="metric__value mono" id="admin-customers-new-card-inner">@newCustomersThisMonth</div>
+            <div class="metric__foot" id="admin-customers-new-card-body">
+                <span class="metric__hint">@L["Users_NewThisMonthHint"]</span>
+            </div>
+        </article>
+    </section>
+
+    <!-- Filters -->
+    <div class="panel" id="admin-customers-filters-card">
+        <div class="panel__head" id="admin-customers-filters-body">
+            <h2 class="panel__title">@L["Users_FiltersTitle"]</h2>
+            <button class="link-btn" @onclick="ClearFilters" id="admin-customers-clear-filters-btn">
+                <i class="oi oi-x"></i> @L["Users_ClearFiltersButton"]
+            </button>
+        </div>
+        <div class="filters" id="admin-customers-filters-row">
+            <div class="field" id="admin-customers-status-filter-col">
+                <label class="field__label">@L["Users_StatusFilterLabel"]</label>
+                <select class="field__input" @bind="selectedStatus" @bind:after="FilterCustomers" id="admin-customers-status-filter">
+                    <option value="">@L["Users_AllStatusesOption"]</option>
+                    <option value="true">@L["Users_ActiveStatusOption"]</option>
+                    <option value="false">@L["Users_InactiveStatusOption"]</option>
+                </select>
+            </div>
+            <div class="field field--grow" id="admin-customers-search-filter-col">
+                <label class="field__label">@L["Users_SearchUsersLabel"]</label>
+                <input type="text" class="field__input" placeholder="@L["Users_SearchUsersPlaceholder"]"
+                       @bind="searchTerm" @oninput="FilterCustomers" id="admin-customers-search-input" />
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state" id="admin-customers-loading-state">
+            <span class="loading-spinner" id="admin-customers-loading-spinner"></span>
+            <p id="admin-customers-loading-text">@L["Customers_LoadingMessage"]</p>
+        </div>
+    }
+    else
+    {
+        <!-- Customers Table -->
+        <div class="panel" id="admin-customers-table-panel">
+            <div class="panel__head" id="admin-customers-table-head">
+                <h2 class="panel__title" id="admin-customers-table-title">@L["Customers_TableTitle"] <span class="panel__count mono" id="admin-customers-table-count">@filteredCustomers.Count</span></h2>
+            </div>
+
+            @if (filteredCustomers?.Any() == true)
+            {
+                <table class="console-table" id="admin-customers-table">
+                    <thead>
+                        <tr id="admin-customers-table-header-row">
+                            <th class="sortable @(sortState.IsSorted("id") ? "is-sorted" : "")" @onclick='() => SortBy("id")' id="admin-customers-table-col-id">@L["Users_UserColumnHeader"]<span class="sort-ind">@sortState.Indicator("id")</span></th>
+                            <th class="sortable @(sortState.IsSorted("name") ? "is-sorted" : "")" @onclick='() => SortBy("name")' id="admin-customers-table-col-name">@L["Users_NameColumnHeader"]<span class="sort-ind">@sortState.Indicator("name")</span></th>
+                            <th class="sortable @(sortState.IsSorted("username") ? "is-sorted" : "")" @onclick='() => SortBy("username")' id="admin-customers-table-col-username">@L["Users_UsernameColumnHeader"]<span class="sort-ind">@sortState.Indicator("username")</span></th>
+                            <th class="sortable @(sortState.IsSorted("email") ? "is-sorted" : "")" @onclick='() => SortBy("email")' id="admin-customers-table-col-email">@L["Users_EmailColumnHeader"]<span class="sort-ind">@sortState.Indicator("email")</span></th>
+                            <th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")' id="admin-customers-table-col-status">@L["Users_StatusColumnHeader"]<span class="sort-ind">@sortState.Indicator("status")</span></th>
+                            <th class="num sortable @(sortState.IsSorted("created") ? "is-sorted" : "")" @onclick='() => SortBy("created")' id="admin-customers-table-col-created">@L["Users_CreatedColumnHeader"]<span class="sort-ind">@sortState.Indicator("created")</span></th>
+                            <th class="actions-col" id="admin-customers-table-col-actions">@L["Users_ActionsColumnHeader"]</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-customers-table-body">
+                        @foreach (var customer in filteredCustomers.Take(100))
+                        {
+                            <tr id="admin-customers-row-@customer.Id">
+                                <td class="mono console-table__id" id="admin-customers-cell-id-@customer.Id">#@customer.Id</td>
+                                <td id="admin-customers-cell-name-@customer.Id">@customer.Name</td>
+                                <td id="admin-customers-cell-username-@customer.Id">@customer.Username</td>
+                                <td class="console-table__muted" id="admin-customers-cell-email-@customer.Id">@customer.Email</td>
+                                <td id="admin-customers-cell-status-@customer.Id">
+                                    <span class="status @(customer.IsActive ? "is-active" : "is-inactive")">
+                                        <span class="status__dot"></span>@(customer.IsActive ? L["Users_ActiveStatus"] : L["Users_InactiveStatus"])
+                                    </span>
+                                </td>
+                                <td class="num mono console-table__time" id="admin-customers-cell-created-@customer.Id">@customer.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                <td class="actions-col" id="admin-customers-cell-actions-@customer.Id">
+                                    <div class="row-actions" id="admin-customers-actions-@customer.Id">
+                                        <button class="row-btn" @onclick="@(() => EditCustomer(customer))" id="admin-customers-edit-btn-@customer.Id" title="@L["Users_EditUserTitle"]">
+                                            <i class="oi oi-pencil"></i>
+                                        </button>
+                                        @if (customer.IsActive)
+                                        {
+                                            <button class="row-btn" @onclick="@(() => SetActive(customer, false))" id="admin-customers-deactivate-btn-@customer.Id" title="@L["Users_DeactivateUserTitle"]">
+                                                <i class="oi oi-ban"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="row-btn row-btn--ok" @onclick="@(() => SetActive(customer, true))" id="admin-customers-activate-btn-@customer.Id" title="@L["Users_ActivateUserTitle"]">
+                                                <i class="oi oi-circle-check"></i>
+                                            </button>
+                                        }
+                                        <button class="row-btn row-btn--danger" @onclick="@(() => DeleteCustomer(customer.Id))" id="admin-customers-delete-btn-@customer.Id" title="@L["Users_DeleteUserTitle"]">
+                                            <i class="oi oi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                @if (filteredCustomers.Count > 100)
+                {
+                    <div class="table-foot" id="admin-customers-table-foot">
+                        <p id="admin-customers-table-foot-message">@L["Users_ShowingFirstMessage"] <span class="mono">100</span> @L["Users_OfTotalMessage"] <span class="mono">@filteredCustomers.Count</span> @L["Customers_TotalText"]</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty" id="admin-customers-empty">
+                    <i class="oi oi-info" id="admin-customers-empty-icon"></i>
+                    <p id="admin-customers-empty-title">@L["Customers_NoCustomersFound"]</p>
+                    <span id="admin-customers-empty-message">@L["Customers_EmptyMessage"]</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Edit Customer Modal -->
+@if (showEditModal)
+{
+    <div class="modal fade show" id="admin-customers-edit-modal" tabindex="-1" role="dialog" style="display: block; z-index: 1055;" aria-modal="true" aria-labelledby="admin-customers-edit-modal-title">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document" id="admin-customers-edit-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" id="admin-customers-edit-modal-header">
+                    <h5 class="modal-title" id="admin-customers-edit-modal-title">@L["Customers_EditModalTitle"]</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal" id="admin-customers-edit-modal-close-btn" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="admin-customers-edit-modal-body">
+                    <EditForm Model="editUser" OnValidSubmit="UpdateCustomer" id="admin-customers-edit-modal-form">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3" id="admin-customers-edit-modal-username-group">
+                            <label class="form-label" for="admin-customers-edit-modal-username-input">@L["Users_UsernameLabel"]</label>
+                            <InputText class="form-control" @bind-Value="editUser.Username" id="admin-customers-edit-modal-username-input" />
+                        </div>
+
+                        <div class="mb-3" id="admin-customers-edit-modal-email-group">
+                            <label class="form-label" for="admin-customers-edit-modal-email-input">@L["Users_EmailLabel"]</label>
+                            <InputText class="form-control" @bind-Value="editUser.Email" type="email" id="admin-customers-edit-modal-email-input" />
+                        </div>
+
+                        <div class="row" id="admin-customers-edit-modal-name-row">
+                            <div class="col-md-6 mb-3" id="admin-customers-edit-modal-firstname-col">
+                                <label class="form-label" for="admin-customers-edit-modal-firstname-input">@L["Users_FirstNameLabel"]</label>
+                                <InputText class="form-control" @bind-Value="editUser.FirstName" id="admin-customers-edit-modal-firstname-input" />
+                            </div>
+                            <div class="col-md-6 mb-3" id="admin-customers-edit-modal-lastname-col">
+                                <label class="form-label" for="admin-customers-edit-modal-lastname-input">@L["Users_LastNameLabel"]</label>
+                                <InputText class="form-control" @bind-Value="editUser.LastName" id="admin-customers-edit-modal-lastname-input" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="admin-customers-edit-modal-phone-group">
+                            <label class="form-label" for="admin-customers-edit-modal-phone-input">@L["Users_PhoneNumberLabel"]</label>
+                            <InputText class="form-control" @bind-Value="editUser.PhoneNumber" id="admin-customers-edit-modal-phone-input" />
+                        </div>
+
+                        <div class="mb-3 form-check" id="admin-customers-edit-modal-active-group">
+                            <input type="checkbox" class="form-check-input" @bind="isActiveChecked" id="admin-customers-edit-modal-active-checkbox" />
+                            <label class="form-check-label" for="admin-customers-edit-modal-active-checkbox">
+                                @L["Users_ActiveCheckboxLabel"]
+                            </label>
+                        </div>
+
+                        <div class="modal-footer" id="admin-customers-edit-modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseEditModal" id="admin-customers-edit-modal-cancel-btn">@L["Users_CancelButton"]</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isUpdating" id="admin-customers-edit-modal-submit-btn">
+                                @if (isUpdating)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                @L["Users_UpdateUserButton"]
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" style="z-index: 1050;" id="admin-customers-edit-modal-backdrop"></div>
+}

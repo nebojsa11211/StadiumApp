@@ -186,12 +186,12 @@
                 <table class="console-table" id="admin-logs-table">
                     <thead id="admin-logs-table-head">
                         <tr id="admin-logs-table-header-row">
-                            <th id="admin-logs-th-time">@L["Logs_TimeHeader"]</th>
-                            <th id="admin-logs-th-level">@L["Logs_LevelHeader"]</th>
-                            <th id="admin-logs-th-action">@L["Logs_ActionHeader"]</th>
-                            <th id="admin-logs-th-user">@L["Logs_UserHeader"]</th>
-                            <th id="admin-logs-th-source">@L["Logs_SourceHeader"]</th>
-                            <th id="admin-logs-th-message">@L["Logs_MessageHeader"]</th>
+                            <th class="sortable @(sortState.IsSorted("time") ? "is-sorted" : "")" @onclick='() => SortBy("time")' id="admin-logs-th-time">@L["Logs_TimeHeader"]<span class="sort-ind">@sortState.Indicator("time")</span></th>
+                            <th class="sortable @(sortState.IsSorted("level") ? "is-sorted" : "")" @onclick='() => SortBy("level")' id="admin-logs-th-level">@L["Logs_LevelHeader"]<span class="sort-ind">@sortState.Indicator("level")</span></th>
+                            <th class="sortable @(sortState.IsSorted("action") ? "is-sorted" : "")" @onclick='() => SortBy("action")' id="admin-logs-th-action">@L["Logs_ActionHeader"]<span class="sort-ind">@sortState.Indicator("action")</span></th>
+                            <th class="sortable @(sortState.IsSorted("user") ? "is-sorted" : "")" @onclick='() => SortBy("user")' id="admin-logs-th-user">@L["Logs_UserHeader"]<span class="sort-ind">@sortState.Indicator("user")</span></th>
+                            <th class="sortable @(sortState.IsSorted("source") ? "is-sorted" : "")" @onclick='() => SortBy("source")' id="admin-logs-th-source">@L["Logs_SourceHeader"]<span class="sort-ind">@sortState.Indicator("source")</span></th>
+                            <th class="sortable @(sortState.IsSorted("message") ? "is-sorted" : "")" @onclick='() => SortBy("message")' id="admin-logs-th-message">@L["Logs_MessageHeader"]<span class="sort-ind">@sortState.Indicator("message")</span></th>
                         </tr>
                     </thead>
                     <tbody id="admin-logs-table-body">

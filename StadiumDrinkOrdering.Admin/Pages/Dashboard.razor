@@ -167,15 +167,15 @@
                     <table class="order-table" id="admin-dashboard-recent-orders-table">
                         <thead id="admin-dashboard-recent-orders-table-head">
                             <tr id="admin-dashboard-recent-orders-table-header-row">
-                                <th id="admin-dashboard-recent-orders-table-header-order">@L["Dash_HeaderOrder"]</th>
-                                <th id="admin-dashboard-recent-orders-table-header-customer">@L["Dash_HeaderCustomer"]</th>
-                                <th class="num" id="admin-dashboard-recent-orders-table-header-amount">@L["Dash_HeaderAmount"]</th>
-                                <th id="admin-dashboard-recent-orders-table-header-status">@L["Dash_HeaderStatus"]</th>
-                                <th class="num" id="admin-dashboard-recent-orders-table-header-time">@L["Dash_HeaderTime"]</th>
+                                <th class="sortable @(sortState.IsSorted("order") ? "is-sorted" : "")" @onclick='() => SortBy("order")' id="admin-dashboard-recent-orders-table-header-order">@L["Dash_HeaderOrder"]<span class="sort-ind">@sortState.Indicator("order")</span></th>
+                                <th class="sortable @(sortState.IsSorted("customer") ? "is-sorted" : "")" @onclick='() => SortBy("customer")' id="admin-dashboard-recent-orders-table-header-customer">@L["Dash_HeaderCustomer"]<span class="sort-ind">@sortState.Indicator("customer")</span></th>
+                                <th class="num sortable @(sortState.IsSorted("amount") ? "is-sorted" : "")" @onclick='() => SortBy("amount")' id="admin-dashboard-recent-orders-table-header-amount">@L["Dash_HeaderAmount"]<span class="sort-ind">@sortState.Indicator("amount")</span></th>
+                                <th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")' id="admin-dashboard-recent-orders-table-header-status">@L["Dash_HeaderStatus"]<span class="sort-ind">@sortState.Indicator("status")</span></th>
+                                <th class="num sortable @(sortState.IsSorted("time") ? "is-sorted" : "")" @onclick='() => SortBy("time")' id="admin-dashboard-recent-orders-table-header-time">@L["Dash_HeaderTime"]<span class="sort-ind">@sortState.Indicator("time")</span></th>
                             </tr>
                         </thead>
                         <tbody id="admin-dashboard-recent-orders-table-body">
-                            @foreach (var order in recentOrders.Take(6))
+                            @foreach (var order in DisplayedRecentOrders.Take(6))
                             {
                                 <tr id="@($"admin-dashboard-recent-order-row-{order.Id}")" @onclick="@(() => NavigateToOrder(order.Id))">
                                     <td class="mono order-table__id" id="@($"admin-dashboard-recent-order-id-{order.Id}")">#@order.Id</td>

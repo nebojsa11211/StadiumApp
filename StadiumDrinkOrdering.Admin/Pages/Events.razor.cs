@@ -16,9 +16,8 @@ public partial class Events : ComponentBase
     private List<EventDto>? events;
     private List<SeasonDto>? seasons;
     /// <summary>
-    /// The configured venue. Every event is held in this one stadium, so its address is the shared
-    /// event location (events no longer carry a free-typed location). Null while loading / if the
-    /// venue endpoint is unreachable. Also the source of <see cref="venueClubs"/>.
+    /// The configured venue. Every event is held in this one stadium. Null while loading / if the
+    /// venue endpoint is unreachable. The source of <see cref="venueClubs"/>.
     /// </summary>
     private VenueDto? venue;
     /// <summary>
@@ -75,10 +74,7 @@ public partial class Events : ComponentBase
         await LoadVenue();
     }
 
-    /// <summary>
-    /// Loads the venue: its clubs feed the Match home-team picker, and its address is the shared
-    /// location shown for every event. Never throws.
-    /// </summary>
+    /// <summary>Loads the venue; its clubs feed the Match home-team picker. Never throws.</summary>
     private async Task LoadVenue()
     {
         try
@@ -92,27 +88,6 @@ public partial class Events : ComponentBase
             venueClubs = new List<ClubDto>();
         }
     }
-
-    /// <summary>
-    /// The shared event location: the venue name plus city from Venue Settings (e.g.
-    /// "Stadion Rujevica · Rijeka"), falling back to just the name, or "—" if the venue is unavailable.
-    /// </summary>
-    private string VenueLocation
-    {
-        get
-        {
-            var name = venue?.Name;
-            if (string.IsNullOrWhiteSpace(name)) return "—";
-            return string.IsNullOrWhiteSpace(venue?.City) ? name : $"{name} · {venue!.City}";
-        }
-    }
-
-    /// <summary>
-    /// The location to display for an event: its own stored value (e.g. an externally-ingested
-    /// event that carries one), otherwise the shared venue location.
-    /// </summary>
-    private string DisplayLocation(EventDto evt) =>
-        string.IsNullOrWhiteSpace(evt.Location) ? VenueLocation : evt.Location!;
 
     /// <summary>The venue's primary club name, or the first club, used as the default home team.</summary>
     private string? DefaultHomeTeam =>
@@ -335,8 +310,6 @@ public partial class Events : ComponentBase
                     Description = string.IsNullOrWhiteSpace(eventForm.Description) ? null : eventForm.Description.Trim(),
                     Date = eventForm.Date,
                     EndDate = eventForm.EndDate,
-                    // Location is intentionally not set: every event is at the one venue, so the UI
-                    // derives it from Venue Settings rather than storing a per-event copy.
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
@@ -370,8 +343,6 @@ public partial class Events : ComponentBase
                     Description = string.IsNullOrWhiteSpace(eventForm.Description) ? null : eventForm.Description.Trim(),
                     Date = eventForm.Date,
                     EndDate = eventForm.EndDate,
-                    // Location left null on purpose: the API preserves any existing value (e.g. an
-                    // externally-ingested location) and the UI otherwise shows the venue location.
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,

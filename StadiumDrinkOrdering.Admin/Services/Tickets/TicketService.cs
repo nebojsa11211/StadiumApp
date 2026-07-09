@@ -1,13 +1,14 @@
 using StadiumDrinkOrdering.Admin.Services.Base;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 
 namespace StadiumDrinkOrdering.Admin.Services.Tickets
 {
     public class TicketService : BaseApiService, ITicketService
     {
-        public TicketService(HttpClient httpClient, ICentralizedLoggingClient loggingClient)
-            : base(httpClient, loggingClient)
+        public TicketService(HttpClient httpClient, ICentralizedLoggingClient loggingClient, ITokenStorageService tokenStorage)
+            : base(httpClient, loggingClient, tokenStorage: tokenStorage)
         {
         }
 
@@ -15,6 +16,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.GetAsync("tickets");
                 if (response.IsSuccessStatusCode)
                 {
@@ -33,6 +35,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
         {
             try
             {
+                SetAuthorizationHeader();
                 var url = eventId.HasValue ? $"tickets?eventId={eventId.Value}" : "tickets";
                 var response = await HttpClient.GetAsync(url);
                 if (response.IsSuccessStatusCode)
@@ -55,6 +58,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.PostAsync($"tickets/validate/{ticketCode}", null);
                 return response.IsSuccessStatusCode;
             }
@@ -69,6 +73,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
         {
             try
             {
+                SetAuthorizationHeader();
                 var endpoint = isActive ? $"tickets/{ticketId}/activate" : $"tickets/{ticketId}/deactivate";
                 var response = await HttpClient.PutAsync(endpoint, null);
                 return response.IsSuccessStatusCode;

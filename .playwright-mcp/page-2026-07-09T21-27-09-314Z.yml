@@ -1,0 +1,6 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e3]:
+    - status [ref=f2e4]:
+      - generic [ref=f2e5]: Učitavanje...
+    - paragraph [ref=f2e6]: Inicijalizacija aplikacije...
+  - generic [ref=f2e7]: Stadium viewer initialized with keyboard navigation support

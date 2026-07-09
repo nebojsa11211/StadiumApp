@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Admin.Common
 @inject HttpClient HttpClient
 @inject IConfiguration Configuration
 @inject ILogger<StadiumInfo> Logger
@@ -106,18 +107,18 @@
                         <thead id="admin-stadium-info-sector-thead">
                             <tr id="admin-stadium-info-sector-header-row">
                                 <th style="width:2rem;" id="admin-stadium-info-sector-col-expand"></th>
-                                <th id="admin-stadium-info-sector-col-code">@L["StadiumInfo_ColCode"]</th>
-                                <th id="admin-stadium-info-sector-col-name">@L["StadiumInfo_ColName"]</th>
-                                <th id="admin-stadium-info-sector-col-type">@L["StadiumInfo_ColType"]</th>
-                                <th class="text-end" id="admin-stadium-info-sector-col-rows">@L["StadiumInfo_ColRows"]</th>
-                                <th class="text-end" id="admin-stadium-info-sector-col-seatsperrow">@L["StadiumInfo_ColSeatsPerRow"]</th>
-                                <th class="text-end" id="admin-stadium-info-sector-col-totalseats">@L["StadiumInfo_ColTotalSeats"]</th>
-                                <th class="text-end" id="admin-stadium-info-sector-col-price">@L["StadiumInfo_ColPricePerSeat"]</th>
-                                <th class="text-end" id="admin-stadium-info-sector-col-seasonprice">@L["StadiumInfo_ColSeasonPrice"]</th>
+                                <th class="sortable @(sortState.IsSorted("code") ? "is-sorted" : "")" @onclick='() => SortBy("code")' id="admin-stadium-info-sector-col-code">@L["StadiumInfo_ColCode"]<span class="sort-ind">@sortState.Indicator("code")</span></th>
+                                <th class="sortable @(sortState.IsSorted("name") ? "is-sorted" : "")" @onclick='() => SortBy("name")' id="admin-stadium-info-sector-col-name">@L["StadiumInfo_ColName"]<span class="sort-ind">@sortState.Indicator("name")</span></th>
+                                <th class="sortable @(sortState.IsSorted("type") ? "is-sorted" : "")" @onclick='() => SortBy("type")' id="admin-stadium-info-sector-col-type">@L["StadiumInfo_ColType"]<span class="sort-ind">@sortState.Indicator("type")</span></th>
+                                <th class="text-end sortable @(sortState.IsSorted("rows") ? "is-sorted" : "")" @onclick='() => SortBy("rows")' id="admin-stadium-info-sector-col-rows">@L["StadiumInfo_ColRows"]<span class="sort-ind">@sortState.Indicator("rows")</span></th>
+                                <th class="text-end sortable @(sortState.IsSorted("seatsperrow") ? "is-sorted" : "")" @onclick='() => SortBy("seatsperrow")' id="admin-stadium-info-sector-col-seatsperrow">@L["StadiumInfo_ColSeatsPerRow"]<span class="sort-ind">@sortState.Indicator("seatsperrow")</span></th>
+                                <th class="text-end sortable @(sortState.IsSorted("totalseats") ? "is-sorted" : "")" @onclick='() => SortBy("totalseats")' id="admin-stadium-info-sector-col-totalseats">@L["StadiumInfo_ColTotalSeats"]<span class="sort-ind">@sortState.Indicator("totalseats")</span></th>
+                                <th class="text-end sortable @(sortState.IsSorted("price") ? "is-sorted" : "")" @onclick='() => SortBy("price")' id="admin-stadium-info-sector-col-price">@L["StadiumInfo_ColPricePerSeat"]<span class="sort-ind">@sortState.Indicator("price")</span></th>
+                                <th class="text-end sortable @(sortState.IsSorted("seasonprice") ? "is-sorted" : "")" @onclick='() => SortBy("seasonprice")' id="admin-stadium-info-sector-col-seasonprice">@L["StadiumInfo_ColSeasonPrice"]<span class="sort-ind">@sortState.Indicator("seasonprice")</span></th>
                             </tr>
                         </thead>
                         <tbody id="admin-stadium-info-sector-tbody">
-                            @foreach (var sector in sectors)
+                            @foreach (var sector in DisplayedSectors)
                             {
                                 var isExpanded = expandedSectorIds.Contains(sector.Id);
                                 <tr id="admin-stadium-info-sector-row-@sector.Id"
@@ -346,6 +347,30 @@
     private bool loadError = false;
     private List<StadiumSectorOverlay> sectors = new();
     private readonly HashSet<int> expandedSectorIds = new();
+
+    // Sorting
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<StadiumSectorOverlay, object?>> SortSelectors = new()
+    {
+        ["code"] = s => s.SectorCode,
+        ["name"] = s => s.Name,
+        ["type"] = s => s.Type,
+        ["rows"] = s => s.Rows,
+        ["seatsperrow"] = s => s.SeatsPerRow,
+        ["totalseats"] = s => s.TotalSeats,
+        ["price"] = s => s.Price,
+        ["seasonprice"] = s => s.SeasonTicketPrice,
+    };
+
+    // Preserves the as-loaded API order until the admin picks a sort column.
+    private IEnumerable<StadiumSectorOverlay> DisplayedSectors =>
+        sortState.Column is null ? sectors : sortState.Apply(sectors, SortSelectors);
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        StateHasChanged();
+    }
 
     // Persisted-seat state, fetched on demand. An overlay sector is matched to a hierarchy
     // Sector by code server-side; when real seats exist we show them, otherwise we fall back

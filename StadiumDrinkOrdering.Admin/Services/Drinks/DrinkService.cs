@@ -2,13 +2,14 @@ using StadiumDrinkOrdering.Admin.Services.Base;
 using StadiumDrinkOrdering.Admin.Services.ErrorHandling;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 
 namespace StadiumDrinkOrdering.Admin.Services.Drinks
 {
     public class DrinkService : BaseApiService, IDrinkService
     {
-        public DrinkService(HttpClient httpClient, ICentralizedLoggingClient loggingClient, IErrorNotificationService errorNotificationService)
-            : base(httpClient, loggingClient, errorNotificationService)
+        public DrinkService(HttpClient httpClient, ICentralizedLoggingClient loggingClient, IErrorNotificationService errorNotificationService, ITokenStorageService tokenStorage)
+            : base(httpClient, loggingClient, errorNotificationService, tokenStorage)
         {
         }
 

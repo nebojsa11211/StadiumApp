@@ -20,7 +20,21 @@ public class User
     
     [Required]
     public UserRole Role { get; set; }
-    
+
+    [StringLength(50)]
+    public string? FirstName { get; set; }
+
+    [StringLength(50)]
+    public string? LastName { get; set; }
+
+    [Phone]
+    [StringLength(30)]
+    public string? PhoneNumber { get; set; }
+
+    /// <summary>Whether the account is enabled. Deactivated accounts remain in the system
+    /// (for history) but are flagged inactive. Defaults to true.</summary>
+    public bool IsActive { get; set; } = true;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastLoginAt { get; set; }
     

@@ -15,6 +15,7 @@ public class UserFilterDto
 {
     public string? SearchTerm { get; set; }
     public UserRole? Role { get; set; }
+    public UserRole? ExcludeRole { get; set; }
     public DateTime? CreatedAfter { get; set; }
     public DateTime? CreatedBefore { get; set; }
     public int Page { get; set; } = 1;

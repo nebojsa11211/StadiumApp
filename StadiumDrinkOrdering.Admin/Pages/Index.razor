@@ -185,7 +185,7 @@
                 </div>
                 <table class="dash-orders-table">
                     <thead>
-                        <tr><th>@L["Index_HeaderID"]</th><th>@L["Index_HeaderSeat"]</th><th>@L["Index_HeaderAmount"]</th><th>@L["Index_HeaderStatus"]</th></tr>
+                        <tr><th class="sortable @(sortState.IsSorted("id") ? "is-sorted" : "")" @onclick='() => SortBy("id")'>@L["Index_HeaderID"]<span class="sort-ind">@sortState.Indicator("id")</span></th><th class="sortable @(sortState.IsSorted("seat") ? "is-sorted" : "")" @onclick='() => SortBy("seat")'>@L["Index_HeaderSeat"]<span class="sort-ind">@sortState.Indicator("seat")</span></th><th class="sortable @(sortState.IsSorted("amount") ? "is-sorted" : "")" @onclick='() => SortBy("amount")'>@L["Index_HeaderAmount"]<span class="sort-ind">@sortState.Indicator("amount")</span></th><th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")'>@L["Index_HeaderStatus"]<span class="sort-ind">@sortState.Indicator("status")</span></th></tr>
                     </thead>
                     <tbody>
                         @if (_recentOrders.Count == 0)
@@ -198,7 +198,7 @@
                         }
                         else
                         {
-                            @foreach (var o in _recentOrders)
+                            @foreach (var o in DisplayedRecentOrders)
                             {
                                 <tr id="@($"admin-dashboard-order-{o.Id}")">
                                     <td class="dash-order-id">#@o.Id</td>

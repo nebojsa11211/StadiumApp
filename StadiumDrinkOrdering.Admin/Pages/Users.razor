@@ -90,8 +90,8 @@
                 <select class="field__input" @bind="selectedRole" @bind:after="FilterUsers" id="admin-users-role-filter">
                     <option value="">@L["Users_AllRolesOption"]</option>
                     <option value="Admin">@L["Users_RoleAdmin"]</option>
-                    <option value="Staff">@L["Users_RoleStaff"]</option>
-                    <option value="Customer">@L["Users_RoleCustomer"]</option>
+                    <option value="Bartender">@L["Users_RoleBartender"]</option>
+                    <option value="Waiter">@L["Users_RoleWaiter"]</option>
                 </select>
             </div>
             <div class="field" id="admin-users-status-filter-col">
@@ -144,21 +144,21 @@
                             <th class="check" id="admin-users-table-col-checkbox">
                                 <input type="checkbox" class="check-box" @onchange="ToggleSelectAll" id="admin-users-select-all-checkbox" />
                             </th>
-                            <th id="admin-users-table-col-id">@L["Users_UserColumnHeader"]</th>
-                            <th id="admin-users-table-col-name">@L["Users_NameColumnHeader"]</th>
-                            <th id="admin-users-table-col-username">@L["Users_UsernameColumnHeader"]</th>
-                            <th id="admin-users-table-col-email">@L["Users_EmailColumnHeader"]</th>
-                            <th id="admin-users-table-col-role">@L["Users_RoleColumnHeader"]</th>
-                            <th id="admin-users-table-col-status">@L["Users_StatusColumnHeader"]</th>
-                            <th class="num" id="admin-users-table-col-created">@L["Users_CreatedColumnHeader"]</th>
+                            <th class="sortable @(sortState.IsSorted("id") ? "is-sorted" : "")" @onclick='() => SortBy("id")' id="admin-users-table-col-id">@L["Users_UserColumnHeader"]<span class="sort-ind">@sortState.Indicator("id")</span></th>
+                            <th class="sortable @(sortState.IsSorted("name") ? "is-sorted" : "")" @onclick='() => SortBy("name")' id="admin-users-table-col-name">@L["Users_NameColumnHeader"]<span class="sort-ind">@sortState.Indicator("name")</span></th>
+                            <th class="sortable @(sortState.IsSorted("username") ? "is-sorted" : "")" @onclick='() => SortBy("username")' id="admin-users-table-col-username">@L["Users_UsernameColumnHeader"]<span class="sort-ind">@sortState.Indicator("username")</span></th>
+                            <th class="sortable @(sortState.IsSorted("email") ? "is-sorted" : "")" @onclick='() => SortBy("email")' id="admin-users-table-col-email">@L["Users_EmailColumnHeader"]<span class="sort-ind">@sortState.Indicator("email")</span></th>
+                            <th class="sortable @(sortState.IsSorted("role") ? "is-sorted" : "")" @onclick='() => SortBy("role")' id="admin-users-table-col-role">@L["Users_RoleColumnHeader"]<span class="sort-ind">@sortState.Indicator("role")</span></th>
+                            <th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")' id="admin-users-table-col-status">@L["Users_StatusColumnHeader"]<span class="sort-ind">@sortState.Indicator("status")</span></th>
+                            <th class="num sortable @(sortState.IsSorted("created") ? "is-sorted" : "")" @onclick='() => SortBy("created")' id="admin-users-table-col-created">@L["Users_CreatedColumnHeader"]<span class="sort-ind">@sortState.Indicator("created")</span></th>
                             <th class="actions-col" id="admin-users-table-col-actions">@L["Users_ActionsColumnHeader"]</th>
                         </tr>
                     </thead>
                     <tbody id="admin-users-table-body">
                         @foreach (var user in filteredUsers.Take(50))
                         {
-                            <tr class="@(selectedUserIds.Contains(user.Id) ? "is-selected" : "")" id="admin-users-row-@user.Id">
-                                <td class="check" id="admin-users-cell-checkbox-@user.Id">
+                            <tr class="is-clickable @(selectedUserIds.Contains(user.Id) ? "is-selected" : "")" @onclick="@(() => ShowUserStats(user))" id="admin-users-row-@user.Id" title="@L["Users_ViewStatsRowTooltip"]">
+                                <td class="check" id="admin-users-cell-checkbox-@user.Id" @onclick:stopPropagation="true">
                                     <input type="checkbox" class="check-box"
                                            checked="@selectedUserIds.Contains(user.Id)"
                                            @onchange="@((e) => ToggleUserSelection(user.Id, (bool)e.Value!))" id="admin-users-checkbox-@user.Id" />
@@ -176,7 +176,7 @@
                                     </span>
                                 </td>
                                 <td class="num mono console-table__time" id="admin-users-cell-created-@user.Id">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
-                                <td class="actions-col" id="admin-users-cell-actions-@user.Id">
+                                <td class="actions-col" id="admin-users-cell-actions-@user.Id" @onclick:stopPropagation="true">
                                     <div class="row-actions" id="admin-users-actions-@user.Id">
                                         <button class="row-btn" @onclick="@(() => EditUser(user))" id="admin-users-edit-btn-@user.Id" title="@L["Users_EditUserTitle"]">
                                             <i class="oi oi-pencil"></i>
@@ -266,9 +266,9 @@
                         <div class="mb-3" id="admin-users-modal-role-group">
                             <label class="form-label" for="admin-users-modal-role-select">@L["Users_RoleLabel"] *</label>
                             <InputSelect class="form-select" @bind-Value="newUser.Role" id="admin-users-modal-role-select">
-                                <option value="Customer">@L["Users_RoleCustomer"]</option>
-                                <option value="Staff">@L["Users_RoleStaff"]</option>
-                                <option value="Admin">@L["Users_RoleAdmin"]</option>
+                                <option value="@UserRole.Bartender">@L["Users_RoleBartender"]</option>
+                                <option value="@UserRole.Waiter">@L["Users_RoleWaiter"]</option>
+                                <option value="@UserRole.Admin">@L["Users_RoleAdmin"]</option>
                             </InputSelect>
                         </div>
 
@@ -335,8 +335,8 @@
                             <label class="form-label" for="admin-users-edit-modal-role-select">@L["Users_RoleLabel"]</label>
                             <InputSelect class="form-select" @bind-Value="editUser.Role" id="admin-users-edit-modal-role-select">
                                 <option value="">@L["Users_SelectRoleOption"]</option>
-                                <option value="@UserRole.Customer">@L["Users_RoleCustomer"]</option>
-                                <option value="@UserRole.Bartender">@L["Users_RoleStaff"]</option>
+                                <option value="@UserRole.Bartender">@L["Users_RoleBartender"]</option>
+                                <option value="@UserRole.Waiter">@L["Users_RoleWaiter"]</option>
                                 <option value="@UserRole.Admin">@L["Users_RoleAdmin"]</option>
                             </InputSelect>
                         </div>
@@ -364,6 +364,130 @@
         </div>
     </div>
     <div class="modal-backdrop fade show" style="z-index: 1050;" id="admin-users-edit-modal-backdrop"></div>
+}
+
+<!-- Staff Member Stats Modal -->
+@if (showStatsModal)
+{
+    <div class="modal fade show" id="admin-users-stats-modal" tabindex="-1" role="dialog" style="display: block; z-index: 1055;" aria-modal="true" aria-labelledby="admin-users-stats-modal-title">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document" id="admin-users-stats-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" id="admin-users-stats-modal-header">
+                    <h5 class="modal-title" id="admin-users-stats-modal-title">
+                        <i class="oi oi-graph me-2"></i>@L["Users_StatsModalTitle"]
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CloseStatsModal" id="admin-users-stats-modal-close-btn" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="admin-users-stats-modal-body">
+                    @if (isLoadingStats)
+                    {
+                        <div class="text-center py-4" id="admin-users-stats-loading">
+                            <span class="spinner-border" role="status"></span>
+                            <p class="mt-2">@L["Users_StatsLoadingMessage"]</p>
+                        </div>
+                    }
+                    else if (selectedStats == null)
+                    {
+                        <div class="alert alert-warning" id="admin-users-stats-error">@L["Users_StatsUnavailableMessage"]</div>
+                    }
+                    else
+                    {
+                        <!-- Member header -->
+                        <div class="d-flex align-items-center mb-4" id="admin-users-stats-member">
+                            <div class="flex-grow-1">
+                                <h4 class="mb-1" id="admin-users-stats-member-name">@selectedStats.FullName</h4>
+                                <div class="text-muted small" id="admin-users-stats-member-meta">
+                                    <span class="badge @GetRoleBadgeClass(selectedStats.Role) me-2">@selectedStats.Role</span>
+                                    <span class="me-2">@selectedStats.Email</span>
+                                    <span class="status @(selectedStats.IsActive ? "is-active" : "is-inactive")">
+                                        <span class="status__dot"></span>@(selectedStats.IsActive ? L["Users_ActiveStatus"] : L["Users_InactiveStatus"])
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order metrics -->
+                        <h6 class="text-uppercase text-muted mb-2" id="admin-users-stats-orders-heading">@L["Users_StatsOrdersHeading"]</h6>
+                        <div class="row g-3 mb-4" id="admin-users-stats-orders">
+                            <div class="col-6 col-md-3">
+                                <div class="stat-tile" id="admin-users-stats-total-handled">
+                                    <div class="stat-tile__value">@selectedStats.TotalOrdersHandled</div>
+                                    <div class="stat-tile__label">@L["Users_StatsTotalHandled"]</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-tile" id="admin-users-stats-accepted">
+                                    <div class="stat-tile__value">@selectedStats.OrdersAccepted</div>
+                                    <div class="stat-tile__label">@L["Users_StatsAccepted"]</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-tile" id="admin-users-stats-prepared">
+                                    <div class="stat-tile__value">@selectedStats.OrdersPrepared</div>
+                                    <div class="stat-tile__label">@L["Users_StatsPrepared"]</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-tile" id="admin-users-stats-delivered">
+                                    <div class="stat-tile__value">@selectedStats.OrdersDelivered</div>
+                                    <div class="stat-tile__label">@L["Users_StatsDelivered"]</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Revenue + events -->
+                        <div class="row g-3 mb-4" id="admin-users-stats-secondary">
+                            <div class="col-6 col-md-3">
+                                <div class="stat-tile" id="admin-users-stats-revenue">
+                                    <div class="stat-tile__value">@selectedStats.RevenueDelivered.ToString("C")</div>
+                                    <div class="stat-tile__label">@L["Users_StatsRevenueDelivered"]</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-tile" id="admin-users-stats-events">
+                                    <div class="stat-tile__value">@selectedStats.EventsAssigned</div>
+                                    <div class="stat-tile__label">@L["Users_StatsEventsAssigned"]</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-tile" id="admin-users-stats-upcoming-events">
+                                    <div class="stat-tile__value">@selectedStats.UpcomingEventsAssigned</div>
+                                    <div class="stat-tile__label">@L["Users_StatsUpcomingEvents"]</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-tile" id="admin-users-stats-in-preparation">
+                                    <div class="stat-tile__value">@selectedStats.OrdersInPreparation</div>
+                                    <div class="stat-tile__label">@L["Users_StatsInPreparation"]</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account timeline -->
+                        <h6 class="text-uppercase text-muted mb-2" id="admin-users-stats-account-heading">@L["Users_StatsAccountHeading"]</h6>
+                        <ul class="list-unstyled mb-0" id="admin-users-stats-account">
+                            <li class="d-flex justify-content-between py-1 border-bottom">
+                                <span class="text-muted">@L["Users_StatsMemberSince"]</span>
+                                <span>@selectedStats.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            </li>
+                            <li class="d-flex justify-content-between py-1 border-bottom">
+                                <span class="text-muted">@L["Users_StatsLastLogin"]</span>
+                                <span>@(selectedStats.LastLoginAt?.ToString("MMM dd, yyyy HH:mm") ?? L["Users_StatsNever"])</span>
+                            </li>
+                            <li class="d-flex justify-content-between py-1">
+                                <span class="text-muted">@L["Users_StatsLastOrderHandled"]</span>
+                                <span>@(selectedStats.LastOrderHandledAt?.ToString("MMM dd, yyyy HH:mm") ?? L["Users_StatsNever"])</span>
+                            </li>
+                        </ul>
+                    }
+                </div>
+                <div class="modal-footer" id="admin-users-stats-modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseStatsModal" id="admin-users-stats-modal-close-footer-btn">@L["Users_CloseButton"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" style="z-index: 1050;" id="admin-users-stats-modal-backdrop"></div>
 }
 
 

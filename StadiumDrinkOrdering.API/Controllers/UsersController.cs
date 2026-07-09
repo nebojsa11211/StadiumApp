@@ -42,6 +42,18 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    [HttpGet("{id}/stats")]
+    public async Task<ActionResult<StaffMemberStatsDto>> GetUserStats(int id)
+    {
+        var stats = await _authService.GetStaffMemberStatsAsync(id);
+        if (stats == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(stats);
+    }
+
     [HttpPost]
     public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserDto createUserDto)
     {

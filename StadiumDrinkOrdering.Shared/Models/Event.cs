@@ -13,19 +13,12 @@ public class Event
     /// <summary>
     /// The kind of event. Defaults to "Match" (a sporting fixture); other common values are
     /// "Concert" and "Other" (free text). Externally-ingested events may carry their own value
-    /// (e.g. "Football"). This is the real event type — distinct from <see cref="Location"/>,
-    /// which was historically (and incorrectly) stored in this column by the admin UI.
+    /// (e.g. "Football"). This is the real event type — it does not encode location: every event
+    /// is held at the one configured venue, so location is derived from Venue Settings, not stored.
     /// </summary>
     [Required]
     [StringLength(50)]
     public string EventType { get; set; } = "Match";
-
-    /// <summary>
-    /// Free-text location/venue label shown to customers (e.g. "Stadion Maksimir"). Nullable so
-    /// legacy and externally-ingested events remain valid. Kept separate from <see cref="EventType"/>.
-    /// </summary>
-    [StringLength(200)]
-    public string? Location { get; set; }
 
     /// <summary>
     /// Home side of a versus-style fixture (e.g. "Istra"). Nullable so non-versus events

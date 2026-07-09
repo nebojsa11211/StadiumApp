@@ -97,6 +97,36 @@ public class DemoDataController : ControllerBase
         }
     }
 
+    [HttpPost("generate-drink-sales-completed")]
+    public async Task<IActionResult> GenerateDrinkSalesForCompletedEvents()
+    {
+        try
+        {
+            _logger.LogInformation("Generating drink sales for completed events");
+            var seeded = await _demoDataService.GenerateDrinkSalesForCompletedEventsAsync();
+
+            return Ok(new
+            {
+                success = true,
+                eventsSeeded = seeded,
+                message = seeded > 0
+                    ? $"Generated drink sales for {seeded} completed event(s)."
+                    : "No completed events needed drink sales (none found, or all already had sales).",
+                timestamp = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating drink sales for completed events");
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "An error occurred while generating drink sales for completed events",
+                error = ex.Message
+            });
+        }
+    }
+
     [HttpPost("clear")]
     public async Task<IActionResult> ClearDemoData()
     {

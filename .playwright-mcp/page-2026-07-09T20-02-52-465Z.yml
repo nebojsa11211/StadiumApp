@@ -1,0 +1,157 @@
+- generic [ref=f3e1]:
+  - generic [ref=f3e2]:
+    - complementary [ref=f3e3]:
+      - generic [ref=f3e4]:
+        - generic [ref=f3e6]: 
+        - generic [ref=f3e7]:
+          - generic [ref=f3e8]: STADIUM
+          - generic [ref=f3e9]: ADMIN
+      - generic [ref=f3e10]:
+        - generic [ref=f3e11]: 22:02:52
+        - generic [ref=f3e12]: 09. 07. 26 HR
+      - navigation [ref=f3e13]:
+        - link " Nadzorna ploča" [ref=f3e14] [cursor=pointer]:
+          - /url: ""
+          - generic [ref=f3e15]: 
+          - generic [ref=f3e16]: Nadzorna ploča
+        - link " Narudžbe" [ref=f3e17] [cursor=pointer]:
+          - /url: orders
+          - generic [ref=f3e18]: 
+          - generic [ref=f3e19]: Narudžbe
+        - link " Pića" [ref=f3e20] [cursor=pointer]:
+          - /url: drinks
+          - generic [ref=f3e21]: 
+          - generic [ref=f3e22]: Pića
+        - link " Analitika" [ref=f3e23] [cursor=pointer]:
+          - /url: analytics
+          - generic [ref=f3e24]: 
+          - generic [ref=f3e25]: Analitika
+        - link " Korisnička analitika" [ref=f3e26] [cursor=pointer]:
+          - /url: customer-analytics
+          - generic [ref=f3e27]: 
+          - generic [ref=f3e28]: Korisnička analitika
+        - generic [ref=f3e29]: Upravljanje stadionom
+        - link " Događaji" [ref=f3e30] [cursor=pointer]:
+          - /url: events
+          - generic [ref=f3e31]: 
+          - generic [ref=f3e32]: Događaji
+        - link " Sezone" [ref=f3e33] [cursor=pointer]:
+          - /url: admin/seasons
+          - generic [ref=f3e34]: 
+          - generic [ref=f3e35]: Sezone
+        - link " Karte" [ref=f3e36] [cursor=pointer]:
+          - /url: tickets
+          - generic [ref=f3e37]: 
+          - generic [ref=f3e38]: Karte
+        - link "👁 Pregled" [ref=f3e39] [cursor=pointer]:
+          - /url: admin/stadium-overview
+          - generic [ref=f3e40]: 👁
+          - generic [ref=f3e41]: Pregled
+        - link " Alat za crtanje" [ref=f3e42] [cursor=pointer]:
+          - /url: admin/stadium-drawing-tool
+          - generic [ref=f3e43]: 
+          - generic [ref=f3e44]: Alat za crtanje
+        - link " Informacije o stadionu" [ref=f3e45] [cursor=pointer]:
+          - /url: admin/stadium-info
+          - generic [ref=f3e46]: 
+          - generic [ref=f3e47]: Informacije o stadionu
+        - link " Stadion i brend" [ref=f3e48] [cursor=pointer]:
+          - /url: admin/venue-settings
+          - generic [ref=f3e49]: 
+          - generic [ref=f3e50]: Stadion i brend
+        - generic [ref=f3e51]: Sustav
+        - link " Zapisi" [ref=f3e52] [cursor=pointer]:
+          - /url: logs
+          - generic [ref=f3e53]: 
+          - generic [ref=f3e54]: Zapisi
+        - link " Baza podataka" [ref=f3e55] [cursor=pointer]:
+          - /url: datagrid
+          - generic [ref=f3e56]: 
+          - generic [ref=f3e57]: Baza podataka
+        - link " Sigurnost" [ref=f3e58] [cursor=pointer]:
+          - /url: users
+          - generic [ref=f3e59]: 
+          - generic [ref=f3e60]: Sigurnost
+        - link " Novčanici" [ref=f3e61] [cursor=pointer]:
+          - /url: admin/wallets
+          - generic [ref=f3e62]: 
+          - generic [ref=f3e63]: Novčanici
+        - link " Postavke" [ref=f3e64] [cursor=pointer]:
+          - /url: admin/settings
+          - generic [ref=f3e65]: 
+          - generic [ref=f3e66]: Postavke
+      - generic [ref=f3e67]:
+        - generic [ref=f3e68]:
+          - generic [ref=f3e69]: 
+          - generic [ref=f3e70]:
+            - generic [ref=f3e71]: Centralizirani Logging
+            - generic [ref=f3e72]: "Zadnja objava: 22:02"
+        - generic [ref=f3e73]:
+          - generic [ref=f3e74]: "N"
+          - generic [ref=f3e75]:
+            - button "Odjava" [ref=f3e76] [cursor=pointer]
+            - generic [ref=f3e77]: nebojsa.medancic+adminStadion@gmail.com
+        - generic [ref=f3e78]:
+          - generic [ref=f3e79]: HR/EN
+          - generic [ref=f3e80]:
+            - button "HR" [ref=f3e81] [cursor=pointer]
+            - button "EN" [ref=f3e82] [cursor=pointer]
+    - main [ref=f3e83]:
+      - generic [ref=f3e84]:
+        - generic [ref=f3e85]:
+          - generic [ref=f3e86]:
+            - generic [ref=f3e87]: Analitika
+            - heading "Analitika Kupaca" [active] [level=1] [ref=f3e88]
+            - paragraph [ref=f3e89]: Pregledajte i analizirajte ponašanje kupaca pri kupnji i obrasce trošenja
+          - button "Izvezi CSV" [disabled] [ref=f3e91]:
+            - generic [ref=f3e92]: Izvezi CSV
+        - generic [ref=f3e93]:
+          - generic [ref=f3e94]:
+            - heading "Filtri & Pretraga" [level=2] [ref=f3e95]: Filtri & Pretraga
+            - button "Prikaži/Sakrij filtre" [ref=f3e96] [cursor=pointer]
+          - generic [ref=f3e97]:
+            - generic [ref=f3e98]:
+              - generic [ref=f3e99]:
+                - generic [ref=f3e100]: Pretraži Kupca
+                - textbox "Pretraži po imenu ili e-mailu…" [ref=f3e101]
+              - generic [ref=f3e102]:
+                - generic [ref=f3e103]: Min Potrošeno (€)
+                - spinbutton "0" [ref=f3e104]
+              - generic [ref=f3e105]:
+                - generic [ref=f3e106]: Maks Potrošeno (€)
+                - spinbutton "10000" [ref=f3e107]
+              - generic [ref=f3e108]:
+                - generic [ref=f3e109]: Sortiraj po
+                - combobox [ref=f3e110] [cursor=pointer]:
+                  - option "Ukupno Potrošeno" [selected]
+                  - option "Ime Kupca"
+                  - option "Kupljene Karte"
+                  - option "Zadnja Kupnja"
+              - generic [ref=f3e111]:
+                - generic [ref=f3e112]: Redoslijed
+                - combobox [ref=f3e113] [cursor=pointer]:
+                  - option "Silazno"
+                  - option "Uzlazno"
+            - generic [ref=f3e114]:
+              - generic [ref=f3e115]: Pročistite listu kupaca koristeći filtre gore.
+              - generic [ref=f3e116]:
+                - button "Primijeni Filtre" [ref=f3e117] [cursor=pointer]:
+                  - generic [ref=f3e118]: Primijeni Filtre
+                - button "Očisti" [ref=f3e119] [cursor=pointer]:
+                  - generic [ref=f3e120]: Očisti
+        - generic [ref=f3e121]:
+          - generic [ref=f3e122]:
+            - heading "Lista Kupaca" [level=2] [ref=f3e123]
+            - generic [ref=f3e124]:
+              - generic [ref=f3e125]: Prikaži
+              - combobox [ref=f3e126] [cursor=pointer]:
+                - option "10" [selected]
+                - option "20"
+                - option "50"
+                - option "100"
+          - generic [ref=f3e127]:
+            - paragraph [ref=f3e128]: Nema kupaca koji odgovaraju vašim kriterijima
+            - text: Pokušajte prilagoditi ili očistiti filtre.
+            - button "Očisti Filtre" [ref=f3e130] [cursor=pointer]:
+              - generic [ref=f3e131]: Očisti Filtre
+  - generic [ref=f3e132]: Stadium viewer initialized with keyboard navigation support

@@ -3,6 +3,7 @@ using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Shared.Models;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Common;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
 
@@ -30,6 +31,25 @@ public partial class Users : ComponentBase
     private string selectedStatus = "";
     private string searchTerm = "";
 
+    // Sorting
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<UserDto, object?>> SortSelectors = new()
+    {
+        ["id"] = u => u.Id,
+        ["name"] = u => u.Name,
+        ["username"] = u => u.Username,
+        ["email"] = u => u.Email,
+        ["role"] = u => u.Role,
+        ["status"] = u => u.IsActive,
+        ["created"] = u => u.CreatedAt,
+    };
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        FilterUsers();
+    }
+
     // Create user modal
     private bool showCreateModal = false;
     private CreateUserDto newUser = new();
@@ -40,6 +60,11 @@ public partial class Users : ComponentBase
     private int editUserId = 0;
     private bool isUpdatingUser = false;
     private bool isActiveChecked = true;
+
+    // Stats modal
+    private bool showStatsModal = false;
+    private bool isLoadingStats = false;
+    private StaffMemberStatsDto? selectedStats;
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,7 +78,12 @@ public partial class Users : ComponentBase
 
         try
         {
-            var users = await AdminApiService.GetUsersAsync();
+            // This page manages internal team accounts only (Admin/Staff).
+            // Customer accounts are managed on the dedicated /customers page.
+            var users = await AdminApiService.GetUsersAsync(new UserFilterDto
+            {
+                ExcludeRole = UserRole.Customer
+            });
             if (users != null)
             {
                 allUsers = users.ToList();
@@ -108,7 +138,11 @@ public partial class Users : ComponentBase
                 u.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
         }
 
-        filteredUsers = query.OrderByDescending(u => u.CreatedAt).ToList();
+        // Default to newest-first until the user picks a sort column.
+        var ordered = sortState.Column is null
+            ? query.OrderByDescending(u => u.CreatedAt)
+            : sortState.Apply(query, SortSelectors);
+        filteredUsers = ordered.ToList();
         StateHasChanged();
     }
 
@@ -151,7 +185,7 @@ public partial class Users : ComponentBase
 
     private void ShowCreateUserModal()
     {
-        newUser = new CreateUserDto();
+        newUser = new CreateUserDto { Role = UserRole.Bartender };
         showCreateModal = true;
     }
 
@@ -184,20 +218,39 @@ public partial class Users : ComponentBase
         }
     }
 
+    private async Task ShowUserStats(UserDto user)
+    {
+        showStatsModal = true;
+        isLoadingStats = true;
+        selectedStats = null;
+        StateHasChanged();
+
+        try
+        {
+            selectedStats = await AdminApiService.GetUserStatsAsync(user.Id);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Failed to load user stats:", ex.Message);
+        }
+        finally
+        {
+            isLoadingStats = false;
+            StateHasChanged();
+        }
+    }
+
+    private void CloseStatsModal()
+    {
+        showStatsModal = false;
+        selectedStats = null;
+    }
+
     private void EditUser(UserDto user)
     {
         editUserId = user.Id;
         isActiveChecked = user.IsActive;
-        editUser = new UpdateUserDto
-        {
-            Username = user.Username,
-            Email = user.Email,
-            FirstName = user.Name?.Split(' ').FirstOrDefault(),
-            LastName = user.Name?.Contains(' ') == true ? string.Join(" ", user.Name.Split(' ').Skip(1)) : null,
-            PhoneNumber = user.PhoneNumber,
-            Role = user.Role,
-            IsActive = user.IsActive
-        };
+        editUser = BuildUpdateDto(user);
         showEditModal = true;
     }
 
@@ -234,73 +287,136 @@ public partial class Users : ComponentBase
         }
     }
 
-    private async Task ActivateUser(int userId)
+    private static UpdateUserDto BuildUpdateDto(UserDto user) => new()
     {
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("showToast", "User activated successfully", "success");
-            await LoadUsers();
-        }
-        catch (Exception)
-        {
-            await JSRuntime.InvokeVoidAsync("showToast", "Failed to activate user", "error");
-        }
-    }
+        Username = user.Username,
+        Email = user.Email,
+        FirstName = user.FirstName,
+        LastName = user.LastName,
+        PhoneNumber = user.PhoneNumber,
+        Role = user.Role,
+        IsActive = user.IsActive
+    };
 
-    private async Task DeactivateUser(int userId)
+    private Task ActivateUser(int userId) => SetUserActive(userId, true);
+
+    private Task DeactivateUser(int userId) => SetUserActive(userId, false);
+
+    private async Task SetUserActive(int userId, bool active)
     {
+        var user = allUsers.FirstOrDefault(u => u.Id == userId);
+        if (user == null)
+            return;
+
         try
         {
-            await JSRuntime.InvokeVoidAsync("showToast", "User deactivated successfully", "warning");
-            await LoadUsers();
+            var dto = BuildUpdateDto(user);
+            dto.IsActive = active;
+
+            var result = await AdminApiService.UpdateUserAsync(userId, dto);
+            if (result != null)
+            {
+                await JSRuntime.InvokeVoidAsync("showToast",
+                    active ? "User activated successfully" : "User deactivated successfully",
+                    active ? "success" : "warning");
+                await LoadUsers();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", "Failed to update user status", "error");
+            }
         }
         catch (Exception)
         {
-            await JSRuntime.InvokeVoidAsync("showToast", "Failed to deactivate user", "error");
+            await JSRuntime.InvokeVoidAsync("showToast", "Failed to update user status", "error");
         }
     }
 
     private async Task DeleteUser(int userId)
     {
-        if (await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this user? This action cannot be undone."))
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this user? This action cannot be undone."))
+            return;
+
+        try
         {
-            try
+            var success = await AdminApiService.DeleteUserAsync(userId);
+            if (success)
             {
                 await JSRuntime.InvokeVoidAsync("showToast", "User deleted successfully", "success");
                 await LoadUsers();
             }
-            catch (Exception)
+            else
             {
                 await JSRuntime.InvokeVoidAsync("showToast", "Failed to delete user", "error");
             }
+        }
+        catch (Exception)
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", "Failed to delete user", "error");
         }
     }
 
     private async Task ResetPassword(int userId)
     {
-        if (await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to reset this user's password?"))
+        var newPassword = await JSRuntime.InvokeAsync<string?>("prompt", "Enter a new password for this user (min 6 characters):");
+        if (string.IsNullOrWhiteSpace(newPassword))
+            return;
+
+        if (newPassword.Length < 6)
         {
-            try
+            await JSRuntime.InvokeVoidAsync("showToast", "Password must be at least 6 characters", "error");
+            return;
+        }
+
+        try
+        {
+            var success = await AdminApiService.ChangeUserPasswordAsync(userId, new ChangePasswordDto
             {
-                await JSRuntime.InvokeVoidAsync("showToast", "Password reset successfully", "success");
-            }
-            catch (Exception)
-            {
-                await JSRuntime.InvokeVoidAsync("showToast", "Failed to reset password", "error");
-            }
+                NewPassword = newPassword,
+                ConfirmNewPassword = newPassword
+            });
+            await JSRuntime.InvokeVoidAsync("showToast",
+                success ? "Password reset successfully" : "Failed to reset password",
+                success ? "success" : "error");
+        }
+        catch (Exception)
+        {
+            await JSRuntime.InvokeVoidAsync("showToast", "Failed to reset password", "error");
         }
     }
 
-    private async Task BulkActivate()
-    {
-        await JSRuntime.InvokeVoidAsync("showToast", $"Activated {selectedUserIds.Count} users", "success");
-        selectedUserIds.Clear();
-        await LoadUsers();
-    }
+    private Task BulkActivate() => BulkSetActive(true);
 
-    private async Task BulkDeactivate()
+    private Task BulkDeactivate() => BulkSetActive(false);
+
+    private async Task BulkSetActive(bool active)
     {
-        await JSRuntime.InvokeVoidAsync("showToast", $"Deactivated {selectedUserIds.Count} users", "warning");
+        var ids = selectedUserIds.ToList();
+        var successCount = 0;
+
+        foreach (var id in ids)
+        {
+            var user = allUsers.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                continue;
+
+            try
+            {
+                var dto = BuildUpdateDto(user);
+                dto.IsActive = active;
+                var result = await AdminApiService.UpdateUserAsync(id, dto);
+                if (result != null)
+                    successCount++;
+            }
+            catch (Exception)
+            {
+                // Skip failures; summary toast reports the successful count.
+            }
+        }
+
+        await JSRuntime.InvokeVoidAsync("showToast",
+            $"{(active ? "Activated" : "Deactivated")} {successCount} of {ids.Count} users",
+            active ? "success" : "warning");
         selectedUserIds.Clear();
         await LoadUsers();
     }
@@ -383,7 +499,7 @@ public partial class Users : ComponentBase
 
     private List<CreateUserDto> GenerateSampleUsers()
     {
-        var roles = new[] { UserRole.Customer, UserRole.Bartender, UserRole.Waiter };
+        var roles = new[] { UserRole.Bartender, UserRole.Waiter };
         var firstNames = new[] { "John", "Jane", "Mike", "Sarah", "David", "Emma", "Chris", "Lisa", "Tom", "Anna", "Mark", "Julia", "Steve", "Maria", "Paul", "Linda", "James", "Susan", "Daniel", "Nicole" };
         var lastNames = new[] { "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin" };
 

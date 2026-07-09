@@ -338,6 +338,15 @@
   <data name="Nav_CustomerAnalytics" xml:space="preserve">
     <value>Korisnička analitika</value>
   </data>
+  <data name="Nav_GroupOperations" xml:space="preserve">
+    <value>Poslovanje</value>
+  </data>
+  <data name="Nav_GroupEvents" xml:space="preserve">
+    <value>Događaji i karte</value>
+  </data>
+  <data name="Nav_GroupAnalytics" xml:space="preserve">
+    <value>Analitika</value>
+  </data>
   <data name="Nav_GroupStadium" xml:space="preserve">
     <value>Upravljanje stadionom</value>
   </data>
@@ -369,7 +378,7 @@
     <value>Baza podataka</value>
   </data>
   <data name="Nav_Security" xml:space="preserve">
-    <value>Sigurnost</value>
+    <value>Timski računi</value>
   </data>
   <data name="Sidebar_LoggingTitle" xml:space="preserve">
     <value>Centralizirani Logging</value>
@@ -1580,13 +1589,13 @@
     <value>Upravljanje korisnicima - Stadium Admin</value>
   </data>
   <data name="Users_EyebrowLabel" xml:space="preserve">
-    <value>Korisnici</value>
+    <value>Tim</value>
   </data>
   <data name="Users_MainTitle" xml:space="preserve">
-    <value>Upravljanje korisnicima</value>
+    <value>Timski i djelatnički računi</value>
   </data>
   <data name="Users_Subtitle" xml:space="preserve">
-    <value>Upravljajte sustavskim korisnicima i njihovim ulogama</value>
+    <value>Upravljajte internim računima tima (Administratori i osoblje) i njihovim ulogama</value>
   </data>
   <data name="Users_AddUserButtonText" xml:space="preserve">
     <value>Dodaj korisnika</value>
@@ -1689,6 +1698,63 @@
   </data>
   <data name="Users_ActiveStatus" xml:space="preserve">
     <value>Aktivno</value>
+  </data>
+  <data name="Users_ViewStatsRowTooltip" xml:space="preserve">
+    <value>Kliknite za prikaz statistike člana</value>
+  </data>
+  <data name="Users_StatsModalTitle" xml:space="preserve">
+    <value>Statistika člana</value>
+  </data>
+  <data name="Users_StatsLoadingMessage" xml:space="preserve">
+    <value>Učitavanje statistike...</value>
+  </data>
+  <data name="Users_StatsUnavailableMessage" xml:space="preserve">
+    <value>Statistika nije dostupna za ovog člana.</value>
+  </data>
+  <data name="Users_StatsOrdersHeading" xml:space="preserve">
+    <value>Aktivnost narudžbi</value>
+  </data>
+  <data name="Users_StatsTotalHandled" xml:space="preserve">
+    <value>Ukupno obrađeno</value>
+  </data>
+  <data name="Users_StatsAccepted" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="Users_StatsInPreparation" xml:space="preserve">
+    <value>U pripremi</value>
+  </data>
+  <data name="Users_StatsPrepared" xml:space="preserve">
+    <value>Pripremljeno</value>
+  </data>
+  <data name="Users_StatsDelivered" xml:space="preserve">
+    <value>Dostavljeno</value>
+  </data>
+  <data name="Users_StatsRevenueDelivered" xml:space="preserve">
+    <value>Prihod od dostave</value>
+  </data>
+  <data name="Users_StatsEventsAssigned" xml:space="preserve">
+    <value>Dodijeljeni događaji</value>
+  </data>
+  <data name="Users_StatsUpcomingEvents" xml:space="preserve">
+    <value>Nadolazeći događaji</value>
+  </data>
+  <data name="Users_StatsAccountHeading" xml:space="preserve">
+    <value>Račun</value>
+  </data>
+  <data name="Users_StatsMemberSince" xml:space="preserve">
+    <value>Član od</value>
+  </data>
+  <data name="Users_StatsLastLogin" xml:space="preserve">
+    <value>Zadnja prijava</value>
+  </data>
+  <data name="Users_StatsLastOrderHandled" xml:space="preserve">
+    <value>Zadnja obrađena narudžba</value>
+  </data>
+  <data name="Users_StatsNever" xml:space="preserve">
+    <value>Nikad</value>
+  </data>
+  <data name="Users_CloseButton" xml:space="preserve">
+    <value>Zatvori</value>
   </data>
   <data name="Users_InactiveStatus" xml:space="preserve">
     <value>Neaktivno</value>
@@ -1927,6 +1993,15 @@
   <data name="Drinks_ImageUrlPlaceholder" xml:space="preserve">
     <value>https://primjer.com/slika.jpg</value>
   </data>
+  <data name="Drinks_UploadImageButton" xml:space="preserve">
+    <value>Učitaj sliku</value>
+  </data>
+  <data name="Drinks_UploadingImage" xml:space="preserve">
+    <value>Učitavanje…</value>
+  </data>
+  <data name="Drinks_RemoveImageButton" xml:space="preserve">
+    <value>Ukloni</value>
+  </data>
   <data name="Drinks_AvailableForOrderingLabel" xml:space="preserve">
     <value>Dostupno za naručivanje</value>
   </data>
@@ -2158,6 +2233,12 @@
   <data name="Tickets_PriceHeader" xml:space="preserve">
     <value>Cijena</value>
   </data>
+  <data name="Tickets_IncludedPrice" xml:space="preserve">
+    <value>Uključeno</value>
+  </data>
+  <data name="Tickets_SeasonPassBadge" xml:space="preserve">
+    <value>Sezonska</value>
+  </data>
   <data name="Tickets_StatusHeader" xml:space="preserve">
     <value>Stanje</value>
   </data>
@@ -2245,9 +2326,6 @@
   <data name="Events_DateLabel" xml:space="preserve">
     <value>Datum</value>
   </data>
-  <data name="Events_LocationLabel" xml:space="preserve">
-    <value>Lokacija</value>
-  </data>
   <data name="Events_CapacityLabel" xml:space="preserve">
     <value>Kapacitet</value>
   </data>
@@ -2275,8 +2353,86 @@
   <data name="Events_LiveOccupancyButton" xml:space="preserve">
     <value>Popunjenost uživo</value>
   </data>
+  <data name="Events_StatisticsButton" xml:space="preserve">
+    <value>Statistika</value>
+  </data>
   <data name="Events_DeleteButton" xml:space="preserve">
     <value>Obriši</value>
+  </data>
+  <data name="EventStats_PageTitle" xml:space="preserve">
+    <value>Statistika događaja</value>
+  </data>
+  <data name="EventStats_Eyebrow" xml:space="preserve">
+    <value>Statistika događaja</value>
+  </data>
+  <data name="EventStats_Title" xml:space="preserve">
+    <value>Statistika događaja</value>
+  </data>
+  <data name="EventStats_Subtitle" xml:space="preserve">
+    <value>Konačni podaci o prodaji i narudžbama za ovaj događaj.</value>
+  </data>
+  <data name="EventStats_BackButton" xml:space="preserve">
+    <value>Natrag na događaje</value>
+  </data>
+  <data name="EventStats_Loading" xml:space="preserve">
+    <value>Učitavanje statistike…</value>
+  </data>
+  <data name="EventStats_ErrorTitle" xml:space="preserve">
+    <value>Nije moguće učitati statistiku</value>
+  </data>
+  <data name="EventStats_RetryButton" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="EventStats_TotalRevenueLabel" xml:space="preserve">
+    <value>Ukupni prihod</value>
+  </data>
+  <data name="EventStats_TotalRevenueHint" xml:space="preserve">
+    <value>Ulaznice + pića</value>
+  </data>
+  <data name="EventStats_TicketsSoldLabel" xml:space="preserve">
+    <value>Prodane ulaznice</value>
+  </data>
+  <data name="EventStats_Of" xml:space="preserve">
+    <value>od</value>
+  </data>
+  <data name="EventStats_SeatsLabel" xml:space="preserve">
+    <value>sjedala</value>
+  </data>
+  <data name="EventStats_OccupancyLabel" xml:space="preserve">
+    <value>Popunjenost</value>
+  </data>
+  <data name="EventStats_TicketingTitle" xml:space="preserve">
+    <value>Ulaznice</value>
+  </data>
+  <data name="EventStats_SeasonTicketsLabel" xml:space="preserve">
+    <value>Sezonske ulaznice</value>
+  </data>
+  <data name="EventStats_CapacityLabel" xml:space="preserve">
+    <value>Kapacitet</value>
+  </data>
+  <data name="EventStats_TicketRevenueLabel" xml:space="preserve">
+    <value>Prihod od ulaznica</value>
+  </data>
+  <data name="EventStats_DrinksTitle" xml:space="preserve">
+    <value>Narudžbe pića</value>
+  </data>
+  <data name="EventStats_OrdersLabel" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="EventStats_DrinksSoldLabel" xml:space="preserve">
+    <value>Prodana pića</value>
+  </data>
+  <data name="EventStats_DrinksRevenueLabel" xml:space="preserve">
+    <value>Prihod od pića</value>
+  </data>
+  <data name="EventStats_AvgOrderValueLabel" xml:space="preserve">
+    <value>Prosječna vrijednost narudžbe</value>
+  </data>
+  <data name="EventStats_MostPopularDrinkLabel" xml:space="preserve">
+    <value>Najpopularnije piće</value>
+  </data>
+  <data name="EventStats_CalculatedAt" xml:space="preserve">
+    <value>Izračunato</value>
   </data>
   <data name="Events_CreateModalTitle" xml:space="preserve">
     <value>Kreiraj novi događaj</value>
@@ -2286,12 +2442,6 @@
   </data>
   <data name="Events_EventNameLabel" xml:space="preserve">
     <value>Naziv događaja *</value>
-  </data>
-  <data name="Events_LocationFieldLabel" xml:space="preserve">
-    <value>Lokacija</value>
-  </data>
-  <data name="Events_LocationVenueHint" xml:space="preserve">
-    <value>Postavlja se u postavkama lokacije — svi se događaji održavaju na ovom stadionu.</value>
   </data>
   <data name="Events_TypeFieldLabel" xml:space="preserve">
     <value>Vrsta događaja</value>
@@ -2536,9 +2686,6 @@
   <data name="Orders_PanelTitle" xml:space="preserve">
     <value>Narudžbe</value>
   </data>
-  <data name="Orders_AcceptButtonText" xml:space="preserve">
-    <value>Prihvati ({0})</value>
-  </data>
   <data name="Orders_CancelBulkButton" xml:space="preserve">
     <value>Otkaži</value>
   </data>
@@ -2568,12 +2715,6 @@
   </data>
   <data name="Orders_ViewTitle" xml:space="preserve">
     <value>Prikaži narudžbu</value>
-  </data>
-  <data name="Orders_AcceptTitle" xml:space="preserve">
-    <value>Prihvati narudžbu</value>
-  </data>
-  <data name="Orders_AdvanceTitle" xml:space="preserve">
-    <value>Napreduj status</value>
   </data>
   <data name="Orders_ShowingMessage" xml:space="preserve">
     <value>Prikazujem {0} od {1} ukupnih narudžbi</value>
@@ -2652,9 +2793,6 @@
   </data>
   <data name="Analytics_DateHeader" xml:space="preserve">
     <value>Datum</value>
-  </data>
-  <data name="Analytics_LocationHeader" xml:space="preserve">
-    <value>Lokacija</value>
   </data>
   <data name="Analytics_StatusHeader" xml:space="preserve">
     <value>Status</value>
@@ -3286,8 +3424,53 @@
   <data name="Users_RoleStaff" xml:space="preserve">
     <value>Osoblje</value>
   </data>
+  <data name="Users_RoleBartender" xml:space="preserve">
+    <value>Konobar za šankom</value>
+  </data>
+  <data name="Users_RoleWaiter" xml:space="preserve">
+    <value>Konobar</value>
+  </data>
   <data name="Users_RoleCustomer" xml:space="preserve">
     <value>Kupac</value>
+  </data>
+  <data name="Nav_Customers" xml:space="preserve">
+    <value>Kupci</value>
+  </data>
+  <data name="Customers_PageTitle" xml:space="preserve">
+    <value>Kupci</value>
+  </data>
+  <data name="Customers_EyebrowLabel" xml:space="preserve">
+    <value>Kupci</value>
+  </data>
+  <data name="Customers_MainTitle" xml:space="preserve">
+    <value>Računi kupaca</value>
+  </data>
+  <data name="Customers_Subtitle" xml:space="preserve">
+    <value>Pregledajte i podržite registrirane račune kupaca</value>
+  </data>
+  <data name="Customers_TotalLabel" xml:space="preserve">
+    <value>Ukupno kupaca</value>
+  </data>
+  <data name="Customers_TotalHint" xml:space="preserve">
+    <value>Registrirani računi kupaca</value>
+  </data>
+  <data name="Customers_TableTitle" xml:space="preserve">
+    <value>Kupci</value>
+  </data>
+  <data name="Customers_TotalText" xml:space="preserve">
+    <value>ukupno kupaca</value>
+  </data>
+  <data name="Customers_LoadingMessage" xml:space="preserve">
+    <value>Učitavanje kupaca...</value>
+  </data>
+  <data name="Customers_NoCustomersFound" xml:space="preserve">
+    <value>Nema pronađenih kupaca</value>
+  </data>
+  <data name="Customers_EmptyMessage" xml:space="preserve">
+    <value>Nijedan račun kupca ne odgovara trenutnim filtrima.</value>
+  </data>
+  <data name="Customers_EditModalTitle" xml:space="preserve">
+    <value>Uredi kupca</value>
   </data>
   <data name="Index_LogLabelWarning" xml:space="preserve">
     <value>[Upozorenje]</value>

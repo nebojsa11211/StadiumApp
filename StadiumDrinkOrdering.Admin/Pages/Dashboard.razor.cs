@@ -3,6 +3,7 @@ using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Common;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
 
@@ -32,6 +33,31 @@ public partial class Dashboard : ComponentBase, IDisposable
     private decimal ordersTrend = 0;
     private decimal revenueTrend = 0;
     private List<OrderDto>? recentOrders;
+
+    // Sorting
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<OrderDto, object?>> SortSelectors = new()
+    {
+        ["order"] = o => o.Id,
+        ["customer"] = o => o.CustomerName,
+        ["amount"] = o => o.TotalAmount,
+        ["status"] = o => o.Status,
+        ["time"] = o => o.CreatedAt,
+    };
+
+    // Displayed orders: keep today's default order (newest-first) until a column is picked.
+    private IEnumerable<OrderDto> DisplayedRecentOrders =>
+        recentOrders == null
+            ? Enumerable.Empty<OrderDto>()
+            : sortState.Column is null
+                ? recentOrders
+                : sortState.Apply(recentOrders, SortSelectors);
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {

@@ -12,6 +12,14 @@ public interface IDemoDataService
     Task<bool> GenerateStaffAssignmentsAsync();
     Task<bool> ClearDemoDataAsync();
     Task<bool> GenerateDemoDataForEventAsync(int eventId);
+
+    /// <summary>
+    /// Ensures every <see cref="EventStatus.Completed"/> event has some realised drink sales so the
+    /// post-event statistics page shows meaningful numbers. Idempotent: an event that already has any
+    /// non-cancelled drink order is skipped, so re-running does not pile up duplicate sales. Returns
+    /// the number of completed events that had sales generated for them.
+    /// </summary>
+    Task<int> GenerateDrinkSalesForCompletedEventsAsync();
 }
 
 public class DemoDataService : IDemoDataService
@@ -642,6 +650,125 @@ public class DemoDataService : IDemoDataService
         {
             _logger.LogError(ex, "Error generating demo data for event {EventId}", eventId);
             return false;
+        }
+    }
+
+    public async Task<int> GenerateDrinkSalesForCompletedEventsAsync()
+    {
+        try
+        {
+            var completedEvents = await _context.Events
+                .Where(e => e.Status == EventStatus.Completed)
+                .ToListAsync();
+
+            if (completedEvents.Count == 0)
+            {
+                _logger.LogInformation("No completed events found; no drink sales generated.");
+                return 0;
+            }
+
+            var drinks = await _context.Drinks.Where(d => d.IsAvailable).ToListAsync();
+            if (drinks.Count == 0)
+            {
+                _logger.LogWarning("No available drinks found; cannot generate drink sales for completed events.");
+                return 0;
+            }
+
+            // Orders reference a real customer (FK to Users). Prefer customers; fall back to any user so
+            // seeding still works on a fresh DB that only has the admin account.
+            var customers = await _context.Users.Where(u => u.Role == UserRole.Customer).ToListAsync();
+            if (customers.Count == 0)
+                customers = await _context.Users.ToListAsync();
+            if (customers.Count == 0)
+            {
+                _logger.LogWarning("No users found; cannot attribute drink sales to a customer.");
+                return 0;
+            }
+
+            // Idempotency: skip any completed event that already has a non-cancelled drink order, so
+            // re-running this never doubles up sales.
+            var completedIds = completedEvents.Select(e => e.Id).ToList();
+            var eventsWithSales = (await _context.Orders
+                    .Where(o => o.EventId != null
+                                && completedIds.Contains(o.EventId.Value)
+                                && o.Status != OrderStatus.Cancelled)
+                    .Select(o => o.EventId!.Value)
+                    .Distinct()
+                    .ToListAsync())
+                .ToHashSet();
+
+            var eventsSeeded = 0;
+
+            foreach (var evt in completedEvents)
+            {
+                if (eventsWithSales.Contains(evt.Id))
+                    continue;
+
+                // A completed event's sales all happened inside its live window (never before the
+                // start, never after it ended). Kind=Utc keeps Npgsql's timestamptz columns happy.
+                var windowStart = DateTime.SpecifyKind(evt.EventDate, DateTimeKind.Utc);
+                var windowEnd = DateTime.SpecifyKind(evt.EventEndDate ?? evt.EventDate.AddHours(4), DateTimeKind.Utc);
+                var spanSeconds = Math.Max(0, (windowEnd - windowStart).TotalSeconds);
+
+                var orderCount = Random.Shared.Next(6, 16); // some, but varied, sales per event
+                for (int i = 0; i < orderCount; i++)
+                {
+                    var customer = customers[Random.Shared.Next(customers.Count)];
+                    var createdAt = DateTime.SpecifyKind(
+                        windowStart.AddSeconds(Random.Shared.NextDouble() * spanSeconds),
+                        DateTimeKind.Utc);
+
+                    var order = new Order
+                    {
+                        EventId = evt.Id,
+                        CustomerId = customer.Id,
+                        TicketNumber = $"DRK{evt.Id:D2}-{i + 1:D3}",
+                        SeatNumber = $"{(char)('A' + Random.Shared.Next(0, 4))}{Random.Shared.Next(1, 30)}",
+                        TotalAmount = 0, // set once items are priced
+                        Status = OrderStatus.Delivered, // the event is over, so sales are fulfilled
+                        CreatedAt = createdAt,
+                        DeliveredAt = createdAt.AddMinutes(Random.Shared.Next(5, 20)),
+                        Notes = "Seeded drink sale for completed event"
+                    };
+
+                    _context.Orders.Add(order);
+                    await _context.SaveChangesAsync();
+
+                    decimal totalAmount = 0;
+                    var itemCount = Random.Shared.Next(1, 4);
+                    for (int j = 0; j < itemCount; j++)
+                    {
+                        var drink = drinks[Random.Shared.Next(drinks.Count)];
+                        var quantity = Random.Shared.Next(1, 4);
+                        var totalPrice = drink.Price * quantity;
+                        totalAmount += totalPrice;
+
+                        _context.OrderItems.Add(new OrderItem
+                        {
+                            OrderId = order.Id,
+                            DrinkId = drink.Id,
+                            Quantity = quantity,
+                            UnitPrice = drink.Price,
+                            TotalPrice = totalPrice
+                        });
+                    }
+
+                    order.TotalAmount = totalAmount;
+                    await _context.SaveChangesAsync();
+                }
+
+                eventsSeeded++;
+            }
+
+            _logger.LogInformation(
+                "Generated drink sales for {Seeded} of {Total} completed events (others already had sales).",
+                eventsSeeded, completedEvents.Count);
+            return eventsSeeded;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating drink sales for completed events");
+            return 0;
         }
     }
 }

@@ -143,12 +143,12 @@
             <table class="console-table" id="admin-drinks-grid">
                 <thead id="admin-drinks-table-head">
                     <tr id="admin-drinks-table-header-row">
-                        <th id="admin-drinks-th-drink">@L["Drinks_DrinkColumnHeader"]</th>
-                        <th id="admin-drinks-th-category">@L["Drinks_CategoryColumnHeader"]</th>
-                        <th id="admin-drinks-th-description">@L["Drinks_DescriptionColumnHeader"]</th>
-                        <th class="num" id="admin-drinks-th-price">@L["Drinks_PriceColumnHeader"]</th>
-                        <th class="num" id="admin-drinks-th-stock">@L["Drinks_StockColumnHeader"]</th>
-                        <th id="admin-drinks-th-status">@L["Drinks_StatusColumnHeader"]</th>
+                        <th class="sortable @(sortState.IsSorted("name") ? "is-sorted" : "")" @onclick='() => SortBy("name")' id="admin-drinks-th-drink">@L["Drinks_DrinkColumnHeader"]<span class="sort-ind">@sortState.Indicator("name")</span></th>
+                        <th class="sortable @(sortState.IsSorted("category") ? "is-sorted" : "")" @onclick='() => SortBy("category")' id="admin-drinks-th-category">@L["Drinks_CategoryColumnHeader"]<span class="sort-ind">@sortState.Indicator("category")</span></th>
+                        <th class="sortable @(sortState.IsSorted("description") ? "is-sorted" : "")" @onclick='() => SortBy("description")' id="admin-drinks-th-description">@L["Drinks_DescriptionColumnHeader"]<span class="sort-ind">@sortState.Indicator("description")</span></th>
+                        <th class="num sortable @(sortState.IsSorted("price") ? "is-sorted" : "")" @onclick='() => SortBy("price")' id="admin-drinks-th-price">@L["Drinks_PriceColumnHeader"]<span class="sort-ind">@sortState.Indicator("price")</span></th>
+                        <th class="num sortable @(sortState.IsSorted("stock") ? "is-sorted" : "")" @onclick='() => SortBy("stock")' id="admin-drinks-th-stock">@L["Drinks_StockColumnHeader"]<span class="sort-ind">@sortState.Indicator("stock")</span></th>
+                        <th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")' id="admin-drinks-th-status">@L["Drinks_StatusColumnHeader"]<span class="sort-ind">@sortState.Indicator("status")</span></th>
                         <th class="actions-col" id="admin-drinks-th-actions">@L["Drinks_ActionsColumnHeader"]</th>
                     </tr>
                 </thead>
@@ -230,25 +230,33 @@
 <!-- Create/Edit Drink Modal -->
 @if (showDrinkModal)
 {
-    <div class="modal fade show d-block" tabindex="-1" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important; z-index: 9999 !important;" id="admin-drink-modal">
-        <div class="modal-dialog" style="position: relative; margin: auto; max-width: 90vw; max-height: 90vh; z-index: 10000;">
-            <div class="modal-content" id="admin-drink-modal-content" style="max-height: 90vh; overflow-y: auto; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-                <div class="modal-header" id="admin-drink-modal-header">
-                    <h5 class="modal-title" id="admin-drink-modal-title">@(editingDrink == null ? L["Drinks_AddNewDrinkModalTitle"] : L["Drinks_EditDrinkModalTitle"])</h5>
-                    <button type="button" class="btn-close" @onclick="HideDrinkModal" id="admin-drink-modal-close-btn"></button>
-                </div>
-                <div class="modal-body" id="admin-drink-modal-body">
-                    <div class="field" style="margin-bottom:1rem;" id="admin-drink-modal-name-field">
+    <div class="drink-modal-overlay" id="admin-drink-modal" @onclick="HideDrinkModal">
+        <div class="drink-modal" @onclick:stopPropagation="true">
+            <div class="drink-modal__content" id="admin-drink-modal-content">
+                <header class="drink-modal__head" id="admin-drink-modal-header">
+                    <div class="drink-modal__head-left">
+                        <span class="drink-modal__icon"><i class="bi bi-cup-straw"></i></span>
+                        <div class="drink-modal__head-text">
+                            <span class="eyebrow">@L["Drinks_EyebrowLabel"]</span>
+                            <h5 class="drink-modal__title" id="admin-drink-modal-title">@(editingDrink == null ? L["Drinks_AddNewDrinkModalTitle"] : L["Drinks_EditDrinkModalTitle"])</h5>
+                        </div>
+                    </div>
+                    <button type="button" class="drink-modal__close" @onclick="HideDrinkModal" id="admin-drink-modal-close-btn" aria-label="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </header>
+                <div class="drink-modal__body" id="admin-drink-modal-body">
+                    <div class="field" id="admin-drink-modal-name-field">
                         <label class="field__label" for="admin-drink-name">@L["Drinks_NameLabel"] *</label>
                         <input type="text" class="field__input" @bind="drinkForm.Name" required id="admin-drink-name">
                     </div>
 
-                    <div class="field" style="margin-bottom:1rem;" id="admin-drink-modal-description-field">
+                    <div class="field" id="admin-drink-modal-description-field">
                         <label class="field__label" for="admin-drink-description">@L["Drinks_DescriptionLabel"]</label>
                         <textarea class="field__input" rows="3" @bind="drinkForm.Description" id="admin-drink-description"></textarea>
                     </div>
 
-                    <div class="filters" style="padding:0; margin-bottom:1rem;" id="admin-drink-modal-number-fields">
+                    <div class="drink-modal__row" id="admin-drink-modal-number-fields">
                         <div class="field field--grow" id="admin-drink-modal-price-field">
                             <label class="field__label" for="admin-drink-price">@L["Drinks_PriceLabel"] *</label>
                             <input type="number" class="field__input" @bind="drinkForm.Price"
@@ -261,7 +269,7 @@
                         </div>
                     </div>
 
-                    <div class="field" style="margin-bottom:1rem;" id="admin-drink-modal-category-field">
+                    <div class="field" id="admin-drink-modal-category-field">
                         <label class="field__label" for="admin-drink-category">@L["Drinks_CategoryModalLabel"] *</label>
                         <select class="field__input" @bind="drinkForm.Category" required id="admin-drink-category">
                             @foreach (var category in Enum.GetValues<DrinkCategory>())
@@ -271,10 +279,50 @@
                         </select>
                     </div>
 
-                    <div class="field" style="margin-bottom:1rem;" id="admin-drink-modal-image-field">
+                    <div class="field" id="admin-drink-modal-image-field">
                         <label class="field__label" for="admin-drink-image">@L["Drinks_ImageUrlLabel"]</label>
-                        <input type="url" class="field__input" @bind="drinkForm.ImageUrl"
-                               placeholder="@L["Drinks_ImageUrlPlaceholder"]" id="admin-drink-image">
+                        <div class="drink-image-upload" id="admin-drink-image-upload">
+                            <div class="drink-image-preview" id="admin-drink-image-preview">
+                                @if (!string.IsNullOrWhiteSpace(drinkForm.ImageUrl))
+                                {
+                                    <img src="@drinkForm.ImageUrl" alt="@drinkForm.Name" id="admin-drink-image-preview-img" />
+                                }
+                                else
+                                {
+                                    <span class="drink-image-preview__ph" id="admin-drink-image-preview-ph">🥤</span>
+                                }
+                            </div>
+                            <div class="drink-image-upload__controls" id="admin-drink-image-controls">
+                                <input type="url" class="field__input" @bind="drinkForm.ImageUrl"
+                                       placeholder="@L["Drinks_ImageUrlPlaceholder"]" id="admin-drink-image">
+                                <div class="drink-image-upload__actions" id="admin-drink-image-actions">
+                                    <label class="pill-btn @(isUploadingImage ? "disabled" : "")" id="admin-drink-image-upload-label">
+                                        @if (isUploadingImage)
+                                        {
+                                            <span class="spinner-border spinner-border-sm" id="admin-drink-image-spinner"></span>
+                                            <span>@L["Drinks_UploadingImage"]</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-upload"></i>
+                                            <span>@L["Drinks_UploadImageButton"]</span>
+                                        }
+                                        <InputFile OnChange="OnImageSelected" accept="image/*" class="d-none"
+                                                   disabled="@isUploadingImage" id="admin-drink-image-input" />
+                                    </label>
+                                    @if (!string.IsNullOrWhiteSpace(drinkForm.ImageUrl))
+                                    {
+                                        <button type="button" class="pill-btn pill-btn--danger" @onclick="ClearImage" id="admin-drink-image-remove-btn">
+                                            <i class="bi bi-trash"></i><span>@L["Drinks_RemoveImageButton"]</span>
+                                        </button>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrEmpty(imageError))
+                                {
+                                    <span class="drink-image-upload__error" id="admin-drink-image-error">@imageError</span>
+                                }
+                            </div>
+                        </div>
                     </div>
 
                     <label class="drink-check" id="admin-drink-available-label">
@@ -282,7 +330,7 @@
                         <span>@L["Drinks_AvailableForOrderingLabel"]</span>
                     </label>
                 </div>
-                <div class="modal-footer" id="admin-drink-modal-footer">
+                <footer class="drink-modal__foot" id="admin-drink-modal-footer">
                     <button type="button" class="pill-btn" @onclick="HideDrinkModal" id="admin-drink-modal-cancel-btn">
                         @L["Drinks_CancelButton"]
                     </button>
@@ -293,7 +341,7 @@
                         }
                         @(editingDrink == null ? L["Drinks_CreateDrinkButton"] : L["Drinks_SaveChangesButton"])
                     </button>
-                </div>
+                </footer>
             </div>
         </div>
     </div>

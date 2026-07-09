@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Common;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 
@@ -51,6 +52,24 @@ public partial class Orders : ComponentBase
 
     // Event filter options, derived from the loaded orders (only events that have orders)
     private List<(int Id, string Name)> eventOptions = new();
+
+    // Sorting
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<OrderDto, object?>> SortSelectors = new()
+    {
+        ["order"] = o => o.Id,
+        ["customer"] = o => o.CustomerName,
+        ["items"] = o => o.OrderItems.Count,
+        ["total"] = o => o.TotalAmount,
+        ["status"] = o => o.Status,
+        ["created"] = o => o.CreatedAt,
+    };
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        FilterOrders();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -149,7 +168,11 @@ public partial class Orders : ComponentBase
             query = query.Where(o => o.CreatedAt.Date <= toDate.Value.Date);
         }
 
-        filteredOrders = query.OrderByDescending(o => o.CreatedAt).ToList();
+        // Default to newest-first until the user picks a sort column.
+        var ordered = sortState.Column is null
+            ? query.OrderByDescending(o => o.CreatedAt)
+            : sortState.Apply(query, SortSelectors);
+        filteredOrders = ordered.ToList();
         displayCount = PageSize;
         CalculateStatistics();
         StateHasChanged();
@@ -242,37 +265,6 @@ public partial class Orders : ComponentBase
         StateHasChanged();
     }
 
-    private async Task BulkAccept()
-    {
-        var targets = selectedOrderIds
-            .Select(id => allOrders.FirstOrDefault(o => o.Id == id))
-            .Where(o => o != null && o!.Status == OrderStatus.Pending)
-            .Select(o => o!.Id)
-            .ToList();
-
-        int succeeded = 0;
-        try
-        {
-            foreach (var id in targets)
-            {
-                if (await AdminApiService.UpdateOrderStatusAsync(id, OrderStatus.Accepted))
-                    succeeded++;
-            }
-        }
-        catch (Exception)
-        {
-            // fall through to report whatever succeeded
-        }
-
-        if (succeeded > 0)
-            await JSRuntime.InvokeVoidAsync("showToast", $"Accepted {succeeded} order(s)", "success");
-        if (succeeded < targets.Count)
-            await JSRuntime.InvokeVoidAsync("showToast", $"Failed to accept {targets.Count - succeeded} order(s)", "error");
-
-        selectedOrderIds.Clear();
-        await LoadOrders();
-    }
-
     private async Task BulkCancel()
     {
         var targets = selectedOrderIds
@@ -302,76 +294,6 @@ public partial class Orders : ComponentBase
 
         selectedOrderIds.Clear();
         await LoadOrders();
-    }
-
-    private async Task AcceptOrder(int orderId)
-    {
-        try
-        {
-            var order = allOrders.FirstOrDefault(o => o.Id == orderId);
-            if (order == null)
-                return;
-
-            if (await AdminApiService.UpdateOrderStatusAsync(orderId, OrderStatus.Accepted))
-            {
-                await JSRuntime.InvokeVoidAsync("showToast", $"Order #{orderId} accepted", "success");
-                await LoadOrders();
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("showToast", "Failed to accept order", "error");
-            }
-        }
-        catch (Exception)
-        {
-            await JSRuntime.InvokeVoidAsync("showToast", "Failed to accept order", "error");
-        }
-    }
-
-    private async Task AdvanceOrderStatus(int orderId)
-    {
-        try
-        {
-            var order = allOrders.FirstOrDefault(o => o.Id == orderId);
-            if (order == null)
-                return;
-
-            var nextStatus = GetNextStatus(order.Status);
-            if (nextStatus == order.Status)
-            {
-                await JSRuntime.InvokeVoidAsync("showToast", $"Order #{orderId} cannot be advanced further", "warning");
-                return;
-            }
-
-            if (await AdminApiService.UpdateOrderStatusAsync(orderId, nextStatus))
-            {
-                await JSRuntime.InvokeVoidAsync("showToast", $"Order #{orderId} advanced to {nextStatus}", "success");
-                await LoadOrders();
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("showToast", "Failed to update order status", "error");
-            }
-        }
-        catch (Exception)
-        {
-            await JSRuntime.InvokeVoidAsync("showToast", "Failed to update order status", "error");
-        }
-    }
-
-    // Order fulfillment workflow: Pending -> Accepted -> InPreparation -> Ready -> OutForDelivery -> Delivered.
-    // Terminal states (Delivered, Cancelled) return themselves.
-    private static OrderStatus GetNextStatus(OrderStatus status)
-    {
-        return status switch
-        {
-            OrderStatus.Pending => OrderStatus.Accepted,
-            OrderStatus.Accepted => OrderStatus.InPreparation,
-            OrderStatus.InPreparation => OrderStatus.Ready,
-            OrderStatus.Ready => OrderStatus.OutForDelivery,
-            OrderStatus.OutForDelivery => OrderStatus.Delivered,
-            _ => status
-        };
     }
 
     private void CreateNewOrder()

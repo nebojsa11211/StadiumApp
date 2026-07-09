@@ -6,6 +6,7 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Shared.Authentication.Interfaces
+@using StadiumDrinkOrdering.Admin.Common
 @inject IHttpClientFactory HttpClientFactory
 @inject IConfiguration Configuration
 @inject ITokenStorageService TokenStorage
@@ -271,8 +272,15 @@
                 {
                     <div class="table-responsive" id="admin-venue-clubs-responsive">
                         <table class="table align-middle mb-0" id="admin-venue-clubs-table">
+                            <thead id="admin-venue-clubs-thead">
+                                <tr id="admin-venue-clubs-header-row">
+                                    <th style="width:64px;" id="admin-venue-clubs-col-logo"></th>
+                                    <th class="sortable @(sortState.IsSorted("name") ? "is-sorted" : "")" @onclick='() => SortBy("name")' id="admin-venue-clubs-col-name">@L["Venue_ClubName"]<span class="sort-ind">@sortState.Indicator("name")</span></th>
+                                    <th class="text-end" id="admin-venue-clubs-col-actions"></th>
+                                </tr>
+                            </thead>
                             <tbody id="admin-venue-clubs-tbody">
-                                @foreach (var club in venue.Clubs)
+                                @foreach (var club in DisplayedClubs)
                                 {
                                     <tr id="admin-venue-club-row-@club.Id">
                                         <td style="width:64px;">
@@ -331,6 +339,25 @@
 
     private ClubUpsertDto? editingClub;
     private int? editingClubId;
+
+    // Sorting (clubs table)
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<ClubDto, object?>> SortSelectors = new()
+    {
+        ["name"] = c => c.Name,
+    };
+
+    // Preserves the server-provided club order until the admin picks a sort column.
+    private IEnumerable<ClubDto> DisplayedClubs =>
+        venue is null
+            ? Enumerable.Empty<ClubDto>()
+            : sortState.Column is null ? venue.Clubs : sortState.Apply(venue.Clubs, SortSelectors);
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        StateHasChanged();
+    }
 
     private string? alertMessage;
     private string alertClass = "alert-success";

@@ -70,9 +70,12 @@ namespace StadiumDrinkOrdering.Admin.Services
 
         // Legacy methods - User operations (delegated to UserService)
         public Task<IEnumerable<UserDto>?> GetUsersAsync() => Users.GetUsersAsync();
+        public Task<IEnumerable<UserDto>?> GetUsersAsync(UserFilterDto filter) => Users.GetUsersAsync(filter);
         public Task<UserDto?> GetUserAsync(int id) => Users.GetUserAsync(id);
+        public Task<StaffMemberStatsDto?> GetUserStatsAsync(int id) => Users.GetUserStatsAsync(id);
         public Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto) => Users.CreateUserAsync(createUserDto);
         public Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto updateUserDto) => Users.UpdateUserAsync(id, updateUserDto);
+        public Task<bool> ChangeUserPasswordAsync(int id, ChangePasswordDto changePasswordDto) => Users.ChangeUserPasswordAsync(id, changePasswordDto);
         public Task<bool> DeleteUserAsync(int id) => Users.DeleteUserAsync(id);
 
         // Legacy methods - Drink operations (delegated to DrinkService)

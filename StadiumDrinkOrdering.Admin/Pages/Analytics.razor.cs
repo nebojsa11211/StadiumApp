@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Common;
 using StadiumDrinkOrdering.Shared.DTOs;
 
 namespace StadiumDrinkOrdering.Admin.Pages
@@ -15,24 +16,33 @@ namespace StadiumDrinkOrdering.Admin.Pages
         // Analytics data
         private IEnumerable<EventDto>? availableEvents;
 
-        /// <summary>The configured venue — its address is the shared location shown for every event.</summary>
-        private VenueDto? venue;
+        // Sorting
+        private readonly TableSortState sortState = new();
+        private static readonly Dictionary<string, Func<EventDto, object?>> SortSelectors = new()
+        {
+            ["name"] = e => e.Name,
+            ["date"] = e => e.Date,
+            ["status"] = e => e.IsActive,
+        };
+
+        private void SortBy(string column)
+        {
+            sortState.Toggle(column);
+            ApplyEventSort();
+            StateHasChanged();
+        }
+
+        private void ApplyEventSort()
+        {
+            if (availableEvents == null || sortState.Column is null)
+                return;
+
+            availableEvents = sortState.Apply(availableEvents, SortSelectors).ToList();
+        }
 
         protected override async Task OnInitializedAsync()
         {
             await LoadAnalyticsData();
-        }
-
-        /// <summary>
-        /// The location to display for an event: its own stored value if present, otherwise the
-        /// shared venue location (name plus city). Every event is held in the one stadium.
-        /// </summary>
-        private string DisplayLocation(EventDto evt)
-        {
-            if (!string.IsNullOrWhiteSpace(evt.Location)) return evt.Location!;
-            var name = venue?.Name;
-            if (string.IsNullOrWhiteSpace(name)) return "—";
-            return string.IsNullOrWhiteSpace(venue?.City) ? name : $"{name} · {venue!.City}";
         }
 
         private async Task LoadAnalyticsData()
@@ -44,7 +54,6 @@ namespace StadiumDrinkOrdering.Admin.Pages
             try
             {
                 await LoadAvailableEvents();
-                await LoadVenue();
             }
             catch (Exception ex)
             {
@@ -62,23 +71,11 @@ namespace StadiumDrinkOrdering.Admin.Pages
             try
             {
                 availableEvents = await AdminApiService.GetEventsAsync();
+                ApplyEventSort();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to load events: {ex.Message}");
-            }
-        }
-
-        /// <summary>Loads the venue so the events table can show its address as the shared location. Never throws.</summary>
-        private async Task LoadVenue()
-        {
-            try
-            {
-                venue = await AdminApiService.GetAsync<VenueDto>("venue");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to load venue: {ex.Message}");
             }
         }
 

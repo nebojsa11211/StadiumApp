@@ -17,7 +17,6 @@ public class EventDto
     /// <summary>End of the event window, if set.</summary>
     public DateTime? EndDate { get; set; }
     public string? Description { get; set; }
-    public string? Location { get; set; }
     public int Capacity { get; set; }
     public int AvailableSeats { get; set; }
     /// <summary>

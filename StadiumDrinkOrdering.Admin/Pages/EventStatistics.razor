@@ -1,0 +1,157 @@
+@page "/admin/event-statistics/{EventId:int}"
+@using StadiumDrinkOrdering.Shared.DTOs
+@attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@L["EventStats_PageTitle"]</PageTitle>
+
+<div class="console" id="admin-event-stats-main-container">
+    <!-- Page Header -->
+    <header class="console-head" id="admin-event-stats-header">
+        <div class="console-head__title">
+            <span class="eyebrow">@L["EventStats_Eyebrow"]</span>
+            <h1 id="admin-event-stats-title">@(stats?.EventName ?? L["EventStats_Title"].Value)</h1>
+            <p id="admin-event-stats-subtitle">
+                @if (stats != null)
+                {
+                    <span class="mono">@stats.EventDate.ToString("MMM dd, yyyy HH:mm")</span>
+                    <span class="text-muted"> · @stats.Status</span>
+                }
+                else
+                {
+                    @L["EventStats_Subtitle"]
+                }
+            </p>
+        </div>
+        <div class="console-head__actions">
+            <a class="pill-btn" href="events" id="admin-event-stats-back-btn">
+                <i class="bi bi-arrow-left"></i><span>@L["EventStats_BackButton"]</span>
+            </a>
+        </div>
+    </header>
+
+    @if (stats == null && !loadFailed)
+    {
+        <div class="loading-state" id="admin-event-stats-loading">
+            <span class="loading-spinner"></span>
+            <p id="admin-event-stats-loading-text">@L["EventStats_Loading"]</p>
+        </div>
+    }
+    else if (loadFailed)
+    {
+        <div class="console-alert console-alert--danger" role="alert" id="admin-event-stats-error">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+                <strong id="admin-event-stats-error-title">@L["EventStats_ErrorTitle"]</strong>
+                <p class="mb-0" id="admin-event-stats-error-message">@loadError</p>
+                <hr>
+                <button class="pill-btn" @onclick="LoadStats" id="admin-event-stats-retry-btn">
+                    <i class="bi bi-arrow-clockwise"></i><span>@L["EventStats_RetryButton"]</span>
+                </button>
+            </div>
+        </div>
+    }
+    else if (stats != null)
+    {
+        <!-- Headline Metrics -->
+        <section class="metrics metrics--3" id="admin-event-stats-metrics">
+            <article class="metric metric--accent" id="admin-event-stats-metric-revenue">
+                <div class="metric__head">
+                    <span class="metric__label">@L["EventStats_TotalRevenueLabel"]</span>
+                    <i class="bi bi-cash-stack metric__icon is-ok"></i>
+                </div>
+                <div class="metric__value mono" id="admin-event-stats-metric-revenue-value">$@stats.TotalRevenue.ToString("N2")</div>
+                <div class="metric__foot">
+                    <span class="metric__hint">@L["EventStats_TotalRevenueHint"]</span>
+                </div>
+            </article>
+
+            <article class="metric" id="admin-event-stats-metric-tickets">
+                <div class="metric__head">
+                    <span class="metric__label">@L["EventStats_TicketsSoldLabel"]</span>
+                    <i class="bi bi-ticket-perforated metric__icon"></i>
+                </div>
+                <div class="metric__value mono" id="admin-event-stats-metric-tickets-value">@stats.TotalTicketsSold.ToString("N0")</div>
+                <div class="metric__foot">
+                    <span class="metric__hint">@L["EventStats_Of"] @stats.TotalCapacity.ToString("N0") @L["EventStats_SeatsLabel"]</span>
+                </div>
+            </article>
+
+            <article class="metric" id="admin-event-stats-metric-occupancy">
+                <div class="metric__head">
+                    <span class="metric__label">@L["EventStats_OccupancyLabel"]</span>
+                    <i class="bi bi-people metric__icon"></i>
+                </div>
+                <div class="metric__value mono" id="admin-event-stats-metric-occupancy-value">@stats.OccupancyPercent.ToString("0.#")%</div>
+                <div class="metric__foot">
+                    <div class="progress" style="height: 6px;" id="admin-event-stats-occupancy-bar">
+                        <div class="progress-bar" role="progressbar"
+                             style="width: @(Math.Min(100, (double)stats.OccupancyPercent).ToString(System.Globalization.CultureInfo.InvariantCulture))%;"
+                             aria-valuenow="@stats.OccupancyPercent" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <div class="row" id="admin-event-stats-panels">
+            <!-- Ticketing -->
+            <div class="col-lg-6 mb-4">
+                <div class="panel h-100" id="admin-event-stats-ticketing-panel">
+                    <div class="panel__head">
+                        <h2 class="panel__title"><i class="bi bi-ticket-perforated"></i> @L["EventStats_TicketingTitle"]</h2>
+                    </div>
+                    <div class="panel__body">
+                        <dl class="event-meta" id="admin-event-stats-ticketing-details">
+                            <dt>@L["EventStats_TicketsSoldLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-ticketing-sold">@stats.TotalTicketsSold.ToString("N0")</dd>
+                            <dt>@L["EventStats_SeasonTicketsLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-ticketing-season">@stats.SeasonTicketsSold.ToString("N0")</dd>
+                            <dt>@L["EventStats_CapacityLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-ticketing-capacity">@stats.TotalCapacity.ToString("N0")</dd>
+                            <dt>@L["EventStats_OccupancyLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-ticketing-occupancy">@stats.OccupancyPercent.ToString("0.#")%</dd>
+                            <dt>@L["EventStats_TicketRevenueLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-ticketing-revenue">$@stats.TicketRevenue.ToString("N2")</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drink ordering -->
+            <div class="col-lg-6 mb-4">
+                <div class="panel h-100" id="admin-event-stats-drinks-panel">
+                    <div class="panel__head">
+                        <h2 class="panel__title"><i class="bi bi-cup-straw"></i> @L["EventStats_DrinksTitle"]</h2>
+                    </div>
+                    <div class="panel__body">
+                        <dl class="event-meta" id="admin-event-stats-drinks-details">
+                            <dt>@L["EventStats_OrdersLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-drinks-orders">@stats.TotalOrders.ToString("N0")</dd>
+                            <dt>@L["EventStats_DrinksSoldLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-drinks-sold">@stats.TotalDrinksSold.ToString("N0")</dd>
+                            <dt>@L["EventStats_DrinksRevenueLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-drinks-revenue">$@stats.DrinksRevenue.ToString("N2")</dd>
+                            <dt>@L["EventStats_AvgOrderValueLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-drinks-avg">$@stats.AverageOrderValue.ToString("N2")</dd>
+                            <dt>@L["EventStats_MostPopularDrinkLabel"]</dt>
+                            <dd id="admin-event-stats-drinks-popular">
+                                @if (!string.IsNullOrEmpty(stats.MostPopularDrink))
+                                {
+                                    @stats.MostPopularDrink
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-muted small mono" id="admin-event-stats-calculated-at">
+            @L["EventStats_CalculatedAt"] @stats.CalculatedAt.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+        </p>
+    }
+</div>

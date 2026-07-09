@@ -27,20 +27,19 @@
             <a href="" class="@NavClass("")" id="admin-dashboard-nav-dashboard">
                 <i class="bi bi-grid-1x2"></i><span>@L["Nav_Dashboard"]</span>
             </a>
-            <a href="orders" class="@NavClass("orders")" id="admin-dashboard-nav-orders">
+
+            <div class="dash-nav-group">@L["Nav_GroupOperations"]</div>
+            <a href="orders" class="@NavClass("orders", "dash-nav-sub")" id="admin-dashboard-nav-orders">
                 <i class="bi bi-cart3"></i><span>@L["Nav_Orders"]</span>
             </a>
-            <a href="drinks" class="@NavClass("drinks")" id="admin-dashboard-nav-drinks">
+            <a href="drinks" class="@NavClass("drinks", "dash-nav-sub")" id="admin-dashboard-nav-drinks">
                 <i class="bi bi-cup-straw"></i><span>@L["Nav_Drinks"]</span>
             </a>
-            <a href="analytics" class="@NavClass("analytics")" id="admin-dashboard-nav-analytics">
-                <i class="bi bi-bar-chart-line"></i><span>@L["Nav_Analytics"]</span>
-            </a>
-            <a href="customer-analytics" class="@NavClass("customer-analytics", "dash-nav-sub")" id="admin-dashboard-nav-customer-analytics">
-                <i class="bi bi-dash"></i><span>@L["Nav_CustomerAnalytics"]</span>
+            <a href="admin/wallets" class="@NavClass("admin/wallets", "dash-nav-sub")" id="admin-dashboard-nav-wallets">
+                <i class="bi bi-wallet2"></i><span>@L["Nav_Wallets"]</span>
             </a>
 
-            <div class="dash-nav-group">@L["Nav_GroupStadium"]</div>
+            <div class="dash-nav-group">@L["Nav_GroupEvents"]</div>
             <a href="events" class="@NavClass("events", "dash-nav-sub")" id="admin-dashboard-nav-events">
                 <i class="bi bi-calendar-event"></i><span>@L["Nav_Events"]</span>
             </a>
@@ -50,6 +49,8 @@
             <a href="tickets" class="@NavClass("tickets", "dash-nav-sub")" id="admin-dashboard-nav-tickets">
                 <i class="bi bi-ticket-perforated"></i><span>@L["Nav_Tickets"]</span>
             </a>
+
+            <div class="dash-nav-group">@L["Nav_GroupStadium"]</div>
             <a href="admin/stadium-overview" class="@NavClass("admin/stadium-overview", "dash-nav-sub")" id="admin-dashboard-nav-overview">
                 <i class="bi bi-eye"></i><span>@L["Nav_Overview"]</span>
             </a>
@@ -63,20 +64,28 @@
                 <i class="bi bi-buildings"></i><span>@L["Nav_Venue"]</span>
             </a>
 
+            <div class="dash-nav-group">@L["Nav_GroupAnalytics"]</div>
+            <a href="analytics" class="@NavClass("analytics", "dash-nav-sub")" id="admin-dashboard-nav-analytics">
+                <i class="bi bi-bar-chart-line"></i><span>@L["Nav_Analytics"]</span>
+            </a>
+            <a href="customers" class="@NavClass("customers", "dash-nav-sub")" id="admin-dashboard-nav-customers">
+                <i class="bi bi-person-vcard"></i><span>@L["Nav_Customers"]</span>
+            </a>
+            <a href="customer-analytics" class="@NavClass("customer-analytics", "dash-nav-sub")" id="admin-dashboard-nav-customer-analytics">
+                <i class="bi bi-people"></i><span>@L["Nav_CustomerAnalytics"]</span>
+            </a>
+
             <div class="dash-nav-group">@L["Nav_GroupSystem"]</div>
-            <a href="logs" class="@NavClass("logs")" id="admin-dashboard-nav-logs">
-                <i class="bi bi-card-list"></i><span>@L["Nav_Logs"]</span>
-            </a>
-            <a href="datagrid" class="@NavClass("datagrid")" id="admin-dashboard-nav-database">
-                <i class="bi bi-database"></i><span>@L["Nav_Database"]</span>
-            </a>
-            <a href="users" class="@NavClass("users")" id="admin-dashboard-nav-security">
+            <a href="users" class="@NavClass("users", "dash-nav-sub")" id="admin-dashboard-nav-security">
                 <i class="bi bi-shield-lock"></i><span>@L["Nav_Security"]</span>
             </a>
-            <a href="admin/wallets" class="@NavClass("admin/wallets")" id="admin-dashboard-nav-wallets">
-                <i class="bi bi-wallet2"></i><span>@L["Nav_Wallets"]</span>
+            <a href="logs" class="@NavClass("logs", "dash-nav-sub")" id="admin-dashboard-nav-logs">
+                <i class="bi bi-card-list"></i><span>@L["Nav_Logs"]</span>
             </a>
-            <a href="admin/settings" class="@NavClass("admin/settings")" id="admin-dashboard-nav-settings">
+            <a href="datagrid" class="@NavClass("datagrid", "dash-nav-sub")" id="admin-dashboard-nav-database">
+                <i class="bi bi-database"></i><span>@L["Nav_Database"]</span>
+            </a>
+            <a href="admin/settings" class="@NavClass("admin/settings", "dash-nav-sub")" id="admin-dashboard-nav-settings">
                 <i class="bi bi-gear"></i><span>@L["Nav_Settings"]</span>
             </a>
         </nav>

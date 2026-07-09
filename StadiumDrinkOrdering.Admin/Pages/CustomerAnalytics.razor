@@ -171,12 +171,12 @@
                 <table class="console-table" id="admin-customer-analytics-table">
                     <thead id="admin-customer-analytics-table-head">
                         <tr id="admin-customer-analytics-table-header-row">
-                            <th id="admin-customer-analytics-table-header-customer">@L["CustAnalytics_HeaderCustomer"]</th>
-                            <th class="num" id="admin-customer-analytics-table-header-spent">@L["CustAnalytics_HeaderTotalSpent"]</th>
-                            <th class="num" id="admin-customer-analytics-table-header-tickets">@L["CustAnalytics_HeaderTickets"]</th>
-                            <th class="num" id="admin-customer-analytics-table-header-events">@L["CustAnalytics_HeaderEvents"]</th>
-                            <th class="num" id="admin-customer-analytics-table-header-avg">@L["CustAnalytics_HeaderAvgTransaction"]</th>
-                            <th id="admin-customer-analytics-table-header-lastpurchase">@L["CustAnalytics_HeaderLastPurchase"]</th>
+                            <th class="sortable @(sortState.IsSorted("customer") ? "is-sorted" : "")" @onclick='() => SortBy("customer")' id="admin-customer-analytics-table-header-customer">@L["CustAnalytics_HeaderCustomer"]<span class="sort-ind">@sortState.Indicator("customer")</span></th>
+                            <th class="num sortable @(sortState.IsSorted("spent") ? "is-sorted" : "")" @onclick='() => SortBy("spent")' id="admin-customer-analytics-table-header-spent">@L["CustAnalytics_HeaderTotalSpent"]<span class="sort-ind">@sortState.Indicator("spent")</span></th>
+                            <th class="num sortable @(sortState.IsSorted("tickets") ? "is-sorted" : "")" @onclick='() => SortBy("tickets")' id="admin-customer-analytics-table-header-tickets">@L["CustAnalytics_HeaderTickets"]<span class="sort-ind">@sortState.Indicator("tickets")</span></th>
+                            <th class="num sortable @(sortState.IsSorted("events") ? "is-sorted" : "")" @onclick='() => SortBy("events")' id="admin-customer-analytics-table-header-events">@L["CustAnalytics_HeaderEvents"]<span class="sort-ind">@sortState.Indicator("events")</span></th>
+                            <th class="num sortable @(sortState.IsSorted("avg") ? "is-sorted" : "")" @onclick='() => SortBy("avg")' id="admin-customer-analytics-table-header-avg">@L["CustAnalytics_HeaderAvgTransaction"]<span class="sort-ind">@sortState.Indicator("avg")</span></th>
+                            <th class="sortable @(sortState.IsSorted("lastpurchase") ? "is-sorted" : "")" @onclick='() => SortBy("lastpurchase")' id="admin-customer-analytics-table-header-lastpurchase">@L["CustAnalytics_HeaderLastPurchase"]<span class="sort-ind">@sortState.Indicator("lastpurchase")</span></th>
                             <th class="actions-col" id="admin-customer-analytics-table-header-actions">@L["CustAnalytics_HeaderActions"]</th>
                         </tr>
                     </thead>

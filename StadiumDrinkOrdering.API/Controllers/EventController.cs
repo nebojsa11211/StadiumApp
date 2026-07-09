@@ -192,6 +192,30 @@ public class EventController : ControllerBase
     }
 
     /// <summary>
+    /// Get post-event statistics (ticketing/occupancy + drink ordering + combined revenue) for a
+    /// single event. Powers the admin event-statistics page opened from a completed event's card.
+    /// </summary>
+    [HttpGet("{id}/statistics")]
+    public async Task<ActionResult<EventStatisticsDto>> GetEventStatistics(int id)
+    {
+        try
+        {
+            var stats = await _eventService.GetEventStatisticsAsync(id);
+            if (stats == null)
+            {
+                return NotFound($"Event with ID {id} not found");
+            }
+
+            return Ok(stats);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving statistics for event {EventId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
     /// Create new event
     /// </summary>
     [HttpPost]
@@ -234,7 +258,6 @@ public class EventController : ControllerBase
                 EventType = eventType,
                 HomeTeam = homeTeam,
                 AwayTeam = awayTeam,
-                Location = string.IsNullOrWhiteSpace(request.Location) ? null : request.Location.Trim(),
                 EventDate = request.Date!.Value,
                 EventEndDate = request.EndDate,
                 TotalSeats = stadiumCapacity > 0 ? stadiumCapacity : request.Capacity,
@@ -334,7 +357,6 @@ public class EventController : ControllerBase
                 EventType = newType,
                 HomeTeam = homeTeam,
                 AwayTeam = awayTeam,
-                Location = request.Location ?? existing.Location,
                 EventDate = newStart,
                 EventEndDate = newEnd,
                 VenueId = existing.VenueId,
@@ -604,7 +626,6 @@ public class EventController : ControllerBase
             Date = evt.EventDate,
             EndDate = evt.EventEndDate,
             Description = evt.Description,
-            Location = evt.Location,
             Capacity = capacity,
             AvailableSeats = Math.Max(0, capacity - soldSeats),
             SeasonTicketsSold = Math.Min(seasonSold, soldSeats),

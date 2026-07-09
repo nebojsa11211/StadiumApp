@@ -60,10 +60,9 @@
                     <table class="console-table" id="admin-analytics-events-table">
                         <thead id="admin-analytics-events-table-head">
                             <tr id="admin-analytics-events-table-header-row">
-                                <th id="admin-analytics-events-table-header-name">@L["Analytics_EventNameHeader"]</th>
-                                <th id="admin-analytics-events-table-header-date">@L["Analytics_DateHeader"]</th>
-                                <th id="admin-analytics-events-table-header-location">@L["Analytics_LocationHeader"]</th>
-                                <th id="admin-analytics-events-table-header-status">@L["Analytics_StatusHeader"]</th>
+                                <th class="sortable @(sortState.IsSorted("name") ? "is-sorted" : "")" @onclick='() => SortBy("name")' id="admin-analytics-events-table-header-name">@L["Analytics_EventNameHeader"]<span class="sort-ind">@sortState.Indicator("name")</span></th>
+                                <th class="sortable @(sortState.IsSorted("date") ? "is-sorted" : "")" @onclick='() => SortBy("date")' id="admin-analytics-events-table-header-date">@L["Analytics_DateHeader"]<span class="sort-ind">@sortState.Indicator("date")</span></th>
+                                <th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")' id="admin-analytics-events-table-header-status">@L["Analytics_StatusHeader"]<span class="sort-ind">@sortState.Indicator("status")</span></th>
                             </tr>
                         </thead>
                         <tbody id="admin-analytics-events-table-body">
@@ -72,7 +71,6 @@
                                 <tr id="@($"admin-analytics-event-row-{evt.Id}")">
                                     <td class="console-table__id" id="@($"admin-analytics-event-cell-name-{evt.Id}")">@evt.Name</td>
                                     <td class="mono console-table__time" id="@($"admin-analytics-event-cell-date-{evt.Id}")">@(evt.Date?.ToString("MMM dd, yyyy") ?? @L["Analytics_TBDLabel"])</td>
-                                    <td id="@($"admin-analytics-event-cell-location-{evt.Id}")">@DisplayLocation(evt)</td>
                                     <td id="@($"admin-analytics-event-cell-status-{evt.Id}")">
                                         @if (evt.IsActive)
                                         {

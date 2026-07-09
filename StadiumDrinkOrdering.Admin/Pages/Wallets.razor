@@ -2,6 +2,7 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Admin.Services
+@using StadiumDrinkOrdering.Admin.Common
 @inject IAdminApiService ApiService
 @inject IStringLocalizer<SharedResources> L
 
@@ -43,14 +44,14 @@
             <table class="table align-middle" id="admin-wallets-table">
                 <thead id="admin-wallets-thead">
                     <tr id="admin-wallets-header-row">
-                        <th id="admin-wallets-header-user">@L["Wallets_ColUser"]</th>
-                        <th class="text-end" id="admin-wallets-header-balance">@L["Wallets_ColBalance"]</th>
-                        <th id="admin-wallets-header-status">@L["Wallets_ColStatus"]</th>
+                        <th class="sortable @(sortState.IsSorted("user") ? "is-sorted" : "")" @onclick='() => SortBy("user")' id="admin-wallets-header-user">@L["Wallets_ColUser"]<span class="sort-ind">@sortState.Indicator("user")</span></th>
+                        <th class="text-end sortable @(sortState.IsSorted("balance") ? "is-sorted" : "")" @onclick='() => SortBy("balance")' id="admin-wallets-header-balance">@L["Wallets_ColBalance"]<span class="sort-ind">@sortState.Indicator("balance")</span></th>
+                        <th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")' id="admin-wallets-header-status">@L["Wallets_ColStatus"]<span class="sort-ind">@sortState.Indicator("status")</span></th>
                         <th class="text-end" id="admin-wallets-header-actions">@L["Wallets_ColActions"]</th>
                     </tr>
                 </thead>
                 <tbody id="admin-wallets-tbody">
-                    @foreach (var w in list.Wallets)
+                    @foreach (var w in SortedWallets)
                     {
                         <tr id="admin-wallet-row-@w.WalletId">
                             <td>
@@ -209,6 +210,24 @@
 
     private string alertMessage = "";
     private string alertType = "";
+
+    // Sorting — main wallets table
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<WalletAdminDto, object?>> SortSelectors = new()
+    {
+        ["user"] = w => w.Username,
+        ["balance"] = w => w.Balance,
+        ["status"] = w => w.Status,
+    };
+
+    private IEnumerable<WalletAdminDto> SortedWallets =>
+        sortState.Column is null ? list!.Wallets : sortState.Apply(list!.Wallets, SortSelectors);
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync() => await Load();
 

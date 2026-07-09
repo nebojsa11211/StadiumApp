@@ -3,6 +3,7 @@ using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Admin.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.Admin.Common;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
 
@@ -20,6 +21,26 @@ public partial class Tickets : ComponentBase
     private string? searchTerm;
     private int? selectedEventId;
     private bool? selectedStatus;
+
+    // Sorting
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<TicketDto, object?>> SortSelectors = new()
+    {
+        ["number"] = t => t.TicketNumber,
+        ["event"] = t => t.EventName,
+        ["date"] = t => t.EventDate,
+        ["seat"] = t => t.Section,
+        ["customer"] = t => t.CustomerName,
+        ["purchase"] = t => t.PurchaseDate,
+        ["price"] = t => t.Price,
+        ["status"] = t => t.IsActive,
+    };
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        ApplyFilters();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +80,6 @@ public partial class Tickets : ComponentBase
                     Name = e.Name,
                     Date = e.Date,
                     Description = e.Description,
-                    Location = "Stadium", // Default location since Event model doesn't have Location
                     Capacity = e.Capacity,
                     AvailableSeats = e.AvailableSeats,
                     BasePrice = e.BasePrice,
@@ -146,7 +166,10 @@ public partial class Tickets : ComponentBase
             );
         }
 
-        filteredTickets = filtered.ToList();
+        var ordered = sortState.Column is null
+            ? filtered
+            : sortState.Apply(filtered, SortSelectors);
+        filteredTickets = ordered.ToList();
     }
 
     private Task ResetFilters()

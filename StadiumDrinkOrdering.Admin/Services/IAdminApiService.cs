@@ -38,9 +38,12 @@ namespace StadiumDrinkOrdering.Admin.Services
         Task<bool> UpdateOrderStatusAsync(int orderId, OrderStatus status);
 
         Task<IEnumerable<UserDto>?> GetUsersAsync();
+        Task<IEnumerable<UserDto>?> GetUsersAsync(UserFilterDto filter);
         Task<UserDto?> GetUserAsync(int id);
+        Task<StaffMemberStatsDto?> GetUserStatsAsync(int id);
         Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto);
         Task<UserDto?> UpdateUserAsync(int id, UpdateUserDto updateUserDto);
+        Task<bool> ChangeUserPasswordAsync(int id, ChangePasswordDto changePasswordDto);
         Task<bool> DeleteUserAsync(int id);
 
         Task<IEnumerable<DrinkDto>?> GetDrinksAsync();

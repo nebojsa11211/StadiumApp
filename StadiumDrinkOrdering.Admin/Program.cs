@@ -135,11 +135,13 @@ builder.Services.AddScoped<IUserService>(provider =>
 builder.Services.AddScoped<IDrinkService>(provider =>
     new DrinkService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
                      provider.GetRequiredService<ICentralizedLoggingClient>(),
-                     provider.GetRequiredService<IErrorNotificationService>()));
+                     provider.GetRequiredService<IErrorNotificationService>(),
+                     provider.GetRequiredService<ITokenStorageService>()));
 
 builder.Services.AddScoped<ITicketService>(provider =>
     new TicketService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
-                      provider.GetRequiredService<ICentralizedLoggingClient>()));
+                      provider.GetRequiredService<ICentralizedLoggingClient>(),
+                      provider.GetRequiredService<ITokenStorageService>()));
 
 builder.Services.AddScoped<IAuthService>(provider =>
     new AuthService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"),
@@ -151,7 +153,8 @@ builder.Services.AddScoped<ILogService>(provider =>
 
 builder.Services.AddScoped<IAnalyticsService>(provider =>
     new AnalyticsService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),
-                         provider.GetRequiredService<ICentralizedLoggingClient>()));
+                         provider.GetRequiredService<ICentralizedLoggingClient>(),
+                         provider.GetRequiredService<ITokenStorageService>()));
 
 builder.Services.AddScoped<IStadiumService>(provider =>
     new StadiumService(provider.GetRequiredService<IHttpClientFactory>().CreateClient("AuthenticatedClient"),

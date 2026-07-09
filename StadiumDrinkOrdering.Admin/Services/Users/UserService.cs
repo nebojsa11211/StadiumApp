@@ -13,15 +13,26 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
         {
         }
 
-        public async Task<IEnumerable<UserDto>?> GetUsersAsync()
+        // Fetch a large page so the admin grids show the full set rather than the
+        // default 20-row API page.
+        private const int AdminPageSize = 1000;
+
+        public Task<IEnumerable<UserDto>?> GetUsersAsync()
+            => GetUsersAsync(new UserFilterDto());
+
+        public async Task<IEnumerable<UserDto>?> GetUsersAsync(UserFilterDto filter)
         {
             try
             {
                 // Set authorization header before making the request
                 SetAuthorizationHeader();
 
-                // Use POST /users/search with empty filter to get all users
-                var filter = new UserFilterDto();
+                if (filter.PageSize <= 0 || filter.PageSize == 20)
+                {
+                    filter.PageSize = AdminPageSize;
+                }
+
+                // Use POST /users/search with the supplied filter
                 var content = CreateJsonContent(filter);
                 var response = await HttpClient.PostAsync("users/search", content);
                 if (response.IsSuccessStatusCode)
@@ -58,6 +69,25 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
             catch (Exception ex)
             {
                 await LogErrorAsync(ex, "GetUser", $"Failed to retrieve user {id}");
+            }
+            return null;
+        }
+
+        public async Task<StaffMemberStatsDto?> GetUserStatsAsync(int id)
+        {
+            try
+            {
+                SetAuthorizationHeader();
+                var response = await HttpClient.GetAsync($"users/{id}/stats");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return DeserializeResponse<StaffMemberStatsDto>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                await LogErrorAsync(ex, "GetUserStats", $"Failed to retrieve stats for user {id}");
             }
             return null;
         }
@@ -100,6 +130,22 @@ namespace StadiumDrinkOrdering.Admin.Services.Users
                 await LogErrorAsync(ex, "UpdateUser", $"Failed to update user {id}");
             }
             return null;
+        }
+
+        public async Task<bool> ChangeUserPasswordAsync(int id, ChangePasswordDto changePasswordDto)
+        {
+            try
+            {
+                SetAuthorizationHeader();
+                var content = CreateJsonContent(changePasswordDto);
+                var response = await HttpClient.PutAsync($"users/{id}/password", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                await LogErrorAsync(ex, "ChangeUserPassword", $"Failed to change password for user {id}");
+            }
+            return false;
         }
 
         public async Task<bool> DeleteUserAsync(int id)

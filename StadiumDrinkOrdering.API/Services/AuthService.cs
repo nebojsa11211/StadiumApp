@@ -18,6 +18,7 @@ public interface IAuthService
     Task<bool> RevokeAllUserRefreshTokensAsync(int userId, string? reason = null);
     Task<UserDto?> RegisterAsync(RegisterDto registerDto);
     Task<UserDto?> GetUserByIdAsync(int userId);
+    Task<StaffMemberStatsDto?> GetStaffMemberStatsAsync(int userId);
 
     // User management methods for Admin
     Task<UserListDto> GetUsersAsync(UserFilterDto filter);
@@ -323,6 +324,56 @@ public class AuthService : IAuthService
         return user != null ? MapToUserDto(user) : null;
     }
 
+    public async Task<StaffMemberStatsDto?> GetStaffMemberStatsAsync(int userId)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+            return null;
+
+        // Every order this member touched at any workflow stage.
+        var handledOrders = _context.Orders.Where(o =>
+            o.AcceptedByUserId == userId ||
+            o.InPreparationByUserId == userId ||
+            o.PreparedByUserId == userId ||
+            o.DeliveredByUserId == userId ||
+            o.AssignedStaffId == userId);
+
+        var stats = new StaffMemberStatsDto
+        {
+            UserId = user.Id,
+            FullName = MapToUserDto(user).FullName,
+            Username = user.Username,
+            Email = user.Email,
+            Role = user.Role,
+            IsActive = user.IsActive,
+            CreatedAt = user.CreatedAt,
+            LastLoginAt = user.LastLoginAt,
+
+            OrdersAccepted = await _context.Orders.CountAsync(o => o.AcceptedByUserId == userId),
+            OrdersInPreparation = await _context.Orders.CountAsync(o => o.InPreparationByUserId == userId),
+            OrdersPrepared = await _context.Orders.CountAsync(o => o.PreparedByUserId == userId),
+            OrdersDelivered = await _context.Orders.CountAsync(o => o.DeliveredByUserId == userId),
+
+            TotalOrdersHandled = await handledOrders.CountAsync(),
+            RevenueDelivered = await _context.Orders
+                .Where(o => o.DeliveredByUserId == userId)
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m,
+
+            EventsAssigned = await _context.EventStaffAssignments.CountAsync(a => a.StaffId == userId),
+            UpcomingEventsAssigned = await _context.EventStaffAssignments
+                .CountAsync(a => a.StaffId == userId && a.Event.EventDate >= DateTime.UtcNow),
+        };
+
+        // Latest workflow touch across the stamped timestamps.
+        stats.LastOrderHandledAt = await handledOrders
+            .Select(o => o.DeliveredAt ?? o.PreparedAt ?? o.InPreparationAt ?? o.AcceptedAt)
+            .Where(d => d != null)
+            .OrderByDescending(d => d)
+            .FirstOrDefaultAsync();
+
+        return stats;
+    }
+
     private string GenerateJwtToken(User user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
@@ -461,6 +512,11 @@ public class AuthService : IAuthService
             query = query.Where(u => u.Role == filter.Role.Value);
         }
 
+        if (filter.ExcludeRole.HasValue)
+        {
+            query = query.Where(u => u.Role != filter.ExcludeRole.Value);
+        }
+
         if (filter.CreatedAfter.HasValue)
         {
             query = query.Where(u => u.CreatedAt >= filter.CreatedAfter.Value);
@@ -502,8 +558,12 @@ public class AuthService : IAuthService
         {
             Username = createUserDto.Username,
             Email = createUserDto.Email,
+            FirstName = createUserDto.FirstName,
+            LastName = createUserDto.LastName,
+            PhoneNumber = createUserDto.PhoneNumber,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password),
             Role = createUserDto.Role,
+            IsActive = createUserDto.IsActive,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -528,11 +588,18 @@ public class AuthService : IAuthService
             return null;
         }
 
-        user.Username = updateUserDto.Username;
-        user.Email = updateUserDto.Email;
+        user.Username = updateUserDto.Username ?? user.Username;
+        user.Email = updateUserDto.Email ?? user.Email;
+        user.FirstName = updateUserDto.FirstName;
+        user.LastName = updateUserDto.LastName;
+        user.PhoneNumber = updateUserDto.PhoneNumber;
         if (updateUserDto.Role.HasValue)
         {
             user.Role = updateUserDto.Role.Value;
+        }
+        if (updateUserDto.IsActive.HasValue)
+        {
+            user.IsActive = updateUserDto.IsActive.Value;
         }
 
         await _context.SaveChangesAsync();
@@ -579,12 +646,18 @@ public class AuthService : IAuthService
 
     private static UserDto MapToUserDto(User user)
     {
+        var fullName = $"{user.FirstName} {user.LastName}".Trim();
         return new UserDto
         {
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty,
+            Name = string.IsNullOrWhiteSpace(fullName) ? null : fullName,
+            PhoneNumber = user.PhoneNumber,
             Role = user.Role,
+            IsActive = user.IsActive,
             CreatedAt = user.CreatedAt,
             LastLoginAt = user.LastLoginAt
         };

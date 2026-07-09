@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Common;
 using StadiumDrinkOrdering.Shared.DTOs;
 using System.Net.Http;
 
@@ -11,6 +12,34 @@ public partial class Logs : ComponentBase
     [Inject] private IAdminApiService ApiService { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private IConsoleLoggingToggleService ToggleService { get; set; } = default!;
+
+    // Sorting
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<LogEntryDto, object?>> SortSelectors = new()
+    {
+        ["time"] = l => l.Timestamp,
+        ["level"] = l => l.Level,
+        ["action"] = l => l.Action,
+        ["user"] = l => l.UserEmail,
+        ["source"] = l => l.Source,
+        ["message"] = l => l.Message,
+    };
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        ApplyLogSort();
+        StateHasChanged();
+    }
+
+    // Sorts the in-memory page currently rendered by the table. Server paging is unchanged.
+    private void ApplyLogSort()
+    {
+        if (logs?.Logs == null || sortState.Column is null)
+            return;
+
+        logs.Logs = sortState.Apply(logs.Logs, SortSelectors).ToList();
+    }
 
     private PagedLogsDto? logs;
     private LogSummaryDto? logSummary;
@@ -137,7 +166,9 @@ public partial class Logs : ComponentBase
                 LogsByCategory = new Dictionary<string, int>()
             };
         }
-        
+
+        ApplyLogSort();
+
         isLoading = false;
         StateHasChanged();
     }

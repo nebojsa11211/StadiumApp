@@ -135,6 +135,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Base
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.GetAsync(endpoint);
                 return await HandleApiResponseAsync<T>(response, $"GET {endpoint}", showUserNotification);
             }
@@ -151,6 +152,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Base
         {
             try
             {
+                SetAuthorizationHeader();
                 var content = data != null ? CreateJsonContent(data) : null;
                 var response = await HttpClient.PostAsync(endpoint, content);
                 return await HandleApiResponseAsync<T>(response, $"POST {endpoint}", showUserNotification);
@@ -168,6 +170,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Base
         {
             try
             {
+                SetAuthorizationHeader();
                 var content = data != null ? CreateJsonContent(data) : null;
                 var response = await HttpClient.PutAsync(endpoint, content);
                 return await HandleApiResponseAsync<T>(response, $"PUT {endpoint}", showUserNotification);
@@ -185,6 +188,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Base
         {
             try
             {
+                SetAuthorizationHeader();
                 var response = await HttpClient.DeleteAsync(endpoint);
 
                 if (response.IsSuccessStatusCode)

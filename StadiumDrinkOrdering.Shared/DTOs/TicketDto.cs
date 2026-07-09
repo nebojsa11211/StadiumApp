@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using StadiumDrinkOrdering.Shared.Models;
 
 namespace StadiumDrinkOrdering.Shared.DTOs;
 
@@ -18,6 +19,7 @@ public class TicketDto
     public string? CustomerEmail { get; set; }
     public string? CustomerName { get; set; }
     public decimal Price { get; set; }
+    public TicketKind Kind { get; set; } = TicketKind.SingleEvent;
 }
 
 public class ValidateTicketDto

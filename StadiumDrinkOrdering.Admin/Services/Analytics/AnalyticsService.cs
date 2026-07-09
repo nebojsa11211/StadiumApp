@@ -1,13 +1,14 @@
 using StadiumDrinkOrdering.Admin.Services.Base;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Services;
+using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 
 namespace StadiumDrinkOrdering.Admin.Services.Analytics
 {
     public class AnalyticsService : BaseApiService, IAnalyticsService
     {
-        public AnalyticsService(HttpClient httpClient, ICentralizedLoggingClient loggingClient)
-            : base(httpClient, loggingClient)
+        public AnalyticsService(HttpClient httpClient, ICentralizedLoggingClient loggingClient, ITokenStorageService tokenStorage)
+            : base(httpClient, loggingClient, tokenStorage: tokenStorage)
         {
         }
 
@@ -15,8 +16,9 @@ namespace StadiumDrinkOrdering.Admin.Services.Analytics
         {
             try
             {
+                SetAuthorizationHeader();
                 var content = CreateJsonContent(filter);
-                var response = await HttpClient.PostAsync("analytics/customers", content);
+                var response = await HttpClient.PostAsync("CustomerAnalytics/search", content);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseJson = await response.Content.ReadAsStringAsync();
@@ -34,7 +36,8 @@ namespace StadiumDrinkOrdering.Admin.Services.Analytics
         {
             try
             {
-                var response = await HttpClient.GetAsync("analytics/customers/summary");
+                SetAuthorizationHeader();
+                var response = await HttpClient.GetAsync("CustomerAnalytics/summary");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -53,8 +56,9 @@ namespace StadiumDrinkOrdering.Admin.Services.Analytics
         {
             try
             {
+                SetAuthorizationHeader();
                 var content = CreateJsonContent(filter);
-                return await HttpClient.PostAsync("analytics/customers/export", content);
+                return await HttpClient.PostAsync("CustomerAnalytics/export", content);
             }
             catch (Exception ex)
             {

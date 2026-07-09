@@ -1,6 +1,7 @@
 @page "/admin/seasons"
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Admin.Services
+@using StadiumDrinkOrdering.Admin.Common
 @inject IAdminApiService ApiService
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<SharedResources> L
@@ -65,12 +66,12 @@
                 <table class="table align-middle" id="admin-seasons-table">
                     <thead id="admin-seasons-thead">
                         <tr id="admin-seasons-header-row">
-                            <th id="admin-seasons-header-season">@L["Seasons_ColSeason"]</th><th id="admin-seasons-header-window">@L["Seasons_ColWindow"]</th><th class="text-center" id="admin-seasons-header-current">@L["Seasons_ColCurrent"]</th>
-                            <th class="text-end" id="admin-seasons-header-events">@L["Seasons_ColEvents"]</th><th class="text-end" id="admin-seasons-header-passes">@L["Seasons_ColPasses"]</th><th class="text-end" id="admin-seasons-header-actions">@L["Seasons_ColActions"]</th>
+                            <th class="sortable @(seasonSort.IsSorted("season") ? "is-sorted" : "")" @onclick='() => SortSeasons("season")' id="admin-seasons-header-season">@L["Seasons_ColSeason"]<span class="sort-ind">@seasonSort.Indicator("season")</span></th><th class="sortable @(seasonSort.IsSorted("window") ? "is-sorted" : "")" @onclick='() => SortSeasons("window")' id="admin-seasons-header-window">@L["Seasons_ColWindow"]<span class="sort-ind">@seasonSort.Indicator("window")</span></th><th class="text-center sortable @(seasonSort.IsSorted("current") ? "is-sorted" : "")" @onclick='() => SortSeasons("current")' id="admin-seasons-header-current">@L["Seasons_ColCurrent"]<span class="sort-ind">@seasonSort.Indicator("current")</span></th>
+                            <th class="text-end sortable @(seasonSort.IsSorted("events") ? "is-sorted" : "")" @onclick='() => SortSeasons("events")' id="admin-seasons-header-events">@L["Seasons_ColEvents"]<span class="sort-ind">@seasonSort.Indicator("events")</span></th><th class="text-end sortable @(seasonSort.IsSorted("passes") ? "is-sorted" : "")" @onclick='() => SortSeasons("passes")' id="admin-seasons-header-passes">@L["Seasons_ColPasses"]<span class="sort-ind">@seasonSort.Indicator("passes")</span></th><th class="text-end" id="admin-seasons-header-actions">@L["Seasons_ColActions"]</th>
                         </tr>
                     </thead>
                     <tbody id="admin-seasons-tbody">
-                        @foreach (var s in seasons.OrderByDescending(x => x.StartDate))
+                        @foreach (var s in SortedSeasons)
                         {
                             <tr id="admin-season-row-@s.Id">
                                 <td>
@@ -139,7 +140,7 @@
                         </p>
                         <table class="table table-sm align-middle" id="admin-season-passes-table">
                             <thead id="admin-season-passes-thead">
-                                <tr id="admin-season-passes-header-row"><th id="admin-season-passes-header-sector">@L["Seasons_ColSector"]</th><th id="admin-season-passes-header-seat">@L["Seasons_ColSeat"]</th><th id="admin-season-passes-header-holder">@L["Seasons_ColHolder"]</th><th id="admin-season-passes-header-purchased">@L["Seasons_ColPurchased"]</th><th id="admin-season-passes-header-source">@L["Seasons_ColSource"]</th><th class="text-end" id="admin-season-passes-header-qr">QR</th></tr>
+                                <tr id="admin-season-passes-header-row"><th class="sortable @(passSort.IsSorted("sector") ? "is-sorted" : "")" @onclick='() => SortPasses("sector")' id="admin-season-passes-header-sector">@L["Seasons_ColSector"]<span class="sort-ind">@passSort.Indicator("sector")</span></th><th class="sortable @(passSort.IsSorted("seat") ? "is-sorted" : "")" @onclick='() => SortPasses("seat")' id="admin-season-passes-header-seat">@L["Seasons_ColSeat"]<span class="sort-ind">@passSort.Indicator("seat")</span></th><th class="sortable @(passSort.IsSorted("holder") ? "is-sorted" : "")" @onclick='() => SortPasses("holder")' id="admin-season-passes-header-holder">@L["Seasons_ColHolder"]<span class="sort-ind">@passSort.Indicator("holder")</span></th><th class="sortable @(passSort.IsSorted("purchased") ? "is-sorted" : "")" @onclick='() => SortPasses("purchased")' id="admin-season-passes-header-purchased">@L["Seasons_ColPurchased"]<span class="sort-ind">@passSort.Indicator("purchased")</span></th><th class="sortable @(passSort.IsSorted("source") ? "is-sorted" : "")" @onclick='() => SortPasses("source")' id="admin-season-passes-header-source">@L["Seasons_ColSource"]<span class="sort-ind">@passSort.Indicator("source")</span></th><th class="text-end" id="admin-season-passes-header-qr">QR</th></tr>
                             </thead>
                             <tbody id="admin-season-passes-tbody">
                                 @foreach (var grp in passes.GroupBy(p => p.SectionCode).OrderBy(g => g.Key))
@@ -147,7 +148,7 @@
                                     <tr class="table-light" id="@($"admin-season-pass-group-{grp.Key}")">
                                         <td colspan="6" id="@($"admin-season-pass-group-label-{grp.Key}")"><strong>@grp.Key</strong> <span class="text-muted small">· @L["Seasons_SeatsCount", grp.Count()]</span></td>
                                     </tr>
-                                    @foreach (var p in grp)
+                                    @foreach (var p in SortPassGroup(grp))
                                     {
                                         <tr id="admin-season-pass-row-@p.Id">
                                             <td class="text-muted small">@p.SectionCode</td>
@@ -296,6 +297,48 @@
 
     private string alertMessage = "";
     private string alertType = "";
+
+    // Sorting — main seasons table
+    private readonly TableSortState seasonSort = new();
+    private static readonly Dictionary<string, Func<SeasonDto, object?>> SeasonSortSelectors = new()
+    {
+        ["season"] = s => s.Name,
+        ["window"] = s => s.StartDate,
+        ["current"] = s => s.IsCurrent,
+        ["events"] = s => s.EventCount,
+        ["passes"] = s => s.SeasonTicketCount,
+    };
+
+    private IEnumerable<SeasonDto> SortedSeasons =>
+        seasonSort.Column is null
+            ? seasons!.OrderByDescending(x => x.StartDate)
+            : seasonSort.Apply(seasons!, SeasonSortSelectors);
+
+    private void SortSeasons(string column)
+    {
+        seasonSort.Toggle(column);
+        StateHasChanged();
+    }
+
+    // Sorting — season passes table (sorts rows within each sector group)
+    private readonly TableSortState passSort = new();
+    private static readonly Dictionary<string, Func<SeasonTicketDto, object?>> PassSortSelectors = new()
+    {
+        ["sector"] = p => p.SectionCode,
+        ["seat"] = p => p.RowNumber,
+        ["holder"] = p => p.HolderName,
+        ["purchased"] = p => p.PurchaseDate,
+        ["source"] = p => p.SourceSystem,
+    };
+
+    private IEnumerable<SeasonTicketDto> SortPassGroup(IEnumerable<SeasonTicketDto> grp) =>
+        passSort.Column is null ? grp : passSort.Apply(grp, PassSortSelectors);
+
+    private void SortPasses(string column)
+    {
+        passSort.Toggle(column);
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync() => await LoadSeasons();
 

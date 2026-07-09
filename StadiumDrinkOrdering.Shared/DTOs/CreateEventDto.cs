@@ -32,9 +32,6 @@ public class CreateEventDto
     /// <summary>End of the event window; must be after <see cref="Date"/> when supplied.</summary>
     public DateTime? EndDate { get; set; }
 
-    [StringLength(100)]
-    public string? Location { get; set; }
-
     [Required]
     [Range(1, 100000)]
     public int Capacity { get; set; }

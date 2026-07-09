@@ -137,8 +137,6 @@
                                         }
                                         <dt><i class="bi bi-calendar3"></i> @L["Events_DateLabel"]</dt>
                                         <dd class="mono" id="admin-event-date-@evt.Id">@evt.Date?.ToString("MMM dd, yyyy HH:mm")</dd>
-                                        <dt><i class="bi bi-geo-alt"></i> @L["Events_LocationLabel"]</dt>
-                                        <dd id="admin-event-location-@evt.Id">@DisplayLocation(evt)</dd>
                                         <dt><i class="bi bi-person-fill"></i> @L["Events_CapacityLabel"]</dt>
                                         <dd class="mono" id="admin-event-capacity-@evt.Id">@evt.Capacity.ToString("N0") @L["Events_SeatsLabel"]</dd>
                                         <dt><i class="bi bi-cash"></i> @L["Events_BasePriceLabel"]</dt>
@@ -183,6 +181,12 @@
                                         <a class="pill-btn" href="admin/stadium-overview?eventId=@evt.Id" id="admin-event-occupancy-btn-@evt.Id">
                                             <i class="bi bi-graph-up-arrow"></i><span>@L["Events_LiveOccupancyButton"]</span>
                                         </a>
+                                        @if (evt.Status == EventStatus.Completed)
+                                        {
+                                            <a class="pill-btn pill-btn--primary" href="admin/event-statistics/@evt.Id" id="admin-event-statistics-btn-@evt.Id">
+                                                <i class="bi bi-bar-chart-line"></i><span>@L["Events_StatisticsButton"]</span>
+                                            </a>
+                                        }
                                         @foreach (var target in EventLifecycle.AllowedNextStatuses(evt.Status))
                                         {
                                             var meta = TransitionMeta(target);
@@ -220,13 +224,6 @@
                             <div class="mb-3" id="admin-event-form-name-group">
                                 <label class="form-label" for="admin-event-form-name">@L["Events_EventNameLabel"]</label>
                                 <input type="text" class="form-control" @bind="eventForm.Name" required id="admin-event-form-name">
-                            </div>
-                        </div>
-                        <div class="col-12" id="admin-event-form-location-col">
-                            <div class="mb-3" id="admin-event-form-location-group">
-                                <label class="form-label">@L["Events_LocationFieldLabel"]</label>
-                                <input type="text" class="form-control" value="@VenueLocation" readonly disabled id="admin-event-form-location">
-                                <div class="form-text" id="admin-event-form-location-help">@L["Events_LocationVenueHint"]</div>
                             </div>
                         </div>
                     </div>

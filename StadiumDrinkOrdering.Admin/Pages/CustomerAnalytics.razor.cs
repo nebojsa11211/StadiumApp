@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 // using StadiumDrinkOrdering.Admin.Components; - Components removed
 using StadiumDrinkOrdering.Admin.Services;
+using StadiumDrinkOrdering.Admin.Common;
 using StadiumDrinkOrdering.Shared.DTOs;
 
 namespace StadiumDrinkOrdering.Admin.Pages;
@@ -19,6 +20,33 @@ public partial class CustomerAnalytics : ComponentBase
     private CustomerAnalyticsFilterDto currentFilter = new();
     private bool isLoading = false;
     private string? errorMessage = null;
+
+    // Sorting (applied to the current page of results)
+    private readonly TableSortState sortState = new();
+    private static readonly Dictionary<string, Func<CustomerAnalyticsDto, object?>> SortSelectors = new()
+    {
+        ["customer"] = c => c.CustomerName,
+        ["spent"] = c => c.TotalSpent,
+        ["tickets"] = c => c.TotalTicketsPurchased,
+        ["events"] = c => c.TotalEventsAttended,
+        ["avg"] = c => c.AverageSpendPerTransaction,
+        ["lastpurchase"] = c => c.LastPurchaseDate,
+    };
+
+    private void SortBy(string column)
+    {
+        sortState.Toggle(column);
+        ApplySort();
+        StateHasChanged();
+    }
+
+    private void ApplySort()
+    {
+        if (customers is null || sortState.Column is null)
+            return;
+
+        customers = sortState.Apply(customers, SortSelectors).ToList();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,6 +77,9 @@ public partial class CustomerAnalytics : ComponentBase
             {
                 customers = new List<CustomerAnalyticsDto>();
             }
+
+            // Keep the user's chosen column sort applied across page/filter reloads.
+            ApplySort();
         }
         catch (Exception ex)
         {

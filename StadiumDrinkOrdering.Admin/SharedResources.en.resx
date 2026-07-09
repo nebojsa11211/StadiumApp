@@ -308,6 +308,15 @@
   <data name="Nav_CustomerAnalytics" xml:space="preserve">
     <value>Customer Analytics</value>
   </data>
+  <data name="Nav_GroupOperations" xml:space="preserve">
+    <value>Operations</value>
+  </data>
+  <data name="Nav_GroupEvents" xml:space="preserve">
+    <value>Events &amp; Ticketing</value>
+  </data>
+  <data name="Nav_GroupAnalytics" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
   <data name="Nav_GroupStadium" xml:space="preserve">
     <value>Stadium Management</value>
   </data>
@@ -339,7 +348,7 @@
     <value>Database</value>
   </data>
   <data name="Nav_Security" xml:space="preserve">
-    <value>Security</value>
+    <value>Team Accounts</value>
   </data>
   <data name="Sidebar_LoggingTitle" xml:space="preserve">
     <value>Centralized Logging</value>
@@ -1550,13 +1559,13 @@
     <value>User Management - Stadium Admin</value>
   </data>
   <data name="Users_EyebrowLabel" xml:space="preserve">
-    <value>Users</value>
+    <value>Team</value>
   </data>
   <data name="Users_MainTitle" xml:space="preserve">
-    <value>User Management</value>
+    <value>Team &amp; Staff Accounts</value>
   </data>
   <data name="Users_Subtitle" xml:space="preserve">
-    <value>Manage system users and their roles</value>
+    <value>Manage internal team accounts (Admin and Staff) and their roles</value>
   </data>
   <data name="Users_AddUserButtonText" xml:space="preserve">
     <value>Add User</value>
@@ -1659,6 +1668,63 @@
   </data>
   <data name="Users_ActiveStatus" xml:space="preserve">
     <value>Active</value>
+  </data>
+  <data name="Users_ViewStatsRowTooltip" xml:space="preserve">
+    <value>Click to view member statistics</value>
+  </data>
+  <data name="Users_StatsModalTitle" xml:space="preserve">
+    <value>Member Statistics</value>
+  </data>
+  <data name="Users_StatsLoadingMessage" xml:space="preserve">
+    <value>Loading statistics...</value>
+  </data>
+  <data name="Users_StatsUnavailableMessage" xml:space="preserve">
+    <value>Statistics are not available for this member.</value>
+  </data>
+  <data name="Users_StatsOrdersHeading" xml:space="preserve">
+    <value>Order Activity</value>
+  </data>
+  <data name="Users_StatsTotalHandled" xml:space="preserve">
+    <value>Total Handled</value>
+  </data>
+  <data name="Users_StatsAccepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Users_StatsInPreparation" xml:space="preserve">
+    <value>In Preparation</value>
+  </data>
+  <data name="Users_StatsPrepared" xml:space="preserve">
+    <value>Prepared</value>
+  </data>
+  <data name="Users_StatsDelivered" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="Users_StatsRevenueDelivered" xml:space="preserve">
+    <value>Revenue Delivered</value>
+  </data>
+  <data name="Users_StatsEventsAssigned" xml:space="preserve">
+    <value>Events Assigned</value>
+  </data>
+  <data name="Users_StatsUpcomingEvents" xml:space="preserve">
+    <value>Upcoming Events</value>
+  </data>
+  <data name="Users_StatsAccountHeading" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Users_StatsMemberSince" xml:space="preserve">
+    <value>Member Since</value>
+  </data>
+  <data name="Users_StatsLastLogin" xml:space="preserve">
+    <value>Last Login</value>
+  </data>
+  <data name="Users_StatsLastOrderHandled" xml:space="preserve">
+    <value>Last Order Handled</value>
+  </data>
+  <data name="Users_StatsNever" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="Users_CloseButton" xml:space="preserve">
+    <value>Close</value>
   </data>
   <data name="Users_InactiveStatus" xml:space="preserve">
     <value>Inactive</value>
@@ -1897,6 +1963,15 @@
   <data name="Drinks_ImageUrlPlaceholder" xml:space="preserve">
     <value>https://example.com/image.jpg</value>
   </data>
+  <data name="Drinks_UploadImageButton" xml:space="preserve">
+    <value>Upload image</value>
+  </data>
+  <data name="Drinks_UploadingImage" xml:space="preserve">
+    <value>Uploading…</value>
+  </data>
+  <data name="Drinks_RemoveImageButton" xml:space="preserve">
+    <value>Remove</value>
+  </data>
   <data name="Drinks_AvailableForOrderingLabel" xml:space="preserve">
     <value>Available for ordering</value>
   </data>
@@ -2128,6 +2203,12 @@
   <data name="Tickets_PriceHeader" xml:space="preserve">
     <value>Price</value>
   </data>
+  <data name="Tickets_IncludedPrice" xml:space="preserve">
+    <value>Included</value>
+  </data>
+  <data name="Tickets_SeasonPassBadge" xml:space="preserve">
+    <value>Season Pass</value>
+  </data>
   <data name="Tickets_StatusHeader" xml:space="preserve">
     <value>Status</value>
   </data>
@@ -2215,9 +2296,6 @@
   <data name="Events_DateLabel" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="Events_LocationLabel" xml:space="preserve">
-    <value>Location</value>
-  </data>
   <data name="Events_CapacityLabel" xml:space="preserve">
     <value>Capacity</value>
   </data>
@@ -2245,8 +2323,86 @@
   <data name="Events_LiveOccupancyButton" xml:space="preserve">
     <value>Live occupancy</value>
   </data>
+  <data name="Events_StatisticsButton" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
   <data name="Events_DeleteButton" xml:space="preserve">
     <value>Delete</value>
+  </data>
+  <data name="EventStats_PageTitle" xml:space="preserve">
+    <value>Event Statistics</value>
+  </data>
+  <data name="EventStats_Eyebrow" xml:space="preserve">
+    <value>Event Statistics</value>
+  </data>
+  <data name="EventStats_Title" xml:space="preserve">
+    <value>Event Statistics</value>
+  </data>
+  <data name="EventStats_Subtitle" xml:space="preserve">
+    <value>Final sales and ordering figures for this event.</value>
+  </data>
+  <data name="EventStats_BackButton" xml:space="preserve">
+    <value>Back to Events</value>
+  </data>
+  <data name="EventStats_Loading" xml:space="preserve">
+    <value>Loading statistics…</value>
+  </data>
+  <data name="EventStats_ErrorTitle" xml:space="preserve">
+    <value>Could not load statistics</value>
+  </data>
+  <data name="EventStats_RetryButton" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="EventStats_TotalRevenueLabel" xml:space="preserve">
+    <value>Total revenue</value>
+  </data>
+  <data name="EventStats_TotalRevenueHint" xml:space="preserve">
+    <value>Tickets + drinks</value>
+  </data>
+  <data name="EventStats_TicketsSoldLabel" xml:space="preserve">
+    <value>Tickets sold</value>
+  </data>
+  <data name="EventStats_Of" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="EventStats_SeatsLabel" xml:space="preserve">
+    <value>seats</value>
+  </data>
+  <data name="EventStats_OccupancyLabel" xml:space="preserve">
+    <value>Occupancy</value>
+  </data>
+  <data name="EventStats_TicketingTitle" xml:space="preserve">
+    <value>Ticketing</value>
+  </data>
+  <data name="EventStats_SeasonTicketsLabel" xml:space="preserve">
+    <value>Season tickets</value>
+  </data>
+  <data name="EventStats_CapacityLabel" xml:space="preserve">
+    <value>Capacity</value>
+  </data>
+  <data name="EventStats_TicketRevenueLabel" xml:space="preserve">
+    <value>Ticket revenue</value>
+  </data>
+  <data name="EventStats_DrinksTitle" xml:space="preserve">
+    <value>Drink ordering</value>
+  </data>
+  <data name="EventStats_OrdersLabel" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="EventStats_DrinksSoldLabel" xml:space="preserve">
+    <value>Drinks sold</value>
+  </data>
+  <data name="EventStats_DrinksRevenueLabel" xml:space="preserve">
+    <value>Drinks revenue</value>
+  </data>
+  <data name="EventStats_AvgOrderValueLabel" xml:space="preserve">
+    <value>Average order value</value>
+  </data>
+  <data name="EventStats_MostPopularDrinkLabel" xml:space="preserve">
+    <value>Most popular drink</value>
+  </data>
+  <data name="EventStats_CalculatedAt" xml:space="preserve">
+    <value>Calculated at</value>
   </data>
   <data name="Events_CreateModalTitle" xml:space="preserve">
     <value>Create New Event</value>
@@ -2256,12 +2412,6 @@
   </data>
   <data name="Events_EventNameLabel" xml:space="preserve">
     <value>Event Name *</value>
-  </data>
-  <data name="Events_LocationFieldLabel" xml:space="preserve">
-    <value>Location</value>
-  </data>
-  <data name="Events_LocationVenueHint" xml:space="preserve">
-    <value>Set in Venue Settings — every event is held at this stadium.</value>
   </data>
   <data name="Events_TypeFieldLabel" xml:space="preserve">
     <value>Event Type</value>
@@ -2506,9 +2656,6 @@
   <data name="Orders_PanelTitle" xml:space="preserve">
     <value>Orders</value>
   </data>
-  <data name="Orders_AcceptButtonText" xml:space="preserve">
-    <value>Accept ({0})</value>
-  </data>
   <data name="Orders_CancelBulkButton" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -2538,12 +2685,6 @@
   </data>
   <data name="Orders_ViewTitle" xml:space="preserve">
     <value>View order</value>
-  </data>
-  <data name="Orders_AcceptTitle" xml:space="preserve">
-    <value>Accept order</value>
-  </data>
-  <data name="Orders_AdvanceTitle" xml:space="preserve">
-    <value>Advance status</value>
   </data>
   <data name="Orders_ShowingMessage" xml:space="preserve">
     <value>Showing {0} of {1} total orders</value>
@@ -2622,9 +2763,6 @@
   </data>
   <data name="Analytics_DateHeader" xml:space="preserve">
     <value>Date</value>
-  </data>
-  <data name="Analytics_LocationHeader" xml:space="preserve">
-    <value>Location</value>
   </data>
   <data name="Analytics_StatusHeader" xml:space="preserve">
     <value>Status</value>
@@ -3256,8 +3394,53 @@
   <data name="Users_RoleStaff" xml:space="preserve">
     <value>Staff</value>
   </data>
+  <data name="Users_RoleBartender" xml:space="preserve">
+    <value>Bartender</value>
+  </data>
+  <data name="Users_RoleWaiter" xml:space="preserve">
+    <value>Waiter</value>
+  </data>
   <data name="Users_RoleCustomer" xml:space="preserve">
     <value>Customer</value>
+  </data>
+  <data name="Nav_Customers" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="Customers_PageTitle" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="Customers_EyebrowLabel" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="Customers_MainTitle" xml:space="preserve">
+    <value>Customer Accounts</value>
+  </data>
+  <data name="Customers_Subtitle" xml:space="preserve">
+    <value>View and support registered customer accounts</value>
+  </data>
+  <data name="Customers_TotalLabel" xml:space="preserve">
+    <value>Total Customers</value>
+  </data>
+  <data name="Customers_TotalHint" xml:space="preserve">
+    <value>Registered customer accounts</value>
+  </data>
+  <data name="Customers_TableTitle" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="Customers_TotalText" xml:space="preserve">
+    <value>total customers</value>
+  </data>
+  <data name="Customers_LoadingMessage" xml:space="preserve">
+    <value>Loading customers...</value>
+  </data>
+  <data name="Customers_NoCustomersFound" xml:space="preserve">
+    <value>No customers found</value>
+  </data>
+  <data name="Customers_EmptyMessage" xml:space="preserve">
+    <value>No customer accounts match the current filters.</value>
+  </data>
+  <data name="Customers_EditModalTitle" xml:space="preserve">
+    <value>Edit Customer</value>
   </data>
   <data name="Index_LogLabelWarning" xml:space="preserve">
     <value>[Warning]</value>

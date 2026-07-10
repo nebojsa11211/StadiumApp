@@ -1,7 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StadiumDrinkOrdering.API.Authorization;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Services;
+using System.Security.Claims;
 using System.Text;
 
 namespace StadiumDrinkOrdering.API.Controllers;
@@ -320,6 +324,69 @@ public class AuthController : ControllerBase
         }
     }
 
+    /// <summary>Validates an emailed activation token so the set-password page can show whose account it is.</summary>
+    [AllowAnonymous]
+    [HttpGet("activate/{token}")]
+    public async Task<ActionResult<ActivationInfoDto>> GetActivationInfo(string token)
+    {
+        return Ok(await _authService.GetActivationInfoAsync(token));
+    }
+
+    /// <summary>Claims a shell account by setting its first password from an activation token; signs the fan in.</summary>
+    [AllowAnonymous]
+    [HttpPost("activate")]
+    public async Task<ActionResult<LoginResponseDto>> Activate([FromBody] ActivateAccountDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _authService.ActivateAccountAsync(dto);
+        if (result == null)
+            return BadRequest(new { error = "Aktivacijska poveznica nije važeća ili je istekla." });
+
+        return Ok(result);
+    }
+
+    /// <summary>Admin: create claimable shell accounts for existing ticket/pass emails that don't have one
+    /// yet (backfill for data created before auto-provisioning). Returns how many were provisioned.
+    /// <para>Silent by default (<c>sendEmail=false</c>): accounts are created WITHOUT activation emails, so a
+    /// bulk backfill can't blast thousands of messages — fans claim by registering with their email. Pass
+    /// <c>?sendEmail=true</c> to also send the activation link to each.</para></summary>
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    [HttpPost("backfill-shell-accounts")]
+    public async Task<ActionResult> BackfillShellAccounts(
+        [FromServices] IAccountProvisioningService provisioning,
+        [FromServices] Data.ApplicationDbContext db,
+        [FromQuery] bool sendEmail = false)
+    {
+        // Distinct ticket-holder emails, with a display name, that have no account yet.
+        var ticketHolders = await db.Tickets
+            .Where(t => t.CustomerEmail != null && t.CustomerEmail != "")
+            .Select(t => new { Email = t.CustomerEmail!, Name = t.CustomerName })
+            .Union(db.SeasonTickets
+                .Where(s => s.HolderEmail != null && s.HolderEmail != "")
+                .Select(s => new { Email = s.HolderEmail!, Name = s.HolderName }))
+            .ToListAsync();
+
+        var byEmail = ticketHolders
+            .GroupBy(x => x.Email.ToLower())
+            .Select(g => g.First())
+            .ToList();
+
+        var existingEmails = (await db.Users.Select(u => u.Email.ToLower()).ToListAsync()).ToHashSet();
+
+        var created = 0;
+        foreach (var holder in byEmail)
+        {
+            if (existingEmails.Contains(holder.Email.ToLower()))
+                continue;
+            await provisioning.EnsureShellAccountAsync(holder.Email, holder.Name, null, "Backfill", sendActivation: sendEmail);
+            created++;
+        }
+
+        return Ok(new { provisioned = created, candidates = byEmail.Count, emailsSent = sendEmail });
+    }
+
     [HttpGet("user/{id}")]
     public async Task<ActionResult<UserDto>> GetUser(int id)
     {
@@ -330,6 +397,42 @@ public class AuthController : ControllerBase
         }
 
         return Ok(user);
+    }
+
+    /// <summary>The signed-in fan's own profile (name, phone, OIB).</summary>
+    [Authorize(Policy = AuthorizationPolicies.RequireAuthenticatedUser)]
+    [HttpGet("me/profile")]
+    public async Task<ActionResult<UserDto>> GetMyProfile()
+    {
+        var userId = GetCurrentUserId();
+        if (userId is null or 0)
+            return Unauthorized();
+
+        var user = await _authService.GetUserByIdAsync(userId.Value);
+        return user == null ? NotFound() : Ok(user);
+    }
+
+    /// <summary>Updates the signed-in fan's own profile. Populating name + OIB here lets bar staff
+    /// verify the fan before a cash top-up.</summary>
+    [Authorize(Policy = AuthorizationPolicies.RequireAuthenticatedUser)]
+    [HttpPut("me/profile")]
+    public async Task<ActionResult<UserDto>> UpdateMyProfile([FromBody] UpdateProfileDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var userId = GetCurrentUserId();
+        if (userId is null or 0)
+            return Unauthorized();
+
+        var updated = await _authService.UpdateProfileAsync(userId.Value, dto);
+        return updated == null ? NotFound() : Ok(updated);
+    }
+
+    private int? GetCurrentUserId()
+    {
+        var value = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("user_id");
+        return int.TryParse(value, out var id) ? id : null;
     }
 
     /// <summary>

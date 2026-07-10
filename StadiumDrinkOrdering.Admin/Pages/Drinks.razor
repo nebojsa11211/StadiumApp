@@ -94,7 +94,7 @@
                     <span class="metric__label">@L["Drinks_CategoriesLabel"]</span>
                     <i class="bi bi-tags metric__icon"></i>
                 </div>
-                <div class="metric__value mono" id="admin-drinks-metric-categories-value">@drinks.Select(d => d.Category).Distinct().Count()</div>
+                <div class="metric__value mono" id="admin-drinks-metric-categories-value">@drinks.Select(d => d.CategoryId).Distinct().Count()</div>
                 <div class="metric__foot" id="admin-drinks-metric-categories-foot">
                     <span class="metric__hint">@L["Drinks_DistinctTypesHint"]</span>
                 </div>
@@ -111,9 +111,9 @@
                     <label class="field__label" for="admin-category-filter">@L["Drinks_CategoryLabel"]</label>
                     <select class="field__input" @bind="selectedCategory" @bind:after="StateHasChanged" id="admin-category-filter">
                         <option value="">@L["Drinks_AllCategoriesOption"]</option>
-                        @foreach (var category in Enum.GetValues<DrinkCategory>())
+                        @foreach (var category in categories)
                         {
-                            <option value="@category">@category</option>
+                            <option value="@category.Id">@category.Icon @category.Name</option>
                         }
                     </select>
                 </div>
@@ -140,6 +140,7 @@
                 <h2 class="panel__title" id="admin-drinks-table-title">@L["Drinks_DrinksTableTitle"] <span class="panel__count mono">@FilteredDrinks.Count()</span></h2>
             </div>
 
+            @{ pager.Source = FilteredDrinks.ToList(); }
             <table class="console-table" id="admin-drinks-grid">
                 <thead id="admin-drinks-table-head">
                     <tr id="admin-drinks-table-header-row">
@@ -153,7 +154,7 @@
                     </tr>
                 </thead>
                 <tbody id="admin-drinks-table-body">
-                    @foreach (var drink in FilteredDrinks)
+                    @foreach (var drink in pager.PageItems)
                     {
                         <tr id="admin-drink-card-@drink.Id">
                             <td>
@@ -169,7 +170,7 @@
                                     <span class="drink-name" id="admin-drink-name-@drink.Id">@drink.Name</span>
                                 </div>
                             </td>
-                            <td class="console-table__muted" id="admin-drink-category-@drink.Id">@drink.Category</td>
+                            <td class="console-table__muted" id="admin-drink-category-@drink.Id">@drink.CategoryIcon @drink.CategoryName</td>
                             <td class="drink-desc" id="admin-drink-description-@drink.Id">@drink.Description</td>
                             <td class="num mono" id="admin-drink-price-@drink.Id">$@drink.Price.ToString("F2")</td>
                             <td class="num mono" id="admin-drink-stock-@drink.Id">@drink.StockQuantity</td>
@@ -223,6 +224,7 @@
                     }
                 </tbody>
             </table>
+            <TablePager TItem="DrinkDto" View="pager" IdPrefix="admin-drinks-table" OnChanged="StateHasChanged" />
         </div>
     }
 </div>
@@ -271,10 +273,10 @@
 
                     <div class="field" id="admin-drink-modal-category-field">
                         <label class="field__label" for="admin-drink-category">@L["Drinks_CategoryModalLabel"] *</label>
-                        <select class="field__input" @bind="drinkForm.Category" required id="admin-drink-category">
-                            @foreach (var category in Enum.GetValues<DrinkCategory>())
+                        <select class="field__input" @bind="drinkForm.CategoryId" required id="admin-drink-category">
+                            @foreach (var category in SelectableCategories)
                             {
-                                <option value="@category">@category</option>
+                                <option value="@category.Id">@category.Icon @category.Name</option>
                             }
                         </select>
                     </div>

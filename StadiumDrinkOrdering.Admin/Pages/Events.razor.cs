@@ -79,7 +79,7 @@ public partial class Events : ComponentBase
     {
         try
         {
-            venue = await ApiService.GetAsync<VenueDto>("venue");
+            venue = await ApiService.GetAsync<VenueDto>("api/venue");
             venueClubs = venue?.Clubs ?? new List<ClubDto>();
         }
         catch
@@ -165,6 +165,9 @@ public partial class Events : ComponentBase
             HomeTeam = DefaultHomeTeam,
             Date = DateTime.Now.AddDays(30),
             EndDate = DateTime.Now.AddDays(30).AddHours(2),
+            // Sales open immediately (blank start) and close by default when the event starts.
+            TicketSalesStartDate = null,
+            TicketSalesEndDate = DateTime.Now.AddDays(30),
             IsActive = true,
             // Capacity is the real stadium seat count (read-only in the form); server is authoritative.
             Capacity = realStadiumCapacity,
@@ -199,6 +202,8 @@ public partial class Events : ComponentBase
             Description = evt.Description,
             Date = evt.Date ?? DateTime.Now,
             EndDate = evt.EndDate ?? (evt.Date ?? DateTime.Now).AddHours(2),
+            TicketSalesStartDate = evt.TicketSalesStartDate,
+            TicketSalesEndDate = evt.TicketSalesEndDate,
             // Read-only in the form; prefer the live stadium capacity, falling back to the stored value.
             Capacity = realStadiumCapacity > 0 ? realStadiumCapacity : evt.Capacity,
             BasePrice = evt.BasePrice,
@@ -276,6 +281,14 @@ public partial class Events : ComponentBase
             return;
         }
 
+        // When both sales bounds are set, the end must come after the start.
+        if (eventForm.TicketSalesStartDate.HasValue && eventForm.TicketSalesEndDate.HasValue &&
+            eventForm.TicketSalesEndDate.Value <= eventForm.TicketSalesStartDate.Value)
+        {
+            ShowAlert("The ticket sales end time must be after the sales start time", "danger");
+            return;
+        }
+
         // A Match must name both sides; its home team is one of the venue's resident clubs.
         if (eventForm.EventType == "Match")
         {
@@ -310,6 +323,8 @@ public partial class Events : ComponentBase
                     Description = string.IsNullOrWhiteSpace(eventForm.Description) ? null : eventForm.Description.Trim(),
                     Date = eventForm.Date,
                     EndDate = eventForm.EndDate,
+                    TicketSalesStartDate = eventForm.TicketSalesStartDate,
+                    TicketSalesEndDate = eventForm.TicketSalesEndDate,
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
@@ -343,6 +358,8 @@ public partial class Events : ComponentBase
                     Description = string.IsNullOrWhiteSpace(eventForm.Description) ? null : eventForm.Description.Trim(),
                     Date = eventForm.Date,
                     EndDate = eventForm.EndDate,
+                    TicketSalesStartDate = eventForm.TicketSalesStartDate,
+                    TicketSalesEndDate = eventForm.TicketSalesEndDate,
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
@@ -520,6 +537,10 @@ public partial class Events : ComponentBase
         public string? Description { get; set; }
         public DateTime Date { get; set; } = DateTime.Now.AddDays(30);
         public DateTime EndDate { get; set; } = DateTime.Now.AddDays(30).AddHours(2);
+        /// <summary>Start of ticket sales. Null = sales open as soon as the event is put on sale.</summary>
+        public DateTime? TicketSalesStartDate { get; set; }
+        /// <summary>End of ticket sales. Null = sales stay open while the event is on sale.</summary>
+        public DateTime? TicketSalesEndDate { get; set; }
         public int Capacity { get; set; }
         public decimal BasePrice { get; set; }
         public bool IsActive { get; set; } = true;

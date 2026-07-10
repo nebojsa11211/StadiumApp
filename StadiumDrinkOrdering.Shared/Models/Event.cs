@@ -43,6 +43,19 @@ public class Event
     /// </summary>
     public DateTime? EventEndDate { get; set; }
 
+    /// <summary>
+    /// Start of the ticket-sales window. Before this instant tickets cannot be sold even when the
+    /// event is <see cref="EventStatus.OnSale"/>. Null means sales are open as soon as the event goes
+    /// on sale (no lower bound). See <see cref="AreTicketSalesOpenAt"/>.
+    /// </summary>
+    public DateTime? TicketSalesStartDate { get; set; }
+
+    /// <summary>
+    /// End of the ticket-sales window. After this instant tickets can no longer be sold. Null means
+    /// sales stay open for as long as the event is <see cref="EventStatus.OnSale"/> (no upper bound).
+    /// </summary>
+    public DateTime? TicketSalesEndDate { get; set; }
+
     public int? VenueId { get; set; }
     
     [Required]
@@ -99,6 +112,38 @@ public class Event
         && (EventEndDate.HasValue
             ? nowUtc <= EventEndDate.Value
             : nowUtc.Date <= EventDate.Date);
+
+    /// <summary>
+    /// True when <paramref name="nowUtc"/> falls within the optional ticket-sales window. A null
+    /// bound leaves that side open, so an event with no window configured is always "within". This
+    /// is purely the time check and ignores lifecycle status (see <see cref="AreTicketSalesOpenAt"/>).
+    /// </summary>
+    public bool IsWithinSalesWindow(DateTime nowUtc) =>
+        (!TicketSalesStartDate.HasValue || nowUtc >= TicketSalesStartDate.Value)
+        && (!TicketSalesEndDate.HasValue || nowUtc <= TicketSalesEndDate.Value);
+
+    /// <summary>
+    /// True when tickets/seats may be sold right now: the lifecycle permits sales
+    /// (<see cref="EventLifecycle.CanSellTickets"/> — the event is on sale) AND the current time is
+    /// inside the configured sales window (<see cref="IsWithinSalesWindow"/>).
+    /// </summary>
+    public bool AreTicketSalesOpenAt(DateTime nowUtc) =>
+        EventLifecycle.CanSellTickets(Status) && IsWithinSalesWindow(nowUtc);
+
+    /// <summary>
+    /// A human-friendly reason why ticket sales are currently closed, or null when they are open.
+    /// Distinguishes "not on sale", "not opened yet", and "closed" so the UI/API can be specific.
+    /// </summary>
+    public string? TicketSalesBlockedReason(DateTime nowUtc)
+    {
+        if (!EventLifecycle.CanSellTickets(Status))
+            return "Tickets for this event are not currently on sale.";
+        if (TicketSalesStartDate.HasValue && nowUtc < TicketSalesStartDate.Value)
+            return "Ticket sales for this event have not opened yet.";
+        if (TicketSalesEndDate.HasValue && nowUtc > TicketSalesEndDate.Value)
+            return "Ticket sales for this event have closed.";
+        return null;
+    }
 
     // Navigation properties
     public virtual Season? Season { get; set; }

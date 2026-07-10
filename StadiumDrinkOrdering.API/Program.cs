@@ -24,6 +24,10 @@ using Npgsql;
 // process/launch-profile environment variables are NOT overwritten (NoClobber semantics).
 StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.LoadDotEnvFile();
 
+// QuestPDF is used to render printable ticket cards (GET /tickets/{id}/card.pdf).
+// Community license is free for individuals / small companies.
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ================================================================================================
@@ -317,6 +321,19 @@ if (string.Equals(walletGatewayProvider, "Stripe", StringComparison.OrdinalIgnor
 else
     builder.Services.AddScoped<IWalletPaymentGateway, MockWalletPaymentGateway>();
 builder.Services.AddScoped<IQRCodeService, QRCodeService>();
+
+// Email + shell-account provisioning. Real SMTP is used only when Email:Host is configured; otherwise a
+// dev sender logs the activation link so the flow is testable without SMTP credentials.
+var emailSettings = builder.Configuration.GetSection("Email").Get<EmailSettings>() ?? new EmailSettings();
+builder.Services.AddSingleton(emailSettings);
+if (!string.IsNullOrWhiteSpace(emailSettings.Host))
+    builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+else
+    builder.Services.AddScoped<IEmailSender, LoggingEmailSender>();
+builder.Services.AddScoped<IAccountProvisioningService, AccountProvisioningService>();
+
+builder.Services.AddScoped<ITicketCardPdfService, TicketCardPdfService>();
+builder.Services.AddScoped<ITicketDetailService, TicketDetailService>();
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IOrderSessionService, OrderSessionService>();
@@ -406,8 +423,8 @@ builder.Services.AddCors(options =>
             // unlike the server-rendered apps). NOTE: 7050 is the TicketingSimulator (server-rendered,
             // no CORS needed) — the Runner moved off the shared 7050 to 7060. See docs/staff-app-split-plan.md.
             corsBuilder.WithOrigins(
-                "https://localhost:7010", "https://localhost:7020", "https://localhost:7030", "https://localhost:7040", "https://localhost:7060",
-                "https://admin:9030", "https://customer:9020", "https://staff:9040", "https://runner:9060",
+                "https://localhost:7010", "https://localhost:7020", "https://localhost:7030", "https://localhost:7060",
+                "https://admin:9030", "https://customer:9020", "https://runner:9060",
                 "https://localhost:9060"
             );
         }

@@ -23,30 +23,20 @@ public class Drink
     public int StockQuantity { get; set; }
     
     public string? ImageUrl { get; set; }
-    
+
     [Required]
-    public DrinkCategory Category { get; set; }
-    
+    public int CategoryId { get; set; }
+
     public bool IsAvailable { get; set; } = true;
-    
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
-    
+
     // Navigation properties
+    [JsonIgnore] // Ignore to prevent circular references in JSON serialization
+    public virtual Category? Category { get; set; }
+
     [JsonIgnore] // Ignore to prevent circular references in JSON serialization
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }
-
-public enum DrinkCategory
-{
-    Beer = 1,
-    SoftDrink = 2,
-    Water = 3,
-    Coffee = 4,
-    Tea = 5,
-    Juice = 6,
-    EnergyDrink = 7,
-    Cocktail = 8
-}
-
 

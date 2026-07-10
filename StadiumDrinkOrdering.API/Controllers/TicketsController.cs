@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Data;
+using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 
@@ -13,10 +14,20 @@ namespace StadiumDrinkOrdering.API.Controllers;
 public class TicketsController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly IQRCodeService _qrCodeService;
+    private readonly ITicketCardPdfService _ticketCardPdfService;
+    private readonly ITicketDetailService _ticketDetailService;
 
-    public TicketsController(ApplicationDbContext context)
+    public TicketsController(
+        ApplicationDbContext context,
+        IQRCodeService qrCodeService,
+        ITicketCardPdfService ticketCardPdfService,
+        ITicketDetailService ticketDetailService)
     {
         _context = context;
+        _qrCodeService = qrCodeService;
+        _ticketCardPdfService = ticketCardPdfService;
+        _ticketDetailService = ticketDetailService;
     }
 
     [HttpGet]
@@ -47,6 +58,8 @@ public class TicketsController : ControllerBase
                 EventName = t.EventName,
                 EventDate = t.EventDate,
                 IsActive = t.IsActive,
+                Status = t.Status,
+                IsUsed = t.IsUsed,
                 EventId = t.EventId,
                 OrderId = t.Orders.Any() ? t.Orders.First().Id : null,
                 PurchaseDate = t.PurchaseDate,
@@ -163,6 +176,48 @@ public class TicketsController : ControllerBase
         };
 
         return Ok(ticketDto);
+    }
+
+    /// <summary>
+    /// Full drill-down for a single ticket: event/seat/customer facts, the complete spending
+    /// breakdown (ticket price + every drink order placed against the ticket + payments) and a
+    /// QR image for the ticket-card preview. Backs the ticket detail view on the Admin /tickets page.
+    /// </summary>
+    [HttpGet("{id:int}/details")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<ActionResult<TicketDetailDto>> GetTicketDetails(int id)
+    {
+        var dto = await _ticketDetailService.BuildDetailAsync(id);
+        return dto == null ? NotFound() : Ok(dto);
+    }
+
+    /// <summary>
+    /// Renders the ticket as a printable PDF card (with QR code) for download.
+    /// </summary>
+    [HttpGet("{id:int}/card.pdf")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> GetTicketCardPdf(int id)
+    {
+        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        // Reuse the same deep-link QR the customer/staff flows use.
+        var qrDataUri = await _qrCodeService.GetQrImageDataUriAsync(ticket);
+        var qrPng = DataUriToBytes(qrDataUri);
+
+        var pdf = _ticketCardPdfService.GenerateTicketCard(ticket, qrPng);
+        var fileName = $"ticket-{ticket.TicketNumber}.pdf";
+        return File(pdf, "application/pdf", fileName);
+    }
+
+    private static byte[] DataUriToBytes(string dataUri)
+    {
+        var commaIndex = dataUri.IndexOf(',');
+        var base64 = commaIndex >= 0 ? dataUri[(commaIndex + 1)..] : dataUri;
+        return Convert.FromBase64String(base64);
     }
 
 }

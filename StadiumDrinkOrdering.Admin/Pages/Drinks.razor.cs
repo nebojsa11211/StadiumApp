@@ -14,6 +14,7 @@ public partial class Drinks : ComponentBase
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
     private List<DrinkDto>? drinks;
+    private List<CategoryDto> categories = new();
     private DrinkDto? editingDrink;
     private bool showDrinkModal = false;
     private bool isSaving = false;
@@ -37,10 +38,11 @@ public partial class Drinks : ComponentBase
 
     // Sorting
     private readonly TableSortState sortState = new();
+    private readonly PagedView<DrinkDto> pager = new();
     private static readonly Dictionary<string, Func<DrinkDto, object?>> SortSelectors = new()
     {
         ["name"] = d => d.Name,
-        ["category"] = d => d.Category,
+        ["category"] = d => d.CategoryName,
         ["description"] = d => d.Description,
         ["price"] = d => d.Price,
         ["stock"] = d => d.StockQuantity,
@@ -55,8 +57,20 @@ public partial class Drinks : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCategories();
         await LoadDrinks();
     }
+
+    private async Task LoadCategories()
+    {
+        var result = await ApiService.GetCategoriesAsync();
+        categories = result?.OrderBy(c => c.SortOrder).ThenBy(c => c.Name).ToList() ?? new List<CategoryDto>();
+    }
+
+    // Only active categories are offered when creating/editing a drink, but an existing drink
+    // may already point at a now-inactive category, so keep that one selectable while editing.
+    private IEnumerable<CategoryDto> SelectableCategories =>
+        categories.Where(c => c.IsActive || c.Id == drinkForm.CategoryId);
 
     private async Task LoadDrinks()
     {
@@ -95,9 +109,9 @@ public partial class Drinks : ComponentBase
             var filtered = drinks.AsEnumerable();
 
             // Category filter
-            if (!string.IsNullOrEmpty(selectedCategory) && Enum.TryParse<DrinkCategory>(selectedCategory, out var category))
+            if (!string.IsNullOrEmpty(selectedCategory) && int.TryParse(selectedCategory, out var categoryId))
             {
-                filtered = filtered.Where(d => d.Category == category);
+                filtered = filtered.Where(d => d.CategoryId == categoryId);
             }
 
             // Availability filter
@@ -119,7 +133,7 @@ public partial class Drinks : ComponentBase
             }
 
             var ordered = sortState.Column is null
-                ? filtered.OrderBy(d => d.Category).ThenBy(d => d.Name)
+                ? filtered.OrderBy(d => d.CategoryName).ThenBy(d => d.Name)
                 : sortState.Apply(filtered, SortSelectors);
             return ordered;
         }
@@ -128,7 +142,8 @@ public partial class Drinks : ComponentBase
     private void ShowCreateDrinkModal()
     {
         editingDrink = null;
-        drinkForm = new DrinkFormModel { IsAvailable = true };
+        var defaultCategory = categories.FirstOrDefault(c => c.IsActive) ?? categories.FirstOrDefault();
+        drinkForm = new DrinkFormModel { IsAvailable = true, CategoryId = defaultCategory?.Id ?? 0 };
         imageError = "";
         showDrinkModal = true;
     }
@@ -143,7 +158,7 @@ public partial class Drinks : ComponentBase
             Price = drink.Price,
             StockQuantity = drink.StockQuantity,
             ImageUrl = drink.ImageUrl,
-            Category = drink.Category,
+            CategoryId = drink.CategoryId,
             IsAvailable = drink.IsAvailable
         };
         imageError = "";
@@ -169,7 +184,7 @@ public partial class Drinks : ComponentBase
 
     private async Task SaveDrink()
     {
-        if (string.IsNullOrWhiteSpace(drinkForm.Name) || drinkForm.Price <= 0)
+        if (string.IsNullOrWhiteSpace(drinkForm.Name) || drinkForm.Price <= 0 || drinkForm.CategoryId <= 0)
         {
             ShowAlert("Please fill in all required fields", "danger");
             return;
@@ -188,7 +203,7 @@ public partial class Drinks : ComponentBase
                     Price = drinkForm.Price,
                     StockQuantity = drinkForm.StockQuantity,
                     ImageUrl = string.IsNullOrWhiteSpace(drinkForm.ImageUrl) ? null : drinkForm.ImageUrl.Trim(),
-                    Category = drinkForm.Category,
+                    CategoryId = drinkForm.CategoryId,
                     IsAvailable = drinkForm.IsAvailable
                 };
 
@@ -214,7 +229,7 @@ public partial class Drinks : ComponentBase
                     Price = drinkForm.Price,
                     StockQuantity = drinkForm.StockQuantity,
                     ImageUrl = string.IsNullOrWhiteSpace(drinkForm.ImageUrl) ? null : drinkForm.ImageUrl.Trim(),
-                    Category = drinkForm.Category,
+                    CategoryId = drinkForm.CategoryId,
                     IsAvailable = drinkForm.IsAvailable
                 };
 
@@ -336,7 +351,7 @@ public partial class Drinks : ComponentBase
         public decimal Price { get; set; }
         public int StockQuantity { get; set; }
         public string? ImageUrl { get; set; }
-        public DrinkCategory Category { get; set; } = DrinkCategory.SoftDrink;
+        public int CategoryId { get; set; }
         public bool IsAvailable { get; set; } = true;
     }
 }

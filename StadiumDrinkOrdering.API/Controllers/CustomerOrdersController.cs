@@ -14,15 +14,18 @@ public class CustomerOrdersController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly IOverlaySeatService _overlaySeats;
+    private readonly IAccountProvisioningService _accountProvisioning;
     private readonly ILogger<CustomerOrdersController> _logger;
 
     public CustomerOrdersController(
         ApplicationDbContext context,
         IOverlaySeatService overlaySeats,
+        IAccountProvisioningService accountProvisioning,
         ILogger<CustomerOrdersController> logger)
     {
         _context = context;
         _overlaySeats = overlaySeats;
+        _accountProvisioning = accountProvisioning;
         _logger = logger;
     }
 
@@ -95,13 +98,15 @@ public class CustomerOrdersController : ControllerBase
                 });
             }
 
-            // Phase 1 gate: tickets/seats may only be purchased while the event is on sale.
-            if (!EventLifecycle.CanSellTickets(eventEntity.Status))
+            // Phase 1 gate: tickets/seats may only be purchased while the event is on sale AND within
+            // its configured ticket-sales window.
+            var salesBlockedReason = eventEntity.TicketSalesBlockedReason(DateTime.UtcNow);
+            if (salesBlockedReason != null)
             {
                 return BadRequest(new TicketOrderResultDto
                 {
                     Success = false,
-                    ErrorMessage = "Tickets for this event are not currently on sale."
+                    ErrorMessage = salesBlockedReason
                 });
             }
 
@@ -184,6 +189,11 @@ public class CustomerOrdersController : ControllerBase
 
             _context.Tickets.AddRange(tickets);
             await _context.SaveChangesAsync();
+
+            // Give a guest buyer a claimable account (no-op if they already have one) so the ticket's
+            // wallet can be topped up at the bar.
+            await _accountProvisioning.EnsureShellAccountAsync(
+                request.CustomerInfo.Email, customerName, request.CustomerInfo.Phone, "CustomerPurchase");
 
             // Clear the shopping cart
             if (!string.IsNullOrEmpty(request.SessionId))

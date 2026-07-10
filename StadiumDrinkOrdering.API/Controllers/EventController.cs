@@ -235,6 +235,11 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = windowError });
             }
 
+            if (!IsValidSalesWindow(request.TicketSalesStartDate, request.TicketSalesEndDate, out var salesWindowError))
+            {
+                return BadRequest(new { message = salesWindowError });
+            }
+
             var name = request.Name.Trim();
             if (await _eventService.IsEventNameTakenAsync(name))
             {
@@ -260,6 +265,8 @@ public class EventController : ControllerBase
                 AwayTeam = awayTeam,
                 EventDate = request.Date!.Value,
                 EventEndDate = request.EndDate,
+                TicketSalesStartDate = request.TicketSalesStartDate,
+                TicketSalesEndDate = request.TicketSalesEndDate,
                 TotalSeats = stadiumCapacity > 0 ? stadiumCapacity : request.Capacity,
                 Description = request.Description,
                 BaseTicketPrice = request.BasePrice,
@@ -329,6 +336,15 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = windowError });
             }
 
+            // Null in the request means "unchanged" (matches the event-window merge above), so validate
+            // the effective (merged) sales window.
+            var newSalesStart = request.TicketSalesStartDate ?? existing.TicketSalesStartDate;
+            var newSalesEnd = request.TicketSalesEndDate ?? existing.TicketSalesEndDate;
+            if (!IsValidSalesWindow(newSalesStart, newSalesEnd, out var salesWindowError))
+            {
+                return BadRequest(new { message = salesWindowError });
+            }
+
             var newSeasonId = request.SeasonId ?? existing.SeasonId;
             var seasonLinkIsNew = newSeasonId != null && newSeasonId != existing.SeasonId;
 
@@ -359,6 +375,8 @@ public class EventController : ControllerBase
                 AwayTeam = awayTeam,
                 EventDate = newStart,
                 EventEndDate = newEnd,
+                TicketSalesStartDate = newSalesStart,
+                TicketSalesEndDate = newSalesEnd,
                 VenueId = existing.VenueId,
                 TotalSeats = stadiumCapacity > 0 ? stadiumCapacity : (request.Capacity ?? existing.TotalSeats),
                 Description = request.Description ?? existing.Description,
@@ -398,6 +416,21 @@ public class EventController : ControllerBase
         if (start.HasValue && end.HasValue && end.Value <= start.Value)
         {
             error = "The event end time must be after the start time.";
+            return false;
+        }
+        error = string.Empty;
+        return true;
+    }
+
+    /// <summary>
+    /// Validates the optional ticket-sales window: when both bounds are supplied the end must come
+    /// strictly after the start. A missing start or end is allowed (that side of the window is open).
+    /// </summary>
+    private static bool IsValidSalesWindow(DateTime? start, DateTime? end, out string error)
+    {
+        if (start.HasValue && end.HasValue && end.Value <= start.Value)
+        {
+            error = "The ticket sales end time must be after the sales start time.";
             return false;
         }
         error = string.Empty;
@@ -625,6 +658,8 @@ public class EventController : ControllerBase
             AwayTeam = evt.AwayTeam,
             Date = evt.EventDate,
             EndDate = evt.EventEndDate,
+            TicketSalesStartDate = evt.TicketSalesStartDate,
+            TicketSalesEndDate = evt.TicketSalesEndDate,
             Description = evt.Description,
             Capacity = capacity,
             AvailableSeats = Math.Max(0, capacity - soldSeats),
@@ -635,7 +670,7 @@ public class EventController : ControllerBase
             Status = evt.Status,
             StatusName = evt.Status.ToString(),
             Phase = EventLifecycle.PhaseOf(evt.Status),
-            CanSellTickets = EventLifecycle.CanSellTickets(evt.Status),
+            CanSellTickets = evt.AreTicketSalesOpenAt(DateTime.UtcNow),
             CanOrderDrinks = EventLifecycle.CanOrderDrinks(evt.Status),
             IsCurrentlyLive = evt.IsLiveAt(DateTime.UtcNow),
             SeasonId = evt.SeasonId,

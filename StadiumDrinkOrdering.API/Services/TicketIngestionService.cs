@@ -64,6 +64,7 @@ public class TicketIngestionService : ITicketIngestionService
     private readonly IAnalyticsService _analytics;
     private readonly IQRCodeService _qrCode;
     private readonly IOrderService _orderService;
+    private readonly IAccountProvisioningService _accountProvisioning;
     private readonly ILogger<TicketIngestionService> _logger;
 
     public TicketIngestionService(
@@ -72,6 +73,7 @@ public class TicketIngestionService : ITicketIngestionService
         IAnalyticsService analytics,
         IQRCodeService qrCode,
         IOrderService orderService,
+        IAccountProvisioningService accountProvisioning,
         ILogger<TicketIngestionService> logger)
     {
         _context = context;
@@ -79,6 +81,7 @@ public class TicketIngestionService : ITicketIngestionService
         _analytics = analytics;
         _qrCode = qrCode;
         _orderService = orderService;
+        _accountProvisioning = accountProvisioning;
         _logger = logger;
     }
 
@@ -366,12 +369,12 @@ public class TicketIngestionService : ITicketIngestionService
         // Resolve (or lazily create) the event — tolerates out-of-order delivery.
         var evt = await ResolveOrCreateEventAsync(dto.ExternalEventId, envelope.SourceSystem, ct);
 
-        // Lifecycle gate: tickets may only be sold while the event is on sale. Once it goes live
-        // (Active/InProgress), is sold out, or has ended, sales are closed — reject the webhook so
-        // the external system stops selling into it.
-        if (!EventLifecycle.CanSellTickets(evt.Status))
-            return Rejected($"Ticket sales are closed — event is {evt.Status}"
-                + (EventLifecycle.PhaseOf(evt.Status) == EventPhase.Active ? " (live)" : "") + ".");
+        // Lifecycle + window gate: tickets may only be sold while the event is on sale AND inside its
+        // configured ticket-sales window. Once it goes live (Active/InProgress), is sold out, has
+        // ended, or the sales window has closed/not opened, reject the webhook so the external system
+        // stops selling into it.
+        if (!evt.AreTicketSalesOpenAt(DateTime.UtcNow))
+            return Rejected(evt.TicketSalesBlockedReason(DateTime.UtcNow) ?? "Ticket sales are closed.");
 
         // The "real" stadium is defined by the drawing-tool overlays (source of truth).
         var overlay = await _context.StadiumSectorOverlays
@@ -412,6 +415,9 @@ public class TicketIngestionService : ITicketIngestionService
 
         RecordInbox(envelope);
         await _context.SaveChangesAsync(ct);
+
+        // Give the buyer a claimable account so they can load a wallet / be topped up at the bar.
+        await _accountProvisioning.EnsureShellAccountAsync(dto.CustomerEmail, dto.CustomerName, null, "TicketSold");
 
         var result = new TicketingWebhookResult
         {
@@ -542,6 +548,9 @@ public class TicketIngestionService : ITicketIngestionService
         _context.SeasonTickets.Add(pass);
         RecordInbox(envelope);
         await _context.SaveChangesAsync(ct); // assigns seat.Id + pass.Id
+
+        // Give the pass holder a claimable account (also links this pass to it by email).
+        await _accountProvisioning.EnsureShellAccountAsync(dto.HolderEmail, dto.HolderName, null, "SeasonTicketSold");
 
         // Materialize a derived access ticket for every event already in the season.
         var events = await _context.Events.Where(e => e.SeasonId == season.Id).ToListAsync(ct);

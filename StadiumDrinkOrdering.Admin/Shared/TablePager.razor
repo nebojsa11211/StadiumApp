@@ -1,0 +1,72 @@
+@typeparam TItem
+@inject IStringLocalizer<SharedResources> L
+
+@if (View is not null && View.TotalCount > 0)
+{
+    <div class="table-foot" id="@($"{IdPrefix}-pager")">
+        <div class="pager-left">
+            <p id="@($"{IdPrefix}-pager-info")">@L["Pager_Showing", View.FirstItem, View.LastItem, View.TotalCount]</p>
+            <div class="pager-size">
+                <label for="@($"{IdPrefix}-pager-size")">@L["Pager_Show"]</label>
+                <select class="field__input" value="@View.PageSize" @onchange="OnSizeChanged" id="@($"{IdPrefix}-pager-size")">
+                    @foreach (var opt in PagedView<TItem>.PageSizeOptions)
+                    {
+                        <option value="@opt">@opt</option>
+                    }
+                </select>
+            </div>
+        </div>
+        @if (View.TotalPages > 1)
+        {
+            <div class="bulk-actions" id="@($"{IdPrefix}-pager-buttons")">
+                <button class="icon-btn" @onclick="() => Go(View.CurrentPage - 1)" disabled="@(View.CurrentPage == 1)"
+                        title="@L["Pager_Previous"]" id="@($"{IdPrefix}-pager-prev")">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                @foreach (var p in PageWindow())
+                {
+                    <button class="pill-btn @(p == View.CurrentPage ? "pill-btn--primary" : "")" @onclick="() => Go(p)"
+                            id="@($"{IdPrefix}-pager-page-{p}")">@p</button>
+                }
+                <button class="icon-btn" @onclick="() => Go(View.CurrentPage + 1)" disabled="@(View.CurrentPage == View.TotalPages)"
+                        title="@L["Pager_Next"]" id="@($"{IdPrefix}-pager-next")">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>The paging state owned by the host page.</summary>
+    [Parameter, EditorRequired] public PagedView<TItem> View { get; set; } = default!;
+
+    /// <summary>Raised after the page or page size changes, so the host can re-render.</summary>
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    /// <summary>Prefix for the generated element ids (e.g. "admin-users-table").</summary>
+    [Parameter] public string IdPrefix { get; set; } = "table";
+
+    private async Task Go(int page)
+    {
+        View.GoToPage(page);
+        if (OnChanged.HasDelegate) await OnChanged.InvokeAsync();
+    }
+
+    private async Task OnSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var size))
+            View.PageSize = size;
+        View.Reset();
+        if (OnChanged.HasDelegate) await OnChanged.InvokeAsync();
+    }
+
+    // A five-page window centred on the current page.
+    private IEnumerable<int> PageWindow()
+    {
+        var start = Math.Max(1, View.CurrentPage - 2);
+        var end = Math.Min(View.TotalPages, View.CurrentPage + 2);
+        for (var i = start; i <= end; i++)
+            yield return i;
+    }
+}

@@ -247,6 +247,8 @@ public class EventService : IEventService
         existingEvent.AwayTeam = eventItem.AwayTeam;
         existingEvent.EventDate = eventItem.EventDate;
         existingEvent.EventEndDate = eventItem.EventEndDate;
+        existingEvent.TicketSalesStartDate = eventItem.TicketSalesStartDate;
+        existingEvent.TicketSalesEndDate = eventItem.TicketSalesEndDate;
         existingEvent.VenueId = eventItem.VenueId;
         existingEvent.TotalSeats = eventItem.TotalSeats;
         existingEvent.Description = eventItem.Description;

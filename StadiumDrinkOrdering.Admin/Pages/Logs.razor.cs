@@ -13,6 +13,8 @@ public partial class Logs : ComponentBase
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private IConsoleLoggingToggleService ToggleService { get; set; } = default!;
 
+    private readonly PagedView<LogEntryDto> pager = new();
+
     // Sorting
     private readonly TableSortState sortState = new();
     private static readonly Dictionary<string, Func<LogEntryDto, object?>> SortSelectors = new()
@@ -83,11 +85,12 @@ public partial class Logs : ComponentBase
     private async Task LoadData()
     {
         isLoading = true;
-        
-        var filter = new LogFilterDto 
-        { 
-            Page = 1, 
-            PageSize = 100,
+        pager.Reset();
+
+        var filter = new LogFilterDto
+        {
+            Page = 1,
+            PageSize = 500,
             Level = selectedLevel,
             FromDate = fromDate,
             ToDate = toDate

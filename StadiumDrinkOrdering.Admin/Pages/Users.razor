@@ -155,7 +155,7 @@
                         </tr>
                     </thead>
                     <tbody id="admin-users-table-body">
-                        @foreach (var user in filteredUsers.Take(50))
+                        @foreach (var user in pager.PageItems)
                         {
                             <tr class="is-clickable @(selectedUserIds.Contains(user.Id) ? "is-selected" : "")" @onclick="@(() => ShowUserStats(user))" id="admin-users-row-@user.Id" title="@L["Users_ViewStatsRowTooltip"]">
                                 <td class="check" id="admin-users-cell-checkbox-@user.Id" @onclick:stopPropagation="true">
@@ -209,12 +209,7 @@
                     </tbody>
                 </table>
 
-                @if (filteredUsers.Count > 50)
-                {
-                    <div class="table-foot" id="admin-users-table-foot">
-                        <p id="admin-users-table-foot-message">@L["Users_ShowingFirstMessage"] <span class="mono">50</span> @L["Users_OfTotalMessage"] <span class="mono">@filteredUsers.Count</span> @L["Users_TotalUsersText"]</p>
-                    </div>
-                }
+                <TablePager TItem="UserDto" View="pager" IdPrefix="admin-users-table" OnChanged="StateHasChanged" />
             }
             else
             {

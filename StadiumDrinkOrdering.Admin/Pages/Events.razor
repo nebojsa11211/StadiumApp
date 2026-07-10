@@ -321,6 +321,29 @@
                         </div>
                     </div>
 
+                    <div class="row" id="admin-event-form-sales-window-row">
+                        <div class="col-md-6" id="admin-event-form-sales-start-col">
+                            <div class="mb-3" id="admin-event-form-sales-start-group">
+                                <label class="form-label" for="admin-event-form-sales-start">@L["Events_SalesStartDateTimeLabel"]</label>
+                                <input type="datetime-local" class="form-control" @bind="eventForm.TicketSalesStartDate" id="admin-event-form-sales-start">
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="admin-event-form-sales-end-col">
+                            <div class="mb-3" id="admin-event-form-sales-end-group">
+                                <label class="form-label" for="admin-event-form-sales-end">@L["Events_SalesEndDateTimeLabel"]</label>
+                                <input type="datetime-local" class="form-control" @bind="eventForm.TicketSalesEndDate" id="admin-event-form-sales-end">
+                                @if (eventForm.TicketSalesStartDate.HasValue && eventForm.TicketSalesEndDate.HasValue &&
+                                     eventForm.TicketSalesEndDate.Value <= eventForm.TicketSalesStartDate.Value)
+                                {
+                                    <div class="text-danger small mt-1" id="admin-event-form-sales-end-error">@L["Events_SalesEndAfterStartValidation"]</div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-12" id="admin-event-form-sales-window-hint-col">
+                            <div class="form-text mb-3" id="admin-event-form-sales-window-hint">@L["Events_SalesWindowHint"]</div>
+                        </div>
+                    </div>
+
                     <div class="row" id="admin-event-form-capacity-price-row">
                         <div class="col-md-6" id="admin-event-form-capacity-col">
                             <div class="mb-3" id="admin-event-form-capacity-group">

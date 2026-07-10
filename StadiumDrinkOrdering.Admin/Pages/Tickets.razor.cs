@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Admin.Services;
@@ -20,10 +21,38 @@ public partial class Tickets : ComponentBase
     private string? errorMessage;
     private string? searchTerm;
     private int? selectedEventId;
-    private bool? selectedStatus;
+    private string? selectedStatus;
+
+    /// <summary>The three real lifecycle states an admin cares about, in sort order.</summary>
+    private enum TicketState { Active, Used, Cancelled }
+
+    /// <summary>
+    /// Collapses a ticket's <see cref="TicketDto.Status"/>/<see cref="TicketDto.IsUsed"/>/
+    /// <see cref="TicketDto.IsActive"/> flags into a single display state. A refund/cancel is
+    /// the only thing that clears <c>IsActive</c>, so treat that (or a Cancelled status) as
+    /// cancelled; otherwise a used/scanned ticket shows as Used, else Active.
+    /// </summary>
+    private static TicketState StateOf(TicketDto t)
+    {
+        if (!t.IsActive || string.Equals(t.Status, TicketStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
+            return TicketState.Cancelled;
+        if (t.IsUsed || string.Equals(t.Status, TicketStatuses.Used, StringComparison.OrdinalIgnoreCase))
+            return TicketState.Used;
+        return TicketState.Active;
+    }
+
+    // Ticket detail drill-down
+    private bool showDetail;
+    private bool detailLoading;
+    private string? detailError;
+    private TicketDetailDto? selectedDetail;
+    private bool pdfDownloading;
+    private string? pdfError;
+    private int detailTicketId;
 
     // Sorting
     private readonly TableSortState sortState = new();
+    private readonly PagedView<TicketDto> pager = new();
     private static readonly Dictionary<string, Func<TicketDto, object?>> SortSelectors = new()
     {
         ["number"] = t => t.TicketNumber,
@@ -33,7 +62,7 @@ public partial class Tickets : ComponentBase
         ["customer"] = t => t.CustomerName,
         ["purchase"] = t => t.PurchaseDate,
         ["price"] = t => t.Price,
-        ["status"] = t => t.IsActive,
+        ["status"] = t => (int)StateOf(t),
     };
 
     private void SortBy(string column)
@@ -114,14 +143,7 @@ public partial class Tickets : ComponentBase
 
     private Task FilterByStatus(string? statusStr)
     {
-        if (string.IsNullOrEmpty(statusStr))
-        {
-            selectedStatus = null;
-        }
-        else if (bool.TryParse(statusStr, out var status))
-        {
-            selectedStatus = status;
-        }
+        selectedStatus = string.IsNullOrEmpty(statusStr) ? null : statusStr;
         ApplyFilters();
         return Task.CompletedTask;
     }
@@ -148,10 +170,11 @@ public partial class Tickets : ComponentBase
             filtered = filtered.Where(t => t.EventId == selectedEventId.Value);
         }
 
-        // Apply status filter
-        if (selectedStatus.HasValue)
+        // Apply status filter (Active / Used / Cancelled)
+        if (!string.IsNullOrEmpty(selectedStatus)
+            && Enum.TryParse<TicketState>(selectedStatus, ignoreCase: true, out var wantedState))
         {
-            filtered = filtered.Where(t => t.IsActive == selectedStatus.Value);
+            filtered = filtered.Where(t => StateOf(t) == wantedState);
         }
 
         // Apply search filter
@@ -170,6 +193,8 @@ public partial class Tickets : ComponentBase
             ? filtered
             : sortState.Apply(filtered, SortSelectors);
         filteredTickets = ordered.ToList();
+        pager.Source = filteredTickets;
+        pager.Reset();
     }
 
     private Task ResetFilters()
@@ -178,6 +203,8 @@ public partial class Tickets : ComponentBase
         selectedEventId = null;
         selectedStatus = null;
         filteredTickets = allTickets;
+        pager.Source = filteredTickets ?? new List<TicketDto>();
+        pager.Reset();
         return Task.CompletedTask;
     }
 
@@ -247,5 +274,88 @@ public partial class Tickets : ComponentBase
         {
             await JSRuntime.InvokeVoidAsync("alert", $"Error activating ticket: {ex.Message}");
         }
+    }
+
+    // ---- Ticket detail drill-down ----
+
+    private async Task OpenDetail(int ticketId)
+    {
+        detailTicketId = ticketId;
+        showDetail = true;
+        detailLoading = true;
+        detailError = null;
+        pdfError = null;
+        selectedDetail = null;
+        StateHasChanged();
+
+        try
+        {
+            selectedDetail = await ApiService.GetTicketDetailsAsync(ticketId);
+            if (selectedDetail == null)
+            {
+                detailError = "Could not load ticket details.";
+            }
+        }
+        catch (Exception ex)
+        {
+            detailError = $"Error loading ticket details: {ex.Message}";
+        }
+        finally
+        {
+            detailLoading = false;
+        }
+    }
+
+    private void CloseDetail()
+    {
+        showDetail = false;
+        selectedDetail = null;
+        pdfError = null;
+    }
+
+    private async Task DownloadCardPdf()
+    {
+        if (pdfDownloading) return;
+        pdfDownloading = true;
+        pdfError = null;
+        StateHasChanged();
+
+        try
+        {
+            var bytes = await ApiService.GetTicketCardPdfAsync(detailTicketId);
+            if (bytes == null || bytes.Length == 0)
+            {
+                pdfError = L["Tickets_DetailDownloadFailed"];
+                return;
+            }
+
+            var fileName = $"ticket-{selectedDetail?.TicketNumber ?? detailTicketId.ToString()}.pdf";
+            using var stream = new MemoryStream(bytes);
+            using var streamRef = new DotNetStreamReference(stream);
+            await JSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+        catch (Exception)
+        {
+            pdfError = L["Tickets_DetailDownloadFailed"];
+        }
+        finally
+        {
+            pdfDownloading = false;
+        }
+    }
+
+    // ---- View helpers ----
+
+    private static string Dash(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value!;
+
+    private static string Money(decimal amount) => $"€{amount:0.00}";
+
+    private static string SeatText(TicketDetailDto d)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(d.Section)) parts.Add(d.Section!);
+        if (!string.IsNullOrWhiteSpace(d.Row)) parts.Add($"Row {d.Row}");
+        if (!string.IsNullOrWhiteSpace(d.SeatNumber)) parts.Add($"Seat {d.SeatNumber}");
+        return parts.Count == 0 ? "—" : string.Join(" · ", parts);
     }
 }

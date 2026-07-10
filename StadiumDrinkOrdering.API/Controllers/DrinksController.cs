@@ -22,22 +22,13 @@ public class DrinksController : ControllerBase
     public async Task<ActionResult<List<DrinkDto>>> GetDrinks()
     {
         var drinks = await _context.Drinks
+            .Include(d => d.Category)
             .Where(d => d.IsAvailable)
-            .OrderBy(d => d.Category)
+            .OrderBy(d => d.Category!.SortOrder)
             .ThenBy(d => d.Name)
             .ToListAsync();
 
-        var drinkDtos = drinks.Select(d => new DrinkDto
-        {
-            Id = d.Id,
-            Name = d.Name,
-            Description = d.Description,
-            Price = d.Price,
-            StockQuantity = d.StockQuantity,
-            ImageUrl = d.ImageUrl,
-            Category = d.Category,
-            IsAvailable = d.IsAvailable
-        }).ToList();
+        var drinkDtos = drinks.Select(MapToDto).ToList();
 
         return Ok(drinkDtos);
     }
@@ -45,25 +36,15 @@ public class DrinksController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<DrinkDto>> GetDrink(int id)
     {
-        var drink = await _context.Drinks.FindAsync(id);
+        var drink = await _context.Drinks
+            .Include(d => d.Category)
+            .FirstOrDefaultAsync(d => d.Id == id);
         if (drink == null)
         {
             return NotFound();
         }
 
-        var drinkDto = new DrinkDto
-        {
-            Id = drink.Id,
-            Name = drink.Name,
-            Description = drink.Description,
-            Price = drink.Price,
-            StockQuantity = drink.StockQuantity,
-            ImageUrl = drink.ImageUrl,
-            Category = drink.Category,
-            IsAvailable = drink.IsAvailable
-        };
-
-        return Ok(drinkDto);
+        return Ok(MapToDto(drink));
     }
 
     [HttpPost]
@@ -75,6 +56,11 @@ public class DrinksController : ControllerBase
             return BadRequest(ModelState);
         }
 
+        if (!await _context.Categories.AnyAsync(c => c.Id == createDrinkDto.CategoryId))
+        {
+            return BadRequest("The selected category does not exist.");
+        }
+
         var drink = new Drink
         {
             Name = createDrinkDto.Name,
@@ -82,27 +68,16 @@ public class DrinksController : ControllerBase
             Price = createDrinkDto.Price,
             StockQuantity = createDrinkDto.StockQuantity,
             ImageUrl = createDrinkDto.ImageUrl,
-            Category = createDrinkDto.Category,
+            CategoryId = createDrinkDto.CategoryId,
             IsAvailable = createDrinkDto.IsAvailable,
             CreatedAt = DateTime.UtcNow
         };
 
         _context.Drinks.Add(drink);
         await _context.SaveChangesAsync();
+        await _context.Entry(drink).Reference(d => d.Category).LoadAsync();
 
-        var drinkDto = new DrinkDto
-        {
-            Id = drink.Id,
-            Name = drink.Name,
-            Description = drink.Description,
-            Price = drink.Price,
-            StockQuantity = drink.StockQuantity,
-            ImageUrl = drink.ImageUrl,
-            Category = drink.Category,
-            IsAvailable = drink.IsAvailable
-        };
-
-        return CreatedAtAction(nameof(GetDrink), new { id = drink.Id }, drinkDto);
+        return CreatedAtAction(nameof(GetDrink), new { id = drink.Id }, MapToDto(drink));
     }
 
     [HttpPut("{id}")]
@@ -115,12 +90,18 @@ public class DrinksController : ControllerBase
             return NotFound();
         }
 
+        if (updateDrinkDto.CategoryId.HasValue &&
+            !await _context.Categories.AnyAsync(c => c.Id == updateDrinkDto.CategoryId.Value))
+        {
+            return BadRequest("The selected category does not exist.");
+        }
+
         if (updateDrinkDto.Name != null) drink.Name = updateDrinkDto.Name;
         if (updateDrinkDto.Description != null) drink.Description = updateDrinkDto.Description;
         if (updateDrinkDto.Price.HasValue) drink.Price = updateDrinkDto.Price.Value;
         if (updateDrinkDto.StockQuantity.HasValue) drink.StockQuantity = updateDrinkDto.StockQuantity.Value;
         if (updateDrinkDto.ImageUrl != null) drink.ImageUrl = updateDrinkDto.ImageUrl;
-        if (updateDrinkDto.Category.HasValue) drink.Category = updateDrinkDto.Category.Value;
+        if (updateDrinkDto.CategoryId.HasValue) drink.CategoryId = updateDrinkDto.CategoryId.Value;
         if (updateDrinkDto.IsAvailable.HasValue) drink.IsAvailable = updateDrinkDto.IsAvailable.Value;
 
         drink.UpdatedAt = DateTime.UtcNow;
@@ -144,6 +125,21 @@ public class DrinksController : ControllerBase
 
         return NoContent();
     }
+
+    private static DrinkDto MapToDto(Drink d) => new()
+    {
+        Id = d.Id,
+        Name = d.Name,
+        Description = d.Description,
+        Price = d.Price,
+        StockQuantity = d.StockQuantity,
+        ImageUrl = d.ImageUrl,
+        CategoryId = d.CategoryId,
+        CategoryName = d.Category?.Name,
+        CategoryDisplayName = d.Category?.DisplayName,
+        CategoryIcon = d.Category?.Icon,
+        IsAvailable = d.IsAvailable
+    };
 }
 
 

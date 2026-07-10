@@ -11,6 +11,10 @@ public class UserDto
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
+
+    /// <summary>Croatian OIB (11 digits) if the fan has provided it. Shown to bar staff at cash top-up.</summary>
+    public string? Oib { get; set; }
+
     public UserRole Role { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; }

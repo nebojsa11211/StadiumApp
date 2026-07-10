@@ -5,6 +5,8 @@
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <PageTitle>Novčanik — HALFTIME</PageTitle>
 
@@ -42,17 +44,28 @@
                     <label for="customer-wallet-deposit-amount">Iznos (@summary.Currency)</label>
                     <input id="customer-wallet-deposit-amount" type="number" min="0.01" step="0.01" @bind="depositAmount" />
                 </div>
-                <div class="field">
-                    <label for="customer-wallet-deposit-method">Način plaćanja</label>
-                    <select id="customer-wallet-deposit-method" class="wal-select" @bind="depositMethod">
-                        <option value="CreditCard">Kreditna kartica</option>
-                        <option value="PayPal">PayPal</option>
-                    </select>
-                </div>
+                @if (summary.RequiresCardEntry)
+                {
+                    <div class="field">
+                        <label>Podaci o kartici</label>
+                        <div id="customer-wallet-card-element" class="wal-card-input"></div>
+                        <div id="customer-wallet-card-errors" class="wal-card-errors" role="alert"></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="field">
+                        <label for="customer-wallet-deposit-method">Način plaćanja</label>
+                        <select id="customer-wallet-deposit-method" class="wal-select" @bind="depositMethod">
+                            <option value="CreditCard">Kreditna kartica</option>
+                            <option value="PayPal">PayPal</option>
+                        </select>
+                    </div>
+                }
                 <button id="customer-wallet-deposit-btn" class="btn btn-primary" @onclick="Deposit" disabled="@(isDepositing || depositAmount <= 0 || summary.Status == WalletStatus.Frozen)">
                     @if (isDepositing)
                     {
-                        <span class="spinner"></span> <span>Obrađujem…</span>
+                        <span class="spinner"></span> <span>@depositBusyText</span>
                     }
                     else
                     {
@@ -103,8 +116,13 @@
     private decimal depositAmount = 20m;
     private string depositMethod = "CreditCard";
     private bool isDepositing;
+    private string depositBusyText = "Obrađujem…";
     private string alertMessage = string.Empty;
     private string alertType = string.Empty;
+
+    // Stripe (async gateway) card-entry state.
+    private bool stripeInitStarted;
+    private bool stripeReady;
 
     protected override async Task OnInitializedAsync() => await Load();
 
@@ -115,31 +133,90 @@
             transactions = await ApiService.GetWalletTransactionsAsync(1, 25);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Mount the Stripe Card Element once, the first time the deposit card is on screen in async-gateway
+        // mode. Guarded so a failed attempt (or later re-renders) doesn't retry in a loop.
+        if (!stripeInitStarted && summary is { RequiresCardEntry: true, PublishableKey: not null })
+        {
+            stripeInitStarted = true;
+            try
+            {
+                await JS.InvokeAsync<bool>("stripeWallet.init",
+                    summary.PublishableKey, "customer-wallet-card-element", "customer-wallet-card-errors");
+                stripeReady = true;
+            }
+            catch (Exception ex)
+            {
+                ShowAlert("Kartično plaćanje trenutno nije dostupno.", "danger");
+                Console.WriteLine($"Stripe init failed: {ex.Message}");
+            }
+        }
+    }
+
     private async Task Deposit()
     {
         if (isDepositing || depositAmount <= 0) return;
         isDepositing = true;
+        depositBusyText = "Obrađujem…";
         try
         {
             var dto = new InitiateDepositDto
             {
                 Amount = depositAmount,
-                Method = depositMethod,
+                Method = summary?.RequiresCardEntry == true ? "CreditCard" : depositMethod,
                 IdempotencyKey = Guid.NewGuid().ToString("N")
             };
             var result = await ApiService.DepositToWalletAsync(dto);
-            if (result is { RequiresAction: true })
+
+            if (result is { RequiresAction: true, ClientSecret: not null })
             {
-                ShowAlert("Potrebna je potvrda plaćanja.", "info");
+                // Async gateway (Stripe): confirm the card in the browser, then wait for the webhook to credit.
+                if (!stripeReady)
+                {
+                    ShowAlert("Kartično plaćanje nije spremno. Osvježite stranicu.", "danger");
+                    return;
+                }
+
+                depositBusyText = "Potvrđujem karticu…";
+                StateHasChanged();
+                var confirm = await JS.InvokeAsync<StripeConfirmResult>("stripeWallet.confirm", result.ClientSecret);
+                if (confirm is not { Success: true })
+                {
+                    ShowAlert(confirm?.Error ?? "Plaćanje nije uspjelo.", "danger");
+                    return;
+                }
+
+                // Card charged. Our wallet is credited by the signed webhook — poll the intent's settlement
+                // status (an exact ledger check, not a balance guess) until it lands.
+                depositBusyText = "Knjižim uplatu…";
+                StateHasChanged();
+                var settled = await WaitForSettlementAsync(result.ProviderIntentId);
+                if (settled is { Settled: true })
+                {
+                    // The status response already carries the credited balance — apply it straight to the
+                    // hero and only refresh the ledger, skipping a redundant summary fetch.
+                    if (summary != null)
+                        summary.Balance = settled.NewBalance;
+                    transactions = await ApiService.GetWalletTransactionsAsync(1, 25);
+                    ShowAlert("Uplata je uspješna.", "success");
+                }
+                else
+                {
+                    // Delayed webhook — reload fully; funds will appear shortly.
+                    await Load();
+                    ShowAlert("Plaćanje je zaprimljeno. Sredstva će biti vidljiva za koji trenutak.", "info");
+                }
             }
             else if (result is { Success: true })
             {
+                // Synchronous gateway (mock): already credited.
                 ShowAlert("Uplata je uspješna.", "success");
                 await Load();
             }
             else
             {
-                ShowAlert("Uplata nije uspjela.", "danger");
+                ShowAlert(TranslateFailure(result?.FailureReason), "danger");
             }
         }
         catch (Exception ex)
@@ -150,6 +227,44 @@
         {
             isDepositing = false;
         }
+    }
+
+    // Webhook settlement is asynchronous; poll the intent's status for a short window until the wallet is
+    // credited. A returned (settled) status is definitive (the ledger has the credit) and carries the new
+    // balance; null means it hadn't landed within the window.
+    private async Task<DepositStatusDto?> WaitForSettlementAsync(string? intentId)
+    {
+        if (string.IsNullOrEmpty(intentId))
+            return null;
+        for (var attempt = 0; attempt < 10; attempt++)
+        {
+            await Task.Delay(1500);
+            var status = await ApiService.GetDepositStatusAsync(intentId);
+            if (status is { Settled: true })
+                return status;
+        }
+        return null;
+    }
+
+    private static string TranslateFailure(string? reason) => reason switch
+    {
+        "WalletFrozen" => "Novčanik je zamrznut.",
+        "GatewayDeclined" => "Plaćanje je odbijeno.",
+        "NotEligible" => "Novčanik nije dostupan.",
+        _ => "Uplata nije uspjela."
+    };
+
+    private sealed class StripeConfirmResult
+    {
+        public bool Success { get; set; }
+        public string? Error { get; set; }
+        public string? Status { get; set; }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try { await JS.InvokeVoidAsync("stripeWallet.destroy"); }
+        catch { /* circuit already gone during teardown */ }
     }
 
     private string FormatMoney(decimal amount)

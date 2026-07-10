@@ -20,14 +20,28 @@ public interface IApiService
     Task<DrinkDto?> GetDrinkAsync(int id);
     Task<LoginResponseDto?> LoginAsync(LoginDto loginDto);
     Task<UserDto?> RegisterAsync(RegisterDto registerDto);
+
+    // Passwordless "shell account" activation (fan sets a password from an emailed link).
+    Task<ActivationInfoDto?> GetActivationInfoAsync(string token);
+    Task<(bool ok, string? error, LoginResponseDto? result)> ActivateAccountAsync(ActivateAccountDto dto);
     Task<OrderDto?> CreateOrderAsync(CreateOrderDto createOrderDto);
     Task<OrderPlacementResult> PlaceOrderAsync(CreateOrderDto createOrderDto);
     Task<List<OrderDto>?> GetMyOrdersAsync();
+
+    // My tickets (spending detail + printable PDF card)
+    Task<List<TicketDto>?> GetMyTicketsAsync();
+    Task<TicketDetailDto?> GetMyTicketDetailsAsync(int ticketId);
+    Task<byte[]?> GetMyTicketCardPdfAsync(int ticketId);
+
+    // Customer self-service profile (identity fields shown to bar staff at cash top-up)
+    Task<UserDto?> GetMyProfileAsync();
+    Task<UserDto?> UpdateProfileAsync(UpdateProfileDto dto);
 
     // Fan wallet
     Task<WalletSummaryDto?> GetWalletSummaryAsync();
     Task<WalletTransactionListDto?> GetWalletTransactionsAsync(int page = 1, int pageSize = 20);
     Task<DepositResultDto?> DepositToWalletAsync(InitiateDepositDto dto);
+    Task<DepositStatusDto?> GetDepositStatusAsync(string intentId);
     Task<OrderDto?> GetOrderAsync(int id);
     Task<bool> CancelOrderAsync(int id);
     Task<StadiumLayoutDto?> GetStadiumLayoutAsync();
@@ -194,6 +208,63 @@ public class ApiService : IApiService
         return null;
     }
 
+    // Reads activation-link status. Anonymous endpoint — no bearer token is sent. AuthController is
+    // routed at [controller], so the relative path is "auth/activate/{token}" against the host-root base.
+    public async Task<ActivationInfoDto?> GetActivationInfoAsync(string token)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"auth/activate/{Uri.EscapeDataString(token)}");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<ActivationInfoDto>(json, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting activation info: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Claims a shell account by setting a password. On success returns the LoginResponseDto so the
+    // caller can log the fan in; on HTTP 400 surfaces the API's { error } message.
+    public async Task<(bool ok, string? error, LoginResponseDto? result)> ActivateAccountAsync(ActivateAccountDto dto)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(dto, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("auth/activate", content);
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = JsonSerializer.Deserialize<LoginResponseDto>(body, _jsonOptions);
+                return (true, null, result);
+            }
+
+            // Failure body is { error }.
+            string? error = null;
+            try
+            {
+                using var doc = JsonDocument.Parse(body);
+                if (doc.RootElement.TryGetProperty("error", out var errProp))
+                    error = errProp.GetString();
+            }
+            catch { /* non-JSON body — fall through */ }
+
+            return (false, string.IsNullOrWhiteSpace(error) ? "Aktivacija nije uspjela. Pokušaj ponovno." : error, null);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error activating account: {ex.Message}");
+            return (false, "Nije moguće spojiti se na poslužitelj.", null);
+        }
+    }
+
     public async Task<OrderDto?> CreateOrderAsync(CreateOrderDto createOrderDto)
     {
         try
@@ -249,6 +320,36 @@ public class ApiService : IApiService
         }
     }
 
+    // Customer self-service profile. AuthController is routed at [controller] (=/Auth), so the
+    // relative path is "auth/me/profile" against the host-root base address. Bearer token required.
+    public async Task<UserDto?> GetMyProfileAsync()
+    {
+        SetAuthorizationHeader();
+        return await GetAsync<UserDto>("auth/me/profile");
+    }
+
+    public async Task<UserDto?> UpdateProfileAsync(UpdateProfileDto dto)
+    {
+        try
+        {
+            SetAuthorizationHeader();
+            var json = JsonSerializer.Serialize(dto, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync("auth/me/profile", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<UserDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating profile: {ex.Message}");
+        }
+        return null;
+    }
+
     public async Task<WalletSummaryDto?> GetWalletSummaryAsync()
     {
         SetAuthorizationHeader();
@@ -267,6 +368,12 @@ public class ApiService : IApiService
         return await PostAsync<InitiateDepositDto, DepositResultDto>("api/wallet/me/deposits", dto);
     }
 
+    public async Task<DepositStatusDto?> GetDepositStatusAsync(string intentId)
+    {
+        SetAuthorizationHeader();
+        return await GetAsync<DepositStatusDto>($"api/wallet/me/deposits/{Uri.EscapeDataString(intentId)}/status");
+    }
+
     public async Task<List<OrderDto>?> GetMyOrdersAsync()
     {
         try
@@ -282,6 +389,62 @@ public class ApiService : IApiService
         catch (Exception ex)
         {
             Console.WriteLine($"Error getting my orders: {ex.Message}");
+        }
+        return null;
+    }
+
+    public async Task<List<TicketDto>?> GetMyTicketsAsync()
+    {
+        try
+        {
+            SetAuthorizationHeader();
+            var response = await _httpClient.GetAsync("customer/tickets");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<TicketDto>>(json, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting my tickets: {ex.Message}");
+        }
+        return null;
+    }
+
+    public async Task<TicketDetailDto?> GetMyTicketDetailsAsync(int ticketId)
+    {
+        try
+        {
+            SetAuthorizationHeader();
+            var response = await _httpClient.GetAsync($"customer/tickets/{ticketId}/details");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<TicketDetailDto>(json, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting ticket details: {ex.Message}");
+        }
+        return null;
+    }
+
+    public async Task<byte[]?> GetMyTicketCardPdfAsync(int ticketId)
+    {
+        try
+        {
+            SetAuthorizationHeader();
+            var response = await _httpClient.GetAsync($"customer/tickets/{ticketId}/card.pdf");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsByteArrayAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading ticket PDF: {ex.Message}");
         }
         return null;
     }

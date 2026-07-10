@@ -28,6 +28,11 @@ public interface IWalletService
     /// recognised wallet-deposit settlement. Throws on an invalid signature (caller maps to HTTP 400).</summary>
     Task<bool> HandleDepositWebhookAsync(string payload, string signatureHeader);
 
+    /// <summary>Settlement state of one async deposit intent for the given fan. Reports Completed only once
+    /// the webhook has credited the wallet — a definitive success signal the browser can poll after
+    /// confirming the card. Scoped to the user's own wallet.</summary>
+    Task<DepositStatusDto> GetDepositStatusAsync(int userId, string providerIntentId);
+
     /// <summary>Atomically debit the wallet for a purchase. Non-negative balance is guaranteed and the
     /// operation is idempotent on <paramref name="idempotencyKey"/> (safe to retry). Used by the order
     /// spend path.</summary>
@@ -37,6 +42,13 @@ public interface IWalletService
     /// <summary>Credit funds back (e.g. cancelled order). Idempotent on <paramref name="idempotencyKey"/>.</summary>
     Task<WalletTransaction?> RefundAsync(
         int walletId, decimal amount, string idempotencyKey, string referenceType, int? referenceId, string description, int? actorUserId);
+
+    /// <summary>Credit cash onto a fan's wallet at the bar counter, performed by a staff member. Works for
+    /// ANY registered account (no season-ticket eligibility gate), creating the wallet on first top-up.
+    /// Idempotent on <paramref name="idempotencyKey"/>; records the acting staff for cash reconciliation.
+    /// Returns <see cref="WalletDebitOutcome.WalletFrozen"/> if the wallet is frozen/closed.</summary>
+    Task<(WalletDebitOutcome Outcome, WalletTransaction? Transaction)> StaffCashDepositAsync(
+        int userId, decimal amount, int staffUserId, string idempotencyKey);
 
     // ---- Admin operations ----
 
@@ -76,6 +88,11 @@ public class WalletService : IWalletService
         var wallet = await _context.Wallets.AsNoTracking()
             .FirstOrDefaultAsync(w => w.UserId == userId);
 
+        // Deposit UX depends on the gateway: an async gateway (Stripe) needs the browser to mount a card
+        // field with the publishable key; the synchronous mock needs neither.
+        var requiresCardEntry = _gateway.SettlesAsynchronously;
+        var publishableKey = requiresCardEntry ? _gateway.PublishableKey : null;
+
         if (wallet != null)
         {
             return new WalletSummaryDto
@@ -86,24 +103,38 @@ public class WalletService : IWalletService
                 Status = wallet.Status,
                 Exists = true,
                 // Once a wallet exists it stays usable; still report current eligibility for the UI.
-                IsEligible = await IsEligibleAsync(userId)
+                IsEligible = await IsEligibleAsync(userId),
+                RequiresCardEntry = requiresCardEntry,
+                PublishableKey = publishableKey
             };
         }
 
         return new WalletSummaryDto
         {
             Exists = false,
-            IsEligible = await IsEligibleAsync(userId)
+            IsEligible = await IsEligibleAsync(userId),
+            RequiresCardEntry = requiresCardEntry,
+            PublishableKey = publishableKey
         };
     }
 
-    public async Task<Wallet?> GetOrCreateForUserAsync(int userId)
+    public Task<Wallet?> GetOrCreateForUserAsync(int userId) =>
+        GetOrCreateForUserCoreAsync(userId, requireEligibility: true);
+
+    /// <summary>Shared get-or-create. The customer deposit path gates on season-ticket eligibility; the
+    /// staff bar cash top-up path does not (any registered account can hold cash loaded at the counter).</summary>
+    private async Task<Wallet?> GetOrCreateForUserCoreAsync(int userId, bool requireEligibility)
     {
         var wallet = await _context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
         if (wallet != null)
             return wallet;
 
-        if (!await IsEligibleAsync(userId))
+        if (requireEligibility && !await IsEligibleAsync(userId))
+            return null;
+
+        // Never create a wallet for a non-existent account (would violate the UserId FK). The eligibility
+        // check implies a real user, but the ungated staff path must verify it explicitly.
+        if (!requireEligibility && !await _context.Users.AnyAsync(u => u.Id == userId))
             return null;
 
         wallet = new Wallet
@@ -210,6 +241,7 @@ public class WalletService : IWalletService
                 RequiresAction = true,
                 ClientSecret = intent.ClientSecret,
                 PublishableKey = intent.PublishableKey,
+                ProviderIntentId = intent.ProviderIntentId,
                 NewBalance = wallet.Balance
             };
         }
@@ -298,6 +330,38 @@ public class WalletService : IWalletService
             });
     }
 
+    public async Task<DepositStatusDto> GetDepositStatusAsync(int userId, string providerIntentId)
+    {
+        var wallet = await _context.Wallets.AsNoTracking().FirstOrDefaultAsync(w => w.UserId == userId);
+        if (wallet == null)
+            return new DepositStatusDto { Status = WalletTransactionStatus.Pending };
+
+        // The webhook credits under this exact key (see CreditSettledDepositAsync). Filtering by the caller's
+        // own wallet means one fan can never probe another's deposit, even with a guessed intent id.
+        var key = $"deposit-{providerIntentId}";
+        var txn = await _context.WalletTransactions.AsNoTracking()
+            .FirstOrDefaultAsync(t => t.WalletId == wallet.Id && t.IdempotencyKey == key);
+
+        if (txn == null)
+        {
+            // Not credited yet — webhook hasn't arrived (or the payment never succeeded).
+            return new DepositStatusDto
+            {
+                Status = WalletTransactionStatus.Pending,
+                Settled = false,
+                NewBalance = wallet.Balance
+            };
+        }
+
+        return new DepositStatusDto
+        {
+            Status = txn.Status,
+            Settled = txn.Status == WalletTransactionStatus.Completed,
+            NewBalance = txn.BalanceAfter,
+            WalletTransactionId = txn.Id
+        };
+    }
+
     public async Task<(WalletDebitOutcome Outcome, WalletTransaction? Transaction)> TryDebitAsync(
         int userId, decimal amount, string idempotencyKey, string referenceType, int? referenceId, string description)
     {
@@ -327,6 +391,27 @@ public class WalletService : IWalletService
             wallet.UserId, WalletTransactionType.Refund, +amount, idempotencyKey,
             referenceType, referenceId, description, actorUserId, requireFunds: false);
         return applied.Transaction;
+    }
+
+    public async Task<(WalletDebitOutcome Outcome, WalletTransaction? Transaction)> StaffCashDepositAsync(
+        int userId, decimal amount, int staffUserId, string idempotencyKey)
+    {
+        if (amount <= 0)
+            return (WalletDebitOutcome.InsufficientFunds, null);
+
+        // Ensure a wallet exists for this account — the bar cash top-up is NOT gated on season tickets, so
+        // any registered fan can load cash. Returns null only if the account itself doesn't exist.
+        var wallet = await GetOrCreateForUserCoreAsync(userId, requireEligibility: false);
+        if (wallet == null)
+            return (WalletDebitOutcome.WalletNotFound, null);
+
+        // Credit as a Deposit tagged CashTopup, stamped with the acting staff for cash-drawer reconciliation.
+        // Reuses the guarded, idempotent ledger primitive (a frozen wallet is rejected → WalletFrozen).
+        return await ApplyLedgerEntryAsync(
+            userId, WalletTransactionType.Deposit, +amount, idempotencyKey,
+            referenceType: "CashTopup", referenceId: null,
+            description: $"Cash top-up at bar (staff #{staffUserId})",
+            actorUserId: staffUserId, requireFunds: false);
     }
 
     public async Task<WalletAdminListDto> GetWalletsAsync(string? search, int page, int pageSize)

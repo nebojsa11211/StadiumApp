@@ -66,9 +66,10 @@
                 <div class="field" id="admin-tickets-filter-status-field">
                     <label class="field__label" for="admin-tickets-status-select">@L["Tickets_FilterByStatusLabel"]</label>
                     <select class="field__input" @onchange="@(async (e) => await FilterByStatus(e.Value?.ToString()))" id="admin-tickets-status-select">
-                        <option value="">@L["Tickets_AllTicketsOption"]</option>
-                        <option value="true">@L["Tickets_ActiveOption"]</option>
-                        <option value="false">@L["Tickets_InactiveOption"]</option>
+                        <option value="" selected="@(selectedStatus == null)">@L["Tickets_AllTicketsOption"]</option>
+                        <option value="Active" selected="@(selectedStatus == "Active")">@L["Tickets_ActiveOption"]</option>
+                        <option value="Used" selected="@(selectedStatus == "Used")">@L["Tickets_UsedOption"]</option>
+                        <option value="Cancelled" selected="@(selectedStatus == "Cancelled")">@L["Tickets_CancelledOption"]</option>
                     </select>
                 </div>
                 <div class="field field--grow" id="admin-tickets-filter-search-field">
@@ -97,7 +98,7 @@
                     <span class="metric__label">@L["Tickets_ActiveTicketsLabel"]</span>
                     <i class="bi bi-check-circle metric__icon is-ok"></i>
                 </div>
-                <div class="metric__value mono" id="admin-tickets-metric-active-value">@filteredTickets?.Count(t => t.IsActive)</div>
+                <div class="metric__value mono" id="admin-tickets-metric-active-value">@filteredTickets?.Count(t => StateOf(t) == TicketState.Active)</div>
                 <div class="metric__foot" id="admin-tickets-metric-active-foot">
                     <span class="metric__hint">@L["Tickets_CurrentlyValidHint"]</span>
                 </div>
@@ -159,10 +160,12 @@
                         </tr>
                     </thead>
                     <tbody id="admin-tickets-table-body">
-                        @foreach (var ticket in filteredTickets)
+                        @foreach (var ticket in pager.PageItems)
                         {
                             <tr id="admin-tickets-row-@ticket.Id">
-                                <td class="mono" id="admin-tickets-cell-number-@ticket.Id">@ticket.TicketNumber</td>
+                                <td class="mono" id="admin-tickets-cell-number-@ticket.Id">
+                                    <button type="button" class="ticket-link" id="admin-tickets-open-detail-@ticket.Id" @onclick="() => OpenDetail(ticket.Id)">@ticket.TicketNumber</button>
+                                </td>
                                 <td id="admin-tickets-cell-event-@ticket.Id">
                                     @ticket.EventName
                                     @if (ticket.Kind == TicketKind.Season)
@@ -207,17 +210,25 @@
                                     }
                                 </td>
                                 <td id="admin-tickets-cell-status-@ticket.Id">
-                                    @if (ticket.IsActive)
+                                    @switch (StateOf(ticket))
                                     {
-                                        <span class="status is-active" id="admin-tickets-status-active-@ticket.Id"><span class="status__dot"></span>@L["Tickets_ActiveStatus"]</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="status is-inactive" id="admin-tickets-status-inactive-@ticket.Id"><span class="status__dot"></span>@L["Tickets_InactiveStatus"]</span>
+                                        case TicketState.Active:
+                                            <span class="status is-active" id="admin-tickets-status-active-@ticket.Id"><span class="status__dot"></span>@L["Tickets_ActiveStatus"]</span>
+                                            break;
+                                        case TicketState.Used:
+                                            <span class="status is-used" id="admin-tickets-status-used-@ticket.Id"><span class="status__dot"></span>@L["Tickets_UsedStatus"]</span>
+                                            break;
+                                        default:
+                                            <span class="status is-cancelled" id="admin-tickets-status-cancelled-@ticket.Id"><span class="status__dot"></span>@L["Tickets_CancelledStatus"]</span>
+                                            break;
                                     }
                                 </td>
                                 <td class="actions-col" id="admin-tickets-cell-actions-@ticket.Id">
                                     <div class="row-actions" id="admin-tickets-row-actions-@ticket.Id">
+                                        <button id="admin-tickets-details-btn-@ticket.Id" class="row-btn" @onclick="() => OpenDetail(ticket.Id)"
+                                                title="@L["Tickets_DetailViewTitle"]">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
                                         @if (ticket.OrderId.HasValue)
                                         {
                                             <button id="admin-tickets-view-order-btn-@ticket.Id" class="row-btn" @onclick="() => ViewOrder(ticket.OrderId.Value)"
@@ -249,7 +260,239 @@
                         }
                     </tbody>
                 </table>
+                <TablePager TItem="TicketDto" View="pager" IdPrefix="admin-tickets-table" OnChanged="StateHasChanged" />
             </div>
         }
+    }
+
+    @if (showDetail)
+    {
+        <div class="ticket-detail-overlay" id="admin-tickets-detail-overlay" @onclick="CloseDetail">
+            <div class="ticket-detail-modal" id="admin-tickets-detail-modal" @onclick:stopPropagation="true">
+                <header class="ticket-detail-modal__head" id="admin-tickets-detail-head">
+                    <div>
+                        <span class="eyebrow">@L["Tickets_DetailTitle"]</span>
+                        <h2 id="admin-tickets-detail-number">@(selectedDetail?.TicketNumber ?? "")</h2>
+                    </div>
+                    <button type="button" class="ticket-detail-modal__close" id="admin-tickets-detail-close-btn"
+                            title="@L["Tickets_DetailClose"]" @onclick="CloseDetail">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </header>
+
+                @if (detailLoading)
+                {
+                    <div class="loading-state" id="admin-tickets-detail-loading">
+                        <span class="loading-spinner"></span>
+                        <p>@L["Tickets_DetailLoading"]</p>
+                    </div>
+                }
+                else if (selectedDetail == null)
+                {
+                    <div class="console-alert console-alert--danger" id="admin-tickets-detail-error">
+                        <span>@(detailError ?? errorMessage)</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="ticket-detail-body" id="admin-tickets-detail-body">
+                        <!-- LEFT: visual ticket card + PDF download -->
+                        <div class="ticket-detail-left" id="admin-tickets-detail-left">
+                            <span class="section-label">@L["Tickets_DetailCardPreview"]</span>
+                            <div class="tcard" id="admin-tickets-detail-card">
+                                <div class="tcard__head">
+                                    <div>
+                                        <span class="tcard__eyebrow">STADIUM ENTRY TICKET</span>
+                                        <div class="tcard__event">@selectedDetail.EventName</div>
+                                    </div>
+                                    @if (selectedDetail.Kind == TicketKind.Season)
+                                    {
+                                        <span class="tcard__season">@L["Tickets_SeasonPassBadge"]</span>
+                                    }
+                                </div>
+                                <div class="tcard__body">
+                                    <div class="tcard__info">
+                                        <div class="tcard__field">
+                                            <span>DATE &amp; TIME</span>
+                                            <strong>@(selectedDetail.EventDate?.ToString("ddd, dd MMM yyyy HH:mm") ?? "—")</strong>
+                                        </div>
+                                        <div class="tcard__seatrow">
+                                            <div class="tcard__field"><span>SECTION</span><strong>@Dash(selectedDetail.Section)</strong></div>
+                                            <div class="tcard__field"><span>ROW</span><strong>@Dash(selectedDetail.Row)</strong></div>
+                                            <div class="tcard__field"><span>SEAT</span><strong>@Dash(selectedDetail.SeatNumber)</strong></div>
+                                        </div>
+                                    </div>
+                                    <div class="tcard__qr">
+                                        @if (!string.IsNullOrEmpty(selectedDetail.QrImageDataUri))
+                                        {
+                                            <img src="@selectedDetail.QrImageDataUri" alt="QR" id="admin-tickets-detail-qr" />
+                                        }
+                                        <span class="tcard__num">@selectedDetail.TicketNumber</span>
+                                    </div>
+                                </div>
+                                <div class="tcard__foot">
+                                    <div>
+                                        <span class="tcard__pricelabel">@L["Tickets_DetailTicketPrice"]</span>
+                                        <div class="tcard__price">@Money(selectedDetail.TicketPrice)</div>
+                                    </div>
+                                    <span class="tcard__purchased">@L["Tickets_DetailPurchased"] @selectedDetail.PurchaseDate.ToString("dd MMM yyyy")</span>
+                                </div>
+                            </div>
+
+                            <button type="button" class="pill-btn pill-btn--primary tcard__download" id="admin-tickets-detail-download-btn"
+                                    disabled="@pdfDownloading" @onclick="DownloadCardPdf">
+                                @if (pdfDownloading)
+                                {
+                                    <span class="loading-spinner loading-spinner--sm"></span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                }
+                                <span>@L["Tickets_DetailDownloadPdf"]</span>
+                            </button>
+                            @if (!string.IsNullOrEmpty(pdfError))
+                            {
+                                <div class="console-alert console-alert--danger" id="admin-tickets-detail-pdf-error">
+                                    <span>@pdfError</span>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- RIGHT: facts + spending breakdown -->
+                        <div class="ticket-detail-right" id="admin-tickets-detail-right">
+                            <div class="detail-group" id="admin-tickets-detail-eventseat">
+                                <span class="section-label">@L["Tickets_DetailEventSeat"]</span>
+                                <dl class="detail-list">
+                                    <dt>@L["Tickets_EventHeader"]</dt><dd>@selectedDetail.EventName</dd>
+                                    <dt>@L["Tickets_DateHeader"]</dt><dd>@(selectedDetail.EventDate?.ToString("MMM dd, yyyy HH:mm") ?? "—")</dd>
+                                    <dt>@L["Tickets_SeatHeader"]</dt><dd>@SeatText(selectedDetail)</dd>
+                                    <dt>@L["Tickets_StatusHeader"]</dt>
+                                    <dd>
+                                        @if (selectedDetail.IsActive)
+                                        {
+                                            <span class="status is-active"><span class="status__dot"></span>@L["Tickets_ActiveStatus"]</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status is-inactive"><span class="status__dot"></span>@L["Tickets_InactiveStatus"]</span>
+                                        }
+                                        <span class="used-flag">· @(selectedDetail.IsUsed ? L["Tickets_DetailUsed"] : L["Tickets_DetailNotUsed"])</span>
+                                    </dd>
+                                </dl>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(selectedDetail.CustomerName) || !string.IsNullOrEmpty(selectedDetail.CustomerEmail) || !string.IsNullOrEmpty(selectedDetail.CustomerPhone))
+                            {
+                                <div class="detail-group" id="admin-tickets-detail-customer">
+                                    <span class="section-label">@L["Tickets_DetailCustomer"]</span>
+                                    <dl class="detail-list">
+                                        @if (!string.IsNullOrEmpty(selectedDetail.CustomerName))
+                                        {
+                                            <dt>@L["Tickets_DetailName"]</dt><dd>@selectedDetail.CustomerName</dd>
+                                        }
+                                        @if (!string.IsNullOrEmpty(selectedDetail.CustomerEmail))
+                                        {
+                                            <dt>@L["Tickets_DetailEmail"]</dt><dd>@selectedDetail.CustomerEmail</dd>
+                                        }
+                                        @if (!string.IsNullOrEmpty(selectedDetail.CustomerPhone))
+                                        {
+                                            <dt>@L["Tickets_DetailPhone"]</dt><dd>@selectedDetail.CustomerPhone</dd>
+                                        }
+                                    </dl>
+                                </div>
+                            }
+
+                            <div class="detail-group" id="admin-tickets-detail-wallet">
+                                <span class="section-label">@L["Tickets_DetailWallet"]</span>
+                                @if (selectedDetail.CustomerHasWallet)
+                                {
+                                    <div class="wallet-balance" id="admin-tickets-detail-wallet-balance">
+                                        <i class="bi bi-wallet2"></i>
+                                        <span class="wallet-balance__amount mono">@Money(selectedDetail.WalletBalance ?? 0m)</span>
+                                        @if (!string.IsNullOrEmpty(selectedDetail.WalletStatus) && selectedDetail.WalletStatus != "Active")
+                                        {
+                                            <span class="wallet-balance__status">· @selectedDetail.WalletStatus</span>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="wallet-balance wallet-balance--none" id="admin-tickets-detail-wallet-none">
+                                        <i class="bi bi-wallet2"></i>
+                                        <span class="wallet-balance__empty">@L["Tickets_DetailNoWallet"]</span>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="detail-group" id="admin-tickets-detail-spending">
+                                <span class="section-label">@L["Tickets_DetailSpending"]</span>
+
+                                <div class="spend-row spend-row--head">
+                                    <span>@L["Tickets_DetailTicketPrice"]</span>
+                                    <span class="mono">@Money(selectedDetail.TicketPrice)</span>
+                                </div>
+
+                                <div class="spend-subhead">@L["Tickets_DetailDrinksOrders"]</div>
+                                @if (selectedDetail.DrinkOrders.Count == 0)
+                                {
+                                    <p class="spend-empty" id="admin-tickets-detail-no-orders">@L["Tickets_DetailNoOrders"]</p>
+                                }
+                                else
+                                {
+                                    @foreach (var order in selectedDetail.DrinkOrders)
+                                    {
+                                        <div class="order-block" id="admin-tickets-detail-order-@order.OrderId">
+                                            <div class="order-block__head">
+                                                <span>@L["Tickets_DetailOrder"] #@order.OrderId · @order.Status</span>
+                                                <span class="mono">@Money(order.OrderTotal)</span>
+                                            </div>
+                                            <table class="order-items">
+                                                <thead>
+                                                    <tr>
+                                                        <th>@L["Tickets_DetailDrinksOrders"]</th>
+                                                        <th class="num">@L["Tickets_DetailQty"]</th>
+                                                        <th class="num">@L["Tickets_DetailUnit"]</th>
+                                                        <th class="num">@L["Tickets_DetailItemTotal"]</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in order.Items)
+                                                    {
+                                                        <tr>
+                                                            <td>@item.DrinkName</td>
+                                                            <td class="num mono">@item.Quantity</td>
+                                                            <td class="num mono">@Money(item.UnitPrice)</td>
+                                                            <td class="num mono">@Money(item.TotalPrice)</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                            @if (order.Payment != null)
+                                            {
+                                                <div class="order-block__pay">
+                                                    <i class="bi bi-credit-card"></i>
+                                                    @L["Tickets_DetailPayment"]: @order.Payment.Method · @order.Payment.Status · @Money(order.Payment.Amount)
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+
+                                    <div class="spend-row">
+                                        <span>@L["Tickets_DetailDrinksTotal"]</span>
+                                        <span class="mono">@Money(selectedDetail.DrinksTotal)</span>
+                                    </div>
+                                }
+
+                                <div class="spend-row spend-row--grand">
+                                    <span>@L["Tickets_DetailGrandTotal"]</span>
+                                    <span class="mono">@Money(selectedDetail.GrandTotal)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     }
 </div>

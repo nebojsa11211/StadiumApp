@@ -319,20 +319,27 @@ namespace StadiumDrinkOrdering.API.Services
                             var drink = await _context.Drinks.FirstOrDefaultAsync(d => d.Name == drinkName);
                             if (drink == null)
                             {
-                                var drinkCategory = drinkName switch
+                                // Map the import's drink name to a category name, then resolve to a
+                                // category row (categories are now data-driven). Fall back to SoftDrink.
+                                var categoryName = drinkName switch
                                 {
-                                    "Beer" => DrinkCategory.Beer,
-                                    "Champagne" => DrinkCategory.Cocktail,
-                                    "Soft Drink" => DrinkCategory.SoftDrink,
-                                    "Water" => DrinkCategory.Water,
-                                    "Coffee" => DrinkCategory.Coffee,
-                                    _ => DrinkCategory.SoftDrink
+                                    "Beer" => "Beer",
+                                    "Champagne" => "Cocktail",
+                                    "Soft Drink" => "SoftDrink",
+                                    "Water" => "Water",
+                                    "Coffee" => "Coffee",
+                                    _ => "SoftDrink"
                                 };
-                                    
+
+                                var category =
+                                    await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName)
+                                    ?? await _context.Categories.FirstOrDefaultAsync(c => c.Name == "SoftDrink")
+                                    ?? await _context.Categories.OrderBy(c => c.Id).FirstAsync();
+
                                 drink = new Drink
                                 {
                                     Name = drinkName ?? "Unknown",
-                                    Category = drinkCategory,
+                                    CategoryId = category.Id,
                                     Price = beverageElement.GetProperty("price").GetDecimal() / beverageElement.GetProperty("quantity").GetInt32(),
                                     IsAvailable = true
                                 };

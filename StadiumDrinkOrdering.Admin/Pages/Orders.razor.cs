@@ -13,13 +13,11 @@ public partial class Orders : ComponentBase
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
-    private const int PageSize = 50;
-
     private bool isLoading = false;
     private List<OrderDto> allOrders = new();
     private List<OrderDto> filteredOrders = new();
     private HashSet<int> selectedOrderIds = new();
-    private int displayCount = PageSize;
+    private readonly PagedView<OrderDto> pager = new();
 
     // Order detail modal (opened by the row "view" button)
     private OrderDto? viewOrder;
@@ -173,7 +171,8 @@ public partial class Orders : ComponentBase
             ? query.OrderByDescending(o => o.CreatedAt)
             : sortState.Apply(query, SortSelectors);
         filteredOrders = ordered.ToList();
-        displayCount = PageSize;
+        pager.Source = filteredOrders;
+        pager.Reset();
         CalculateStatistics();
         StateHasChanged();
     }
@@ -248,7 +247,7 @@ public partial class Orders : ComponentBase
         selectedOrderIds.Clear();
         if (isSelected)
         {
-            foreach (var order in filteredOrders.Take(displayCount))
+            foreach (var order in pager.PageItems)
             {
                 selectedOrderIds.Add(order.Id);
             }
@@ -333,12 +332,6 @@ public partial class Orders : ComponentBase
     {
         viewOrder = null;
         isLoadingDetail = false;
-    }
-
-    private void LoadMoreOrders()
-    {
-        displayCount = Math.Min(displayCount + PageSize, filteredOrders.Count);
-        StateHasChanged();
     }
 
     // Console status pill modifier (dot + label) matching the dashboard design

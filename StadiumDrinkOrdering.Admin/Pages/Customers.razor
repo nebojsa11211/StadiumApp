@@ -113,7 +113,7 @@
                         </tr>
                     </thead>
                     <tbody id="admin-customers-table-body">
-                        @foreach (var customer in filteredCustomers.Take(100))
+                        @foreach (var customer in pager.PageItems)
                         {
                             <tr id="admin-customers-row-@customer.Id">
                                 <td class="mono console-table__id" id="admin-customers-cell-id-@customer.Id">#@customer.Id</td>
@@ -153,12 +153,7 @@
                     </tbody>
                 </table>
 
-                @if (filteredCustomers.Count > 100)
-                {
-                    <div class="table-foot" id="admin-customers-table-foot">
-                        <p id="admin-customers-table-foot-message">@L["Users_ShowingFirstMessage"] <span class="mono">100</span> @L["Users_OfTotalMessage"] <span class="mono">@filteredCustomers.Count</span> @L["Customers_TotalText"]</p>
-                    </div>
-                }
+                <TablePager TItem="UserDto" View="pager" IdPrefix="admin-customers-table" OnChanged="StateHasChanged" />
             }
             else
             {

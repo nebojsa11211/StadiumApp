@@ -60,4 +60,4 @@ Write-Host "HTTPS URLs will be available at:" -ForegroundColor Yellow
 Write-Host "  - API: https://localhost:9010" -ForegroundColor White
 Write-Host "  - Customer: https://localhost:9020" -ForegroundColor White  
 Write-Host "  - Admin: https://localhost:9030" -ForegroundColor White
-Write-Host "  - Staff: https://localhost:9040" -ForegroundColor White
+Write-Host "  - Bar: https://localhost:9040" -ForegroundColor White

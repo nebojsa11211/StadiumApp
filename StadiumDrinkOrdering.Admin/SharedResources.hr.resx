@@ -332,6 +332,9 @@
   <data name="Nav_Drinks" xml:space="preserve">
     <value>Pića</value>
   </data>
+  <data name="Nav_Categories" xml:space="preserve">
+    <value>Kategorije</value>
+  </data>
   <data name="Nav_Analytics" xml:space="preserve">
     <value>Analitika</value>
   </data>
@@ -2173,6 +2176,12 @@
   <data name="Tickets_InactiveOption" xml:space="preserve">
     <value>Neaktivne</value>
   </data>
+  <data name="Tickets_UsedOption" xml:space="preserve">
+    <value>Iskorištene</value>
+  </data>
+  <data name="Tickets_CancelledOption" xml:space="preserve">
+    <value>Otkazane</value>
+  </data>
   <data name="Tickets_SearchLabel" xml:space="preserve">
     <value>Pretraživanje</value>
   </data>
@@ -2256,6 +2265,12 @@
   </data>
   <data name="Tickets_InactiveStatus" xml:space="preserve">
     <value>Neaktivna</value>
+  </data>
+  <data name="Tickets_UsedStatus" xml:space="preserve">
+    <value>Iskorištena</value>
+  </data>
+  <data name="Tickets_CancelledStatus" xml:space="preserve">
+    <value>Otkazana</value>
   </data>
   <data name="Tickets_ViewOrderTitle" xml:space="preserve">
     <value>Prikaži narudžbu</value>
@@ -2502,6 +2517,18 @@
   </data>
   <data name="Events_EndAfterStartValidation" xml:space="preserve">
     <value>Vrijeme završetka mora biti nakon vremena početka.</value>
+  </data>
+  <data name="Events_SalesStartDateTimeLabel" xml:space="preserve">
+    <value>Početak prodaje ulaznica</value>
+  </data>
+  <data name="Events_SalesEndDateTimeLabel" xml:space="preserve">
+    <value>Kraj prodaje ulaznica</value>
+  </data>
+  <data name="Events_SalesEndAfterStartValidation" xml:space="preserve">
+    <value>Vrijeme kraja prodaje mora biti nakon vremena početka prodaje.</value>
+  </data>
+  <data name="Events_SalesWindowHint" xml:space="preserve">
+    <value>Neobavezno. Ostavite početak praznim za trenutno otvaranje prodaje, a kraj praznim da ostane otvorena dok je događaj u prodaji. Ulaznice se mogu prodavati samo kada je događaj „U prodaji” i unutar ovog razdoblja.</value>
   </data>
   <data name="Events_CapacityFieldLabel" xml:space="preserve">
     <value>Kapacitet</value>
@@ -3712,4 +3739,36 @@
   <data name="Settings_TicketSalesEnabledHint" xml:space="preserve"><value>Kada je isključeno, aplikacija za kupce skriva kupnju, a API odbija nove kupnje. Ulaznice tada u sustav ulaze samo putem vanjske integracije.</value></data>
   <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Prodaja ulaznica je UKLJUČENA — kupci mogu kupovati ulaznice u aplikaciji.</value></data>
   <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Prodaja ulaznica je ISKLJUČENA — ulaznice dolaze samo iz vanjskog sustava.</value></data>
+  <data name="Tickets_DetailViewTitle" xml:space="preserve"><value>Prikaži detalje</value></data>
+  <data name="Tickets_DetailTitle" xml:space="preserve"><value>Detalji ulaznice</value></data>
+  <data name="Tickets_DetailClose" xml:space="preserve"><value>Zatvori</value></data>
+  <data name="Tickets_DetailLoading" xml:space="preserve"><value>Učitavanje detalja ulaznice…</value></data>
+  <data name="Tickets_DetailEventSeat" xml:space="preserve"><value>Događaj i sjedalo</value></data>
+  <data name="Tickets_DetailCustomer" xml:space="preserve"><value>Kupac</value></data>
+  <data name="Tickets_DetailWallet" xml:space="preserve"><value>Stanje novčanika</value></data>
+  <data name="Tickets_DetailNoWallet" xml:space="preserve"><value>Ovaj kupac nema novčanik</value></data>
+  <data name="Tickets_DetailName" xml:space="preserve"><value>Ime</value></data>
+  <data name="Tickets_DetailEmail" xml:space="preserve"><value>E-pošta</value></data>
+  <data name="Tickets_DetailPhone" xml:space="preserve"><value>Telefon</value></data>
+  <data name="Tickets_DetailUsed" xml:space="preserve"><value>Iskorišteno</value></data>
+  <data name="Tickets_DetailNotUsed" xml:space="preserve"><value>Nije iskorišteno</value></data>
+  <data name="Tickets_DetailPurchased" xml:space="preserve"><value>Kupljeno</value></data>
+  <data name="Tickets_DetailSpending" xml:space="preserve"><value>Pregled potrošnje</value></data>
+  <data name="Tickets_DetailTicketPrice" xml:space="preserve"><value>Cijena ulaznice</value></data>
+  <data name="Tickets_DetailDrinksOrders" xml:space="preserve"><value>Pića i narudžbe</value></data>
+  <data name="Tickets_DetailNoOrders" xml:space="preserve"><value>Nema narudžbi pića za ovu ulaznicu.</value></data>
+  <data name="Tickets_DetailOrder" xml:space="preserve"><value>Narudžba</value></data>
+  <data name="Tickets_DetailQty" xml:space="preserve"><value>Kol.</value></data>
+  <data name="Tickets_DetailUnit" xml:space="preserve"><value>Jed.</value></data>
+  <data name="Tickets_DetailItemTotal" xml:space="preserve"><value>Ukupno</value></data>
+  <data name="Tickets_DetailPayment" xml:space="preserve"><value>Plaćanje</value></data>
+  <data name="Tickets_DetailDrinksTotal" xml:space="preserve"><value>Ukupno pića</value></data>
+  <data name="Tickets_DetailGrandTotal" xml:space="preserve"><value>Sveukupno</value></data>
+  <data name="Tickets_DetailCardPreview" xml:space="preserve"><value>Kartica ulaznice</value></data>
+  <data name="Tickets_DetailDownloadPdf" xml:space="preserve"><value>Preuzmi PDF</value></data>
+  <data name="Tickets_DetailDownloadFailed" xml:space="preserve"><value>Nije moguće generirati PDF. Pokušajte ponovno.</value></data>
+  <data name="Pager_Show" xml:space="preserve"><value>Prikaži</value></data>
+  <data name="Pager_Showing" xml:space="preserve"><value>Prikaz {0} do {1} od {2}</value></data>
+  <data name="Pager_Previous" xml:space="preserve"><value>Prethodna stranica</value></data>
+  <data name="Pager_Next" xml:space="preserve"><value>Sljedeća stranica</value></data>
 </root>

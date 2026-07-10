@@ -21,6 +21,8 @@ else if (_home is null || !_home.HasPass)
         <h2>Nemaš sezonsku pretplatu</h2>
         <p class="muted">Na ovom računu nije pronađena sezonska ulaznica. Došao si na pojedinačnu utakmicu? Skeniraj ulaznicu.</p>
         <button id="customer-home-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
+        <button id="customer-home-my-tickets-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/my-tickets"))">🎟️ Moje ulaznice</button>
+        <button id="customer-layout-profile-link" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/profile"))">👤 Moj profil</button>
         <button id="customer-home-logout-btn" class="btn btn-ghost" @onclick="Logout">Odjava</button>
     </div>
 }
@@ -31,7 +33,7 @@ else
             <div class="greet">Dobra večer,</div>
             <div class="name">@FirstName 👋</div>
         </div>
-        <button id="customer-home-avatar-btn" class="avatar" @onclick="Logout" title="Odjava">@Initials</button>
+        <button id="customer-home-avatar-btn" class="avatar" @onclick="@(() => Nav.NavigateTo("/profile"))" title="Moj profil">@Initials</button>
     </div>
 
     <div id="customer-home-pass" class="pass">
@@ -42,6 +44,11 @@ else
         </div>
         <span class="chip-seat"><b>Tvoje mjesto</b></span>
     </div>
+
+    <a id="customer-home-my-tickets-link" href="/my-tickets" class="home-tickets-link">
+        <span>🎟️ Moje ulaznice & računi</span>
+        <span class="chev">›</span>
+    </a>
 
     @if (_home.LiveEvent is not null)
     {

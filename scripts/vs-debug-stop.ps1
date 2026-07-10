@@ -42,11 +42,11 @@ $containers = @(
     "stadium-api",
     "stadium-admin",
     "stadium-customer",
-    "stadium-staff",
+    "stadium-bar",
     "stadiumdrinkordering.api",
     "stadiumdrinkordering.customer",
     "stadiumdrinkordering.admin",
-    "stadiumdrinkordering.staff"
+    "stadiumdrinkordering.bar"
 )
 
 foreach ($container in $containers) {

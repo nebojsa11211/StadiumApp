@@ -42,6 +42,25 @@
             <ValidationMessage For="@(() => registerModel.Email)" class="verr" />
         </div>
 
+        <div id="customer-register-firstname-group" class="field">
+            <label for="customer-register-firstname-input">Ime</label>
+            <InputText id="customer-register-firstname-input" @bind-Value="registerModel.FirstName" placeholder="npr. Ivan" autocomplete="given-name" />
+            <ValidationMessage For="@(() => registerModel.FirstName)" class="verr" />
+        </div>
+
+        <div id="customer-register-lastname-group" class="field">
+            <label for="customer-register-lastname-input">Prezime</label>
+            <InputText id="customer-register-lastname-input" @bind-Value="registerModel.LastName" placeholder="npr. Horvat" autocomplete="family-name" />
+            <ValidationMessage For="@(() => registerModel.LastName)" class="verr" />
+        </div>
+
+        <div id="customer-register-oib-group" class="field">
+            <label for="customer-register-oib-input">OIB</label>
+            <InputText id="customer-register-oib-input" @bind-Value="registerModel.Oib" placeholder="11 znamenki" inputmode="numeric" maxlength="11" autocomplete="off" />
+            <ValidationMessage For="@(() => registerModel.Oib)" class="verr" />
+            <span class="reg-hint">Koristi se za provjeru identiteta pri uplati na baru.</span>
+        </div>
+
         <div id="customer-register-password-group" class="field">
             <label for="customer-register-password-input">Lozinka</label>
             <InputText id="customer-register-password-input" type="password" @bind-Value="registerModel.Password" placeholder="••••••••" autocomplete="new-password" />
@@ -97,6 +116,18 @@
         [EmailAddress(ErrorMessage = "Unesi ispravnu email adresu")]
         public string Email { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Ime je obavezno")]
+        [StringLength(50, ErrorMessage = "Ime mora imati manje od 50 znakova")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Prezime je obavezno")]
+        [StringLength(50, ErrorMessage = "Prezime mora imati manje od 50 znakova")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "OIB je obavezan")]
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "OIB mora imati točno 11 znamenki")]
+        public string Oib { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Lozinka je obavezna")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Lozinka mora imati najmanje 6 znakova")]
         public string Password { get; set; } = string.Empty;
@@ -133,7 +164,10 @@
                 Username = registerModel.Username,
                 Email = registerModel.Email,
                 Password = registerModel.Password,
-                ConfirmPassword = registerModel.ConfirmPassword
+                ConfirmPassword = registerModel.ConfirmPassword,
+                FirstName = registerModel.FirstName,
+                LastName = registerModel.LastName,
+                Oib = registerModel.Oib
             };
 
             var result = await ApiService.RegisterAsync(registerDto);

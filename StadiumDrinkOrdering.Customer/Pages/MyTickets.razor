@@ -1,0 +1,266 @@
+@page "/my-tickets"
+@layout MobileShell
+@using System.IO
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Customer.Components
+@inject IApiService ApiService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Moje ulaznice — HALFTIME</PageTitle>
+
+<ScreenHeader Title="Moje ulaznice" Subtitle="Ulaznice & potrošnja" ShowBack="true" BackHref="/home" />
+
+<AuthenticationGuard>
+    <div id="customer-tickets-container" class="mt-body no-scrollbar">
+
+        @if (tickets == null)
+        {
+            <div id="customer-tickets-loading" class="mt-state"><span class="spinner"></span> Učitavam ulaznice…</div>
+        }
+        else if (!tickets.Any())
+        {
+            <div id="customer-tickets-empty" class="mt-state mt-empty">
+                <div class="mt-emoji">🎟️</div>
+                <h2>Još nema ulaznica</h2>
+                <p>Kad kupiš ulaznicu, pojavit će se ovdje s računom i PDF karticom.</p>
+                <a id="customer-tickets-browse-btn" href="/events" class="btn btn-primary">Pogledaj događaje</a>
+            </div>
+        }
+        else
+        {
+            <div id="customer-tickets-list" class="mt-list">
+                @foreach (var ticket in tickets)
+                {
+                    <button type="button" id="customer-ticket-@ticket.Id" class="mt-card" @onclick="() => OpenDetail(ticket.Id)">
+                        <div class="mt-card-head">
+                            <span id="customer-ticket-event-@ticket.Id" class="mt-event">@ticket.EventName</span>
+                            @if (ticket.Kind == TicketKind.Season)
+                            {
+                                <span class="mt-badge">Sezonska</span>
+                            }
+                        </div>
+                        <div class="mt-card-meta">
+                            <span id="customer-ticket-date-@ticket.Id">📅 @(ticket.EventDate?.ToLocalTime().ToString("dd.MM.yyyy · HH:mm") ?? "—")</span>
+                            <span id="customer-ticket-seat-@ticket.Id">🎫 @SeatText(ticket)</span>
+                        </div>
+                        <div class="mt-card-foot">
+                            <span id="customer-ticket-number-@ticket.Id" class="mt-num tnum">@ticket.TicketNumber</span>
+                            <span id="customer-ticket-price-@ticket.Id" class="mt-price tnum">
+                                @(ticket.Kind == TicketKind.Season && ticket.Price == 0m ? "Uključeno" : Money(ticket.Price))
+                            </span>
+                        </div>
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    @if (showDetail)
+    {
+        <div id="customer-ticket-scrim" class="mt-scrim show" @onclick="CloseDetail"></div>
+        <div id="customer-ticket-sheet" class="mt-sheet show">
+            <div class="grab"></div>
+            <div class="mt-sheet-head">
+                <div>
+                    <div id="customer-ticket-sheet-title" class="mt-sheet-title">Ulaznica</div>
+                    <div class="mt-sheet-sub tnum">@(selectedDetail?.TicketNumber ?? "")</div>
+                </div>
+                <button id="customer-ticket-sheet-close-btn" class="iconbtn" @onclick="CloseDetail" aria-label="Zatvori">✕</button>
+            </div>
+
+            <div class="mt-sheet-body no-scrollbar">
+                @if (detailLoading)
+                {
+                    <div class="mt-state"><span class="spinner"></span> Učitavam…</div>
+                }
+                else if (selectedDetail == null)
+                {
+                    <div class="mt-inline-error">Ne mogu učitati detalje ulaznice.</div>
+                }
+                else
+                {
+                    <!-- Visual ticket card -->
+                    <div id="customer-ticket-card" class="tcard">
+                        <div class="tcard-head">
+                            <div>
+                                <span class="tcard-eyebrow">ULAZ NA STADION</span>
+                                <div class="tcard-event">@selectedDetail.EventName</div>
+                            </div>
+                            @if (selectedDetail.Kind == TicketKind.Season)
+                            {
+                                <span class="tcard-season">SEZONSKA</span>
+                            }
+                        </div>
+                        <div class="tcard-body">
+                            <div class="tcard-info">
+                                <div class="tcard-field">
+                                    <span>DATUM</span>
+                                    <strong>@(selectedDetail.EventDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "—")</strong>
+                                </div>
+                                <div class="tcard-seatrow">
+                                    <div class="tcard-field"><span>SEKTOR</span><strong>@Dash(selectedDetail.Section)</strong></div>
+                                    <div class="tcard-field"><span>RED</span><strong>@Dash(selectedDetail.Row)</strong></div>
+                                    <div class="tcard-field"><span>SJEDALO</span><strong>@Dash(selectedDetail.SeatNumber)</strong></div>
+                                </div>
+                            </div>
+                            <div class="tcard-qr">
+                                @if (!string.IsNullOrEmpty(selectedDetail.QrImageDataUri))
+                                {
+                                    <img src="@selectedDetail.QrImageDataUri" alt="QR" id="customer-ticket-qr" />
+                                }
+                            </div>
+                        </div>
+                        <div class="tcard-foot">
+                            <div>
+                                <span class="tcard-pricelabel">CIJENA ULAZNICE</span>
+                                <div class="tcard-price tnum">@Money(selectedDetail.TicketPrice)</div>
+                            </div>
+                            <span class="tcard-purchased tnum">@selectedDetail.PurchaseDate.ToLocalTime().ToString("dd.MM.yyyy")</span>
+                        </div>
+                    </div>
+
+                    <button id="customer-ticket-download-btn" class="btn btn-primary mt-download"
+                            disabled="@pdfDownloading" @onclick="DownloadCardPdf">
+                        @if (pdfDownloading)
+                        {
+                            <span class="spinner"></span> <span>Pripremam…</span>
+                        }
+                        else
+                        {
+                            <span>⬇ Preuzmi PDF ulaznicu</span>
+                        }
+                    </button>
+                    @if (!string.IsNullOrEmpty(pdfError))
+                    {
+                        <div class="mt-inline-error">@pdfError</div>
+                    }
+
+                    <!-- Spending breakdown -->
+                    <span class="label">Potrošnja</span>
+                    <div class="mt-spend">
+                        <div class="mt-spend-row">
+                            <span>Cijena ulaznice</span>
+                            <span class="tnum">@Money(selectedDetail.TicketPrice)</span>
+                        </div>
+
+                        <div class="mt-spend-sub">Pića i narudžbe</div>
+                        @if (selectedDetail.DrinkOrders.Count == 0)
+                        {
+                            <p id="customer-ticket-no-orders" class="mt-spend-empty">Nema narudžbi pića za ovu ulaznicu.</p>
+                        }
+                        else
+                        {
+                            @foreach (var order in selectedDetail.DrinkOrders)
+                            {
+                                <div id="customer-ticket-order-@order.OrderId" class="mt-order">
+                                    <div class="mt-order-head">
+                                        <span>Narudžba #@order.OrderId · @order.Status</span>
+                                        <span class="tnum">@Money(order.OrderTotal)</span>
+                                    </div>
+                                    @foreach (var item in order.Items)
+                                    {
+                                        <div class="mt-order-item">
+                                            <span>@item.Quantity × @item.DrinkName</span>
+                                            <span class="tnum">@Money(item.TotalPrice)</span>
+                                        </div>
+                                    }
+                                    @if (order.Payment != null)
+                                    {
+                                        <div class="mt-order-pay">💳 @order.Payment.Method · @order.Payment.Status</div>
+                                    }
+                                </div>
+                            }
+                            <div class="mt-spend-row">
+                                <span>Ukupno pića</span>
+                                <span class="tnum">@Money(selectedDetail.DrinksTotal)</span>
+                            </div>
+                        }
+
+                        <div class="mt-spend-row mt-spend-grand">
+                            <span>Sveukupno</span>
+                            <span class="tnum">@Money(selectedDetail.GrandTotal)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</AuthenticationGuard>
+
+@code {
+    private List<TicketDto>? tickets;
+    private bool showDetail;
+    private bool detailLoading;
+    private TicketDetailDto? selectedDetail;
+    private int detailTicketId;
+    private bool pdfDownloading;
+    private string? pdfError;
+
+    protected override async Task OnInitializedAsync() => tickets = await ApiService.GetMyTicketsAsync();
+
+    private async Task OpenDetail(int ticketId)
+    {
+        detailTicketId = ticketId;
+        showDetail = true;
+        detailLoading = true;
+        pdfError = null;
+        selectedDetail = null;
+        StateHasChanged();
+
+        selectedDetail = await ApiService.GetMyTicketDetailsAsync(ticketId);
+        detailLoading = false;
+    }
+
+    private void CloseDetail()
+    {
+        showDetail = false;
+        selectedDetail = null;
+        pdfError = null;
+    }
+
+    private async Task DownloadCardPdf()
+    {
+        if (pdfDownloading) return;
+        pdfDownloading = true;
+        pdfError = null;
+        StateHasChanged();
+
+        try
+        {
+            var bytes = await ApiService.GetMyTicketCardPdfAsync(detailTicketId);
+            if (bytes == null || bytes.Length == 0)
+            {
+                pdfError = "Nije moguće generirati PDF. Pokušaj ponovno.";
+                return;
+            }
+
+            var fileName = $"ulaznica-{selectedDetail?.TicketNumber ?? detailTicketId.ToString()}.pdf";
+            using var stream = new MemoryStream(bytes);
+            using var streamRef = new DotNetStreamReference(stream);
+            await JSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+        catch (Exception)
+        {
+            pdfError = "Nije moguće generirati PDF. Pokušaj ponovno.";
+        }
+        finally
+        {
+            pdfDownloading = false;
+        }
+    }
+
+    private static string Dash(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value!;
+
+    private static string Money(decimal amount) => $"€{amount:0.00}";
+
+    private static string SeatText(TicketDto t)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(t.Section)) parts.Add(t.Section!);
+        if (!string.IsNullOrWhiteSpace(t.Row)) parts.Add($"Red {t.Row}");
+        if (!string.IsNullOrWhiteSpace(t.SeatNumber)) parts.Add($"Sj. {t.SeatNumber}");
+        return parts.Count == 0 ? "—" : string.Join(" · ", parts);
+    }
+}

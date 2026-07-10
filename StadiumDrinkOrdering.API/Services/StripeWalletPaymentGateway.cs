@@ -28,6 +28,8 @@ public class StripeWalletPaymentGateway : IWalletPaymentGateway
 
     public bool SettlesAsynchronously => true;
 
+    public string? PublishableKey => _settings.PublishableKey;
+
     public Task<WalletGatewayResult> AuthorizeDepositAsync(decimal amount, string currency, string method, string reference)
         => throw new NotSupportedException("Stripe settles asynchronously via CreateDepositIntentAsync + webhook.");
 

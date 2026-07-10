@@ -87,6 +87,21 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
+    /// Settlement status of an async deposit intent for the signed-in fan. The browser polls this after
+    /// confirming the card: <c>Settled = true</c> is a definitive success (the webhook has credited the
+    /// wallet). Always scoped to the caller's own wallet.
+    /// </summary>
+    [HttpGet("me/deposits/{intentId}/status")]
+    public async Task<ActionResult<DepositStatusDto>> GetDepositStatus(string intentId)
+    {
+        var userId = _authorizationService.GetCurrentUserId(User);
+        if (userId is null or 0)
+            return Unauthorized();
+
+        return Ok(await _walletService.GetDepositStatusAsync(userId.Value, intentId));
+    }
+
+    /// <summary>
     /// Provider deposit webhook (e.g. Stripe <c>payment_intent.succeeded</c>). Unauthenticated — trust is
     /// established by the provider signature, verified inside the gateway. Credits the wallet exactly once
     /// (idempotent on the provider intent id). Returns 400 on a bad signature so the provider retries.

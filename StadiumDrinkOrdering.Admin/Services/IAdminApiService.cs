@@ -52,8 +52,15 @@ namespace StadiumDrinkOrdering.Admin.Services
         Task<DrinkDto?> UpdateDrinkAsync(int id, UpdateDrinkDto updateDrinkDto);
         Task<bool> DeleteDrinkAsync(int id);
 
+        Task<IEnumerable<CategoryDto>?> GetCategoriesAsync();
+        Task<CategoryDto?> CreateCategoryAsync(CreateCategoryDto createCategoryDto);
+        Task<CategoryDto?> UpdateCategoryAsync(int id, UpdateCategoryDto updateCategoryDto);
+        Task<(bool Success, string? Error)> DeleteCategoryAsync(int id);
+
         Task<IEnumerable<TicketDto>?> GetTicketsAsync();
         Task<IEnumerable<TicketDto>?> GetTicketsAsync(int? eventId);
+        Task<TicketDetailDto?> GetTicketDetailsAsync(int ticketId);
+        Task<byte[]?> GetTicketCardPdfAsync(int ticketId);
         Task<bool> ValidateTicketAsync(string ticketCode);
         Task<bool> UpdateTicketStatusAsync(int ticketId, bool isActive);
 

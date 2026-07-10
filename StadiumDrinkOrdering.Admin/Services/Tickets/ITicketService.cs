@@ -6,6 +6,8 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
     {
         Task<IEnumerable<TicketDto>?> GetTicketsAsync();
         Task<IEnumerable<TicketDto>?> GetTicketsAsync(int? eventId);
+        Task<TicketDetailDto?> GetTicketDetailsAsync(int ticketId);
+        Task<byte[]?> GetTicketCardPdfAsync(int ticketId);
         Task<bool> ValidateTicketAsync(string ticketCode);
         Task<bool> UpdateTicketStatusAsync(int ticketId, bool isActive);
     }

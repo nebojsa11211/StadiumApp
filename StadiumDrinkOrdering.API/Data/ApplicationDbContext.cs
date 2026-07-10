@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Drink> Drinks { get; set; }
+    public DbSet<Category> Categories { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Payment> Payments { get; set; }
@@ -59,6 +60,7 @@ public class ApplicationDbContext : DbContext
 
     // JWT Refresh Token entities
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<AccountActivationToken> AccountActivationTokens { get; set; }
 
     // External integration (ticketing webhook idempotency ledger)
     public DbSet<IntegrationInboxEntry> IntegrationInboxEntries { get; set; }
@@ -102,6 +104,22 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Price).HasPrecision(10, 2);
+
+            // Drinks belong to a category; block deleting a category still in use.
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.Drinks)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Category configuration
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.DisplayName).HasMaxLength(100);
+            entity.Property(e => e.Icon).HasMaxLength(16);
+            entity.HasIndex(e => e.Name).IsUnique();
         });
 
         // Order configuration
@@ -697,6 +715,21 @@ public class ApplicationDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        // AccountActivationToken configuration (single-use shell-account claim token)
+        modelBuilder.Entity<AccountActivationToken>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Token).IsUnique();
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.ExpiresAt);
+            entity.Property(e => e.Token).HasMaxLength(512).IsRequired();
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         // IntegrationInboxEntry configuration (webhook idempotency ledger)
         modelBuilder.Entity<IntegrationInboxEntry>(entity =>
         {
@@ -765,16 +798,30 @@ public class ApplicationDbContext : DbContext
             }
         );
 
+        // Seed drink categories. Ids intentionally match the legacy DrinkCategory enum values
+        // (Beer=1 ... Cocktail=8) so existing drink rows keep their category with no data migration.
+        var categorySeedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = 1, Name = "Beer", DisplayName = "Pivo", Icon = "🍺", IsActive = true, SortOrder = 1, CreatedAt = categorySeedDate },
+            new Category { Id = 2, Name = "SoftDrink", DisplayName = "Gazirano", Icon = "🥤", IsActive = true, SortOrder = 2, CreatedAt = categorySeedDate },
+            new Category { Id = 3, Name = "Water", DisplayName = "Voda", Icon = "💧", IsActive = true, SortOrder = 3, CreatedAt = categorySeedDate },
+            new Category { Id = 4, Name = "Coffee", DisplayName = "Kava", Icon = "☕", IsActive = true, SortOrder = 4, CreatedAt = categorySeedDate },
+            new Category { Id = 5, Name = "Tea", DisplayName = "Čaj", Icon = "🍵", IsActive = true, SortOrder = 5, CreatedAt = categorySeedDate },
+            new Category { Id = 6, Name = "Juice", DisplayName = "Sok", Icon = "🧃", IsActive = true, SortOrder = 6, CreatedAt = categorySeedDate },
+            new Category { Id = 7, Name = "EnergyDrink", DisplayName = "Energetsko", Icon = "⚡", IsActive = true, SortOrder = 7, CreatedAt = categorySeedDate },
+            new Category { Id = 8, Name = "Cocktail", DisplayName = "Koktel", Icon = "🍸", IsActive = true, SortOrder = 8, CreatedAt = categorySeedDate }
+        );
+
         // Seed some drinks
         modelBuilder.Entity<Drink>().HasData(
-            new Drink { Id = 1, Name = "Coca Cola", Description = "Classic Coca Cola", Price = 3.50m, StockQuantity = 100, Category = DrinkCategory.SoftDrink },
-            new Drink { Id = 2, Name = "Pepsi", Description = "Pepsi Cola", Price = 3.50m, StockQuantity = 100, Category = DrinkCategory.SoftDrink },
-            new Drink { Id = 3, Name = "Water", Description = "Bottled Water", Price = 2.00m, StockQuantity = 200, Category = DrinkCategory.Water },
-            new Drink { Id = 4, Name = "Beer", Description = "Local Draft Beer", Price = 6.00m, StockQuantity = 150, Category = DrinkCategory.Beer },
-            new Drink { Id = 5, Name = "Coffee", Description = "Hot Coffee", Price = 4.00m, StockQuantity = 80, Category = DrinkCategory.Coffee },
-            new Drink { Id = 6, Name = "Orange Juice", Description = "Fresh Orange Juice", Price = 4.50m, StockQuantity = 60, Category = DrinkCategory.Juice },
-            new Drink { Id = 7, Name = "Red Bull", Description = "Energy Drink", Price = 5.00m, StockQuantity = 90, Category = DrinkCategory.EnergyDrink },
-            new Drink { Id = 8, Name = "Green Tea", Description = "Hot Green Tea", Price = 3.00m, StockQuantity = 70, Category = DrinkCategory.Tea }
+            new Drink { Id = 1, Name = "Coca Cola", Description = "Classic Coca Cola", Price = 3.50m, StockQuantity = 100, CategoryId = 2 },
+            new Drink { Id = 2, Name = "Pepsi", Description = "Pepsi Cola", Price = 3.50m, StockQuantity = 100, CategoryId = 2 },
+            new Drink { Id = 3, Name = "Water", Description = "Bottled Water", Price = 2.00m, StockQuantity = 200, CategoryId = 3 },
+            new Drink { Id = 4, Name = "Beer", Description = "Local Draft Beer", Price = 6.00m, StockQuantity = 150, CategoryId = 1 },
+            new Drink { Id = 5, Name = "Coffee", Description = "Hot Coffee", Price = 4.00m, StockQuantity = 80, CategoryId = 4 },
+            new Drink { Id = 6, Name = "Orange Juice", Description = "Fresh Orange Juice", Price = 4.50m, StockQuantity = 60, CategoryId = 6 },
+            new Drink { Id = 7, Name = "Red Bull", Description = "Energy Drink", Price = 5.00m, StockQuantity = 90, CategoryId = 7 },
+            new Drink { Id = 8, Name = "Green Tea", Description = "Hot Green Tea", Price = 3.00m, StockQuantity = 70, CategoryId = 5 }
         );
 
         // Seed sample event first

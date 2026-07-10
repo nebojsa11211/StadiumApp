@@ -42,5 +42,31 @@ namespace StadiumDrinkOrdering.Admin.Services.Drinks
             var result = await DeleteWithErrorHandlingAsync($"drinks/{id}");
             return result.IsSuccess;
         }
+
+        public async Task<IEnumerable<CategoryDto>?> GetCategoriesAsync()
+        {
+            var result = await GetWithErrorHandlingAsync<IEnumerable<CategoryDto>>("categories");
+            return result.IsSuccess ? result.Data : null;
+        }
+
+        public async Task<CategoryDto?> CreateCategoryAsync(CreateCategoryDto createCategoryDto)
+        {
+            var result = await PostWithErrorHandlingAsync<CategoryDto>("categories", createCategoryDto);
+            return result.IsSuccess ? result.Data : null;
+        }
+
+        public async Task<CategoryDto?> UpdateCategoryAsync(int id, UpdateCategoryDto updateCategoryDto)
+        {
+            var result = await PutWithErrorHandlingAsync<CategoryDto>($"categories/{id}", updateCategoryDto);
+            return result.IsSuccess ? result.Data : null;
+        }
+
+        public async Task<(bool Success, string? Error)> DeleteCategoryAsync(int id)
+        {
+            // Suppress the generic error toast so the page can surface the API's specific
+            // "category in use" message from the response body instead.
+            var result = await DeleteWithErrorHandlingAsync($"categories/{id}", showUserNotification: false);
+            return (result.IsSuccess, result.IsSuccess ? null : result.ErrorMessage);
+        }
     }
 }

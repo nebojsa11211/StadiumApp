@@ -16,6 +16,10 @@ public interface IWalletPaymentGateway
     /// <summary>True when deposits settle asynchronously via webhook; false for synchronous capture.</summary>
     bool SettlesAsynchronously { get; }
 
+    /// <summary>Publishable (public) provider key the browser needs to confirm a card, or null for a
+    /// gateway that requires no browser-side card entry (e.g. the synchronous mock). Safe to expose.</summary>
+    string? PublishableKey { get; }
+
     /// <summary>Synchronous authorize + capture. Only called when <see cref="SettlesAsynchronously"/> is false.</summary>
     Task<WalletGatewayResult> AuthorizeDepositAsync(decimal amount, string currency, string method, string reference);
 
@@ -52,6 +56,8 @@ public record WalletDepositSettlement(
 public class MockWalletPaymentGateway : IWalletPaymentGateway
 {
     public bool SettlesAsynchronously => false;
+
+    public string? PublishableKey => null; // synchronous capture — no browser-side card entry.
 
     public Task<WalletGatewayResult> AuthorizeDepositAsync(decimal amount, string currency, string method, string reference)
     {

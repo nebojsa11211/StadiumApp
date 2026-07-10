@@ -74,12 +74,12 @@ else
         <div id="customer-order-tabs" class="tabs no-scrollbar">
             @foreach (var cat in _categories)
             {
-                var n = CatCount(cat);
-                <button id="customer-order-tab-@cat" class="tab @(cat == _selected ? "on" : "")" @onclick="() => _selected = cat">
-                    <span class="tab-emoji">@DrinkVisuals.Emoji(cat)</span> @DrinkVisuals.Label(cat)
+                var n = CatCount(cat.Id);
+                <button id="customer-order-tab-@cat.Id" class="tab @(cat.Id == _selected ? "on" : "")" @onclick="() => _selected = cat.Id">
+                    <span class="tab-emoji">@cat.Icon</span> @cat.Label
                     @if (n > 0)
                     {
-                        <span id="customer-order-tab-count-@cat" class="cnt tnum">@n</span>
+                        <span id="customer-order-tab-count-@cat.Id" class="cnt tnum">@n</span>
                     }
                 </button>
             }
@@ -115,9 +115,12 @@ else
 @code {
     private bool _loading = true;
     private List<DrinkDto> _drinks = new();
-    private List<DrinkCategory> _categories = new();
-    private DrinkCategory _selected;
+    private List<CatTab> _categories = new();
+    private int _selected;
     private DrinkDto? _sheetDrink;
+
+    // Lightweight category descriptor for the tab strip, built from the loaded drinks.
+    private record CatTab(int Id, string Icon, string Label);
 
     protected override async Task OnInitializedAsync()
     {
@@ -161,18 +164,24 @@ else
     private async Task LoadDrinks()
     {
         _drinks = await Api.GetDrinksAsync() ?? new();
-        _categories = _drinks.Where(d => d.IsAvailable).Select(d => d.Category).Distinct().OrderBy(c => c).ToList();
-        if (_categories.Any() && !_categories.Contains(_selected))
-            _selected = _categories.First();
+        _categories = _drinks.Where(d => d.IsAvailable)
+            .GroupBy(d => d.CategoryId)
+            .Select(g => new CatTab(
+                g.Key,
+                DrinkVisuals.Emoji(g.First().CategoryIcon),
+                DrinkVisuals.Label(g.First().CategoryDisplayName, g.First().CategoryName)))
+            .ToList();
+        if (_categories.Any() && _categories.All(c => c.Id != _selected))
+            _selected = _categories.First().Id;
     }
 
     private IEnumerable<DrinkDto> Filtered() =>
-        _drinks.Where(d => d.Category == _selected).OrderByDescending(d => d.IsAvailable && d.StockQuantity > 0).ThenBy(d => d.Name);
+        _drinks.Where(d => d.CategoryId == _selected).OrderByDescending(d => d.IsAvailable && d.StockQuantity > 0).ThenBy(d => d.Name);
 
     private void QuickAdd(DrinkDto drink) => State.AddDrink(drink, 1);
 
     // Total cart quantity for a category — powers the count badge on each tab.
-    private int CatCount(DrinkCategory c) => _drinks.Where(d => d.Category == c).Sum(d => State.QtyOf(d.Id));
+    private int CatCount(int categoryId) => _drinks.Where(d => d.CategoryId == categoryId).Sum(d => State.QtyOf(d.Id));
 
     // A seat coordinate for the pass; falls back to an em dash so the ticket layout never collapses.
     private static string Coord(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value.Trim();

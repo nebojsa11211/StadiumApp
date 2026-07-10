@@ -254,7 +254,7 @@
                         </tr>
                     </thead>
                     <tbody id="admin-orders-tbody">
-                        @foreach (var order in filteredOrders.Take(displayCount))
+                        @foreach (var order in pager.PageItems)
                         {
                             <tr class="@(selectedOrderIds.Contains(order.Id) ? "is-selected" : "")" id="@($"admin-orders-row-{order.Id}")">
                                 <td class="check" id="@($"admin-orders-checkbox-{order.Id}")">
@@ -284,13 +284,7 @@
                     </tbody>
                 </table>
 
-                @if (filteredOrders.Count > displayCount)
-                {
-                    <div class="table-foot" id="admin-orders-table-foot">
-                        <p id="admin-orders-showing-message">@L["Orders_ShowingMessage", Math.Min(displayCount, filteredOrders.Count), filteredOrders.Count]</p>
-                        <button class="pill-btn" @onclick="LoadMoreOrders" id="admin-orders-load-more-btn">@L["Orders_LoadMoreButton"]</button>
-                    </div>
-                }
+                <TablePager TItem="OrderDto" View="pager" IdPrefix="admin-orders-table" OnChanged="StateHasChanged" />
             }
             else
             {

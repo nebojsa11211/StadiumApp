@@ -1,45 +1,30 @@
-using StadiumDrinkOrdering.Shared.Models;
-
 namespace StadiumDrinkOrdering.Customer.Components.Mobile;
 
-/// <summary>Maps a drink category to its glyph, thumbnail style, and Croatian label.</summary>
+/// <summary>
+/// Maps a drink's (now data-driven) category to its glyph, thumbnail style, and label.
+/// Icon and label come from the category record; the thumbnail style is a best-effort
+/// mapping of the canonical category name to one of the built-in CSS looks, with a
+/// generic fallback for custom categories.
+/// </summary>
 public static class DrinkVisuals
 {
-    public static string Emoji(DrinkCategory c) => c switch
-    {
-        DrinkCategory.Beer => "🍺",
-        DrinkCategory.SoftDrink => "🥤",
-        DrinkCategory.Water => "💧",
-        DrinkCategory.Coffee => "☕",
-        DrinkCategory.Tea => "🍵",
-        DrinkCategory.Juice => "🧃",
-        DrinkCategory.EnergyDrink => "⚡",
-        _ => "🥤"
-    };
+    public static string Emoji(string? icon) =>
+        string.IsNullOrWhiteSpace(icon) ? "🥤" : icon!;
 
-    public static string Thumb(DrinkCategory c) => c switch
+    public static string Thumb(string? categoryName) => (categoryName ?? "").ToLowerInvariant() switch
     {
-        DrinkCategory.Beer => "beer",
-        DrinkCategory.SoftDrink => "soft",
-        DrinkCategory.Water => "water",
-        DrinkCategory.Coffee => "coffee",
-        DrinkCategory.Tea => "coffee",
-        DrinkCategory.Juice => "soft",
-        DrinkCategory.EnergyDrink => "snack",
+        "beer" => "beer",
+        "softdrink" => "soft",
+        "water" => "water",
+        "coffee" => "coffee",
+        "tea" => "coffee",
+        "juice" => "soft",
+        "energydrink" => "snack",
         _ => "soft"
     };
 
-    public static string Label(DrinkCategory c) => c switch
-    {
-        DrinkCategory.Beer => "Pivo",
-        DrinkCategory.SoftDrink => "Gazirano",
-        DrinkCategory.Water => "Voda",
-        DrinkCategory.Coffee => "Kava",
-        DrinkCategory.Tea => "Čaj",
-        DrinkCategory.Juice => "Sok",
-        DrinkCategory.EnergyDrink => "Energetsko",
-        _ => c.ToString()
-    };
+    public static string Label(string? displayName, string? name) =>
+        !string.IsNullOrWhiteSpace(displayName) ? displayName! : (name ?? "");
 }
 
 /// <summary>Payload emitted by the drink detail sheet when the fan confirms an add.</summary>

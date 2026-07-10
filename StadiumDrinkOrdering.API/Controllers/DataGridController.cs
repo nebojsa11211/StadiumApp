@@ -739,26 +739,33 @@ public class DataGridController : ControllerBase
 
             case "drink":
                 var drinks = new List<Drink>();
-                var drinkCategories = new[] { DrinkCategory.Beer, DrinkCategory.SoftDrink, DrinkCategory.Water, DrinkCategory.Coffee, DrinkCategory.Cocktail, DrinkCategory.EnergyDrink, DrinkCategory.Juice };
+                var drinkCategories = await _context.Set<Category>()
+                    .Where(c => c.IsActive)
+                    .ToListAsync();
+                if (drinkCategories.Count == 0)
+                    drinkCategories = await _context.Set<Category>().ToListAsync();
+                if (drinkCategories.Count == 0)
+                    throw new InvalidOperationException("No drink categories exist. Create a category before generating drinks.");
+
                 var brands = new[] { "Premium", "Classic", "Gold", "Select", "Special", "Deluxe" };
-                
+
                 for (int i = 0; i < count; i++)
                 {
-                    var category = drinkCategories[random.Next(drinkCategories.Length)];
+                    var category = drinkCategories[random.Next(drinkCategories.Count)];
                     var brand = brands[random.Next(brands.Length)];
-                    
+
                     drinks.Add(new Drink
                     {
-                        Name = $"{brand} {category} {i + 1}",
+                        Name = $"{brand} {category.Name} {i + 1}",
                         Price = Math.Round((decimal)(random.NextDouble() * 15 + 2), 2),
                         StockQuantity = random.Next(0, 100),
                         IsAvailable = random.Next(100) > 10, // 90% available
-                        Description = $"Generated {category}",
-                        Category = category,
-                        ImageUrl = $"/images/drinks/{category.ToString().ToLower()}.jpg"
+                        Description = $"Generated {category.Name}",
+                        CategoryId = category.Id,
+                        ImageUrl = $"/images/drinks/{category.Name.ToLower()}.jpg"
                     });
                 }
-                
+
                 _context.Set<Drink>().AddRange(drinks);
                 generatedCount = drinks.Count;
                 break;

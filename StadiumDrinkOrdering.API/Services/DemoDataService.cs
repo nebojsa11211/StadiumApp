@@ -20,6 +20,14 @@ public interface IDemoDataService
     /// the number of completed events that had sales generated for them.
     /// </summary>
     Task<int> GenerateDrinkSalesForCompletedEventsAsync();
+
+    /// <summary>
+    /// One-shot backfill that gives already-existing tickets of past (finished) events a realistic
+    /// lifecycle mix — ~85% Used (attended), ~10% Active (no-show), ~5% Cancelled (refunded) — instead
+    /// of the flat "Active" they were originally seeded with. Only touches tickets whose event date is
+    /// in the past; future-event tickets are left untouched. Returns the number of tickets updated.
+    /// </summary>
+    Task<int> BackfillPastEventTicketStatusesAsync();
 }
 
 public class DemoDataService : IDemoDataService
@@ -217,9 +225,46 @@ public class DemoDataService : IDemoDataService
             var ticketsToGenerate = Math.Min(20, seats.Count); // Generate up to 20 tickets per event
             var selectedSeats = seats.Take(ticketsToGenerate).ToList();
 
+            var isPastEvent = evt.EventDate < DateTime.UtcNow;
+
             foreach (var seat in selectedSeats)
             {
                 maxTicketId++;
+
+                // Default: an active ticket bought for an upcoming event.
+                var status = TicketStatuses.Active;
+                var isActive = true;
+                var isUsed = false;
+                DateTime? usedAt = null;
+                var purchaseDate = DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 30));
+
+                if (isPastEvent)
+                {
+                    // Ticket was bought before the event actually took place.
+                    purchaseDate = evt.EventDate.AddDays(-Random.Shared.Next(1, 30));
+
+                    // Realistic lifecycle mix for a finished event:
+                    // 85% attended (scanned), 10% no-show (still active, never scanned), 5% refunded.
+                    var roll = Random.Shared.Next(100); // 0-99
+                    if (roll < 85)
+                    {
+                        status = TicketStatuses.Used;
+                        isUsed = true;
+                        usedAt = evt.EventDate.AddMinutes(-Random.Shared.Next(5, 90)); // entered around kickoff
+                    }
+                    else if (roll < 95)
+                    {
+                        // No-show: valid ticket that was simply never scanned.
+                        status = TicketStatuses.Active;
+                    }
+                    else
+                    {
+                        // Refunded/cancelled before the event.
+                        status = TicketStatuses.Cancelled;
+                        isActive = false;
+                    }
+                }
+
                 var ticket = new Ticket
                 {
                     Id = maxTicketId,
@@ -228,11 +273,13 @@ public class DemoDataService : IDemoDataService
                     SeatId = seat.Id,
                     QRCodeToken = Guid.NewGuid().ToString(),
                     Price = evt.BaseTicketPrice ?? 50.00m,
-                    PurchaseDate = DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 30)),
+                    PurchaseDate = purchaseDate,
                     CustomerName = $"Customer {maxTicketId}",
                     CustomerEmail = $"customer{maxTicketId}@example.com",
-                    Status = "Active",
-                    IsActive = true,
+                    Status = status,
+                    IsActive = isActive,
+                    IsUsed = isUsed,
+                    UsedAt = usedAt,
                     CreatedAt = DateTime.UtcNow,
                     // Legacy fields for compatibility
                     SeatNumber = seat.SeatCode,
@@ -252,6 +299,56 @@ public class DemoDataService : IDemoDataService
         // IQRCodeService.GetQrImageDataUriAsync. We intentionally do NOT persist a base64 image here:
         // the Ticket.QRCode column is varchar(500) and a PNG data URI overflows it, which previously
         // faulted the DbContext and cascaded failures through the rest of demo generation.
+    }
+
+    public async Task<int> BackfillPastEventTicketStatusesAsync()
+    {
+        var now = DateTime.UtcNow;
+
+        // Only tickets whose event has already finished. Join Events so we can key off the real
+        // event date and stamp a plausible UsedAt near kickoff.
+        var pastTickets = await _context.Tickets
+            .Join(_context.Events,
+                t => t.EventId,
+                e => e.Id,
+                (t, e) => new { Ticket = t, e.EventDate })
+            .Where(x => x.EventDate < now)
+            .ToListAsync();
+
+        foreach (var x in pastTickets)
+        {
+            var ticket = x.Ticket;
+
+            // Same 85% Used / 10% Active (no-show) / 5% Cancelled split the seed generator uses.
+            var roll = Random.Shared.Next(100); // 0-99
+            if (roll < 85)
+            {
+                ticket.Status = TicketStatuses.Used;
+                ticket.IsUsed = true;
+                ticket.IsActive = true;
+                ticket.UsedAt = x.EventDate.AddMinutes(-Random.Shared.Next(5, 90)); // entered around kickoff
+            }
+            else if (roll < 95)
+            {
+                // No-show: valid ticket that was simply never scanned.
+                ticket.Status = TicketStatuses.Active;
+                ticket.IsUsed = false;
+                ticket.IsActive = true;
+                ticket.UsedAt = null;
+            }
+            else
+            {
+                // Refunded/cancelled.
+                ticket.Status = TicketStatuses.Cancelled;
+                ticket.IsUsed = false;
+                ticket.IsActive = false;
+                ticket.UsedAt = null;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Backfilled lifecycle status for {Count} past-event ticket(s)", pastTickets.Count);
+        return pastTickets.Count;
     }
 
     public async Task<bool> GenerateStaffAssignmentsAsync()

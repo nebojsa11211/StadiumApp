@@ -302,6 +302,9 @@
   <data name="Nav_Drinks" xml:space="preserve">
     <value>Drinks</value>
   </data>
+  <data name="Nav_Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
   <data name="Nav_Analytics" xml:space="preserve">
     <value>Analytics</value>
   </data>
@@ -2143,6 +2146,12 @@
   <data name="Tickets_InactiveOption" xml:space="preserve">
     <value>Inactive</value>
   </data>
+  <data name="Tickets_UsedOption" xml:space="preserve">
+    <value>Used</value>
+  </data>
+  <data name="Tickets_CancelledOption" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
   <data name="Tickets_SearchLabel" xml:space="preserve">
     <value>Search</value>
   </data>
@@ -2226,6 +2235,12 @@
   </data>
   <data name="Tickets_InactiveStatus" xml:space="preserve">
     <value>Inactive</value>
+  </data>
+  <data name="Tickets_UsedStatus" xml:space="preserve">
+    <value>Used</value>
+  </data>
+  <data name="Tickets_CancelledStatus" xml:space="preserve">
+    <value>Cancelled</value>
   </data>
   <data name="Tickets_ViewOrderTitle" xml:space="preserve">
     <value>View Order</value>
@@ -2472,6 +2487,18 @@
   </data>
   <data name="Events_EndAfterStartValidation" xml:space="preserve">
     <value>The end time must be after the start time.</value>
+  </data>
+  <data name="Events_SalesStartDateTimeLabel" xml:space="preserve">
+    <value>Ticket Sales Start</value>
+  </data>
+  <data name="Events_SalesEndDateTimeLabel" xml:space="preserve">
+    <value>Ticket Sales End</value>
+  </data>
+  <data name="Events_SalesEndAfterStartValidation" xml:space="preserve">
+    <value>The sales end time must be after the sales start time.</value>
+  </data>
+  <data name="Events_SalesWindowHint" xml:space="preserve">
+    <value>Optional. Leave the start blank to open sales immediately, and the end blank to keep them open while the event is on sale. Tickets can only be sold when the event is On Sale and within this window.</value>
   </data>
   <data name="Events_CapacityFieldLabel" xml:space="preserve">
     <value>Capacity</value>
@@ -3682,4 +3709,36 @@
   <data name="Settings_TicketSalesEnabledHint" xml:space="preserve"><value>When off, the customer app hides its buy flow and the API rejects new purchases. Tickets then enter the system only through the external ticketing integration.</value></data>
   <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Ticket sales are ON — customers can buy tickets in the app.</value></data>
   <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Ticket sales are OFF — tickets only come from the external system.</value></data>
+  <data name="Tickets_DetailViewTitle" xml:space="preserve"><value>View details</value></data>
+  <data name="Tickets_DetailTitle" xml:space="preserve"><value>Ticket Details</value></data>
+  <data name="Tickets_DetailClose" xml:space="preserve"><value>Close</value></data>
+  <data name="Tickets_DetailLoading" xml:space="preserve"><value>Loading ticket details…</value></data>
+  <data name="Tickets_DetailEventSeat" xml:space="preserve"><value>Event &amp; Seat</value></data>
+  <data name="Tickets_DetailCustomer" xml:space="preserve"><value>Customer</value></data>
+  <data name="Tickets_DetailWallet" xml:space="preserve"><value>Wallet balance</value></data>
+  <data name="Tickets_DetailNoWallet" xml:space="preserve"><value>No wallet for this customer</value></data>
+  <data name="Tickets_DetailName" xml:space="preserve"><value>Name</value></data>
+  <data name="Tickets_DetailEmail" xml:space="preserve"><value>Email</value></data>
+  <data name="Tickets_DetailPhone" xml:space="preserve"><value>Phone</value></data>
+  <data name="Tickets_DetailUsed" xml:space="preserve"><value>Used</value></data>
+  <data name="Tickets_DetailNotUsed" xml:space="preserve"><value>Not used</value></data>
+  <data name="Tickets_DetailPurchased" xml:space="preserve"><value>Purchased</value></data>
+  <data name="Tickets_DetailSpending" xml:space="preserve"><value>Spending Breakdown</value></data>
+  <data name="Tickets_DetailTicketPrice" xml:space="preserve"><value>Ticket price</value></data>
+  <data name="Tickets_DetailDrinksOrders" xml:space="preserve"><value>Drinks &amp; orders</value></data>
+  <data name="Tickets_DetailNoOrders" xml:space="preserve"><value>No drink orders placed on this ticket.</value></data>
+  <data name="Tickets_DetailOrder" xml:space="preserve"><value>Order</value></data>
+  <data name="Tickets_DetailQty" xml:space="preserve"><value>Qty</value></data>
+  <data name="Tickets_DetailUnit" xml:space="preserve"><value>Unit</value></data>
+  <data name="Tickets_DetailItemTotal" xml:space="preserve"><value>Total</value></data>
+  <data name="Tickets_DetailPayment" xml:space="preserve"><value>Payment</value></data>
+  <data name="Tickets_DetailDrinksTotal" xml:space="preserve"><value>Drinks total</value></data>
+  <data name="Tickets_DetailGrandTotal" xml:space="preserve"><value>Grand total</value></data>
+  <data name="Tickets_DetailCardPreview" xml:space="preserve"><value>Ticket Card</value></data>
+  <data name="Tickets_DetailDownloadPdf" xml:space="preserve"><value>Download PDF</value></data>
+  <data name="Tickets_DetailDownloadFailed" xml:space="preserve"><value>Could not generate the PDF. Please try again.</value></data>
+  <data name="Pager_Show" xml:space="preserve"><value>Show</value></data>
+  <data name="Pager_Showing" xml:space="preserve"><value>Showing {0} to {1} of {2}</value></data>
+  <data name="Pager_Previous" xml:space="preserve"><value>Previous page</value></data>
+  <data name="Pager_Next" xml:space="preserve"><value>Next page</value></data>
 </root>

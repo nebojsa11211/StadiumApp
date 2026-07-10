@@ -9,5 +9,10 @@ namespace StadiumDrinkOrdering.Admin.Services.Drinks
         Task<DrinkDto?> CreateDrinkAsync(CreateDrinkDto createDrinkDto);
         Task<DrinkDto?> UpdateDrinkAsync(int id, UpdateDrinkDto updateDrinkDto);
         Task<bool> DeleteDrinkAsync(int id);
+
+        Task<IEnumerable<CategoryDto>?> GetCategoriesAsync();
+        Task<CategoryDto?> CreateCategoryAsync(CreateCategoryDto createCategoryDto);
+        Task<CategoryDto?> UpdateCategoryAsync(int id, UpdateCategoryDto updateCategoryDto);
+        Task<(bool Success, string? Error)> DeleteCategoryAsync(int id);
     }
 }

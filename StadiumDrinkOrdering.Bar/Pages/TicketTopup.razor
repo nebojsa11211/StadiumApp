@@ -1,0 +1,525 @@
+@page "/topup"
+@using System.Globalization
+@inject IStaffApiService ApiService
+@inject IAuthStateService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IAsyncDisposable
+
+<PageTitle>@Localizer["TicketTopup_PageTitle"]</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    <div id="bar-topup-auth-container" class="container mt-5">
+        <div id="bar-topup-auth-alert" class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">🔐 @Localizer["Dashboard_AuthenticationRequired"]</h4>
+            <p>@Localizer["Dashboard_MustBeLoggedIn"]</p>
+            <hr>
+            <p class="mb-0">
+                <a href="/login" class="btn btn-primary">@Localizer["Dashboard_GoToLogin"]</a>
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div id="bar-topup-container" class="container mt-4" style="max-width: 640px;">
+        <div id="bar-topup-header" class="mb-4">
+            <h1 id="bar-topup-title" class="h3 mb-1">💳 @Localizer["TicketTopup_Heading"]</h1>
+            <p class="text-muted mb-0">@Localizer["TicketTopup_Subtitle"]</p>
+        </div>
+
+        @if (result != null)
+        {
+            @* ---------- Step 4: Result ---------- *@
+            <div id="bar-topup-result" class="card">
+                <div class="card-body text-center">
+                    @if (result.Success)
+                    {
+                        <div id="bar-topup-result-success">
+                            <div class="display-5 mb-2">✅</div>
+                            <h2 class="h4 mb-3">@Localizer["TicketTopup_SuccessTitle"]</h2>
+                            @if (resolved != null)
+                            {
+                                <p class="mb-1 text-muted">@resolved.FullName</p>
+                            }
+                            <p class="mb-1">@Localizer["TicketTopup_NewBalance"]:</p>
+                            <div id="bar-topup-result-new-balance" class="display-6 fw-bold text-success mb-4">
+                                @FormatMoney(result.NewBalance, resolved?.Currency)
+                            </div>
+                            <button id="bar-topup-new-btn" class="btn btn-primary btn-lg" @onclick="ResetAll">
+                                @Localizer["TicketTopup_NewTopupBtn"]
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="bar-topup-result-failure">
+                            <div class="display-5 mb-2">⚠️</div>
+                            <h2 class="h4 mb-3">@Localizer["TicketTopup_FailTitle"]</h2>
+                            <div id="bar-topup-result-failure-reason" class="alert alert-danger">
+                                @FailureText(result.FailureReason)
+                            </div>
+                            <div class="d-flex gap-2 justify-content-center">
+                                <button id="bar-topup-retry-btn" class="btn btn-outline-primary" @onclick="BackToAmount">
+                                    @Localizer["TicketTopup_TryAgainBtn"]
+                                </button>
+                                <button id="bar-topup-new-btn" class="btn btn-primary" @onclick="ResetAll">
+                                    @Localizer["TicketTopup_NewTopupBtn"]
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (resolved != null && resolved.HasAccount)
+        {
+            @* ---------- Steps 2 & 3: Resolved identity + amount entry ---------- *@
+            <div id="bar-topup-identity-card" class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>👤 @Localizer["TicketTopup_IdentityHeader"]</span>
+                    @if (!string.IsNullOrWhiteSpace(resolved.MatchedBy))
+                    {
+                        <span class="badge bg-secondary">@string.Format(Localizer["TicketTopup_MatchedBy"].Value, resolved.MatchedBy)</span>
+                    }
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-5 col-sm-4 text-muted">@Localizer["TicketTopup_FullName"]</dt>
+                        <dd class="col-7 col-sm-8" id="bar-topup-identity-name">@Display(resolved.FullName)</dd>
+
+                        <dt class="col-5 col-sm-4 text-muted">@Localizer["TicketTopup_Email"]</dt>
+                        <dd class="col-7 col-sm-8" id="bar-topup-identity-email">@Display(resolved.Email)</dd>
+
+                        <dt class="col-5 col-sm-4 text-muted">@Localizer["TicketTopup_Oib"]</dt>
+                        <dd class="col-7 col-sm-8" id="bar-topup-identity-oib">@Display(resolved.Oib)</dd>
+
+                        <dt class="col-5 col-sm-4 text-muted">@Localizer["TicketTopup_CurrentBalance"]</dt>
+                        <dd class="col-7 col-sm-8 fw-bold" id="bar-topup-identity-balance">
+                            @FormatMoney(resolved.Balance, resolved.Currency)
+                        </dd>
+                    </dl>
+
+                    @if (!WalletActive)
+                    {
+                        <div id="bar-topup-wallet-warning" class="alert alert-warning mt-3 mb-0">
+                            @if (string.Equals(resolved.WalletStatus, WalletStatus.Frozen, StringComparison.OrdinalIgnoreCase))
+                            {
+                                @Localizer["TicketTopup_WalletFrozenWarning"]
+                            }
+                            else
+                            {
+                                @string.Format(Localizer["TicketTopup_WalletNotActiveWarning"].Value, resolved.WalletStatus)
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (WalletActive)
+            {
+                <div id="bar-topup-amount-card" class="card mb-3">
+                    <div class="card-body">
+                        <label for="bar-topup-amount-input" class="form-label">@Localizer["TicketTopup_AmountLabel"]</label>
+                        <input id="bar-topup-amount-input" type="number" min="0" step="0.01" inputmode="decimal"
+                               class="form-control form-control-lg mb-2" @bind="amountText" @bind:event="oninput"
+                               placeholder="@Localizer["TicketTopup_AmountPlaceholder"]" disabled="@isSubmitting" />
+
+                        <div id="bar-topup-quick-amounts" class="d-flex gap-2 mb-3">
+                            @foreach (var quick in quickAmounts)
+                            {
+                                <button type="button" class="btn btn-outline-secondary flex-fill"
+                                        id="bar-topup-quick-@quick" @onclick="() => SetQuickAmount(quick)"
+                                        disabled="@isSubmitting">
+                                    @quick
+                                </button>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(submitError))
+                        {
+                            <div id="bar-topup-submit-error" class="alert alert-danger">@submitError</div>
+                        }
+
+                        <button id="bar-topup-confirm-btn" class="btn btn-success btn-lg w-100"
+                                @onclick="ConfirmAsync" disabled="@(isSubmitting || ParsedAmount <= 0)">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <span>@Localizer["TicketTopup_Submitting"]</span>
+                            }
+                            else
+                            {
+                                <span>@Localizer["TicketTopup_ConfirmBtn"]</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            }
+
+            <button id="bar-topup-cancel-btn" class="btn btn-link text-muted" @onclick="ResetAll">
+                @Localizer["TicketTopup_CancelBtn"]
+            </button>
+        }
+        else
+        {
+            @* ---------- Step 1: Identify ---------- *@
+            <div id="bar-topup-identify-card" class="card">
+                <div class="card-body">
+                    <form id="bar-topup-identify-form" @onsubmit="ResolveAsync">
+                        <label for="bar-topup-code-input" class="form-label">@Localizer["TicketTopup_IdentifyLabel"]</label>
+                        <div class="input-group input-group-lg mb-3">
+                            <input id="bar-topup-code-input" type="text" class="form-control"
+                                   @bind="codeInput" @bind:event="oninput"
+                                   placeholder="@Localizer["TicketTopup_CodePlaceholder"]"
+                                   disabled="@isResolving" autocomplete="off" />
+                            <button id="bar-topup-resolve-btn" class="btn btn-primary" type="submit"
+                                    disabled="@(isResolving || string.IsNullOrWhiteSpace(codeInput))">
+                                @if (isResolving)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                                }
+                                else
+                                {
+                                    <span>@Localizer["TicketTopup_ResolveBtn"]</span>
+                                }
+                            </button>
+                        </div>
+                    </form>
+
+                    @if (!scannerActive)
+                    {
+                        <button id="bar-topup-scan-btn" class="btn btn-outline-dark w-100" @onclick="RequestScan"
+                                disabled="@isResolving">
+                            📷 @Localizer["TicketTopup_ScanBtn"]
+                        </button>
+                    }
+                    else
+                    {
+                        <div id="bar-topup-scanner" class="text-center">
+                            <video id="bar-topup-scanner-video" playsinline muted
+                                   style="width:100%; max-height:320px; background:#000; border-radius:.5rem;"></video>
+                            <p class="text-muted small mt-2 mb-2">@Localizer["TicketTopup_ScanningHint"]</p>
+                            <button id="bar-topup-stop-scan-btn" class="btn btn-outline-secondary w-100"
+                                    @onclick="StopScannerAsync">
+                                @Localizer["TicketTopup_StopScanBtn"]
+                            </button>
+                        </div>
+                    }
+
+                    @if (scannerUnsupported)
+                    {
+                        <div id="bar-topup-scan-unsupported" class="alert alert-info mt-3 mb-0">
+                            @Localizer["TicketTopup_ScanNotSupported"]
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(scannerError))
+                    {
+                        <div id="bar-topup-scan-error" class="alert alert-warning mt-3 mb-0">
+                            @Localizer["TicketTopup_ScanError"]
+                        </div>
+                    }
+
+                    @if (notFound)
+                    {
+                        <div id="bar-topup-not-found" class="alert alert-danger mt-3 mb-0">
+                            @Localizer["TicketTopup_NotFound"]
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(noAccountMessage))
+                    {
+                        <div id="bar-topup-no-account" class="alert alert-warning mt-3 mb-0">
+                            @noAccountMessage
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(resolveError))
+                    {
+                        <div id="bar-topup-resolve-error" class="alert alert-danger mt-3 mb-0">
+                            @resolveError
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    // ---- Identify ----
+    private string codeInput = string.Empty;
+    private bool isResolving;
+    private bool notFound;
+    private string? noAccountMessage;
+    private string? resolveError;
+
+    // ---- Resolved ----
+    private BarTopupResolveResultDto? resolved;
+
+    // ---- Amount ----
+    private string amountText = string.Empty;
+    private readonly int[] quickAmounts = { 10, 20, 50 };
+    private bool isSubmitting;
+    private string? submitError;
+
+    // ---- Result ----
+    private BarTopupResultDto? result;
+
+    // ---- Scanner ----
+    private bool scannerActive;
+    private bool pendingScannerStart;
+    private bool scannerUnsupported;
+    private string? scannerError;
+    private DotNetObjectReference<TicketTopup>? selfRef;
+    private const string ScannerVideoId = "bar-topup-scanner-video";
+
+    private bool WalletActive =>
+        resolved != null && string.Equals(resolved.WalletStatus, WalletStatus.Active, StringComparison.OrdinalIgnoreCase);
+
+    private decimal ParsedAmount => TryParseAmount(amountText, out var a) ? a : 0m;
+
+    protected override void OnInitialized()
+    {
+        // Bounce to login the moment the session ends (mirrors Dashboard/OrderQueue behaviour).
+        AuthService.OnAuthenticationStateChanged += OnAuthStateChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The <video> element only exists after the render that flips scannerActive on, so the actual
+        // camera start is deferred to here (post-render) to guarantee the element is in the DOM.
+        if (pendingScannerStart)
+        {
+            pendingScannerStart = false;
+            await StartScannerAsync();
+        }
+    }
+
+    // ---------------- Identify / resolve ----------------
+
+    private async Task ResolveAsync()
+    {
+        var query = codeInput?.Trim();
+        if (string.IsNullOrWhiteSpace(query) || isResolving)
+            return;
+
+        // Any camera session is finished once we start resolving.
+        await StopScannerAsync();
+
+        isResolving = true;
+        notFound = false;
+        noAccountMessage = null;
+        resolveError = null;
+        resolved = null;
+        result = null;
+        StateHasChanged();
+
+        try
+        {
+            var res = await ApiService.ResolveTopupAsync(query);
+            if (res == null)
+            {
+                resolveError = Localizer["TicketTopup_ResolveError"].Value;
+            }
+            else if (!res.Found)
+            {
+                notFound = true;
+            }
+            else if (!res.HasAccount)
+            {
+                // Matched a ticket/pass but no linked account — surface the server message so the
+                // bartender can tell the fan to sign in / register first. Cannot top up.
+                noAccountMessage = string.IsNullOrWhiteSpace(res.Message)
+                    ? Localizer["TicketTopup_NoAccount"].Value
+                    : res.Message;
+            }
+            else
+            {
+                resolved = res;
+                amountText = string.Empty;
+                submitError = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            resolveError = ex.Message;
+        }
+        finally
+        {
+            isResolving = false;
+            StateHasChanged();
+        }
+    }
+
+    // ---------------- Amount / confirm ----------------
+
+    private void SetQuickAmount(int value)
+    {
+        amountText = value.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private async Task ConfirmAsync()
+    {
+        if (isSubmitting || resolved?.UserId is not int userId || !WalletActive)
+            return;
+        if (!TryParseAmount(amountText, out var amount) || amount <= 0)
+            return;
+
+        isSubmitting = true;
+        submitError = null;
+        StateHasChanged();
+
+        try
+        {
+            var request = new BarTopupRequestDto
+            {
+                UserId = userId,
+                Amount = amount,
+                // Fresh key per confirmed attempt so a network retry is a safe server-side no-op.
+                IdempotencyKey = Guid.NewGuid().ToString()
+            };
+
+            var res = await ApiService.SubmitTopupAsync(request);
+            if (res == null)
+                submitError = Localizer["TicketTopup_Fail_Generic"].Value;
+            else
+                result = res; // covers both success and structured failure (mapped in the result view)
+        }
+        catch (Exception ex)
+        {
+            submitError = ex.Message;
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    // Back to the amount step keeping the resolved fan (used after a failed submit).
+    private void BackToAmount()
+    {
+        result = null;
+        submitError = null;
+    }
+
+    private async Task ResetAll()
+    {
+        await StopScannerAsync();
+        codeInput = string.Empty;
+        amountText = string.Empty;
+        resolved = null;
+        result = null;
+        notFound = false;
+        noAccountMessage = null;
+        resolveError = null;
+        submitError = null;
+        scannerUnsupported = false;
+        scannerError = null;
+    }
+
+    // ---------------- Scanner ----------------
+
+    private void RequestScan()
+    {
+        scannerUnsupported = false;
+        scannerError = null;
+        scannerActive = true;      // renders the <video> element
+        pendingScannerStart = true; // OnAfterRenderAsync starts the camera once it's in the DOM
+    }
+
+    private async Task StartScannerAsync()
+    {
+        selfRef ??= DotNetObjectReference.Create(this);
+        try
+        {
+            var res = await JS.InvokeAsync<ScanStartResult>("barTopupScanner.start", ScannerVideoId, selfRef);
+            if (res == null || !res.Supported)
+            {
+                scannerUnsupported = true;
+                scannerActive = false;
+            }
+            else if (!res.Started)
+            {
+                scannerError = res.Error;
+                scannerActive = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            scannerError = ex.Message;
+            scannerActive = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task StopScannerAsync()
+    {
+        pendingScannerStart = false;
+        if (!scannerActive)
+            return;
+        scannerActive = false;
+        try { await JS.InvokeVoidAsync("barTopupScanner.stop"); }
+        catch (Exception ex) { Console.WriteLine($"Stopping scanner failed: {ex.Message}"); }
+    }
+
+    [JSInvokable]
+    public Task OnQrDecoded(string text) => InvokeAsync(async () =>
+    {
+        // JS has already released the camera on a successful decode.
+        scannerActive = false;
+        pendingScannerStart = false;
+        codeInput = text;
+        await ResolveAsync();
+    });
+
+    // ---------------- Helpers ----------------
+
+    private static bool TryParseAmount(string? s, out decimal amount)
+    {
+        amount = 0m;
+        if (string.IsNullOrWhiteSpace(s))
+            return false;
+        // Accept both comma and dot decimal separators regardless of active culture.
+        s = s.Trim().Replace(',', '.');
+        return decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out amount);
+    }
+
+    private string Display(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? "—" : value;
+
+    private static string FormatMoney(decimal amount, string? currency) =>
+        $"{amount.ToString("0.00", CultureInfo.InvariantCulture)} {(string.IsNullOrWhiteSpace(currency) ? "EUR" : currency)}";
+
+    private string FailureText(string? reason) => reason switch
+    {
+        "WalletFrozen" => Localizer["TicketTopup_Fail_WalletFrozen"].Value,
+        "AccountNotFound" => Localizer["TicketTopup_Fail_AccountNotFound"].Value,
+        "InvalidAmount" => Localizer["TicketTopup_Fail_InvalidAmount"].Value,
+        _ => Localizer["TicketTopup_Fail_Generic"].Value
+    };
+
+    private void OnAuthStateChanged()
+    {
+        if (!AuthService.IsAuthenticated)
+            Navigation.NavigateTo("/login");
+        InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        AuthService.OnAuthenticationStateChanged -= OnAuthStateChanged;
+        try { await JS.InvokeVoidAsync("barTopupScanner.stop"); }
+        catch (Exception ex) { Console.WriteLine($"Scanner disposal stop failed: {ex.Message}"); }
+        selfRef?.Dispose();
+    }
+
+    // Shape returned by barTopupScanner.start (camelCase JSON → these properties).
+    public class ScanStartResult
+    {
+        public bool Supported { get; set; }
+        public bool Started { get; set; }
+        public string? Error { get; set; }
+    }
+}

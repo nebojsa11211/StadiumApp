@@ -1,0 +1,87 @@
+/* ---- body ---- */
+.mt-body{flex:1;overflow-y:auto;padding:14px 20px 40px;display:flex;flex-direction:column;gap:12px}
+
+/* ---- states ---- */
+.mt-state{display:flex;align-items:center;justify-content:center;gap:10px;
+    color:var(--muted);font-weight:700;font-size:14px;padding:40px 24px}
+.mt-empty{flex-direction:column;text-align:center;gap:12px;padding-top:56px}
+.mt-empty h2{font-size:20px;font-weight:900}
+.mt-empty p{color:var(--muted);font-size:14px;max-width:28ch}
+.mt-emoji{font-size:52px}
+.mt-empty .btn{width:auto;padding-left:28px;padding-right:28px;margin-top:4px}
+
+/* ---- list ---- */
+.mt-list{display:flex;flex-direction:column;gap:12px}
+.mt-card{appearance:none;text-align:left;width:100%;cursor:pointer;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+    padding:15px;display:flex;flex-direction:column;gap:11px;transition:.15s}
+.mt-card:hover{border-color:var(--line-2);background:var(--surface-2);transform:translateY(-1px)}
+.mt-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mt-event{font-size:15px;font-weight:900;letter-spacing:-.01em;color:var(--ink)}
+.mt-badge{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    color:#FFCF8B;background:rgba(255,176,32,.14);border:1px solid rgba(255,176,32,.32);
+    border-radius:999px;padding:3px 9px;white-space:nowrap}
+.mt-card-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.mt-card-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    border-top:1px solid var(--line);padding-top:11px}
+.mt-num{font-size:12.5px;font-weight:700;color:var(--muted)}
+.mt-price{font-size:16px;font-weight:900;color:var(--ink)}
+
+/* ---- detail sheet ---- */
+.mt-scrim{position:fixed;inset:0;z-index:50;background:rgba(3,4,7,.68);backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;transition:opacity .28s var(--ease)}
+.mt-scrim.show{opacity:1;pointer-events:auto}
+.mt-sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,110%);
+    width:100%;max-width:var(--app-max);z-index:51;
+    background:var(--surface-2);border-top:1px solid var(--line-2);border-radius:26px 26px 0 0;
+    padding:10px 22px calc(22px + var(--safe-bottom));
+    transition:transform .34s var(--ease);display:flex;flex-direction:column;max-height:90dvh}
+.mt-sheet.show{transform:translate(-50%,0)}
+.mt-sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;flex:none}
+.mt-sheet-title{font-size:19px;font-weight:900;letter-spacing:-.01em}
+.mt-sheet-sub{font-size:12px;font-weight:700;color:var(--muted);margin-top:2px}
+.mt-sheet-body{overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+
+/* ---- visual ticket card ---- */
+.tcard{border:1px solid var(--line-2);border-radius:18px;overflow:hidden;background:var(--surface)}
+.tcard-head{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--brand);color:#fff;padding:13px 15px}
+.tcard-eyebrow{font-size:10px;font-weight:800;letter-spacing:.12em;color:rgba(255,255,255,.85)}
+.tcard-event{font-size:16px;font-weight:900;line-height:1.2;margin-top:2px}
+.tcard-season{background:#fff;color:#FF1F6B;font-size:10px;font-weight:900;
+    padding:3px 8px;border-radius:999px;white-space:nowrap}
+.tcard-body{display:flex;gap:12px;padding:15px}
+.tcard-info{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0}
+.tcard-seatrow{display:flex;gap:16px}
+.tcard-field span{display:block;font-size:9.5px;font-weight:800;letter-spacing:.06em;color:var(--muted)}
+.tcard-field strong{font-size:15px;font-weight:900;color:var(--ink)}
+.tcard-qr{flex:none;display:flex;align-items:center}
+.tcard-qr img{width:92px;height:92px;border-radius:10px;background:#fff;padding:6px;image-rendering:pixelated}
+.tcard-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
+    padding:13px 15px;border-top:1px dashed var(--line-2)}
+.tcard-pricelabel{font-size:9.5px;font-weight:800;letter-spacing:.06em;color:var(--muted)}
+.tcard-price{font-size:20px;font-weight:900;color:var(--ink);margin-top:2px}
+.tcard-purchased{font-size:12px;font-weight:700;color:var(--muted)}
+
+.mt-download{width:100%}
+
+/* ---- spending ---- */
+.mt-spend{display:flex;flex-direction:column;gap:2px;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px}
+.mt-spend-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;font-weight:800;color:var(--ink)}
+.mt-spend-grand{border-bottom:none;border-top:2px solid var(--line-2);margin-top:4px;padding-top:12px;
+    font-size:16px;font-weight:900}
+.mt-spend-sub{margin-top:12px;margin-bottom:6px;font-size:10.5px;font-weight:800;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mt-spend-empty{color:var(--muted);font-size:13px;font-weight:600;padding:2px 0 8px}
+.mt-order{background:var(--surface-3);border:1px solid var(--line);border-radius:var(--r-sm);
+    padding:11px 12px;margin-bottom:9px;display:flex;flex-direction:column;gap:5px}
+.mt-order-head{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    font-size:12.5px;font-weight:900;color:var(--ink)}
+.mt-order-item{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    font-size:13px;font-weight:700;color:var(--muted)}
+.mt-order-pay{margin-top:3px;font-size:11.5px;font-weight:700;color:var(--muted)}
+
+.mt-inline-error{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.4);color:#FFB4B4;
+    border-radius:var(--r-sm);padding:11px 13px;font-size:13px;font-weight:700}

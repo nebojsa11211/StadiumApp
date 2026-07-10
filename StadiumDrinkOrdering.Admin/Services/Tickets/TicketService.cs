@@ -54,6 +54,43 @@ namespace StadiumDrinkOrdering.Admin.Services.Tickets
             return null;
         }
 
+        public async Task<TicketDetailDto?> GetTicketDetailsAsync(int ticketId)
+        {
+            try
+            {
+                SetAuthorizationHeader();
+                var response = await HttpClient.GetAsync($"tickets/{ticketId}/details");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return DeserializeResponse<TicketDetailDto>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                await LogErrorAsync(ex, "GetTicketDetails", $"Failed to retrieve details for ticket {ticketId}");
+            }
+            return null;
+        }
+
+        public async Task<byte[]?> GetTicketCardPdfAsync(int ticketId)
+        {
+            try
+            {
+                SetAuthorizationHeader();
+                var response = await HttpClient.GetAsync($"tickets/{ticketId}/card.pdf");
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await LogErrorAsync(ex, "GetTicketCardPdf", $"Failed to download PDF card for ticket {ticketId}");
+            }
+            return null;
+        }
+
         public async Task<bool> ValidateTicketAsync(string ticketCode)
         {
             try

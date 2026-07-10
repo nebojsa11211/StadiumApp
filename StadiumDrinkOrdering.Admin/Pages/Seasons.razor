@@ -63,6 +63,7 @@
                 <h2 class="panel__title">@L["Seasons_AllSeasons"] <span class="panel__count mono">@seasons.Count</span></h2>
             </div>
             <div class="panel__body">
+                @{ pager.Source = SortedSeasons.ToList(); }
                 <table class="table align-middle" id="admin-seasons-table">
                     <thead id="admin-seasons-thead">
                         <tr id="admin-seasons-header-row">
@@ -71,7 +72,7 @@
                         </tr>
                     </thead>
                     <tbody id="admin-seasons-tbody">
-                        @foreach (var s in SortedSeasons)
+                        @foreach (var s in pager.PageItems)
                         {
                             <tr id="admin-season-row-@s.Id">
                                 <td>
@@ -108,6 +109,7 @@
                         }
                     </tbody>
                 </table>
+                <TablePager TItem="SeasonDto" View="pager" IdPrefix="admin-seasons-table" OnChanged="StateHasChanged" />
             </div>
         </div>
     }
@@ -298,6 +300,8 @@
     private string alertMessage = "";
     private string alertType = "";
 
+    private readonly PagedView<SeasonDto> pager = new();
+
     // Sorting — main seasons table
     private readonly TableSortState seasonSort = new();
     private static readonly Dictionary<string, Func<SeasonDto, object?>> SeasonSortSelectors = new()
@@ -349,6 +353,7 @@
             loadingFailed = false;
             loadingError = "";
             seasons = await ApiService.GetAsync<List<SeasonDto>>("seasons") ?? new List<SeasonDto>();
+            pager.Reset();
         }
         catch (Exception ex)
         {

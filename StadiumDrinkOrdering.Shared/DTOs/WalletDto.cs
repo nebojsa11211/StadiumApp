@@ -18,6 +18,15 @@ public class WalletSummaryDto
 
     /// <summary>False when the user is eligible but no wallet has been created yet.</summary>
     public bool Exists { get; set; }
+
+    /// <summary>True when the configured gateway settles asynchronously and the browser must collect +
+    /// confirm card details (real gateway, e.g. Stripe). False for the synchronous mock, which credits
+    /// immediately on submit and needs no card entry.</summary>
+    public bool RequiresCardEntry { get; set; }
+
+    /// <summary>Publishable (public) gateway key the browser uses to mount the card field, when
+    /// <see cref="RequiresCardEntry"/> is true. Null otherwise.</summary>
+    public string? PublishableKey { get; set; }
 }
 
 public class WalletTransactionDto
@@ -75,8 +84,32 @@ public class DepositResultDto
     public string? ClientSecret { get; set; }
     public string? PublishableKey { get; set; }
 
+    /// <summary>Provider intent id for an async deposit. The browser polls
+    /// <c>GET api/wallet/me/deposits/{id}/status</c> with this after confirming the card to learn whether
+    /// the webhook has credited the wallet. Null for the synchronous mock.</summary>
+    public string? ProviderIntentId { get; set; }
+
     /// <summary>True when the deposit needs browser-side card confirmation (async gateway).</summary>
     public bool RequiresAction { get; set; }
+}
+
+/// <summary>Settlement state of a specific async deposit intent, as recorded in <b>this</b> system's ledger.
+/// <see cref="Settled"/> flips to true only once the signed webhook has credited the wallet — a definitive
+/// success signal, unlike inferring it from a balance change.</summary>
+public class DepositStatusDto
+{
+    /// <summary>Pending until the webhook credits the wallet, then Completed. (Never Failed here: a declined
+    /// card is reported to the browser by the confirmation call, not persisted as a ledger row.)</summary>
+    public string Status { get; set; } = WalletTransactionStatus.Pending;
+
+    /// <summary>True once the wallet has been credited for this intent.</summary>
+    public bool Settled { get; set; }
+
+    /// <summary>Wallet balance after the credit (or the current balance while still pending).</summary>
+    public decimal NewBalance { get; set; }
+
+    /// <summary>The credited ledger entry's id, once settled; 0 while pending.</summary>
+    public long WalletTransactionId { get; set; }
 }
 
 /// <summary>Admin view of a wallet, joined with its owner for the management console.</summary>

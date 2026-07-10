@@ -100,18 +100,19 @@ public class ShoppingCartController : ControllerBase
                 return Conflict("Ticket sales are currently disabled.");
             }
 
-            // Phase 1 gate: seats may only be reserved while the event is on sale.
-            var eventStatus = await _context.Events
-                .Where(e => e.Id == request.EventId)
-                .Select(e => (EventStatus?)e.Status)
-                .FirstOrDefaultAsync();
-            if (eventStatus == null)
+            // Phase 1 gate: seats may only be reserved while the event is on sale AND within its
+            // configured ticket-sales window.
+            var eventEntity = await _context.Events
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == request.EventId);
+            if (eventEntity == null)
             {
                 return NotFound("Event not found");
             }
-            if (!EventLifecycle.CanSellTickets(eventStatus.Value))
+            var salesBlockedReason = eventEntity.TicketSalesBlockedReason(DateTime.UtcNow);
+            if (salesBlockedReason != null)
             {
-                return Conflict("Tickets for this event are not currently on sale.");
+                return Conflict(salesBlockedReason);
             }
 
             var success = await _cartService.AddSeatToCartAsync(

@@ -25,6 +25,8 @@ public partial class Customers : ComponentBase
     private string selectedStatus = "";
     private string searchTerm = "";
 
+    private readonly PagedView<UserDto> pager = new();
+
     // Sorting
     private readonly TableSortState sortState = new();
     private static readonly Dictionary<string, Func<UserDto, object?>> SortSelectors = new()
@@ -115,6 +117,8 @@ public partial class Customers : ComponentBase
             ? query.OrderByDescending(u => u.CreatedAt)
             : sortState.Apply(query, SortSelectors);
         filteredCustomers = ordered.ToList();
+        pager.Source = filteredCustomers;
+        pager.Reset();
         StateHasChanged();
     }
 

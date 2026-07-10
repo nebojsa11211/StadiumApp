@@ -663,4 +663,117 @@
   <data name="ConnectionStatusCard_Disconnected" xml:space="preserve">
     <value>Disconnected</value>
   </data>
+
+  <!-- Ticket Top-up (bar cash wallet top-up) -->
+  <data name="TicketTopup_NavLabel" xml:space="preserve">
+    <value>Top-up</value>
+  </data>
+  <data name="TicketTopup_PageTitle" xml:space="preserve">
+    <value>Wallet top-up</value>
+  </data>
+  <data name="TicketTopup_Heading" xml:space="preserve">
+    <value>Wallet top-up</value>
+  </data>
+  <data name="TicketTopup_Subtitle" xml:space="preserve">
+    <value>Load cash onto a fan's wallet at the counter.</value>
+  </data>
+  <data name="TicketTopup_IdentifyLabel" xml:space="preserve">
+    <value>Scan or enter ticket code, email or OIB</value>
+  </data>
+  <data name="TicketTopup_CodePlaceholder" xml:space="preserve">
+    <value>Ticket code, email or OIB</value>
+  </data>
+  <data name="TicketTopup_ResolveBtn" xml:space="preserve">
+    <value>Find</value>
+  </data>
+  <data name="TicketTopup_ScanBtn" xml:space="preserve">
+    <value>Scan with camera</value>
+  </data>
+  <data name="TicketTopup_StopScanBtn" xml:space="preserve">
+    <value>Stop scanning</value>
+  </data>
+  <data name="TicketTopup_ScanningHint" xml:space="preserve">
+    <value>Point the camera at the ticket QR code</value>
+  </data>
+  <data name="TicketTopup_ScanNotSupported" xml:space="preserve">
+    <value>Scanning is not supported on this device — enter the code manually</value>
+  </data>
+  <data name="TicketTopup_ScanError" xml:space="preserve">
+    <value>Camera unavailable — enter the code manually</value>
+  </data>
+  <data name="TicketTopup_NotFound" xml:space="preserve">
+    <value>No record found for the entered code.</value>
+  </data>
+  <data name="TicketTopup_NoAccount" xml:space="preserve">
+    <value>A ticket was found, but it is not linked to a user account. Ask the fan to sign in or register first.</value>
+  </data>
+  <data name="TicketTopup_ResolveError" xml:space="preserve">
+    <value>An error occurred during lookup. Please try again.</value>
+  </data>
+  <data name="TicketTopup_IdentityHeader" xml:space="preserve">
+    <value>Fan details</value>
+  </data>
+  <data name="TicketTopup_MatchedBy" xml:space="preserve">
+    <value>Matched: {0}</value>
+  </data>
+  <data name="TicketTopup_FullName" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="TicketTopup_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="TicketTopup_Oib" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="TicketTopup_CurrentBalance" xml:space="preserve">
+    <value>Current balance</value>
+  </data>
+  <data name="TicketTopup_WalletFrozenWarning" xml:space="preserve">
+    <value>The wallet is frozen and cannot be topped up.</value>
+  </data>
+  <data name="TicketTopup_WalletNotActiveWarning" xml:space="preserve">
+    <value>The wallet is not active ({0}) — top-up is not possible.</value>
+  </data>
+  <data name="TicketTopup_AmountLabel" xml:space="preserve">
+    <value>Cash amount (EUR)</value>
+  </data>
+  <data name="TicketTopup_AmountPlaceholder" xml:space="preserve">
+    <value>0.00</value>
+  </data>
+  <data name="TicketTopup_ConfirmBtn" xml:space="preserve">
+    <value>Confirm top-up</value>
+  </data>
+  <data name="TicketTopup_Submitting" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="TicketTopup_CancelBtn" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="TicketTopup_SuccessTitle" xml:space="preserve">
+    <value>Top-up successful</value>
+  </data>
+  <data name="TicketTopup_NewBalance" xml:space="preserve">
+    <value>New balance</value>
+  </data>
+  <data name="TicketTopup_NewTopupBtn" xml:space="preserve">
+    <value>New top-up</value>
+  </data>
+  <data name="TicketTopup_FailTitle" xml:space="preserve">
+    <value>Top-up failed</value>
+  </data>
+  <data name="TicketTopup_TryAgainBtn" xml:space="preserve">
+    <value>Try again</value>
+  </data>
+  <data name="TicketTopup_Fail_WalletFrozen" xml:space="preserve">
+    <value>The wallet is frozen and cannot be topped up.</value>
+  </data>
+  <data name="TicketTopup_Fail_AccountNotFound" xml:space="preserve">
+    <value>Account not found.</value>
+  </data>
+  <data name="TicketTopup_Fail_InvalidAmount" xml:space="preserve">
+    <value>Invalid amount.</value>
+  </data>
+  <data name="TicketTopup_Fail_Generic" xml:space="preserve">
+    <value>An error occurred. Please try again.</value>
+  </data>
 </root>

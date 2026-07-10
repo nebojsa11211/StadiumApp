@@ -127,6 +127,36 @@ public class DemoDataController : ControllerBase
         }
     }
 
+    [HttpPost("backfill-ticket-statuses")]
+    public async Task<IActionResult> BackfillPastEventTicketStatuses()
+    {
+        try
+        {
+            _logger.LogInformation("Backfilling ticket lifecycle statuses for past events");
+            var updated = await _demoDataService.BackfillPastEventTicketStatusesAsync();
+
+            return Ok(new
+            {
+                success = true,
+                ticketsUpdated = updated,
+                message = updated > 0
+                    ? $"Backfilled lifecycle status (85% Used / 10% Active / 5% Cancelled) for {updated} past-event ticket(s)."
+                    : "No past-event tickets found to update.",
+                timestamp = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error backfilling ticket statuses for past events");
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "An error occurred while backfilling ticket statuses",
+                error = ex.Message
+            });
+        }
+    }
+
     [HttpPost("clear")]
     public async Task<IActionResult> ClearDemoData()
     {

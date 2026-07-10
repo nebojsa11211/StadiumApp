@@ -32,6 +32,17 @@ public class CreateEventDto
     /// <summary>End of the event window; must be after <see cref="Date"/> when supplied.</summary>
     public DateTime? EndDate { get; set; }
 
+    /// <summary>
+    /// Start of the ticket-sales window. Optional: null means sales open as soon as the event is put
+    /// on sale. When both bounds are supplied, this must be before <see cref="TicketSalesEndDate"/>.
+    /// </summary>
+    public DateTime? TicketSalesStartDate { get; set; }
+
+    /// <summary>
+    /// End of the ticket-sales window. Optional: null means sales stay open while the event is on sale.
+    /// </summary>
+    public DateTime? TicketSalesEndDate { get; set; }
+
     [Required]
     [Range(1, 100000)]
     public int Capacity { get; set; }

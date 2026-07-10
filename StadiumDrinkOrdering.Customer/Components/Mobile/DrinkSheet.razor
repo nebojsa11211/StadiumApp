@@ -6,7 +6,7 @@
     @if (Drink != null)
     {
         <div id="customer-drink-sheet-grab" class="grab"></div>
-        <div id="customer-drink-sheet-thumb" class="big-thumb @DrinkVisuals.Thumb(Drink.Category)">@DrinkVisuals.Emoji(Drink.Category)</div>
+        <div id="customer-drink-sheet-thumb" class="big-thumb @DrinkVisuals.Thumb(Drink.CategoryName)">@DrinkVisuals.Emoji(Drink.CategoryIcon)</div>
         <h3>@Drink.Name</h3>
         <div id="customer-drink-sheet-description" class="desc">@(string.IsNullOrWhiteSpace(Drink.Description) ? "Poslužuje se hladno i donosi na tvoje mjesto." : Drink.Description)</div>
 

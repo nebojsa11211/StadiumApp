@@ -32,9 +32,9 @@
         {
             <div id="customer-category-filters" class="menu-cats no-scrollbar">
                 <button id="customer-category-all" class="menu-chip @(selectedCategory == null ? "on" : "")" @onclick="() => FilterByCategory(null)">Sve</button>
-                @foreach (var category in Enum.GetValues<DrinkCategory>())
+                @foreach (var category in MenuCategories)
                 {
-                    <button id="customer-category-@category" class="menu-chip @(selectedCategory == category ? "on" : "")" @onclick="() => FilterByCategory(category)">@category</button>
+                    <button id="customer-category-@category.Id" class="menu-chip @(selectedCategory == category.Id ? "on" : "")" @onclick="() => FilterByCategory(category.Id)">@category.Icon @category.Label</button>
                 }
             </div>
 
@@ -180,7 +180,7 @@
 
 @code {
     private List<DrinkDto>? drinks;
-    private DrinkCategory? selectedCategory;
+    private int? selectedCategory;
     private Dictionary<int, int> quantities = new();
     private string ticketNumber = "";
     private string orderNotes = "";
@@ -210,9 +210,18 @@
     private IEnumerable<DrinkDto> FilteredDrinks =>
         drinks == null ? Enumerable.Empty<DrinkDto>()
         : selectedCategory == null ? drinks
-        : drinks.Where(d => d.Category == selectedCategory);
+        : drinks.Where(d => d.CategoryId == selectedCategory);
 
-    private void FilterByCategory(DrinkCategory? category) => selectedCategory = category;
+    // Distinct categories present in the loaded drinks, ordered by their first appearance.
+    private IEnumerable<(int Id, string Icon, string Label)> MenuCategories =>
+        (drinks ?? Enumerable.Empty<DrinkDto>())
+            .GroupBy(d => d.CategoryId)
+            .Select(g => (
+                Id: g.Key,
+                Icon: DrinkVisuals.Emoji(g.First().CategoryIcon),
+                Label: DrinkVisuals.Label(g.First().CategoryDisplayName, g.First().CategoryName)));
+
+    private void FilterByCategory(int? categoryId) => selectedCategory = categoryId;
 
     private void IncreaseQuantity(int drinkId)
     {

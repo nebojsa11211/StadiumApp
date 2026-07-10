@@ -18,6 +18,19 @@ public interface IAuthService
     Task<bool> RevokeAllUserRefreshTokensAsync(int userId, string? reason = null);
     Task<UserDto?> RegisterAsync(RegisterDto registerDto);
     Task<UserDto?> GetUserByIdAsync(int userId);
+
+    /// <summary>Updates the signed-in fan's own profile (name, phone, OIB). Returns the updated
+    /// profile, or null if the user no longer exists.</summary>
+    Task<UserDto?> UpdateProfileAsync(int userId, UpdateProfileDto dto);
+
+    /// <summary>Validates an account-activation token and reports who it belongs to (for the set-password
+    /// page). Never throws.</summary>
+    Task<ActivationInfoDto> GetActivationInfoAsync(string token);
+
+    /// <summary>Claims a shell account by setting its first password from an activation token, then returns
+    /// a login response so the fan is signed in. Null if the token is missing/expired/used or the account
+    /// is already active.</summary>
+    Task<LoginResponseDto?> ActivateAccountAsync(ActivateAccountDto dto);
     Task<StaffMemberStatsDto?> GetStaffMemberStatsAsync(int userId);
 
     // User management methods for Admin
@@ -270,16 +283,43 @@ public class AuthService : IAuthService
 
     public async Task<UserDto?> RegisterAsync(RegisterDto registerDto)
     {
-        // Check if user already exists
-        if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email || u.Username == registerDto.Username))
+        // A shell account may already exist for this email (auto-provisioned from a ticket). Registering
+        // with that email *claims* it — sets the first password — rather than being rejected as "taken".
+        var existingByEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == registerDto.Email);
+        if (existingByEmail != null)
         {
-            return null;
+            if (!existingByEmail.IsShellAccount)
+                return null; // a real (already-claimed) account owns this email
+
+            // Claim the shell: keep the requested username only if it's free for another account.
+            var usernameTaken = await _context.Users
+                .AnyAsync(u => u.Id != existingByEmail.Id && u.Username == registerDto.Username);
+            if (!usernameTaken && !string.IsNullOrWhiteSpace(registerDto.Username))
+                existingByEmail.Username = registerDto.Username;
+
+            existingByEmail.PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
+            if (!string.IsNullOrWhiteSpace(registerDto.FirstName)) existingByEmail.FirstName = registerDto.FirstName.Trim();
+            if (!string.IsNullOrWhiteSpace(registerDto.LastName)) existingByEmail.LastName = registerDto.LastName.Trim();
+            if (!string.IsNullOrWhiteSpace(registerDto.Oib)) existingByEmail.Oib = registerDto.Oib.Trim();
+            existingByEmail.IsShellAccount = false;
+
+            await ConsumeActivationTokensAsync(existingByEmail.Id);
+            await _context.SaveChangesAsync();
+            await LinkSeasonTicketsByEmailAsync(existingByEmail);
+            return MapToUserDto(existingByEmail);
         }
+
+        // Brand-new account: the username must be free.
+        if (await _context.Users.AnyAsync(u => u.Username == registerDto.Username))
+            return null;
 
         var user = new User
         {
             Username = registerDto.Username,
             Email = registerDto.Email,
+            FirstName = string.IsNullOrWhiteSpace(registerDto.FirstName) ? null : registerDto.FirstName.Trim(),
+            LastName = string.IsNullOrWhiteSpace(registerDto.LastName) ? null : registerDto.LastName.Trim(),
+            Oib = string.IsNullOrWhiteSpace(registerDto.Oib) ? null : registerDto.Oib.Trim(),
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
             Role = UserRole.Customer,
             CreatedAt = DateTime.UtcNow
@@ -293,6 +333,68 @@ public class AuthService : IAuthService
         await LinkSeasonTicketsByEmailAsync(user);
 
         return MapToUserDto(user);
+    }
+
+    public async Task<ActivationInfoDto> GetActivationInfoAsync(string token)
+    {
+        var row = await _context.AccountActivationTokens.AsNoTracking()
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t => t.Token == token);
+
+        if (row == null)
+            return new ActivationInfoDto { Valid = false, Reason = "NotFound" };
+        if (row.IsUsed)
+            return new ActivationInfoDto { Valid = false, Reason = "AlreadyUsed" };
+        if (row.ExpiresAt <= DateTime.UtcNow)
+            return new ActivationInfoDto { Valid = false, Reason = "Expired" };
+        if (!row.User.IsShellAccount)
+            return new ActivationInfoDto { Valid = false, Reason = "AlreadyActive" };
+
+        var name = $"{row.User.FirstName} {row.User.LastName}".Trim();
+        return new ActivationInfoDto
+        {
+            Valid = true,
+            Email = row.User.Email,
+            FullName = string.IsNullOrWhiteSpace(name) ? null : name
+        };
+    }
+
+    public async Task<LoginResponseDto?> ActivateAccountAsync(ActivateAccountDto dto)
+    {
+        var row = await _context.AccountActivationTokens
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t => t.Token == dto.Token);
+
+        // Reject anything not currently claimable (missing/expired/used, or already-activated account).
+        if (row == null || !row.IsValid || !row.User.IsShellAccount)
+            return null;
+
+        var user = row.User;
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        user.IsShellAccount = false;
+
+        await ConsumeActivationTokensAsync(user.Id);
+        await _context.SaveChangesAsync();
+        await LinkSeasonTicketsByEmailAsync(user);
+
+        // Log the fan straight in so they land in the app with their new password.
+        return new LoginResponseDto
+        {
+            Token = GenerateJwtToken(user),
+            User = MapToUserDto(user),
+            ExpiresAt = DateTime.UtcNow.AddHours(24)
+        };
+    }
+
+    /// <summary>Marks all outstanding activation tokens for a user as used (single-use, and a claimed
+    /// account should have no live tokens left).</summary>
+    private async Task ConsumeActivationTokensAsync(int userId)
+    {
+        await _context.AccountActivationTokens
+            .Where(t => t.UserId == userId && !t.IsUsed)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(t => t.IsUsed, true)
+                .SetProperty(t => t.UsedAt, DateTime.UtcNow));
     }
 
     /// <summary>
@@ -322,6 +424,21 @@ public class AuthService : IAuthService
     {
         var user = await _context.Users.FindAsync(userId);
         return user != null ? MapToUserDto(user) : null;
+    }
+
+    public async Task<UserDto?> UpdateProfileAsync(int userId, UpdateProfileDto dto)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+            return null;
+
+        user.FirstName = string.IsNullOrWhiteSpace(dto.FirstName) ? null : dto.FirstName.Trim();
+        user.LastName = string.IsNullOrWhiteSpace(dto.LastName) ? null : dto.LastName.Trim();
+        user.PhoneNumber = string.IsNullOrWhiteSpace(dto.PhoneNumber) ? null : dto.PhoneNumber.Trim();
+        user.Oib = string.IsNullOrWhiteSpace(dto.Oib) ? null : dto.Oib.Trim();
+
+        await _context.SaveChangesAsync();
+        return MapToUserDto(user);
     }
 
     public async Task<StaffMemberStatsDto?> GetStaffMemberStatsAsync(int userId)
@@ -656,6 +773,7 @@ public class AuthService : IAuthService
             LastName = user.LastName ?? string.Empty,
             Name = string.IsNullOrWhiteSpace(fullName) ? null : fullName,
             PhoneNumber = user.PhoneNumber,
+            Oib = user.Oib,
             Role = user.Role,
             IsActive = user.IsActive,
             CreatedAt = user.CreatedAt,

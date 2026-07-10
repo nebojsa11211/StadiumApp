@@ -195,6 +195,8 @@ public class IntegrationController : ControllerBase
                 e.AwayTeam,
                 e.EventDate,
                 e.EventEndDate,
+                e.TicketSalesStartDate,
+                e.TicketSalesEndDate,
                 e.SourceSystem,
                 e.BaseTicketPrice,
                 e.TotalSeats,
@@ -203,6 +205,7 @@ public class IntegrationController : ControllerBase
             })
             .ToListAsync(ct);
 
+        var nowUtc = DateTime.UtcNow;
         var events = rows.Select(e => new ExternalEventSummaryDto
         {
             EventId = e.Id,
@@ -218,7 +221,9 @@ public class IntegrationController : ControllerBase
             TotalSeats = e.TotalSeats,
             TotalSold = e.TotalSold,
             StatusName = e.Status.ToString(),
-            CanSellTickets = EventLifecycle.CanSellTickets(e.Status),
+            CanSellTickets = EventLifecycle.CanSellTickets(e.Status)
+                && (e.TicketSalesStartDate == null || nowUtc >= e.TicketSalesStartDate.Value)
+                && (e.TicketSalesEndDate == null || nowUtc <= e.TicketSalesEndDate.Value),
             CanOrderDrinks = EventLifecycle.CanOrderDrinks(e.Status)
         }).ToList();
 

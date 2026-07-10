@@ -31,6 +31,8 @@ public partial class Users : ComponentBase
     private string selectedStatus = "";
     private string searchTerm = "";
 
+    private readonly PagedView<UserDto> pager = new();
+
     // Sorting
     private readonly TableSortState sortState = new();
     private static readonly Dictionary<string, Func<UserDto, object?>> SortSelectors = new()
@@ -143,6 +145,8 @@ public partial class Users : ComponentBase
             ? query.OrderByDescending(u => u.CreatedAt)
             : sortState.Apply(query, SortSelectors);
         filteredUsers = ordered.ToList();
+        pager.Source = filteredUsers;
+        pager.Reset();
         StateHasChanged();
     }
 
@@ -166,7 +170,7 @@ public partial class Users : ComponentBase
         selectedUserIds.Clear();
         if (isSelected)
         {
-            foreach (var user in filteredUsers.Take(50))
+            foreach (var user in pager.PageItems)
             {
                 selectedUserIds.Add(user.Id);
             }

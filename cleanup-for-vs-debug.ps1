@@ -45,7 +45,7 @@ Stop-ProcessSafely -ProcessName "dotnet" -DisplayName "dotnet"
 Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.API" -DisplayName "API"
 Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.Admin" -DisplayName "Admin"
 Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.Customer" -DisplayName "Customer"
-Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.Staff" -DisplayName "Staff"
+Stop-ProcessSafely -ProcessName "StadiumDrinkOrdering.Bar" -DisplayName "Bar"
 
 # Check for any remaining processes on key ports
 Write-Host ""

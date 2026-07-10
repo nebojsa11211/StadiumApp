@@ -16,6 +16,10 @@ public class EventDto
     public DateTime? Date { get; set; }
     /// <summary>End of the event window, if set.</summary>
     public DateTime? EndDate { get; set; }
+    /// <summary>Start of the ticket-sales window, if set (null = opens as soon as the event is on sale).</summary>
+    public DateTime? TicketSalesStartDate { get; set; }
+    /// <summary>End of the ticket-sales window, if set (null = stays open while the event is on sale).</summary>
+    public DateTime? TicketSalesEndDate { get; set; }
     public string? Description { get; set; }
     public int Capacity { get; set; }
     public int AvailableSeats { get; set; }
@@ -39,7 +43,10 @@ public class EventDto
     public string StatusName { get; set; } = string.Empty;
     /// <summary>High-level phase (Future / Active / Past) derived from <see cref="Status"/>.</summary>
     public EventPhase Phase { get; set; }
-    /// <summary>Whether tickets/seats may currently be sold for this event.</summary>
+    /// <summary>
+    /// Whether tickets/seats may currently be sold: the event is on sale AND the current time is
+    /// within its configured sales window.
+    /// </summary>
     public bool CanSellTickets { get; set; }
     /// <summary>Whether drink ordering is currently open for this event.</summary>
     public bool CanOrderDrinks { get; set; }

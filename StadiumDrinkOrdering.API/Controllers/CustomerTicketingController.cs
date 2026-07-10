@@ -77,14 +77,18 @@ public class CustomerTicketingController : ControllerBase
                 .ToListAsync();
 
             var eventDtos = new List<CustomerEventDto>();
-            
+            var venueInfo = BuildVenueInfo(await _context.Venues.AsNoTracking().FirstOrDefaultAsync());
+
             foreach (var evt in events)
             {
-                // Get ticket count and availability. "Sold" = any non-cancelled ticket (incl. season
-                // passes' derived tickets), funnelled through TicketStatuses.CountsAsSold.
-                var totalTickets = await _context.Tickets.CountAsync(t => t.EventId == evt.Id && t.Status != TicketStatuses.Cancelled);
-                var availableSeats = evt.TotalSeats - totalTickets;
-                
+                // Availability comes from the real-stadium overlay sectors so the card matches the
+                // event-details page exactly: sold counts per sector (incl. season-pass seats) and
+                // disabled sectors contribute zero available. Summing the same summaries the details
+                // endpoint uses keeps the two views consistent.
+                var summaries = await _overlaySeats.GetSectionSummariesAsync(evt.Id);
+                var availableSeats = summaries.Values.Sum(s => s.AvailableSeats);
+                var soldSeats = summaries.Values.Sum(s => s.SoldSeats);
+
                 eventDtos.Add(new CustomerEventDto
                 {
                     Id = evt.Id,
@@ -94,9 +98,9 @@ public class CustomerTicketingController : ControllerBase
                     Description = evt.Description,
                     BaseTicketPrice = evt.BaseTicketPrice ?? 50.00m,
                     TotalSeats = evt.TotalSeats,
-                    AvailableSeats = Math.Max(0, availableSeats),
-                    SoldTickets = totalTickets,
-                    VenueInfo = "Stadium Arena" // Could be made dynamic
+                    AvailableSeats = availableSeats,
+                    SoldTickets = soldSeats,
+                    VenueInfo = venueInfo
                 });
             }
 
@@ -131,6 +135,10 @@ public class CustomerTicketingController : ControllerBase
             // Availability + price per sector. Every seat in a sector shares the sector's price.
             var sectionAvailability = await GetSectionAvailabilityForEvent(eventId, baseTicketPrice);
 
+            // Roll the per-sector figures up to event level so the meta chips ("X free" and the
+            // venue name) show real data rather than a hardcoded placeholder.
+            var venue = await _context.Venues.AsNoTracking().FirstOrDefaultAsync();
+
             var eventDetails = new CustomerEventDetailsDto
             {
                 Id = evt.Id,
@@ -140,7 +148,8 @@ public class CustomerTicketingController : ControllerBase
                 Description = evt.Description,
                 BaseTicketPrice = baseTicketPrice,
                 TotalSeats = evt.TotalSeats,
-                VenueInfo = "Stadium Arena",
+                AvailableSeats = sectionAvailability.Values.Sum(s => s.AvailableSeats),
+                VenueInfo = BuildVenueInfo(venue),
                 SectionAvailability = sectionAvailability,
                 PricingTiers = BuildPricingTiersFromSectors(sectionAvailability)
             };
@@ -246,6 +255,20 @@ public class CustomerTicketingController : ControllerBase
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Human-readable venue label for the event meta chip, taken from the singleton venue profile
+    /// (name + city). Falls back to the venue name alone, or a generic label if no venue exists yet.
+    /// </summary>
+    private static string BuildVenueInfo(Venue? venue)
+    {
+        if (venue == null || string.IsNullOrWhiteSpace(venue.Name))
+            return "Stadium";
+
+        return string.IsNullOrWhiteSpace(venue.City)
+            ? venue.Name
+            : $"{venue.Name}, {venue.City}";
     }
 
     private static List<PricingTierDto> BuildPricingTiersFromSectors(Dictionary<string, SectionAvailabilityInfo> sections)

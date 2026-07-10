@@ -32,6 +32,13 @@
     outline:none;transition:border-color .15s}
 .wal-select:focus{border-color:var(--magenta);box-shadow:0 0 0 3px rgba(255,31,107,.18)}
 
+/* ---- Stripe card element (async gateway) ---- */
+.wal-card-input{width:100%;background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px;
+    padding:14px 16px;transition:border-color .15s}
+.wal-card-input.StripeElement--focus{border-color:var(--magenta);box-shadow:0 0 0 3px rgba(255,31,107,.18)}
+.wal-card-input.StripeElement--invalid{border-color:rgba(239,68,68,.6)}
+.wal-card-errors{color:#FFB4B4;font-size:12.5px;font-weight:600;margin-top:6px;min-height:1em}
+
 /* ---- transactions ---- */
 .wal-tx-empty{text-align:center;color:var(--muted);font-size:13.5px;font-weight:600;padding:16px 0}
 .wal-tx-list{display:flex;flex-direction:column}

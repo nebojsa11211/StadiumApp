@@ -31,9 +31,23 @@ public class User
     [StringLength(30)]
     public string? PhoneNumber { get; set; }
 
+    /// <summary>Croatian personal identification number (OIB) — 11 digits. Optional; captured at
+    /// registration or via the customer profile page. Shown to bar staff to confirm the fan's identity
+    /// before loading cash onto their wallet at the counter.</summary>
+    [StringLength(11)]
+    public string? Oib { get; set; }
+
     /// <summary>Whether the account is enabled. Deactivated accounts remain in the system
     /// (for history) but are flagged inactive. Defaults to true.</summary>
     public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// True for an auto-created <b>shell account</b>: one provisioned from a ticket's email so the fan can
+    /// hold a wallet (and be topped up at the bar) before they've signed up. It has a random, unusable
+    /// <see cref="PasswordHash"/> — nobody can log in — until the fan "claims" it by setting a password
+    /// (via the emailed activation link or by registering with the same email), which flips this to false.
+    /// </summary>
+    public bool IsShellAccount { get; set; } = false;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastLoginAt { get; set; }

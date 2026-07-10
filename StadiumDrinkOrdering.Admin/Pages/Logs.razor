@@ -195,7 +195,8 @@
                         </tr>
                     </thead>
                     <tbody id="admin-logs-table-body">
-                        @foreach (var log in logs.Logs.Take(50))
+                        @{ pager.Source = logs.Logs; }
+                        @foreach (var log in pager.PageItems)
                         {
                             <tr id="admin-logs-row-@log.Id">
                                 <td class="mono console-table__time" id="admin-logs-cell-time-@log.Id">@log.Timestamp.ToLocalTime().ToString("MM-dd HH:mm:ss")</td>
@@ -248,12 +249,7 @@
                     </tbody>
                 </table>
 
-                @if (logs.TotalCount > 50)
-                {
-                    <div class="table-foot" id="admin-logs-table-footer">
-                        <p id="admin-logs-showing-note">@L["Logs_ShowingFirst50", logs.TotalCount]</p>
-                    </div>
-                }
+                <TablePager TItem="LogEntryDto" View="pager" IdPrefix="admin-logs-table" OnChanged="StateHasChanged" />
             }
             else
             {

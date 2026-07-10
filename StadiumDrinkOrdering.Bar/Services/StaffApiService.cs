@@ -30,7 +30,11 @@ public interface IStaffApiService
     Task<PagedLogsDto?> GetLogsAsync(LogFilterDto filter);
     Task<LogSummaryDto?> GetLogSummaryAsync();
     Task<bool> LogUserActionAsync(string action, string category, string? details = null);
-    
+
+    // Bar cash wallet top-up (bartender loads cash onto a fan's wallet at the counter)
+    Task<BarTopupResolveResultDto?> ResolveTopupAsync(string query);
+    Task<BarTopupResultDto?> SubmitTopupAsync(BarTopupRequestDto request);
+
     string? Token { get; set; }
 }
 
@@ -436,7 +440,7 @@ public class StaffApiService : IStaffApiService
 
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
+
             await EnsureAuthHeaderAsync();
             var response = await _httpClient.PostAsync("logs/log-action", content);
             return response.IsSuccessStatusCode;
@@ -446,5 +450,56 @@ public class StaffApiService : IStaffApiService
             Console.WriteLine($"Error logging user action: {ex.Message}");
             return false;
         }
+    }
+
+    // Resolve a scanned/typed value (ticket number, QR token, email, or OIB) to the fan account that
+    // will receive the cash. BarTopupController is routed under "api/bar/topup" (unlike the other
+    // controllers here which have no api prefix), so the endpoint path carries the full "api/bar/..."
+    // prefix on top of the configured base address.
+    public async Task<BarTopupResolveResultDto?> ResolveTopupAsync(string query)
+    {
+        try
+        {
+            var request = new BarTopupResolveRequestDto { Query = query };
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/topup/resolve", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<BarTopupResolveResultDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error resolving top-up query: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Credit the confirmed cash amount onto the resolved fan's wallet. The caller supplies a fresh
+    // IdempotencyKey per confirmed attempt so a retried submit is a safe no-op server-side.
+    public async Task<BarTopupResultDto?> SubmitTopupAsync(BarTopupRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/topup", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<BarTopupResultDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error submitting top-up: {ex.Message}");
+        }
+        return null;
     }
 }

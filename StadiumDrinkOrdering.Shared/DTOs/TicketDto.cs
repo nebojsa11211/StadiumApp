@@ -13,6 +13,10 @@ public class TicketDto
     public string? EventName { get; set; }
     public DateTime? EventDate { get; set; }
     public bool IsActive { get; set; }
+    /// <summary>Canonical lifecycle status: Active / Used / Cancelled (see <see cref="TicketStatuses"/>).</summary>
+    public string? Status { get; set; }
+    /// <summary>True once the ticket has been scanned/redeemed at the gate.</summary>
+    public bool IsUsed { get; set; }
     public int? EventId { get; set; }
     public int? OrderId { get; set; }
     public DateTime? PurchaseDate { get; set; }

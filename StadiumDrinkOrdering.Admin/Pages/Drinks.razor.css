@@ -1,8 +1,12 @@
 /* =============================================================================
    Drink Management — page-specific helpers
    Structural styling layers on top of the global Operations Console system
-   (admin-console.css). Only bits with no console equivalent live here:
-   catalog thumbnail, truncated description cell, labeled row buttons.
+   (admin-console.css). Only bits unique to the drinks catalog live here:
+   catalog thumbnail and truncated description cell.
+
+   NOTE: the shared helpers (.row-btn--label, .drink-name, .drink-check and the
+   whole .drink-modal* system) now live in admin-console.css so other console
+   pages (e.g. Categories) can reuse them.
    ============================================================================= */
 
 /* Drink name + thumbnail in the first table cell */
@@ -29,11 +33,6 @@
     font-size: 1.05rem;
 }
 
-.drink-name {
-    color: var(--stadium-gray-900, #111);
-    font-weight: 500;
-}
-
 /* Truncated description cell so the table stays scannable */
 .drink-desc {
     color: var(--stadium-gray-500, #868e96);
@@ -41,175 +40,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-/* Row action buttons that carry a text label (Edit / Disable / Delete).
-   Extends the global .row-btn (icon-only) to allow an inline label. */
-.row-btn--label {
-    width: auto;
-    gap: 0.35rem;
-    padding: 0 0.6rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-/* Inline checkbox + label row inside the modal */
-.drink-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: var(--stadium-gray-700, #495057);
-    cursor: pointer;
-    padding: 0.65rem 0.8rem;
-    border: 1px solid var(--line, #e9ecef);
-    border-radius: 8px;
-    background: var(--stadium-gray-50, #f8f9fa);
-    transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.drink-check:hover {
-    border-color: var(--stadium-gray-300, #ced4da);
-}
-
-/* =============================================================================
-   Create / Edit modal — reskinned to match the Operations Console system
-   ============================================================================= */
-.drink-modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.25rem;
-    background: rgba(15, 23, 42, 0.55);
-    backdrop-filter: blur(3px);
-    animation: drink-modal-fade 0.15s ease;
-}
-
-.drink-modal {
-    width: 100%;
-    max-width: 520px;
-    display: flex;
-}
-
-.drink-modal__content {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-height: 90vh;
-    background: var(--surface, #fff);
-    border: 1px solid var(--line, #e9ecef);
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 24px 55px -12px rgba(15, 23, 42, 0.38);
-    animation: drink-modal-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes drink-modal-fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes drink-modal-pop {
-    from { opacity: 0; transform: translateY(10px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.drink-modal__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.15rem 1.35rem;
-    border-bottom: 1px solid var(--line, #e9ecef);
-    background: var(--pitch-soft, #eaf3ec);
-}
-
-.drink-modal__head-left {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.85rem;
-    min-width: 0;
-}
-
-.drink-modal__head-text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    min-width: 0;
-}
-
-.drink-modal__icon {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    background: var(--pitch, #1f7a4d);
-    color: #fff;
-    font-size: 1.05rem;
-}
-
-.drink-modal__head .eyebrow {
-    color: var(--pitch-dark, #176239);
-}
-
-.drink-modal__title {
-    margin: 0;
-    font-size: 1.02rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--ink, #111);
-}
-
-.drink-modal__close {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    background: transparent;
-    color: var(--muted, #868e96);
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.drink-modal__close:hover {
-    background: rgba(15, 23, 42, 0.08);
-    color: var(--ink, #111);
-}
-
-.drink-modal__body {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1.35rem;
-    overflow-y: auto;
-}
-
-.drink-modal__row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.drink-modal__foot {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.6rem;
-    padding: 1rem 1.35rem;
-    border-top: 1px solid var(--line, #e9ecef);
-    background: var(--stadium-gray-50, #f8f9fa);
 }
 
 /* ----- Image upload field --------------------------------------------------- */

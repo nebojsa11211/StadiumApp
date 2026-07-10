@@ -84,10 +84,16 @@ namespace StadiumDrinkOrdering.Admin.Services
         public Task<DrinkDto?> CreateDrinkAsync(CreateDrinkDto createDrinkDto) => Drinks.CreateDrinkAsync(createDrinkDto);
         public Task<DrinkDto?> UpdateDrinkAsync(int id, UpdateDrinkDto updateDrinkDto) => Drinks.UpdateDrinkAsync(id, updateDrinkDto);
         public Task<bool> DeleteDrinkAsync(int id) => Drinks.DeleteDrinkAsync(id);
+        public Task<IEnumerable<CategoryDto>?> GetCategoriesAsync() => Drinks.GetCategoriesAsync();
+        public Task<CategoryDto?> CreateCategoryAsync(CreateCategoryDto createCategoryDto) => Drinks.CreateCategoryAsync(createCategoryDto);
+        public Task<CategoryDto?> UpdateCategoryAsync(int id, UpdateCategoryDto updateCategoryDto) => Drinks.UpdateCategoryAsync(id, updateCategoryDto);
+        public Task<(bool Success, string? Error)> DeleteCategoryAsync(int id) => Drinks.DeleteCategoryAsync(id);
 
         // Legacy methods - Ticket operations (delegated to TicketService)
         public Task<IEnumerable<TicketDto>?> GetTicketsAsync() => Tickets.GetTicketsAsync();
         public Task<IEnumerable<TicketDto>?> GetTicketsAsync(int? eventId) => Tickets.GetTicketsAsync(eventId);
+        public Task<TicketDetailDto?> GetTicketDetailsAsync(int ticketId) => Tickets.GetTicketDetailsAsync(ticketId);
+        public Task<byte[]?> GetTicketCardPdfAsync(int ticketId) => Tickets.GetTicketCardPdfAsync(ticketId);
         public Task<bool> ValidateTicketAsync(string ticketCode) => Tickets.ValidateTicketAsync(ticketCode);
         public Task<bool> UpdateTicketStatusAsync(int ticketId, bool isActive) => Tickets.UpdateTicketStatusAsync(ticketId, isActive);
 

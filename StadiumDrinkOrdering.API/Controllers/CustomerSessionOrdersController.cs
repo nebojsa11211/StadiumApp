@@ -53,12 +53,13 @@ public class CustomerSessionOrdersController : ControllerBase
         if (session is null || !session.IsActive || session.ExpiresAt <= DateTime.UtcNow)
             return Unauthorized(new SessionOrderResultDto { Error = "Your session has expired. Please scan your ticket again." });
 
-        // Ordering is only open while the event is live (Active/InProgress) — enforces the countdown-only rule.
-        var status = session.Ticket?.Event?.Status;
-        if (status is null || !EventLifecycle.CanOrderDrinks(status.Value))
+        // Ordering is only open while the event is live (Active/InProgress) AND within the event's
+        // optional drink-ordering window — enforces the countdown-only rule and any early bar close.
+        var orderEvent = session.Ticket?.Event;
+        if (orderEvent is null || !orderEvent.AreDrinkSalesOpenAt(DateTime.UtcNow))
             return BadRequest(new SessionOrderResultDto
             {
-                Error = status is not null ? EventLifecycle.OrderingBlockedReason(status.Value) : "Ordering is not available for this event."
+                Error = orderEvent?.DrinkSalesBlockedReason(DateTime.UtcNow) ?? "Ordering is not available for this event."
             });
 
         var guestId = await GetGuestCustomerIdAsync();

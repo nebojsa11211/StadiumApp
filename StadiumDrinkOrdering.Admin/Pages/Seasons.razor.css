@@ -1,0 +1,193 @@
+/* Expand toggle in the season name cell */
+.season-expand-btn {
+    margin-right: 0.4rem;
+    color: var(--muted);
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.season-expand-btn:hover {
+    color: var(--ink);
+}
+
+tr.is-expanded .season-expand-btn {
+    color: var(--pitch, #2e7d32);
+}
+
+/* The expanded statistics row */
+.season-detail-row > td {
+    background: var(--surface-2, rgba(0, 0, 0, 0.02));
+    border-top: 0;
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.season-detail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.9rem;
+}
+
+/* A single stat tile inside the detail panel */
+.season-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background: var(--surface, #fff);
+    border: 1px solid var(--line, #e5e7eb);
+    border-radius: 10px;
+    padding: 0.8rem 0.9rem;
+}
+
+.season-stat__label {
+    font-family: var(--stadium-font-mono, monospace);
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted, #6b7280);
+}
+
+.season-stat__value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.05;
+    color: var(--ink, #111827);
+    letter-spacing: -0.02em;
+}
+
+/* Text-valued tiles (e.g. best-selling drink name) use a smaller, wrapping value */
+.season-stat__value--text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.season-stat__value--muted {
+    color: var(--muted, #6b7280);
+}
+
+.season-stat__sub {
+    font-size: 0.74rem;
+    color: var(--muted, #6b7280);
+}
+
+.season-stat__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.15rem;
+}
+
+/* Occupancy progress bar */
+.season-stat__bar {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--stadium-gray-200, #e5e7eb);
+    overflow: hidden;
+    margin-top: 0.2rem;
+}
+
+.season-stat__bar > span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--pitch, #2e7d32);
+    transition: width 0.3s ease;
+}
+
+/* Small status chips for event phases / pass origin */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--line, #e5e7eb);
+    color: var(--ink, #111827);
+    background: var(--surface, #fff);
+    white-space: nowrap;
+}
+
+/* ---- Season comparison charts (inline SVG) ---- */
+.season-charts {
+    /* Validated categorical hues (dataviz default: blue / aqua / brand-green) */
+    --chart-s1: #2a78d6;
+    --chart-s2: #1baf7a;
+    --chart-s3: #1f7a4d;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem;
+}
+
+:root[data-theme="dark"] .season-charts,
+[data-theme="dark"] .season-charts {
+    --chart-s1: #3987e5;
+    --chart-s2: #199e70;
+    --chart-s3: #2e9e64;
+}
+
+.season-chart__title {
+    font-family: var(--stadium-font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted, #6b7280);
+    margin-bottom: 0.4rem;
+}
+
+.season-chart svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.chart-grid { stroke: var(--line, #e5e7eb); stroke-width: 1; }
+.chart-bar { transition: opacity 0.15s ease; cursor: default; }
+.chart-bar:hover { opacity: 0.82; }
+
+.chart-val {
+    fill: var(--ink, #111827);
+    font-size: 10px;
+    font-weight: 600;
+    text-anchor: middle;
+    font-family: var(--stadium-font-mono, monospace);
+}
+
+.chart-xlabel {
+    fill: var(--muted, #6b7280);
+    font-size: 10px;
+    text-anchor: middle;
+    font-family: var(--stadium-font-mono, monospace);
+}
+
+.season-chart__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.season-chart__legend .li {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    color: var(--muted, #6b7280);
+}
+
+.season-chart__legend .sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.chip--up { border-color: #93c5fd; background: rgba(59, 130, 246, 0.10); color: #1d4ed8; }
+.chip--live { border-color: #6ee7b7; background: rgba(16, 185, 129, 0.12); color: #047857; }
+.chip--done { border-color: var(--line, #e5e7eb); background: var(--stadium-gray-100, #f3f4f6); color: var(--muted, #6b7280); }
+.chip--in { border-color: #c4b5fd; background: rgba(139, 92, 246, 0.10); color: #6d28d9; }
+.chip--ext { border-color: #fcd34d; background: rgba(245, 158, 11, 0.12); color: #b45309; }

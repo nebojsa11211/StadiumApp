@@ -773,7 +773,7 @@
     <value>Sector Information: {0}</value>
   </data>
   <data name="SectorEdit_PreviewField" xml:space="preserve">
-    <value>⬇️ FIELD / STAGE ⬇️</value>
+    <value>FIELD / STAGE</value>
   </data>
   <data name="SectorEdit_PreviewRow" xml:space="preserve">
     <value>Row</value>
@@ -786,6 +786,24 @@
   </data>
   <data name="SectorEdit_PreviewLegend" xml:space="preserve">
     <value>Legend</value>
+  </data>
+  <data name="SectorEdit_PreviewSeatMargin" xml:space="preserve">
+    <value>Seat margin from edges</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSide" xml:space="preserve">
+    <value>Field side</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSideTop" xml:space="preserve">
+    <value>Place field at top</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSideBottom" xml:space="preserve">
+    <value>Place field at bottom</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSideLeft" xml:space="preserve">
+    <value>Place field at left</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSideRight" xml:space="preserve">
+    <value>Place field at right</value>
   </data>
   <data name="SectorEdit_PreviewSeatType" xml:space="preserve">
     <value>{0} Seat</value>
@@ -1939,6 +1957,84 @@
   <data name="Drinks_DeleteButton" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Drinks_AddStockButton" xml:space="preserve">
+    <value>Add stock</value>
+  </data>
+  <data name="Drinks_HistoryButton" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Drinks_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Drinks_AddStockEyebrow" xml:space="preserve">
+    <value>Add stock</value>
+  </data>
+  <data name="Drinks_RestockCurrentStock" xml:space="preserve">
+    <value>Current stock</value>
+  </data>
+  <data name="Drinks_RestockNewStock" xml:space="preserve">
+    <value>New stock level</value>
+  </data>
+  <data name="Drinks_RestockQuantityLabel" xml:space="preserve">
+    <value>Quantity to add</value>
+  </data>
+  <data name="Drinks_RestockNoteLabel" xml:space="preserve">
+    <value>Note (optional)</value>
+  </data>
+  <data name="Drinks_RestockNotePlaceholder" xml:space="preserve">
+    <value>e.g. supplier delivery</value>
+  </data>
+  <data name="Drinks_RestockSuccess" xml:space="preserve">
+    <value>Added {0} to '{1}'. New stock: {2}</value>
+  </data>
+  <data name="Drinks_RestockFailed" xml:space="preserve">
+    <value>Failed to add stock</value>
+  </data>
+  <data name="Drinks_RestockInvalidQuantity" xml:space="preserve">
+    <value>Enter a quantity greater than zero</value>
+  </data>
+  <data name="Drinks_HistoryEyebrow" xml:space="preserve">
+    <value>Stock history</value>
+  </data>
+  <data name="Drinks_HistoryLoading" xml:space="preserve">
+    <value>Loading stock history...</value>
+  </data>
+  <data name="Drinks_HistoryEmpty" xml:space="preserve">
+    <value>No stock movements recorded yet</value>
+  </data>
+  <data name="Drinks_HistoryDateColumn" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Drinks_HistoryTypeColumn" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Drinks_HistoryChangeColumn" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Drinks_HistoryBalanceColumn" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Drinks_HistoryByColumn" xml:space="preserve">
+    <value>By</value>
+  </data>
+  <data name="Drinks_HistoryNoteColumn" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Drinks_HistorySystemActor" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Drinks_MovementRestock" xml:space="preserve">
+    <value>Restock</value>
+  </data>
+  <data name="Drinks_MovementSale" xml:space="preserve">
+    <value>Sale</value>
+  </data>
+  <data name="Drinks_MovementOrderCancelled" xml:space="preserve">
+    <value>Order cancelled</value>
+  </data>
+  <data name="Drinks_MovementManualAdjustment" xml:space="preserve">
+    <value>Manual adjustment</value>
+  </data>
   <data name="Drinks_AddNewDrinkModalTitle" xml:space="preserve">
     <value>Add New Drink</value>
   </data>
@@ -1952,7 +2048,7 @@
     <value>Description</value>
   </data>
   <data name="Drinks_PriceLabel" xml:space="preserve">
-    <value>Price ($)</value>
+    <value>Price (€)</value>
   </data>
   <data name="Drinks_StockQuantityLabel" xml:space="preserve">
     <value>Stock Quantity</value>
@@ -2128,6 +2224,12 @@
   <data name="Tickets_ResetButton" xml:space="preserve">
     <value>Reset</value>
   </data>
+  <data name="Tickets_FilterBySeasonLabel" xml:space="preserve">
+    <value>Filter by Season</value>
+  </data>
+  <data name="Tickets_AllSeasonsOption" xml:space="preserve">
+    <value>All Seasons</value>
+  </data>
   <data name="Tickets_FilterByEventLabel" xml:space="preserve">
     <value>Filter by Event</value>
   </data>
@@ -2142,6 +2244,9 @@
   </data>
   <data name="Tickets_ActiveOption" xml:space="preserve">
     <value>Active</value>
+  </data>
+  <data name="Tickets_ExpiredOption" xml:space="preserve">
+    <value>Expired</value>
   </data>
   <data name="Tickets_InactiveOption" xml:space="preserve">
     <value>Inactive</value>
@@ -2233,6 +2338,9 @@
   <data name="Tickets_ActiveStatus" xml:space="preserve">
     <value>Active</value>
   </data>
+  <data name="Tickets_ExpiredStatus" xml:space="preserve">
+    <value>Expired</value>
+  </data>
   <data name="Tickets_InactiveStatus" xml:space="preserve">
     <value>Inactive</value>
   </data>
@@ -2317,6 +2425,18 @@
   <data name="Events_SeatsLabel" xml:space="preserve">
     <value>seats</value>
   </data>
+  <data name="Events_OccupancyLabel" xml:space="preserve">
+    <value>Seats Sold</value>
+  </data>
+  <data name="Events_SeatsSold" xml:space="preserve">
+    <value>sold</value>
+  </data>
+  <data name="Events_SeatsFree" xml:space="preserve">
+    <value>free</value>
+  </data>
+  <data name="Events_SeasonPassNote" xml:space="preserve">
+    <value>{0} via season passes</value>
+  </data>
   <data name="Events_BasePriceLabel" xml:space="preserve">
     <value>Base Price</value>
   </data>
@@ -2382,6 +2502,12 @@
   </data>
   <data name="EventStats_SeatsLabel" xml:space="preserve">
     <value>seats</value>
+  </data>
+  <data name="EventStats_ViewTicketsHint" xml:space="preserve">
+    <value>View all tickets</value>
+  </data>
+  <data name="EventStats_ViewDrinkOrdersHint" xml:space="preserve">
+    <value>View drink orders</value>
   </data>
   <data name="EventStats_OccupancyLabel" xml:space="preserve">
     <value>Occupancy</value>
@@ -2499,6 +2625,24 @@
   </data>
   <data name="Events_SalesWindowHint" xml:space="preserve">
     <value>Optional. Leave the start blank to open sales immediately, and the end blank to keep them open while the event is on sale. Tickets can only be sold when the event is On Sale and within this window.</value>
+  </data>
+  <data name="Events_DrinkSalesStartDateTimeLabel" xml:space="preserve">
+    <value>Drink Ordering Opens</value>
+  </data>
+  <data name="Events_DrinkSalesEndDateTimeLabel" xml:space="preserve">
+    <value>Drink Ordering Closes</value>
+  </data>
+  <data name="Events_DrinkSalesEndAfterStartValidation" xml:space="preserve">
+    <value>The drink ordering end time must be after the start time.</value>
+  </data>
+  <data name="Events_DrinkWindowHint" xml:space="preserve">
+    <value>Optional. Leave the start blank to open drink ordering the moment the event goes live, and the end blank to keep it open until the event ends. Drinks can only be ordered while the event is live and within this window.</value>
+  </data>
+  <data name="Events_TicketWindowLabel" xml:space="preserve">
+    <value>Ticket Sales</value>
+  </data>
+  <data name="Events_DrinkWindowLabel" xml:space="preserve">
+    <value>Drink Ordering</value>
   </data>
   <data name="Events_CapacityFieldLabel" xml:space="preserve">
     <value>Capacity</value>
@@ -2637,6 +2781,12 @@
   </data>
   <data name="Orders_AllStatusesOption" xml:space="preserve">
     <value>All Statuses</value>
+  </data>
+  <data name="Orders_SeasonLabel" xml:space="preserve">
+    <value>Season</value>
+  </data>
+  <data name="Orders_AllSeasonsOption" xml:space="preserve">
+    <value>All Seasons</value>
   </data>
   <data name="Orders_EventLabel" xml:space="preserve">
     <value>Event</value>
@@ -2784,6 +2934,9 @@
   </data>
   <data name="Analytics_AvailableEventsTitle" xml:space="preserve">
     <value>Available Events</value>
+  </data>
+  <data name="Analytics_AllSeasonsOption" xml:space="preserve">
+    <value>All Seasons</value>
   </data>
   <data name="Analytics_EventNameHeader" xml:space="preserve">
     <value>Event Name</value>
@@ -3142,6 +3295,18 @@
   <data name="Index_ViewingOtherSeason" xml:space="preserve">
     <value>You're viewing an event from {0}, not the current season.</value>
   </data>
+  <data name="Index_PreviousSeason" xml:space="preserve">
+    <value>Previous season</value>
+  </data>
+  <data name="Index_NextSeason" xml:space="preserve">
+    <value>Next season</value>
+  </data>
+  <data name="Index_SelectSeason" xml:space="preserve">
+    <value>Select season</value>
+  </data>
+  <data name="Index_ReturnToCurrentSeason" xml:space="preserve">
+    <value>Return to current season</value>
+  </data>
   <data name="Index_OfSeats" xml:space="preserve">
     <value>of {0} seats</value>
   </data>
@@ -3457,6 +3622,18 @@
   <data name="Customers_TotalText" xml:space="preserve">
     <value>total customers</value>
   </data>
+  <data name="Customers_SeasonFilterLabel" xml:space="preserve">
+    <value>Season</value>
+  </data>
+  <data name="Customers_AllSeasonsOption" xml:space="preserve">
+    <value>All seasons</value>
+  </data>
+  <data name="Customers_EventFilterLabel" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="Customers_AllEventsOption" xml:space="preserve">
+    <value>All events</value>
+  </data>
   <data name="Customers_LoadingMessage" xml:space="preserve">
     <value>Loading customers...</value>
   </data>
@@ -3535,6 +3712,7 @@
 <data name="Seasons_FormEnds" xml:space="preserve"><value>Ends</value></data>
 <data name="Seasons_EndAfterStart" xml:space="preserve"><value>End date must be after the start date.</value></data>
 <data name="Seasons_FormCurrent" xml:space="preserve"><value>Current season (default for new events &amp; season tickets)</value></data>
+  <data name="Seasons_FinishedNotCurrent" xml:space="preserve"><value>This season has already finished, so it can't be set as the current season.</value></data>
 <data name="Seasons_Cancel" xml:space="preserve"><value>Cancel</value></data>
 <data name="Seasons_CreateSeason" xml:space="preserve"><value>Create season</value></data>
 <data name="Seasons_SaveChanges" xml:space="preserve"><value>Save changes</value></data>
@@ -3549,6 +3727,44 @@
 <data name="Seasons_DeleteConfirm" xml:space="preserve"><value>Delete season '{0}'? Linked events will be unlinked.</value></data>
 <data name="Seasons_DeletedMsg" xml:space="preserve"><value>Season '{0}' deleted.</value></data>
 <data name="Seasons_DeleteFailed" xml:space="preserve"><value>Failed to delete season.</value></data>
+  <!-- Seasons statistics (KPI row, revenue column, expandable per-season detail) -->
+  <data name="Seasons_KpiPassesLabel" xml:space="preserve"><value>Season passes</value></data>
+  <data name="Seasons_KpiPassesHint" xml:space="preserve"><value>Active across all seasons</value></data>
+  <data name="Seasons_KpiRevenueLabel" xml:space="preserve"><value>Pass revenue</value></data>
+  <data name="Seasons_KpiRevenueHint" xml:space="preserve"><value>From active season passes</value></data>
+  <data name="Seasons_KpiAvgPriceLabel" xml:space="preserve"><value>Avg. pass price</value></data>
+  <data name="Seasons_KpiAvgPriceHint" xml:space="preserve"><value>Per active pass</value></data>
+  <data name="Seasons_KpiOccupancyLabel" xml:space="preserve"><value>Season occupancy</value></data>
+  <data name="Seasons_KpiOccupancyHint" xml:space="preserve"><value>{0} of {1} stadium seats</value></data>
+  <data name="Seasons_ColRevenue" xml:space="preserve"><value>Revenue</value></data>
+  <data name="Seasons_ExpandDetails" xml:space="preserve"><value>Toggle statistics</value></data>
+  <data name="Seasons_StatOccupancy" xml:space="preserve"><value>Occupancy</value></data>
+  <data name="Seasons_StatRevenue" xml:space="preserve"><value>Revenue</value></data>
+  <data name="Seasons_StatAvgPrice" xml:space="preserve"><value>Avg. pass price</value></data>
+  <data name="Seasons_StatEvents" xml:space="preserve"><value>Events</value></data>
+  <data name="Seasons_StatUpcoming" xml:space="preserve"><value>Upcoming</value></data>
+  <data name="Seasons_StatLive" xml:space="preserve"><value>Live</value></data>
+  <data name="Seasons_StatCompleted" xml:space="preserve"><value>Completed</value></data>
+  <data name="Seasons_StatHolders" xml:space="preserve"><value>Holders</value></data>
+  <data name="Seasons_StatDistinctHolders" xml:space="preserve"><value>Distinct holders</value></data>
+  <data name="Seasons_StatLinkedAccounts" xml:space="preserve"><value>Linked to accounts</value></data>
+  <data name="Seasons_StatPassOrigin" xml:space="preserve"><value>Pass origin</value></data>
+  <data name="Seasons_StatInternal" xml:space="preserve"><value>In-house</value></data>
+  <data name="Seasons_StatExternal" xml:space="preserve"><value>External</value></data>
+  <data name="Seasons_OfCapacity" xml:space="preserve"><value>of {0} seats</value></data>
+  <data name="Seasons_StatOrders" xml:space="preserve"><value>Drink orders</value></data>
+  <data name="Seasons_StatAvgOrder" xml:space="preserve"><value>Avg. order</value></data>
+  <data name="Seasons_StatDrinksSold" xml:space="preserve"><value>Drinks sold</value></data>
+  <data name="Seasons_StatDrinksRevenue" xml:space="preserve"><value>Revenue</value></data>
+  <data name="Seasons_StatTopDrink" xml:space="preserve"><value>Best seller</value></data>
+  <data name="Seasons_StatUnits" xml:space="preserve"><value>{0} sold</value></data>
+  <data name="Seasons_StatNoOrders" xml:space="preserve"><value>No orders yet</value></data>
+  <data name="Seasons_ChartsTitle" xml:space="preserve"><value>Season comparison</value></data>
+  <data name="Seasons_ChartRevenueTitle" xml:space="preserve"><value>Revenue by season (€)</value></data>
+  <data name="Seasons_ChartOccupancyTitle" xml:space="preserve"><value>Season-pass occupancy</value></data>
+  <data name="Seasons_ChartDrinksTitle" xml:space="preserve"><value>Drinks sold by season</value></data>
+  <data name="Seasons_LegendPassRevenue" xml:space="preserve"><value>Pass revenue</value></data>
+  <data name="Seasons_LegendDrinksRevenue" xml:space="preserve"><value>Drinks revenue</value></data>
   <!-- App Component -->
   <data name="App_InitializingApplication" xml:space="preserve"><value>Initializing application...</value></data>
   <data name="App_NotFound" xml:space="preserve"><value>Not found</value></data>
@@ -3709,6 +3925,71 @@
   <data name="Settings_TicketSalesEnabledHint" xml:space="preserve"><value>When off, the customer app hides its buy flow and the API rejects new purchases. Tickets then enter the system only through the external ticketing integration.</value></data>
   <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Ticket sales are ON — customers can buy tickets in the app.</value></data>
   <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Ticket sales are OFF — tickets only come from the external system.</value></data>
+  <data name="Settings_EmailSection" xml:space="preserve"><value>Email (SMTP)</value></data>
+  <data name="Settings_EmailSubtitle" xml:space="preserve"><value>Configure the outgoing mail server used for account activation links and notification emails.</value></data>
+  <data name="Settings_EmailEnabled" xml:space="preserve"><value>Send emails over SMTP</value></data>
+  <data name="Settings_EmailEnabledHint" xml:space="preserve"><value>When off, emails are written to the application log instead of being delivered.</value></data>
+  <data name="Settings_EmailHost" xml:space="preserve"><value>SMTP host</value></data>
+  <data name="Settings_EmailPort" xml:space="preserve"><value>Port</value></data>
+  <data name="Settings_EmailUsername" xml:space="preserve"><value>Username</value></data>
+  <data name="Settings_EmailPassword" xml:space="preserve"><value>Password</value></data>
+  <data name="Settings_EmailPasswordStoredHint" xml:space="preserve"><value>A password is saved. Leave blank to keep it, or enter a new one to replace it.</value></data>
+  <data name="Settings_EmailPasswordHint" xml:space="preserve"><value>Leave blank if your mail server requires no authentication.</value></data>
+  <data name="Settings_EmailUseSsl" xml:space="preserve"><value>Use SSL/TLS</value></data>
+  <data name="Settings_EmailFromAddress" xml:space="preserve"><value>From address</value></data>
+  <data name="Settings_EmailFromName" xml:space="preserve"><value>From name</value></data>
+  <data name="Settings_EmailSave" xml:space="preserve"><value>Save email settings</value></data>
+  <data name="Settings_EmailSaved" xml:space="preserve"><value>Email settings saved.</value></data>
+  <data name="Settings_EmailSaveFailed" xml:space="preserve"><value>Failed to save email settings.</value></data>
+  <data name="Settings_EmailTestTitle" xml:space="preserve"><value>Send a test email</value></data>
+  <data name="Settings_EmailTestHint" xml:space="preserve"><value>Send a test message to confirm the SMTP configuration works. Uses the values above; if the password field is blank the saved password is used.</value></data>
+  <data name="Settings_EmailTestRecipient" xml:space="preserve"><value>Recipient email</value></data>
+  <data name="Settings_EmailTestButton" xml:space="preserve"><value>Send test email</value></data>
+  <data name="Settings_EmailTestSuccess" xml:space="preserve"><value>Test email sent successfully.</value></data>
+  <data name="Settings_EmailTestFailed" xml:space="preserve"><value>Test email failed: {0}</value></data>
+  <data name="Settings_EmailTemplatesSection" xml:space="preserve"><value>Email templates</value></data>
+  <data name="Settings_EmailTemplatesSubtitle" xml:space="preserve"><value>Edit the subject and content of the emails the system sends to customers.</value></data>
+  <data name="Settings_EmailTemplatesButton" xml:space="preserve"><value>Manage email templates</value></data>
+  <data name="EmailTemplates_PageTitle" xml:space="preserve"><value>Email templates</value></data>
+  <data name="EmailTemplates_Eyebrow" xml:space="preserve"><value>Settings</value></data>
+  <data name="EmailTemplates_Heading" xml:space="preserve"><value>Email templates</value></data>
+  <data name="EmailTemplates_Subtitle" xml:space="preserve"><value>Customize the subject and content of the transactional emails the system sends.</value></data>
+  <data name="EmailTemplates_BackToSettings" xml:space="preserve"><value>Back to settings</value></data>
+  <data name="EmailTemplates_Loading" xml:space="preserve"><value>Loading templates…</value></data>
+  <data name="EmailTemplates_Error" xml:space="preserve"><value>Failed to load email templates.</value></data>
+  <data name="EmailTemplates_Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="EmailTemplates_Empty" xml:space="preserve"><value>No email templates are defined.</value></data>
+  <data name="EmailTemplates_Customized" xml:space="preserve"><value>Customized</value></data>
+  <data name="EmailTemplates_UpdatedAt" xml:space="preserve"><value>Updated</value></data>
+  <data name="EmailTemplates_Placeholders" xml:space="preserve"><value>Available placeholders</value></data>
+  <data name="EmailTemplates_PlaceholdersHint" xml:space="preserve"><value>Insert these tokens in the subject or body; they are replaced with real values when the email is sent.</value></data>
+  <data name="EmailTemplates_Subject" xml:space="preserve"><value>Subject</value></data>
+  <data name="EmailTemplates_HtmlBody" xml:space="preserve"><value>HTML body</value></data>
+  <data name="EmailTemplates_TextBody" xml:space="preserve"><value>Plain-text body</value></data>
+  <data name="EmailTemplates_TextBodyHint" xml:space="preserve"><value>Optional. Shown by email clients that don't render HTML.</value></data>
+  <data name="EmailTemplates_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="EmailTemplates_Saved" xml:space="preserve"><value>Template saved.</value></data>
+  <data name="EmailTemplates_SaveFailed" xml:space="preserve"><value>Failed to save template.</value></data>
+  <data name="EmailTemplates_Preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="EmailTemplates_PreviewTitle" xml:space="preserve"><value>Preview (with sample values)</value></data>
+  <data name="EmailTemplates_PreviewFailed" xml:space="preserve"><value>Failed to render preview.</value></data>
+  <data name="EmailTemplates_PreviewSampleHint" xml:space="preserve"><value>Placeholders are filled with sample values for this preview.</value></data>
+  <data name="EmailTemplates_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="EmailTemplates_Reset" xml:space="preserve"><value>Reset to default</value></data>
+  <data name="EmailTemplates_ResetDone" xml:space="preserve"><value>Template reset to default.</value></data>
+  <data name="EmailTemplates_ResetFailed" xml:space="preserve"><value>Failed to reset template.</value></data>
+  <data name="Settings_DangerSection" xml:space="preserve"><value>Danger zone</value></data>
+  <data name="Settings_DangerSubtitle" xml:space="preserve"><value>Irreversible actions. Use with care.</value></data>
+  <data name="Settings_PurgeTitle" xml:space="preserve"><value>Delete all transactional data</value></data>
+  <data name="Settings_PurgeHint" xml:space="preserve"><value>Permanently removes every ticket, order, event, season, wallet transaction and wallet balance. Users, drinks, stadium structure and venue branding are kept. This cannot be undone.</value></data>
+  <data name="Settings_PurgeButton" xml:space="preserve"><value>Delete all data…</value></data>
+  <data name="Settings_PurgeConfirmTitle" xml:space="preserve"><value>Delete all transactional data?</value></data>
+  <data name="Settings_PurgeConfirmBody" xml:space="preserve"><value>This permanently deletes ALL tickets, orders, events, seasons, wallet transactions and wallet balances. This action cannot be undone.</value></data>
+  <data name="Settings_PurgeConfirmPromptLabel" xml:space="preserve"><value>Type DELETE to confirm</value></data>
+  <data name="Settings_PurgeConfirmButton" xml:space="preserve"><value>Yes, delete everything</value></data>
+  <data name="Settings_PurgeCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Settings_PurgeSuccess" xml:space="preserve"><value>All transactional data deleted ({0} rows removed).</value></data>
+  <data name="Settings_PurgeFailed" xml:space="preserve"><value>Failed to delete data. No changes were made.</value></data>
   <data name="Tickets_DetailViewTitle" xml:space="preserve"><value>View details</value></data>
   <data name="Tickets_DetailTitle" xml:space="preserve"><value>Ticket Details</value></data>
   <data name="Tickets_DetailClose" xml:space="preserve"><value>Close</value></data>
@@ -3735,10 +4016,16 @@
   <data name="Tickets_DetailDrinksTotal" xml:space="preserve"><value>Drinks total</value></data>
   <data name="Tickets_DetailGrandTotal" xml:space="preserve"><value>Grand total</value></data>
   <data name="Tickets_DetailCardPreview" xml:space="preserve"><value>Ticket Card</value></data>
+  <data name="Tickets_DetailSeatLocation" xml:space="preserve"><value>Seat Location</value></data>
+  <data name="Tickets_DetailLocationUnknown" xml:space="preserve"><value>Location not available</value></data>
   <data name="Tickets_DetailDownloadPdf" xml:space="preserve"><value>Download PDF</value></data>
   <data name="Tickets_DetailDownloadFailed" xml:space="preserve"><value>Could not generate the PDF. Please try again.</value></data>
   <data name="Pager_Show" xml:space="preserve"><value>Show</value></data>
   <data name="Pager_Showing" xml:space="preserve"><value>Showing {0} to {1} of {2}</value></data>
   <data name="Pager_Previous" xml:space="preserve"><value>Previous page</value></data>
   <data name="Pager_Next" xml:space="preserve"><value>Next page</value></data>
+  <data name="Settings_Eyebrow" xml:space="preserve"><value>System</value></data>
+  <data name="Venue_Eyebrow" xml:space="preserve"><value>Stadium</value></data>
+  <data name="StadiumInfo_Eyebrow" xml:space="preserve"><value>Stadium</value></data>
+  <data name="Drawing_Eyebrow" xml:space="preserve"><value>Stadium</value></data>
 </root>

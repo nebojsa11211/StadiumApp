@@ -2,6 +2,7 @@
 @layout MobileShell
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components.Stadium
+@using StadiumDrinkOrdering.Shared.Models
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
@@ -171,24 +172,30 @@ else
                         <div id="customer-event-details-seats-@rowGroup.Key" class="seats">
                             @foreach (var seat in rowGroup.OrderBy(s => s.SeatNumber))
                             {
-                                if (seat.IsAvailable)
-                                {
-                                    var isSel = selectedSeats.Any(s => s.SectorId == seat.SectorId && s.RowNumber == seat.RowNumber && s.SeatNumber == seat.SeatNumber);
-                                    <button id="customer-event-details-seat-@seat.SectorId-r@seat.RowNumber-s@seat.SeatNumber" class="seat @(isSel ? "sel" : "")"
-                                            @onclick="@(() => ToggleSeatSelection(seat))"
-                                            aria-pressed="@isSel"
-                                            aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber}, €{seat.Price.ToString("F0")} — {(isSel ? "odabrano" : "slobodno")}")'
-                                            title="@SeatTitle(seat)">
-                                        @seat.SeatNumber
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button id="customer-event-details-seat-@seat.SectorId-r@seat.RowNumber-s@seat.SeatNumber" class="seat taken" disabled aria-disabled="true"
-                                            aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber} — zauzeto")'>
-                                        @seat.SeatNumber
-                                    </button>
-                                }
+                                <div class="seat-cell" id="customer-event-details-seat-cell-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)">
+                                    @if (seat.IsAvailable)
+                                    {
+                                        var isSel = selectedSeats.Any(s => s.SectorId == seat.SectorId && s.RowNumber == seat.RowNumber && s.SeatNumber == seat.SeatNumber);
+                                        <button id="customer-event-details-seat-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat @(isSel ? "sel" : "")"
+                                                @onclick="@(() => ToggleSeatSelection(seat))"
+                                                aria-pressed="@isSel"
+                                                aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber}, €{seat.Price.ToString("F0")} — {(isSel ? "odabrano" : "slobodno")}")'
+                                                title="@SeatTitle(seat)">
+                                            @seat.SeatNumber
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button id="customer-event-details-seat-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat taken" disabled aria-disabled="true"
+                                                aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber} — zauzeto")'>
+                                            @seat.SeatNumber
+                                        </button>
+                                    }
+                                    <button id="customer-event-details-seat-locate-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat-loc"
+                                            @onclick="@(() => OpenSeatLocator(seat))"
+                                            title="Prikaži sjedalo na karti"
+                                            aria-label='@($"Prikaži mjesto {seat.SeatNumber}, red {seat.RowNumber} na karti stadiona")'>📍</button>
+                                </div>
                             }
                         </div>
                     </div>
@@ -210,7 +217,7 @@ else
             <div id="customer-event-details-seat-summary" class="seat-summary no-scrollbar" role="group" aria-label="Odabrana mjesta">
                 @foreach (var seat in selectedSeats.OrderBy(s => s.RowNumber).ThenBy(s => s.SeatNumber))
                 {
-                    <button id="customer-event-details-seat-chip-@seat.SectorId-r@seat.RowNumber-s@seat.SeatNumber" class="seat-chip" @onclick="@(() => ToggleSeatSelection(seat))"
+                    <button id="customer-event-details-seat-chip-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat-chip" @onclick="@(() => ToggleSeatSelection(seat))"
                             aria-label='@($"Ukloni: Red {seat.RowNumber}, mjesto {seat.SeatNumber}")'>
                         <span>Red @seat.RowNumber · @seat.SeatNumber</span>
                         <span class="x" aria-hidden="true">✕</span>
@@ -229,6 +236,32 @@ else
                 <span>Odaberi mjesta</span>
             }
         </button>
+    }
+</div>
+
+@* ---- Seat locator map ---- *@
+<div id="customer-event-details-scrim-locator" class="scrim scrim-top @(locatorSeat != null ? "show" : "")" @onclick="CloseSeatLocator"></div>
+<div id="customer-event-details-locator" class="locator @(locatorSeat != null ? "show" : "")" role="dialog" aria-modal="true" aria-label="Karta sjedala">
+    @if (locatorSeat != null)
+    {
+        <div class="locator-head">
+            <div>
+                <div id="customer-event-details-locator-title" class="locator-title">@(locatorOverlay?.Name ?? locatorOverlay?.SectorCode ?? "Sektor")</div>
+                <div id="customer-event-details-locator-sub" class="locator-sub">📍 Red @locatorSeat.RowNumber · Mjesto @locatorSeat.SeatNumber</div>
+            </div>
+            <button id="customer-event-details-locator-close-btn" class="iconbtn" @onclick="CloseSeatLocator" aria-label="Zatvori">✕</button>
+        </div>
+        <div class="locator-canvas-wrap" id="customer-event-details-locator-canvas-wrap">
+            <canvas id="customer-seat-locator-canvas" width="900" height="600"></canvas>
+            @if (locatorLoading)
+            {
+                <div class="locator-overlay" id="customer-event-details-locator-loading"><span class="spinner"></span></div>
+            }
+            @if (locatorError != null)
+            {
+                <div class="locator-overlay locator-error" id="customer-event-details-locator-error">@locatorError</div>
+            }
+        </div>
     }
 </div>
 
@@ -296,6 +329,14 @@ else
     private bool hasInitialized = false;
     private StadiumSelectorCanvas? stadiumCanvas;
 
+    // Seat locator (map) state
+    private List<StadiumSectorOverlay>? overlaysCache;
+    private CustomerSeatDto? locatorSeat;
+    private StadiumSectorOverlay? locatorOverlay;
+    private bool locatorLoading;
+    private string? locatorError;
+    private bool locatorNeedsRender;
+
     private static readonly string[] MonthsHr =
         { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
 
@@ -328,6 +369,65 @@ else
             await LoadCart();
             StateHasChanged();
         }
+
+        // Draw the sector map with the chosen seat highlighted once the modal is in the DOM.
+        if (locatorNeedsRender && locatorOverlay != null && locatorSeat != null)
+        {
+            locatorNeedsRender = false;
+            try
+            {
+                var json = System.Text.Json.JsonSerializer.Serialize(locatorOverlay);
+
+                // Highlight the clicked seat plus every selected/cart seat in this same sector.
+                var sid = locatorSeat.SectorId;
+                var points = new List<(int Row, int Seat)> { (locatorSeat.RowNumber, locatorSeat.SeatNumber) };
+                points.AddRange(selectedSeats.Where(x => x.SectorId == sid).Select(x => (x.RowNumber, x.SeatNumber)));
+                points.AddRange(cartItems.Where(x => x.SectorId == sid).Select(x => (x.RowNumber, x.SeatNumber)));
+                var highlight = points.Distinct().Select(p => new { row = p.Row, seat = p.Seat }).ToArray();
+
+                await JSRuntime.InvokeVoidAsync("renderSectorPreview",
+                    "customer-seat-locator-canvas", json, 0.08, "Red {0}, mjesto {1}", null, highlight);
+            }
+            catch
+            {
+                // Canvas not ready / JS unavailable - ignore.
+            }
+        }
+    }
+
+    private async Task OpenSeatLocator(CustomerSeatDto seat)
+    {
+        locatorSeat = seat;
+        locatorOverlay = null;
+        locatorError = null;
+        locatorLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            overlaysCache ??= await ApiService.GetStadiumSectorOverlaysAsync();
+            locatorOverlay = overlaysCache?.FirstOrDefault(o => o.Id == seat.SectorId);
+            if (locatorOverlay == null)
+                locatorError = "Karta ovog sektora nije dostupna.";
+        }
+        catch
+        {
+            locatorError = "Greška pri učitavanju karte sektora.";
+        }
+        finally
+        {
+            locatorLoading = false;
+            locatorNeedsRender = locatorOverlay != null;
+            StateHasChanged();
+        }
+    }
+
+    private void CloseSeatLocator()
+    {
+        locatorSeat = null;
+        locatorOverlay = null;
+        locatorError = null;
+        locatorNeedsRender = false;
     }
 
     private async Task LoadEventDetails()

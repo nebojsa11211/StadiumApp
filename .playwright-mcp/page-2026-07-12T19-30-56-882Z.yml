@@ -1,0 +1,151 @@
+- generic [ref=e4]:
+  - complementary [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: 
+      - generic [ref=e9]:
+        - generic [ref=e10]: STADIUM
+        - generic [ref=e11]: ADMIN
+    - generic [ref=e12]:
+      - generic [ref=e13]: 21:30:56
+      - generic [ref=e14]: 12. 07. 26 HR
+    - navigation [ref=e15]:
+      - link " Nadzorna ploča" [ref=e16] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e17]: 
+        - generic [ref=e18]: Nadzorna ploča
+      - generic [ref=e19]: Poslovanje
+      - link " Narudžbe" [ref=e20] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e21]: 
+        - generic [ref=e22]: Narudžbe
+      - link " Pića" [ref=e23] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e24]: 
+        - generic [ref=e25]: Pića
+      - link " Kategorije" [ref=e26] [cursor=pointer]:
+        - /url: categories
+        - generic [ref=e27]: 
+        - generic [ref=e28]: Kategorije
+      - link " Novčanici" [ref=e29] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=e30]: 
+        - generic [ref=e31]: Novčanici
+      - generic [ref=e32]: Događaji i karte
+      - link " Događaji" [ref=e33] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e34]: 
+        - generic [ref=e35]: Događaji
+      - link " Sezone" [ref=e36] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=e37]: 
+        - generic [ref=e38]: Sezone
+      - link " Karte" [ref=e39] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e40]: 
+        - generic [ref=e41]: Karte
+      - generic [ref=e42]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=e43] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e44]: 👁
+        - generic [ref=e45]: Pregled
+      - link " Alat za crtanje" [ref=e46] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e47]: 
+        - generic [ref=e48]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=e49] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=e50]: 
+        - generic [ref=e51]: Informacije o stadionu
+      - link " Stadion i brend" [ref=e52] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=e53]: 
+        - generic [ref=e54]: Stadion i brend
+      - generic [ref=e55]: Analitika
+      - link " Analitika" [ref=e56] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e57]: 
+        - generic [ref=e58]: Analitika
+      - link " Kupci" [ref=e59] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=e60]: 
+        - generic [ref=e61]: Kupci
+      - link " Korisnička analitika" [ref=e62] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e63]: 
+        - generic [ref=e64]: Korisnička analitika
+      - generic [ref=e65]: Sustav
+      - link " Timski računi" [ref=e66] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e67]: 
+        - generic [ref=e68]: Timski računi
+      - link " Zapisi" [ref=e69] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e70]: 
+        - generic [ref=e71]: Zapisi
+      - link " Baza podataka" [ref=e72] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e73]: 
+        - generic [ref=e74]: Baza podataka
+      - link " Postavke" [ref=e75] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=e76]: 
+        - generic [ref=e77]: Postavke
+    - generic [ref=e78]:
+      - generic [ref=e79]:
+        - generic [ref=e80]: 
+        - generic [ref=e81]:
+          - generic [ref=e82]: Centralizirani Logging
+          - generic [ref=e83]: "Zadnja objava: 21:30"
+      - generic [ref=e84]:
+        - generic [ref=e85]: "N"
+        - generic [ref=e86]:
+          - button "Odjava" [ref=e87] [cursor=pointer]
+          - generic [ref=e88]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=e89]:
+        - generic [ref=e90]: HR/EN
+        - generic [ref=e91]:
+          - button "HR" [ref=e92] [cursor=pointer]
+          - button "EN" [ref=e93] [cursor=pointer]
+  - main [ref=e94]:
+    - generic [ref=e95]:
+      - generic [ref=e97]:
+        - generic [ref=e98]: Postavke
+        - heading "Predlošci e-pošte" [active] [level=1] [ref=e99]
+        - paragraph [ref=e100]: Prilagodite predmet i sadržaj transakcijskih e-poruka koje sustav šalje.
+      - link " Natrag na postavke" [ref=e101] [cursor=pointer]:
+        - /url: /admin/settings
+        - generic [ref=e102]: 
+        - text: Natrag na postavke
+      - generic [ref=e103]:
+        - button "Account activation Sent to a ticket holder whose account was created automatically, inviting them to activate it and set a password." [ref=e106] [cursor=pointer]:
+          - generic [ref=e107]: Account activation
+          - generic [ref=e109]: Sent to a ticket holder whose account was created automatically, inviting them to activate it and set a password.
+        - generic [ref=e111]:
+          - heading "Account activation" [level=5] [ref=e113]
+          - generic [ref=e114]:
+            - generic [ref=e115]:
+              - generic [ref=e116]: Dostupni rezervirani znakovi
+              - generic [ref=e117]:
+                - generic [ref=e118]: "{{Greeting}}"
+                - generic [ref=e119]: "{{Name}}"
+                - generic [ref=e120]: "{{ActivationLink}}"
+                - generic [ref=e121]: "{{ExpiryDays}}"
+              - generic [ref=e122]: Umetnite ove oznake u predmet ili tijelo; zamjenjuju se stvarnim vrijednostima pri slanju e-pošte.
+            - generic [ref=e123]:
+              - generic [ref=e124]: Predmet
+              - textbox "Predmet" [ref=e125]: Aktivirajte svoj račun — Stadium
+            - generic [ref=e126]:
+              - generic [ref=e127]: HTML sadržaj
+              - textbox "HTML sadržaj" [ref=e128]: "<p>{{Greeting}},</p><p>Kupili ste ulaznicu i pripremili smo vam korisnički račun kako biste mogli dodati sredstva u svoj novčanik i naručivati na stadionu.</p><p>Aktivirajte račun i postavite lozinku klikom na poveznicu: <a href=\"{{ActivationLink}}\">Aktiviraj račun</a></p><p>Ili otvorite: {{ActivationLink}}</p><p>Poveznica vrijedi {{ExpiryDays}} dana.</p>"
+            - generic [ref=e129]:
+              - generic [ref=e130]: Tekstualni sadržaj
+              - textbox "Tekstualni sadržaj" [ref=e131]: "{{Greeting}}, Pripremili smo vam korisnički račun. Aktivirajte ga i postavite lozinku: {{ActivationLink}} Poveznica vrijedi {{ExpiryDays}} dana."
+              - generic [ref=e132]: Neobavezno. Prikazuje se u klijentima e-pošte koji ne prikazuju HTML.
+            - generic [ref=e133]:
+              - button "Spremi" [ref=e134] [cursor=pointer]
+              - button "👁 Pretpregled" [ref=e135] [cursor=pointer]:
+                - generic [ref=e136]: 👁
+                - text: Pretpregled
+              - button " Vrati na zadano" [disabled]:
+                - generic: 
+                - text: Vrati na zadano

@@ -13,7 +13,7 @@
     <div class="container-fluid" id="admin-datagrid-container">
         @if (isLoading)
         {
-            <div class="loading-container" id="admin-datagrid-loading-container">
+            <div class="loading-container" id="admin-datagrid-loading">
                 <div class="spinner-border text-primary" id="admin-datagrid-loading-spinner" role="status">
                     <span class="visually-hidden">@L["DataGrid_LoadingSpinner"]</span>
                 </div>
@@ -244,7 +244,7 @@
                                                         }
                                                         else if (decimal.TryParse(value.ToString(), out var decimalValue) && column.Name.Contains("Price", StringComparison.OrdinalIgnoreCase))
                                                         {
-                                                            <span class="price-value">$@decimalValue.ToString("F2")</span>
+                                                            <span class="price-value">€@decimalValue.ToString("F2")</span>
                                                         }
                                                         else
                                                         {

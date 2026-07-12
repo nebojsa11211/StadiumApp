@@ -13,12 +13,10 @@
 <PageTitle>@L["Settings_PageTitle"]</PageTitle>
 
 <div id="admin-settings-main-container" class="container-fluid">
-    <div class="row mb-3" id="admin-settings-header-row">
-        <div class="col-12" id="admin-settings-header-col">
-            <h1 id="admin-settings-title" class="mb-1">@L["Settings_Heading"]</h1>
-            <p class="text-muted" id="admin-settings-subtitle">@L["Settings_Subtitle"]</p>
-        </div>
-    </div>
+    <PageHeader Id="admin-settings-header"
+                Eyebrow='@L["Settings_Eyebrow"]'
+                Title='@L["Settings_Heading"]'
+                Subtitle='@L["Settings_Subtitle"]' />
 
     @if (!string.IsNullOrEmpty(alertMessage))
     {
@@ -76,8 +74,183 @@
                 </div>
             </div>
         </div>
+
+        <div class="card mb-4" id="admin-settings-email-card">
+            <div class="card-header">
+                <h5 class="mb-0" id="admin-settings-email-title">@L["Settings_EmailSection"]</h5>
+            </div>
+            <div class="card-body" id="admin-settings-email-body">
+                <p class="text-muted" id="admin-settings-email-subtitle">@L["Settings_EmailSubtitle"]</p>
+
+                @if (email is null)
+                {
+                    <div id="admin-settings-email-loading" class="text-muted">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>@L["Settings_Loading"]
+                    </div>
+                }
+                else
+                {
+                    <div class="form-check form-switch mb-3" id="admin-settings-email-enabled-group">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="admin-settings-email-enabled-input"
+                               checked="@email.EmailEnabled"
+                               @onchange="e => email.EmailEnabled = e.Value is bool b && b" />
+                        <label class="form-check-label fw-semibold" for="admin-settings-email-enabled-input">
+                            @L["Settings_EmailEnabled"]
+                        </label>
+                        <div class="form-text" id="admin-settings-email-enabled-hint">@L["Settings_EmailEnabledHint"]</div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-8" id="admin-settings-email-host-group">
+                            <label class="form-label" for="admin-settings-email-host-input">@L["Settings_EmailHost"]</label>
+                            <input type="text" class="form-control" id="admin-settings-email-host-input"
+                                   @bind="email.SmtpHost" placeholder="smtp.example.com" autocomplete="off" />
+                        </div>
+                        <div class="col-md-4" id="admin-settings-email-port-group">
+                            <label class="form-label" for="admin-settings-email-port-input">@L["Settings_EmailPort"]</label>
+                            <input type="number" min="1" max="65535" class="form-control" id="admin-settings-email-port-input"
+                                   @bind="email.SmtpPort" />
+                        </div>
+                        <div class="col-md-6" id="admin-settings-email-username-group">
+                            <label class="form-label" for="admin-settings-email-username-input">@L["Settings_EmailUsername"]</label>
+                            <input type="text" class="form-control" id="admin-settings-email-username-input"
+                                   @bind="email.SmtpUsername" autocomplete="off" />
+                        </div>
+                        <div class="col-md-6" id="admin-settings-email-password-group">
+                            <label class="form-label" for="admin-settings-email-password-input">@L["Settings_EmailPassword"]</label>
+                            <input type="password" class="form-control" id="admin-settings-email-password-input"
+                                   @bind="email.Password" autocomplete="new-password"
+                                   placeholder="@(email.HasPassword ? "••••••••" : "")" />
+                            <div class="form-text" id="admin-settings-email-password-hint">
+                                @(email.HasPassword ? L["Settings_EmailPasswordStoredHint"] : L["Settings_EmailPasswordHint"])
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="admin-settings-email-from-address-group">
+                            <label class="form-label" for="admin-settings-email-from-address-input">@L["Settings_EmailFromAddress"]</label>
+                            <input type="email" class="form-control" id="admin-settings-email-from-address-input"
+                                   @bind="email.FromAddress" placeholder="no-reply@@stadium.local" autocomplete="off" />
+                        </div>
+                        <div class="col-md-6" id="admin-settings-email-from-name-group">
+                            <label class="form-label" for="admin-settings-email-from-name-input">@L["Settings_EmailFromName"]</label>
+                            <input type="text" class="form-control" id="admin-settings-email-from-name-input"
+                                   @bind="email.FromName" placeholder="Stadium" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mt-3" id="admin-settings-email-ssl-group">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="admin-settings-email-ssl-input"
+                               checked="@email.SmtpUseSsl"
+                               @onchange="e => email.SmtpUseSsl = e.Value is bool b && b" />
+                        <label class="form-check-label" for="admin-settings-email-ssl-input">@L["Settings_EmailUseSsl"]</label>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="button" id="admin-settings-email-save-btn" class="btn btn-primary"
+                                @onclick="SaveEmailAsync" disabled="@isSavingEmail">
+                            @if (isSavingEmail)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            @L["Settings_EmailSave"]
+                        </button>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <h6 class="fw-semibold" id="admin-settings-email-test-title">@L["Settings_EmailTestTitle"]</h6>
+                    <p class="form-text mt-0" id="admin-settings-email-test-hint">@L["Settings_EmailTestHint"]</p>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-6" id="admin-settings-email-test-recipient-group">
+                            <label class="form-label" for="admin-settings-email-test-recipient-input">@L["Settings_EmailTestRecipient"]</label>
+                            <input type="email" class="form-control" id="admin-settings-email-test-recipient-input"
+                                   @bind="testRecipient" autocomplete="off" />
+                        </div>
+                        <div class="col-md-6" id="admin-settings-email-test-btn-group">
+                            <button type="button" id="admin-settings-email-test-btn" class="btn btn-outline-primary"
+                                    @onclick="SendTestEmailAsync"
+                                    disabled="@(isTestingEmail || string.IsNullOrWhiteSpace(testRecipient) || string.IsNullOrWhiteSpace(email.SmtpHost))">
+                                @if (isTestingEmail)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                }
+                                <i class="bi bi-send me-1"></i>@L["Settings_EmailTestButton"]
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card mb-4" id="admin-settings-email-templates-card">
+            <div class="card-header">
+                <h5 class="mb-0" id="admin-settings-email-templates-title">@L["Settings_EmailTemplatesSection"]</h5>
+            </div>
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2" id="admin-settings-email-templates-body">
+                <p class="text-muted mb-0" id="admin-settings-email-templates-subtitle">@L["Settings_EmailTemplatesSubtitle"]</p>
+                <a class="btn btn-outline-primary" id="admin-settings-email-templates-link" href="/admin/email-templates">
+                    <i class="bi bi-envelope-paper me-1"></i>@L["Settings_EmailTemplatesButton"]
+                </a>
+            </div>
+        </div>
+
+        <div class="card mb-4 border-danger" id="admin-settings-danger-card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0" id="admin-settings-danger-title">@L["Settings_DangerSection"]</h5>
+            </div>
+            <div class="card-body" id="admin-settings-danger-body">
+                <p class="text-muted mb-3" id="admin-settings-danger-subtitle">@L["Settings_DangerSubtitle"]</p>
+
+                <h6 class="fw-semibold" id="admin-settings-purge-title">@L["Settings_PurgeTitle"]</h6>
+                <p class="form-text mt-0" id="admin-settings-purge-hint">@L["Settings_PurgeHint"]</p>
+
+                <button type="button" id="admin-settings-purge-btn" class="btn btn-outline-danger"
+                        @onclick="OpenPurgeModal" disabled="@isPurging">
+                    <i class="bi bi-trash me-1"></i>@L["Settings_PurgeButton"]
+                </button>
+            </div>
+        </div>
     }
 </div>
+
+@if (showPurgeModal)
+{
+    <div class="modal fade show d-block" id="admin-settings-purge-modal" tabindex="-1"
+         style="background-color: rgba(0,0,0,0.5);" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-danger" id="admin-settings-purge-modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="admin-settings-purge-modal-title">@L["Settings_PurgeConfirmTitle"]</h5>
+                    <button type="button" id="admin-settings-purge-modal-close" class="btn-close btn-close-white"
+                            @onclick="ClosePurgeModal" disabled="@isPurging"></button>
+                </div>
+                <div class="modal-body" id="admin-settings-purge-modal-body">
+                    <p id="admin-settings-purge-modal-text">@L["Settings_PurgeConfirmBody"]</p>
+                    <label class="form-label fw-semibold" for="admin-settings-purge-confirm-input">
+                        @L["Settings_PurgeConfirmPromptLabel"]
+                    </label>
+                    <input type="text" id="admin-settings-purge-confirm-input" class="form-control"
+                           @bind="purgeConfirmText" @bind:event="oninput" autocomplete="off" disabled="@isPurging" />
+                </div>
+                <div class="modal-footer" id="admin-settings-purge-modal-footer">
+                    <button type="button" id="admin-settings-purge-cancel-btn" class="btn btn-secondary"
+                            @onclick="ClosePurgeModal" disabled="@isPurging">
+                        @L["Settings_PurgeCancel"]
+                    </button>
+                    <button type="button" id="admin-settings-purge-confirm-btn" class="btn btn-danger"
+                            @onclick="PurgeAsync" disabled="@(isPurging || !IsPurgeConfirmed)">
+                        @if (isPurging)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        @L["Settings_PurgeConfirmButton"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private bool isLoading = true;
@@ -85,8 +258,19 @@
     private bool isSaving;
     private AppSettingsDto? settings;
 
+    private EmailSettingsDto? email;
+    private bool isSavingEmail;
+    private bool isTestingEmail;
+    private string testRecipient = string.Empty;
+
     private string? alertMessage;
     private string alertClass = "alert-success";
+
+    private bool showPurgeModal;
+    private bool isPurging;
+    private string purgeConfirmText = string.Empty;
+    private bool IsPurgeConfirmed =>
+        string.Equals(purgeConfirmText.Trim(), "DELETE", StringComparison.Ordinal);
 
     // The shared "AuthenticatedClient" injects the JWT via AuthenticationHandler, but that handler
     // runs in a different DI scope than the Blazor circuit, so its scoped token store is empty and
@@ -114,6 +298,7 @@
         try
         {
             settings = await Api.GetFromJsonAsync<AppSettingsDto>("api/venue/settings");
+            email = await Api.GetFromJsonAsync<EmailSettingsDto>("api/venue/email-settings");
         }
         catch (Exception ex)
         {
@@ -124,6 +309,62 @@
         {
             isLoading = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task SaveEmailAsync()
+    {
+        if (email is null) return;
+        isSavingEmail = true;
+        try
+        {
+            var resp = await Api.PutAsJsonAsync("api/venue/email-settings", email);
+            if (resp.IsSuccessStatusCode)
+            {
+                email = await resp.Content.ReadFromJsonAsync<EmailSettingsDto>();
+                ShowAlert(L["Settings_EmailSaved"], true);
+            }
+            else
+            {
+                ShowAlert(L["Settings_EmailSaveFailed"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save email settings");
+            ShowAlert(L["Settings_EmailSaveFailed"], false);
+        }
+        finally
+        {
+            isSavingEmail = false;
+        }
+    }
+
+    private async Task SendTestEmailAsync()
+    {
+        if (email is null || string.IsNullOrWhiteSpace(testRecipient)) return;
+        isTestingEmail = true;
+        try
+        {
+            var request = new SendTestEmailDto { Settings = email, ToEmail = testRecipient.Trim() };
+            var resp = await Api.PostAsJsonAsync("api/venue/email-settings/test", request);
+            var result = resp.IsSuccessStatusCode
+                ? await resp.Content.ReadFromJsonAsync<SendTestEmailResultDto>()
+                : null;
+
+            if (result?.Success == true)
+                ShowAlert(L["Settings_EmailTestSuccess"], true);
+            else
+                ShowAlert(L["Settings_EmailTestFailed", result?.Error ?? "unknown error"], false);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to send test email");
+            ShowAlert(L["Settings_EmailTestFailed", ex.Message], false);
+        }
+        finally
+        {
+            isTestingEmail = false;
         }
     }
 
@@ -158,6 +399,47 @@
         finally
         {
             isSaving = false;
+        }
+    }
+
+    private void OpenPurgeModal()
+    {
+        purgeConfirmText = string.Empty;
+        showPurgeModal = true;
+    }
+
+    private void ClosePurgeModal()
+    {
+        if (isPurging) return;
+        showPurgeModal = false;
+    }
+
+    private async Task PurgeAsync()
+    {
+        if (!IsPurgeConfirmed) return;
+        isPurging = true;
+        try
+        {
+            var resp = await Api.PostAsync("api/admin/maintenance/purge-transactional-data", content: null);
+            if (resp.IsSuccessStatusCode)
+            {
+                var summary = await resp.Content.ReadFromJsonAsync<PurgeDataResultDto>();
+                showPurgeModal = false;
+                ShowAlert(L["Settings_PurgeSuccess", summary?.TotalRowsDeleted ?? 0], true);
+            }
+            else
+            {
+                ShowAlert(L["Settings_PurgeFailed"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to purge transactional data");
+            ShowAlert(L["Settings_PurgeFailed"], false);
+        }
+        finally
+        {
+            isPurging = false;
         }
     }
 

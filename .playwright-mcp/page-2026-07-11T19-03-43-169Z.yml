@@ -1,0 +1,55 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - button "Back" [ref=e5] [cursor=pointer]: ‹
+      - generic [ref=e6]:
+        - generic [ref=e7]: Istra - Zagreb
+        - generic [ref=e8]: Football
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e12]: "14"
+          - generic [ref=e13]: srp
+        - generic [ref=e14]:
+          - heading "Istra - Zagreb" [level=1] [ref=e15]
+          - generic [ref=e16]: za 3 dana · 20:00
+          - generic [ref=e17]:
+            - generic [ref=e18]: 🏟️ Stadion Maksimir, Zagreb
+            - generic [ref=e19]: 🪑 183 slobodno
+      - paragraph [ref=e20]: Simulated event
+      - generic [ref=e22]:
+        - generic [ref=e23]: Standard
+        - generic [ref=e24]: €45
+      - generic [ref=e25]:
+        - generic [ref=e26]: Odaberi tribinu
+        - generic [ref=e27]: Dodirni tribinu na karti ili u popisu
+      - generic [ref=e31]:
+        - button "Jug1 147 / 200 slobodno €45›" [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Jug1
+            - generic [ref=e35]: 147 / 200 slobodno
+          - generic [ref=e36]:
+            - generic [ref=e37]: €45
+            - generic [ref=e38]: ›
+        - button "Sjever1 36 / 200 slobodno €45›" [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]:
+            - generic [ref=e41]: Sjever1
+            - generic [ref=e42]: 36 / 200 slobodno
+          - generic [ref=e43]:
+            - generic [ref=e44]: €45
+            - generic [ref=e45]: ›
+    - generic [ref=e47] [cursor=pointer]:
+      - generic [ref=e48]:
+        - generic [ref=e49]: "0"
+        - generic [ref=e50]: Tvoja košarica
+      - generic [ref=e51]: €0,00 ›
+    - dialog "Karta sjedala"
+  - generic [ref=e54]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=e55] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=e56]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

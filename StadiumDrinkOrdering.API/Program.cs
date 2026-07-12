@@ -322,14 +322,13 @@ else
     builder.Services.AddScoped<IWalletPaymentGateway, MockWalletPaymentGateway>();
 builder.Services.AddScoped<IQRCodeService, QRCodeService>();
 
-// Email + shell-account provisioning. Real SMTP is used only when Email:Host is configured; otherwise a
-// dev sender logs the activation link so the flow is testable without SMTP credentials.
+// Email + shell-account provisioning. SMTP is configured at runtime from the Admin settings page
+// (persisted on the Venue row); the appsettings Email section is only a fallback. The sender resolves
+// config per send and logs the message when nothing is configured, so the flow stays testable.
 var emailSettings = builder.Configuration.GetSection("Email").Get<EmailSettings>() ?? new EmailSettings();
 builder.Services.AddSingleton(emailSettings);
-if (!string.IsNullOrWhiteSpace(emailSettings.Host))
-    builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
-else
-    builder.Services.AddScoped<IEmailSender, LoggingEmailSender>();
+builder.Services.AddScoped<IEmailSender, DbBackedEmailSender>();
+builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<IAccountProvisioningService, AccountProvisioningService>();
 
 builder.Services.AddScoped<ITicketCardPdfService, TicketCardPdfService>();

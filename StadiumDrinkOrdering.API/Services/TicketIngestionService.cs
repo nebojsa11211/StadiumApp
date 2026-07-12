@@ -49,6 +49,15 @@ public interface ITicketIngestionService
     /// the Bar/Staff order queue. Broadcasts the new order over SignalR like a real customer order.
     /// </summary>
     Task<SimulatedDrinkOrderResult> SimulateDrinkOrderAsync(string externalEventId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Testing hook for the admin Stadium Overview: fills <paramref name="numberOfTickets"/> seats of an
+    /// event with simulated sold tickets. Seats are allocated from the drawing-tool overlays (the real
+    /// stadium, source of truth) so each ticket's <see cref="Ticket.Section"/> is a genuine overlay
+    /// <see cref="StadiumSectorOverlay.SectorCode"/> — which lets the admin ticket-detail blueprint
+    /// locator resolve the seat instead of showing "location not available".
+    /// </summary>
+    Task<SimulatedTicketSalesResult> SimulateTicketSalesAsync(int eventId, int numberOfTickets, decimal basePrice, CancellationToken ct = default);
 }
 
 /// <summary>
@@ -958,6 +967,89 @@ public class TicketIngestionService : ITicketIngestionService
             SeatNumber = order.SeatNumber,
             OrderSummary = summary,
             TotalAmount = total
+        };
+    }
+
+    public async Task<SimulatedTicketSalesResult> SimulateTicketSalesAsync(int eventId, int numberOfTickets, decimal basePrice, CancellationToken ct = default)
+    {
+        var evt = await _context.Events.FirstOrDefaultAsync(e => e.Id == eventId, ct);
+        if (evt == null)
+            return new SimulatedTicketSalesResult { Accepted = false, Message = $"Event with ID {eventId} not found" };
+
+        // The "real" stadium is defined by the drawing-tool overlays (source of truth). Allocating
+        // simulated seats from these — instead of the legacy StadiumSeatsNew hierarchy — makes each
+        // ticket's Section a genuine overlay SectorCode, so the admin blueprint locator can pin it.
+        var overlays = await _context.StadiumSectorOverlays
+            .Where(o => !o.IsDeleted)
+            .OrderBy(o => o.Id)
+            .ToListAsync(ct);
+        if (overlays.Count == 0)
+            return new SimulatedTicketSalesResult
+            {
+                Accepted = false,
+                EventId = evt.Id,
+                Message = "No stadium sectors have been drawn yet — draw the stadium in the drawing tool first."
+            };
+
+        var count = Math.Clamp(numberOfTickets, 1, 1000);
+        var customerNames = new[] { "John Doe", "Jane Smith", "Mike Johnson", "Sarah Wilson", "Tom Brown", "Lisa Davis", "Chris Miller", "Anna Garcia" };
+
+        var created = 0;
+        for (var i = 0; i < count; i++)
+        {
+            // Round-robin across sectors so the simulated sales spread over the whole stadium.
+            var overlay = overlays[i % overlays.Count];
+            var section = await ResolveBackingSectionAsync(overlay, ct);
+            var seat = await AllocateSeatAsync(section, evt.Id, overlay.TotalSeats, ct);
+            if (seat == null)
+                continue; // this sector is full — skip it
+
+            var customerName = customerNames[_rng.Next(customerNames.Length)];
+            var ticket = new Ticket
+            {
+                TicketNumber = $"TK{DateTime.UtcNow.Ticks}{_rng.Next(1000, 9999)}",
+                EventId = evt.Id,
+                Seat = seat, // navigation set so a possibly-new Seat is inserted in the same SaveChanges
+                QRCode = string.Empty,
+                QRCodeToken = Guid.NewGuid().ToString(),
+                CustomerName = customerName,
+                CustomerEmail = $"{customerName.Replace(" ", "").ToLower()}@example.com",
+                CustomerPhone = $"+1-555-{_rng.Next(100, 999)}-{_rng.Next(1000, 9999)}",
+                Price = basePrice + (decimal)(_rng.NextDouble() * 20), // some price variation
+                PurchaseDate = DateTime.UtcNow.AddHours(-_rng.Next(0, 72)), // within the last 3 days
+                Status = TicketStatuses.Active,
+                SeatNumber = seat.SeatNumber.ToString(),
+                Section = overlay.SectorCode, // real overlay code the blueprint locator matches on
+                Row = seat.RowNumber.ToString(),
+                EventName = evt.EventName,
+                EventDate = evt.EventDate,
+                IsActive = true
+            };
+            _context.Tickets.Add(ticket);
+
+            // Save per ticket so the next AllocateSeatAsync (which queries the DB) sees this seat as taken.
+            await _context.SaveChangesAsync(ct);
+            created++;
+        }
+
+        _logger.LogInformation("Generated {Count} simulation tickets for event {EventId}", created, eventId);
+
+        // Sold counts changed — refresh derived analytics best-effort (never fail the simulation on it).
+        try
+        {
+            await _analytics.UpdateEventAnalyticsAsync(evt.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to refresh analytics after simulating sales for event {EventId}", evt.Id);
+        }
+
+        return new SimulatedTicketSalesResult
+        {
+            Accepted = true,
+            EventId = evt.Id,
+            TicketsCreated = created,
+            Message = $"Generated {created} simulation tickets"
         };
     }
 

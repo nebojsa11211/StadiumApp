@@ -14,12 +14,14 @@ public class TicketSalesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly ISeatMappingService _seatMappingService;
+    private readonly ITicketIngestionService _ticketIngestionService;
     private readonly ILogger<TicketSalesController> _logger;
 
-    public TicketSalesController(ApplicationDbContext context, ISeatMappingService seatMappingService, ILogger<TicketSalesController> logger)
+    public TicketSalesController(ApplicationDbContext context, ISeatMappingService seatMappingService, ITicketIngestionService ticketIngestionService, ILogger<TicketSalesController> logger)
     {
         _context = context;
         _seatMappingService = seatMappingService;
+        _ticketIngestionService = ticketIngestionService;
         _logger = logger;
     }
 
@@ -146,67 +148,22 @@ public class TicketSalesController : ControllerBase
     {
         try
         {
-            var eventExists = await _context.Events.AnyAsync(e => e.Id == eventId);
-            if (!eventExists)
+            // Delegate to the ingestion service so simulated seats are allocated from the drawing-tool
+            // overlays (the real stadium). This keeps each ticket's Section a genuine overlay SectorCode,
+            // which the admin ticket-detail blueprint locator can resolve instead of "location not available".
+            var result = await _ticketIngestionService.SimulateTicketSalesAsync(eventId, request.NumberOfTickets, request.BasePrice);
+
+            if (!result.Accepted)
             {
-                return NotFound($"Event with ID {eventId} not found");
+                return result.Message.Contains("not found", StringComparison.OrdinalIgnoreCase)
+                    ? NotFound(result.Message)
+                    : BadRequest(new { message = result.Message });
             }
 
-            // Get some random StadiumSeatNew records
-            var availableStadiumSeats = await _context.StadiumSeatsNew
-                .Include(s => s.Sector)
-                .ThenInclude(sec => sec.Ring)
-                .ThenInclude(r => r.Tribune)
-                .Take(request.NumberOfTickets)
-                .ToListAsync();
-
-            var generatedTickets = new List<Ticket>();
-            var random = new Random();
-            var customerNames = new[] { "John Doe", "Jane Smith", "Mike Johnson", "Sarah Wilson", "Tom Brown", "Lisa Davis", "Chris Miller", "Anna Garcia" };
-
-            foreach (var stadiumSeat in availableStadiumSeats)
+            return Ok(new
             {
-                // Get or create corresponding Seat record
-                var seat = await _seatMappingService.GetSeatFromStadiumSeatNewAsync(stadiumSeat.Id);
-                if (seat == null) continue;
-
-                // Check if ticket already exists for this seat and event
-                var existingTicket = await _context.Tickets
-                    .FirstOrDefaultAsync(t => t.EventId == eventId && t.SeatId == seat.Id);
-                if (existingTicket != null) continue;
-
-                var customerName = customerNames[random.Next(customerNames.Length)];
-                var ticket = new Ticket
-                {
-                    TicketNumber = $"TK{DateTime.Now.Ticks}{random.Next(1000, 9999)}",
-                    EventId = eventId,
-                    SeatId = seat.Id,
-                    QRCode = "",
-                    QRCodeToken = Guid.NewGuid().ToString(),
-                    CustomerName = customerName,
-                    CustomerEmail = $"{customerName.Replace(" ", "").ToLower()}@example.com",
-                    CustomerPhone = $"+1-555-{random.Next(100, 999)}-{random.Next(1000, 9999)}",
-                    Price = request.BasePrice + (decimal)(random.NextDouble() * 20), // Add some price variation
-                    PurchaseDate = DateTime.UtcNow.AddHours(-random.Next(0, 72)), // Random purchase time in last 3 days
-                    Status = "Active",
-                    SeatNumber = stadiumSeat.SeatNumber.ToString(),
-                    Section = stadiumSeat.Sector.Code,
-                    Row = stadiumSeat.RowNumber.ToString()
-                };
-
-                generatedTickets.Add(ticket);
-            }
-
-            if (generatedTickets.Any())
-            {
-                _context.Tickets.AddRange(generatedTickets);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Generated {Count} simulation tickets for event {EventId}", generatedTickets.Count, eventId);
-            }
-
-            return Ok(new { 
-                message = $"Generated {generatedTickets.Count} simulation tickets", 
-                ticketsCreated = generatedTickets.Count 
+                message = result.Message,
+                ticketsCreated = result.TicketsCreated
             });
         }
         catch (Exception ex)

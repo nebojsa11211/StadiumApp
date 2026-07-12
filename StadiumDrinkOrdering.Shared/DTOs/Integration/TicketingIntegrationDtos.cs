@@ -228,6 +228,18 @@ public class SimulatedDrinkOrderResult
     public decimal TotalAmount { get; set; }
 }
 
+/// <summary>Outcome of an admin "simulate ticket sales" run (Stadium Overview testing tool).</summary>
+public class SimulatedTicketSalesResult
+{
+    public bool Accepted { get; set; }
+    public string Message { get; set; } = string.Empty;
+
+    public int? EventId { get; set; }
+
+    /// <summary>How many simulation tickets were actually created (sectors that were full are skipped).</summary>
+    public int TicketsCreated { get; set; }
+}
+
 /// <summary>
 /// Summary of a season known to our side, so the external system/simulator can list seasons,
 /// link events to them, and sell season tickets into one.

@@ -39,6 +39,15 @@ public class UpdateEventDto
     /// <summary>End of the ticket-sales window. Null leaves the existing value unchanged.</summary>
     public DateTime? TicketSalesEndDate { get; set; }
 
+    /// <summary>
+    /// Start of the drink-ordering window. Null leaves the existing value unchanged. When the effective
+    /// start and end are both set, the start must be before the end.
+    /// </summary>
+    public DateTime? DrinkSalesStartDate { get; set; }
+
+    /// <summary>End of the drink-ordering window. Null leaves the existing value unchanged.</summary>
+    public DateTime? DrinkSalesEndDate { get; set; }
+
     [Range(1, 100000)]
     public int? Capacity { get; set; }
 

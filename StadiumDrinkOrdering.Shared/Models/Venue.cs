@@ -79,6 +79,38 @@ public class Venue
     /// </summary>
     public bool TicketSalesEnabled { get; set; } = true;
 
+    // ---- Outgoing email (SMTP) --------------------------------------------------------------
+    // Configured at runtime from the Admin settings page rather than appsettings, so an operator
+    // can point the installation at their own mail server without a redeploy. When
+    // <see cref="EmailEnabled"/> is false (or the host is blank) the app logs emails instead of
+    // sending them.
+
+    /// <summary>Master switch: actually deliver transactional emails over SMTP. When false the
+    /// activation/notification flow logs the message instead of sending it.</summary>
+    public bool EmailEnabled { get; set; }
+
+    [StringLength(200)]
+    public string? SmtpHost { get; set; }
+
+    public int SmtpPort { get; set; } = 587;
+
+    [StringLength(200)]
+    public string? SmtpUsername { get; set; }
+
+    /// <summary>SMTP password. Stored as-is on the singleton row; never returned to the client
+    /// (the settings API exposes only a <c>HasPassword</c> flag).</summary>
+    [StringLength(500)]
+    public string? SmtpPassword { get; set; }
+
+    /// <summary>Use SSL/TLS for the SMTP connection. Defaults to true (STARTTLS on 587 / SSL on 465).</summary>
+    public bool SmtpUseSsl { get; set; } = true;
+
+    [StringLength(200)]
+    public string? EmailFromAddress { get; set; }
+
+    [StringLength(150)]
+    public string? EmailFromName { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 

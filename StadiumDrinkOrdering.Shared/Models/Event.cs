@@ -56,6 +56,20 @@ public class Event
     /// </summary>
     public DateTime? TicketSalesEndDate { get; set; }
 
+    /// <summary>
+    /// Start of the drink-ordering window within the live event. Before this instant drinks cannot be
+    /// ordered even while the event is live. Null means ordering opens as soon as the event goes live
+    /// (no lower bound). See <see cref="AreDrinkSalesOpenAt"/>.
+    /// </summary>
+    public DateTime? DrinkSalesStartDate { get; set; }
+
+    /// <summary>
+    /// End of the drink-ordering window. After this instant drinks can no longer be ordered even while
+    /// the event is still live (e.g. bars close before the final whistle). Null means ordering stays
+    /// open for as long as the event is live (no upper bound).
+    /// </summary>
+    public DateTime? DrinkSalesEndDate { get; set; }
+
     public int? VenueId { get; set; }
     
     [Required]
@@ -142,6 +156,40 @@ public class Event
             return "Ticket sales for this event have not opened yet.";
         if (TicketSalesEndDate.HasValue && nowUtc > TicketSalesEndDate.Value)
             return "Ticket sales for this event have closed.";
+        return null;
+    }
+
+    /// <summary>
+    /// True when <paramref name="nowUtc"/> falls within the optional drink-ordering window. A null
+    /// bound leaves that side open, so an event with no window configured is always "within". This is
+    /// purely the time check and ignores lifecycle status (see <see cref="AreDrinkSalesOpenAt"/>).
+    /// </summary>
+    public bool IsWithinDrinkSalesWindow(DateTime nowUtc) =>
+        (!DrinkSalesStartDate.HasValue || nowUtc >= DrinkSalesStartDate.Value)
+        && (!DrinkSalesEndDate.HasValue || nowUtc <= DrinkSalesEndDate.Value);
+
+    /// <summary>
+    /// True when drinks may be ordered right now: the lifecycle permits ordering
+    /// (<see cref="EventLifecycle.CanOrderDrinks"/> — the event is live) AND the current time is inside
+    /// the configured drink-ordering window (<see cref="IsWithinDrinkSalesWindow"/>). A null window adds
+    /// no restriction beyond the live-phase rule, so existing events behave exactly as before.
+    /// </summary>
+    public bool AreDrinkSalesOpenAt(DateTime nowUtc) =>
+        EventLifecycle.CanOrderDrinks(Status) && IsWithinDrinkSalesWindow(nowUtc);
+
+    /// <summary>
+    /// A human-friendly reason why drink ordering is currently closed, or null when it is open.
+    /// Distinguishes the lifecycle reason (not live / ended) from the window reasons ("not opened yet",
+    /// "closed") so the UI/API can be specific.
+    /// </summary>
+    public string? DrinkSalesBlockedReason(DateTime nowUtc)
+    {
+        if (!EventLifecycle.CanOrderDrinks(Status))
+            return EventLifecycle.OrderingBlockedReason(Status);
+        if (DrinkSalesStartDate.HasValue && nowUtc < DrinkSalesStartDate.Value)
+            return "Drink ordering for this event has not opened yet.";
+        if (DrinkSalesEndDate.HasValue && nowUtc > DrinkSalesEndDate.Value)
+            return "Drink ordering for this event has closed.";
         return null;
     }
 

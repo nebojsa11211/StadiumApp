@@ -28,7 +28,43 @@ public interface IDemoDataService
     /// in the past; future-event tickets are left untouched. Returns the number of tickets updated.
     /// </summary>
     Task<int> BackfillPastEventTicketStatusesAsync();
+
+    /// <summary>
+    /// Seeds the real GNK Dinamo 2025/26 SuperSport HNL season: makes GNK Dinamo the venue's primary
+    /// resident club, creates the "2025/26" <see cref="Season"/>, and adds one <see cref="Event"/> per
+    /// Dinamo home match (all 18 already played — final scores from HNS), linked to that season and
+    /// marked <see cref="EventStatus.Completed"/>. No tickets or orders are generated. Idempotent:
+    /// fixtures already present (matched by event name) are skipped, so re-running adds nothing.
+    /// </summary>
+    Task<DinamoSeasonSeedResult> GenerateDinamoSeason2025Async();
+
+    /// <summary>
+    /// Gives events <em>varied</em> per-event sales so the dashboard KPIs actually change as you step
+    /// through events: for each target event it tops occupancy up to a random target with ordinary
+    /// single-event tickets (making "Tickets Sold" and the regular/season split differ per event) and
+    /// adds a random number of realised (Delivered) drink orders (making "Total Revenue" differ per
+    /// event). Pass <paramref name="seasonId"/> to limit it to one season; when null it processes every
+    /// event that is still "flat" (no single-event tickets and/or no drink orders yet). Idempotent: the
+    /// ticket top-up is skipped for an event that already has single-event tickets, and the order top-up
+    /// for an event that already has non-cancelled orders, so re-running never doubles up.
+    /// </summary>
+    Task<VariedSalesSeedResult> GenerateVariedPerEventSalesAsync(int? seasonId = null);
 }
+
+/// <summary>Outcome of seeding the GNK Dinamo 2025/26 home-fixture sample.</summary>
+public record DinamoSeasonSeedResult(
+    int SeasonId,
+    string SeasonName,
+    string HomeClub,
+    int TotalHomeMatches,
+    int EventsCreated,
+    int EventsSkipped);
+
+/// <summary>Outcome of seeding varied per-event ticket sales and drink orders.</summary>
+public record VariedSalesSeedResult(
+    int EventsProcessed,
+    int TicketsAdded,
+    int OrdersAdded);
 
 public class DemoDataService : IDemoDataService
 {
@@ -625,6 +661,180 @@ public class DemoDataService : IDemoDataService
         }
     }
 
+    public async Task<DinamoSeasonSeedResult> GenerateDinamoSeason2025Async()
+    {
+        const string homeTeam = "GNK Dinamo";
+
+        // Every GNK Dinamo home fixture of the 2025/26 SuperSport HNL, in kickoff order. Kickoff
+        // times are Zagreb local time; final scores are the real results (source: HNS semafor).
+        // Tuple: (year, month, day, hour, minute, awayTeam, dinamoGoals, awayGoals).
+        var fixtures = new (int Y, int Mo, int D, int H, int Min, string Away, int Gf, int Ga)[]
+        {
+            (2025,  8,  8, 21,  0, "HNK Vukovar 1991",     3, 0),
+            (2025,  8, 23, 21,  0, "NK Istra 1961",        3, 0),
+            (2025,  9, 14, 19, 15, "HNK Gorica",           1, 2),
+            (2025,  9, 28, 18, 15, "NK Slaven Belupo",     4, 1),
+            (2025, 10, 18, 18,  0, "NK Osijek",            2, 1),
+            (2025, 11,  1, 16,  0, "HNK Rijeka",           2, 1),
+            (2025, 11, 22, 15,  0, "NK Varaždin",          3, 1),
+            (2025, 12,  6, 15,  0, "HNK Hajduk Split",     1, 1),
+            (2025, 12, 20, 17, 45, "NK Lokomotiva Zagreb", 2, 0),
+            (2026,  2,  2, 18,  0, "HNK Vukovar 1991",     3, 1),
+            (2026,  2, 14, 15,  0, "NK Istra 1961",        4, 0),
+            (2026,  3,  1, 17, 15, "HNK Gorica",           4, 2),
+            (2026,  3, 14, 17, 15, "NK Slaven Belupo",     4, 2),
+            (2026,  4,  4, 15,  0, "NK Osijek",            7, 0),
+            (2026,  4, 18, 16,  0, "HNK Rijeka",           2, 2),
+            (2026,  4, 26, 18, 45, "NK Varaždin",          2, 1),
+            (2026,  5,  9, 16,  0, "HNK Hajduk Split",     2, 0),
+            (2026,  5, 23, 18, 45, "NK Lokomotiva Zagreb", 0, 0),
+        };
+
+        var homeClub = await EnsureDinamoHomeClubAsync();
+        var season = await EnsureDinamoSeasonAsync();
+        var zagreb = ResolveZagrebTimeZone();
+
+        // Capacity barely matters for display (the event API recomputes it from the drawn stadium),
+        // but store a sensible figure: the real seat count when a stadium exists, else Maksimir's.
+        var seatCount = await _context.Seats.CountAsync();
+        var totalSeats = seatCount > 0 ? seatCount : 24851;
+
+        int created = 0, skipped = 0;
+        foreach (var f in fixtures)
+        {
+            var kickoffLocal = new DateTime(f.Y, f.Mo, f.D, f.H, f.Min, 0, DateTimeKind.Unspecified);
+            var kickoffUtc = TimeZoneInfo.ConvertTimeToUtc(kickoffLocal, zagreb);
+
+            // Date makes the name unique across the two home meetings with each opponent.
+            var name = $"GNK Dinamo – {f.Away} ({kickoffLocal:dd.MM.yyyy.})";
+            if (await _context.Events.AnyAsync(e => e.EventName == name))
+            {
+                skipped++;
+                continue;
+            }
+
+            _context.Events.Add(new Event
+            {
+                EventName = name,
+                EventType = "Match",
+                HomeTeam = homeTeam,
+                AwayTeam = f.Away,
+                EventDate = kickoffUtc,
+                EventEndDate = kickoffUtc.AddHours(2),
+                VenueId = homeClub.VenueId,
+                TotalSeats = totalSeats,
+                BaseTicketPrice = f.Away.Contains("Hajduk") ? 25.00m : 15.00m,
+                Description = "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · " +
+                              $"konačni rezultat: GNK Dinamo {f.Gf}:{f.Ga} {f.Away}.",
+                IsActive = false,               // past fixture — not published for sale
+                Status = EventStatus.Completed, // already played
+                SeasonId = season.Id,
+                SourceSystem = "SuperSport HNL 2025/26",
+                CreatedAt = DateTime.UtcNow
+            });
+            created++;
+        }
+
+        await _context.SaveChangesAsync();
+        _logger.LogInformation(
+            "Seeded GNK Dinamo 2025/26 season {Season}: {Created} events created, {Skipped} already present.",
+            season.Name, created, skipped);
+
+        return new DinamoSeasonSeedResult(season.Id, season.Name, homeClub.Name, fixtures.Length, created, skipped);
+    }
+
+    /// <summary>
+    /// Ensures GNK Dinamo is the venue's primary resident club (creating the singleton venue and the
+    /// club if missing), and gives the venue a Maksimir identity when it still carries default values.
+    /// Returns the Dinamo <see cref="Club"/>.
+    /// </summary>
+    private async Task<Club> EnsureDinamoHomeClubAsync()
+    {
+        var venue = await _context.Venues.Include(v => v.Clubs).FirstOrDefaultAsync();
+        if (venue == null)
+        {
+            venue = new Venue { Name = "Stadion Maksimir", CreatedAt = DateTime.UtcNow };
+            _context.Venues.Add(venue);
+            await _context.SaveChangesAsync();
+        }
+
+        // Only stamp venue identity when it's still the seeded default, so a customised venue is kept.
+        if (string.IsNullOrWhiteSpace(venue.Name) || venue.Name == "Stadium")
+            venue.Name = "Stadion Maksimir";
+        if (string.IsNullOrWhiteSpace(venue.ClubName))
+            venue.ClubName = "GNK Dinamo";
+        if (string.IsNullOrWhiteSpace(venue.City)) venue.City = "Zagreb";
+        if (string.IsNullOrWhiteSpace(venue.Country)) venue.Country = "Hrvatska";
+
+        var dinamo = venue.Clubs.FirstOrDefault(c =>
+            c.Name.Contains("Dinamo", StringComparison.OrdinalIgnoreCase));
+        if (dinamo == null)
+        {
+            dinamo = new Club
+            {
+                VenueId = venue.Id,
+                Name = "GNK Dinamo",
+                ShortName = "DIN",
+                PrimaryColor = "#0a3d91", // Dinamo blue
+                SecondaryColor = "#ffffff",
+                FoundedYear = 1945,
+                Website = "https://gnkdinamo.hr",
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Clubs.Add(dinamo);
+        }
+
+        // Make Dinamo the one primary club at the venue.
+        foreach (var c in venue.Clubs)
+            c.IsPrimary = false;
+        dinamo.IsPrimary = true;
+        dinamo.DisplayOrder = 0;
+
+        await _context.SaveChangesAsync();
+        return dinamo;
+    }
+
+    /// <summary>
+    /// Finds the "2025/26" season, creating it if absent. This is a <em>historical</em> (already
+    /// finished) season, so it is never flagged current and the "current" flag on other seasons is
+    /// left untouched — seeding past data must not change which season the UIs default to.
+    /// </summary>
+    private async Task<Season> EnsureDinamoSeasonAsync()
+    {
+        var season = await _context.Seasons.FirstOrDefaultAsync(s => s.Name == "2025/26");
+        if (season != null)
+            return season;
+
+        season = new Season
+        {
+            Name = "2025/26",
+            StartDate = new DateTime(2025, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+            EndDate = new DateTime(2026, 5, 31, 0, 0, 0, DateTimeKind.Utc),
+            IsCurrent = false,
+            SourceSystem = "SuperSport HNL 2025/26",
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Seasons.Add(season);
+        await _context.SaveChangesAsync();
+        return season;
+    }
+
+    /// <summary>
+    /// Resolves the Zagreb time zone across OSes (Windows uses "Central European Standard Time",
+    /// Linux/containers use the IANA "Europe/Zagreb"), so kickoff times convert to UTC with correct
+    /// summer/winter offsets. Falls back to a fixed UTC+1 zone if neither id is available.
+    /// </summary>
+    private static TimeZoneInfo ResolveZagrebTimeZone()
+    {
+        foreach (var id in new[] { "Europe/Zagreb", "Central European Standard Time" })
+        {
+            try { return TimeZoneInfo.FindSystemTimeZoneById(id); }
+            catch (TimeZoneNotFoundException) { }
+            catch (InvalidTimeZoneException) { }
+        }
+        return TimeZoneInfo.CreateCustomTimeZone("CET-fallback", TimeSpan.FromHours(1), "CET", "CET");
+    }
+
     public async Task<bool> ClearDemoDataAsync()
     {
         try
@@ -867,5 +1077,191 @@ public class DemoDataService : IDemoDataService
             _logger.LogError(ex, "Error generating drink sales for completed events");
             return 0;
         }
+    }
+
+    // Marks tickets/orders this generator creates so re-runs can recognise (and skip) them.
+    private const string VariedSalesSource = "DemoVariedSales";
+
+    public async Task<VariedSalesSeedResult> GenerateVariedPerEventSalesAsync(int? seasonId = null)
+    {
+        // Target events: one season when asked, otherwise every non-cancelled event.
+        var events = await _context.Events
+            .Where(e => e.Status != EventStatus.Cancelled
+                        && (seasonId == null || e.SeasonId == seasonId))
+            .OrderBy(e => e.EventDate)
+            .ToListAsync();
+
+        if (events.Count == 0)
+        {
+            _logger.LogInformation("No events matched for varied per-event sales (seasonId={SeasonId}).", seasonId);
+            return new VariedSalesSeedResult(0, 0, 0);
+        }
+
+        // Physical seat pool is shared by every event; load it once. Without seats we can still add
+        // orders (revenue), just not seat-bound tickets.
+        var allSeats = await _context.Seats.AsNoTracking().ToListAsync();
+
+        var drinks = await _context.Drinks.Where(d => d.IsAvailable).ToListAsync();
+        var customers = await _context.Users.Where(u => u.Role == UserRole.Customer).ToListAsync();
+        if (customers.Count == 0)
+            customers = await _context.Users.ToListAsync();
+
+        var now = DateTime.UtcNow;
+        int eventsProcessed = 0, ticketsAdded = 0, ordersAdded = 0;
+
+        foreach (var evt in events)
+        {
+            var touched = false;
+
+            // ---- 1) Varied single-event tickets (drives Tickets Sold + regular/season split) ----
+            // Idempotent: only top up an event that has no single-event tickets yet.
+            var hasSingles = await _context.Tickets.AnyAsync(t =>
+                t.EventId == evt.Id && t.Kind == TicketKind.SingleEvent && t.Status != TicketStatuses.Cancelled);
+
+            if (!hasSingles && allSeats.Count > 0)
+            {
+                // Seats already taken by a non-cancelled ticket for THIS event (e.g. season passes).
+                var takenSeatIds = (await _context.Tickets
+                        .Where(t => t.EventId == evt.Id && t.SeatId != null && t.Status != TicketStatuses.Cancelled)
+                        .Select(t => t.SeatId!.Value)
+                        .ToListAsync())
+                    .ToHashSet();
+
+                var existingSold = takenSeatIds.Count;
+                var freeSeats = allSeats.Where(s => !takenSeatIds.Contains(s.Id)).ToList();
+
+                // Aim for a per-event occupancy between 45% and 95% of the physical stadium; the random
+                // target is what makes each event's number different. Never exceed the free seats.
+                var targetFraction = 0.45 + Random.Shared.NextDouble() * 0.50;
+                var targetTotal = (int)Math.Round(targetFraction * allSeats.Count);
+                var singlesToAdd = Math.Clamp(targetTotal - existingSold, 0, freeSeats.Count);
+
+                var isPast = evt.EventDate < now;
+                for (int i = 0; i < singlesToAdd; i++)
+                {
+                    var seat = freeSeats[i];
+
+                    // A finished event's ticket was mostly attended; an upcoming one is simply Active.
+                    var status = TicketStatuses.Active;
+                    var isUsed = false;
+                    DateTime? usedAt = null;
+                    if (isPast && Random.Shared.Next(100) < 90) // ~90% attended
+                    {
+                        status = TicketStatuses.Used;
+                        isUsed = true;
+                        usedAt = DateTime.SpecifyKind(evt.EventDate.AddMinutes(-Random.Shared.Next(5, 90)), DateTimeKind.Utc);
+                    }
+
+                    var purchaseDate = DateTime.SpecifyKind(
+                        (isPast ? evt.EventDate : now).AddDays(-Random.Shared.Next(1, 30)), DateTimeKind.Utc);
+
+                    _context.Tickets.Add(new Ticket
+                    {
+                        TicketNumber = $"SGL{evt.Id:D3}-{i + 1:D4}",
+                        EventId = evt.Id,
+                        SeatId = seat.Id,
+                        QRCodeToken = Guid.NewGuid().ToString(),
+                        Price = evt.BaseTicketPrice ?? 15.00m,
+                        PurchaseDate = purchaseDate,
+                        CustomerName = $"Customer {evt.Id}-{i + 1}",
+                        CustomerEmail = $"fan{evt.Id}_{i + 1}@example.com",
+                        Status = status,
+                        Kind = TicketKind.SingleEvent,
+                        IsActive = status != TicketStatuses.Cancelled,
+                        IsUsed = isUsed,
+                        UsedAt = usedAt,
+                        CreatedAt = now,
+                        // Legacy SeatNumber column is varchar(10); full-stadium seat codes can be
+                        // longer (e.g. "N1A-R25S120"), so clamp to the column width.
+                        SeatNumber = seat.SeatCode is { Length: > 10 } sc ? sc[..10] : seat.SeatCode,
+                        Section = seat.Section?.SectionCode ?? "A",
+                        Row = seat.RowNumber.ToString(),
+                        EventName = evt.EventName,
+                        EventDate = evt.EventDate,
+                        SourceSystem = VariedSalesSource
+                    });
+                    ticketsAdded++;
+                    touched = true;
+                }
+
+                if (singlesToAdd > 0)
+                    await _context.SaveChangesAsync();
+            }
+
+            // ---- 2) Varied drink orders (drives Total Revenue) ----
+            // Idempotent: only add orders to an event that has none yet.
+            var hasOrders = await _context.Orders.AnyAsync(o =>
+                o.EventId == evt.Id && o.Status != OrderStatus.Cancelled);
+
+            if (!hasOrders && drinks.Count > 0 && customers.Count > 0)
+            {
+                // Drink ordering only happens once an event has started; a future event gets none.
+                if (evt.EventDate <= now)
+                {
+                    var windowStart = DateTime.SpecifyKind(evt.EventDate, DateTimeKind.Utc);
+                    var rawEnd = DateTime.SpecifyKind(evt.EventEndDate ?? evt.EventDate.AddHours(4), DateTimeKind.Utc);
+                    var windowEnd = rawEnd > now ? now : rawEnd;
+                    var spanSeconds = Math.Max(0, (windowEnd - windowStart).TotalSeconds);
+
+                    // Random 8–40 orders per event: this spread is what makes revenue differ per event.
+                    var orderCount = Random.Shared.Next(8, 41);
+                    for (int i = 0; i < orderCount; i++)
+                    {
+                        var customer = customers[Random.Shared.Next(customers.Count)];
+                        var createdAt = DateTime.SpecifyKind(
+                            windowStart.AddSeconds(Random.Shared.NextDouble() * spanSeconds), DateTimeKind.Utc);
+
+                        var order = new Order
+                        {
+                            EventId = evt.Id,
+                            CustomerId = customer.Id,
+                            TicketNumber = $"DRK{evt.Id:D3}-{i + 1:D3}",
+                            SeatNumber = $"{(char)('A' + Random.Shared.Next(0, 4))}{Random.Shared.Next(1, 30)}",
+                            TotalAmount = 0, // priced once items are added
+                            Status = OrderStatus.Delivered, // completed/started event → sale is realised
+                            CreatedAt = createdAt,
+                            DeliveredAt = createdAt.AddMinutes(Random.Shared.Next(5, 20)),
+                            Notes = "Seeded varied per-event drink sale"
+                        };
+
+                        _context.Orders.Add(order);
+                        await _context.SaveChangesAsync();
+
+                        decimal totalAmount = 0;
+                        var itemCount = Random.Shared.Next(1, 4);
+                        for (int j = 0; j < itemCount; j++)
+                        {
+                            var drink = drinks[Random.Shared.Next(drinks.Count)];
+                            var quantity = Random.Shared.Next(1, 4);
+                            var totalPrice = drink.Price * quantity;
+                            totalAmount += totalPrice;
+
+                            _context.OrderItems.Add(new OrderItem
+                            {
+                                OrderId = order.Id,
+                                DrinkId = drink.Id,
+                                Quantity = quantity,
+                                UnitPrice = drink.Price,
+                                TotalPrice = totalPrice
+                            });
+                        }
+
+                        order.TotalAmount = totalAmount;
+                        await _context.SaveChangesAsync();
+                        ordersAdded++;
+                        touched = true;
+                    }
+                }
+            }
+
+            if (touched)
+                eventsProcessed++;
+        }
+
+        _logger.LogInformation(
+            "Varied per-event sales: processed {Events} event(s), added {Tickets} single-event ticket(s) and {Orders} drink order(s).",
+            eventsProcessed, ticketsAdded, ordersAdded);
+
+        return new VariedSalesSeedResult(eventsProcessed, ticketsAdded, ordersAdded);
     }
 }

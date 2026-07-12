@@ -3,18 +3,16 @@
 <PageTitle>Drink Categories</PageTitle>
 
 <div class="console" id="admin-categories-container">
-    <header class="console-head" id="admin-categories-header">
-        <div class="console-head__title" id="admin-categories-header-title">
-            <span class="eyebrow">Menu</span>
-            <h1 id="admin-categories-title">Drink Categories</h1>
-            <p id="admin-categories-subtitle">Create, edit and remove the categories used to group drinks.</p>
-        </div>
-        <div class="console-head__actions" id="admin-categories-header-actions">
+    <PageHeader Id="admin-categories-header"
+                Eyebrow="Menu"
+                Title="Drink Categories"
+                Subtitle="Create, edit and remove the categories used to group drinks.">
+        <Actions>
             <button class="pill-btn pill-btn--primary" @onclick="ShowCreateModal" id="admin-add-category-btn">
-                <i class="bi bi-plus"></i><span>New Category</span>
+                <i class="bi bi-plus-lg"></i><span>New Category</span>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     @if (!string.IsNullOrEmpty(alertMessage))
     {

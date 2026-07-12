@@ -17,6 +17,56 @@ public class SeasonDto
     public int SeasonTicketCount { get; set; }
     /// <summary>Origin system if the season was ingested externally (else null).</summary>
     public string? SourceSystem { get; set; }
+
+    // --- Statistics (all counts consider only active, non-cancelled passes) ---
+
+    /// <summary>Total revenue from active season passes (sum of their price).</summary>
+    public decimal PassRevenue { get; set; }
+
+    /// <summary>Linked events that have not started yet (future / on-sale / planned).</summary>
+    public int UpcomingEventCount { get; set; }
+    /// <summary>Linked events that are live right now (game-day, not yet ended).</summary>
+    public int LiveEventCount { get; set; }
+    /// <summary>Linked events that have finished (status = Completed).</summary>
+    public int CompletedEventCount { get; set; }
+
+    /// <summary>Distinct season-pass holders (by holder email; a fan may hold several seats).</summary>
+    public int DistinctHolderCount { get; set; }
+    /// <summary>Active passes whose holder is linked to a fan account.</summary>
+    public int LinkedHolderCount { get; set; }
+    /// <summary>Active passes that were ingested from an external system (SourceSystem set).</summary>
+    public int ExternalPassCount { get; set; }
+
+    /// <summary>
+    /// Total seats configured in the stadium (same for every season). Lets the UI show what share
+    /// of the stadium is sold to season-ticket holders: <c>SeasonTicketCount / StadiumSeatCount</c>.
+    /// </summary>
+    public int StadiumSeatCount { get; set; }
+
+    /// <summary>Average price of an active season pass (0 when none sold).</summary>
+    public decimal AveragePassPrice => SeasonTicketCount > 0 ? PassRevenue / SeasonTicketCount : 0m;
+
+    /// <summary>Active passes created in-house (i.e. not ingested externally).</summary>
+    public int InternalPassCount => SeasonTicketCount - ExternalPassCount;
+
+    /// <summary>Season-pass occupancy as a fraction of stadium capacity (0 when capacity unknown).</summary>
+    public double OccupancyFraction => StadiumSeatCount > 0 ? (double)SeasonTicketCount / StadiumSeatCount : 0d;
+
+    // --- Drink-ordering activity across this season's matches (excludes cancelled orders) ---
+
+    /// <summary>Number of (non-cancelled) drink orders placed across this season's events.</summary>
+    public int OrderCount { get; set; }
+    /// <summary>Total value of those drink orders.</summary>
+    public decimal DrinksRevenue { get; set; }
+    /// <summary>Total number of individual drinks sold (sum of order-item quantities).</summary>
+    public int DrinksSold { get; set; }
+    /// <summary>Name of the best-selling drink this season, or null when nothing was ordered.</summary>
+    public string? TopDrinkName { get; set; }
+    /// <summary>Units sold of the best-selling drink.</summary>
+    public int TopDrinkQuantity { get; set; }
+
+    /// <summary>Average value of a drink order this season (0 when none).</summary>
+    public decimal AverageOrderValue => OrderCount > 0 ? DrinksRevenue / OrderCount : 0m;
 }
 
 /// <summary>

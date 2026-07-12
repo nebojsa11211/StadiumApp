@@ -442,6 +442,46 @@
 .dash-spin { display: inline-block; animation: dashSpin 1s linear infinite; }
 @keyframes dashSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+/* Season banner — navigable, keeps its purple identity */
+.dash-season-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: .75rem;
+    padding: 11px 14px 11px 16px;
+    border-radius: var(--d-radius);
+    border: 1px solid #c4b5fd;
+    border-left: 4px solid #7c3aed;
+    background: #ede9fe;
+    color: #4c1d95;
+    font-size: 14px;
+    box-shadow: 0 1px 2px rgba(76, 29, 149, .08);
+}
+.dash-season-info {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; flex-wrap: wrap; gap: .5rem;
+}
+.dash-season-info > i { font-size: 16px; color: #7c3aed; }
+.dash-season-info strong { font-weight: 700; font-size: 15px; }
+.dash-season-dates { opacity: .8; font-variant-numeric: tabular-nums; }
+.dash-season-passes {
+    display: inline-flex; align-items: center; gap: .3rem;
+    margin-left: auto; white-space: nowrap;
+}
+.dash-season-live {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 1px 8px; border-radius: 20px;
+    background: #ddd6fe; color: #6d28d9;
+    font-size: 11px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase;
+}
+.dash-season-controls { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+@media (max-width: 720px) {
+    .dash-season-bar { flex-wrap: wrap; }
+    .dash-season-info { flex-basis: 100%; order: -1; }
+    .dash-season-passes { margin-left: 0; }
+    .dash-season-controls .dash-event-select { flex: 1; max-width: none; }
+}
+
 .dash-kpi-value--muted { color: var(--d-faint); }
 
 /* extra order status pills */

@@ -1,10 +1,27 @@
 @inherits LayoutComponentBase
 
-@* Chrome-less mobile shell. No desktop navbar/footer — each screen owns its header.
-   On wide viewports the app is centred at phone width against a floodlit backdrop. *@
+@* Chrome-less mobile shell. On phones the app fills the screen exactly as before. On wide
+   viewports the whole app is presented inside a realistic phone device (metal bezel, rounded
+   screen, punch-hole camera, side buttons) so a desktop viewer sees the true mobile experience.
+   The device screen is a transform containing block, so the app's position:fixed bars, sheets
+   and scrims anchor to the phone screen instead of the desktop viewport. *@
 
 <div id="customer-mobile-shell-backdrop" class="app-backdrop">
-    <div id="customer-mobile-shell-frame" class="app-frame">
-        @Body
+    <div class="device">
+        <div id="customer-mobile-shell-screen" class="device-screen">
+            <div class="device-statusbar" aria-hidden="true">
+                <span class="dsb-time">20:45</span>
+                <span class="dsb-cam"></span>
+                <span class="dsb-icons">
+                    <span class="dsb-signal"><i></i><i></i><i></i><i></i></span>
+                    <span class="dsb-batt"></span>
+                </span>
+            </div>
+            <div class="device-scroll">
+                <div id="customer-mobile-shell-frame" class="app-frame">
+                    @Body
+                </div>
+            </div>
+        </div>
     </div>
 </div>

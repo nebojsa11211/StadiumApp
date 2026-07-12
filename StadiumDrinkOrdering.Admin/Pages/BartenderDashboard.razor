@@ -259,12 +259,12 @@
                                                 <tr id="@($"bartender-order-item-row-{item.Id}")">
                                                     <td id="@($"bartender-order-item-cell-name-{item.Id}")">@item.DrinkName</td>
                                                     <td id="@($"bartender-order-item-cell-qty-{item.Id}")">@item.Quantity</td>
-                                                    <td id="@($"bartender-order-item-cell-price-{item.Id}")">$@item.TotalPrice.ToString("F2")</td>
+                                                    <td id="@($"bartender-order-item-cell-price-{item.Id}")">€@item.TotalPrice.ToString("F2")</td>
                                                 </tr>
                                             }
                                         </tbody>
                                     </table>
-                                    <p id="bartender-order-total"><strong>Total: $@selectedOrder.TotalAmount.ToString("F2")</strong></p>
+                                    <p id="bartender-order-total"><strong>Total: €@selectedOrder.TotalAmount.ToString("F2")</strong></p>
                                 </div>
                                 <div class="col-md-6" id="bartender-order-modal-col-right">
                                     <h6 id="bartender-order-details-title">@L["Bartender_OrderDetailsTitle"]</h6>

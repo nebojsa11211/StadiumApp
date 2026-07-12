@@ -1,0 +1,22 @@
+- generic [ref=e9]:
+  - combobox [ref=e12]:
+    - option "Hrvatski" [selected]
+    - option "English"
+  - main [ref=e13]:
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: Stadion admin
+        - heading "Prijavite se" [level=1] [ref=e21]
+        - paragraph [ref=e22]: Pristup konzoli operacija
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - generic [ref=e25]: E-pošta
+          - textbox "E-pošta" [ref=e26]: nebojsa.medancic+adminStadion@gmail.com
+        - generic [ref=e27]:
+          - generic [ref=e28]: Lozinka
+          - generic [ref=e29]:
+            - textbox "Lozinka" [ref=e30]: Admin123!
+            - button "Show password" [ref=e31] [cursor=pointer]
+        - button "Prijava u tijeku..." [disabled] [ref=e39]:
+          - status [ref=e40]
+      - generic [ref=e38]: Koristite admin@stadium.com/admin123 u demonstracijske svrhe

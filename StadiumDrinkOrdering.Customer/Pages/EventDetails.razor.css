@@ -126,6 +126,43 @@
     opacity:.55;cursor:not-allowed;text-decoration:line-through}
 .seat.taken:hover{background:var(--surface);border-color:var(--line);transform:none}
 
+/* per-seat "locate on map" affordance */
+.seat-cell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.seat-loc{width:var(--seat);height:15px;padding:0;border:0;background:transparent;cursor:pointer;
+    font-size:10px;line-height:1;opacity:.4;-webkit-tap-highlight-color:transparent;
+    transition:opacity .12s var(--ease),transform .12s}
+.seat-loc:hover{opacity:1;transform:scale(1.18)}
+.seat-loc:active{transform:scale(.9)}
+.seat-loc:focus-visible{outline:2px solid var(--live);outline-offset:2px;border-radius:6px;opacity:1}
+
+/* ---- seat locator map modal ---- */
+/* Darker, blurrier backdrop so the panel clearly lifts off the page. */
+.scrim-top{z-index:59;background:rgba(2,3,6,.86);backdrop-filter:blur(5px)}
+.locator{
+    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);
+    width:min(96vw,760px);max-height:92vh;overflow-y:auto;z-index:60;background:var(--surface);
+    /* Brighter edge + brand halo + deep shadow so the whole panel reads as a raised card. */
+    border:1px solid rgba(255,255,255,.24);border-radius:22px;
+    padding:16px 18px calc(18px + var(--safe-bottom));
+    display:flex;flex-direction:column;gap:14px;
+    box-shadow:0 0 0 1px rgba(255,45,120,.30),0 30px 80px -14px rgba(0,0,0,.9);
+    opacity:0;pointer-events:none;
+    transition:opacity .28s var(--ease),transform .28s var(--ease)
+}
+.locator.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.locator-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.locator-title{font-size:19px;font-weight:900;letter-spacing:-.01em}
+.locator-sub{font-size:13px;font-weight:800;color:var(--live);margin-top:2px}
+/* The map is a bright card: light border + soft shadow separate it from the dark panel. */
+.locator-canvas-wrap{position:relative;border-radius:14px;overflow:hidden;
+    background:#fff;border:1px solid rgba(255,255,255,.35);
+    box-shadow:0 6px 20px rgba(0,0,0,.45)}
+.locator-canvas-wrap canvas{display:block;width:100%;height:auto}
+.locator-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.65)}
+.locator-error{background:rgba(255,255,255,.92);color:#c0143c;font-weight:800;
+    font-size:13px;text-align:center;padding:16px}
+
 /* selected-seats summary chips */
 .seat-summary{flex:none;display:flex;flex-wrap:wrap;gap:7px;max-height:84px;overflow-y:auto;
     margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}

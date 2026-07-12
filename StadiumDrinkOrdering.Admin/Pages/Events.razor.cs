@@ -204,6 +204,8 @@ public partial class Events : ComponentBase
             EndDate = evt.EndDate ?? (evt.Date ?? DateTime.Now).AddHours(2),
             TicketSalesStartDate = evt.TicketSalesStartDate,
             TicketSalesEndDate = evt.TicketSalesEndDate,
+            DrinkSalesStartDate = evt.DrinkSalesStartDate,
+            DrinkSalesEndDate = evt.DrinkSalesEndDate,
             // Read-only in the form; prefer the live stadium capacity, falling back to the stored value.
             Capacity = realStadiumCapacity > 0 ? realStadiumCapacity : evt.Capacity,
             BasePrice = evt.BasePrice,
@@ -289,6 +291,14 @@ public partial class Events : ComponentBase
             return;
         }
 
+        // When both drink-ordering bounds are set, the end must come after the start.
+        if (eventForm.DrinkSalesStartDate.HasValue && eventForm.DrinkSalesEndDate.HasValue &&
+            eventForm.DrinkSalesEndDate.Value <= eventForm.DrinkSalesStartDate.Value)
+        {
+            ShowAlert("The drink ordering end time must be after the drink ordering start time", "danger");
+            return;
+        }
+
         // A Match must name both sides; its home team is one of the venue's resident clubs.
         if (eventForm.EventType == "Match")
         {
@@ -325,6 +335,8 @@ public partial class Events : ComponentBase
                     EndDate = eventForm.EndDate,
                     TicketSalesStartDate = eventForm.TicketSalesStartDate,
                     TicketSalesEndDate = eventForm.TicketSalesEndDate,
+                    DrinkSalesStartDate = eventForm.DrinkSalesStartDate,
+                    DrinkSalesEndDate = eventForm.DrinkSalesEndDate,
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
@@ -360,6 +372,8 @@ public partial class Events : ComponentBase
                     EndDate = eventForm.EndDate,
                     TicketSalesStartDate = eventForm.TicketSalesStartDate,
                     TicketSalesEndDate = eventForm.TicketSalesEndDate,
+                    DrinkSalesStartDate = eventForm.DrinkSalesStartDate,
+                    DrinkSalesEndDate = eventForm.DrinkSalesEndDate,
                     Capacity = eventForm.Capacity,
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
@@ -443,6 +457,19 @@ public partial class Events : ComponentBase
             // Non-JSON body — fall through.
         }
         return null;
+    }
+
+    /// <summary>
+    /// Formats an optional [from, to] window for the event card. An unset bound renders as an
+    /// en-dash "—" (that side of the window is open), so e.g. a null start shows "— → Jul 14, 18:00".
+    /// When both bounds are unset the whole window is open and this returns a single "—".
+    /// </summary>
+    private static string FormatWindow(DateTime? from, DateTime? to)
+    {
+        if (from is null && to is null)
+            return "—";
+        static string Fmt(DateTime? d) => d?.ToString("MMM dd, HH:mm") ?? "—";
+        return $"{Fmt(from)} → {Fmt(to)}";
     }
 
     // --- Lifecycle display helpers (badge colour, button style, labels) ---
@@ -541,6 +568,10 @@ public partial class Events : ComponentBase
         public DateTime? TicketSalesStartDate { get; set; }
         /// <summary>End of ticket sales. Null = sales stay open while the event is on sale.</summary>
         public DateTime? TicketSalesEndDate { get; set; }
+        /// <summary>Start of drink ordering. Null = ordering opens as soon as the event goes live.</summary>
+        public DateTime? DrinkSalesStartDate { get; set; }
+        /// <summary>End of drink ordering. Null = ordering stays open while the event is live.</summary>
+        public DateTime? DrinkSalesEndDate { get; set; }
         public int Capacity { get; set; }
         public decimal BasePrice { get; set; }
         public bool IsActive { get; set; } = true;

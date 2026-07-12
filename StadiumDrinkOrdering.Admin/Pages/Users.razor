@@ -6,24 +6,22 @@
 
 <div class="console" id="admin-users-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-users-header">
-        <div class="console-head__title" id="admin-users-title-section">
-            <span class="eyebrow">@L["Users_EyebrowLabel"]</span>
-            <h1>@L["Users_MainTitle"]</h1>
-            <p>@L["Users_Subtitle"]</p>
-        </div>
-        <div class="console-head__actions" id="admin-users-action-buttons">
+    <PageHeader Id="admin-users-header"
+                Eyebrow='@L["Users_EyebrowLabel"]'
+                Title='@L["Users_MainTitle"]'
+                Subtitle='@L["Users_Subtitle"]'>
+        <Actions>
             <button class="pill-btn pill-btn--primary" @onclick="ShowCreateUserModal" id="admin-users-create-btn">
-                <i class="oi oi-plus"></i><span>@L["Users_AddUserButtonText"]</span>
+                <i class="bi bi-plus-lg"></i><span>@L["Users_AddUserButtonText"]</span>
             </button>
             <button class="pill-btn pill-btn--success" @onclick="CreateSampleUsers" disabled="@isCreatingSampleUsers" id="admin-users-create-sample-btn">
-                <i class="oi oi-people @(isCreatingSampleUsers ? "spin" : "")"></i><span>@L["Users_CreateSampleUsersButtonText"]</span>
+                <i class="bi bi-people @(isCreatingSampleUsers ? "spin" : "")"></i><span>@L["Users_CreateSampleUsersButtonText"]</span>
             </button>
             <button class="icon-btn" @onclick="RefreshData" disabled="@isLoading" id="admin-users-refresh-btn" title="@L["Users_RefreshButtonTooltip"]">
-                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i>
+                <i class="bi bi-arrow-clockwise @(isLoading ? "spin" : "")"></i>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     <!-- Key Metrics Cards -->
     <section class="metrics" id="admin-users-summary-cards">
@@ -112,7 +110,7 @@
 
     @if (isLoading)
     {
-        <div class="loading-state" id="admin-users-loading-state">
+        <div class="loading-state" id="admin-users-loading">
             <span class="loading-spinner" id="admin-users-loading-spinner"></span>
             <p id="admin-users-loading-text">@L["Users_LoadingMessage"]</p>
         </div>

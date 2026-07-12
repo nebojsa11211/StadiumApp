@@ -25,6 +25,21 @@ public partial class Customers : ComponentBase
     private string selectedStatus = "";
     private string searchTerm = "";
 
+    // Season / event scoping (server-side)
+    private List<SeasonDto> seasons = new();
+    private List<EventDto> events = new();
+    private string selectedSeasonId = "";
+    private string selectedEventId = "";
+
+    // Events shown in the dropdown are narrowed to the chosen season (if any).
+    private IEnumerable<EventDto> EventsForDropdown =>
+        int.TryParse(selectedSeasonId, out var sid)
+            ? events.Where(e => e.SeasonId == sid)
+            : events;
+
+    private static string EventLabel(EventDto e) =>
+        e.Date.HasValue ? $"{e.Name} · {e.Date.Value.ToLocalTime():yyyy-MM-dd}" : e.Name;
+
     private readonly PagedView<UserDto> pager = new();
 
     // Sorting
@@ -48,7 +63,22 @@ public partial class Customers : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadFilterOptions();
         await LoadCustomers();
+    }
+
+    private async Task LoadFilterOptions()
+    {
+        try
+        {
+            seasons = await AdminApiService.GetAsync<List<SeasonDto>>("seasons") ?? new();
+            events = (await AdminApiService.GetEventsAsync())?.ToList() ?? new();
+        }
+        catch (Exception ex)
+        {
+            // Non-fatal: without options the customer list still works, just without season/event scoping.
+            await JSRuntime.InvokeVoidAsync("console.error", "Failed to load season/event filters:", ex.Message);
+        }
     }
 
     private async Task LoadCustomers()
@@ -58,10 +88,13 @@ public partial class Customers : ComponentBase
 
         try
         {
-            var customers = await AdminApiService.GetUsersAsync(new UserFilterDto
-            {
-                Role = UserRole.Customer
-            });
+            var filter = new UserFilterDto { Role = UserRole.Customer };
+            if (int.TryParse(selectedEventId, out var eventId))
+                filter.EventId = eventId;
+            else if (int.TryParse(selectedSeasonId, out var seasonId))
+                filter.SeasonId = seasonId;
+
+            var customers = await AdminApiService.GetUsersAsync(filter);
             if (customers != null)
             {
                 allCustomers = customers.ToList();
@@ -128,11 +161,25 @@ public partial class Customers : ComponentBase
         await JSRuntime.InvokeVoidAsync("showToast", "Customers refreshed successfully", "success");
     }
 
-    private void ClearFilters()
+    // Season changed: it narrows the event dropdown, so reset the event selection (its option may no
+    // longer be listed) and reload. Season/event scoping is applied server-side.
+    private async Task OnSeasonChanged()
+    {
+        selectedEventId = "";
+        await LoadCustomers();
+    }
+
+    // Event changed: reload with the event scope. The season selector is left untouched so the event
+    // dropdown's option list doesn't change under the selection (which would reset the <select>).
+    private async Task OnEventChanged() => await LoadCustomers();
+
+    private async Task ClearFilters()
     {
         selectedStatus = "";
         searchTerm = "";
-        FilterCustomers();
+        selectedSeasonId = "";
+        selectedEventId = "";
+        await LoadCustomers();
     }
 
     private static UpdateUserDto BuildUpdateDto(UserDto user) => new()

@@ -108,17 +108,30 @@ public class OrderService : IOrderService
         // drink-ordering phase (Active/InProgress). This backstops every caller — including the legacy
         // OrdersController path — so an order can't be created for a not-yet-live, already-finished, or
         // unlinked event, which is what previously left orders stranded (e.g. OutForDelivery) after close.
+        // Ordering must also respect the event's optional drink-ordering window (bars can close before
+        // the final whistle), so we need the window fields — not just the status. Prefer the already-loaded
+        // session event; otherwise fetch the few fields the gate needs and evaluate them in memory.
         var orderEventId = ticketSession?.EventId ?? ticket.EventId;
-        var orderEventStatus = ticketSession?.Event?.Status
-            ?? await _context.Events
+        var orderEvent = ticketSession?.Event;
+        if (orderEvent is null)
+        {
+            var row = await _context.Events
                 .Where(e => e.Id == orderEventId)
-                .Select(e => (EventStatus?)e.Status)
+                .Select(e => new { e.Status, e.DrinkSalesStartDate, e.DrinkSalesEndDate })
                 .FirstOrDefaultAsync();
-        if (orderEventStatus is null || !EventLifecycle.CanOrderDrinks(orderEventStatus.Value))
+            if (row is not null)
+                orderEvent = new Event
+                {
+                    Status = row.Status,
+                    DrinkSalesStartDate = row.DrinkSalesStartDate,
+                    DrinkSalesEndDate = row.DrinkSalesEndDate
+                };
+        }
+        if (orderEvent is null || !orderEvent.AreDrinkSalesOpenAt(DateTime.UtcNow))
         {
             return CreateOrderResult.Fail(CreateOrderOutcome.ValidationFailed,
-                orderEventStatus is not null
-                    ? EventLifecycle.OrderingBlockedReason(orderEventStatus.Value)
+                orderEvent is not null
+                    ? orderEvent.DrinkSalesBlockedReason(DateTime.UtcNow)!
                     : "Drink ordering is unavailable: this ticket is not linked to a live event.");
         }
 
@@ -177,6 +190,19 @@ public class OrderService : IOrderService
 
             // Update stock
             drink.StockQuantity -= orderItemDto.Quantity;
+
+            // Ledger: record the reservation. Linked via the Order navigation so EF stamps the
+            // generated OrderId when the order row is inserted in the SaveChanges below; the whole
+            // set (order + items + movements + stock decrement) commits atomically.
+            _context.StockMovements.Add(new StockMovement
+            {
+                DrinkId = drink.Id,
+                Delta = -orderItemDto.Quantity,
+                QuantityAfter = drink.StockQuantity,
+                Type = StockMovementType.Sale,
+                Order = order,
+                CreatedAt = DateTime.UtcNow
+            });
         }
 
         order.TotalAmount = totalAmount;
@@ -243,6 +269,13 @@ public class OrderService : IOrderService
 
         foreach (var item in order.OrderItems)
             item.Drink.StockQuantity += item.Quantity;
+
+        // The order is being erased as if it never happened, so remove its Sale ledger rows rather than
+        // leaving a sale + compensating-restore pair pointing at a now-deleted order.
+        var saleMovements = await _context.StockMovements
+            .Where(m => m.OrderId == orderId)
+            .ToListAsync();
+        _context.StockMovements.RemoveRange(saleMovements);
 
         _context.OrderItems.RemoveRange(order.OrderItems);
         _context.Orders.Remove(order);
@@ -513,10 +546,20 @@ public class OrderService : IOrderService
                 && p.Status == "Completed");
         var customerId = order.CustomerId;
 
-        // Restore stock
+        // Restore stock and record the return to inventory in the ledger.
         foreach (var orderItem in order.OrderItems)
         {
             orderItem.Drink.StockQuantity += orderItem.Quantity;
+            _context.StockMovements.Add(new StockMovement
+            {
+                DrinkId = orderItem.DrinkId,
+                Delta = orderItem.Quantity,
+                QuantityAfter = orderItem.Drink.StockQuantity,
+                Type = StockMovementType.OrderCancelled,
+                OrderId = order.Id,
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow
+            });
         }
 
         order.Status = OrderStatus.Cancelled;
@@ -576,9 +619,22 @@ public class OrderService : IOrderService
         var now = DateTime.UtcNow;
         foreach (var order in orders)
         {
-            // Restore reserved stock for the cancelled order.
+            // Restore reserved stock for the cancelled order and record each return in the ledger.
             foreach (var item in order.OrderItems)
+            {
                 item.Drink.StockQuantity += item.Quantity;
+                _context.StockMovements.Add(new StockMovement
+                {
+                    DrinkId = item.DrinkId,
+                    Delta = item.Quantity,
+                    QuantityAfter = item.Drink.StockQuantity,
+                    Type = StockMovementType.OrderCancelled,
+                    OrderId = order.Id,
+                    UserId = actorUserId,
+                    Note = reason,
+                    CreatedAt = now
+                });
+            }
 
             order.Status = OrderStatus.Cancelled;
             order.CancelledAt = now;

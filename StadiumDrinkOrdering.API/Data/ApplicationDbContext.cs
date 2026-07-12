@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Drink> Drinks { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<StockMovement> StockMovements { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Payment> Payments { get; set; }
@@ -71,6 +72,9 @@ public class ApplicationDbContext : DbContext
 
     // Venue / resident-club identity (branding surfaced to customers)
     public DbSet<Venue> Venues { get; set; }
+
+    // Admin overrides of transactional email templates (defaults live in EmailTemplateCatalog)
+    public DbSet<EmailTemplate> EmailTemplates { get; set; }
     public DbSet<Club> Clubs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -110,6 +114,31 @@ public class ApplicationDbContext : DbContext
                 .WithMany(c => c.Drinks)
                 .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Stock movement (append-only inventory ledger) configuration
+        modelBuilder.Entity<StockMovement>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Note).HasMaxLength(500);
+            entity.Property(e => e.UserEmail).HasMaxLength(256);
+
+            // Fast lookup of a drink's history in reverse-chronological order.
+            entity.HasIndex(e => new { e.DrinkId, e.CreatedAt });
+
+            // A movement always belongs to a drink; drinks are only ever soft-deleted, so Restrict
+            // keeps the ledger intact and prevents an accidental hard delete of a drink with history.
+            entity.HasOne(e => e.Drink)
+                .WithMany()
+                .HasForeignKey(e => e.DrinkId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Sale/cancel movements reference their order; if that order is ever hard-deleted
+            // (e.g. an unpaid order rolled back), null the link rather than losing the ledger row.
+            entity.HasOne(e => e.Order)
+                .WithMany()
+                .HasForeignKey(e => e.OrderId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Category configuration
@@ -315,6 +344,11 @@ public class ApplicationDbContext : DbContext
             // Linked fan account (populated by the email-match linker). Nullable; if the user is
             // deleted the pass survives with its link cleared rather than cascading the delete.
             entity.HasIndex(e => e.UserId);
+            // A customer may hold at most one season ticket per season. NULL UserIds are distinct in
+            // PostgreSQL, so unlinked passes are unaffected.
+            entity.HasIndex(e => new { e.UserId, e.SeasonId })
+                .IsUnique()
+                .HasDatabaseName("IX_SeasonTickets_UserId_SeasonId");
             entity.HasOne(e => e.User)
                 .WithMany(u => u.SeasonTickets)
                 .HasForeignKey(e => e.UserId)
@@ -752,6 +786,24 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.ClubLogoContentType).HasMaxLength(100);
             // Existing installations should keep selling once the column is added.
             entity.Property(e => e.TicketSalesEnabled).HasDefaultValue(true);
+            entity.Property(e => e.SmtpHost).HasMaxLength(200);
+            entity.Property(e => e.SmtpUsername).HasMaxLength(200);
+            entity.Property(e => e.SmtpPassword).HasMaxLength(500);
+            entity.Property(e => e.EmailFromAddress).HasMaxLength(200);
+            entity.Property(e => e.EmailFromName).HasMaxLength(150);
+            entity.Property(e => e.SmtpPort).HasDefaultValue(587);
+            entity.Property(e => e.SmtpUseSsl).HasDefaultValue(true);
+        });
+
+        // Email template overrides (one row per customized template)
+        modelBuilder.Entity<EmailTemplate>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.TemplateKey).IsUnique();
+            entity.Property(e => e.TemplateKey).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Subject).HasMaxLength(300).IsRequired();
+            entity.Property(e => e.HtmlBody).IsRequired();
+            entity.Property(e => e.UpdatedBy).HasMaxLength(200);
         });
 
         // Club configuration (resident clubs at the venue)

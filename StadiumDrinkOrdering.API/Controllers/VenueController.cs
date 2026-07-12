@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Authorization;
 using StadiumDrinkOrdering.API.Data;
+using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 
@@ -22,10 +23,12 @@ public class VenueController : ControllerBase
         { "image/png", "image/jpeg", "image/webp", "image/svg+xml" };
 
     private readonly ApplicationDbContext _context;
+    private readonly ILogger<VenueController> _logger;
 
-    public VenueController(ApplicationDbContext context)
+    public VenueController(ApplicationDbContext context, ILogger<VenueController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     // ---- Venue profile -------------------------------------------------------------------
@@ -90,6 +93,86 @@ public class VenueController : ControllerBase
 
         await _context.SaveChangesAsync();
         return Ok(new AppSettingsDto { TicketSalesEnabled = venue.TicketSalesEnabled });
+    }
+
+    // ---- Email (SMTP) settings -----------------------------------------------------------
+
+    /// <summary>Read the installation's outgoing-email configuration. Admin-only; the SMTP password
+    /// is never returned (only <see cref="EmailSettingsDto.HasPassword"/>).</summary>
+    [HttpGet("email-settings")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<ActionResult<EmailSettingsDto>> GetEmailSettings()
+    {
+        var venue = await GetOrCreateVenueAsync();
+        return Ok(ToEmailDto(venue));
+    }
+
+    [HttpPut("email-settings")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<ActionResult<EmailSettingsDto>> UpdateEmailSettings([FromBody] EmailSettingsDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var venue = await GetOrCreateVenueAsync();
+        ApplyEmailSettings(venue, dto);
+        venue.UpdatedAt = DateTime.UtcNow;
+        venue.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        await _context.SaveChangesAsync();
+        return Ok(ToEmailDto(venue));
+    }
+
+    /// <summary>Send a one-off test email using the supplied (possibly unsaved) settings, so an admin
+    /// can validate SMTP config before/without saving. If the password field is blank the currently
+    /// stored password is used. Never throws — failures are returned as a structured result.</summary>
+    [HttpPost("email-settings/test")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<ActionResult<SendTestEmailResultDto>> SendTestEmail([FromBody] SendTestEmailDto request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var s = request.Settings;
+        if (string.IsNullOrWhiteSpace(s.SmtpHost))
+            return Ok(new SendTestEmailResultDto { Success = false, Error = "SMTP host is not set." });
+
+        // Fall back to the stored password when the admin didn't re-enter it.
+        var password = s.Password;
+        if (string.IsNullOrEmpty(password))
+        {
+            var venue = await GetOrCreateVenueAsync();
+            password = venue.SmtpPassword;
+        }
+
+        // Explicit test → deliver even to demo domains (no skip list).
+        var cfg = new ResolvedEmailConfig(
+            Host: s.SmtpHost.Trim(),
+            Port: s.SmtpPort,
+            Username: s.SmtpUsername,
+            Password: password,
+            EnableSsl: s.SmtpUseSsl,
+            FromAddress: string.IsNullOrWhiteSpace(s.FromAddress) ? "no-reply@stadium.local" : s.FromAddress.Trim(),
+            FromName: string.IsNullOrWhiteSpace(s.FromName) ? "Stadium" : s.FromName.Trim(),
+            SkipDomains: Array.Empty<string>());
+
+        try
+        {
+            await SmtpMailer.SendAsync(
+                cfg,
+                request.ToEmail.Trim(),
+                "Stadium — test email",
+                "<p>This is a test email from the Stadium admin settings. If you received it, your SMTP configuration works.</p>",
+                "This is a test email from the Stadium admin settings. If you received it, your SMTP configuration works.",
+                _logger);
+
+            return Ok(new SendTestEmailResultDto { Success = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Test email to {To} failed", request.ToEmail);
+            return Ok(new SendTestEmailResultDto { Success = false, Error = ex.Message });
+        }
     }
 
     [HttpPost("photo")]
@@ -277,6 +360,35 @@ public class VenueController : ControllerBase
         }
 
         return venue;
+    }
+
+    private static EmailSettingsDto ToEmailDto(Venue venue) => new()
+    {
+        EmailEnabled = venue.EmailEnabled,
+        SmtpHost = venue.SmtpHost,
+        SmtpPort = venue.SmtpPort,
+        SmtpUsername = venue.SmtpUsername,
+        SmtpUseSsl = venue.SmtpUseSsl,
+        FromAddress = venue.EmailFromAddress,
+        FromName = venue.EmailFromName,
+        HasPassword = !string.IsNullOrEmpty(venue.SmtpPassword),
+        Password = null // never leak the stored password
+    };
+
+    private static void ApplyEmailSettings(Venue venue, EmailSettingsDto dto)
+    {
+        venue.EmailEnabled = dto.EmailEnabled;
+        venue.SmtpHost = string.IsNullOrWhiteSpace(dto.SmtpHost) ? null : dto.SmtpHost.Trim();
+        venue.SmtpPort = dto.SmtpPort;
+        venue.SmtpUsername = string.IsNullOrWhiteSpace(dto.SmtpUsername) ? null : dto.SmtpUsername.Trim();
+        venue.SmtpUseSsl = dto.SmtpUseSsl;
+        venue.EmailFromAddress = string.IsNullOrWhiteSpace(dto.FromAddress) ? null : dto.FromAddress.Trim();
+        venue.EmailFromName = string.IsNullOrWhiteSpace(dto.FromName) ? null : dto.FromName.Trim();
+
+        // Only overwrite the stored password when a new non-empty value is supplied, so leaving the
+        // field blank keeps the existing password rather than wiping it.
+        if (!string.IsNullOrEmpty(dto.Password))
+            venue.SmtpPassword = dto.Password;
     }
 
     private static void ApplyClub(Club club, ClubUpsertDto dto)

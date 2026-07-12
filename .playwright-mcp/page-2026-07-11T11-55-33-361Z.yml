@@ -1,0 +1,275 @@
+- generic [ref=e9]:
+  - complementary [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e12]: 
+      - generic [ref=e14]:
+        - generic [ref=e15]: STADIUM
+        - generic [ref=e16]: ADMIN
+    - generic [ref=e17]:
+      - generic [ref=e18]: 13:55:33
+      - generic [ref=e19]: 11. 07. 26 HR
+    - navigation [ref=e20]:
+      - link " Nadzorna ploča" [ref=e21] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e22]: 
+        - generic [ref=e23]: Nadzorna ploča
+      - generic [ref=e24]: Poslovanje
+      - link " Narudžbe" [ref=e25] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e26]: 
+        - generic [ref=e27]: Narudžbe
+      - link " Pića" [ref=e28] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e29]: 
+        - generic [ref=e30]: Pića
+      - link " Kategorije" [ref=e31] [cursor=pointer]:
+        - /url: categories
+        - generic [ref=e32]: 
+        - generic [ref=e33]: Kategorije
+      - link " Novčanici" [ref=e34] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=e35]: 
+        - generic [ref=e36]: Novčanici
+      - generic [ref=e37]: Događaji i karte
+      - link " Događaji" [ref=e38] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e39]: 
+        - generic [ref=e40]: Događaji
+      - link " Sezone" [ref=e41] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=e42]: 
+        - generic [ref=e43]: Sezone
+      - link " Karte" [ref=e44] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e45]: 
+        - generic [ref=e46]: Karte
+      - generic [ref=e47]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=e48] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e49]: 👁
+        - generic [ref=e50]: Pregled
+      - link " Alat za crtanje" [ref=e51] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e52]: 
+        - generic [ref=e53]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=e54] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=e55]: 
+        - generic [ref=e56]: Informacije o stadionu
+      - link " Stadion i brend" [ref=e57] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=e58]: 
+        - generic [ref=e59]: Stadion i brend
+      - generic [ref=e60]: Analitika
+      - link " Analitika" [ref=e61] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e62]: 
+        - generic [ref=e63]: Analitika
+      - link " Kupci" [ref=e64] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=e65]: 
+        - generic [ref=e66]: Kupci
+      - link " Korisnička analitika" [ref=e67] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e68]: 
+        - generic [ref=e69]: Korisnička analitika
+      - generic [ref=e70]: Sustav
+      - link " Timski računi" [ref=e71] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e72]: 
+        - generic [ref=e73]: Timski računi
+      - link " Zapisi" [ref=e74] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e75]: 
+        - generic [ref=e76]: Zapisi
+      - link " Baza podataka" [ref=e77] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e78]: 
+        - generic [ref=e79]: Baza podataka
+      - link " Postavke" [ref=e80] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=e81]: 
+        - generic [ref=e82]: Postavke
+    - generic [ref=e83]:
+      - generic [ref=e84]:
+        - generic [ref=e85]: 
+        - generic [ref=e86]:
+          - generic [ref=e87]: Centralizirani Logging
+          - generic [ref=e88]: "Zadnja objava: 13:55"
+      - generic [ref=e89]:
+        - generic [ref=e90]: "N"
+        - generic [ref=e91]:
+          - button "Odjava" [ref=e92] [cursor=pointer]
+          - generic [ref=e93]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=e94]:
+        - generic [ref=e95]: HR/EN
+        - generic [ref=e96]:
+          - button "HR" [ref=e97] [cursor=pointer]
+          - button "EN" [ref=e98] [cursor=pointer]
+  - main [ref=e99]:
+    - generic [ref=e100]:
+      - generic [ref=e102]:
+        - heading "🎨 Alat za crtanje stadiona" [level=1] [ref=e103]
+        - paragraph [ref=e104]: Crtajte slojeve preko slike stadiona za stvaranje preklapanja zona, napomena i prilagođenih rasporeda.
+      - generic [ref=e105]:
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - heading "📷 Slika stadiona" [level=5] [ref=e109]
+            - generic [ref=e111]:
+              - generic [ref=e112]:
+                - generic [ref=e113]: ✅ Plan stadiona učitan
+                - button "Očisti" [ref=e114] [cursor=pointer]
+              - button "Choose File" [ref=e115] [cursor=pointer]
+              - text: Ako je potrebno, učitajte drugačiju sliku
+          - generic [ref=e116]:
+            - heading "🖌️ Alati za crtanje" [level=5] [ref=e118]
+            - generic [ref=e119]:
+              - group [ref=e120]:
+                - button "👆 Odaberite/Premjestite" [ref=e121] [cursor=pointer]
+              - generic [ref=e122]:
+                - heading "🎯 Alati za sektore" [level=6] [ref=e123]
+                - group [ref=e124]:
+                  - button "➕ Napravite sektor (Rectangle)" [ref=e125] [cursor=pointer]
+                - generic [ref=e126]: Kliknite i povucite da definirate granice pravokutnog sektora
+              - generic [ref=e127]:
+                - generic [ref=e128]: Boja
+                - textbox "Boja" [ref=e129] [cursor=pointer]: "#ff0000"
+              - generic [ref=e130]:
+                - generic [ref=e131]: "Debljina linije: 3 px"
+                - 'slider "Debljina linije: 3 px" [ref=e132]': "3"
+              - generic [ref=e133]:
+                - generic [ref=e134]: "Neprozirnost: 70%"
+                - 'slider "Neprozirnost: 70%" [ref=e135]': "0.6"
+          - generic [ref=e137]:
+            - button "🗑️ Očisti trenutni sloj" [ref=e138] [cursor=pointer]
+            - button "💾 Izvezi crtež" [ref=e139] [cursor=pointer]
+            - button "📄 Izvezi JSON" [ref=e140] [cursor=pointer]
+            - button "💾 Spremi raspored sektora" [ref=e141] [cursor=pointer]
+        - generic [ref=e148]:
+          - text: "Trenutni alat:"
+          - strong [ref=e149]: −1
+          - text: "| Trenutni sloj:"
+          - strong [ref=e150]: Layer 1
+    - generic [ref=e152]:
+      - generic [ref=e153]:
+        - 'heading "✏️ Uredi sektor: SECT1" [level=5] [ref=e154]'
+        - button [ref=e156] [cursor=pointer]
+      - generic [ref=e158]:
+        - generic [ref=e159]:
+          - generic [ref=e160]:
+            - generic [ref=e161]: Kod sektora *
+            - textbox "npr. A1, VIP1" [ref=e162]: SECT1
+            - text: Jedinstveni identifikator
+          - generic [ref=e163]:
+            - generic [ref=e164]: Naziv sektora *
+            - textbox "npr. Tribina A1, VIP sektor" [ref=e165]: Sjever1
+            - text: Naziv koji se prikazuje kupcima
+        - generic [ref=e167]:
+          - generic [ref=e168]: Način raspoređivanja sedišta
+          - group [ref=e169]:
+            - radio "⚪ Ujednačeno (ista sedišta po redu)" [checked]
+            - generic [ref=e170] [cursor=pointer]: ⚪ Ujednačeno (ista sedišta po redu)
+            - radio "🎯 Promjenjivo (različita sedišta po redu)"
+            - generic [ref=e171] [cursor=pointer]: 🎯 Promjenjivo (različita sedišta po redu)
+          - generic [ref=e172]: Svi redovi će imati isti broj sedišta
+        - generic [ref=e173]:
+          - generic [ref=e174]:
+            - generic [ref=e175]: Broj redova *
+            - spinbutton [ref=e176]: "10"
+            - text: 1-100 redova
+          - generic [ref=e177]:
+            - generic [ref=e178]: Sedišta po redu *
+            - spinbutton [ref=e179]: "20"
+            - text: 1-200 sedišta
+          - generic [ref=e180]:
+            - generic [ref=e181]: Ukupno sedišta
+            - spinbutton [ref=e182]: "200"
+            - text: Izračunato automatski
+        - generic [ref=e183]:
+          - generic [ref=e184]:
+            - generic [ref=e185]: Vrsta sektora
+            - combobox [ref=e186]:
+              - option "Standardno" [selected]
+              - option "VIP"
+              - option "Pristupačno invalidskim kolicima"
+              - option "Premium"
+              - option "Obiteljski sektor"
+            - text: Klasifikacija za određivanje cijene i pristupa
+          - generic [ref=e187]:
+            - generic [ref=e188]: Cijena ulaznice
+            - generic [ref=e189]:
+              - generic [ref=e190]: €
+              - spinbutton "Automatski (po tipu)" [ref=e191]
+            - text: Cijena po sjedalu u ovom sektoru. Ostavite prazno za cijenu po tipu.
+          - generic [ref=e192]:
+            - generic [ref=e193]: Cijena sezonske ulaznice
+            - generic [ref=e194]:
+              - generic [ref=e195]: €
+              - spinbutton "Bez sezonske cijene" [ref=e196]
+            - text: Cijena sezonske ulaznice po sjedalu u ovom sektoru. Ostavite prazno ako se ne prodaje kao sezonska.
+          - generic [ref=e197]:
+            - generic [ref=e198]: Boja prikaza
+            - generic [ref=e199]:
+              - textbox "Odaberite boju sektora" [ref=e200] [cursor=pointer]: "#007bff"
+              - textbox "#007bff" [ref=e201]
+            - text: Vizualna boja na karti stadiona
+        - generic [ref=e203]:
+          - generic [ref=e204]: Položaj i veličina
+          - generic [ref=e207]:
+            - generic [ref=e208]:
+              - generic [ref=e209]: Lijevo
+              - strong [ref=e210]: 11,8%
+            - generic [ref=e211]:
+              - generic [ref=e212]: Gore
+              - strong [ref=e213]: 17,1%
+            - generic [ref=e214]:
+              - generic [ref=e215]: Širina
+              - strong [ref=e216]: 9,8%
+            - generic [ref=e217]:
+              - generic [ref=e218]: Visina
+              - strong [ref=e219]: 24,6%
+          - text: Koristite alat Odaberi/Pomakni na platnu za prilagodbu položaja
+        - generic [ref=e220]:
+          - generic [ref=e221]: "Kreirano: 2026-06-30 17:06"
+          - generic [ref=e223]: "Izmijenjeno: 2026-06-30 17:07"
+      - generic [ref=e225]:
+        - button " Obriši sektor" [ref=e226] [cursor=pointer]:
+          - generic [ref=e227]: 
+          - text: Obriši sektor
+        - button " Sakrij pregled" [active] [ref=e234] [cursor=pointer]:
+          - generic [ref=e229]: 
+          - text: Sakrij pregled
+        - button " Otkaži" [ref=e230] [cursor=pointer]:
+          - generic [ref=e231]: 
+          - text: Otkaži
+        - button " Spremi sektor" [ref=e232] [cursor=pointer]:
+          - generic [ref=e233]: 
+          - text: Spremi sektor
+    - generic [ref=e236]:
+      - generic [ref=e237]:
+        - 'heading "Pregled sektora: SECT1 - Sjever1" [level=5] [ref=e238]':
+          - generic [ref=e239]: 🎯
+        - button [ref=e241] [cursor=pointer]
+      - generic [ref=e242]:
+        - status [ref=e245]:
+          - generic [ref=e246]: ℹ️
+          - generic [ref=e247]: "Informacije o sektoru: 10 x 20 = 200"
+        - generic [ref=e251]:
+          - generic [ref=e252]:
+            - generic [ref=e253]:
+              - generic [ref=e254]: Strana igrališta
+              - group "Strana igrališta" [ref=e255]:
+                - button "Postavi teren na vrh" [ref=e256] [cursor=pointer]: ⬆️
+                - button "Postavi teren na dno" [ref=e257] [cursor=pointer]: ⬇️
+                - button "Postavi teren lijevo" [ref=e258] [cursor=pointer]: ⬅️
+                - button "Postavi teren desno" [ref=e259] [cursor=pointer]: ➡️
+            - generic [ref=e260]:
+              - generic [ref=e261]: Razmak sjedala od rubova
+              - generic [ref=e262]:
+                - slider "Razmak sjedala od rubova" [ref=e263]: "8"
+                - generic [ref=e264]: 8%
+          - generic [ref=e265]: ⬆️ POLJE / POZORNICA ⬆️
+          - generic [ref=e271]:
+            - generic [ref=e272]: Legenda
+            - generic [ref=e273]: STANDARD Sjedište
+      - button "Zatvori pregled" [ref=e276] [cursor=pointer]

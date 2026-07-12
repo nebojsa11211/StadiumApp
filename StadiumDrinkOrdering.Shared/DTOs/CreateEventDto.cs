@@ -43,6 +43,18 @@ public class CreateEventDto
     /// </summary>
     public DateTime? TicketSalesEndDate { get; set; }
 
+    /// <summary>
+    /// Start of the drink-ordering window (within the live event). Optional: null means ordering opens
+    /// as soon as the event goes live. When both bounds are supplied, this must be before
+    /// <see cref="DrinkSalesEndDate"/>.
+    /// </summary>
+    public DateTime? DrinkSalesStartDate { get; set; }
+
+    /// <summary>
+    /// End of the drink-ordering window. Optional: null means ordering stays open while the event is live.
+    /// </summary>
+    public DateTime? DrinkSalesEndDate { get; set; }
+
     [Required]
     [Range(1, 100000)]
     public int Capacity { get; set; }

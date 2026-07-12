@@ -44,6 +44,19 @@ public interface IEventService
     /// events closed. Called opportunistically on read so past-dated events don't linger.
     /// </summary>
     Task<int> AutoCompleteEndedEventsAsync();
+
+    /// <summary>
+    /// One-time backfill: reconciles orders for events that are already terminal (Completed/Cancelled)
+    /// but still have in-flight (non-terminal) drink orders — historical orphans left behind before the
+    /// on-completion order sweep existed. Re-runs the same idempotent, refund-correct
+    /// <see cref="IOrderService.CancelOpenOrdersForEventAsync"/> per affected event, so it restores stock
+    /// and refunds wallet-funded orders exactly like the live completion path. Safe to run repeatedly
+    /// (does nothing once every terminal event is clean). Returns the total number of orders reconciled.
+    /// Pass <paramref name="eventId"/> to reconcile only that one event (a no-op unless it is terminal);
+    /// pass null to sweep every terminal event.
+    /// </summary>
+    Task<int> ReconcileTerminalEventOrdersAsync(int? eventId = null);
+
     Task<IEnumerable<Event>> GetUpcomingEventsAsync();
     Task<IEnumerable<Event>> GetPastEventsAsync();
 
@@ -249,6 +262,8 @@ public class EventService : IEventService
         existingEvent.EventEndDate = eventItem.EventEndDate;
         existingEvent.TicketSalesStartDate = eventItem.TicketSalesStartDate;
         existingEvent.TicketSalesEndDate = eventItem.TicketSalesEndDate;
+        existingEvent.DrinkSalesStartDate = eventItem.DrinkSalesStartDate;
+        existingEvent.DrinkSalesEndDate = eventItem.DrinkSalesEndDate;
         existingEvent.VenueId = eventItem.VenueId;
         existingEvent.TotalSeats = eventItem.TotalSeats;
         existingEvent.Description = eventItem.Description;
@@ -736,6 +751,44 @@ public class EventService : IEventService
                 endedIds.Count, string.Join(", ", endedIds));
 
         return endedIds.Count;
+    }
+
+    public async Task<int> ReconcileTerminalEventOrdersAsync(int? eventId = null)
+    {
+        var openStatuses = new[]
+        {
+            OrderStatus.Pending, OrderStatus.Accepted, OrderStatus.InPreparation,
+            OrderStatus.Ready, OrderStatus.OutForDelivery
+        };
+
+        // Find already-terminal event(s) that still carry at least one in-flight order. These are the
+        // pre-sweep orphans (e.g. orders stuck in InPreparation on a long-completed event). When a
+        // specific eventId is requested, restrict to it so only that event's orders are touched — and
+        // still only if it is itself terminal, so a live event's orders are never cancelled here.
+        var eventIds = await _context.Orders
+            .Where(o => o.EventId != null
+                && (eventId == null || o.EventId == eventId)
+                && openStatuses.Contains(o.Status)
+                && o.Event != null
+                && (o.Event.Status == EventStatus.Completed || o.Event.Status == EventStatus.Cancelled))
+            .Select(o => o.EventId!.Value)
+            .Distinct()
+            .ToListAsync();
+
+        var total = 0;
+        foreach (var id in eventIds)
+        {
+            // Reuse the live sweep so stock restoration and idempotent wallet refunds happen identically.
+            total += await _orderService.CancelOpenOrdersForEventAsync(
+                id, $"Auto-cancelled: reconciling orphaned orders for ended event (event #{id})");
+        }
+
+        if (eventIds.Count > 0)
+            _logger.LogInformation(
+                "Reconciled {OrderCount} orphaned in-flight order(s) across {EventCount} terminal event(s): {EventIds}",
+                total, eventIds.Count, string.Join(", ", eventIds));
+
+        return total;
     }
 
     public async Task<IEnumerable<Event>> GetActiveEventsAsync()

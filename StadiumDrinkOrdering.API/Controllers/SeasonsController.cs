@@ -86,6 +86,18 @@ public class SeasonsController : ControllerBase
         if (request.StartDate.HasValue && request.EndDate.HasValue && request.EndDate <= request.StartDate)
             return BadRequest(new { message = "End date must be after the start date." });
 
+        // Turning on "current" is subject to the same rule as the set-current endpoint: a season
+        // whose (effective) window has already ended can't become the current season.
+        if (request.IsCurrent == true)
+        {
+            var existing = await _seasons.GetSeasonAsync(id, ct);
+            if (existing == null)
+                return NotFound();
+            var effectiveEnd = request.EndDate ?? existing.EndDate;
+            if (IsFinished(effectiveEnd))
+                return BadRequest(new { message = FinishedSeasonMessage });
+        }
+
         var updated = await _seasons.UpdateSeasonAsync(id, request, ct);
         return updated == null ? NotFound() : Ok(updated);
     }
@@ -94,9 +106,25 @@ public class SeasonsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<SeasonDto>> SetCurrent(int id, CancellationToken ct)
     {
+        var season = await _seasons.GetSeasonAsync(id, ct);
+        if (season == null)
+            return NotFound();
+        if (IsFinished(season.EndDate))
+            return BadRequest(new { message = FinishedSeasonMessage });
+
         var updated = await _seasons.SetCurrentAsync(id, ct);
         return updated == null ? NotFound() : Ok(updated);
     }
+
+    /// <summary>
+    /// A season whose window has already ended cannot be the "current" (default) season — that flag
+    /// marks the live/upcoming season the UIs default to. Compared at whole-day granularity in UTC so
+    /// the season stays eligible through the entirety of its final day.
+    /// </summary>
+    private static bool IsFinished(DateTime endDateUtc) => endDateUtc.Date < DateTime.UtcNow.Date;
+
+    private const string FinishedSeasonMessage =
+        "This season has already finished, so it can't be set as the current season.";
 
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]

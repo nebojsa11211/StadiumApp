@@ -1,4 +1,6 @@
 using System.IO;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using StadiumDrinkOrdering.Admin.Services;
@@ -13,6 +15,8 @@ public partial class Tickets : ComponentBase
     [Inject] private IAdminApiService ApiService { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private HttpClient HttpClient { get; set; } = default!;
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
 
     private List<TicketDto>? allTickets;
     private List<TicketDto>? filteredTickets;
@@ -20,17 +24,32 @@ public partial class Tickets : ComponentBase
     private bool isLoading = true;
     private string? errorMessage;
     private string? searchTerm;
+    private int? selectedSeasonId;
     private int? selectedEventId;
     private string? selectedStatus;
 
-    /// <summary>The three real lifecycle states an admin cares about, in sort order.</summary>
-    private enum TicketState { Active, Used, Cancelled }
+    // Season scope (mirrors the dashboard/orders): narrows the event dropdown + the ticket list.
+    private List<SeasonDto> seasons = new();
+    private List<(int Id, string Name)> seasonOptions = new();
+    // EventId -> SeasonId, so a ticket (which carries only EventId) maps to its season.
+    private Dictionary<int, int?> eventSeason = new();
+
+    // Events offered in the event dropdown: all of them, or only the selected season's.
+    private IEnumerable<EventDto> EventOptionsForSeason =>
+        events == null ? Enumerable.Empty<EventDto>()
+        : selectedSeasonId.HasValue ? events.Where(e => e.SeasonId == selectedSeasonId.Value)
+        : events;
+
+    /// <summary>The lifecycle states an admin cares about, in sort order.</summary>
+    private enum TicketState { Active, Expired, Used, Cancelled }
 
     /// <summary>
     /// Collapses a ticket's <see cref="TicketDto.Status"/>/<see cref="TicketDto.IsUsed"/>/
     /// <see cref="TicketDto.IsActive"/> flags into a single display state. A refund/cancel is
     /// the only thing that clears <c>IsActive</c>, so treat that (or a Cancelled status) as
-    /// cancelled; otherwise a used/scanned ticket shows as Used, else Active.
+    /// cancelled; otherwise a used/scanned ticket shows as Used. A ticket that is neither used
+    /// nor cancelled shows as Expired once its event day has passed (see <see cref="IsExpired"/>),
+    /// else Active.
     /// </summary>
     private static TicketState StateOf(TicketDto t)
     {
@@ -38,8 +57,23 @@ public partial class Tickets : ComponentBase
             return TicketState.Cancelled;
         if (t.IsUsed || string.Equals(t.Status, TicketStatuses.Used, StringComparison.OrdinalIgnoreCase))
             return TicketState.Used;
+        if (IsExpired(t))
+            return TicketState.Expired;
         return TicketState.Active;
     }
+
+    /// <summary>
+    /// A single-event ticket is expired once its event day has passed while it was never used or
+    /// cancelled — the passage of the event date, not any stored flag, is what makes it expired.
+    /// Season passes span a whole season (a single <see cref="TicketDto.EventDate"/> doesn't bound
+    /// their validity) so they never expire here, and tickets without an event date can't expire.
+    /// Compared at UTC day granularity to match how event dates are stored/filtered elsewhere, so a
+    /// ticket for an event happening today still counts as Active until the day rolls over.
+    /// </summary>
+    private static bool IsExpired(TicketDto t) =>
+        t.Kind != TicketKind.Season
+        && t.EventDate.HasValue
+        && t.EventDate.Value.Date < DateTime.UtcNow.Date;
 
     // Ticket detail drill-down
     private bool showDetail;
@@ -49,6 +83,13 @@ public partial class Tickets : ComponentBase
     private bool pdfDownloading;
     private string? pdfError;
     private int detailTicketId;
+
+    // Stadium blueprint locator: cached sector overlays + the overlay matching the open ticket's seat.
+    private List<StadiumSectorOverlay>? sectorOverlays;
+    private StadiumSectorOverlay? matchedOverlay;
+    // Exact pin for the individual seat within the matched sector (blueprint %). Null => pin the sector centre.
+    private double? seatPinXPercent;
+    private double? seatPinYPercent;
 
     // Sorting
     private readonly TableSortState sortState = new();
@@ -113,9 +154,18 @@ public partial class Tickets : ComponentBase
                     AvailableSeats = e.AvailableSeats,
                     BasePrice = e.BasePrice,
                     IsActive = e.IsActive,
-                    CreatedAt = e.CreatedAt
+                    CreatedAt = e.CreatedAt,
+                    // Keep the season link so tickets can be scoped by season.
+                    SeasonId = e.SeasonId,
+                    SeasonName = e.SeasonName
                 }).ToList();
+                eventSeason = events.ToDictionary(e => e.Id, e => e.SeasonId);
             }
+
+            // Load seasons for the season filter dropdown.
+            try { seasons = await ApiService.GetAsync<List<SeasonDto>>("seasons") ?? new(); }
+            catch (Exception ex) { Console.WriteLine($"Failed to load seasons: {ex.Message}"); }
+            BuildSeasonOptions();
         }
         catch (Exception ex)
         {
@@ -125,6 +175,42 @@ public partial class Tickets : ComponentBase
         {
             isLoading = false;
         }
+    }
+
+    private void BuildSeasonOptions()
+    {
+        // Only surface seasons that actually have tickets (matches how events are listed elsewhere).
+        var seasonIdsWithTickets = (allTickets ?? new List<TicketDto>())
+            .Where(t => t.EventId.HasValue)
+            .Select(t => eventSeason.GetValueOrDefault(t.EventId!.Value))
+            .Where(s => s.HasValue)
+            .Select(s => s!.Value)
+            .ToHashSet();
+
+        seasonOptions = seasons
+            .Where(s => seasonIdsWithTickets.Contains(s.Id))
+            .OrderBy(s => s.StartDate)
+            .ThenBy(s => s.Id)
+            .Select(s => (s.Id, s.Name))
+            .ToList();
+
+        if (selectedSeasonId.HasValue && !seasonOptions.Any(s => s.Id == selectedSeasonId.Value))
+            selectedSeasonId = null;
+    }
+
+    private Task FilterBySeason(string? seasonIdStr)
+    {
+        selectedSeasonId = string.IsNullOrEmpty(seasonIdStr) ? (int?)null
+            : int.TryParse(seasonIdStr, out var sid) ? sid : (int?)null;
+
+        // If the currently selected event isn't in the new season, drop it so the two stay consistent.
+        if (selectedSeasonId.HasValue && selectedEventId.HasValue
+            && eventSeason.GetValueOrDefault(selectedEventId.Value) != selectedSeasonId.Value)
+        {
+            selectedEventId = null;
+        }
+        ApplyFilters();
+        return Task.CompletedTask;
     }
 
     private Task FilterByEvent(string? eventIdStr)
@@ -164,6 +250,13 @@ public partial class Tickets : ComponentBase
 
         var filtered = allTickets.AsEnumerable();
 
+        // Apply season filter (scopes the whole list to one season's events)
+        if (selectedSeasonId.HasValue)
+        {
+            filtered = filtered.Where(t => t.EventId.HasValue
+                && eventSeason.GetValueOrDefault(t.EventId.Value) == selectedSeasonId.Value);
+        }
+
         // Apply event filter
         if (selectedEventId.HasValue)
         {
@@ -200,6 +293,7 @@ public partial class Tickets : ComponentBase
     private Task ResetFilters()
     {
         searchTerm = null;
+        selectedSeasonId = null;
         selectedEventId = null;
         selectedStatus = null;
         filteredTickets = allTickets;
@@ -295,6 +389,10 @@ public partial class Tickets : ComponentBase
             {
                 detailError = "Could not load ticket details.";
             }
+            else
+            {
+                await ResolveSeatLocationAsync(selectedDetail);
+            }
         }
         catch (Exception ex)
         {
@@ -311,6 +409,79 @@ public partial class Tickets : ComponentBase
         showDetail = false;
         selectedDetail = null;
         pdfError = null;
+        matchedOverlay = null;
+        seatPinXPercent = null;
+        seatPinYPercent = null;
+    }
+
+    /// <summary>
+    /// Locates the ticket's seat on the stadium blueprint by matching its <see cref="TicketDetailDto.Section"/>
+    /// against the drawing-tool sector overlays (same source the admin drawing tool renders). The matched
+    /// overlay carries percentage-based coordinates so the modal can drop a pin on the real blueprint image.
+    /// Overlays are fetched once per page and cached; failures degrade silently to "location not available".
+    /// </summary>
+    private async Task ResolveSeatLocationAsync(TicketDetailDto detail)
+    {
+        matchedOverlay = null;
+
+        var section = detail.Section?.Trim();
+        if (string.IsNullOrEmpty(section))
+            return;
+
+        try
+        {
+            if (sectorOverlays == null)
+            {
+                var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                sectorOverlays = await HttpClient.GetFromJsonAsync<List<StadiumSectorOverlay>>(
+                    $"{apiBaseUrl}/api/StadiumSectorOverlay", jsonOptions) ?? new();
+            }
+
+            matchedOverlay = sectorOverlays.FirstOrDefault(o =>
+                string.Equals(o.SectorCode?.Trim(), section, StringComparison.OrdinalIgnoreCase));
+
+            ComputeSeatPin(matchedOverlay, detail);
+        }
+        catch
+        {
+            // Blueprint locator is a nice-to-have; never block the ticket detail on it.
+            matchedOverlay = null;
+            seatPinXPercent = null;
+            seatPinYPercent = null;
+        }
+    }
+
+    /// <summary>
+    /// Computes the individual seat's position on the blueprint (as blueprint-wide percentages) by
+    /// treating the sector as the uniform Rows × SeatsPerRow grid the drawing tool generates: row 1 is
+    /// the front row, seat 1 the first seat. The seat is placed at the centre of its grid cell. Leaves
+    /// the pin null (so the caller falls back to the sector centre) when the row/seat can't be parsed.
+    /// </summary>
+    private void ComputeSeatPin(StadiumSectorOverlay? overlay, TicketDetailDto detail)
+    {
+        seatPinXPercent = null;
+        seatPinYPercent = null;
+
+        if (overlay == null || overlay.Rows < 1 || overlay.SeatsPerRow < 1)
+            return;
+
+        if (!int.TryParse(detail.Row, out var row) || !int.TryParse(detail.SeatNumber, out var seat))
+            return;
+
+        // Clamp into the sector's grid so an out-of-range seat still lands inside the footprint.
+        row = Math.Clamp(row, 1, overlay.Rows);
+        seat = Math.Clamp(seat, 1, overlay.SeatsPerRow);
+
+        var colFraction = (seat - 0.5) / overlay.SeatsPerRow;
+        var rowFraction = (row - 0.5) / overlay.Rows;
+
+        seatPinXPercent = overlay.LeftPercent + colFraction * overlay.WidthPercent;
+        seatPinYPercent = overlay.TopPercent + rowFraction * overlay.HeightPercent;
     }
 
     private async Task DownloadCardPdf()
@@ -358,4 +529,15 @@ public partial class Tickets : ComponentBase
         if (!string.IsNullOrWhiteSpace(d.SeatNumber)) parts.Add($"Seat {d.SeatNumber}");
         return parts.Count == 0 ? "—" : string.Join(" · ", parts);
     }
+
+    // ---- Stadium blueprint locator helpers ----
+
+    /// <summary>Centre X of the matched sector as a percentage of blueprint width (for pin placement).</summary>
+    private static double OverlayCenterX(StadiumSectorOverlay o) => o.LeftPercent + o.WidthPercent / 2.0;
+
+    /// <summary>Centre Y of the matched sector as a percentage of blueprint height (for pin placement).</summary>
+    private static double OverlayCenterY(StadiumSectorOverlay o) => o.TopPercent + o.HeightPercent / 2.0;
+
+    /// <summary>Formats a percentage for inline CSS using invariant culture (avoids comma decimals).</summary>
+    private static string Pct(double value) => value.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
 }

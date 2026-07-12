@@ -41,13 +41,13 @@ public class TicketAuthService : ITicketAuthService
             // Gate drink ordering on the event's lifecycle status (Phase 2 only: Active / InProgress).
             // This is the authoritative source of truth — replaces ad-hoc EventDate math and blocks
             // both future (not started) and past (ended/cancelled) events.
-            if (ticket.Event == null || !EventLifecycle.CanOrderDrinks(ticket.Event.Status))
+            if (ticket.Event == null || !ticket.Event.AreDrinkSalesOpenAt(DateTime.UtcNow))
             {
                 return new TicketAuthResult
                 {
                     IsSuccess = false,
                     ErrorMessage = ticket.Event != null
-                        ? EventLifecycle.OrderingBlockedReason(ticket.Event.Status)
+                        ? ticket.Event.DrinkSalesBlockedReason(DateTime.UtcNow)!
                         : "This ticket is not linked to a valid event."
                 };
             }
@@ -137,7 +137,7 @@ public class TicketAuthService : ITicketAuthService
             && session.IsActive
             && session.ExpiresAt > DateTime.UtcNow
             && session.Ticket?.Event != null
-            && EventLifecycle.CanOrderDrinks(session.Ticket.Event.Status);
+            && session.Ticket.Event.AreDrinkSalesOpenAt(DateTime.UtcNow);
     }
 
     public async Task<TicketSession?> GetTicketSessionAsync(string sessionId)
@@ -283,8 +283,8 @@ public class TicketAuthService : ITicketAuthService
 
     private static bool IsEventOrderable(TicketSession session)
     {
-        var status = (session.Event ?? session.Ticket?.Event)?.Status;
-        return status is not null && EventLifecycle.CanOrderDrinks(status.Value);
+        var evt = session.Event ?? session.Ticket?.Event;
+        return evt is not null && evt.AreDrinkSalesOpenAt(DateTime.UtcNow);
     }
 
     private TicketInfoDto MapToTicketInfoDto(Ticket ticket)

@@ -9,22 +9,20 @@
 
 <div class="console" id="admin-customer-analytics-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-customer-analytics-header">
-        <div class="console-head__title" id="admin-customer-analytics-title-section">
-            <span class="eyebrow">@L["CustAnalytics_Eyebrow"]</span>
-            <h1>@L["CustAnalytics_Title"]</h1>
-            <p>@L["CustAnalytics_Subtitle"]</p>
-        </div>
-        <div class="console-head__actions" id="admin-customer-analytics-action-buttons">
+    <PageHeader Id="admin-customer-analytics-header"
+                Eyebrow='@L["CustAnalytics_Eyebrow"]'
+                Title='@L["CustAnalytics_Title"]'
+                Subtitle='@L["CustAnalytics_Subtitle"]'>
+        <Actions>
             <button class="pill-btn pill-btn--success" @onclick="ExportData" disabled="@(isLoading || customers?.Any() != true)" id="admin-customer-analytics-export-btn">
-                <i class="fas fa-download"></i><span>@L["CustAnalytics_ExportCSV"]</span>
+                <i class="bi bi-download"></i><span>@L["CustAnalytics_ExportCSV"]</span>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     @if (isLoading && customers?.Any() != true)
     {
-        <div class="loading-state">
+        <div class="loading-state" id="admin-customer-analytics-loading">
             <span class="loading-spinner"></span>
             <p>@L["CustAnalytics_Loading"]</p>
         </div>

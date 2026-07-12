@@ -644,6 +644,29 @@ public class AuthService : IAuthService
             query = query.Where(u => u.CreatedAt <= filter.CreatedBefore.Value);
         }
 
+        // Event/season scoping: a customer "belongs" to an event when they placed a drink order at it
+        // or bought a ticket for it (matched by email); to a season when any of its events qualifies or
+        // they hold a linked season pass. Event is the more specific filter and wins when both are set.
+        if (filter.EventId.HasValue)
+        {
+            var eventId = filter.EventId.Value;
+            query = query.Where(u =>
+                _context.Orders.Any(o => o.CustomerId == u.Id && o.EventId == eventId) ||
+                _context.Tickets.Any(t => t.EventId == eventId
+                                          && t.CustomerEmail != null
+                                          && t.CustomerEmail.ToLower() == u.Email.ToLower()));
+        }
+        else if (filter.SeasonId.HasValue)
+        {
+            var seasonId = filter.SeasonId.Value;
+            query = query.Where(u =>
+                _context.Orders.Any(o => o.CustomerId == u.Id && o.Event!.SeasonId == seasonId) ||
+                _context.Tickets.Any(t => t.Event.SeasonId == seasonId
+                                          && t.CustomerEmail != null
+                                          && t.CustomerEmail.ToLower() == u.Email.ToLower()) ||
+                _context.SeasonTickets.Any(st => st.UserId == u.Id && st.SeasonId == seasonId));
+        }
+
         var totalCount = await query.CountAsync();
 
         // Apply pagination

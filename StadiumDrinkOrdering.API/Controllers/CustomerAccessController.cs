@@ -65,7 +65,7 @@ public class CustomerAccessController : ControllerBase
             return BadRequest(new ValidateTicketResponse { Success = false, ErrorMessage = "Ulaznica nije prepoznata." });
 
         var live = (pass.Season?.Events ?? new List<Event>())
-            .FirstOrDefault(e => EventLifecycle.CanOrderDrinks(e.Status));
+            .FirstOrDefault(e => e.AreDrinkSalesOpenAt(DateTime.UtcNow));
 
         if (live is null)
             return BadRequest(new ValidateTicketResponse

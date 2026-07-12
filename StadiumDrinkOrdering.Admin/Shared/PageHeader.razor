@@ -1,0 +1,62 @@
+@*
+    Standardized admin page header (Operations Console design system).
+    Renders the shared `console-head` structure so every admin page has an
+    identical eyebrow / title / subtitle layout and a right-aligned actions slot.
+    Header buttons should use `pill-btn`/`icon-btn` classes with Bootstrap Icons (bi).
+*@
+<header class="console-head" id="@Id">
+    <div class="console-head__title" id="@TitleSectionId">
+        @if (!string.IsNullOrEmpty(Eyebrow))
+        {
+            <span class="eyebrow">@Eyebrow</span>
+        }
+        @if (TitleContent is not null)
+        {
+            <h1>@TitleContent</h1>
+        }
+        else
+        {
+            <h1>@Title</h1>
+        }
+        @if (SubtitleContent is not null)
+        {
+            <p>@SubtitleContent</p>
+        }
+        else if (!string.IsNullOrEmpty(Subtitle))
+        {
+            <p>@Subtitle</p>
+        }
+    </div>
+    @if (Actions is not null)
+    {
+        <div class="console-head__actions" id="@ActionsId">
+            @Actions
+        </div>
+    }
+</header>
+
+@code {
+    /// <summary>Id applied to the &lt;header&gt; element (e.g. "admin-orders-header").</summary>
+    [Parameter] public string? Id { get; set; }
+
+    /// <summary>Small uppercase mono label above the title.</summary>
+    [Parameter] public string? Eyebrow { get; set; }
+
+    /// <summary>Main heading text. Ignored when <see cref="TitleContent"/> is supplied.</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>Optional rich markup for the heading (overrides <see cref="Title"/>).</summary>
+    [Parameter] public RenderFragment? TitleContent { get; set; }
+
+    /// <summary>Optional muted subtitle below the title.</summary>
+    [Parameter] public string? Subtitle { get; set; }
+
+    /// <summary>Optional rich markup for the subtitle (overrides <see cref="Subtitle"/>).</summary>
+    [Parameter] public RenderFragment? SubtitleContent { get; set; }
+
+    /// <summary>Right-aligned action buttons (use pill-btn / icon-btn + bi icons).</summary>
+    [Parameter] public RenderFragment? Actions { get; set; }
+
+    private string? TitleSectionId => Id is null ? null : $"{Id}-title";
+    private string? ActionsId => Id is null ? null : $"{Id}-actions";
+}

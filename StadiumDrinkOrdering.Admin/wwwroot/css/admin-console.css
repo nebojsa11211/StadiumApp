@@ -34,7 +34,7 @@
     gap: 1.5rem;
     padding-bottom: 1.25rem;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--line, var(--stadium-gray-200));
 }
 
 .eyebrow {
@@ -52,14 +52,14 @@
     font-size: 1.85rem;
     font-weight: 700;
     letter-spacing: -0.025em;
-    color: var(--ink);
+    color: var(--ink, var(--stadium-gray-900));
     margin: 0 0 0.35rem;
     line-height: 1.1;
 }
 
 .console-head__title p {
     margin: 0;
-    color: var(--muted);
+    color: var(--muted, var(--stadium-gray-500));
     font-size: 0.9rem;
 }
 
@@ -215,6 +215,23 @@
 }
 
 .metric--accent::before { background: var(--pitch); }
+
+/* Clickable metric card (drill-down, e.g. tickets sold -> ticket list) */
+.metric--clickable {
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.metric--clickable:hover,
+.metric--clickable:focus-visible {
+    border-color: var(--pitch);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    outline: none;
+}
+
+.metric--clickable:hover::before,
+.metric--clickable:focus-visible::before { background: var(--pitch); }
 
 .metric__head {
     display: flex;
@@ -463,6 +480,8 @@ select.field__input { cursor: pointer; }
 .status.is-inactive .status__dot { background: var(--stadium-gray-400); }
 .status.is-used { color: #2f6f8f; }
 .status.is-used .status__dot { background: var(--stadium-info); }
+.status.is-expired { color: #92600a; }
+.status.is-expired .status__dot { background: var(--stadium-warning); }
 
 /* ----- Ticket kind badge & included price ---------------------------------- */
 .badge-pill {

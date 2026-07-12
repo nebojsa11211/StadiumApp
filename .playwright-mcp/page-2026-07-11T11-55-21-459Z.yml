@@ -1,0 +1,152 @@
+- generic [ref=e9]:
+  - complementary [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e12]: 
+      - generic [ref=e14]:
+        - generic [ref=e15]: STADIUM
+        - generic [ref=e16]: ADMIN
+    - generic [ref=e17]:
+      - generic [ref=e18]: 13:55:21
+      - generic [ref=e19]: 11. 07. 26 HR
+    - navigation [ref=e20]:
+      - link " Nadzorna ploča" [ref=e21] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e22]: 
+        - generic [ref=e23]: Nadzorna ploča
+      - generic [ref=e24]: Poslovanje
+      - link " Narudžbe" [ref=e25] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e26]: 
+        - generic [ref=e27]: Narudžbe
+      - link " Pića" [ref=e28] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e29]: 
+        - generic [ref=e30]: Pića
+      - link " Kategorije" [ref=e31] [cursor=pointer]:
+        - /url: categories
+        - generic [ref=e32]: 
+        - generic [ref=e33]: Kategorije
+      - link " Novčanici" [ref=e34] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=e35]: 
+        - generic [ref=e36]: Novčanici
+      - generic [ref=e37]: Događaji i karte
+      - link " Događaji" [ref=e38] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e39]: 
+        - generic [ref=e40]: Događaji
+      - link " Sezone" [ref=e41] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=e42]: 
+        - generic [ref=e43]: Sezone
+      - link " Karte" [ref=e44] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e45]: 
+        - generic [ref=e46]: Karte
+      - generic [ref=e47]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=e48] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e49]: 👁
+        - generic [ref=e50]: Pregled
+      - link " Alat za crtanje" [ref=e51] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e52]: 
+        - generic [ref=e53]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=e54] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=e55]: 
+        - generic [ref=e56]: Informacije o stadionu
+      - link " Stadion i brend" [ref=e57] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=e58]: 
+        - generic [ref=e59]: Stadion i brend
+      - generic [ref=e60]: Analitika
+      - link " Analitika" [ref=e61] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e62]: 
+        - generic [ref=e63]: Analitika
+      - link " Kupci" [ref=e64] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=e65]: 
+        - generic [ref=e66]: Kupci
+      - link " Korisnička analitika" [ref=e67] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e68]: 
+        - generic [ref=e69]: Korisnička analitika
+      - generic [ref=e70]: Sustav
+      - link " Timski računi" [ref=e71] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e72]: 
+        - generic [ref=e73]: Timski računi
+      - link " Zapisi" [ref=e74] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e75]: 
+        - generic [ref=e76]: Zapisi
+      - link " Baza podataka" [ref=e77] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e78]: 
+        - generic [ref=e79]: Baza podataka
+      - link " Postavke" [ref=e80] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=e81]: 
+        - generic [ref=e82]: Postavke
+    - generic [ref=e83]:
+      - generic [ref=e84]:
+        - generic [ref=e85]: 
+        - generic [ref=e86]:
+          - generic [ref=e87]: Centralizirani Logging
+          - generic [ref=e88]: "Zadnja objava: 13:55"
+      - generic [ref=e89]:
+        - generic [ref=e90]: "N"
+        - generic [ref=e91]:
+          - button "Odjava" [ref=e92] [cursor=pointer]
+          - generic [ref=e93]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=e94]:
+        - generic [ref=e95]: HR/EN
+        - generic [ref=e96]:
+          - button "HR" [ref=e97] [cursor=pointer]
+          - button "EN" [ref=e98] [cursor=pointer]
+  - main [ref=e99]:
+    - generic [ref=e100]:
+      - generic [ref=e102]:
+        - heading "🎨 Alat za crtanje stadiona" [active] [level=1] [ref=e103]
+        - paragraph [ref=e104]: Crtajte slojeve preko slike stadiona za stvaranje preklapanja zona, napomena i prilagođenih rasporeda.
+      - generic [ref=e105]:
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - heading "📷 Slika stadiona" [level=5] [ref=e109]
+            - generic [ref=e111]:
+              - generic [ref=e112]:
+                - generic [ref=e113]: ✅ Plan stadiona učitan
+                - button "Očisti" [ref=e114] [cursor=pointer]
+              - button "Choose File" [ref=e115] [cursor=pointer]
+              - text: Ako je potrebno, učitajte drugačiju sliku
+          - generic [ref=e116]:
+            - heading "🖌️ Alati za crtanje" [level=5] [ref=e118]
+            - generic [ref=e119]:
+              - group [ref=e120]:
+                - button "👆 Odaberite/Premjestite" [ref=e121] [cursor=pointer]
+              - generic [ref=e122]:
+                - heading "🎯 Alati za sektore" [level=6] [ref=e123]
+                - group [ref=e124]:
+                  - button "➕ Napravite sektor (Rectangle)" [ref=e125] [cursor=pointer]
+                - generic [ref=e126]: Kliknite i povucite da definirate granice pravokutnog sektora
+              - generic [ref=e127]:
+                - generic [ref=e128]: Boja
+                - textbox "Boja" [ref=e129] [cursor=pointer]: "#ff0000"
+              - generic [ref=e130]:
+                - generic [ref=e131]: "Debljina linije: 3 px"
+                - 'slider "Debljina linije: 3 px" [ref=e132]': "3"
+              - generic [ref=e133]:
+                - generic [ref=e134]: "Neprozirnost: 70%"
+                - 'slider "Neprozirnost: 70%" [ref=e135]': "0.6"
+          - generic [ref=e137]:
+            - button "🗑️ Očisti trenutni sloj" [ref=e138] [cursor=pointer]
+            - button "💾 Izvezi crtež" [ref=e139] [cursor=pointer]
+            - button "📄 Izvezi JSON" [ref=e140] [cursor=pointer]
+            - button "💾 Spremi raspored sektora" [ref=e141] [cursor=pointer]
+        - generic [ref=e148]:
+          - text: "Trenutni alat:"
+          - strong [ref=e149]: −1
+          - text: "| Trenutni sloj:"
+          - strong [ref=e150]: Layer 1

@@ -95,6 +95,82 @@
     margin-bottom: 8px;
 }
 
+/* ---- Stadium blueprint locator (seat location) ---- */
+.seatmap {
+    margin-top: 16px;
+    text-align: center;
+}
+
+.seatmap__frame {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 320px;
+    border: 1px solid var(--line, #e2e8f0);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.seatmap__img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Highlighted sector footprint, positioned as a percentage of the blueprint. */
+.seatmap__sector {
+    position: absolute;
+    border: 2px solid var(--accent, #2563eb);
+    background: rgba(37, 99, 235, 0.22);
+    border-radius: 3px;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+/* Seat pin centred on the sector, with a pulsing halo. */
+.seatmap__pin {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+    border-radius: 50%;
+    background: var(--accent, #2563eb);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px var(--accent, #2563eb), 0 1px 4px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+/* Exact-seat pin: smaller and sharper than the sector-centre fallback. */
+.seatmap__pin--seat {
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+}
+
+.seatmap__pin::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: var(--accent, #2563eb);
+    opacity: 0.28;
+    animation: seatmap-pulse 1.8s ease-out infinite;
+}
+
+@keyframes seatmap-pulse {
+    0% { transform: scale(0.6); opacity: 0.4; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+.seatmap__caption {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--body, #334155);
+}
+
 /* ---- Wallet balance ---- */
 .wallet-balance {
     display: flex;

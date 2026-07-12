@@ -20,6 +20,10 @@ public class EventDto
     public DateTime? TicketSalesStartDate { get; set; }
     /// <summary>End of the ticket-sales window, if set (null = stays open while the event is on sale).</summary>
     public DateTime? TicketSalesEndDate { get; set; }
+    /// <summary>Start of the drink-ordering window, if set (null = opens as soon as the event goes live).</summary>
+    public DateTime? DrinkSalesStartDate { get; set; }
+    /// <summary>End of the drink-ordering window, if set (null = stays open while the event is live).</summary>
+    public DateTime? DrinkSalesEndDate { get; set; }
     public string? Description { get; set; }
     public int Capacity { get; set; }
     public int AvailableSeats { get; set; }

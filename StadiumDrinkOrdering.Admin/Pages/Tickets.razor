@@ -6,13 +6,10 @@
 
 <div class="console" id="admin-tickets-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-tickets-header">
-        <div class="console-head__title" id="admin-tickets-title-section">
-            <span class="eyebrow" id="admin-tickets-eyebrow">@L["Tickets_Eyebrow"]</span>
-            <h1 id="admin-tickets-title">@L["Tickets_Title"]</h1>
-            <p id="admin-tickets-description">@L["Tickets_Description"]</p>
-        </div>
-    </header>
+    <PageHeader Id="admin-tickets-header"
+                Eyebrow='@L["Tickets_Eyebrow"]'
+                Title='@L["Tickets_Title"]'
+                Subtitle='@L["Tickets_Description"]' />
 
     @if (selectedEventId.HasValue && events != null)
     {
@@ -28,7 +25,7 @@
 
     @if (isLoading)
     {
-        <div class="loading-state" id="admin-tickets-loading-state">
+        <div class="loading-state" id="admin-tickets-loading">
             <span class="loading-spinner"></span>
             <p id="admin-tickets-loading-message">@L["Tickets_LoadingTickets"]</p>
         </div>
@@ -50,16 +47,23 @@
                 </button>
             </div>
             <div class="filters" id="admin-tickets-filter-controls">
+                <div class="field" id="admin-tickets-filter-season-field">
+                    <label class="field__label" for="admin-tickets-season-select">@L["Tickets_FilterBySeasonLabel"]</label>
+                    <select class="field__input" @onchange="@(async (e) => await FilterBySeason(e.Value?.ToString()))" id="admin-tickets-season-select">
+                        <option value="" selected="@(selectedSeasonId == null)">@L["Tickets_AllSeasonsOption"]</option>
+                        @foreach (var s in seasonOptions)
+                        {
+                            <option value="@s.Id" selected="@(selectedSeasonId == s.Id)">@s.Name</option>
+                        }
+                    </select>
+                </div>
                 <div class="field field--grow" id="admin-tickets-filter-event-field">
                     <label class="field__label" for="admin-tickets-event-select">@L["Tickets_FilterByEventLabel"]</label>
                     <select class="field__input" @onchange="@(async (e) => await FilterByEvent(e.Value?.ToString()))" value="@(selectedEventId?.ToString() ?? "")" id="admin-tickets-event-select">
                         <option value="">@L["Tickets_AllEventsOption"]</option>
-                        @if (events != null)
+                        @foreach (var evt in EventOptionsForSeason)
                         {
-                            @foreach (var evt in events)
-                            {
-                                <option value="@evt.Id" selected="@(selectedEventId == evt.Id)">@evt.Name - @evt.Date?.ToString("MMM dd, yyyy")</option>
-                            }
+                            <option value="@evt.Id" selected="@(selectedEventId == evt.Id)">@evt.Name - @evt.Date?.ToString("MMM dd, yyyy")</option>
                         }
                     </select>
                 </div>
@@ -68,6 +72,7 @@
                     <select class="field__input" @onchange="@(async (e) => await FilterByStatus(e.Value?.ToString()))" id="admin-tickets-status-select">
                         <option value="" selected="@(selectedStatus == null)">@L["Tickets_AllTicketsOption"]</option>
                         <option value="Active" selected="@(selectedStatus == "Active")">@L["Tickets_ActiveOption"]</option>
+                        <option value="Expired" selected="@(selectedStatus == "Expired")">@L["Tickets_ExpiredOption"]</option>
                         <option value="Used" selected="@(selectedStatus == "Used")">@L["Tickets_UsedOption"]</option>
                         <option value="Cancelled" selected="@(selectedStatus == "Cancelled")">@L["Tickets_CancelledOption"]</option>
                     </select>
@@ -109,7 +114,7 @@
                     <span class="metric__label">@L["Tickets_TotalRevenueLabel"]</span>
                     <i class="bi bi-currency-dollar metric__icon"></i>
                 </div>
-                <div class="metric__value mono" id="admin-tickets-metric-revenue-value"><span class="metric__unit">$</span>@filteredTickets?.Sum(t => t.Price).ToString("F2")</div>
+                <div class="metric__value mono" id="admin-tickets-metric-revenue-value"><span class="metric__unit">€</span>@filteredTickets?.Sum(t => t.Price).ToString("F2")</div>
                 <div class="metric__foot" id="admin-tickets-metric-revenue-foot">
                     <span class="metric__hint">@L["Tickets_AcrossAllTicketsHint"]</span>
                 </div>
@@ -206,7 +211,7 @@
                                     }
                                     else
                                     {
-                                        @($"${ticket.Price.ToString("F2")}")
+                                        @($"€{ticket.Price.ToString("F2")}")
                                     }
                                 </td>
                                 <td id="admin-tickets-cell-status-@ticket.Id">
@@ -214,6 +219,9 @@
                                     {
                                         case TicketState.Active:
                                             <span class="status is-active" id="admin-tickets-status-active-@ticket.Id"><span class="status__dot"></span>@L["Tickets_ActiveStatus"]</span>
+                                            break;
+                                        case TicketState.Expired:
+                                            <span class="status is-expired" id="admin-tickets-status-expired-@ticket.Id"><span class="status__dot"></span>@L["Tickets_ExpiredStatus"]</span>
                                             break;
                                         case TicketState.Used:
                                             <span class="status is-used" id="admin-tickets-status-used-@ticket.Id"><span class="status__dot"></span>@L["Tickets_UsedStatus"]</span>
@@ -357,6 +365,37 @@
                                     <span>@pdfError</span>
                                 </div>
                             }
+
+                            <!-- Stadium blueprint locator: real drawing-tool image with a pin on this seat's sector -->
+                            <div class="seatmap" id="admin-tickets-detail-seatmap">
+                                <span class="section-label">@L["Tickets_DetailSeatLocation"]</span>
+                                <div class="seatmap__frame" id="admin-tickets-detail-seatmap-frame">
+                                    <img class="seatmap__img" src="/images/stadium-blueprint.png"
+                                         alt="@L["Tickets_DetailSeatLocation"]" id="admin-tickets-detail-seatmap-img" />
+                                    @if (matchedOverlay != null)
+                                    {
+                                        var pinX = seatPinXPercent ?? OverlayCenterX(matchedOverlay);
+                                        var pinY = seatPinYPercent ?? OverlayCenterY(matchedOverlay);
+                                        <div class="seatmap__sector"
+                                             id="admin-tickets-detail-seatmap-sector"
+                                             style="left:@(Pct(matchedOverlay.LeftPercent))%;top:@(Pct(matchedOverlay.TopPercent))%;width:@(Pct(matchedOverlay.WidthPercent))%;height:@(Pct(matchedOverlay.HeightPercent))%;"></div>
+                                        <div class="seatmap__pin@(seatPinXPercent.HasValue ? " seatmap__pin--seat" : "")"
+                                             id="admin-tickets-detail-seatmap-pin"
+                                             style="left:@(Pct(pinX))%;top:@(Pct(pinY))%;"
+                                             title="@SeatText(selectedDetail)"></div>
+                                    }
+                                </div>
+                                <span class="seatmap__caption" id="admin-tickets-detail-seatmap-caption">
+                                    @if (matchedOverlay != null)
+                                    {
+                                        @SeatText(selectedDetail)
+                                    }
+                                    else
+                                    {
+                                        @L["Tickets_DetailLocationUnknown"]
+                                    }
+                                </span>
+                            </div>
                         </div>
 
                         <!-- RIGHT: facts + spending breakdown -->

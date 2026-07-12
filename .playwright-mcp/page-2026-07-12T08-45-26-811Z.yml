@@ -1,0 +1,596 @@
+- generic [ref=f2e4]:
+  - complementary [ref=f2e5]:
+    - generic [ref=f2e6]:
+      - generic [ref=f2e7]: 
+      - generic [ref=f2e9]:
+        - generic [ref=f2e10]: STADIUM
+        - generic [ref=f2e11]: ADMIN
+    - generic [ref=f2e12]:
+      - generic [ref=f2e13]: 10:45:25
+      - generic [ref=f2e14]: 12. 07. 26 HR
+    - navigation [ref=f2e15]:
+      - link " Nadzorna ploča" [ref=f2e16] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f2e17]: 
+        - generic [ref=f2e18]: Nadzorna ploča
+      - generic [ref=f2e19]: Poslovanje
+      - link " Narudžbe" [ref=f2e20] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f2e21]: 
+        - generic [ref=f2e22]: Narudžbe
+      - link " Pića" [ref=f2e23] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f2e24]: 
+        - generic [ref=f2e25]: Pića
+      - link " Kategorije" [ref=f2e26] [cursor=pointer]:
+        - /url: categories
+        - generic [ref=f2e27]: 
+        - generic [ref=f2e28]: Kategorije
+      - link " Novčanici" [ref=f2e29] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=f2e30]: 
+        - generic [ref=f2e31]: Novčanici
+      - generic [ref=f2e32]: Događaji i karte
+      - link " Događaji" [ref=f2e33] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f2e34]: 
+        - generic [ref=f2e35]: Događaji
+      - link " Sezone" [ref=f2e36] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=f2e37]: 
+        - generic [ref=f2e38]: Sezone
+      - link " Karte" [ref=f2e39] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f2e40]: 
+        - generic [ref=f2e41]: Karte
+      - generic [ref=f2e42]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=f2e43] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f2e44]: 👁
+        - generic [ref=f2e45]: Pregled
+      - link " Alat za crtanje" [ref=f2e46] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f2e47]: 
+        - generic [ref=f2e48]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=f2e49] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=f2e50]: 
+        - generic [ref=f2e51]: Informacije o stadionu
+      - link " Stadion i brend" [ref=f2e52] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=f2e53]: 
+        - generic [ref=f2e54]: Stadion i brend
+      - generic [ref=f2e55]: Analitika
+      - link " Analitika" [ref=f2e56] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f2e57]: 
+        - generic [ref=f2e58]: Analitika
+      - link " Kupci" [ref=f2e59] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=f2e60]: 
+        - generic [ref=f2e61]: Kupci
+      - link " Korisnička analitika" [ref=f2e62] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f2e63]: 
+        - generic [ref=f2e64]: Korisnička analitika
+      - generic [ref=f2e65]: Sustav
+      - link " Timski računi" [ref=f2e66] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f2e67]: 
+        - generic [ref=f2e68]: Timski računi
+      - link " Zapisi" [ref=f2e69] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f2e70]: 
+        - generic [ref=f2e71]: Zapisi
+      - link " Baza podataka" [ref=f2e72] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f2e73]: 
+        - generic [ref=f2e74]: Baza podataka
+      - link " Postavke" [ref=f2e75] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=f2e76]: 
+        - generic [ref=f2e77]: Postavke
+    - generic [ref=f2e78]:
+      - generic [ref=f2e79]:
+        - generic [ref=f2e80]: 
+        - generic [ref=f2e81]:
+          - generic [ref=f2e82]: Centralizirani Logging
+          - generic [ref=f2e83]: "Zadnja objava: 10:45"
+      - generic [ref=f2e84]:
+        - generic [ref=f2e85]: "N"
+        - generic [ref=f2e86]:
+          - button "Odjava" [ref=f2e87] [cursor=pointer]
+          - generic [ref=f2e88]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=f2e89]:
+        - generic [ref=f2e90]: HR/EN
+        - generic [ref=f2e91]:
+          - button "HR" [ref=f2e92] [cursor=pointer]
+          - button "EN" [ref=f2e93] [cursor=pointer]
+  - main [ref=f2e94]:
+    - generic [ref=f2e95]:
+      - generic [ref=f2e97]:
+        - generic [ref=f2e98]: Karte
+        - heading "Upravljanje kartama" [active] [level=1] [ref=f2e99]
+        - paragraph [ref=f2e100]: Pregledaj, validiraj i upravljaj svim stadionskim kartama
+      - generic [ref=f2e101]:
+        - generic [ref=f2e102]:
+          - heading "Filtri" [level=2] [ref=f2e103]
+          - button " Resetiraj" [ref=f2e104] [cursor=pointer]:
+            - generic [ref=f2e105]: 
+            - text: Resetiraj
+        - generic [ref=f2e106]:
+          - generic [ref=f2e107]:
+            - generic [ref=f2e108]: Filtriraj po sezoni
+            - combobox "Filtriraj po sezoni" [ref=f2e109] [cursor=pointer]:
+              - option "Sve sezone"
+              - option "2025/26" [selected]
+              - option "2026/2027"
+          - generic [ref=f2e110]:
+            - generic [ref=f2e111]: Filtriraj po gebeurtenaju
+            - combobox "Filtriraj po gebeurtenaju" [ref=f2e112] [cursor=pointer]:
+              - option "Svi događaji" [selected]
+              - option "GNK Dinamo – HNK Vukovar 1991 (08.08.2025.) - kol 08, 2025"
+              - option "GNK Dinamo – NK Istra 1961 (23.08.2025.) - kol 23, 2025"
+              - option "GNK Dinamo – HNK Gorica (14.09.2025.) - ruj 14, 2025"
+              - option "GNK Dinamo – NK Slaven Belupo (28.09.2025.) - ruj 28, 2025"
+              - option "GNK Dinamo – NK Osijek (18.10.2025.) - lis 18, 2025"
+              - option "GNK Dinamo – HNK Rijeka (01.11.2025.) - stu 01, 2025"
+              - option "GNK Dinamo – NK Varaždin (22.11.2025.) - stu 22, 2025"
+              - option "GNK Dinamo – HNK Hajduk Split (06.12.2025.) - pro 06, 2025"
+              - option "GNK Dinamo – NK Lokomotiva Zagreb (20.12.2025.) - pro 20, 2025"
+              - option "GNK Dinamo – HNK Vukovar 1991 (02.02.2026.) - velj 02, 2026"
+              - option "GNK Dinamo – NK Istra 1961 (14.02.2026.) - velj 14, 2026"
+              - option "GNK Dinamo – HNK Gorica (01.03.2026.) - ožu 01, 2026"
+              - option "GNK Dinamo – NK Slaven Belupo (14.03.2026.) - ožu 14, 2026"
+              - option "GNK Dinamo – NK Osijek (04.04.2026.) - tra 04, 2026"
+              - option "GNK Dinamo – HNK Rijeka (18.04.2026.) - tra 18, 2026"
+              - option "GNK Dinamo – NK Varaždin (26.04.2026.) - tra 26, 2026"
+              - option "GNK Dinamo – HNK Hajduk Split (09.05.2026.) - svi 09, 2026"
+              - option "GNK Dinamo – NK Lokomotiva Zagreb (23.05.2026.) - svi 23, 2026"
+              - option "Plua - osijek - srp 04, 2026"
+              - option "pula zagreb - srp 05, 2026"
+              - option "rijeka dinaamo - srp 06, 2026"
+              - option "Istra - Zagreb - srp 14, 2026"
+          - generic [ref=f2e113]:
+            - generic [ref=f2e114]: Filtriraj po statusu
+            - combobox "Filtriraj po statusu" [ref=f2e115] [cursor=pointer]:
+              - option "Sve karte" [selected]
+              - option "Aktivne"
+              - option "Iskorištene"
+              - option "Otkazane"
+          - generic [ref=f2e116]:
+            - generic [ref=f2e117]: Pretraživanje
+            - textbox "Pretraživanje" [ref=f2e118]:
+              - /placeholder: Pretraživanje po broju karte, kupcu...
+      - generic [ref=f2e119]:
+        - article [ref=f2e120]:
+          - generic [ref=f2e121]:
+            - generic [ref=f2e122]: Ukupno karata
+            - generic [ref=f2e123]: 
+          - generic [ref=f2e124]: "5778"
+          - generic [ref=f2e125]: Sve karte u evidenciji
+        - article [ref=f2e127]:
+          - generic [ref=f2e128]:
+            - generic [ref=f2e129]: Aktivne karte
+            - generic [ref=f2e130]: 
+          - generic [ref=f2e131]: "899"
+          - generic [ref=f2e132]: Trenutno valjane
+        - article [ref=f2e134]:
+          - generic [ref=f2e135]:
+            - generic [ref=f2e136]: Ukupan prihod
+            - generic [ref=f2e137]: 
+          - generic [ref=f2e138]: €38070,00
+          - generic [ref=f2e139]: Ukupno od svih karata
+        - article [ref=f2e141]:
+          - generic [ref=f2e142]:
+            - generic [ref=f2e143]: Jedinstveni događaji
+            - generic [ref=f2e144]: 
+          - generic [ref=f2e145]: "22"
+          - generic [ref=f2e146]: Događaji sa kartama
+      - generic [ref=f2e148]:
+        - heading "Karte 5778" [level=2] [ref=f2e150]:
+          - text: Karte
+          - generic [ref=f2e151]: "5778"
+        - table [ref=f2e152]:
+          - rowgroup [ref=f2e153]:
+            - row [ref=f2e154]:
+              - columnheader "Broj karte" [ref=f2e155] [cursor=pointer]
+              - columnheader "Događaj" [ref=f2e156] [cursor=pointer]
+              - columnheader "Datum" [ref=f2e157] [cursor=pointer]
+              - columnheader "Mjesto" [ref=f2e158] [cursor=pointer]
+              - columnheader "Kupac" [ref=f2e159] [cursor=pointer]
+              - columnheader "Datum kupnje" [ref=f2e160] [cursor=pointer]
+              - columnheader "Cijena" [ref=f2e161] [cursor=pointer]
+              - columnheader "Stanje" [ref=f2e162] [cursor=pointer]
+              - columnheader "Akcije" [ref=f2e163]
+          - rowgroup [ref=f2e164]:
+            - row [ref=f2e165]:
+              - cell [ref=f2e166]:
+                - button "TK6391906333460921700001" [ref=f2e167] [cursor=pointer]
+              - cell "Istra - Zagreb" [ref=f2e168]
+              - cell "srp 14, 2026 18:00" [ref=f2e169]
+              - cell "Sektor 2Red 4Mjesto 3" [ref=f2e170]:
+                - text: Sektor 2
+                - generic [ref=f2e171]: Red 4
+                - generic [ref=f2e172]: Mjesto 3
+              - cell "Ivan Horvat ivan.horvat@email.hr" [ref=f2e173]:
+                - generic [ref=f2e174]: Ivan Horvat
+                - text: ivan.horvat@email.hr
+              - cell "srp 07, 2026 21:22" [ref=f2e175]
+              - cell "€45,00" [ref=f2e176]
+              - cell [ref=f2e177]
+              - cell [ref=f2e180]:
+                - generic [ref=f2e181]:
+                  - button "👁" [ref=f2e182] [cursor=pointer]
+                  - button "" [ref=f2e184] [cursor=pointer]
+                  - button "" [ref=f2e186] [cursor=pointer]
+            - row [ref=f2e188]:
+              - cell [ref=f2e189]:
+                - button "TK6391906214748914470002" [ref=f2e190] [cursor=pointer]
+              - cell "Istra - Zagreb" [ref=f2e191]
+              - cell "srp 14, 2026 18:00" [ref=f2e192]
+              - cell "Jug1Red 6Mjesto 5" [ref=f2e193]:
+                - text: Jug1
+                - generic [ref=f2e194]: Red 6
+                - generic [ref=f2e195]: Mjesto 5
+              - cell "Ivan Horvat ivan.horvat@email.hr" [ref=f2e196]:
+                - generic [ref=f2e197]: Ivan Horvat
+                - text: ivan.horvat@email.hr
+              - cell "srp 07, 2026 21:02" [ref=f2e198]
+              - cell "€45,00" [ref=f2e199]
+              - cell [ref=f2e200]
+              - cell [ref=f2e203]:
+                - generic [ref=f2e204]:
+                  - button "👁" [ref=f2e205] [cursor=pointer]
+                  - button "" [ref=f2e207] [cursor=pointer]
+                  - button "" [ref=f2e209] [cursor=pointer]
+            - row [ref=f2e211]:
+              - cell [ref=f2e212]:
+                - button "TK6391906214748786730001" [ref=f2e213] [cursor=pointer]
+              - cell "Istra - Zagreb" [ref=f2e214]
+              - cell "srp 14, 2026 18:00" [ref=f2e215]
+              - cell "Jug1Red 6Mjesto 4" [ref=f2e216]:
+                - text: Jug1
+                - generic [ref=f2e217]: Red 6
+                - generic [ref=f2e218]: Mjesto 4
+              - cell "Ivan Horvat ivan.horvat@email.hr" [ref=f2e219]:
+                - generic [ref=f2e220]: Ivan Horvat
+                - text: ivan.horvat@email.hr
+              - cell "srp 07, 2026 21:02" [ref=f2e221]
+              - cell "€45,00" [ref=f2e222]
+              - cell [ref=f2e223]
+              - cell [ref=f2e226]:
+                - generic [ref=f2e227]:
+                  - button "👁" [ref=f2e228] [cursor=pointer]
+                  - button "" [ref=f2e230] [cursor=pointer]
+                  - button "" [ref=f2e232] [cursor=pointer]
+            - row [ref=f2e234]:
+              - cell [ref=f2e235]:
+                - button "TK6391906181907089370002" [ref=f2e236] [cursor=pointer]
+              - cell "Istra - Zagreb" [ref=f2e237]
+              - cell "srp 14, 2026 18:00" [ref=f2e238]
+              - cell "Sektor 2Red 3Mjesto 10" [ref=f2e239]:
+                - text: Sektor 2
+                - generic [ref=f2e240]: Red 3
+                - generic [ref=f2e241]: Mjesto 10
+              - cell "Ivan Horvat ivan.horvat@email.hr" [ref=f2e242]:
+                - generic [ref=f2e243]: Ivan Horvat
+                - text: ivan.horvat@email.hr
+              - cell "srp 07, 2026 20:56" [ref=f2e244]
+              - cell "€45,00" [ref=f2e245]
+              - cell [ref=f2e246]
+              - cell [ref=f2e249]:
+                - generic [ref=f2e250]:
+                  - button "👁" [ref=f2e251] [cursor=pointer]
+                  - button "" [ref=f2e253] [cursor=pointer]
+                  - button "" [ref=f2e255] [cursor=pointer]
+            - row [ref=f2e257]:
+              - cell [ref=f2e258]:
+                - button "TK6391906181906841160001" [ref=f2e259] [cursor=pointer]
+              - cell "Istra - Zagreb" [ref=f2e260]
+              - cell "srp 14, 2026 18:00" [ref=f2e261]
+              - cell "Sektor 2Red 3Mjesto 11" [ref=f2e262]:
+                - text: Sektor 2
+                - generic [ref=f2e263]: Red 3
+                - generic [ref=f2e264]: Mjesto 11
+              - cell "Ivan Horvat ivan.horvat@email.hr" [ref=f2e265]:
+                - generic [ref=f2e266]: Ivan Horvat
+                - text: ivan.horvat@email.hr
+              - cell "srp 07, 2026 20:56" [ref=f2e267]
+              - cell "€45,00" [ref=f2e268]
+              - cell [ref=f2e269]
+              - cell [ref=f2e272]:
+                - generic [ref=f2e273]:
+                  - button "👁" [ref=f2e274] [cursor=pointer]
+                  - button "" [ref=f2e276] [cursor=pointer]
+                  - button "" [ref=f2e278] [cursor=pointer]
+            - row [ref=f2e280]:
+              - cell [ref=f2e281]:
+                - button "TK6391906047085069360002" [ref=f2e282] [cursor=pointer]
+              - cell "Istra - Zagreb" [ref=f2e283]
+              - cell "srp 14, 2026 18:00" [ref=f2e284]
+              - cell "Sektor 2Red 3Mjesto 13" [ref=f2e285]:
+                - text: Sektor 2
+                - generic [ref=f2e286]: Red 3
+                - generic [ref=f2e287]: Mjesto 13
+              - cell "Ivan Horvat ivan.horvat@email.hr" [ref=f2e288]:
+                - generic [ref=f2e289]: Ivan Horvat
+                - text: ivan.horvat@email.hr
+              - cell "srp 07, 2026 20:34" [ref=f2e290]
+              - cell "€45,00" [ref=f2e291]
+              - cell [ref=f2e292]
+              - cell [ref=f2e295]:
+                - generic [ref=f2e296]:
+                  - button "👁" [ref=f2e297] [cursor=pointer]
+                  - button "" [ref=f2e299] [cursor=pointer]
+                  - button "" [ref=f2e301] [cursor=pointer]
+            - row [ref=f2e303]:
+              - cell [ref=f2e304]:
+                - button "TK6391906047084907840001" [ref=f2e305] [cursor=pointer]
+              - cell "Istra - Zagreb" [ref=f2e306]
+              - cell "srp 14, 2026 18:00" [ref=f2e307]
+              - cell "Sektor 2Red 3Mjesto 12" [ref=f2e308]:
+                - text: Sektor 2
+                - generic [ref=f2e309]: Red 3
+                - generic [ref=f2e310]: Mjesto 12
+              - cell "Ivan Horvat ivan.horvat@email.hr" [ref=f2e311]:
+                - generic [ref=f2e312]: Ivan Horvat
+                - text: ivan.horvat@email.hr
+              - cell "srp 07, 2026 20:34" [ref=f2e313]
+              - cell "€45,00" [ref=f2e314]
+              - cell [ref=f2e315]
+              - cell [ref=f2e318]:
+                - generic [ref=f2e319]:
+                  - button "👁" [ref=f2e320] [cursor=pointer]
+                  - button "" [ref=f2e322] [cursor=pointer]
+                  - button "" [ref=f2e324] [cursor=pointer]
+            - row [ref=f2e326]:
+              - cell [ref=f2e327]:
+                - button "EXT-TCK-7AFBDFEFE980" [ref=f2e328] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e329]
+              - cell "srp 14, 2026 18:00" [ref=f2e330]
+              - cell "SECT2Red 3Mjesto 6" [ref=f2e331]:
+                - text: SECT2
+                - generic [ref=f2e332]: Red 3
+                - generic [ref=f2e333]: Mjesto 6
+              - cell "Marko Kovač" [ref=f2e334]
+              - cell "srp 07, 2026 17:01" [ref=f2e336]
+              - cell "€45,00" [ref=f2e337]
+              - cell [ref=f2e338]
+              - cell [ref=f2e341]:
+                - generic [ref=f2e342]:
+                  - button "👁" [ref=f2e343] [cursor=pointer]
+                  - button "" [ref=f2e345] [cursor=pointer]
+                  - button "" [ref=f2e347] [cursor=pointer]
+            - row [ref=f2e349]:
+              - cell [ref=f2e350]:
+                - button "EXT-TCK-D7D382CF6726" [ref=f2e351] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e352]
+              - cell "srp 14, 2026 18:00" [ref=f2e353]
+              - cell "SECT2Red 3Mjesto 5" [ref=f2e354]:
+                - text: SECT2
+                - generic [ref=f2e355]: Red 3
+                - generic [ref=f2e356]: Mjesto 5
+              - cell "Marko Kovač" [ref=f2e357]
+              - cell "srp 07, 2026 17:01" [ref=f2e359]
+              - cell "€45,00" [ref=f2e360]
+              - cell [ref=f2e361]
+              - cell [ref=f2e364]:
+                - generic [ref=f2e365]:
+                  - button "👁" [ref=f2e366] [cursor=pointer]
+                  - button "" [ref=f2e368] [cursor=pointer]
+                  - button "" [ref=f2e370] [cursor=pointer]
+            - row [ref=f2e372]:
+              - cell [ref=f2e373]:
+                - button "EXT-TCK-0F0CBFE1D044" [ref=f2e374] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e375]
+              - cell "srp 14, 2026 18:00" [ref=f2e376]
+              - cell "SECT2Red 3Mjesto 4" [ref=f2e377]:
+                - text: SECT2
+                - generic [ref=f2e378]: Red 3
+                - generic [ref=f2e379]: Mjesto 4
+              - cell "Marko Kovač" [ref=f2e380]
+              - cell "srp 07, 2026 17:01" [ref=f2e382]
+              - cell "€45,00" [ref=f2e383]
+              - cell [ref=f2e384]
+              - cell [ref=f2e387]:
+                - generic [ref=f2e388]:
+                  - button "👁" [ref=f2e389] [cursor=pointer]
+                  - button "" [ref=f2e391] [cursor=pointer]
+                  - button "" [ref=f2e393] [cursor=pointer]
+            - row [ref=f2e395]:
+              - cell [ref=f2e396]:
+                - button "EXT-TCK-48CA0EAB9522" [ref=f2e397] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e398]
+              - cell "srp 14, 2026 18:00" [ref=f2e399]
+              - cell "SECT2Red 3Mjesto 3" [ref=f2e400]:
+                - text: SECT2
+                - generic [ref=f2e401]: Red 3
+                - generic [ref=f2e402]: Mjesto 3
+              - cell "Maja Vuković" [ref=f2e403]
+              - cell "srp 07, 2026 17:01" [ref=f2e405]
+              - cell "€45,00" [ref=f2e406]
+              - cell [ref=f2e407]
+              - cell [ref=f2e410]:
+                - generic [ref=f2e411]:
+                  - button "👁" [ref=f2e412] [cursor=pointer]
+                  - button "" [ref=f2e414] [cursor=pointer]
+                  - button "" [ref=f2e416] [cursor=pointer]
+            - row [ref=f2e418]:
+              - cell [ref=f2e419]:
+                - button "EXT-TCK-4B31D8EEFD2D" [ref=f2e420] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e421]
+              - cell "srp 14, 2026 18:00" [ref=f2e422]
+              - cell "SECT2Red 3Mjesto 2" [ref=f2e423]:
+                - text: SECT2
+                - generic [ref=f2e424]: Red 3
+                - generic [ref=f2e425]: Mjesto 2
+              - cell "Petra Novak" [ref=f2e426]
+              - cell "srp 07, 2026 17:01" [ref=f2e428]
+              - cell "€45,00" [ref=f2e429]
+              - cell [ref=f2e430]
+              - cell [ref=f2e433]:
+                - generic [ref=f2e434]:
+                  - button "👁" [ref=f2e435] [cursor=pointer]
+                  - button "" [ref=f2e437] [cursor=pointer]
+                  - button "" [ref=f2e439] [cursor=pointer]
+            - row [ref=f2e441]:
+              - cell [ref=f2e442]:
+                - button "EXT-TCK-179EFB25AF24" [ref=f2e443] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e444]
+              - cell "srp 14, 2026 18:00" [ref=f2e445]
+              - cell "SECT2Red 3Mjesto 1" [ref=f2e446]:
+                - text: SECT2
+                - generic [ref=f2e447]: Red 3
+                - generic [ref=f2e448]: Mjesto 1
+              - cell "Tomislav Knežević" [ref=f2e449]
+              - cell "srp 07, 2026 17:01" [ref=f2e451]
+              - cell "€45,00" [ref=f2e452]
+              - cell [ref=f2e453]
+              - cell [ref=f2e456]:
+                - generic [ref=f2e457]:
+                  - button "👁" [ref=f2e458] [cursor=pointer]
+                  - button "" [ref=f2e460] [cursor=pointer]
+                  - button "" [ref=f2e462] [cursor=pointer]
+            - row [ref=f2e464]:
+              - cell [ref=f2e465]:
+                - button "EXT-TCK-FF9755D10C40" [ref=f2e466] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e467]
+              - cell "srp 14, 2026 18:00" [ref=f2e468]
+              - cell "SECT1Red 9Mjesto 4" [ref=f2e469]:
+                - text: SECT1
+                - generic [ref=f2e470]: Red 9
+                - generic [ref=f2e471]: Mjesto 4
+              - cell "Sara Jurić" [ref=f2e472]
+              - cell "srp 07, 2026 17:01" [ref=f2e474]
+              - cell "€45,00" [ref=f2e475]
+              - cell [ref=f2e476]
+              - cell [ref=f2e479]:
+                - generic [ref=f2e480]:
+                  - button "👁" [ref=f2e481] [cursor=pointer]
+                  - button "" [ref=f2e483] [cursor=pointer]
+                  - button "" [ref=f2e485] [cursor=pointer]
+            - row [ref=f2e487]:
+              - cell [ref=f2e488]:
+                - button "EXT-TCK-05E28BA72635" [ref=f2e489] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e490]
+              - cell "srp 14, 2026 18:00" [ref=f2e491]
+              - cell "SECT2Red 2Mjesto 20" [ref=f2e492]:
+                - text: SECT2
+                - generic [ref=f2e493]: Red 2
+                - generic [ref=f2e494]: Mjesto 20
+              - cell "Luka Marić" [ref=f2e495]
+              - cell "srp 07, 2026 17:01" [ref=f2e497]
+              - cell "€45,00" [ref=f2e498]
+              - cell [ref=f2e499]
+              - cell [ref=f2e502]:
+                - generic [ref=f2e503]:
+                  - button "👁" [ref=f2e504] [cursor=pointer]
+                  - button "" [ref=f2e506] [cursor=pointer]
+                  - button "" [ref=f2e508] [cursor=pointer]
+            - row [ref=f2e510]:
+              - cell [ref=f2e511]:
+                - button "EXT-TCK-DA71FEED5E7A" [ref=f2e512] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e513]
+              - cell "srp 14, 2026 18:00" [ref=f2e514]
+              - cell "SECT2Red 2Mjesto 19" [ref=f2e515]:
+                - text: SECT2
+                - generic [ref=f2e516]: Red 2
+                - generic [ref=f2e517]: Mjesto 19
+              - cell "Maja Vuković" [ref=f2e518]
+              - cell "srp 07, 2026 17:01" [ref=f2e520]
+              - cell "€45,00" [ref=f2e521]
+              - cell [ref=f2e522]
+              - cell [ref=f2e525]:
+                - generic [ref=f2e526]:
+                  - button "👁" [ref=f2e527] [cursor=pointer]
+                  - button "" [ref=f2e529] [cursor=pointer]
+                  - button "" [ref=f2e531] [cursor=pointer]
+            - row [ref=f2e533]:
+              - cell [ref=f2e534]:
+                - button "EXT-TCK-553109781E71" [ref=f2e535] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e536]
+              - cell "srp 14, 2026 18:00" [ref=f2e537]
+              - cell "SECT1Red 9Mjesto 3" [ref=f2e538]:
+                - text: SECT1
+                - generic [ref=f2e539]: Red 9
+                - generic [ref=f2e540]: Mjesto 3
+              - cell "Ivan Horvat" [ref=f2e541]
+              - cell "srp 07, 2026 17:01" [ref=f2e543]
+              - cell "€45,00" [ref=f2e544]
+              - cell [ref=f2e545]
+              - cell [ref=f2e548]:
+                - generic [ref=f2e549]:
+                  - button "👁" [ref=f2e550] [cursor=pointer]
+                  - button "" [ref=f2e552] [cursor=pointer]
+                  - button "" [ref=f2e554] [cursor=pointer]
+            - row [ref=f2e556]:
+              - cell [ref=f2e557]:
+                - button "EXT-TCK-0EB5F980E63D" [ref=f2e558] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e559]
+              - cell "srp 14, 2026 18:00" [ref=f2e560]
+              - cell "SECT2Red 2Mjesto 18" [ref=f2e561]:
+                - text: SECT2
+                - generic [ref=f2e562]: Red 2
+                - generic [ref=f2e563]: Mjesto 18
+              - cell "Sara Jurić" [ref=f2e564]
+              - cell "srp 07, 2026 17:01" [ref=f2e566]
+              - cell "€45,00" [ref=f2e567]
+              - cell [ref=f2e568]
+              - cell [ref=f2e571]:
+                - generic [ref=f2e572]:
+                  - button "👁" [ref=f2e573] [cursor=pointer]
+                  - button "" [ref=f2e575] [cursor=pointer]
+                  - button "" [ref=f2e577] [cursor=pointer]
+            - row [ref=f2e579]:
+              - cell [ref=f2e580]:
+                - button "EXT-TCK-0BFCC729C826" [ref=f2e581] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e582]
+              - cell "srp 14, 2026 18:00" [ref=f2e583]
+              - cell "SECT1Red 9Mjesto 2" [ref=f2e584]:
+                - text: SECT1
+                - generic [ref=f2e585]: Red 9
+                - generic [ref=f2e586]: Mjesto 2
+              - cell "Maja Vuković" [ref=f2e587]
+              - cell "srp 07, 2026 17:01" [ref=f2e589]
+              - cell "€45,00" [ref=f2e590]
+              - cell [ref=f2e591]
+              - cell [ref=f2e594]:
+                - generic [ref=f2e595]:
+                  - button "👁" [ref=f2e596] [cursor=pointer]
+                  - button "" [ref=f2e598] [cursor=pointer]
+                  - button "" [ref=f2e600] [cursor=pointer]
+            - row [ref=f2e602]:
+              - cell [ref=f2e603]:
+                - button "EXT-TCK-FC44EF12811E" [ref=f2e604] [cursor=pointer]
+              - cell "istra zagreb" [ref=f2e605]
+              - cell "srp 14, 2026 18:00" [ref=f2e606]
+              - cell "SECT2Red 2Mjesto 17" [ref=f2e607]:
+                - text: SECT2
+                - generic [ref=f2e608]: Red 2
+                - generic [ref=f2e609]: Mjesto 17
+              - cell "Ana Babić" [ref=f2e610]
+              - cell "srp 07, 2026 17:01" [ref=f2e612]
+              - cell "€45,00" [ref=f2e613]
+              - cell [ref=f2e614]
+              - cell [ref=f2e617]:
+                - generic [ref=f2e618]:
+                  - button "👁" [ref=f2e619] [cursor=pointer]
+                  - button "" [ref=f2e621] [cursor=pointer]
+                  - button "" [ref=f2e623] [cursor=pointer]
+        - generic [ref=f2e625]:
+          - generic [ref=f2e626]:
+            - paragraph [ref=f2e627]: Prikaz 1 do 20 od 5778
+            - generic [ref=f2e628]:
+              - generic [ref=f2e629]: Prikaži
+              - combobox "Prikaži" [ref=f2e630] [cursor=pointer]:
+                - option "10"
+                - option "20" [selected]
+                - option "50"
+                - option "100"
+          - generic [ref=f2e631]:
+            - button "" [disabled] [ref=f2e632]
+            - button "1" [ref=f2e634] [cursor=pointer]
+            - button "2" [ref=f2e635] [cursor=pointer]
+            - button "3" [ref=f2e636] [cursor=pointer]
+            - button "" [ref=f2e637] [cursor=pointer]

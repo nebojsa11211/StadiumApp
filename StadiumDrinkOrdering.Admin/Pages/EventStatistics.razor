@@ -7,28 +7,26 @@
 
 <div class="console" id="admin-event-stats-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-event-stats-header">
-        <div class="console-head__title">
-            <span class="eyebrow">@L["EventStats_Eyebrow"]</span>
-            <h1 id="admin-event-stats-title">@(stats?.EventName ?? L["EventStats_Title"].Value)</h1>
-            <p id="admin-event-stats-subtitle">
-                @if (stats != null)
-                {
-                    <span class="mono">@stats.EventDate.ToString("MMM dd, yyyy HH:mm")</span>
-                    <span class="text-muted"> · @stats.Status</span>
-                }
-                else
-                {
-                    @L["EventStats_Subtitle"]
-                }
-            </p>
-        </div>
-        <div class="console-head__actions">
+    <PageHeader Id="admin-event-stats-header"
+                Eyebrow='@L["EventStats_Eyebrow"]'
+                Title='@(stats?.EventName ?? L["EventStats_Title"].Value)'>
+        <SubtitleContent>
+            @if (stats != null)
+            {
+                <span class="mono">@stats.EventDate.ToString("MMM dd, yyyy HH:mm")</span>
+                <span class="text-muted"> · @stats.Status</span>
+            }
+            else
+            {
+                @L["EventStats_Subtitle"]
+            }
+        </SubtitleContent>
+        <Actions>
             <a class="pill-btn" href="events" id="admin-event-stats-back-btn">
                 <i class="bi bi-arrow-left"></i><span>@L["EventStats_BackButton"]</span>
             </a>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     @if (stats == null && !loadFailed)
     {
@@ -54,26 +52,29 @@
     else if (stats != null)
     {
         <!-- Headline Metrics -->
-        <section class="metrics metrics--3" id="admin-event-stats-metrics">
+        <section class="metrics" id="admin-event-stats-metrics">
             <article class="metric metric--accent" id="admin-event-stats-metric-revenue">
                 <div class="metric__head">
                     <span class="metric__label">@L["EventStats_TotalRevenueLabel"]</span>
                     <i class="bi bi-cash-stack metric__icon is-ok"></i>
                 </div>
-                <div class="metric__value mono" id="admin-event-stats-metric-revenue-value">$@stats.TotalRevenue.ToString("N2")</div>
+                <div class="metric__value mono" id="admin-event-stats-metric-revenue-value">€@stats.TotalRevenue.ToString("N2")</div>
                 <div class="metric__foot">
                     <span class="metric__hint">@L["EventStats_TotalRevenueHint"]</span>
                 </div>
             </article>
 
-            <article class="metric" id="admin-event-stats-metric-tickets">
+            <article class="metric metric--clickable" id="admin-event-stats-metric-tickets"
+                     role="button" tabindex="0" title="@L["EventStats_ViewTicketsHint"]"
+                     @onclick="ViewTickets"
+                     @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") ViewTickets(); })">
                 <div class="metric__head">
                     <span class="metric__label">@L["EventStats_TicketsSoldLabel"]</span>
                     <i class="bi bi-ticket-perforated metric__icon"></i>
                 </div>
                 <div class="metric__value mono" id="admin-event-stats-metric-tickets-value">@stats.TotalTicketsSold.ToString("N0")</div>
                 <div class="metric__foot">
-                    <span class="metric__hint">@L["EventStats_Of"] @stats.TotalCapacity.ToString("N0") @L["EventStats_SeatsLabel"]</span>
+                    <span class="metric__hint">@L["EventStats_Of"] @stats.TotalCapacity.ToString("N0") @L["EventStats_SeatsLabel"] <i class="bi bi-arrow-right-short"></i></span>
                 </div>
             </article>
 
@@ -89,6 +90,20 @@
                              style="width: @(Math.Min(100, (double)stats.OccupancyPercent).ToString(System.Globalization.CultureInfo.InvariantCulture))%;"
                              aria-valuenow="@stats.OccupancyPercent" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
+                </div>
+            </article>
+
+            <article class="metric metric--clickable" id="admin-event-stats-metric-drinks"
+                     role="button" tabindex="0" title="@L["EventStats_ViewDrinkOrdersHint"]"
+                     @onclick="ViewDrinkOrders"
+                     @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") ViewDrinkOrders(); })">
+                <div class="metric__head">
+                    <span class="metric__label">@L["EventStats_DrinksSoldLabel"]</span>
+                    <i class="bi bi-cup-straw metric__icon"></i>
+                </div>
+                <div class="metric__value mono" id="admin-event-stats-metric-drinks-value">@stats.TotalDrinksSold.ToString("N0")</div>
+                <div class="metric__foot">
+                    <span class="metric__hint">€@stats.DrinksRevenue.ToString("N2") · @stats.TotalOrders.ToString("N0") @L["EventStats_OrdersLabel"] <i class="bi bi-arrow-right-short"></i></span>
                 </div>
             </article>
         </section>
@@ -111,7 +126,7 @@
                             <dt>@L["EventStats_OccupancyLabel"]</dt>
                             <dd class="mono" id="admin-event-stats-ticketing-occupancy">@stats.OccupancyPercent.ToString("0.#")%</dd>
                             <dt>@L["EventStats_TicketRevenueLabel"]</dt>
-                            <dd class="mono" id="admin-event-stats-ticketing-revenue">$@stats.TicketRevenue.ToString("N2")</dd>
+                            <dd class="mono" id="admin-event-stats-ticketing-revenue">€@stats.TicketRevenue.ToString("N2")</dd>
                         </dl>
                     </div>
                 </div>
@@ -130,9 +145,9 @@
                             <dt>@L["EventStats_DrinksSoldLabel"]</dt>
                             <dd class="mono" id="admin-event-stats-drinks-sold">@stats.TotalDrinksSold.ToString("N0")</dd>
                             <dt>@L["EventStats_DrinksRevenueLabel"]</dt>
-                            <dd class="mono" id="admin-event-stats-drinks-revenue">$@stats.DrinksRevenue.ToString("N2")</dd>
+                            <dd class="mono" id="admin-event-stats-drinks-revenue">€@stats.DrinksRevenue.ToString("N2")</dd>
                             <dt>@L["EventStats_AvgOrderValueLabel"]</dt>
-                            <dd class="mono" id="admin-event-stats-drinks-avg">$@stats.AverageOrderValue.ToString("N2")</dd>
+                            <dd class="mono" id="admin-event-stats-drinks-avg">€@stats.AverageOrderValue.ToString("N2")</dd>
                             <dt>@L["EventStats_MostPopularDrinkLabel"]</dt>
                             <dd id="admin-event-stats-drinks-popular">
                                 @if (!string.IsNullOrEmpty(stats.MostPopularDrink))

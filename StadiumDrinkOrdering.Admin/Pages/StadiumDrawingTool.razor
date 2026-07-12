@@ -15,12 +15,10 @@
 <PageTitle>@L["Drawing_PageTitle"]</PageTitle>
 
 <div id="admin-drawing-tool-main-container" class="container-fluid">
-    <div class="row mb-3">
-        <div class="col-12">
-            <h1 id="admin-drawing-tool-title" class="mb-3">@L["Drawing_MainTitle"]</h1>
-            <p class="text-muted">@L["Drawing_Subtitle"]</p>
-        </div>
-    </div>
+    <PageHeader Id="admin-drawing-tool-header"
+                Eyebrow='@L["Drawing_Eyebrow"]'
+                Title='@L["Drawing_MainTitle"]'
+                Subtitle='@L["Drawing_Subtitle"]' />
 
     <div class="row" id="admin-drawing-tool-main-row">
         <!-- Left Sidebar - Tools & Layers -->

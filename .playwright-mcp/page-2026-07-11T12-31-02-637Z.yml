@@ -1,0 +1,703 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e58]:
+    - banner [ref=f1e59]:
+      - button "Back" [ref=f1e60] [cursor=pointer]: ‹
+      - generic [ref=f1e61]:
+        - generic [ref=f1e62]: Istra - Zagreb
+        - generic [ref=f1e63]: Football
+    - generic [ref=f1e64]:
+      - generic [ref=f1e65]:
+        - generic [ref=f1e66]:
+          - generic [ref=f1e67]: "14"
+          - generic [ref=f1e68]: srp
+        - generic [ref=f1e69]:
+          - heading "Istra - Zagreb" [level=1] [ref=f1e70]
+          - generic [ref=f1e71]: za 3 dana · 20:00
+          - generic [ref=f1e72]:
+            - generic [ref=f1e73]: 🏟️ Stadion Maksimir, Zagreb
+            - generic [ref=f1e74]: 🪑 183 slobodno
+      - paragraph [ref=f1e75]: Simulated event
+      - generic [ref=f1e77]:
+        - generic [ref=f1e78]: Standard
+        - generic [ref=f1e79]: €45
+      - generic [ref=f1e80]:
+        - generic [ref=f1e81]: Odaberi tribinu
+        - generic [ref=f1e82]: Dodirni tribinu na karti ili u popisu
+      - generic [ref=f1e86]:
+        - button "Jug1 147 / 200 slobodno €45›" [ref=f1e87] [cursor=pointer]:
+          - generic [ref=f1e88]:
+            - generic [ref=f1e89]: Jug1
+            - generic [ref=f1e90]: 147 / 200 slobodno
+          - generic [ref=f1e92]:
+            - generic [ref=f1e93]: €45
+            - generic [ref=f1e94]: ›
+        - button "Sjever1 36 / 200 slobodno €45›" [ref=f1e95] [cursor=pointer]:
+          - generic [ref=f1e96]:
+            - generic [ref=f1e97]: Sjever1
+            - generic [ref=f1e98]: 36 / 200 slobodno
+          - generic [ref=f1e100]:
+            - generic [ref=f1e101]: €45
+            - generic [ref=f1e102]: ›
+    - generic [ref=f1e104] [cursor=pointer]:
+      - generic [ref=f1e105]:
+        - generic [ref=f1e106]: "0"
+        - generic [ref=f1e107]: Tvoja košarica
+      - generic [ref=f1e108]: €0,00 ›
+    - generic [ref=f1e110]:
+      - generic [ref=f1e112]:
+        - generic [ref=f1e113]:
+          - generic [ref=f1e114]: Sjever1
+          - generic [ref=f1e115]: SECT1
+        - button "Zatvori" [ref=f1e116] [cursor=pointer]: ✕
+      - generic [ref=f1e117]:
+        - generic [ref=f1e118]: Slobodno
+        - generic [ref=f1e120]: Odabrano
+        - generic [ref=f1e122]: Zauzeto
+      - generic [ref=f1e124]: ⚽ Teren
+      - group "Raspored mjesta u tribini" [ref=f1e128]:
+        - generic [ref=f1e129]:
+          - generic [ref=f1e130]: Red 1
+          - generic [ref=f1e131]:
+            - generic [ref=f1e132]:
+              - button "Red 1, mjesto 1 — zauzeto" [disabled] [ref=f1e133]: "1"
+              - button "Prikaži mjesto 1, red 1 na karti stadiona" [ref=f1e134] [cursor=pointer]: 📍
+            - generic [ref=f1e135]:
+              - button "Red 1, mjesto 2 — zauzeto" [disabled] [ref=f1e136]: "2"
+              - button "Prikaži mjesto 2, red 1 na karti stadiona" [ref=f1e137] [cursor=pointer]: 📍
+            - generic [ref=f1e138]:
+              - button "Red 1, mjesto 3 — zauzeto" [disabled] [ref=f1e139]: "3"
+              - button "Prikaži mjesto 3, red 1 na karti stadiona" [ref=f1e140] [cursor=pointer]: 📍
+            - generic [ref=f1e141]:
+              - button "Red 1, mjesto 4 — zauzeto" [disabled] [ref=f1e142]: "4"
+              - button "Prikaži mjesto 4, red 1 na karti stadiona" [ref=f1e143] [cursor=pointer]: 📍
+            - generic [ref=f1e144]:
+              - button "Red 1, mjesto 5 — zauzeto" [disabled] [ref=f1e145]: "5"
+              - button "Prikaži mjesto 5, red 1 na karti stadiona" [ref=f1e146] [cursor=pointer]: 📍
+            - generic [ref=f1e147]:
+              - button "Red 1, mjesto 6 — zauzeto" [disabled] [ref=f1e148]: "6"
+              - button "Prikaži mjesto 6, red 1 na karti stadiona" [ref=f1e149] [cursor=pointer]: 📍
+            - generic [ref=f1e150]:
+              - button "Red 1, mjesto 7 — zauzeto" [disabled] [ref=f1e151]: "7"
+              - button "Prikaži mjesto 7, red 1 na karti stadiona" [ref=f1e152] [cursor=pointer]: 📍
+            - generic [ref=f1e153]:
+              - button "Red 1, mjesto 8 — zauzeto" [disabled] [ref=f1e154]: "8"
+              - button "Prikaži mjesto 8, red 1 na karti stadiona" [ref=f1e155] [cursor=pointer]: 📍
+            - generic [ref=f1e156]:
+              - button "Red 1, mjesto 9 — zauzeto" [disabled] [ref=f1e157]: "9"
+              - button "Prikaži mjesto 9, red 1 na karti stadiona" [ref=f1e158] [cursor=pointer]: 📍
+            - generic [ref=f1e159]:
+              - button "Red 1, mjesto 10 — zauzeto" [disabled] [ref=f1e160]: "10"
+              - button "Prikaži mjesto 10, red 1 na karti stadiona" [ref=f1e161] [cursor=pointer]: 📍
+            - generic [ref=f1e162]:
+              - button "Red 1, mjesto 11 — zauzeto" [disabled] [ref=f1e163]: "11"
+              - button "Prikaži mjesto 11, red 1 na karti stadiona" [ref=f1e164] [cursor=pointer]: 📍
+            - generic [ref=f1e165]:
+              - button "Red 1, mjesto 12 — zauzeto" [disabled] [ref=f1e166]: "12"
+              - button "Prikaži mjesto 12, red 1 na karti stadiona" [ref=f1e167] [cursor=pointer]: 📍
+            - generic [ref=f1e168]:
+              - button "Red 1, mjesto 13 — zauzeto" [disabled] [ref=f1e169]: "13"
+              - button "Prikaži mjesto 13, red 1 na karti stadiona" [ref=f1e170] [cursor=pointer]: 📍
+            - generic [ref=f1e171]:
+              - button "Red 1, mjesto 14 — zauzeto" [disabled] [ref=f1e172]: "14"
+              - button "Prikaži mjesto 14, red 1 na karti stadiona" [ref=f1e173] [cursor=pointer]: 📍
+            - generic [ref=f1e174]:
+              - button "Red 1, mjesto 15 — zauzeto" [disabled] [ref=f1e175]: "15"
+              - button "Prikaži mjesto 15, red 1 na karti stadiona" [ref=f1e176] [cursor=pointer]: 📍
+            - generic [ref=f1e177]:
+              - button "Red 1, mjesto 16 — zauzeto" [disabled] [ref=f1e178]: "16"
+              - button "Prikaži mjesto 16, red 1 na karti stadiona" [ref=f1e179] [cursor=pointer]: 📍
+            - generic [ref=f1e180]:
+              - button "Red 1, mjesto 17 — zauzeto" [disabled] [ref=f1e181]: "17"
+              - button "Prikaži mjesto 17, red 1 na karti stadiona" [ref=f1e182] [cursor=pointer]: 📍
+            - generic [ref=f1e183]:
+              - button "Red 1, mjesto 18 — zauzeto" [disabled] [ref=f1e184]: "18"
+              - button "Prikaži mjesto 18, red 1 na karti stadiona" [ref=f1e185] [cursor=pointer]: 📍
+            - generic [ref=f1e186]:
+              - button "Red 1, mjesto 19 — zauzeto" [disabled] [ref=f1e187]: "19"
+              - button "Prikaži mjesto 19, red 1 na karti stadiona" [ref=f1e188] [cursor=pointer]: 📍
+            - generic [ref=f1e189]:
+              - button "Red 1, mjesto 20 — zauzeto" [disabled] [ref=f1e190]: "20"
+              - button "Prikaži mjesto 20, red 1 na karti stadiona" [ref=f1e191] [cursor=pointer]: 📍
+        - generic [ref=f1e192]:
+          - generic [ref=f1e193]: Red 2
+          - generic [ref=f1e194]:
+            - generic [ref=f1e195]:
+              - button "Red 2, mjesto 1 — zauzeto" [disabled] [ref=f1e196]: "1"
+              - button "Prikaži mjesto 1, red 2 na karti stadiona" [ref=f1e197] [cursor=pointer]: 📍
+            - generic [ref=f1e198]:
+              - button "Red 2, mjesto 2 — zauzeto" [disabled] [ref=f1e199]: "2"
+              - button "Prikaži mjesto 2, red 2 na karti stadiona" [ref=f1e200] [cursor=pointer]: 📍
+            - generic [ref=f1e201]:
+              - button "Red 2, mjesto 3 — zauzeto" [disabled] [ref=f1e202]: "3"
+              - button "Prikaži mjesto 3, red 2 na karti stadiona" [ref=f1e203] [cursor=pointer]: 📍
+            - generic [ref=f1e204]:
+              - button "Red 2, mjesto 4 — zauzeto" [disabled] [ref=f1e205]: "4"
+              - button "Prikaži mjesto 4, red 2 na karti stadiona" [ref=f1e206] [cursor=pointer]: 📍
+            - generic [ref=f1e207]:
+              - button "Red 2, mjesto 5 — zauzeto" [disabled] [ref=f1e208]: "5"
+              - button "Prikaži mjesto 5, red 2 na karti stadiona" [ref=f1e209] [cursor=pointer]: 📍
+            - generic [ref=f1e210]:
+              - button "Red 2, mjesto 6 — zauzeto" [disabled] [ref=f1e211]: "6"
+              - button "Prikaži mjesto 6, red 2 na karti stadiona" [ref=f1e212] [cursor=pointer]: 📍
+            - generic [ref=f1e213]:
+              - button "Red 2, mjesto 7 — zauzeto" [disabled] [ref=f1e214]: "7"
+              - button "Prikaži mjesto 7, red 2 na karti stadiona" [ref=f1e215] [cursor=pointer]: 📍
+            - generic [ref=f1e216]:
+              - button "Red 2, mjesto 8 — zauzeto" [disabled] [ref=f1e217]: "8"
+              - button "Prikaži mjesto 8, red 2 na karti stadiona" [ref=f1e218] [cursor=pointer]: 📍
+            - generic [ref=f1e219]:
+              - button "Red 2, mjesto 9 — zauzeto" [disabled] [ref=f1e220]: "9"
+              - button "Prikaži mjesto 9, red 2 na karti stadiona" [ref=f1e221] [cursor=pointer]: 📍
+            - generic [ref=f1e222]:
+              - button "Red 2, mjesto 10 — zauzeto" [disabled] [ref=f1e223]: "10"
+              - button "Prikaži mjesto 10, red 2 na karti stadiona" [ref=f1e224] [cursor=pointer]: 📍
+            - generic [ref=f1e225]:
+              - button "Red 2, mjesto 11 — zauzeto" [disabled] [ref=f1e226]: "11"
+              - button "Prikaži mjesto 11, red 2 na karti stadiona" [ref=f1e227] [cursor=pointer]: 📍
+            - generic [ref=f1e228]:
+              - button "Red 2, mjesto 12 — zauzeto" [disabled] [ref=f1e229]: "12"
+              - button "Prikaži mjesto 12, red 2 na karti stadiona" [ref=f1e230] [cursor=pointer]: 📍
+            - generic [ref=f1e231]:
+              - button "Red 2, mjesto 13 — zauzeto" [disabled] [ref=f1e232]: "13"
+              - button "Prikaži mjesto 13, red 2 na karti stadiona" [ref=f1e233] [cursor=pointer]: 📍
+            - generic [ref=f1e234]:
+              - button "Red 2, mjesto 14 — zauzeto" [disabled] [ref=f1e235]: "14"
+              - button "Prikaži mjesto 14, red 2 na karti stadiona" [ref=f1e236] [cursor=pointer]: 📍
+            - generic [ref=f1e237]:
+              - button "Red 2, mjesto 15 — zauzeto" [disabled] [ref=f1e238]: "15"
+              - button "Prikaži mjesto 15, red 2 na karti stadiona" [ref=f1e239] [cursor=pointer]: 📍
+            - generic [ref=f1e240]:
+              - button "Red 2, mjesto 16 — zauzeto" [disabled] [ref=f1e241]: "16"
+              - button "Prikaži mjesto 16, red 2 na karti stadiona" [ref=f1e242] [cursor=pointer]: 📍
+            - generic [ref=f1e243]:
+              - button "Red 2, mjesto 17 — zauzeto" [disabled] [ref=f1e244]: "17"
+              - button "Prikaži mjesto 17, red 2 na karti stadiona" [ref=f1e245] [cursor=pointer]: 📍
+            - generic [ref=f1e246]:
+              - button "Red 2, mjesto 18 — zauzeto" [disabled] [ref=f1e247]: "18"
+              - button "Prikaži mjesto 18, red 2 na karti stadiona" [ref=f1e248] [cursor=pointer]: 📍
+            - generic [ref=f1e249]:
+              - button "Red 2, mjesto 19 — zauzeto" [disabled] [ref=f1e250]: "19"
+              - button "Prikaži mjesto 19, red 2 na karti stadiona" [ref=f1e251] [cursor=pointer]: 📍
+            - generic [ref=f1e252]:
+              - button "Red 2, mjesto 20 — zauzeto" [disabled] [ref=f1e253]: "20"
+              - button "Prikaži mjesto 20, red 2 na karti stadiona" [ref=f1e254] [cursor=pointer]: 📍
+        - generic [ref=f1e255]:
+          - generic [ref=f1e256]: Red 3
+          - generic [ref=f1e257]:
+            - generic [ref=f1e258]:
+              - button "Red 3, mjesto 1 — zauzeto" [disabled] [ref=f1e259]: "1"
+              - button "Prikaži mjesto 1, red 3 na karti stadiona" [ref=f1e260] [cursor=pointer]: 📍
+            - generic [ref=f1e261]:
+              - button "Red 3, mjesto 2 — zauzeto" [disabled] [ref=f1e262]: "2"
+              - button "Prikaži mjesto 2, red 3 na karti stadiona" [ref=f1e263] [cursor=pointer]: 📍
+            - generic [ref=f1e264]:
+              - button "Red 3, mjesto 3 — zauzeto" [disabled] [ref=f1e265]: "3"
+              - button "Prikaži mjesto 3, red 3 na karti stadiona" [ref=f1e266] [cursor=pointer]: 📍
+            - generic [ref=f1e267]:
+              - button "Red 3, mjesto 4 — zauzeto" [disabled] [ref=f1e268]: "4"
+              - button "Prikaži mjesto 4, red 3 na karti stadiona" [ref=f1e269] [cursor=pointer]: 📍
+            - generic [ref=f1e270]:
+              - button "Red 3, mjesto 5 — zauzeto" [disabled] [ref=f1e271]: "5"
+              - button "Prikaži mjesto 5, red 3 na karti stadiona" [active] [ref=f1e272] [cursor=pointer]: 📍
+            - generic [ref=f1e273]:
+              - button "Red 3, mjesto 6 — zauzeto" [disabled] [ref=f1e274]: "6"
+              - button "Prikaži mjesto 6, red 3 na karti stadiona" [ref=f1e275] [cursor=pointer]: 📍
+            - generic [ref=f1e276]:
+              - button "Red 3, mjesto 7 — zauzeto" [disabled] [ref=f1e277]: "7"
+              - button "Prikaži mjesto 7, red 3 na karti stadiona" [ref=f1e278] [cursor=pointer]: 📍
+            - generic [ref=f1e279]:
+              - button "Red 3, mjesto 8 — zauzeto" [disabled] [ref=f1e280]: "8"
+              - button "Prikaži mjesto 8, red 3 na karti stadiona" [ref=f1e281] [cursor=pointer]: 📍
+            - generic [ref=f1e282]:
+              - button "Red 3, mjesto 9 — zauzeto" [disabled] [ref=f1e283]: "9"
+              - button "Prikaži mjesto 9, red 3 na karti stadiona" [ref=f1e284] [cursor=pointer]: 📍
+            - generic [ref=f1e285]:
+              - button "Red 3, mjesto 10 — zauzeto" [disabled] [ref=f1e286]: "10"
+              - button "Prikaži mjesto 10, red 3 na karti stadiona" [ref=f1e287] [cursor=pointer]: 📍
+            - generic [ref=f1e288]:
+              - button "Red 3, mjesto 11 — zauzeto" [disabled] [ref=f1e289]: "11"
+              - button "Prikaži mjesto 11, red 3 na karti stadiona" [ref=f1e290] [cursor=pointer]: 📍
+            - generic [ref=f1e291]:
+              - button "Red 3, mjesto 12 — zauzeto" [disabled] [ref=f1e292]: "12"
+              - button "Prikaži mjesto 12, red 3 na karti stadiona" [ref=f1e293] [cursor=pointer]: 📍
+            - generic [ref=f1e294]:
+              - button "Red 3, mjesto 13 — zauzeto" [disabled] [ref=f1e295]: "13"
+              - button "Prikaži mjesto 13, red 3 na karti stadiona" [ref=f1e296] [cursor=pointer]: 📍
+            - generic [ref=f1e297]:
+              - button "Red 3, mjesto 14 — zauzeto" [disabled] [ref=f1e298]: "14"
+              - button "Prikaži mjesto 14, red 3 na karti stadiona" [ref=f1e299] [cursor=pointer]: 📍
+            - generic [ref=f1e300]:
+              - button "Red 3, mjesto 15 — zauzeto" [disabled] [ref=f1e301]: "15"
+              - button "Prikaži mjesto 15, red 3 na karti stadiona" [ref=f1e302] [cursor=pointer]: 📍
+            - generic [ref=f1e303]:
+              - button "Red 3, mjesto 16 — zauzeto" [disabled] [ref=f1e304]: "16"
+              - button "Prikaži mjesto 16, red 3 na karti stadiona" [ref=f1e305] [cursor=pointer]: 📍
+            - generic [ref=f1e306]:
+              - button "Red 3, mjesto 17 — zauzeto" [disabled] [ref=f1e307]: "17"
+              - button "Prikaži mjesto 17, red 3 na karti stadiona" [ref=f1e308] [cursor=pointer]: 📍
+            - generic [ref=f1e309]:
+              - button "Red 3, mjesto 18 — zauzeto" [disabled] [ref=f1e310]: "18"
+              - button "Prikaži mjesto 18, red 3 na karti stadiona" [ref=f1e311] [cursor=pointer]: 📍
+            - generic [ref=f1e312]:
+              - button "Red 3, mjesto 19 — zauzeto" [disabled] [ref=f1e313]: "19"
+              - button "Prikaži mjesto 19, red 3 na karti stadiona" [ref=f1e314] [cursor=pointer]: 📍
+            - generic [ref=f1e315]:
+              - button "Red 3, mjesto 20 — zauzeto" [disabled] [ref=f1e316]: "20"
+              - button "Prikaži mjesto 20, red 3 na karti stadiona" [ref=f1e317] [cursor=pointer]: 📍
+        - generic [ref=f1e318]:
+          - generic [ref=f1e319]: Red 4
+          - generic [ref=f1e320]:
+            - generic [ref=f1e321]:
+              - button "Red 4, mjesto 1 — zauzeto" [disabled] [ref=f1e322]: "1"
+              - button "Prikaži mjesto 1, red 4 na karti stadiona" [ref=f1e323] [cursor=pointer]: 📍
+            - generic [ref=f1e324]:
+              - button "Red 4, mjesto 2 — zauzeto" [disabled] [ref=f1e325]: "2"
+              - button "Prikaži mjesto 2, red 4 na karti stadiona" [ref=f1e326] [cursor=pointer]: 📍
+            - generic [ref=f1e327]:
+              - button "Red 4, mjesto 3 — zauzeto" [disabled] [ref=f1e328]: "3"
+              - button "Prikaži mjesto 3, red 4 na karti stadiona" [ref=f1e329] [cursor=pointer]: 📍
+            - generic [ref=f1e330]:
+              - button "Red 4, mjesto 4 — zauzeto" [disabled] [ref=f1e331]: "4"
+              - button "Prikaži mjesto 4, red 4 na karti stadiona" [ref=f1e332] [cursor=pointer]: 📍
+            - generic [ref=f1e333]:
+              - button "Red 4, mjesto 5 — zauzeto" [disabled] [ref=f1e334]: "5"
+              - button "Prikaži mjesto 5, red 4 na karti stadiona" [ref=f1e335] [cursor=pointer]: 📍
+            - generic [ref=f1e336]:
+              - button "Red 4, mjesto 6 — zauzeto" [disabled] [ref=f1e337]: "6"
+              - button "Prikaži mjesto 6, red 4 na karti stadiona" [ref=f1e338] [cursor=pointer]: 📍
+            - generic [ref=f1e339]:
+              - button "Red 4, mjesto 7 — zauzeto" [disabled] [ref=f1e340]: "7"
+              - button "Prikaži mjesto 7, red 4 na karti stadiona" [ref=f1e341] [cursor=pointer]: 📍
+            - generic [ref=f1e342]:
+              - button "Red 4, mjesto 8 — zauzeto" [disabled] [ref=f1e343]: "8"
+              - button "Prikaži mjesto 8, red 4 na karti stadiona" [ref=f1e344] [cursor=pointer]: 📍
+            - generic [ref=f1e345]:
+              - button "Red 4, mjesto 9 — zauzeto" [disabled] [ref=f1e346]: "9"
+              - button "Prikaži mjesto 9, red 4 na karti stadiona" [ref=f1e347] [cursor=pointer]: 📍
+            - generic [ref=f1e348]:
+              - button "Red 4, mjesto 10 — zauzeto" [disabled] [ref=f1e349]: "10"
+              - button "Prikaži mjesto 10, red 4 na karti stadiona" [ref=f1e350] [cursor=pointer]: 📍
+            - generic [ref=f1e351]:
+              - button "Red 4, mjesto 11 — zauzeto" [disabled] [ref=f1e352]: "11"
+              - button "Prikaži mjesto 11, red 4 na karti stadiona" [ref=f1e353] [cursor=pointer]: 📍
+            - generic [ref=f1e354]:
+              - button "Red 4, mjesto 12 — zauzeto" [disabled] [ref=f1e355]: "12"
+              - button "Prikaži mjesto 12, red 4 na karti stadiona" [ref=f1e356] [cursor=pointer]: 📍
+            - generic [ref=f1e357]:
+              - button "Red 4, mjesto 13 — zauzeto" [disabled] [ref=f1e358]: "13"
+              - button "Prikaži mjesto 13, red 4 na karti stadiona" [ref=f1e359] [cursor=pointer]: 📍
+            - generic [ref=f1e360]:
+              - button "Red 4, mjesto 14 — zauzeto" [disabled] [ref=f1e361]: "14"
+              - button "Prikaži mjesto 14, red 4 na karti stadiona" [ref=f1e362] [cursor=pointer]: 📍
+            - generic [ref=f1e363]:
+              - button "Red 4, mjesto 15 — zauzeto" [disabled] [ref=f1e364]: "15"
+              - button "Prikaži mjesto 15, red 4 na karti stadiona" [ref=f1e365] [cursor=pointer]: 📍
+            - generic [ref=f1e366]:
+              - button "Red 4, mjesto 16 — zauzeto" [disabled] [ref=f1e367]: "16"
+              - button "Prikaži mjesto 16, red 4 na karti stadiona" [ref=f1e368] [cursor=pointer]: 📍
+            - generic [ref=f1e369]:
+              - button "Red 4, mjesto 17 — zauzeto" [disabled] [ref=f1e370]: "17"
+              - button "Prikaži mjesto 17, red 4 na karti stadiona" [ref=f1e371] [cursor=pointer]: 📍
+            - generic [ref=f1e372]:
+              - button "Red 4, mjesto 18 — zauzeto" [disabled] [ref=f1e373]: "18"
+              - button "Prikaži mjesto 18, red 4 na karti stadiona" [ref=f1e374] [cursor=pointer]: 📍
+            - generic [ref=f1e375]:
+              - button "Red 4, mjesto 19 — zauzeto" [disabled] [ref=f1e376]: "19"
+              - button "Prikaži mjesto 19, red 4 na karti stadiona" [ref=f1e377] [cursor=pointer]: 📍
+            - generic [ref=f1e378]:
+              - button "Red 4, mjesto 20 — zauzeto" [disabled] [ref=f1e379]: "20"
+              - button "Prikaži mjesto 20, red 4 na karti stadiona" [ref=f1e380] [cursor=pointer]: 📍
+        - generic [ref=f1e381]:
+          - generic [ref=f1e382]: Red 5
+          - generic [ref=f1e383]:
+            - generic [ref=f1e384]:
+              - button "Red 5, mjesto 1 — zauzeto" [disabled] [ref=f1e385]: "1"
+              - button "Prikaži mjesto 1, red 5 na karti stadiona" [ref=f1e386] [cursor=pointer]: 📍
+            - generic [ref=f1e387]:
+              - button "Red 5, mjesto 2 — zauzeto" [disabled] [ref=f1e388]: "2"
+              - button "Prikaži mjesto 2, red 5 na karti stadiona" [ref=f1e389] [cursor=pointer]: 📍
+            - generic [ref=f1e390]:
+              - button "Red 5, mjesto 3 — zauzeto" [disabled] [ref=f1e391]: "3"
+              - button "Prikaži mjesto 3, red 5 na karti stadiona" [ref=f1e392] [cursor=pointer]: 📍
+            - generic [ref=f1e393]:
+              - button "Red 5, mjesto 4 — zauzeto" [disabled] [ref=f1e394]: "4"
+              - button "Prikaži mjesto 4, red 5 na karti stadiona" [ref=f1e395] [cursor=pointer]: 📍
+            - generic [ref=f1e396]:
+              - button "Red 5, mjesto 5 — zauzeto" [disabled] [ref=f1e397]: "5"
+              - button "Prikaži mjesto 5, red 5 na karti stadiona" [ref=f1e398] [cursor=pointer]: 📍
+            - generic [ref=f1e399]:
+              - button "Red 5, mjesto 6 — zauzeto" [disabled] [ref=f1e400]: "6"
+              - button "Prikaži mjesto 6, red 5 na karti stadiona" [ref=f1e401] [cursor=pointer]: 📍
+            - generic [ref=f1e402]:
+              - button "Red 5, mjesto 7 — zauzeto" [disabled] [ref=f1e403]: "7"
+              - button "Prikaži mjesto 7, red 5 na karti stadiona" [ref=f1e404] [cursor=pointer]: 📍
+            - generic [ref=f1e405]:
+              - button "Red 5, mjesto 8 — zauzeto" [disabled] [ref=f1e406]: "8"
+              - button "Prikaži mjesto 8, red 5 na karti stadiona" [ref=f1e407] [cursor=pointer]: 📍
+            - generic [ref=f1e408]:
+              - button "Red 5, mjesto 9 — zauzeto" [disabled] [ref=f1e409]: "9"
+              - button "Prikaži mjesto 9, red 5 na karti stadiona" [ref=f1e410] [cursor=pointer]: 📍
+            - generic [ref=f1e411]:
+              - button "Red 5, mjesto 10 — zauzeto" [disabled] [ref=f1e412]: "10"
+              - button "Prikaži mjesto 10, red 5 na karti stadiona" [ref=f1e413] [cursor=pointer]: 📍
+            - generic [ref=f1e414]:
+              - button "Red 5, mjesto 11 — zauzeto" [disabled] [ref=f1e415]: "11"
+              - button "Prikaži mjesto 11, red 5 na karti stadiona" [ref=f1e416] [cursor=pointer]: 📍
+            - generic [ref=f1e417]:
+              - button "Red 5, mjesto 12 — zauzeto" [disabled] [ref=f1e418]: "12"
+              - button "Prikaži mjesto 12, red 5 na karti stadiona" [ref=f1e419] [cursor=pointer]: 📍
+            - generic [ref=f1e420]:
+              - button "Red 5, mjesto 13 — zauzeto" [disabled] [ref=f1e421]: "13"
+              - button "Prikaži mjesto 13, red 5 na karti stadiona" [ref=f1e422] [cursor=pointer]: 📍
+            - generic [ref=f1e423]:
+              - button "Red 5, mjesto 14 — zauzeto" [disabled] [ref=f1e424]: "14"
+              - button "Prikaži mjesto 14, red 5 na karti stadiona" [ref=f1e425] [cursor=pointer]: 📍
+            - generic [ref=f1e426]:
+              - button "Red 5, mjesto 15 — zauzeto" [disabled] [ref=f1e427]: "15"
+              - button "Prikaži mjesto 15, red 5 na karti stadiona" [ref=f1e428] [cursor=pointer]: 📍
+            - generic [ref=f1e429]:
+              - button "Red 5, mjesto 16 — zauzeto" [disabled] [ref=f1e430]: "16"
+              - button "Prikaži mjesto 16, red 5 na karti stadiona" [ref=f1e431] [cursor=pointer]: 📍
+            - generic [ref=f1e432]:
+              - button "Red 5, mjesto 17 — zauzeto" [disabled] [ref=f1e433]: "17"
+              - button "Prikaži mjesto 17, red 5 na karti stadiona" [ref=f1e434] [cursor=pointer]: 📍
+            - generic [ref=f1e435]:
+              - button "Red 5, mjesto 18 — zauzeto" [disabled] [ref=f1e436]: "18"
+              - button "Prikaži mjesto 18, red 5 na karti stadiona" [ref=f1e437] [cursor=pointer]: 📍
+            - generic [ref=f1e438]:
+              - button "Red 5, mjesto 19 — zauzeto" [disabled] [ref=f1e439]: "19"
+              - button "Prikaži mjesto 19, red 5 na karti stadiona" [ref=f1e440] [cursor=pointer]: 📍
+            - generic [ref=f1e441]:
+              - button "Red 5, mjesto 20 — zauzeto" [disabled] [ref=f1e442]: "20"
+              - button "Prikaži mjesto 20, red 5 na karti stadiona" [ref=f1e443] [cursor=pointer]: 📍
+        - generic [ref=f1e444]:
+          - generic [ref=f1e445]: Red 6
+          - generic [ref=f1e446]:
+            - generic [ref=f1e447]:
+              - button "Red 6, mjesto 1 — zauzeto" [disabled] [ref=f1e448]: "1"
+              - button "Prikaži mjesto 1, red 6 na karti stadiona" [ref=f1e449] [cursor=pointer]: 📍
+            - generic [ref=f1e450]:
+              - button "Red 6, mjesto 2 — zauzeto" [disabled] [ref=f1e451]: "2"
+              - button "Prikaži mjesto 2, red 6 na karti stadiona" [ref=f1e452] [cursor=pointer]: 📍
+            - generic [ref=f1e453]:
+              - button "Red 6, mjesto 3 — zauzeto" [disabled] [ref=f1e454]: "3"
+              - button "Prikaži mjesto 3, red 6 na karti stadiona" [ref=f1e455] [cursor=pointer]: 📍
+            - generic [ref=f1e456]:
+              - button "Red 6, mjesto 4 — zauzeto" [disabled] [ref=f1e457]: "4"
+              - button "Prikaži mjesto 4, red 6 na karti stadiona" [ref=f1e458] [cursor=pointer]: 📍
+            - generic [ref=f1e459]:
+              - button "Red 6, mjesto 5 — zauzeto" [disabled] [ref=f1e460]: "5"
+              - button "Prikaži mjesto 5, red 6 na karti stadiona" [ref=f1e461] [cursor=pointer]: 📍
+            - generic [ref=f1e462]:
+              - button "Red 6, mjesto 6 — zauzeto" [disabled] [ref=f1e463]: "6"
+              - button "Prikaži mjesto 6, red 6 na karti stadiona" [ref=f1e464] [cursor=pointer]: 📍
+            - generic [ref=f1e465]:
+              - button "Red 6, mjesto 7 — zauzeto" [disabled] [ref=f1e466]: "7"
+              - button "Prikaži mjesto 7, red 6 na karti stadiona" [ref=f1e467] [cursor=pointer]: 📍
+            - generic [ref=f1e468]:
+              - button "Red 6, mjesto 8 — zauzeto" [disabled] [ref=f1e469]: "8"
+              - button "Prikaži mjesto 8, red 6 na karti stadiona" [ref=f1e470] [cursor=pointer]: 📍
+            - generic [ref=f1e471]:
+              - button "Red 6, mjesto 9 — zauzeto" [disabled] [ref=f1e472]: "9"
+              - button "Prikaži mjesto 9, red 6 na karti stadiona" [ref=f1e473] [cursor=pointer]: 📍
+            - generic [ref=f1e474]:
+              - button "Red 6, mjesto 10 — zauzeto" [disabled] [ref=f1e475]: "10"
+              - button "Prikaži mjesto 10, red 6 na karti stadiona" [ref=f1e476] [cursor=pointer]: 📍
+            - generic [ref=f1e477]:
+              - button "Red 6, mjesto 11 — zauzeto" [disabled] [ref=f1e478]: "11"
+              - button "Prikaži mjesto 11, red 6 na karti stadiona" [ref=f1e479] [cursor=pointer]: 📍
+            - generic [ref=f1e480]:
+              - button "Red 6, mjesto 12 — zauzeto" [disabled] [ref=f1e481]: "12"
+              - button "Prikaži mjesto 12, red 6 na karti stadiona" [ref=f1e482] [cursor=pointer]: 📍
+            - generic [ref=f1e483]:
+              - button "Red 6, mjesto 13 — zauzeto" [disabled] [ref=f1e484]: "13"
+              - button "Prikaži mjesto 13, red 6 na karti stadiona" [ref=f1e485] [cursor=pointer]: 📍
+            - generic [ref=f1e486]:
+              - button "Red 6, mjesto 14 — zauzeto" [disabled] [ref=f1e487]: "14"
+              - button "Prikaži mjesto 14, red 6 na karti stadiona" [ref=f1e488] [cursor=pointer]: 📍
+            - generic [ref=f1e489]:
+              - button "Red 6, mjesto 15 — zauzeto" [disabled] [ref=f1e490]: "15"
+              - button "Prikaži mjesto 15, red 6 na karti stadiona" [ref=f1e491] [cursor=pointer]: 📍
+            - generic [ref=f1e492]:
+              - button "Red 6, mjesto 16 — zauzeto" [disabled] [ref=f1e493]: "16"
+              - button "Prikaži mjesto 16, red 6 na karti stadiona" [ref=f1e494] [cursor=pointer]: 📍
+            - generic [ref=f1e495]:
+              - button "Red 6, mjesto 17 — zauzeto" [disabled] [ref=f1e496]: "17"
+              - button "Prikaži mjesto 17, red 6 na karti stadiona" [ref=f1e497] [cursor=pointer]: 📍
+            - generic [ref=f1e498]:
+              - button "Red 6, mjesto 18 — zauzeto" [disabled] [ref=f1e499]: "18"
+              - button "Prikaži mjesto 18, red 6 na karti stadiona" [ref=f1e500] [cursor=pointer]: 📍
+            - generic [ref=f1e501]:
+              - button "Red 6, mjesto 19 — zauzeto" [disabled] [ref=f1e502]: "19"
+              - button "Prikaži mjesto 19, red 6 na karti stadiona" [ref=f1e503] [cursor=pointer]: 📍
+            - generic [ref=f1e504]:
+              - button "Red 6, mjesto 20 — zauzeto" [disabled] [ref=f1e505]: "20"
+              - button "Prikaži mjesto 20, red 6 na karti stadiona" [ref=f1e506] [cursor=pointer]: 📍
+        - generic [ref=f1e507]:
+          - generic [ref=f1e508]: Red 7
+          - generic [ref=f1e509]:
+            - generic [ref=f1e510]:
+              - button "Red 7, mjesto 1 — zauzeto" [disabled] [ref=f1e511]: "1"
+              - button "Prikaži mjesto 1, red 7 na karti stadiona" [ref=f1e512] [cursor=pointer]: 📍
+            - generic [ref=f1e513]:
+              - button "Red 7, mjesto 2 — zauzeto" [disabled] [ref=f1e514]: "2"
+              - button "Prikaži mjesto 2, red 7 na karti stadiona" [ref=f1e515] [cursor=pointer]: 📍
+            - generic [ref=f1e516]:
+              - button "Red 7, mjesto 3 — zauzeto" [disabled] [ref=f1e517]: "3"
+              - button "Prikaži mjesto 3, red 7 na karti stadiona" [ref=f1e518] [cursor=pointer]: 📍
+            - generic [ref=f1e519]:
+              - button "Red 7, mjesto 4 — zauzeto" [disabled] [ref=f1e520]: "4"
+              - button "Prikaži mjesto 4, red 7 na karti stadiona" [ref=f1e521] [cursor=pointer]: 📍
+            - generic [ref=f1e522]:
+              - button "Red 7, mjesto 5 — zauzeto" [disabled] [ref=f1e523]: "5"
+              - button "Prikaži mjesto 5, red 7 na karti stadiona" [ref=f1e524] [cursor=pointer]: 📍
+            - generic [ref=f1e525]:
+              - button "Red 7, mjesto 6 — zauzeto" [disabled] [ref=f1e526]: "6"
+              - button "Prikaži mjesto 6, red 7 na karti stadiona" [ref=f1e527] [cursor=pointer]: 📍
+            - generic [ref=f1e528]:
+              - button "Red 7, mjesto 7 — zauzeto" [disabled] [ref=f1e529]: "7"
+              - button "Prikaži mjesto 7, red 7 na karti stadiona" [ref=f1e530] [cursor=pointer]: 📍
+            - generic [ref=f1e531]:
+              - button "Red 7, mjesto 8 — zauzeto" [disabled] [ref=f1e532]: "8"
+              - button "Prikaži mjesto 8, red 7 na karti stadiona" [ref=f1e533] [cursor=pointer]: 📍
+            - generic [ref=f1e534]:
+              - button "Red 7, mjesto 9 — zauzeto" [disabled] [ref=f1e535]: "9"
+              - button "Prikaži mjesto 9, red 7 na karti stadiona" [ref=f1e536] [cursor=pointer]: 📍
+            - generic [ref=f1e537]:
+              - button "Red 7, mjesto 10 — zauzeto" [disabled] [ref=f1e538]: "10"
+              - button "Prikaži mjesto 10, red 7 na karti stadiona" [ref=f1e539] [cursor=pointer]: 📍
+            - generic [ref=f1e540]:
+              - button "Red 7, mjesto 11 — zauzeto" [disabled] [ref=f1e541]: "11"
+              - button "Prikaži mjesto 11, red 7 na karti stadiona" [ref=f1e542] [cursor=pointer]: 📍
+            - generic [ref=f1e543]:
+              - button "Red 7, mjesto 12 — zauzeto" [disabled] [ref=f1e544]: "12"
+              - button "Prikaži mjesto 12, red 7 na karti stadiona" [ref=f1e545] [cursor=pointer]: 📍
+            - generic [ref=f1e546]:
+              - button "Red 7, mjesto 13 — zauzeto" [disabled] [ref=f1e547]: "13"
+              - button "Prikaži mjesto 13, red 7 na karti stadiona" [ref=f1e548] [cursor=pointer]: 📍
+            - generic [ref=f1e549]:
+              - button "Red 7, mjesto 14 — zauzeto" [disabled] [ref=f1e550]: "14"
+              - button "Prikaži mjesto 14, red 7 na karti stadiona" [ref=f1e551] [cursor=pointer]: 📍
+            - generic [ref=f1e552]:
+              - button "Red 7, mjesto 15 — zauzeto" [disabled] [ref=f1e553]: "15"
+              - button "Prikaži mjesto 15, red 7 na karti stadiona" [ref=f1e554] [cursor=pointer]: 📍
+            - generic [ref=f1e555]:
+              - button "Red 7, mjesto 16 — zauzeto" [disabled] [ref=f1e556]: "16"
+              - button "Prikaži mjesto 16, red 7 na karti stadiona" [ref=f1e557] [cursor=pointer]: 📍
+            - generic [ref=f1e558]:
+              - button "Red 7, mjesto 17 — zauzeto" [disabled] [ref=f1e559]: "17"
+              - button "Prikaži mjesto 17, red 7 na karti stadiona" [ref=f1e560] [cursor=pointer]: 📍
+            - generic [ref=f1e561]:
+              - button "Red 7, mjesto 18 — zauzeto" [disabled] [ref=f1e562]: "18"
+              - button "Prikaži mjesto 18, red 7 na karti stadiona" [ref=f1e563] [cursor=pointer]: 📍
+            - generic [ref=f1e564]:
+              - button "Red 7, mjesto 19 — zauzeto" [disabled] [ref=f1e565]: "19"
+              - button "Prikaži mjesto 19, red 7 na karti stadiona" [ref=f1e566] [cursor=pointer]: 📍
+            - generic [ref=f1e567]:
+              - button "Red 7, mjesto 20 — zauzeto" [disabled] [ref=f1e568]: "20"
+              - button "Prikaži mjesto 20, red 7 na karti stadiona" [ref=f1e569] [cursor=pointer]: 📍
+        - generic [ref=f1e570]:
+          - generic [ref=f1e571]: Red 8
+          - generic [ref=f1e572]:
+            - generic [ref=f1e573]:
+              - button "Red 8, mjesto 1 — zauzeto" [disabled] [ref=f1e574]: "1"
+              - button "Prikaži mjesto 1, red 8 na karti stadiona" [ref=f1e575] [cursor=pointer]: 📍
+            - generic [ref=f1e576]:
+              - button "Red 8, mjesto 2 — zauzeto" [disabled] [ref=f1e577]: "2"
+              - button "Prikaži mjesto 2, red 8 na karti stadiona" [ref=f1e578] [cursor=pointer]: 📍
+            - generic [ref=f1e579]:
+              - button "Red 8, mjesto 3 — zauzeto" [disabled] [ref=f1e580]: "3"
+              - button "Prikaži mjesto 3, red 8 na karti stadiona" [ref=f1e581] [cursor=pointer]: 📍
+            - generic [ref=f1e582]:
+              - button "Red 8, mjesto 4 — zauzeto" [disabled] [ref=f1e583]: "4"
+              - button "Prikaži mjesto 4, red 8 na karti stadiona" [ref=f1e584] [cursor=pointer]: 📍
+            - generic [ref=f1e585]:
+              - button "Red 8, mjesto 5 — zauzeto" [disabled] [ref=f1e586]: "5"
+              - button "Prikaži mjesto 5, red 8 na karti stadiona" [ref=f1e587] [cursor=pointer]: 📍
+            - generic [ref=f1e588]:
+              - button "Red 8, mjesto 6 — zauzeto" [disabled] [ref=f1e589]: "6"
+              - button "Prikaži mjesto 6, red 8 na karti stadiona" [ref=f1e590] [cursor=pointer]: 📍
+            - generic [ref=f1e591]:
+              - button "Red 8, mjesto 7 — zauzeto" [disabled] [ref=f1e592]: "7"
+              - button "Prikaži mjesto 7, red 8 na karti stadiona" [ref=f1e593] [cursor=pointer]: 📍
+            - generic [ref=f1e594]:
+              - button "Red 8, mjesto 8 — zauzeto" [disabled] [ref=f1e595]: "8"
+              - button "Prikaži mjesto 8, red 8 na karti stadiona" [ref=f1e596] [cursor=pointer]: 📍
+            - generic [ref=f1e597]:
+              - button "Red 8, mjesto 9 — zauzeto" [disabled] [ref=f1e598]: "9"
+              - button "Prikaži mjesto 9, red 8 na karti stadiona" [ref=f1e599] [cursor=pointer]: 📍
+            - generic [ref=f1e600]:
+              - button "Red 8, mjesto 10 — zauzeto" [disabled] [ref=f1e601]: "10"
+              - button "Prikaži mjesto 10, red 8 na karti stadiona" [ref=f1e602] [cursor=pointer]: 📍
+            - generic [ref=f1e603]:
+              - button "Red 8, mjesto 11 — zauzeto" [disabled] [ref=f1e604]: "11"
+              - button "Prikaži mjesto 11, red 8 na karti stadiona" [ref=f1e605] [cursor=pointer]: 📍
+            - generic [ref=f1e606]:
+              - button "Red 8, mjesto 12 — zauzeto" [disabled] [ref=f1e607]: "12"
+              - button "Prikaži mjesto 12, red 8 na karti stadiona" [ref=f1e608] [cursor=pointer]: 📍
+            - generic [ref=f1e609]:
+              - button "Red 8, mjesto 13 — zauzeto" [disabled] [ref=f1e610]: "13"
+              - button "Prikaži mjesto 13, red 8 na karti stadiona" [ref=f1e611] [cursor=pointer]: 📍
+            - generic [ref=f1e612]:
+              - button "Red 8, mjesto 14 — zauzeto" [disabled] [ref=f1e613]: "14"
+              - button "Prikaži mjesto 14, red 8 na karti stadiona" [ref=f1e614] [cursor=pointer]: 📍
+            - generic [ref=f1e615]:
+              - button "Red 8, mjesto 15 — zauzeto" [disabled] [ref=f1e616]: "15"
+              - button "Prikaži mjesto 15, red 8 na karti stadiona" [ref=f1e617] [cursor=pointer]: 📍
+            - generic [ref=f1e618]:
+              - button "Red 8, mjesto 16 — zauzeto" [disabled] [ref=f1e619]: "16"
+              - button "Prikaži mjesto 16, red 8 na karti stadiona" [ref=f1e620] [cursor=pointer]: 📍
+            - generic [ref=f1e621]:
+              - button "Red 8, mjesto 17 — zauzeto" [disabled] [ref=f1e622]: "17"
+              - button "Prikaži mjesto 17, red 8 na karti stadiona" [ref=f1e623] [cursor=pointer]: 📍
+            - generic [ref=f1e624]:
+              - button "Red 8, mjesto 18 — zauzeto" [disabled] [ref=f1e625]: "18"
+              - button "Prikaži mjesto 18, red 8 na karti stadiona" [ref=f1e626] [cursor=pointer]: 📍
+            - generic [ref=f1e627]:
+              - button "Red 8, mjesto 19 — zauzeto" [disabled] [ref=f1e628]: "19"
+              - button "Prikaži mjesto 19, red 8 na karti stadiona" [ref=f1e629] [cursor=pointer]: 📍
+            - generic [ref=f1e630]:
+              - button "Red 8, mjesto 20 — zauzeto" [disabled] [ref=f1e631]: "20"
+              - button "Prikaži mjesto 20, red 8 na karti stadiona" [ref=f1e632] [cursor=pointer]: 📍
+        - generic [ref=f1e633]:
+          - generic [ref=f1e634]: Red 9
+          - generic [ref=f1e635]:
+            - generic [ref=f1e636]:
+              - button "Red 9, mjesto 1 — zauzeto" [disabled] [ref=f1e637]: "1"
+              - button "Prikaži mjesto 1, red 9 na karti stadiona" [ref=f1e638] [cursor=pointer]: 📍
+            - generic [ref=f1e639]:
+              - button "Red 9, mjesto 2 — zauzeto" [disabled] [ref=f1e640]: "2"
+              - button "Prikaži mjesto 2, red 9 na karti stadiona" [ref=f1e641] [cursor=pointer]: 📍
+            - generic [ref=f1e642]:
+              - button "Red 9, mjesto 3 — zauzeto" [disabled] [ref=f1e643]: "3"
+              - button "Prikaži mjesto 3, red 9 na karti stadiona" [ref=f1e644] [cursor=pointer]: 📍
+            - generic [ref=f1e645]:
+              - button "Red 9, mjesto 4 — zauzeto" [disabled] [ref=f1e646]: "4"
+              - button "Prikaži mjesto 4, red 9 na karti stadiona" [ref=f1e647] [cursor=pointer]: 📍
+            - generic [ref=f1e648]:
+              - button "Red 9, mjesto 5, €45 — slobodno" [ref=f1e649] [cursor=pointer]: "5"
+              - button "Prikaži mjesto 5, red 9 na karti stadiona" [ref=f1e650] [cursor=pointer]: 📍
+            - generic [ref=f1e651]:
+              - button "Red 9, mjesto 6, €45 — slobodno" [ref=f1e652] [cursor=pointer]: "6"
+              - button "Prikaži mjesto 6, red 9 na karti stadiona" [ref=f1e653] [cursor=pointer]: 📍
+            - generic [ref=f1e654]:
+              - button "Red 9, mjesto 7, €45 — slobodno" [ref=f1e655] [cursor=pointer]: "7"
+              - button "Prikaži mjesto 7, red 9 na karti stadiona" [ref=f1e656] [cursor=pointer]: 📍
+            - generic [ref=f1e657]:
+              - button "Red 9, mjesto 8, €45 — slobodno" [ref=f1e658] [cursor=pointer]: "8"
+              - button "Prikaži mjesto 8, red 9 na karti stadiona" [ref=f1e659] [cursor=pointer]: 📍
+            - generic [ref=f1e660]:
+              - button "Red 9, mjesto 9, €45 — slobodno" [ref=f1e661] [cursor=pointer]: "9"
+              - button "Prikaži mjesto 9, red 9 na karti stadiona" [ref=f1e662] [cursor=pointer]: 📍
+            - generic [ref=f1e663]:
+              - button "Red 9, mjesto 10, €45 — slobodno" [ref=f1e664] [cursor=pointer]: "10"
+              - button "Prikaži mjesto 10, red 9 na karti stadiona" [ref=f1e665] [cursor=pointer]: 📍
+            - generic [ref=f1e666]:
+              - button "Red 9, mjesto 11, €45 — slobodno" [ref=f1e667] [cursor=pointer]: "11"
+              - button "Prikaži mjesto 11, red 9 na karti stadiona" [ref=f1e668] [cursor=pointer]: 📍
+            - generic [ref=f1e669]:
+              - button "Red 9, mjesto 12, €45 — slobodno" [ref=f1e670] [cursor=pointer]: "12"
+              - button "Prikaži mjesto 12, red 9 na karti stadiona" [ref=f1e671] [cursor=pointer]: 📍
+            - generic [ref=f1e672]:
+              - button "Red 9, mjesto 13, €45 — slobodno" [ref=f1e673] [cursor=pointer]: "13"
+              - button "Prikaži mjesto 13, red 9 na karti stadiona" [ref=f1e674] [cursor=pointer]: 📍
+            - generic [ref=f1e675]:
+              - button "Red 9, mjesto 14, €45 — slobodno" [ref=f1e676] [cursor=pointer]: "14"
+              - button "Prikaži mjesto 14, red 9 na karti stadiona" [ref=f1e677] [cursor=pointer]: 📍
+            - generic [ref=f1e678]:
+              - button "Red 9, mjesto 15, €45 — slobodno" [ref=f1e679] [cursor=pointer]: "15"
+              - button "Prikaži mjesto 15, red 9 na karti stadiona" [ref=f1e680] [cursor=pointer]: 📍
+            - generic [ref=f1e681]:
+              - button "Red 9, mjesto 16, €45 — slobodno" [ref=f1e682] [cursor=pointer]: "16"
+              - button "Prikaži mjesto 16, red 9 na karti stadiona" [ref=f1e683] [cursor=pointer]: 📍
+            - generic [ref=f1e684]:
+              - button "Red 9, mjesto 17, €45 — slobodno" [ref=f1e685] [cursor=pointer]: "17"
+              - button "Prikaži mjesto 17, red 9 na karti stadiona" [ref=f1e686] [cursor=pointer]: 📍
+            - generic [ref=f1e687]:
+              - button "Red 9, mjesto 18, €45 — slobodno" [ref=f1e688] [cursor=pointer]: "18"
+              - button "Prikaži mjesto 18, red 9 na karti stadiona" [ref=f1e689] [cursor=pointer]: 📍
+            - generic [ref=f1e690]:
+              - button "Red 9, mjesto 19, €45 — slobodno" [ref=f1e691] [cursor=pointer]: "19"
+              - button "Prikaži mjesto 19, red 9 na karti stadiona" [ref=f1e692] [cursor=pointer]: 📍
+            - generic [ref=f1e693]:
+              - button "Red 9, mjesto 20, €45 — slobodno" [ref=f1e694] [cursor=pointer]: "20"
+              - button "Prikaži mjesto 20, red 9 na karti stadiona" [ref=f1e695] [cursor=pointer]: 📍
+        - generic [ref=f1e696]:
+          - generic [ref=f1e697]: Red 10
+          - generic [ref=f1e698]:
+            - generic [ref=f1e699]:
+              - button "Red 10, mjesto 1, €45 — slobodno" [ref=f1e700] [cursor=pointer]: "1"
+              - button "Prikaži mjesto 1, red 10 na karti stadiona" [ref=f1e701] [cursor=pointer]: 📍
+            - generic [ref=f1e702]:
+              - button "Red 10, mjesto 2, €45 — slobodno" [ref=f1e703] [cursor=pointer]: "2"
+              - button "Prikaži mjesto 2, red 10 na karti stadiona" [ref=f1e704] [cursor=pointer]: 📍
+            - generic [ref=f1e705]:
+              - button "Red 10, mjesto 3, €45 — slobodno" [ref=f1e706] [cursor=pointer]: "3"
+              - button "Prikaži mjesto 3, red 10 na karti stadiona" [ref=f1e707] [cursor=pointer]: 📍
+            - generic [ref=f1e708]:
+              - button "Red 10, mjesto 4, €45 — slobodno" [ref=f1e709] [cursor=pointer]: "4"
+              - button "Prikaži mjesto 4, red 10 na karti stadiona" [ref=f1e710] [cursor=pointer]: 📍
+            - generic [ref=f1e711]:
+              - button "Red 10, mjesto 5, €45 — slobodno" [ref=f1e712] [cursor=pointer]: "5"
+              - button "Prikaži mjesto 5, red 10 na karti stadiona" [ref=f1e713] [cursor=pointer]: 📍
+            - generic [ref=f1e714]:
+              - button "Red 10, mjesto 6, €45 — slobodno" [ref=f1e715] [cursor=pointer]: "6"
+              - button "Prikaži mjesto 6, red 10 na karti stadiona" [ref=f1e716] [cursor=pointer]: 📍
+            - generic [ref=f1e717]:
+              - button "Red 10, mjesto 7, €45 — slobodno" [ref=f1e718] [cursor=pointer]: "7"
+              - button "Prikaži mjesto 7, red 10 na karti stadiona" [ref=f1e719] [cursor=pointer]: 📍
+            - generic [ref=f1e720]:
+              - button "Red 10, mjesto 8, €45 — slobodno" [ref=f1e721] [cursor=pointer]: "8"
+              - button "Prikaži mjesto 8, red 10 na karti stadiona" [ref=f1e722] [cursor=pointer]: 📍
+            - generic [ref=f1e723]:
+              - button "Red 10, mjesto 9, €45 — slobodno" [ref=f1e724] [cursor=pointer]: "9"
+              - button "Prikaži mjesto 9, red 10 na karti stadiona" [ref=f1e725] [cursor=pointer]: 📍
+            - generic [ref=f1e726]:
+              - button "Red 10, mjesto 10, €45 — slobodno" [ref=f1e727] [cursor=pointer]: "10"
+              - button "Prikaži mjesto 10, red 10 na karti stadiona" [ref=f1e728] [cursor=pointer]: 📍
+            - generic [ref=f1e729]:
+              - button "Red 10, mjesto 11, €45 — slobodno" [ref=f1e730] [cursor=pointer]: "11"
+              - button "Prikaži mjesto 11, red 10 na karti stadiona" [ref=f1e731] [cursor=pointer]: 📍
+            - generic [ref=f1e732]:
+              - button "Red 10, mjesto 12, €45 — slobodno" [ref=f1e733] [cursor=pointer]: "12"
+              - button "Prikaži mjesto 12, red 10 na karti stadiona" [ref=f1e734] [cursor=pointer]: 📍
+            - generic [ref=f1e735]:
+              - button "Red 10, mjesto 13, €45 — slobodno" [ref=f1e736] [cursor=pointer]: "13"
+              - button "Prikaži mjesto 13, red 10 na karti stadiona" [ref=f1e737] [cursor=pointer]: 📍
+            - generic [ref=f1e738]:
+              - button "Red 10, mjesto 14, €45 — slobodno" [ref=f1e739] [cursor=pointer]: "14"
+              - button "Prikaži mjesto 14, red 10 na karti stadiona" [ref=f1e740] [cursor=pointer]: 📍
+            - generic [ref=f1e741]:
+              - button "Red 10, mjesto 15, €45 — slobodno" [ref=f1e742] [cursor=pointer]: "15"
+              - button "Prikaži mjesto 15, red 10 na karti stadiona" [ref=f1e743] [cursor=pointer]: 📍
+            - generic [ref=f1e744]:
+              - button "Red 10, mjesto 16, €45 — slobodno" [ref=f1e745] [cursor=pointer]: "16"
+              - button "Prikaži mjesto 16, red 10 na karti stadiona" [ref=f1e746] [cursor=pointer]: 📍
+            - generic [ref=f1e747]:
+              - button "Red 10, mjesto 17, €45 — slobodno" [ref=f1e748] [cursor=pointer]: "17"
+              - button "Prikaži mjesto 17, red 10 na karti stadiona" [ref=f1e749] [cursor=pointer]: 📍
+            - generic [ref=f1e750]:
+              - button "Red 10, mjesto 18, €45 — slobodno" [ref=f1e751] [cursor=pointer]: "18"
+              - button "Prikaži mjesto 18, red 10 na karti stadiona" [ref=f1e752] [cursor=pointer]: 📍
+            - generic [ref=f1e753]:
+              - button "Red 10, mjesto 19, €45 — slobodno" [ref=f1e754] [cursor=pointer]: "19"
+              - button "Prikaži mjesto 19, red 10 na karti stadiona" [ref=f1e755] [cursor=pointer]: 📍
+            - generic [ref=f1e756]:
+              - button "Red 10, mjesto 20, €45 — slobodno" [ref=f1e757] [cursor=pointer]: "20"
+              - button "Prikaži mjesto 20, red 10 na karti stadiona" [ref=f1e758] [cursor=pointer]: 📍
+      - button "Odaberi mjesta" [disabled] [ref=f1e759]
+    - dialog "Karta sjedala" [ref=f1e764]:
+      - generic [ref=f1e765]:
+        - generic [ref=f1e766]:
+          - generic [ref=f1e767]: Sjever1
+          - generic [ref=f1e768]: 📍 Red 3 · Mjesto 5
+        - button "Zatvori" [ref=f1e769] [cursor=pointer]: ✕
+  - generic [ref=f1e54]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f1e55] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - status
+  - alert
+  - status
+  - status [ref=f1e762]: "Focused: Prikaži mjesto 5, red 3 na karti stadiona"

@@ -7,25 +7,23 @@
 
 <div class="console" id="admin-dashboard-main-container">
     <!-- Dashboard Header -->
-    <header class="console-head" id="admin-dashboard-header">
-        <div class="console-head__title" id="admin-dashboard-title-section">
-            <span class="eyebrow">@L["Dash_Eyebrow"]</span>
-            <h1>@L["Dash_Title"]</h1>
-            <p>@L["Dash_Subtitle"]</p>
-        </div>
-        <div class="console-head__actions" id="admin-dashboard-action-buttons">
+    <PageHeader Id="admin-dashboard-header"
+                Eyebrow='@L["Dash_Eyebrow"]'
+                Title='@L["Dash_Title"]'
+                Subtitle='@L["Dash_Subtitle"]'>
+        <Actions>
             <span class="live-pill" title="@L["Dash_AutoRefreshing"]">
                 <span class="live-dot @(isLoading ? "is-busy" : "")"></span>
                 @(isLoading ? @L["Dash_Syncing"] : @L["Dash_Live"])
             </span>
             <button class="icon-btn" @onclick="RefreshData" disabled="@isLoading" id="admin-dashboard-refresh-btn" title="@L["Dash_RefreshData"]">
-                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i>
+                <i class="bi bi-arrow-clockwise @(isLoading ? "spin" : "")"></i>
             </button>
             <button class="icon-btn" @onclick="ToggleTheme" id="admin-dashboard-toggle-theme-btn" title="@L["Dash_ToggleTheme"]">
-                <i class="oi oi-moon"></i>
+                <i class="bi bi-moon-stars"></i>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     <!-- Loading Progress and Status -->
     @if (isLoading)
@@ -112,7 +110,7 @@
                     <span class="metric__label">@L["Dash_TodaysRevenue"]</span>
                     <i class="oi oi-dollar metric__icon"></i>
                 </div>
-                <div class="metric__value mono"><span class="metric__unit">$</span>@todaysRevenue.ToString("N0")</div>
+                <div class="metric__value mono"><span class="metric__unit">€</span>@todaysRevenue.ToString("N0")</div>
                 <div class="metric__foot">
                     <span class="delta delta--up">&#9650; @revenueTrend.ToString("0.#")%</span>
                     <span class="metric__hint">@L["Dash_VsYesterday"]</span>
@@ -180,7 +178,7 @@
                                 <tr id="@($"admin-dashboard-recent-order-row-{order.Id}")" @onclick="@(() => NavigateToOrder(order.Id))">
                                     <td class="mono order-table__id" id="@($"admin-dashboard-recent-order-id-{order.Id}")">#@order.Id</td>
                                     <td id="@($"admin-dashboard-recent-order-customer-{order.Id}")">@order.CustomerName</td>
-                                    <td class="num mono" id="@($"admin-dashboard-recent-order-amount-{order.Id}")">$@order.TotalAmount.ToString("N2")</td>
+                                    <td class="num mono" id="@($"admin-dashboard-recent-order-amount-{order.Id}")">€@order.TotalAmount.ToString("N2")</td>
                                     <td id="@($"admin-dashboard-recent-order-status-{order.Id}")">
                                         <span class="status @GetStatusModifier(order.Status)">
                                             <span class="status__dot"></span>@order.Status

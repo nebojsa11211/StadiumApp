@@ -6,13 +6,11 @@
 
 <div class="console" id="admin-logs-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-logs-header">
-        <div class="console-head__title" id="admin-logs-header-title">
-            <span class="eyebrow">@L["Logs_EyebrowText"]</span>
-            <h1 id="admin-logs-main-heading">@L["Logs_MainHeading"]</h1>
-            <p id="admin-logs-description">@L["Logs_Description"]</p>
-        </div>
-        <div class="console-head__actions" id="admin-logs-header-actions">
+    <PageHeader Id="admin-logs-header"
+                Eyebrow='@L["Logs_EyebrowText"]'
+                Title='@L["Logs_MainHeading"]'
+                Subtitle='@L["Logs_Description"]'>
+        <Actions>
             <div class="form-check form-switch m-0" id="admin-logs-toggle-group">
                 <input class="form-check-input" type="checkbox" role="switch" id="consoleToSystemToggle" @onchange="ToggleConsoleToSystemLogging" checked="@isConsoleToSystemLoggingEnabled">
                 <label class="form-check-label" for="consoleToSystemToggle" id="admin-logs-toggle-label">
@@ -20,17 +18,17 @@
                 </label>
             </div>
             <button class="pill-btn pill-btn--primary" @onclick="RefreshLogs" id="admin-logs-refresh-btn">
-                <i class="fas fa-sync-alt"></i><span>@L["Logs_RefreshButton"]</span>
+                <i class="bi bi-arrow-clockwise"></i><span>@L["Logs_RefreshButton"]</span>
             </button>
             <button class="pill-btn pill-btn--danger" @onclick="ClearAllLogs" id="admin-logs-clear-btn">
-                <i class="fas fa-trash"></i><span>@L["Logs_ClearAllButton"]</span>
+                <i class="bi bi-trash"></i><span>@L["Logs_ClearAllButton"]</span>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     @if (isLoading)
     {
-        <div class="loading-state" id="admin-logs-loading-state">
+        <div class="loading-state" id="admin-logs-loading">
             <span class="loading-spinner"></span>
             <p>@L["Logs_LoadingMessage"]</p>
         </div>

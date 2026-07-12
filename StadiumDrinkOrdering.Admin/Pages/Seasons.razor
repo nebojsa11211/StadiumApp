@@ -9,18 +9,16 @@
 <PageTitle>@L["Seasons_PageTitle"]</PageTitle>
 
 <div class="console" id="admin-seasons-main-container">
-    <header class="console-head" id="admin-seasons-header">
-        <div class="console-head__title">
-            <span class="eyebrow">@L["Seasons_Eyebrow"]</span>
-            <h1 id="admin-seasons-title">@L["Seasons_Title"]</h1>
-            <p>@L["Seasons_Intro"]</p>
-        </div>
-        <div class="console-head__actions">
+    <PageHeader Id="admin-seasons-header"
+                Eyebrow='@L["Seasons_Eyebrow"]'
+                Title='@L["Seasons_Title"]'
+                Subtitle='@L["Seasons_Intro"]'>
+        <Actions>
             <button class="pill-btn pill-btn--primary" @onclick="ShowCreateModal" id="admin-seasons-create-btn">
-                <i class="bi bi-plus-circle"></i><span>@L["Seasons_NewSeason"]</span>
+                <i class="bi bi-plus-lg"></i><span>@L["Seasons_NewSeason"]</span>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     @if (seasons == null)
     {
@@ -58,6 +56,91 @@
     }
     else
     {
+        <section class="metrics" id="admin-seasons-metrics">
+            <article class="metric metric--accent" id="admin-seasons-metric-passes">
+                <div class="metric__head">
+                    <span class="metric__label">@L["Seasons_KpiPassesLabel"]</span>
+                    <i class="bi bi-person-badge metric__icon is-ok"></i>
+                </div>
+                <div class="metric__value mono" id="admin-seasons-metric-passes-value">@TotalPasses.ToString("N0")</div>
+                <div class="metric__foot"><span class="metric__hint">@L["Seasons_KpiPassesHint"]</span></div>
+            </article>
+
+            <article class="metric" id="admin-seasons-metric-revenue">
+                <div class="metric__head">
+                    <span class="metric__label">@L["Seasons_KpiRevenueLabel"]</span>
+                    <i class="bi bi-cash-stack metric__icon"></i>
+                </div>
+                <div class="metric__value mono" id="admin-seasons-metric-revenue-value"><span class="metric__unit">€</span>@TotalRevenue.ToString("N0")</div>
+                <div class="metric__foot"><span class="metric__hint">@L["Seasons_KpiRevenueHint"]</span></div>
+            </article>
+
+            <article class="metric" id="admin-seasons-metric-avgprice">
+                <div class="metric__head">
+                    <span class="metric__label">@L["Seasons_KpiAvgPriceLabel"]</span>
+                    <i class="bi bi-tag metric__icon"></i>
+                </div>
+                <div class="metric__value mono" id="admin-seasons-metric-avgprice-value"><span class="metric__unit">€</span>@AveragePassPrice.ToString("N2")</div>
+                <div class="metric__foot"><span class="metric__hint">@L["Seasons_KpiAvgPriceHint"]</span></div>
+            </article>
+
+            <article class="metric" id="admin-seasons-metric-occupancy">
+                <div class="metric__head">
+                    <span class="metric__label">@L["Seasons_KpiOccupancyLabel"]</span>
+                    <i class="bi bi-diagram-3 metric__icon"></i>
+                </div>
+                <div class="metric__value mono" id="admin-seasons-metric-occupancy-value">@HeadlineOccupancy.ToString("P0")</div>
+                <div class="metric__foot">
+                    <span class="metric__hint" id="admin-seasons-metric-occupancy-hint">
+                        @L["Seasons_KpiOccupancyHint", HeadlinePasses.ToString("N0"), StadiumSeatCount.ToString("N0")]
+                    </span>
+                </div>
+            </article>
+        </section>
+
+        <div class="panel" id="admin-seasons-charts-panel">
+            <div class="panel__head">
+                <h2 class="panel__title">@L["Seasons_ChartsTitle"]</h2>
+            </div>
+            <div class="panel__body">
+                <div class="season-charts" id="admin-seasons-charts">
+                    @foreach (var c in ChartCards)
+                    {
+                        <div class="season-chart" id="admin-seasons-chart-@c.Key">
+                            <div class="season-chart__title">@c.Title</div>
+                            <svg viewBox="@($"0 0 {Inv(ChartW)} {Inv(ChartH)}")" preserveAspectRatio="xMidYMid meet"
+                                 role="img" aria-label="@c.Title" id="admin-seasons-chart-svg-@c.Key">
+                                @foreach (var gy in c.Model.GridYs)
+                                {
+                                    <line x1="@c.Model.GridX1" y1="@gy" x2="@c.Model.GridX2" y2="@gy" class="chart-grid" />
+                                }
+                                @foreach (var b in c.Model.Bars)
+                                {
+                                    <rect x="@b.X" y="@b.Y" width="@b.W" height="@b.H" rx="3" fill="@b.Fill" class="chart-bar">
+                                        <title>@b.Title</title>
+                                    </rect>
+                                    @SvgText(b.ValX, b.ValY, "chart-val", b.ValueText)
+                                }
+                                @foreach (var xl in c.Model.XLabels)
+                                {
+                                    @SvgText(xl.X, Inv(ChartH - 10), "chart-xlabel", xl.Text)
+                                }
+                            </svg>
+                            @if (c.Legend.Count > 0)
+                            {
+                                <div class="season-chart__legend">
+                                    @foreach (var leg in c.Legend)
+                                    {
+                                        <span class="li"><span class="sw" style="background:@leg.Color"></span>@leg.Label</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
         <div class="panel" id="admin-seasons-panel">
             <div class="panel__head">
                 <h2 class="panel__title">@L["Seasons_AllSeasons"] <span class="panel__count mono">@seasons.Count</span></h2>
@@ -68,14 +151,18 @@
                     <thead id="admin-seasons-thead">
                         <tr id="admin-seasons-header-row">
                             <th class="sortable @(seasonSort.IsSorted("season") ? "is-sorted" : "")" @onclick='() => SortSeasons("season")' id="admin-seasons-header-season">@L["Seasons_ColSeason"]<span class="sort-ind">@seasonSort.Indicator("season")</span></th><th class="sortable @(seasonSort.IsSorted("window") ? "is-sorted" : "")" @onclick='() => SortSeasons("window")' id="admin-seasons-header-window">@L["Seasons_ColWindow"]<span class="sort-ind">@seasonSort.Indicator("window")</span></th><th class="text-center sortable @(seasonSort.IsSorted("current") ? "is-sorted" : "")" @onclick='() => SortSeasons("current")' id="admin-seasons-header-current">@L["Seasons_ColCurrent"]<span class="sort-ind">@seasonSort.Indicator("current")</span></th>
-                            <th class="text-end sortable @(seasonSort.IsSorted("events") ? "is-sorted" : "")" @onclick='() => SortSeasons("events")' id="admin-seasons-header-events">@L["Seasons_ColEvents"]<span class="sort-ind">@seasonSort.Indicator("events")</span></th><th class="text-end sortable @(seasonSort.IsSorted("passes") ? "is-sorted" : "")" @onclick='() => SortSeasons("passes")' id="admin-seasons-header-passes">@L["Seasons_ColPasses"]<span class="sort-ind">@seasonSort.Indicator("passes")</span></th><th class="text-end" id="admin-seasons-header-actions">@L["Seasons_ColActions"]</th>
+                            <th class="text-end sortable @(seasonSort.IsSorted("events") ? "is-sorted" : "")" @onclick='() => SortSeasons("events")' id="admin-seasons-header-events">@L["Seasons_ColEvents"]<span class="sort-ind">@seasonSort.Indicator("events")</span></th><th class="text-end sortable @(seasonSort.IsSorted("passes") ? "is-sorted" : "")" @onclick='() => SortSeasons("passes")' id="admin-seasons-header-passes">@L["Seasons_ColPasses"]<span class="sort-ind">@seasonSort.Indicator("passes")</span></th><th class="text-end sortable @(seasonSort.IsSorted("revenue") ? "is-sorted" : "")" @onclick='() => SortSeasons("revenue")' id="admin-seasons-header-revenue">@L["Seasons_ColRevenue"]<span class="sort-ind">@seasonSort.Indicator("revenue")</span></th><th class="text-end" id="admin-seasons-header-actions">@L["Seasons_ColActions"]</th>
                         </tr>
                     </thead>
                     <tbody id="admin-seasons-tbody">
                         @foreach (var s in pager.PageItems)
                         {
-                            <tr id="admin-season-row-@s.Id">
+                            <tr id="admin-season-row-@s.Id" class="@(IsExpanded(s.Id) ? "is-expanded" : "")">
                                 <td>
+                                    <button class="icon-btn season-expand-btn" @onclick="() => ToggleExpand(s.Id)" id="admin-season-expand-btn-@s.Id"
+                                            title="@L["Seasons_ExpandDetails"]" aria-expanded="@IsExpanded(s.Id).ToString().ToLower()">
+                                        <i class="bi bi-chevron-@(IsExpanded(s.Id) ? "down" : "right")"></i>
+                                    </button>
                                     <strong id="admin-season-name-@s.Id">@s.Name</strong>
                                     @if (s.SourceSystem != null) { <span class="text-muted small">· @s.SourceSystem</span> }
                                 </td>
@@ -88,11 +175,13 @@
                                 </td>
                                 <td class="text-end mono">@s.EventCount</td>
                                 <td class="text-end mono">@s.SeasonTicketCount</td>
+                                <td class="text-end mono">€@s.PassRevenue.ToString("N0")</td>
                                 <td class="text-end text-nowrap">
                                     <button class="pill-btn" @onclick="() => ShowPasses(s)" id="admin-season-passes-btn-@s.Id" disabled="@(s.SeasonTicketCount == 0)">
                                         <i class="bi bi-person-badge"></i><span>@L["Seasons_PassesBtn", s.SeasonTicketCount]</span>
                                     </button>
-                                    @if (!s.IsCurrent)
+                                    @* A finished season can't be the current/default season, so no "Set current" action for it. *@
+                                    @if (!s.IsCurrent && !IsPastSeason(s))
                                     {
                                         <button class="pill-btn" @onclick="() => SetCurrent(s)" id="admin-season-setcurrent-btn-@s.Id">
                                             <i class="bi bi-star"></i><span>@L["Seasons_SetCurrent"]</span>
@@ -106,6 +195,77 @@
                                     </button>
                                 </td>
                             </tr>
+                            @if (IsExpanded(s.Id))
+                            {
+                                <tr class="season-detail-row" id="admin-season-detail-row-@s.Id">
+                                    <td colspan="7">
+                                        <div class="season-detail" id="admin-season-detail-@s.Id">
+                                            <div class="season-stat" id="admin-season-stat-occupancy-@s.Id">
+                                                <span class="season-stat__label">@L["Seasons_StatOccupancy"]</span>
+                                                <span class="season-stat__value mono">@s.OccupancyFraction.ToString("P0")</span>
+                                                <span class="season-stat__sub">@s.SeasonTicketCount.ToString("N0") @L["Seasons_OfCapacity", s.StadiumSeatCount.ToString("N0")]</span>
+                                                <div class="season-stat__bar"><span style="width:@(Math.Min(100, s.OccupancyFraction * 100).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%"></span></div>
+                                            </div>
+
+                                            <div class="season-stat" id="admin-season-stat-revenue-@s.Id">
+                                                <span class="season-stat__label">@L["Seasons_StatRevenue"]</span>
+                                                <span class="season-stat__value mono">€@s.PassRevenue.ToString("N0")</span>
+                                                <span class="season-stat__sub">@L["Seasons_StatAvgPrice"]: €@s.AveragePassPrice.ToString("N2")</span>
+                                            </div>
+
+                                            <div class="season-stat" id="admin-season-stat-events-@s.Id">
+                                                <span class="season-stat__label">@L["Seasons_StatEvents"]</span>
+                                                <span class="season-stat__value mono">@s.EventCount.ToString("N0")</span>
+                                                <span class="season-stat__chips">
+                                                    <span class="chip chip--up" id="admin-season-stat-events-upcoming-@s.Id">@s.UpcomingEventCount @L["Seasons_StatUpcoming"]</span>
+                                                    <span class="chip chip--live" id="admin-season-stat-events-live-@s.Id">@s.LiveEventCount @L["Seasons_StatLive"]</span>
+                                                    <span class="chip chip--done" id="admin-season-stat-events-completed-@s.Id">@s.CompletedEventCount @L["Seasons_StatCompleted"]</span>
+                                                </span>
+                                            </div>
+
+                                            <div class="season-stat" id="admin-season-stat-holders-@s.Id">
+                                                <span class="season-stat__label">@L["Seasons_StatHolders"]</span>
+                                                <span class="season-stat__value mono">@s.DistinctHolderCount.ToString("N0")</span>
+                                                <span class="season-stat__sub">@L["Seasons_StatDistinctHolders"] · @s.LinkedHolderCount.ToString("N0") @L["Seasons_StatLinkedAccounts"]</span>
+                                            </div>
+
+                                            <div class="season-stat" id="admin-season-stat-origin-@s.Id">
+                                                <span class="season-stat__label">@L["Seasons_StatPassOrigin"]</span>
+                                                <span class="season-stat__chips">
+                                                    <span class="chip chip--in" id="admin-season-stat-internal-@s.Id">@s.InternalPassCount.ToString("N0") @L["Seasons_StatInternal"]</span>
+                                                    <span class="chip chip--ext" id="admin-season-stat-external-@s.Id">@s.ExternalPassCount.ToString("N0") @L["Seasons_StatExternal"]</span>
+                                                </span>
+                                            </div>
+
+                                            <div class="season-stat" id="admin-season-stat-orders-@s.Id">
+                                                <span class="season-stat__label"><i class="bi bi-receipt"></i> @L["Seasons_StatOrders"]</span>
+                                                <span class="season-stat__value mono">@s.OrderCount.ToString("N0")</span>
+                                                <span class="season-stat__sub">@L["Seasons_StatAvgOrder"]: €@s.AverageOrderValue.ToString("N2")</span>
+                                            </div>
+
+                                            <div class="season-stat" id="admin-season-stat-drinks-@s.Id">
+                                                <span class="season-stat__label"><i class="bi bi-cup-straw"></i> @L["Seasons_StatDrinksSold"]</span>
+                                                <span class="season-stat__value mono">@s.DrinksSold.ToString("N0")</span>
+                                                <span class="season-stat__sub">@L["Seasons_StatDrinksRevenue"]: €@s.DrinksRevenue.ToString("N0")</span>
+                                            </div>
+
+                                            <div class="season-stat" id="admin-season-stat-topdrink-@s.Id">
+                                                <span class="season-stat__label"><i class="bi bi-trophy"></i> @L["Seasons_StatTopDrink"]</span>
+                                                @if (!string.IsNullOrEmpty(s.TopDrinkName))
+                                                {
+                                                    <span class="season-stat__value season-stat__value--text" title="@s.TopDrinkName">@s.TopDrinkName</span>
+                                                    <span class="season-stat__sub">@L["Seasons_StatUnits", s.TopDrinkQuantity.ToString("N0")]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="season-stat__value season-stat__value--muted">—</span>
+                                                    <span class="season-stat__sub">@L["Seasons_StatNoOrders"]</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>
@@ -247,10 +407,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" @bind="form.IsCurrent" id="admin-season-form-current">
-                        <label class="form-check-label">@L["Seasons_FormCurrent"]</label>
-                    </div>
+                    @* Only a live/upcoming season can be current; a finished window rules it out. *@
+                    @if (form.EndDate.Date >= DateTime.Today)
+                    {
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" @bind="form.IsCurrent" id="admin-season-form-current">
+                            <label class="form-check-label">@L["Seasons_FormCurrent"]</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-muted small" id="admin-season-form-current-past-note">
+                            <i class="bi bi-info-circle"></i> @L["Seasons_FinishedNotCurrent"]
+                        </div>
+                    }
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="HideModal" id="admin-season-modal-cancel-btn">@L["Seasons_Cancel"]</button>
@@ -302,6 +472,147 @@
 
     private readonly PagedView<SeasonDto> pager = new();
 
+    // Rows expanded to reveal their per-season statistics panel.
+    private readonly HashSet<int> expandedSeasons = new();
+    private bool IsExpanded(int id) => expandedSeasons.Contains(id);
+    private void ToggleExpand(int id)
+    {
+        if (!expandedSeasons.Remove(id))
+            expandedSeasons.Add(id);
+    }
+
+    // --- KPI row aggregates (across every season) ---
+    private int TotalPasses => seasons?.Sum(s => s.SeasonTicketCount) ?? 0;
+    private decimal TotalRevenue => seasons?.Sum(s => s.PassRevenue) ?? 0m;
+    private decimal AveragePassPrice => TotalPasses > 0 ? TotalRevenue / TotalPasses : 0m;
+    private int StadiumSeatCount => seasons?.FirstOrDefault()?.StadiumSeatCount ?? 0;
+
+    // Occupancy is only meaningful for a single season at a time (each season fills the same stadium),
+    // so the headline card reflects the current season — or the most recent one when none is flagged.
+    private SeasonDto? HeadlineSeason => seasons?.FirstOrDefault(s => s.IsCurrent) ?? seasons?.FirstOrDefault();
+    private int HeadlinePasses => HeadlineSeason?.SeasonTicketCount ?? 0;
+    private double HeadlineOccupancy => HeadlineSeason?.OccupancyFraction ?? 0d;
+
+    // --- Season-comparison charts (inline SVG, culture-invariant coordinates) ---
+    private const double ChartW = 440, ChartH = 240, PadTop = 26, PadBottom = 30, PadLeft = 14, PadRight = 14;
+
+    // SVG needs '.' decimals; the app's default culture (hr) uses ',', so format every coordinate invariantly.
+    private static string Inv(double d) => d.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+
+    // Razor treats a literal <text> element as its own control tag, so emit SVG text nodes as markup.
+    private static MarkupString SvgText(string x, string y, string cls, string content) =>
+        (MarkupString)$"<text x=\"{x}\" y=\"{y}\" class=\"{cls}\">{System.Net.WebUtility.HtmlEncode(content)}</text>";
+
+    private sealed class ChartBar { public string X = "", Y = "", W = "", H = "", Fill = "", ValueText = "", ValX = "", ValY = "", Title = ""; }
+    private sealed class ChartXLabel { public string X = "", Text = ""; }
+    private sealed class ChartModel
+    {
+        public string GridX1 = "", GridX2 = "";
+        public List<string> GridYs = new();
+        public List<ChartBar> Bars = new();
+        public List<ChartXLabel> XLabels = new();
+    }
+    private sealed record ChartLegend(string Color, string Label);
+    private sealed class ChartCard
+    {
+        public string Key = "";
+        public string Title = "";
+        public ChartModel Model = new();
+        public List<ChartLegend> Legend = new();
+    }
+
+    /// <summary>
+    /// Builds a (grouped) bar chart comparing seasons chronologically. Each series is a value selector;
+    /// bars are scaled to the data max (or <paramref name="fixedMax"/>, e.g. 100 for a percentage).
+    /// </summary>
+    private ChartModel BuildBarChart(Func<SeasonDto, double>[] series, string[] colors, Func<double, string> fmt, double? fixedMax = null)
+    {
+        var data = seasons!.OrderBy(s => s.StartDate).ToList();
+        double plotH = ChartH - PadTop - PadBottom;
+        double plotW = ChartW - PadLeft - PadRight;
+
+        double max = fixedMax ?? 0;
+        if (fixedMax == null)
+            foreach (var s in data)
+                foreach (var f in series)
+                    max = Math.Max(max, f(s));
+        if (max <= 0) max = 1;
+
+        var m = new ChartModel { GridX1 = Inv(PadLeft), GridX2 = Inv(ChartW - PadRight) };
+        const int gridCount = 4;
+        for (int i = 0; i <= gridCount; i++)
+            m.GridYs.Add(Inv(PadTop + plotH * i / gridCount));
+
+        int n = Math.Max(1, data.Count);
+        double bandW = plotW / n;
+        int sc = series.Length;
+        double groupW = bandW * (sc == 1 ? 0.5 : 0.66);
+        const double barGap = 3;
+        double barW = (groupW - barGap * (sc - 1)) / sc;
+        double baseY = PadTop + plotH;
+
+        for (int gi = 0; gi < data.Count; gi++)
+        {
+            var s = data[gi];
+            double bandX = PadLeft + bandW * gi;
+            double groupX = bandX + (bandW - groupW) / 2;
+            for (int si = 0; si < sc; si++)
+            {
+                double v = series[si](s);
+                double h = Math.Max(0, v / max * plotH);
+                double x = groupX + si * (barW + barGap);
+                double y = baseY - h;
+                m.Bars.Add(new ChartBar
+                {
+                    X = Inv(x), Y = Inv(y), W = Inv(barW), H = Inv(h),
+                    Fill = colors[si],
+                    ValueText = fmt(v),
+                    ValX = Inv(x + barW / 2), ValY = Inv(y - 4),
+                    Title = $"{s.Name} · {fmt(v)}"
+                });
+            }
+            m.XLabels.Add(new ChartXLabel { X = Inv(bandX + bandW / 2), Text = s.Name });
+        }
+        return m;
+    }
+
+    private List<ChartCard> ChartCards => new()
+    {
+        new ChartCard
+        {
+            Key = "revenue",
+            Title = L["Seasons_ChartRevenueTitle"],
+            Model = BuildBarChart(
+                new Func<SeasonDto, double>[] { s => (double)s.PassRevenue, s => (double)s.DrinksRevenue },
+                new[] { "var(--chart-s1)", "var(--chart-s2)" },
+                v => "€" + v.ToString("N0")),
+            Legend = new()
+            {
+                new ChartLegend("var(--chart-s1)", L["Seasons_LegendPassRevenue"]),
+                new ChartLegend("var(--chart-s2)", L["Seasons_LegendDrinksRevenue"])
+            }
+        },
+        new ChartCard
+        {
+            Key = "occupancy",
+            Title = L["Seasons_ChartOccupancyTitle"],
+            Model = BuildBarChart(
+                new Func<SeasonDto, double>[] { s => s.OccupancyFraction * 100 },
+                new[] { "var(--chart-s3)" },
+                v => v.ToString("0") + "%",
+                fixedMax: 100)
+        },
+        new ChartCard
+        {
+            Key = "drinks",
+            Title = L["Seasons_ChartDrinksTitle"],
+            Model = BuildBarChart(
+                new Func<SeasonDto, double>[] { s => s.DrinksSold },
+                new[] { "var(--chart-s2)" },
+                v => v.ToString("N0"))
+        }
+    };
+
     // Sorting — main seasons table
     private readonly TableSortState seasonSort = new();
     private static readonly Dictionary<string, Func<SeasonDto, object?>> SeasonSortSelectors = new()
@@ -311,6 +622,7 @@
         ["current"] = s => s.IsCurrent,
         ["events"] = s => s.EventCount,
         ["passes"] = s => s.SeasonTicketCount,
+        ["revenue"] = s => s.PassRevenue,
     };
 
     private IEnumerable<SeasonDto> SortedSeasons =>
@@ -506,6 +818,10 @@
         StateHasChanged();
         _ = Task.Delay(5000).ContinueWith(_ => { alertMessage = ""; InvokeAsync(StateHasChanged); });
     }
+
+    // A season whose window has already ended can't be the current/default season; the UI hides the
+    // "Set current" action for it and the API rejects the change. Mirrors the server-side IsFinished.
+    private static bool IsPastSeason(SeasonDto s) => s.EndDate.ToLocalTime().Date < DateTime.Today;
 
     private class SeasonFormModel
     {

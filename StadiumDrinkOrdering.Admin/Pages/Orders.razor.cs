@@ -13,6 +13,10 @@ public partial class Orders : ComponentBase
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
+    /// <summary>Optional deep-link filter: /orders?eventId=42 pre-selects that event
+    /// (e.g. the "Drinks sold" metric on the event-statistics page links here).</summary>
+    [SupplyParameterFromQuery] public int? EventId { get; set; }
+
     private bool isLoading = false;
     private List<OrderDto> allOrders = new();
     private List<OrderDto> filteredOrders = new();
@@ -43,13 +47,22 @@ public partial class Orders : ComponentBase
 
     // Filters
     private string selectedStatus = "";
+    private string selectedSeasonId = "";
     private string selectedEventId = "";
     private string customerSearch = "";
     private DateTime? fromDate;
     private DateTime? toDate;
 
-    // Event filter options, derived from the loaded orders (only events that have orders)
+    // Event filter options, derived from the loaded orders (only events that have orders).
+    // When a season is selected they are narrowed to that season's events.
     private List<(int Id, string Name)> eventOptions = new();
+
+    // Season filter options (only seasons that have orders), mirroring the dashboard's season scope.
+    private List<(int Id, string Name)> seasonOptions = new();
+    private List<SeasonDto> seasons = new();
+
+    // An order carries only an EventId; its season comes from the nested event.
+    private static int? SeasonIdOf(OrderDto o) => o.Event?.SeasonId;
 
     // Sorting
     private readonly TableSortState sortState = new();
@@ -71,6 +84,11 @@ public partial class Orders : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        // Honour a deep-linked event filter (?eventId=). BuildEventOptions drops it again
+        // if that event turns out to have no orders, so a bad link degrades gracefully.
+        if (EventId.HasValue)
+            selectedEventId = EventId.Value.ToString();
+
         await LoadOrders();
     }
 
@@ -82,9 +100,15 @@ public partial class Orders : ComponentBase
         try
         {
             var orders = await AdminApiService.GetOrdersAsync();
+
+            // Seasons power the season filter and let us label each option (orders only carry EventId).
+            try { seasons = await AdminApiService.GetAsync<List<SeasonDto>>("seasons") ?? new(); }
+            catch (Exception ex) { await JSRuntime.InvokeVoidAsync("console.error", "Failed to load seasons:", ex.Message); }
+
             if (orders != null)
             {
                 allOrders = orders.ToList();
+                BuildSeasonOptions();
                 BuildEventOptions();
 
                 if (allOrders.Count > 0)
@@ -107,8 +131,13 @@ public partial class Orders : ComponentBase
 
     private void BuildEventOptions()
     {
-        eventOptions = allOrders
-            .Where(o => o.EventId.HasValue)
+        var withEvents = allOrders.Where(o => o.EventId.HasValue);
+
+        // When a season is picked, the event dropdown only offers that season's events.
+        if (!string.IsNullOrWhiteSpace(selectedSeasonId) && int.TryParse(selectedSeasonId, out var sid))
+            withEvents = withEvents.Where(o => SeasonIdOf(o) == sid);
+
+        eventOptions = withEvents
             .GroupBy(o => o.EventId!.Value)
             .Select(g => (
                 Id: g.Key,
@@ -117,12 +146,43 @@ public partial class Orders : ComponentBase
             .OrderBy(e => e.Name)
             .ToList();
 
-        // Drop a stale selection if that event no longer has orders after a refresh
+        // Drop a stale selection if that event no longer has orders (or falls outside the season)
         if (!string.IsNullOrEmpty(selectedEventId) &&
             !eventOptions.Any(e => e.Id.ToString() == selectedEventId))
         {
             selectedEventId = "";
         }
+    }
+
+    private void BuildSeasonOptions()
+    {
+        // Only surface seasons that actually have orders, matching how events are listed.
+        var seasonIdsWithOrders = allOrders
+            .Select(SeasonIdOf)
+            .Where(s => s.HasValue)
+            .Select(s => s!.Value)
+            .ToHashSet();
+
+        seasonOptions = seasons
+            .Where(s => seasonIdsWithOrders.Contains(s.Id))
+            .OrderBy(s => s.StartDate)
+            .ThenBy(s => s.Id)
+            .Select(s => (s.Id, s.Name))
+            .ToList();
+
+        // Drop a stale season selection after a refresh.
+        if (!string.IsNullOrEmpty(selectedSeasonId) &&
+            !seasonOptions.Any(s => s.Id.ToString() == selectedSeasonId))
+        {
+            selectedSeasonId = "";
+        }
+    }
+
+    // Season changed: re-scope the event dropdown to the season, then re-filter.
+    private void OnSeasonChanged()
+    {
+        BuildEventOptions();
+        FilterOrders();
     }
 
     private void CalculateSummaryData()
@@ -144,6 +204,11 @@ public partial class Orders : ComponentBase
             {
                 query = query.Where(o => o.Status == status);
             }
+        }
+
+        if (!string.IsNullOrWhiteSpace(selectedSeasonId) && int.TryParse(selectedSeasonId, out var seasonFilterId))
+        {
+            query = query.Where(o => SeasonIdOf(o) == seasonFilterId);
         }
 
         if (!string.IsNullOrWhiteSpace(selectedEventId) && int.TryParse(selectedEventId, out var eventId))
@@ -234,10 +299,12 @@ public partial class Orders : ComponentBase
     private void ClearFilters()
     {
         selectedStatus = "";
+        selectedSeasonId = "";
         selectedEventId = "";
         customerSearch = "";
         fromDate = null;
         toDate = null;
+        BuildEventOptions(); // season cleared → event dropdown lists all events with orders again
         FilterOrders();
     }
 

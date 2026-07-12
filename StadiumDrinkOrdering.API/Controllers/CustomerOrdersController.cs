@@ -113,7 +113,9 @@ public class CustomerOrdersController : ControllerBase
             // Re-validate + resolve every seat against the real overlay stadium BEFORE charging.
             // This rejects seats taken since add-to-cart — including seats held by a season pass —
             // and gets the concrete Seat (Ticket.SeatId) so occupancy stays consistent everywhere.
-            var resolvedSeatIds = new Dictionary<int, int>(); // item index -> Seat.Id
+            var resolvedSeatIds = new Dictionary<int, int>();      // item index -> Seat.Id
+            var resolvedSectorCodes = new Dictionary<int, string>(); // item index -> overlay SectorCode
+            var sectorCodeCache = new Dictionary<int, string>();     // overlay id -> SectorCode (per-sector cache)
             for (var i = 0; i < request.Items.Count; i++)
             {
                 var item = request.Items[i];
@@ -136,6 +138,16 @@ public class CustomerOrdersController : ControllerBase
                     });
                 }
                 resolvedSeatIds[i] = seat.Id;
+
+                // Store the ticket's Section as the real overlay SectorCode (not the client-supplied
+                // display name) so the admin ticket-detail blueprint locator can pin the seat.
+                if (!sectorCodeCache.TryGetValue(item.SectorId, out var sectorCode))
+                {
+                    var overlay = await _overlaySeats.GetOverlayAsync(item.SectorId);
+                    sectorCode = overlay?.SectorCode ?? item.SectionName ?? string.Empty;
+                    sectorCodeCache[item.SectorId] = sectorCode;
+                }
+                resolvedSectorCodes[i] = sectorCode;
             }
 
             // For ticket orders, we don't create a traditional Order record
@@ -181,7 +193,7 @@ public class CustomerOrdersController : ControllerBase
                     SeatId = resolvedSeatIds[i],
                     SeatNumber = item.SeatNumber.ToString(),
                     Row = item.RowNumber.ToString(),
-                    Section = item.SectionName
+                    Section = resolvedSectorCodes[i]
                 };
 
                 tickets.Add(ticket);

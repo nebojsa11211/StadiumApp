@@ -1,5 +1,7 @@
 @using System.ComponentModel.DataAnnotations
+@implements IDisposable
 @inject IStringLocalizer<SharedResources> L
+@inject IJSRuntime JSRuntime
 
 @if (IsVisible)
 {
@@ -355,62 +357,105 @@
     @* Sector Preview Modal *@
     @if (showPreview && Sector != null)
     {
-        <div class="modal fade show" id="sector-preview-modal"
-             style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; overflow-y: auto;"
+        <div class="modal fade show spv-overlay" id="sector-preview-modal"
+             style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,32,0.55); backdrop-filter: blur(2px); z-index: 10000; overflow-y: auto;"
              tabindex="-1">
-            <div class="modal-dialog modal-xl modal-dialog-centered" id="admin-sector-preview-dialog" style="margin: 1.75rem auto; max-width: 90%;">
-                <div class="modal-content" id="admin-sector-preview-content">
-                    <div class="modal-header bg-dark text-white" id="admin-sector-preview-header">
-                        <h5 class="modal-title" id="admin-sector-preview-title">
-                            🎯 @L["SectorEdit_PreviewTitle", $"{Sector.SectorCode} - {Sector.Name}"]
+            <div class="modal-dialog modal-xl modal-dialog-centered" id="admin-sector-preview-dialog" style="margin: 1.75rem auto; max-width: 92%;">
+                <div class="modal-content spv-content" id="admin-sector-preview-content">
+                    <div class="modal-header spv-header" id="admin-sector-preview-header">
+                        <h5 class="modal-title spv-title" id="admin-sector-preview-title">
+                            <span class="spv-title-icon" aria-hidden="true">🎯</span>
+                            <span class="spv-title-text">@L["SectorEdit_PreviewTitle", $"{Sector.SectorCode} - {Sector.Name}"]</span>
                         </h5>
-                        <button type="button" id="admin-sector-preview-close-btn" class="btn-close btn-close-white" @onclick="TogglePreview"></button>
+                        <button type="button" id="admin-sector-preview-close-btn" class="btn-close spv-focusable" @onclick="TogglePreview"></button>
                     </div>
 
-                    <div class="modal-body" id="admin-sector-preview-body" style="background: #1a1a1a;">
-                        <div class="row mb-3" id="admin-sector-preview-info-row">
-                            <div class="col-md-12" id="admin-sector-preview-info-col">
-                                <div class="alert alert-info" id="admin-sector-preview-info">
-                                    <strong>ℹ️ @L["SectorEdit_PreviewInfo", $"{Sector.Rows} x {Sector.SeatsPerRow} = {totalSeats}"]</strong>
+                    <div class="modal-body spv-body" id="admin-sector-preview-body">
+                        <div class="row g-0 mb-3" id="admin-sector-preview-info-row">
+                            <div class="col-12" id="admin-sector-preview-info-col">
+                                <div class="spv-info" id="admin-sector-preview-info" role="status">
+                                    <span class="spv-info-icon" aria-hidden="true">ℹ️</span>
+                                    <span class="spv-info-text">@L["SectorEdit_PreviewInfo", $"{Sector.Rows} x {Sector.SeatsPerRow} = {totalSeats}"]</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row" id="admin-sector-preview-card-row">
-                            <div class="col-md-12" id="admin-sector-preview-card-col">
-                                <div class="card bg-dark text-white" id="admin-sector-preview-card">
-                                    <div class="card-body p-4" id="admin-sector-preview-card-body" style="overflow-x: auto;">
-                                        <div class="text-center mb-3" id="admin-sector-preview-field-label">
-                                            <span class="badge bg-success fs-5">@L["SectorEdit_PreviewField"]</span>
+                        <div class="row g-0" id="admin-sector-preview-card-row">
+                            <div class="col-12" id="admin-sector-preview-card-col">
+                                <div class="spv-card" id="admin-sector-preview-card">
+                                    <div class="spv-card-body" id="admin-sector-preview-card-body">
+                                        <div class="spv-controls" id="admin-sector-preview-controls-row">
+                                            <div class="spv-control-card" id="admin-sector-preview-fieldside-wrap">
+                                                <span class="spv-control-label" id="admin-sector-preview-fieldside-label">@L["SectorEdit_PreviewFieldSide"]</span>
+                                                <div class="btn-group btn-group-sm spv-seg" role="group" aria-label="@L["SectorEdit_PreviewFieldSide"]" id="admin-sector-preview-fieldside-group">
+                                                    <button type="button" id="admin-sector-preview-fieldside-top-btn" class="btn spv-seg-btn @(fieldSide == "top" ? "active" : "")" aria-pressed="@(fieldSide == "top")" aria-label="@L["SectorEdit_PreviewFieldSideTop"]" @onclick='() => SetFieldSide("top")' title="@L["SectorEdit_PreviewFieldSideTop"]">⬆️</button>
+                                                    <button type="button" id="admin-sector-preview-fieldside-bottom-btn" class="btn spv-seg-btn @(fieldSide == "bottom" ? "active" : "")" aria-pressed="@(fieldSide == "bottom")" aria-label="@L["SectorEdit_PreviewFieldSideBottom"]" @onclick='() => SetFieldSide("bottom")' title="@L["SectorEdit_PreviewFieldSideBottom"]">⬇️</button>
+                                                    <button type="button" id="admin-sector-preview-fieldside-left-btn" class="btn spv-seg-btn @(fieldSide == "left" ? "active" : "")" aria-pressed="@(fieldSide == "left")" aria-label="@L["SectorEdit_PreviewFieldSideLeft"]" @onclick='() => SetFieldSide("left")' title="@L["SectorEdit_PreviewFieldSideLeft"]">⬅️</button>
+                                                    <button type="button" id="admin-sector-preview-fieldside-right-btn" class="btn spv-seg-btn @(fieldSide == "right" ? "active" : "")" aria-pressed="@(fieldSide == "right")" aria-label="@L["SectorEdit_PreviewFieldSideRight"]" @onclick='() => SetFieldSide("right")' title="@L["SectorEdit_PreviewFieldSideRight"]">➡️</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="spv-control-card spv-control-card-grow" id="admin-sector-preview-margin-row">
+                                                <label for="admin-sector-preview-margin-slider" class="spv-control-label" id="admin-sector-preview-margin-label">
+                                                    @L["SectorEdit_PreviewSeatMargin"]
+                                                </label>
+                                                <div class="spv-slider-wrap">
+                                                    <input type="range" min="0" max="30" step="1"
+                                                           id="admin-sector-preview-margin-slider"
+                                                           class="form-range spv-range"
+                                                           value="@seatMarginPercent"
+                                                           @oninput="OnSeatMarginChanged" />
+                                                    <span class="spv-margin-value" id="admin-sector-preview-margin-value">@seatMarginPercent%</span>
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <div class="sector-preview-container" id="admin-sector-preview-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                                            @for (int row = 1; row <= Sector.Rows; row++)
+                                        <div class="spv-stage" id="admin-sector-preview-stage">
+                                            @if (fieldSide == "top")
                                             {
-                                                var seatsInRow = GetSeatsForRow(row);
-                                                <div class="seat-row" id="@($"admin-sector-preview-row-{row}")" style="display: flex; gap: 4px; align-items: center;">
-                                                    <span class="row-label" id="@($"admin-sector-preview-row-label-{row}")" style="color: #888; font-size: 12px; width: 40px; text-align: right; margin-right: 8px;">
-                                                        @L["SectorEdit_PreviewRow"] @row
-                                                    </span>
-                                                    @for (int seat = 1; seat <= seatsInRow; seat++)
-                                                    {
-                                                        <div class="seat-item"
-                                                             id="@($"admin-sector-preview-seat-{row}-{seat}")"
-                                                             style="width: 32px; height: 32px; background: @GetSeatColor(Sector.Type); border: 1px solid #555; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; cursor: pointer; transition: all 0.2s;"
-                                                             title="@L["SectorEdit_PreviewSeatTooltip", row, seat]">
-                                                            @seat
-                                                        </div>
-                                                    }
-                                                    <span class="row-label" id="@($"admin-sector-preview-row-count-{row}")" style="color: #888; font-size: 12px; width: 60px; text-align: left; margin-left: 8px;">
-                                                        @seatsInRow @L["SectorEdit_PreviewSeats"]
-                                                    </span>
+                                                <div class="spv-field-slot spv-field-slot-h" id="admin-sector-preview-field-label">
+                                                    <span class="spv-field-badge">@FieldArrow() @L["SectorEdit_PreviewField"] @FieldArrow()</span>
+                                                </div>
+                                            }
+
+                                            <div class="spv-stage-mid">
+                                                @if (fieldSide == "left")
+                                                {
+                                                    <div class="spv-field-slot spv-field-slot-v" id="admin-sector-preview-field-label">
+                                                        <span class="spv-field-badge">@L["SectorEdit_PreviewField"] @FieldArrow()</span>
+                                                    </div>
+                                                }
+
+                                                <div class="sector-preview-container spv-viewport" id="admin-sector-preview-container">
+                                                    <canvas id="admin-sector-preview-canvas"
+                                                            width="900"
+                                                            height="600"
+                                                            style="width: 100%; max-width: 900px; height: auto; background: #ffffff; border-radius: 6px;">
+                                                    </canvas>
+                                                </div>
+
+                                                @if (fieldSide == "right")
+                                                {
+                                                    <div class="spv-field-slot spv-field-slot-v" id="admin-sector-preview-field-label">
+                                                        <span class="spv-field-badge">@FieldArrow() @L["SectorEdit_PreviewField"]</span>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            @if (fieldSide == "bottom")
+                                            {
+                                                <div class="spv-field-slot spv-field-slot-h" id="admin-sector-preview-field-label">
+                                                    <span class="spv-field-badge">@FieldArrow() @L["SectorEdit_PreviewField"] @FieldArrow()</span>
                                                 </div>
                                             }
                                         </div>
 
-                                        <div class="text-center mt-3" id="admin-sector-preview-legend">
-                                            <span class="badge bg-secondary fs-6">@L["SectorEdit_PreviewLegend"]:</span>
-                                            <span class="badge ms-2" id="admin-sector-preview-legend-badge" style="background: @GetSeatColor(Sector.Type);">@L["SectorEdit_PreviewSeatType", Sector.Type.ToUpper()]</span>
+                                        <div class="spv-legend" id="admin-sector-preview-legend">
+                                            <span class="spv-legend-title">@L["SectorEdit_PreviewLegend"]</span>
+                                            <span class="spv-legend-chip" id="admin-sector-preview-legend-badge">
+                                                <span class="spv-legend-swatch" style="background: @GetSeatColor(Sector.Type);" aria-hidden="true"></span>
+                                                @L["SectorEdit_PreviewSeatType", Sector.Type.ToUpper()]
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -418,14 +463,254 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer" id="admin-sector-preview-footer">
-                        <button type="button" id="admin-sector-preview-close-modal-btn" class="btn btn-secondary" @onclick="TogglePreview">
+                    <div class="modal-footer spv-footer" id="admin-sector-preview-footer">
+                        <button type="button" id="admin-sector-preview-close-modal-btn" class="btn spv-close-btn" @onclick="TogglePreview">
                             @L["SectorEdit_PreviewClose"]
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <style>
+            /* ===== Sector Preview Modal — scoped light "stadium-map" theme ===== */
+            #sector-preview-modal .spv-content {
+                border: 1px solid #d7dde5;
+                border-radius: 16px;
+                overflow: hidden;
+                background: #ffffff;
+                box-shadow: 0 28px 70px rgba(15,23,42,0.35);
+            }
+            #sector-preview-modal .spv-header {
+                background: #ffffff;
+                border-bottom: 2px solid #1565c0;
+                color: #1f2a37;
+                padding: 1rem 1.25rem;
+            }
+            #sector-preview-modal .spv-title {
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                font-weight: 700;
+                letter-spacing: 0.2px;
+                margin: 0;
+            }
+            #sector-preview-modal .spv-title-icon { font-size: 1.15rem; line-height: 1; }
+            #sector-preview-modal .spv-title-text { color: #1f2a37; }
+
+            #sector-preview-modal .spv-body {
+                background: #eef1f5;
+                padding: 1.25rem;
+            }
+
+            /* Info banner */
+            #sector-preview-modal .spv-info {
+                display: flex;
+                align-items: center;
+                gap: 0.55rem;
+                background: #e7f1ff;
+                border: 1px solid #b6d4fe;
+                border-radius: 10px;
+                padding: 0.6rem 0.9rem;
+                color: #0a4a9e;
+                font-weight: 500;
+                font-size: 0.92rem;
+            }
+            #sector-preview-modal .spv-info-icon { font-size: 0.95rem; }
+
+            /* Card wrapper */
+            #sector-preview-modal .spv-card {
+                background: #ffffff;
+                border: 1px solid #dde3ea;
+                border-radius: 14px;
+                color: #1f2a37;
+            }
+            #sector-preview-modal .spv-card-body { padding: 1.1rem; overflow-x: auto; }
+
+            /* Controls bar */
+            #sector-preview-modal .spv-controls {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: stretch;
+                gap: 0.85rem;
+                margin-bottom: 1.1rem;
+            }
+            #sector-preview-modal .spv-control-card {
+                display: flex;
+                flex-direction: column;
+                gap: 0.4rem;
+                background: #f5f7fa;
+                border: 1px solid #e2e7ee;
+                border-radius: 12px;
+                padding: 0.6rem 0.85rem;
+            }
+            #sector-preview-modal .spv-control-card-grow { flex: 1 1 260px; min-width: 220px; }
+            #sector-preview-modal .spv-control-label {
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                font-size: 0.68rem;
+                font-weight: 700;
+                color: #5b6675;
+                margin: 0;
+            }
+
+            /* Segmented field-side control */
+            #sector-preview-modal .spv-seg { gap: 0; }
+            #sector-preview-modal .spv-seg-btn {
+                background: #ffffff;
+                border: 1px solid #cdd5df;
+                color: #34404e;
+                font-size: 1rem;
+                line-height: 1;
+                padding: 0.35rem 0.7rem;
+                transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+            }
+            #sector-preview-modal .spv-seg-btn:hover {
+                background: #e8f5ec;
+                border-color: #8fd3a3;
+            }
+            #sector-preview-modal .spv-seg-btn.active {
+                background: linear-gradient(180deg, #34b559, #268a43);
+                border-color: #268a43;
+                color: #ffffff;
+                box-shadow: 0 2px 8px rgba(38,138,67,0.35), inset 0 1px 0 rgba(255,255,255,0.35);
+            }
+            #sector-preview-modal .spv-seg-btn:active { transform: translateY(1px); }
+
+            /* Range slider */
+            #sector-preview-modal .spv-slider-wrap {
+                display: flex;
+                align-items: center;
+                gap: 0.7rem;
+            }
+            #sector-preview-modal .spv-range { flex: 1; min-width: 0; margin: 0; }
+            #sector-preview-modal .spv-range::-webkit-slider-thumb { background: #1565c0; }
+            #sector-preview-modal .spv-range::-moz-range-thumb { background: #1565c0; border: none; }
+            #sector-preview-modal .spv-margin-value {
+                min-width: 46px;
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+                font-weight: 700;
+                font-size: 0.85rem;
+                color: #1565c0;
+            }
+
+            /* Stage / viewport */
+            #sector-preview-modal .spv-stage {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            #sector-preview-modal .spv-stage-mid {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.85rem;
+                width: 100%;
+            }
+            #sector-preview-modal .spv-viewport {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                min-width: 0;
+                padding: 0.9rem;
+                background: #ffffff;
+                border: 1px solid #d7dde5;
+                border-radius: 14px;
+                box-shadow: inset 0 0 0 1px #ffffff, 0 6px 18px rgba(15,23,42,0.12);
+            }
+
+            /* Field / stage badge (grass-green, like the pitch) */
+            #sector-preview-modal .spv-field-slot { display: flex; justify-content: center; }
+            #sector-preview-modal .spv-field-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                background: linear-gradient(180deg, #35a75a, #1f7d3c);
+                color: #ffffff;
+                font-weight: 700;
+                letter-spacing: 0.6px;
+                font-size: 0.82rem;
+                padding: 0.4rem 0.9rem;
+                border-radius: 999px;
+                border: 1px solid rgba(0,0,0,0.08);
+                box-shadow: 0 3px 10px rgba(31,125,60,0.3);
+                white-space: nowrap;
+            }
+            #sector-preview-modal .spv-field-slot-v .spv-field-badge { writing-mode: horizontal-tb; }
+
+            /* Legend */
+            #sector-preview-modal .spv-legend {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.6rem;
+                margin-top: 1.1rem;
+            }
+            #sector-preview-modal .spv-legend-title {
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                font-size: 0.7rem;
+                font-weight: 700;
+                color: #5b6675;
+            }
+            #sector-preview-modal .spv-legend-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+                background: #f2f4f7;
+                border: 1px solid #dde3ea;
+                border-radius: 999px;
+                padding: 0.3rem 0.75rem;
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: #1f2a37;
+            }
+            #sector-preview-modal .spv-legend-swatch {
+                width: 0.85rem;
+                height: 0.85rem;
+                border-radius: 50%;
+                border: 1px solid rgba(0,0,0,0.25);
+                flex: 0 0 auto;
+            }
+
+            /* Footer */
+            #sector-preview-modal .spv-footer {
+                background: #ffffff;
+                border-top: 1px solid #e2e7ee;
+                padding: 0.85rem 1.25rem;
+            }
+            #sector-preview-modal .spv-close-btn {
+                background: #1565c0;
+                border: 1px solid #1565c0;
+                color: #ffffff;
+                font-weight: 600;
+                padding: 0.5rem 1.4rem;
+                border-radius: 9px;
+                transition: background-color 0.15s ease, border-color 0.15s ease;
+            }
+            #sector-preview-modal .spv-close-btn:hover {
+                background: #0f4e97;
+                border-color: #0f4e97;
+                color: #ffffff;
+            }
+
+            /* Accessibility: visible focus on the light surface */
+            #sector-preview-modal .spv-seg-btn:focus-visible,
+            #sector-preview-modal .spv-close-btn:focus-visible,
+            #sector-preview-modal .spv-range:focus-visible,
+            #sector-preview-modal .spv-focusable:focus-visible {
+                outline: 2px solid #1565c0;
+                outline-offset: 2px;
+            }
+
+            @@media (max-width: 576px) {
+                #sector-preview-modal .spv-controls { gap: 0.6rem; }
+                #sector-preview-modal .spv-stage-mid { gap: 0.5rem; }
+            }
+        </style>
     }
 }
 
@@ -605,11 +890,94 @@
 
     // Preview modal state
     private bool showPreview = false;
+    private bool previewNeedsRender = false;
+    private int seatMarginPercent = 8; // seat inset from the shape borders (% of short axis)
+    private string fieldSide = "bottom"; // which side of the sector the field/stage is on
+
+    private void SetFieldSide(string side)
+    {
+        fieldSide = side;
+        StateHasChanged();
+    }
+
+    // Arrow points from the field label toward the seating (the way seats face).
+    private string FieldArrow() => fieldSide switch
+    {
+        "top" => "⬇️",
+        "bottom" => "⬆️",
+        "left" => "➡️",
+        "right" => "⬅️",
+        _ => "⬆️"
+    };
 
     private void TogglePreview()
     {
         showPreview = !showPreview;
+        previewNeedsRender = showPreview;
         StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (showPreview && previewNeedsRender && Sector != null)
+        {
+            previewNeedsRender = false;
+            await RenderPreviewAsync();
+        }
+    }
+
+    private async Task OnSeatMarginChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var value))
+        {
+            seatMarginPercent = Math.Clamp(value, 0, 30);
+            await RenderPreviewAsync();
+        }
+    }
+
+    private DotNetObjectReference<SectorEditModal>? _selfRef;
+
+    private async Task RenderPreviewAsync()
+    {
+        if (Sector == null) return;
+        try
+        {
+            _selfRef ??= DotNetObjectReference.Create(this);
+            var json = System.Text.Json.JsonSerializer.Serialize(Sector);
+            var tipTemplate = L["SectorEdit_PreviewSeatTooltip"].Value; // e.g. "Row {0}, Seat {1}"
+            await JSRuntime.InvokeVoidAsync("renderSectorPreview",
+                "admin-sector-preview-canvas", json, seatMarginPercent / 100.0, tipTemplate, _selfRef);
+        }
+        catch
+        {
+            // Canvas not ready or JS unavailable during prerender - ignore.
+        }
+    }
+
+    // Generates a QR code (as a PNG data URI) for a seat's stadium code, on demand
+    // when a seat is hovered in the preview. Uses QRCoder's managed PngByteQRCode
+    // (no System.Drawing dependency).
+    [JSInvokable]
+    public string GetSeatQrDataUri(string data)
+    {
+        if (string.IsNullOrWhiteSpace(data)) return string.Empty;
+        try
+        {
+            using var generator = new QRCoder.QRCodeGenerator();
+            using var qrData = generator.CreateQrCode(data, QRCoder.QRCodeGenerator.ECCLevel.M);
+            var png = new QRCoder.PngByteQRCode(qrData);
+            var bytes = png.GetGraphic(6);
+            return $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
+    public void Dispose()
+    {
+        _selfRef?.Dispose();
     }
 
     private string GetSeatColor(string type)

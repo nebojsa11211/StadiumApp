@@ -8,18 +8,19 @@
 
 <div class="console" id="admin-events-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-events-header">
-        <div class="console-head__title">
-            <span class="eyebrow">@L["Events_Eyebrow"]</span>
-            <h1 id="admin-events-title">@L["Events_Title"]</h1>
-            <p>@L["Events_Subtitle"]</p>
-        </div>
-        <div class="console-head__actions">
+    <PageHeader Id="admin-events-header"
+                Eyebrow='@L["Events_Eyebrow"]'
+                Title='@L["Events_Title"]'
+                Subtitle='@L["Events_Subtitle"]'>
+        <Actions>
             <button class="pill-btn pill-btn--primary" @onclick="ShowCreateEventModal" id="admin-events-create-btn">
-                <i class="bi bi-plus-circle"></i><span>@L["Events_CreateButton"]</span>
+                <i class="bi bi-plus-lg"></i><span>@L["Events_CreateButton"]</span>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
+
+    @* Season scope banner — navigate seasons; scopes the events grid below. *@
+    <SeasonFilterBanner Seasons="seasons" @bind-Value="seasonFilterValue" IdPrefix="admin-events-season-banner" />
 
     @if (events == null)
     {
@@ -97,20 +98,6 @@
         <div class="panel" id="admin-events-panel">
             <div class="panel__head" id="admin-events-panel-head">
                 <h2 class="panel__title" id="admin-events-panel-title">@L["Events_PanelTitle"] <span class="panel__count mono" id="admin-events-panel-count">@FilteredEvents.Count()</span></h2>
-                @if (seasons != null && seasons.Any())
-                {
-                    <div class="ms-auto d-flex align-items-center gap-2" id="admin-events-season-filter-container">
-                        <label class="form-label mb-0 small text-muted" for="admin-events-season-filter" id="admin-events-season-filter-label">Season</label>
-                        <select id="admin-events-season-filter" class="form-select form-select-sm" style="width:auto" @bind="seasonFilterValue">
-                            <option value="">All seasons</option>
-                            <option value="none">No season</option>
-                            @foreach (var s in seasons.OrderByDescending(x => x.StartDate))
-                            {
-                                <option value="@s.Id">@s.Name</option>
-                            }
-                        </select>
-                    </div>
-                }
             </div>
             <div class="panel__body" id="admin-events-panel-body">
                 <div class="row" id="admin-events-list">
@@ -120,6 +107,7 @@
                             <div class="panel event-card" id="admin-event-card-@evt.Id">
                                 <div class="panel__head" id="admin-event-header-@evt.Id">
                                     <h3 class="panel__title" id="admin-event-header-content-@evt.Id">
+                                        <span class="event-card__id mono" id="admin-event-id-@evt.Id">#@evt.Id</span>
                                         <span id="admin-event-name-@evt.Id">@evt.Name</span>
                                     </h3>
                                     <span class="status @StatusBadgeClass(evt.Status)" id="admin-event-status-badge-@evt.Id" title="Phase: @evt.Phase">
@@ -137,10 +125,35 @@
                                         }
                                         <dt><i class="bi bi-calendar3"></i> @L["Events_DateLabel"]</dt>
                                         <dd class="mono" id="admin-event-date-@evt.Id">@evt.Date?.ToString("MMM dd, yyyy HH:mm")</dd>
+                                        <dt><i class="bi bi-ticket-perforated"></i> @L["Events_TicketWindowLabel"]</dt>
+                                        <dd class="mono" id="admin-event-ticket-window-@evt.Id">@FormatWindow(evt.TicketSalesStartDate, evt.TicketSalesEndDate)</dd>
+                                        <dt><i class="bi bi-cup-straw"></i> @L["Events_DrinkWindowLabel"]</dt>
+                                        <dd class="mono" id="admin-event-drink-window-@evt.Id">@FormatWindow(evt.DrinkSalesStartDate, evt.DrinkSalesEndDate)</dd>
                                         <dt><i class="bi bi-person-fill"></i> @L["Events_CapacityLabel"]</dt>
                                         <dd class="mono" id="admin-event-capacity-@evt.Id">@evt.Capacity.ToString("N0") @L["Events_SeatsLabel"]</dd>
+                                        @if (evt.Status == EventStatus.OnSale)
+                                        {
+                                            var soldSeats = Math.Max(0, evt.Capacity - evt.AvailableSeats);
+                                            var occupancyPct = evt.Capacity > 0 ? (int)Math.Round(100.0 * soldSeats / evt.Capacity) : 0;
+                                            <dt><i class="bi bi-ticket-detailed"></i> @L["Events_OccupancyLabel"]</dt>
+                                            <dd id="admin-event-occupancy-@evt.Id">
+                                                <span class="mono fw-medium" id="admin-event-seats-sold-@evt.Id">@soldSeats.ToString("N0")</span> @L["Events_SeatsSold"]
+                                                <span class="text-muted">·</span>
+                                                <span class="mono" id="admin-event-seats-free-@evt.Id">@evt.AvailableSeats.ToString("N0")</span> @L["Events_SeatsFree"]
+                                                @if (evt.SeasonTicketsSold > 0)
+                                                {
+                                                    <div class="event-occupancy__note" id="admin-event-season-sold-@evt.Id">@L["Events_SeasonPassNote", evt.SeasonTicketsSold.ToString("N0")]</div>
+                                                }
+                                            </dd>
+                                            <dt class="event-occupancy__bar-label"><i class="bi bi-bar-chart-steps"></i></dt>
+                                            <dd class="event-occupancy__bar-cell">
+                                                <div class="event-occupancy__bar" id="admin-event-occupancy-bar-@evt.Id" title="@occupancyPct% sold">
+                                                    <div class="event-occupancy__fill" style="width:@(occupancyPct)%"></div>
+                                                </div>
+                                            </dd>
+                                        }
                                         <dt><i class="bi bi-cash"></i> @L["Events_BasePriceLabel"]</dt>
-                                        <dd class="mono" id="admin-event-price-@evt.Id">$@evt.BasePrice.ToString("F2")</dd>
+                                        <dd class="mono" id="admin-event-price-@evt.Id">€@evt.BasePrice.ToString("F2")</dd>
                                         <dt><i class="bi bi-calendar-range"></i> Season</dt>
                                         <dd id="admin-event-season-@evt.Id">
                                             @if (!string.IsNullOrEmpty(evt.SeasonName))
@@ -344,6 +357,29 @@
                         </div>
                     </div>
 
+                    <div class="row" id="admin-event-form-drink-window-row">
+                        <div class="col-md-6" id="admin-event-form-drink-start-col">
+                            <div class="mb-3" id="admin-event-form-drink-start-group">
+                                <label class="form-label" for="admin-event-form-drink-start">@L["Events_DrinkSalesStartDateTimeLabel"]</label>
+                                <input type="datetime-local" class="form-control" @bind="eventForm.DrinkSalesStartDate" id="admin-event-form-drink-start">
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="admin-event-form-drink-end-col">
+                            <div class="mb-3" id="admin-event-form-drink-end-group">
+                                <label class="form-label" for="admin-event-form-drink-end">@L["Events_DrinkSalesEndDateTimeLabel"]</label>
+                                <input type="datetime-local" class="form-control" @bind="eventForm.DrinkSalesEndDate" id="admin-event-form-drink-end">
+                                @if (eventForm.DrinkSalesStartDate.HasValue && eventForm.DrinkSalesEndDate.HasValue &&
+                                     eventForm.DrinkSalesEndDate.Value <= eventForm.DrinkSalesStartDate.Value)
+                                {
+                                    <div class="text-danger small mt-1" id="admin-event-form-drink-end-error">@L["Events_DrinkSalesEndAfterStartValidation"]</div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-12" id="admin-event-form-drink-window-hint-col">
+                            <div class="form-text mb-3" id="admin-event-form-drink-window-hint">@L["Events_DrinkWindowHint"]</div>
+                        </div>
+                    </div>
+
                     <div class="row" id="admin-event-form-capacity-price-row">
                         <div class="col-md-6" id="admin-event-form-capacity-col">
                             <div class="mb-3" id="admin-event-form-capacity-group">
@@ -360,7 +396,7 @@
                             <div class="mb-3" id="admin-event-form-price-group">
                                 <label class="form-label" for="admin-event-form-price">@L["Events_BasePriceFieldLabel"]</label>
                                 <div class="input-group" id="admin-event-form-price-input-group">
-                                    <span class="input-group-text" id="admin-event-form-price-symbol">$</span>
+                                    <span class="input-group-text" id="admin-event-form-price-symbol">€</span>
                                     <input type="number" class="form-control" @bind="eventForm.BasePrice"
                                            step="0.01" min="0" required id="admin-event-form-price">
                                 </div>
@@ -433,10 +469,10 @@
                                                     <span class="text-muted small ms-1">@row.SectorCode</span>
                                                 </td>
                                                 <td><span class="text-capitalize">@row.Type</span></td>
-                                                <td class="text-end mono">$@EffectiveDefault(row).ToString("F2")</td>
+                                                <td class="text-end mono">€@EffectiveDefault(row).ToString("F2")</td>
                                                 <td>
                                                     <div class="input-group input-group-sm">
-                                                        <span class="input-group-text">$</span>
+                                                        <span class="input-group-text">€</span>
                                                         <input type="number" step="0.01" min="0" class="form-control"
                                                                placeholder="@EffectiveDefault(row).ToString("F2")"
                                                                @bind="row.EventPrice"

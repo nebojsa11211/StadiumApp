@@ -13,8 +13,14 @@ namespace StadiumDrinkOrdering.Admin.Pages
         private bool isLoading = false;
         private string? errorMessage = null;
 
-        // Analytics data
+        // Analytics data — allEvents is the full set; availableEvents is the season-filtered view shown.
+        private List<EventDto> allEvents = new();
         private IEnumerable<EventDto>? availableEvents;
+
+        // Season scope (mirrors the dashboard/orders/tickets).
+        private int? selectedSeasonId;
+        private List<SeasonDto> seasons = new();
+        private List<(int Id, string Name)> seasonOptions = new();
 
         // Sorting
         private readonly TableSortState sortState = new();
@@ -70,13 +76,57 @@ namespace StadiumDrinkOrdering.Admin.Pages
         {
             try
             {
-                availableEvents = await AdminApiService.GetEventsAsync();
-                ApplyEventSort();
+                allEvents = (await AdminApiService.GetEventsAsync())?.ToList() ?? new List<EventDto>();
+
+                try { seasons = await AdminApiService.GetAsync<List<SeasonDto>>("seasons") ?? new(); }
+                catch (Exception ex) { Console.WriteLine($"Failed to load seasons: {ex.Message}"); }
+
+                BuildSeasonOptions();
+                ApplyEventFilter();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to load events: {ex.Message}");
             }
+        }
+
+        private void BuildSeasonOptions()
+        {
+            // Only surface seasons that actually have events.
+            var seasonIdsWithEvents = allEvents
+                .Where(e => e.SeasonId.HasValue)
+                .Select(e => e.SeasonId!.Value)
+                .ToHashSet();
+
+            seasonOptions = seasons
+                .Where(s => seasonIdsWithEvents.Contains(s.Id))
+                .OrderBy(s => s.StartDate)
+                .ThenBy(s => s.Id)
+                .Select(s => (s.Id, s.Name))
+                .ToList();
+
+            if (selectedSeasonId.HasValue && !seasonOptions.Any(s => s.Id == selectedSeasonId.Value))
+                selectedSeasonId = null;
+        }
+
+        // Rebuilds the shown event list from the season selection, then applies the active sort.
+        private void ApplyEventFilter()
+        {
+            IEnumerable<EventDto> query = allEvents;
+            if (selectedSeasonId.HasValue)
+                query = query.Where(e => e.SeasonId == selectedSeasonId.Value);
+
+            availableEvents = query.ToList();
+            ApplyEventSort();
+        }
+
+        private void OnSeasonChanged(ChangeEventArgs e)
+        {
+            var v = e.Value?.ToString();
+            selectedSeasonId = string.IsNullOrEmpty(v) ? (int?)null
+                : int.TryParse(v, out var sid) ? sid : (int?)null;
+            ApplyEventFilter();
+            StateHasChanged();
         }
 
         private void NavigateToCustomerAnalytics()

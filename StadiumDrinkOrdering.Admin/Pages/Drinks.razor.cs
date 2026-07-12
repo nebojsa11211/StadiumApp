@@ -36,6 +36,22 @@ public partial class Drinks : ComponentBase
 
     private DrinkFormModel drinkForm = new();
 
+    // Restock ("Add stock") modal state
+    private bool showRestockModal = false;
+    private DrinkDto? restockDrink;
+    private int restockQuantity = 1;
+    private string? restockNote;
+    private bool isRestocking = false;
+
+    // Stock-history modal state
+    private bool showHistoryModal = false;
+    private DrinkDto? historyDrink;
+    private List<StockMovementDto>? stockMovements;
+    private bool loadingHistory = false;
+
+    // Below this level a drink is flagged as low stock (badge, filter, metric).
+    private const int LowStockThreshold = 10;
+
     // Sorting
     private readonly TableSortState sortState = new();
     private readonly PagedView<DrinkDto> pager = new();
@@ -119,7 +135,7 @@ public partial class Drinks : ComponentBase
             {
                 "available" => filtered.Where(d => d.IsAvailable && d.StockQuantity > 0),
                 "unavailable" => filtered.Where(d => !d.IsAvailable || d.StockQuantity == 0),
-                "lowstock" => filtered.Where(d => d.StockQuantity < 10 && d.IsAvailable),
+                "lowstock" => filtered.Where(d => d.StockQuantity < LowStockThreshold && d.IsAvailable),
                 _ => filtered
             };
 
@@ -324,6 +340,102 @@ public partial class Drinks : ComponentBase
             }
         }
     }
+
+    private void ShowRestockModal(DrinkDto drink)
+    {
+        restockDrink = drink;
+        restockQuantity = 1;
+        restockNote = null;
+        showRestockModal = true;
+    }
+
+    private void HideRestockModal()
+    {
+        showRestockModal = false;
+        restockDrink = null;
+    }
+
+    private async Task SubmitRestock()
+    {
+        if (restockDrink == null)
+            return;
+
+        if (restockQuantity <= 0)
+        {
+            ShowAlert(L["Drinks_RestockInvalidQuantity"], "danger");
+            return;
+        }
+
+        isRestocking = true;
+        try
+        {
+            var dto = new RestockDrinkDto
+            {
+                Quantity = restockQuantity,
+                Note = string.IsNullOrWhiteSpace(restockNote) ? null : restockNote.Trim()
+            };
+
+            var updated = await ApiService.RestockDrinkAsync(restockDrink.Id, dto);
+            if (updated != null)
+            {
+                var name = restockDrink.Name;
+                var added = restockQuantity;
+                HideRestockModal();
+                await LoadDrinks();
+                ShowAlert(L["Drinks_RestockSuccess", added, name, updated.StockQuantity], "success");
+            }
+            else
+            {
+                ShowAlert(L["Drinks_RestockFailed"], "danger");
+            }
+        }
+        finally
+        {
+            isRestocking = false;
+        }
+    }
+
+    private async Task ShowHistoryModal(DrinkDto drink)
+    {
+        historyDrink = drink;
+        stockMovements = null;
+        showHistoryModal = true;
+        loadingHistory = true;
+        try
+        {
+            var result = await ApiService.GetStockMovementsAsync(drink.Id);
+            stockMovements = result?.ToList() ?? new List<StockMovementDto>();
+        }
+        finally
+        {
+            loadingHistory = false;
+        }
+    }
+
+    private void HideHistoryModal()
+    {
+        showHistoryModal = false;
+        historyDrink = null;
+        stockMovements = null;
+    }
+
+    // Human label + badge style for a ledger entry's movement type.
+    private string MovementTypeLabel(string type) => type switch
+    {
+        "Restock" => L["Drinks_MovementRestock"],
+        "Sale" => L["Drinks_MovementSale"],
+        "OrderCancelled" => L["Drinks_MovementOrderCancelled"],
+        "ManualAdjustment" => L["Drinks_MovementManualAdjustment"],
+        _ => type
+    };
+
+    private static string MovementBadgeClass(string type) => type switch
+    {
+        "Restock" => "is-active",
+        "Sale" => "is-cancelled",
+        "OrderCancelled" => "is-pending",
+        _ => ""
+    };
 
     private void ShowAlert(string message, string type)
     {

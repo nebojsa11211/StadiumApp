@@ -1,0 +1,2598 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Hrvatski nogometni savez" [ref=e7]
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - list [ref=e12]:
+            - listitem [ref=e13]:
+              - link "Ulaznice" [ref=e14] [cursor=pointer]:
+                - /url: https://hns.family/obitelj/navijaci/ulaznice/
+            - listitem [ref=e15]:
+              - link "Shop" [ref=e16] [cursor=pointer]:
+                - /url: https://shop.hns.family/
+            - listitem [ref=e17]:
+              - link "Vatreno srce" [ref=e18] [cursor=pointer]:
+                - /url: https://hns.family/vatreno-srce/
+            - listitem [ref=e19]:
+              - link "Mediji" [ref=e20] [cursor=pointer]:
+                - /url: https://hns.family/mediji/informacije/
+            - listitem [ref=e21]:
+              - list [ref=e22]:
+                - listitem [ref=e23]:
+                  - link "Facebook" [ref=e24] [cursor=pointer]:
+                    - /url: https://www.facebook.com/cff.hns
+                - listitem [ref=e25]:
+                  - link "Twitter" [ref=e26] [cursor=pointer]:
+                    - /url: https://twitter.com/HNS_CFF
+                - listitem [ref=e27]:
+                  - link "Instagram" [ref=e28] [cursor=pointer]:
+                    - /url: https://instagram.com/hns_cff
+                - listitem [ref=e29]:
+                  - link "Youtube" [ref=e30] [cursor=pointer]:
+                    - /url: https://www.youtube.com/@hns.family
+                - listitem [ref=e31]:
+                  - link "Weibo" [ref=e32] [cursor=pointer]:
+                    - /url: https://www.weibo.com/u/7375804392
+                - listitem [ref=e33]:
+                  - link "LinkedIn" [ref=e34] [cursor=pointer]:
+                    - /url: https://www.linkedin.com/company/croatian-football-federation/
+                - listitem [ref=e35]:
+                  - link "TikTok" [ref=e36] [cursor=pointer]:
+                    - /url: https://www.tiktok.com/@hns.family
+          - list [ref=e38]:
+            - listitem [ref=e39]:
+              - generic [ref=e40]: HR
+            - listitem [ref=e42]:
+              - link "EN" [ref=e43] [cursor=pointer]:
+                - /url: /en/
+        - generic [ref=e45]:
+          - list [ref=e47]:
+            - listitem [ref=e48]:
+              - link [ref=e49] [cursor=pointer]:
+                - /url: https://hns.family/
+                - heading "HNS.family" [level=2] [ref=e50]
+                - heading "Službena stranica Saveza" [level=3] [ref=e51]
+            - listitem [ref=e52]:
+              - link [ref=e53] [cursor=pointer]:
+                - /url: https://hns.team/
+                - heading "HNS.team" [level=2] [ref=e54]
+                - heading "Hrvatske reprezentacije" [level=3] [ref=e55]
+            - listitem [ref=e56]:
+              - link [ref=e57] [cursor=pointer]:
+                - /url: https://riznica.hns.family/
+                - heading "HNS.riznica" [level=2] [ref=e58]
+                - heading "Povijest i statistika" [level=3] [ref=e59]
+            - listitem [ref=e60]:
+              - link [ref=e61] [cursor=pointer]:
+                - /url: https://semafor.hns.family/
+                - heading "Semafor" [level=2] [ref=e62]
+                - heading "Sva domaća natjecanja" [level=3] [ref=e63]
+          - list [ref=e65]:
+            - listitem [ref=e66]:
+              - link "Arhiva" [ref=e67] [cursor=pointer]:
+                - /url: https://hns.family/arhiva/
+  - main [ref=e68]:
+    - generic [ref=e70]:
+      - list [ref=e73]:
+        - listitem [ref=e74]:
+          - generic [ref=e75]:
+            - link [ref=e77] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399930/gnk-dinamo-nk-lokomotiva-z-0-0/
+            - generic [ref=e78]: SuperSport HNL
+            - link [ref=e80] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/609/gnk-dinamo/
+              - text: GNK Dinamo
+              - img "GNK Dinamo" [ref=e82]
+            - link "0 0" [ref=e84] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399930/gnk-dinamo-nk-lokomotiva-z-0-0/
+              - generic [ref=e85]:
+                - generic [ref=e86]: "0"
+                - generic [ref=e87]: "0"
+            - link [ref=e89] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/594/nk-lokomotiva-z/
+              - text: NK Lokomotiva (Z)
+              - img "NK Lokomotiva (Z)" [ref=e91]
+        - listitem [ref=e92]:
+          - generic [ref=e93]:
+            - link [ref=e95] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399932/nk-varazdin-nk-istra-1961-2-0/
+            - generic [ref=e96]: SuperSport HNL
+            - link [ref=e98] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/5355/nk-varazdin/
+              - text: NK Varaždin
+              - img "NK Varaždin" [ref=e100]
+            - link "2 0" [ref=e102] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399932/nk-varazdin-nk-istra-1961-2-0/
+              - generic [ref=e103]:
+                - generic [ref=e104]: "2"
+                - generic [ref=e105]: "0"
+            - link [ref=e107] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/1534/nk-istra-1961/
+              - text: NK Istra 1961
+              - img "NK Istra 1961" [ref=e109]
+        - listitem [ref=e110]:
+          - generic [ref=e111]:
+            - link [ref=e113] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399933/hnk-rijeka-hnk-gorica-sdd-2-0/
+            - generic [ref=e114]: SuperSport HNL
+            - link [ref=e116] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/1471/hnk-rijeka/
+              - text: HNK Rijeka
+              - img "HNK Rijeka" [ref=e118]
+            - link "2 0" [ref=e120] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399933/hnk-rijeka-hnk-gorica-sdd-2-0/
+              - generic [ref=e121]:
+                - generic [ref=e122]: "2"
+                - generic [ref=e123]: "0"
+            - link [ref=e125] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/1274/hnk-gorica-sdd/
+              - text: HNK Gorica s.d.d.
+              - img "HNK Gorica s.d.d." [ref=e127]
+        - listitem [ref=e128]:
+          - generic [ref=e129]:
+            - link [ref=e131] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399931/hnk-hajduk-hnk-vukovar-1991-6-3/
+            - generic [ref=e132]: SuperSport HNL
+            - link [ref=e134] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/515/hnk-hajduk/
+              - text: HNK Hajduk
+              - img "HNK Hajduk" [ref=e136]
+            - link "6 3" [ref=e138] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399931/hnk-hajduk-hnk-vukovar-1991-6-3/
+              - generic [ref=e139]:
+                - generic [ref=e140]: "6"
+                - generic [ref=e141]: "3"
+            - link [ref=e143] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/5361/hnk-vukovar-1991/
+              - text: HNK Vukovar 1991
+              - img "HNK Vukovar 1991" [ref=e145]
+        - listitem [ref=e146]:
+          - generic [ref=e147]:
+            - link [ref=e149] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399934/nk-osijek-nk-slaven-belupo-2-0/
+            - generic [ref=e150]: SuperSport HNL
+            - link [ref=e152] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/150/nk-osijek/
+              - text: NK Osijek
+              - img "NK Osijek" [ref=e154]
+            - link "2 0" [ref=e156] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399934/nk-osijek-nk-slaven-belupo-2-0/
+              - generic [ref=e157]:
+                - generic [ref=e158]: "2"
+                - generic [ref=e159]: "0"
+            - link [ref=e161] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/914/nk-slaven-belupo/
+              - text: NK Slaven Belupo
+              - img "NK Slaven Belupo" [ref=e163]
+        - listitem [ref=e164]:
+          - generic [ref=e165]:
+            - link [ref=e167] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399927/nk-istra-1961-hnk-rijeka-0-0/
+            - generic [ref=e168]: SuperSport HNL
+            - link [ref=e170] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/1534/nk-istra-1961/
+              - text: NK Istra 1961
+              - img "NK Istra 1961" [ref=e172]
+            - link "0 0" [ref=e174] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399927/nk-istra-1961-hnk-rijeka-0-0/
+              - generic [ref=e175]:
+                - generic [ref=e176]: "0"
+                - generic [ref=e177]: "0"
+            - link [ref=e179] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/1471/hnk-rijeka/
+              - text: HNK Rijeka
+              - img "HNK Rijeka" [ref=e181]
+        - listitem [ref=e182]:
+          - generic [ref=e183]:
+            - link [ref=e185] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399925/nk-slaven-belupo-gnk-dinamo-1-4/
+            - generic [ref=e186]: SuperSport HNL
+            - link [ref=e188] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/914/nk-slaven-belupo/
+              - text: NK Slaven Belupo
+              - img "NK Slaven Belupo" [ref=e190]
+            - link "1 4" [ref=e192] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399925/nk-slaven-belupo-gnk-dinamo-1-4/
+              - generic [ref=e193]:
+                - generic [ref=e194]: "1"
+                - generic [ref=e195]: "4"
+            - link [ref=e197] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/609/gnk-dinamo/
+              - text: GNK Dinamo
+              - img "GNK Dinamo" [ref=e199]
+        - listitem [ref=e200]:
+          - generic [ref=e201]:
+            - link [ref=e203] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399929/nk-lokomotiva-z-hnk-hajduk-1-1/
+            - generic [ref=e204]: SuperSport HNL
+            - link [ref=e206] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/594/nk-lokomotiva-z/
+              - text: NK Lokomotiva (Z)
+              - img "NK Lokomotiva (Z)" [ref=e208]
+            - link "1 1" [ref=e210] [cursor=pointer]:
+              - /url: https://semafor.hns.family/utakmice/100399929/nk-lokomotiva-z-hnk-hajduk-1-1/
+              - generic [ref=e211]:
+                - generic [ref=e212]: "1"
+                - generic [ref=e213]: "1"
+            - link [ref=e215] [cursor=pointer]:
+              - /url: https://semafor.hns.family/klubovi/515/hnk-hajduk/
+              - text: HNK Hajduk
+              - img "HNK Hajduk" [ref=e217]
+      - generic [ref=e218]:
+        - heading "Semafor" [level=3] [ref=e220]
+        - generic [ref=e221]:
+          - img "HNS" [ref=e222]
+          - heading "semafor" [level=1] [ref=e223]
+        - link [ref=e225] [cursor=pointer]:
+          - /url: https://qrcodes.pro/LFnVj2
+          - img "Semafor app" [ref=e226]
+      - list [ref=e228]:
+        - listitem [ref=e229]:
+          - heading "Sezona:" [level=3] [ref=e230]
+          - button "2025/26 2025/26" [ref=e231]:
+            - combobox [ref=e232]:
+              - option "2027"
+              - option "2026/27"
+              - option "2026"
+              - option "2025/26" [selected]
+              - option "2025"
+              - option "2024/25"
+              - option "2024"
+              - option "2023/24"
+              - option "2023"
+              - option "2022/23"
+              - option "2022"
+              - option "2021/22"
+              - option "2021"
+              - option "2020/21"
+              - option "2020"
+              - option "2019/20"
+              - option "2019"
+              - option "2018/19"
+              - option "2018"
+              - option "2017/18"
+              - option "2017"
+              - option "2016/17"
+              - option "2016"
+              - option "2015/16"
+              - option "2015"
+              - option "2014/15"
+              - option "2014"
+              - option "2013/14"
+              - option "2013"
+              - option "2012/13"
+              - option "2012"
+              - option "2011/12"
+              - option "2010/11"
+              - option "2009/10"
+              - option "2008/09"
+              - option "2007/08"
+              - option "2006/07"
+              - option "2005/06"
+              - option "2004/05"
+              - option "2003/04"
+            - paragraph [ref=e233]:
+              - generic [ref=e234] [cursor=pointer]: 2025/26
+        - listitem [ref=e237]:
+          - heading "Razina:" [level=3] [ref=e238]
+          - button "Hrvatski nogometni savez Hrvatski nogometni savez" [ref=e239]:
+            - combobox [ref=e240]:
+              - option "- odaberi razinu -"
+              - option "Hrvatski nogometni savez" [selected]
+              - option "HNS - NS Zagreb"
+              - option "HNS - NS Osijek"
+              - option "HNS - NS Rijeka"
+              - option "HNS - NS Sjever"
+              - option "HNS - NS Split"
+              - option "ZNS"
+              - option "ŽNS bjelovarsko-bilogorski"
+              - option "ŽNS brodsko-posavski"
+              - option "ŽNS dubrovačko-neretvanski"
+              - option "ŽNS istarski"
+              - option "ŽNS karlovački"
+              - option "ŽNS koprivničko-križevački"
+              - option "ŽNS krapinsko-zagorski"
+              - option "ŽNS ličko-senjski"
+              - option "ŽNS međimurski"
+              - option "ŽNS osječko-baranjski"
+              - option "ŽNS požeško-slavonski"
+              - option "ŽNS primorsko-goranski"
+              - option "ŽNS sisačko-moslavački"
+              - option "ŽNS splitsko-dalmatinski"
+              - option "ŽNS šibensko-kninski"
+              - option "ŽNS varaždinski"
+              - option "ŽNS virovitičko-podravski"
+              - option "ŽNS vukovarsko-srijemski"
+              - option "ŽNS zadarski"
+              - option "ŽNS zagrebački"
+              - option "NS Beli Manastir"
+              - option "NS Donji Miholjac"
+              - option "NS Đakovo"
+              - option "NS Jastrebarsko"
+              - option "NS Kutina"
+              - option "NS Našice"
+              - option "NS Nova Gradiška"
+              - option "NS Osijek"
+              - option "NS Samobor"
+              - option "NS Valpovo"
+              - option "NS Velika Gorica"
+              - option "NS Vinkovci"
+              - option "NS Vrbovec"
+              - option "NS Zaprešić"
+            - paragraph [ref=e241]:
+              - generic [ref=e242] [cursor=pointer]: Hrvatski nogometni savez
+        - listitem [ref=e245]:
+          - heading "Natjecanje:" [level=3] [ref=e246]
+          - button "- odaberi natjecanje - - odaberi natjecanje -" [ref=e247]:
+            - combobox [ref=e248]:
+              - option "- odaberi natjecanje -" [selected]
+              - option "SuperSport HNL"
+              - option "SuperSport HNK"
+              - option "KUP ŽNS 25/26"
+              - option "SuperSport Prva NL"
+              - option "Kvalifikacije za popunu Prve HNLŽ 2026/2027 25/26"
+              - option "SuperSport Druga NL"
+              - option "1. NL juniori"
+              - option "Kvalifikacija za Prvu HNLŽ kadetkinje 25/26"
+              - option "1. NL kadeti"
+              - option "Kvalifikacija za Prvu HNLŽ pionirke 25/26"
+              - option "1. NL pioniri"
+              - option "HNKŽ"
+              - option "SuperSport HMNL"
+              - option "Superkup u malom nogometu 2025"
+              - option "Prva HMNL 25/26"
+              - option "Druga HNLŽ 25/26 skupina \"A\""
+              - option "Druga HNLŽ 25/26 skupina \"B\""
+              - option "Prva HNLŽ kadetkinje 25/26"
+              - option "Prva HNLŽ pionirke 25/26"
+              - option "Treća NL Istok 25/26"
+              - option "Kvalifikacije za popunu Prve HNLŽ 25/26"
+              - option "Doigravanje za popunu 1. HNLŽ 25/26"
+              - option "Kvalifikacija za Prvu HNLŽ kadetkinje 25/26"
+              - option "Kvalifikacija za Prvu HNLŽ pionirke 25/26"
+              - option "Kvalifikacije za Prvu NL-PIONIRI 25/26"
+              - option "Kvalifikacije za Prvu NL-KADETI 25/26"
+              - option "Kvalifikacije za Prvu NL JUNIORI 25/26"
+              - option "2. NL - KADETI A 25/26"
+              - option "2. NL - KADETI B 25/26"
+              - option "2. NL - JUNIORI A 25/26"
+              - option "2. NL - JUNIORI B 25/26"
+              - option "1. NL Središte Osijek - Juniori 25/26"
+              - option "1. NL Središte Istok - Kadeti 25/26"
+              - option "1. NL Središte Istok - Stariji pioniri 25/26"
+              - option "1. NL Središte Istok - Mlađi pioniri 25/26"
+              - option "1. NL Središte Istok - Početnici U-11 25/26"
+              - option "1. NL Središte Istok - Početnici U-9 25/26"
+              - option "2. NL Središte Istok - Stariji pioniri 25/26"
+              - option "2. NL Središte Istok - Mlađi pioniri 25/26"
+              - option "2. NL Središte Istok ''A'' - Početnici U-11 25/26"
+              - option "2. NL Središte Istok ''B'' - Početnici U-11 25/26"
+              - option "2. NL Središte Istok ''A'' - Početnici U-9 25/26"
+              - option "2. NL Središte Istok ''B'' - Početnici U-9 25/26"
+              - option "4. Nogometna liga Središta Zagreb skupina A 25/26"
+              - option "MŽNL Os-Vk 25/26"
+              - option "KUP ŽNS 25/26"
+              - option "HNLŽM - kadetkinje 25/26 skupina Centar \"A\""
+              - option "HNLŽM - pionirke 25/26 skupina Centar \"A\""
+              - option "HNLŽM - kadetkinje 25/26 Centar skupina \"B\""
+              - option "HNLŽM - pionirke 25/26 Centar skupina \"B\""
+              - option "HNLŽM - kadetkinje 25/26 skupina Istok"
+              - option "HNLŽM - pionirke 25/26 skupina Istok"
+              - option "HNLŽM - kadetkinje 25/26 skupina Jug"
+              - option "HNLŽM - pionirke 25/26 skupina Jug"
+              - option "kup-futsal regija zapad 25/26"
+              - option "2. NL Središte Istok - Kadeti 25/26"
+              - option "Doigravanje za popunu 1. HNLŽ 25/26"
+              - option "FUTSAL DRUGA HMNL JUG - središte Split 25/26"
+              - option "FUTSAL HMNK - središte Split 2025./26."
+              - option "futsal juniori -Centar 25/26"
+              - option "Futsal kadeti-regija Centar 25/26"
+              - option "Futsal kvalifikacije Prva HMNL juniora 25/26"
+              - option "Futsal kvalifikacije Prva HMNL juniora 25/26"
+              - option "Futsal kvalifikacije Prva HMNL kadeti 25/26"
+              - option "Futsal kvalifikacije Prva HMNL kadeti 25/26"
+              - option "FUTSAL Mladež kadeti - središte Split, Završnica, 25/26"
+              - option "FUTSAL mladež- juniori, regija istok 25/26"
+              - option "FUTSAL mladež- juniori, regija istok 25/26- PLAY OFF"
+              - option "FUTSAL mladež- kadeti, regija istok 25/26"
+              - option "FUTSAL PRVA HMNL juniori 25/26"
+              - option "FUTSAL PRVA HMNL KADETI 25/26"
+              - option "Futsal Prva HMNL pioniri 25/26"
+              - option "Futsal Prva HMNL pioniri sjever"
+              - option "FUTSAL REGIJA ISTOK 25/26"
+              - option "Futsal-2.hmnl-Zapad 25/26"
+              - option "Futsal-DRUGA HMNL-Centar 25/26"
+              - option "futsal-kup središte Zagreb 25/26"
+              - option "HMNK"
+              - option "HMNK REGIJA ISTOK 25/26"
+              - option "HMNK regija ISTOK 25/26 kvalifikacije"
+              - option "Kvalifikacije za popunu Druga HNL - JUNIORI 25/26"
+              - option "Kvalifikacije za popunu Druga HNL - KADETI 25/26"
+              - option "Kvalifikacije za popunu prve lige - JUNIORI 25/26"
+              - option "Kvalifikacije za popunu prve lige- KADETI 25/26"
+              - option "Kvalifikacije za popunu SHMNL 25/26"
+              - option "Kvalifikacije za popunu SuperSport 2 .NL 25/26"
+              - option "Prva HMNLŽ"
+              - option "Prva HNL - PIONIRI 25/26"
+              - option "Završnica HNK - JUNIORI 25/26"
+              - option "Završnica HNK - KADETI 25/26"
+              - option "Završnica HNK - PIONIRI 25/26"
+            - paragraph [ref=e249]:
+              - generic [ref=e250] [cursor=pointer]: "- odaberi natjecanje -"
+        - listitem [ref=e253]
+      - generic [ref=e254]:
+        - heading "SuperSport HNL" [level=1] [ref=e255]
+        - heading "2025/2026" [level=2] [ref=e256]
+      - generic [ref=e257]:
+        - heading "Raspored, rezultati, strijelci" [level=2] [ref=e258]
+        - generic [ref=e260]:
+          - generic [ref=e262]:
+            - list [ref=e264]:
+              - listitem [ref=e265]:
+                - generic [ref=e266]: 36. kolo
+              - listitem [ref=e269]:
+                - generic [ref=e270]:
+                  - generic [ref=e271]: 22.05.2026. 16:00
+                  - link [ref=e273] [cursor=pointer]:
+                    - /url: /klubovi/150/nk-osijek/
+                    - text: NK Osijek
+                    - img "NK Osijek" [ref=e275]
+                  - 'link "2 : 0" [ref=e277] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399934/nk-osijek-nk-slaven-belupo-2-0/
+                    - generic [ref=e278]:
+                      - generic [ref=e279]: "2"
+                      - generic [ref=e280]: ":"
+                      - generic [ref=e281]: "0"
+                  - link [ref=e283] [cursor=pointer]:
+                    - /url: /klubovi/914/nk-slaven-belupo/
+                    - text: NK Slaven Belupo
+                    - img "NK Slaven Belupo" [ref=e285]
+                  - generic [ref=e286]: Opus Arena, Osijek
+                  - link [ref=e288] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399934/nk-osijek-nk-slaven-belupo-2-0/
+              - listitem [ref=e290]:
+                - generic [ref=e291]:
+                  - generic [ref=e292]: 22.05.2026. 18:15
+                  - link [ref=e294] [cursor=pointer]:
+                    - /url: /klubovi/515/hnk-hajduk/
+                    - text: HNK Hajduk
+                    - img "HNK Hajduk" [ref=e296]
+                  - 'link "6 : 3" [ref=e298] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399931/hnk-hajduk-hnk-vukovar-1991-6-3/
+                    - generic [ref=e299]:
+                      - generic [ref=e300]: "6"
+                      - generic [ref=e301]: ":"
+                      - generic [ref=e302]: "3"
+                  - link [ref=e304] [cursor=pointer]:
+                    - /url: /klubovi/5361/hnk-vukovar-1991/
+                    - text: HNK Vukovar 1991
+                    - img "HNK Vukovar 1991" [ref=e306]
+                  - generic [ref=e307]: Gradski stadion Poljud, Split
+                  - link [ref=e309] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399931/hnk-hajduk-hnk-vukovar-1991-6-3/
+              - listitem [ref=e311]:
+                - generic [ref=e312]:
+                  - generic [ref=e313]: 23.05.2026. 16:00
+                  - link [ref=e315] [cursor=pointer]:
+                    - /url: /klubovi/5355/nk-varazdin/
+                    - text: NK Varaždin
+                    - img "NK Varaždin" [ref=e317]
+                  - 'link "2 : 0" [ref=e319] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399932/nk-varazdin-nk-istra-1961-2-0/
+                    - generic [ref=e320]:
+                      - generic [ref=e321]: "2"
+                      - generic [ref=e322]: ":"
+                      - generic [ref=e323]: "0"
+                  - link [ref=e325] [cursor=pointer]:
+                    - /url: /klubovi/1534/nk-istra-1961/
+                    - text: NK Istra 1961
+                    - img "NK Istra 1961" [ref=e327]
+                  - generic [ref=e328]: Stadion Varteks, Varaždin
+                  - link [ref=e330] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399932/nk-varazdin-nk-istra-1961-2-0/
+              - listitem [ref=e332]:
+                - generic [ref=e333]:
+                  - generic [ref=e334]: 23.05.2026. 16:00
+                  - link [ref=e336] [cursor=pointer]:
+                    - /url: /klubovi/1471/hnk-rijeka/
+                    - text: HNK Rijeka
+                    - img "HNK Rijeka" [ref=e338]
+                  - 'link "2 : 0" [ref=e340] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399933/hnk-rijeka-hnk-gorica-sdd-2-0/
+                    - generic [ref=e341]:
+                      - generic [ref=e342]: "2"
+                      - generic [ref=e343]: ":"
+                      - generic [ref=e344]: "0"
+                  - link [ref=e346] [cursor=pointer]:
+                    - /url: /klubovi/1274/hnk-gorica-sdd/
+                    - text: HNK Gorica s.d.d.
+                    - img "HNK Gorica s.d.d." [ref=e348]
+                  - generic [ref=e349]: HNK Rijeka, Rijeka
+                  - link [ref=e351] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399933/hnk-rijeka-hnk-gorica-sdd-2-0/
+              - listitem [ref=e353]:
+                - generic [ref=e354]:
+                  - generic [ref=e355]: 23.05.2026. 18:45
+                  - link [ref=e357] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e359]
+                  - 'link "0 : 0" [ref=e361] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399930/gnk-dinamo-nk-lokomotiva-z-0-0/
+                    - generic [ref=e362]:
+                      - generic [ref=e363]: "0"
+                      - generic [ref=e364]: ":"
+                      - generic [ref=e365]: "0"
+                  - link [ref=e367] [cursor=pointer]:
+                    - /url: /klubovi/594/nk-lokomotiva-z/
+                    - text: NK Lokomotiva (Z)
+                    - img "NK Lokomotiva (Z)" [ref=e369]
+                  - generic [ref=e370]: Stadion Maksimir, Zagreb
+                  - link [ref=e372] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399930/gnk-dinamo-nk-lokomotiva-z-0-0/
+            - link "Vidi sve" [ref=e375] [cursor=pointer]:
+              - /url: /natjecanja/100391485/supersport-hnl/detaljno/
+          - generic [ref=e378]:
+            - list [ref=e380]:
+              - listitem [ref=e381] [cursor=pointer]:
+                - generic [ref=e382]: Strijelci
+              - listitem [ref=e383] [cursor=pointer]:
+                - generic [ref=e384]: Kartoni
+              - listitem [ref=e385] [cursor=pointer]:
+                - generic [ref=e386]: Nastupi / minute
+            - generic [ref=e389]:
+              - list [ref=e390]:
+                - listitem [ref=e391]:
+                  - generic [ref=e392]:
+                    - generic [ref=e393]: "1"
+                    - link [ref=e396] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/198025/dion-drena-beljo/
+                      - img "Dion Drena Beljo" [ref=e397]
+                    - generic [ref=e398]:
+                      - heading [level=3] [ref=e399]:
+                        - link "Dion Drena Beljo" [ref=e400] [cursor=pointer]:
+                          - /url: https://semafor.hns.family/igraci/198025/dion-drena-beljo/
+                      - text: GNK Dinamo
+                    - generic [ref=e401]: "31"
+                - listitem [ref=e402]:
+                  - generic [ref=e403]:
+                    - generic [ref=e404]: "2"
+                    - link [ref=e407] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/13438/jakov-puljic/
+                      - img "Jakov Puljić" [ref=e408]
+                    - generic [ref=e409]:
+                      - heading [level=3] [ref=e410]:
+                        - link "Jakov Puljić" [ref=e411] [cursor=pointer]:
+                          - /url: https://semafor.hns.family/igraci/13438/jakov-puljic/
+                      - text: HNK Vukovar 1991
+                    - generic [ref=e412]: "17"
+                - listitem [ref=e413]:
+                  - generic [ref=e414]:
+                    - generic [ref=e415]: "3"
+                    - link [ref=e418] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/1223360/smail-prevljak/
+                      - img "Smail Prevljak" [ref=e419]
+                    - generic [ref=e420]:
+                      - heading [level=3] [ref=e421]:
+                        - link "Smail Prevljak" [ref=e422] [cursor=pointer]:
+                          - /url: https://semafor.hns.family/igraci/1223360/smail-prevljak/
+                      - text: NK Istra 1961
+                    - generic [ref=e423]: "14"
+                - listitem [ref=e424]:
+                  - generic [ref=e425]:
+                    - generic [ref=e426]: "4"
+                    - link [ref=e429] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/149253/michele-sego/
+                      - img "Michele Šego" [ref=e430]
+                    - generic [ref=e431]:
+                      - heading [level=3] [ref=e432]:
+                        - link "Michele Šego" [ref=e433] [cursor=pointer]:
+                          - /url: https://semafor.hns.family/igraci/149253/michele-sego/
+                      - text: HNK Hajduk
+                    - generic [ref=e434]: "13"
+                - listitem [ref=e435]:
+                  - generic [ref=e436]:
+                    - generic [ref=e437]: "5"
+                    - link [ref=e440] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/165809/toni-fruk/
+                      - img "Toni Fruk" [ref=e441]
+                    - generic [ref=e442]:
+                      - heading [level=3] [ref=e443]:
+                        - link "Toni Fruk" [ref=e444] [cursor=pointer]:
+                          - /url: https://semafor.hns.family/igraci/165809/toni-fruk/
+                      - text: HNK Rijeka
+                    - generic [ref=e445]: "12"
+              - link "Vidi sve" [ref=e447] [cursor=pointer]:
+                - /url: /natjecanja/100391485/supersport-hnl/detaljno/?tab=scorers
+      - generic [ref=e449]:
+        - heading "Ljestvica" [level=2] [ref=e450]
+        - list [ref=e453]:
+          - listitem [ref=e454]:
+            - generic [ref=e455]:
+              - generic [ref=e456]: Poz
+              - generic [ref=e457]: Klub
+              - generic [ref=e458]: Uk
+              - generic [ref=e460]: Pob
+              - generic [ref=e461]: Ner
+              - generic [ref=e462]: Por
+              - generic [ref=e464]: G+
+              - generic [ref=e465]: G-
+              - generic [ref=e466]: GR
+              - generic [ref=e468]: Bod
+              - generic [ref=e470]: Forma
+          - listitem [ref=e471]:
+            - generic [ref=e472]:
+              - generic [ref=e473]: "1"
+              - link [ref=e475] [cursor=pointer]:
+                - /url: /klubovi/609/gnk-dinamo/
+                - img "GNK Dinamo" [ref=e477]
+                - text: GNK Dinamo
+              - generic [ref=e478]: "36"
+              - generic [ref=e480]: "27"
+              - generic [ref=e481]: "5"
+              - generic [ref=e482]: "4"
+              - generic [ref=e484]: "93"
+              - generic [ref=e485]: "28"
+              - generic [ref=e486]: "+65"
+              - generic [ref=e488]: "86"
+          - listitem [ref=e496]:
+            - generic [ref=e497]:
+              - generic [ref=e498]: "2"
+              - link [ref=e500] [cursor=pointer]:
+                - /url: /klubovi/515/hnk-hajduk/
+                - img "HNK Hajduk" [ref=e502]
+                - text: HNK Hajduk
+              - generic [ref=e503]: "36"
+              - generic [ref=e505]: "20"
+              - generic [ref=e506]: "8"
+              - generic [ref=e507]: "8"
+              - generic [ref=e509]: "61"
+              - generic [ref=e510]: "36"
+              - generic [ref=e511]: "+25"
+              - generic [ref=e513]: "68"
+          - listitem [ref=e521]:
+            - generic [ref=e522]:
+              - generic [ref=e523]: "3"
+              - link [ref=e525] [cursor=pointer]:
+                - /url: /klubovi/5355/nk-varazdin/
+                - img "NK Varaždin" [ref=e527]
+                - text: NK Varaždin
+              - generic [ref=e528]: "36"
+              - generic [ref=e530]: "15"
+              - generic [ref=e531]: "9"
+              - generic [ref=e532]: "12"
+              - generic [ref=e534]: "47"
+              - generic [ref=e535]: "46"
+              - generic [ref=e536]: "+1"
+              - generic [ref=e538]: "54"
+          - listitem [ref=e546]:
+            - generic [ref=e547]:
+              - generic [ref=e548]: "4"
+              - link [ref=e550] [cursor=pointer]:
+                - /url: /klubovi/1471/hnk-rijeka/
+                - img "HNK Rijeka" [ref=e552]
+                - text: HNK Rijeka
+              - generic [ref=e553]: "36"
+              - generic [ref=e555]: "14"
+              - generic [ref=e556]: "11"
+              - generic [ref=e557]: "11"
+              - generic [ref=e559]: "49"
+              - generic [ref=e560]: "36"
+              - generic [ref=e561]: "+13"
+              - generic [ref=e563]: "53"
+          - listitem [ref=e571]:
+            - generic [ref=e572]:
+              - generic [ref=e573]: "5"
+              - link [ref=e575] [cursor=pointer]:
+                - /url: /klubovi/594/nk-lokomotiva-z/
+                - img "NK Lokomotiva (Z)" [ref=e577]
+                - text: NK Lokomotiva (Z)
+              - generic [ref=e578]: "36"
+              - generic [ref=e580]: "10"
+              - generic [ref=e581]: "14"
+              - generic [ref=e582]: "12"
+              - generic [ref=e584]: "40"
+              - generic [ref=e585]: "52"
+              - generic [ref=e586]: "-12"
+              - generic [ref=e588]: "44"
+          - listitem [ref=e596]:
+            - generic [ref=e597]:
+              - generic [ref=e598]: "6"
+              - link [ref=e600] [cursor=pointer]:
+                - /url: /klubovi/1534/nk-istra-1961/
+                - img "NK Istra 1961" [ref=e602]
+                - text: NK Istra 1961
+              - generic [ref=e603]: "36"
+              - generic [ref=e605]: "12"
+              - generic [ref=e606]: "7"
+              - generic [ref=e607]: "17"
+              - generic [ref=e609]: "39"
+              - generic [ref=e610]: "50"
+              - generic [ref=e611]: "-11"
+              - generic [ref=e613]: "43"
+          - listitem [ref=e621]:
+            - generic [ref=e622]:
+              - generic [ref=e623]: "7"
+              - link [ref=e625] [cursor=pointer]:
+                - /url: /klubovi/1274/hnk-gorica-sdd/
+                - img "HNK Gorica s.d.d." [ref=e627]
+                - text: HNK Gorica s.d.d.
+              - generic [ref=e628]: "36"
+              - generic [ref=e630]: "11"
+              - generic [ref=e631]: "8"
+              - generic [ref=e632]: "17"
+              - generic [ref=e634]: "40"
+              - generic [ref=e635]: "48"
+              - generic [ref=e636]: "-8"
+              - generic [ref=e638]: "41"
+          - listitem [ref=e646]:
+            - generic [ref=e647]:
+              - generic [ref=e648]: "8"
+              - link [ref=e650] [cursor=pointer]:
+                - /url: /klubovi/914/nk-slaven-belupo/
+                - img "NK Slaven Belupo" [ref=e652]
+                - text: NK Slaven Belupo
+              - generic [ref=e653]: "36"
+              - generic [ref=e655]: "10"
+              - generic [ref=e656]: "11"
+              - generic [ref=e657]: "15"
+              - generic [ref=e659]: "46"
+              - generic [ref=e660]: "61"
+              - generic [ref=e661]: "-15"
+              - generic [ref=e663]: "41"
+          - listitem [ref=e671]:
+            - generic [ref=e672]:
+              - generic [ref=e673]: "9"
+              - link [ref=e675] [cursor=pointer]:
+                - /url: /klubovi/150/nk-osijek/
+                - img "NK Osijek" [ref=e677]
+                - text: NK Osijek
+              - generic [ref=e678]: "36"
+              - generic [ref=e680]: "8"
+              - generic [ref=e681]: "11"
+              - generic [ref=e682]: "17"
+              - generic [ref=e684]: "27"
+              - generic [ref=e685]: "49"
+              - generic [ref=e686]: "-22"
+              - generic [ref=e688]: "35"
+          - listitem [ref=e696]:
+            - generic [ref=e697]:
+              - generic [ref=e698]: "10"
+              - link [ref=e700] [cursor=pointer]:
+                - /url: /klubovi/5361/hnk-vukovar-1991/
+                - img "HNK Vukovar 1991" [ref=e702]
+                - text: HNK Vukovar 1991
+              - generic [ref=e703]: "36"
+              - generic [ref=e705]: "6"
+              - generic [ref=e706]: "10"
+              - generic [ref=e707]: "20"
+              - generic [ref=e709]: "37"
+              - generic [ref=e710]: "73"
+              - generic [ref=e711]: "-36"
+              - generic [ref=e713]: "28"
+      - generic [ref=e721]:
+        - heading "Statistika" [level=2] [ref=e722]
+        - generic [ref=e724]:
+          - generic [ref=e726]:
+            - heading "Pogotci" [level=3] [ref=e727]
+            - list [ref=e728]:
+              - listitem [ref=e729]:
+                - generic [ref=e730]: Kolo
+                - generic [ref=e731]: Pogodaka
+                - generic [ref=e732]: Prosjek
+              - listitem [ref=e733]:
+                - generic [ref=e734]: "1"
+                - generic [ref=e735]: "10"
+                - generic [ref=e736]: 2,0
+              - listitem [ref=e737]:
+                - generic [ref=e738]: "2"
+                - generic [ref=e739]: "13"
+                - generic [ref=e740]: 2,6
+              - listitem [ref=e741]:
+                - generic [ref=e742]: "3"
+                - generic [ref=e743]: "11"
+                - generic [ref=e744]: 2,2
+              - listitem [ref=e745]:
+                - generic [ref=e746]: "4"
+                - generic [ref=e747]: "15"
+                - generic [ref=e748]: 3,0
+              - listitem [ref=e749]:
+                - generic [ref=e750]: "5"
+                - generic [ref=e751]: "14"
+                - generic [ref=e752]: 2,8
+              - listitem [ref=e753]:
+                - generic [ref=e754]: "6"
+                - generic [ref=e755]: "14"
+                - generic [ref=e756]: 2,8
+              - listitem [ref=e757]:
+                - generic [ref=e758]: "7"
+                - generic [ref=e759]: "14"
+                - generic [ref=e760]: 2,8
+              - listitem [ref=e761]:
+                - generic [ref=e762]: "8"
+                - generic [ref=e763]: "11"
+                - generic [ref=e764]: 2,2
+              - listitem [ref=e765]:
+                - generic [ref=e766]: "9"
+                - generic [ref=e767]: "12"
+                - generic [ref=e768]: 2,4
+              - listitem [ref=e769]:
+                - generic [ref=e770]: "10"
+                - generic [ref=e771]: "14"
+                - generic [ref=e772]: 2,8
+            - link "Vidi sve" [ref=e774] [cursor=pointer]:
+              - /url: /natjecanja/100391485/supersport-hnl/detaljno/?tab=stats
+          - generic [ref=e777]:
+            - heading "Akumulirane opomene" [level=3] [ref=e778]
+            - list [ref=e779]:
+              - listitem [ref=e780]:
+                - generic [ref=e782]: Igrač / klub
+                - generic [ref=e783]: Opomene
+              - listitem [ref=e784]:
+                - generic [ref=e785]:
+                  - link [ref=e788] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/1225480/hugo-guillamon-sanmartin/
+                    - img "Hugo Guillamon Sanmartin" [ref=e789]
+                  - generic [ref=e790]:
+                    - heading [level=3] [ref=e791]:
+                      - link "Hugo Guillamon Sanmartin" [ref=e792] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/1225480/hugo-guillamon-sanmartin/
+                    - text: HNK Hajduk
+                  - generic [ref=e793]: "4"
+              - listitem [ref=e795]:
+                - generic [ref=e796]:
+                  - link [ref=e799] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/384080/raul-kumar/
+                    - img "Raul Kumar" [ref=e800]
+                  - generic [ref=e801]:
+                    - heading [level=3] [ref=e802]:
+                      - link "Raul Kumar" [ref=e803] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/384080/raul-kumar/
+                    - text: NK Istra 1961
+                  - generic [ref=e804]: "4"
+              - listitem [ref=e806]:
+                - generic [ref=e807]:
+                  - link [ref=e810] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/106509/josip-radosevic/
+                    - img "Josip Radošević" [ref=e811]
+                  - generic [ref=e812]:
+                    - heading [level=3] [ref=e813]:
+                      - link "Josip Radošević" [ref=e814] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/106509/josip-radosevic/
+                    - text: NK Istra 1961
+                  - generic [ref=e815]: "4"
+              - listitem [ref=e817]:
+                - generic [ref=e818]:
+                  - link [ref=e821] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/181625/tomislav-duvnjak/
+                    - img "Tomislav Duvnjak" [ref=e822]
+                  - generic [ref=e823]:
+                    - heading [level=3] [ref=e824]:
+                      - link "Tomislav Duvnjak" [ref=e825] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/181625/tomislav-duvnjak/
+                    - text: NK Varaždin
+                  - generic [ref=e826]: "4"
+              - listitem [ref=e828]:
+                - generic [ref=e829]:
+                  - link [ref=e832] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/198025/dion-drena-beljo/
+                    - img "Dion Drena Beljo" [ref=e833]
+                  - generic [ref=e834]:
+                    - heading [level=3] [ref=e835]:
+                      - link "Dion Drena Beljo" [ref=e836] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/198025/dion-drena-beljo/
+                    - text: GNK Dinamo
+                  - generic [ref=e837]: "3"
+            - link "Vidi sve" [ref=e840] [cursor=pointer]:
+              - /url: /natjecanja/100391485/supersport-hnl/detaljno/?tab=stats
+          - generic [ref=e843]:
+            - heading "Neodrađene suspenzije" [level=3] [ref=e844]
+            - list [ref=e845]:
+              - listitem [ref=e846]:
+                - generic [ref=e848]: Igrač / klub
+                - generic [ref=e849]: Utakmica
+              - listitem [ref=e850]:
+                - generic [ref=e851]:
+                  - link [ref=e854] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/1225480/hugo-guillamon-sanmartin/
+                    - img "Hugo Guillamon Sanmartin" [ref=e855]
+                  - generic [ref=e856]:
+                    - heading [level=3] [ref=e857]:
+                      - link "Hugo Guillamon Sanmartin" [ref=e858] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/1225480/hugo-guillamon-sanmartin/
+                    - text: HNK Hajduk
+                    - heading "akumulirani žuti kartoni" [level=4] [ref=e859]
+                  - generic [ref=e860]: "1"
+              - listitem [ref=e861]:
+                - generic [ref=e862]:
+                  - link [ref=e865] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/384080/raul-kumar/
+                    - img "Raul Kumar" [ref=e866]
+                  - generic [ref=e867]:
+                    - heading [level=3] [ref=e868]:
+                      - link "Raul Kumar" [ref=e869] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/384080/raul-kumar/
+                    - text: NK Istra 1961
+                    - heading "akumulirani žuti kartoni" [level=4] [ref=e870]
+                  - generic [ref=e871]: "1"
+              - listitem [ref=e872]:
+                - generic [ref=e873]:
+                  - link [ref=e876] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/106509/josip-radosevic/
+                    - img "Josip Radošević" [ref=e877]
+                  - generic [ref=e878]:
+                    - heading [level=3] [ref=e879]:
+                      - link "Josip Radošević" [ref=e880] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/106509/josip-radosevic/
+                    - text: NK Istra 1961
+                    - heading "akumulirani žuti kartoni" [level=4] [ref=e881]
+                  - generic [ref=e882]: "1"
+              - listitem [ref=e883]:
+                - generic [ref=e884]:
+                  - link [ref=e887] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/1233482/ouguehi-christian-dimitri-legbo/
+                    - img "Ouguehi Christian Dimitri Legbo" [ref=e888]
+                  - generic [ref=e889]:
+                    - heading [level=3] [ref=e890]:
+                      - link "Ouguehi Christian Dimitri Legbo" [ref=e891] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/1233482/ouguehi-christian-dimitri-legbo/
+                    - text: HNK Rijeka
+                    - heading "crveni karton" [level=4] [ref=e892]
+                  - generic [ref=e893]: "1"
+              - listitem [ref=e894]:
+                - generic [ref=e895]:
+                  - link [ref=e898] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/181625/tomislav-duvnjak/
+                    - img "Tomislav Duvnjak" [ref=e899]
+                  - generic [ref=e900]:
+                    - heading [level=3] [ref=e901]:
+                      - link "Tomislav Duvnjak" [ref=e902] [cursor=pointer]:
+                        - /url: https://semafor.hns.family/igraci/181625/tomislav-duvnjak/
+                    - text: NK Varaždin
+                    - heading "akumulirani žuti kartoni" [level=4] [ref=e903]
+                  - generic [ref=e904]: "1"
+            - link "Vidi sve" [ref=e906] [cursor=pointer]:
+              - /url: /natjecanja/100391485/supersport-hnl/detaljno/?tab=stats
+      - generic [ref=e908]:
+        - heading "Klubovi u natjecanju" [level=2] [ref=e909]
+        - list [ref=e914]:
+          - listitem [ref=e915] [cursor=pointer]:
+            - generic [ref=e916]:
+              - img "GNK Dinamo" [ref=e918]
+              - heading "GNK Dinamo" [level=3] [ref=e921]
+          - listitem [ref=e924] [cursor=pointer]:
+            - generic [ref=e925]:
+              - img "HNK Gorica s.d.d." [ref=e927]
+              - heading "HNK Gorica s.d.d." [level=3] [ref=e930]
+          - listitem [ref=e931] [cursor=pointer]:
+            - generic [ref=e932]:
+              - img "HNK Hajduk" [ref=e934]
+              - heading "HNK Hajduk" [level=3] [ref=e937]
+          - listitem [ref=e938] [cursor=pointer]:
+            - generic [ref=e939]:
+              - img "HNK Rijeka" [ref=e941]
+              - heading "HNK Rijeka" [level=3] [ref=e944]
+          - listitem [ref=e945] [cursor=pointer]:
+            - generic [ref=e946]:
+              - img "HNK Vukovar 1991" [ref=e948]
+              - heading "HNK Vukovar 1991" [level=3] [ref=e951]
+          - listitem [ref=e952] [cursor=pointer]:
+            - generic [ref=e953]:
+              - img "NK Istra 1961" [ref=e955]
+              - heading "NK Istra 1961" [level=3] [ref=e958]
+          - listitem [ref=e959] [cursor=pointer]:
+            - generic [ref=e960]:
+              - img "NK Lokomotiva (Z)" [ref=e962]
+              - heading "NK Lokomotiva (Z)" [level=3] [ref=e965]
+          - listitem [ref=e966] [cursor=pointer]:
+            - generic [ref=e967]:
+              - img "NK Osijek" [ref=e969]
+              - heading "NK Osijek" [level=3] [ref=e972]
+          - listitem [ref=e973] [cursor=pointer]:
+            - generic [ref=e974]:
+              - img "NK Slaven Belupo" [ref=e976]
+              - heading "NK Slaven Belupo" [level=3] [ref=e979]
+          - listitem [ref=e980] [cursor=pointer]:
+            - generic [ref=e981]:
+              - img "NK Varaždin" [ref=e983]
+              - heading "NK Varaždin" [level=3] [ref=e986]
+        - generic [ref=e988]:
+          - generic [ref=e990]:
+            - list [ref=e992]:
+              - listitem [ref=e993] [cursor=pointer]:
+                - generic [ref=e994]: Utakmice
+              - listitem [ref=e995] [cursor=pointer]:
+                - generic [ref=e996]: Igrači
+            - list [ref=e1001]:
+              - listitem [ref=e1002]:
+                - generic [ref=e1003]:
+                  - generic [ref=e1004]: 02.08.2025. 21:00
+                  - link [ref=e1006] [cursor=pointer]:
+                    - /url: /klubovi/150/nk-osijek/
+                    - text: NK Osijek
+                    - img "NK Osijek" [ref=e1008]
+                  - 'link "0 : 2" [ref=e1010] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399755/nk-osijek-gnk-dinamo-0-2/
+                    - generic [ref=e1011]:
+                      - generic [ref=e1012]: "0"
+                      - generic [ref=e1013]: ":"
+                      - generic [ref=e1014]: "2"
+                  - link [ref=e1016] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1018]
+                  - generic [ref=e1019]: Opus Arena, Osijek
+                  - link [ref=e1021] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399755/nk-osijek-gnk-dinamo-0-2/
+              - listitem [ref=e1023]:
+                - generic [ref=e1024]:
+                  - generic [ref=e1025]: 08.08.2025. 21:00
+                  - link [ref=e1027] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1029]
+                  - 'link "3 : 0" [ref=e1031] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399760/gnk-dinamo-hnk-vukovar-1991-3-0/
+                    - generic [ref=e1032]:
+                      - generic [ref=e1033]: "3"
+                      - generic [ref=e1034]: ":"
+                      - generic [ref=e1035]: "0"
+                  - link [ref=e1037] [cursor=pointer]:
+                    - /url: /klubovi/5361/hnk-vukovar-1991/
+                    - text: HNK Vukovar 1991
+                    - img "HNK Vukovar 1991" [ref=e1039]
+                  - generic [ref=e1040]: Stadion Maksimir, Zagreb
+                  - link [ref=e1042] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399760/gnk-dinamo-hnk-vukovar-1991-3-0/
+              - listitem [ref=e1044]:
+                - generic [ref=e1045]:
+                  - generic [ref=e1046]: 16.08.2025. 21:00
+                  - link [ref=e1048] [cursor=pointer]:
+                    - /url: /klubovi/1471/hnk-rijeka/
+                    - text: HNK Rijeka
+                    - img "HNK Rijeka" [ref=e1050]
+                  - 'link "0 : 2" [ref=e1052] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399765/hnk-rijeka-gnk-dinamo-0-2/
+                    - generic [ref=e1053]:
+                      - generic [ref=e1054]: "0"
+                      - generic [ref=e1055]: ":"
+                      - generic [ref=e1056]: "2"
+                  - link [ref=e1058] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1060]
+                  - generic [ref=e1061]: HNK Rijeka, Rijeka
+                  - link [ref=e1063] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399765/hnk-rijeka-gnk-dinamo-0-2/
+              - listitem [ref=e1065]:
+                - generic [ref=e1066]:
+                  - generic [ref=e1067]: 23.08.2025. 21:00
+                  - link [ref=e1069] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1071]
+                  - 'link "3 : 0" [ref=e1073] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399770/gnk-dinamo-nk-istra-1961-3-0/
+                    - generic [ref=e1074]:
+                      - generic [ref=e1075]: "3"
+                      - generic [ref=e1076]: ":"
+                      - generic [ref=e1077]: "0"
+                  - link [ref=e1079] [cursor=pointer]:
+                    - /url: /klubovi/1534/nk-istra-1961/
+                    - text: NK Istra 1961
+                    - img "NK Istra 1961" [ref=e1081]
+                  - generic [ref=e1082]: Stadion Maksimir, Zagreb
+                  - link [ref=e1084] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399770/gnk-dinamo-nk-istra-1961-3-0/
+              - listitem [ref=e1086]:
+                - generic [ref=e1087]:
+                  - generic [ref=e1088]: 30.08.2025. 21:00
+                  - link [ref=e1090] [cursor=pointer]:
+                    - /url: /klubovi/5355/nk-varazdin/
+                    - text: NK Varaždin
+                    - img "NK Varaždin" [ref=e1092]
+                  - 'link "2 : 2" [ref=e1094] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399775/nk-varazdin-gnk-dinamo-2-2/
+                    - generic [ref=e1095]:
+                      - generic [ref=e1096]: "2"
+                      - generic [ref=e1097]: ":"
+                      - generic [ref=e1098]: "2"
+                  - link [ref=e1100] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1102]
+                  - generic [ref=e1103]: Stadion Varteks, Varaždin
+                  - link [ref=e1105] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399775/nk-varazdin-gnk-dinamo-2-2/
+              - listitem [ref=e1107]:
+                - generic [ref=e1108]:
+                  - generic [ref=e1109]: 14.09.2025. 19:15
+                  - link [ref=e1111] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1113]
+                  - 'link "1 : 2" [ref=e1115] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399780/gnk-dinamo-hnk-gorica-sdd-1-2/
+                    - generic [ref=e1116]:
+                      - generic [ref=e1117]: "1"
+                      - generic [ref=e1118]: ":"
+                      - generic [ref=e1119]: "2"
+                  - link [ref=e1121] [cursor=pointer]:
+                    - /url: /klubovi/1274/hnk-gorica-sdd/
+                    - text: HNK Gorica s.d.d.
+                    - img "HNK Gorica s.d.d." [ref=e1123]
+                  - generic [ref=e1124]: Stadion Maksimir, Zagreb
+                  - link [ref=e1126] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399780/gnk-dinamo-hnk-gorica-sdd-1-2/
+              - listitem [ref=e1128]:
+                - generic [ref=e1129]:
+                  - generic [ref=e1130]: 20.09.2025. 17:00
+                  - link [ref=e1132] [cursor=pointer]:
+                    - /url: /klubovi/515/hnk-hajduk/
+                    - text: HNK Hajduk
+                    - img "HNK Hajduk" [ref=e1134]
+                  - 'link "0 : 2" [ref=e1136] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399785/hnk-hajduk-gnk-dinamo-0-2/
+                    - generic [ref=e1137]:
+                      - generic [ref=e1138]: "0"
+                      - generic [ref=e1139]: ":"
+                      - generic [ref=e1140]: "2"
+                  - link [ref=e1142] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1144]
+                  - generic [ref=e1145]: Gradski stadion Poljud, Split
+                  - link [ref=e1147] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399785/hnk-hajduk-gnk-dinamo-0-2/
+              - listitem [ref=e1149]:
+                - generic [ref=e1150]:
+                  - generic [ref=e1151]: 28.09.2025. 18:15
+                  - link [ref=e1153] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1155]
+                  - 'link "4 : 1" [ref=e1157] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399790/gnk-dinamo-nk-slaven-belupo-4-1/
+                    - generic [ref=e1158]:
+                      - generic [ref=e1159]: "4"
+                      - generic [ref=e1160]: ":"
+                      - generic [ref=e1161]: "1"
+                  - link [ref=e1163] [cursor=pointer]:
+                    - /url: /klubovi/914/nk-slaven-belupo/
+                    - text: NK Slaven Belupo
+                    - img "NK Slaven Belupo" [ref=e1165]
+                  - generic [ref=e1166]: Stadion Maksimir, Zagreb
+                  - link [ref=e1168] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399790/gnk-dinamo-nk-slaven-belupo-4-1/
+              - listitem [ref=e1170]:
+                - generic [ref=e1171]:
+                  - generic [ref=e1172]: 05.10.2025. 18:45
+                  - link [ref=e1174] [cursor=pointer]:
+                    - /url: /klubovi/594/nk-lokomotiva-z/
+                    - text: NK Lokomotiva (Z)
+                    - img "NK Lokomotiva (Z)" [ref=e1176]
+                  - 'link "2 : 1" [ref=e1178] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399795/nk-lokomotiva-z-gnk-dinamo-2-1/
+                    - generic [ref=e1179]:
+                      - generic [ref=e1180]: "2"
+                      - generic [ref=e1181]: ":"
+                      - generic [ref=e1182]: "1"
+                  - link [ref=e1184] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1186]
+                  - generic [ref=e1187]: Stadion Maksimir, Zagreb
+                  - link [ref=e1189] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399795/nk-lokomotiva-z-gnk-dinamo-2-1/
+              - listitem [ref=e1191]:
+                - generic [ref=e1192]:
+                  - generic [ref=e1193]: 18.10.2025. 18:00
+                  - link [ref=e1195] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1197]
+                  - 'link "2 : 1" [ref=e1199] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399800/gnk-dinamo-nk-osijek-2-1/
+                    - generic [ref=e1200]:
+                      - generic [ref=e1201]: "2"
+                      - generic [ref=e1202]: ":"
+                      - generic [ref=e1203]: "1"
+                  - link [ref=e1205] [cursor=pointer]:
+                    - /url: /klubovi/150/nk-osijek/
+                    - text: NK Osijek
+                    - img "NK Osijek" [ref=e1207]
+                  - generic [ref=e1208]: Stadion Maksimir, Zagreb
+                  - link [ref=e1210] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399800/gnk-dinamo-nk-osijek-2-1/
+              - listitem [ref=e1212]:
+                - generic [ref=e1213]:
+                  - generic [ref=e1214]: 27.10.2025. 19:00
+                  - link [ref=e1216] [cursor=pointer]:
+                    - /url: /klubovi/5361/hnk-vukovar-1991/
+                    - text: HNK Vukovar 1991
+                    - img "HNK Vukovar 1991" [ref=e1218]
+                  - 'link "1 : 0" [ref=e1220] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399805/hnk-vukovar-1991-gnk-dinamo-1-0/
+                    - generic [ref=e1221]:
+                      - generic [ref=e1222]: "1"
+                      - generic [ref=e1223]: ":"
+                      - generic [ref=e1224]: "0"
+                  - link [ref=e1226] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1228]
+                  - generic [ref=e1229]: Stadion Cibalia, Vinkovci
+                  - link [ref=e1231] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399805/hnk-vukovar-1991-gnk-dinamo-1-0/
+              - listitem [ref=e1233]:
+                - generic [ref=e1234]:
+                  - generic [ref=e1235]: 01.11.2025. 16:00
+                  - link [ref=e1237] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1239]
+                  - 'link "2 : 1" [ref=e1241] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399810/gnk-dinamo-hnk-rijeka-2-1/
+                    - generic [ref=e1242]:
+                      - generic [ref=e1243]: "2"
+                      - generic [ref=e1244]: ":"
+                      - generic [ref=e1245]: "1"
+                  - link [ref=e1247] [cursor=pointer]:
+                    - /url: /klubovi/1471/hnk-rijeka/
+                    - text: HNK Rijeka
+                    - img "HNK Rijeka" [ref=e1249]
+                  - generic [ref=e1250]: Stadion Maksimir, Zagreb
+                  - link [ref=e1252] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399810/gnk-dinamo-hnk-rijeka-2-1/
+              - listitem [ref=e1254]:
+                - generic [ref=e1255]:
+                  - generic [ref=e1256]: 09.11.2025. 16:00
+                  - link [ref=e1258] [cursor=pointer]:
+                    - /url: /klubovi/1534/nk-istra-1961/
+                    - text: NK Istra 1961
+                    - img "NK Istra 1961" [ref=e1260]
+                  - 'link "2 : 1" [ref=e1262] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399815/nk-istra-1961-gnk-dinamo-2-1/
+                    - generic [ref=e1263]:
+                      - generic [ref=e1264]: "2"
+                      - generic [ref=e1265]: ":"
+                      - generic [ref=e1266]: "1"
+                  - link [ref=e1268] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1270]
+                  - generic [ref=e1271]: Aldo Drosina, Pula
+                  - link [ref=e1273] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399815/nk-istra-1961-gnk-dinamo-2-1/
+              - listitem [ref=e1275]:
+                - generic [ref=e1276]:
+                  - generic [ref=e1277]: 22.11.2025. 15:00
+                  - link [ref=e1279] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1281]
+                  - 'link "3 : 1" [ref=e1283] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399820/gnk-dinamo-nk-varazdin-3-1/
+                    - generic [ref=e1284]:
+                      - generic [ref=e1285]: "3"
+                      - generic [ref=e1286]: ":"
+                      - generic [ref=e1287]: "1"
+                  - link [ref=e1289] [cursor=pointer]:
+                    - /url: /klubovi/5355/nk-varazdin/
+                    - text: NK Varaždin
+                    - img "NK Varaždin" [ref=e1291]
+                  - generic [ref=e1292]: Stadion Maksimir, Zagreb
+                  - link [ref=e1294] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399820/gnk-dinamo-nk-varazdin-3-1/
+              - listitem [ref=e1296]:
+                - generic [ref=e1297]:
+                  - generic [ref=e1298]: 01.12.2025. 18:00
+                  - link [ref=e1300] [cursor=pointer]:
+                    - /url: /klubovi/1274/hnk-gorica-sdd/
+                    - text: HNK Gorica s.d.d.
+                    - img "HNK Gorica s.d.d." [ref=e1302]
+                  - 'link "0 : 2" [ref=e1304] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399825/hnk-gorica-sdd-gnk-dinamo-0-2/
+                    - generic [ref=e1305]:
+                      - generic [ref=e1306]: "0"
+                      - generic [ref=e1307]: ":"
+                      - generic [ref=e1308]: "2"
+                  - link [ref=e1310] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1312]
+                  - generic [ref=e1313]: Gradski stadion, Velika Gorica
+                  - link [ref=e1315] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399825/hnk-gorica-sdd-gnk-dinamo-0-2/
+              - listitem [ref=e1317]:
+                - generic [ref=e1318]:
+                  - generic [ref=e1319]: 06.12.2025. 15:00
+                  - link [ref=e1321] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1323]
+                  - 'link "1 : 1" [ref=e1325] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399830/gnk-dinamo-hnk-hajduk-1-1/
+                    - generic [ref=e1326]:
+                      - generic [ref=e1327]: "1"
+                      - generic [ref=e1328]: ":"
+                      - generic [ref=e1329]: "1"
+                  - link [ref=e1331] [cursor=pointer]:
+                    - /url: /klubovi/515/hnk-hajduk/
+                    - text: HNK Hajduk
+                    - img "HNK Hajduk" [ref=e1333]
+                  - generic [ref=e1334]: Stadion Maksimir, Zagreb
+                  - link [ref=e1336] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399830/gnk-dinamo-hnk-hajduk-1-1/
+              - listitem [ref=e1338]:
+                - generic [ref=e1339]:
+                  - generic [ref=e1340]: 14.12.2025. 15:00
+                  - link [ref=e1342] [cursor=pointer]:
+                    - /url: /klubovi/914/nk-slaven-belupo/
+                    - text: NK Slaven Belupo
+                    - img "NK Slaven Belupo" [ref=e1344]
+                  - 'link "2 : 5" [ref=e1346] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399835/nk-slaven-belupo-gnk-dinamo-2-5/
+                    - generic [ref=e1347]:
+                      - generic [ref=e1348]: "2"
+                      - generic [ref=e1349]: ":"
+                      - generic [ref=e1350]: "5"
+                  - link [ref=e1352] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1354]
+                  - generic [ref=e1355]: Gradski stadion "Ivan Kušek Apaš", Koprivnica
+                  - link [ref=e1357] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399835/nk-slaven-belupo-gnk-dinamo-2-5/
+              - listitem [ref=e1359]:
+                - generic [ref=e1360]:
+                  - generic [ref=e1361]: 20.12.2025. 17:45
+                  - link [ref=e1363] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1365]
+                  - 'link "2 : 0" [ref=e1367] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399840/gnk-dinamo-nk-lokomotiva-z-2-0/
+                    - generic [ref=e1368]:
+                      - generic [ref=e1369]: "2"
+                      - generic [ref=e1370]: ":"
+                      - generic [ref=e1371]: "0"
+                  - link [ref=e1373] [cursor=pointer]:
+                    - /url: /klubovi/594/nk-lokomotiva-z/
+                    - text: NK Lokomotiva (Z)
+                    - img "NK Lokomotiva (Z)" [ref=e1375]
+                  - generic [ref=e1376]: Stadion Maksimir, Zagreb
+                  - link [ref=e1378] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399840/gnk-dinamo-nk-lokomotiva-z-2-0/
+              - listitem [ref=e1380]:
+                - generic [ref=e1381]:
+                  - generic [ref=e1382]: 25.01.2026. 17:45
+                  - link [ref=e1384] [cursor=pointer]:
+                    - /url: /klubovi/150/nk-osijek/
+                    - text: NK Osijek
+                    - img "NK Osijek" [ref=e1386]
+                  - 'link "0 : 3" [ref=e1388] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399845/nk-osijek-gnk-dinamo-0-3/
+                    - generic [ref=e1389]:
+                      - generic [ref=e1390]: "0"
+                      - generic [ref=e1391]: ":"
+                      - generic [ref=e1392]: "3"
+                  - link [ref=e1394] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1396]
+                  - generic [ref=e1397]: Opus Arena, Osijek
+                  - link [ref=e1399] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399845/nk-osijek-gnk-dinamo-0-3/
+              - listitem [ref=e1401]:
+                - generic [ref=e1402]:
+                  - generic [ref=e1403]: 02.02.2026. 18:00
+                  - link [ref=e1405] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1407]
+                  - 'link "3 : 1" [ref=e1409] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399850/gnk-dinamo-hnk-vukovar-1991-3-1/
+                    - generic [ref=e1410]:
+                      - generic [ref=e1411]: "3"
+                      - generic [ref=e1412]: ":"
+                      - generic [ref=e1413]: "1"
+                  - link [ref=e1415] [cursor=pointer]:
+                    - /url: /klubovi/5361/hnk-vukovar-1991/
+                    - text: HNK Vukovar 1991
+                    - img "HNK Vukovar 1991" [ref=e1417]
+                  - generic [ref=e1418]: Stadion Maksimir, Zagreb
+                  - link [ref=e1420] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399850/gnk-dinamo-hnk-vukovar-1991-3-1/
+              - listitem [ref=e1422]:
+                - generic [ref=e1423]:
+                  - generic [ref=e1424]: 08.02.2026. 17:45
+                  - link [ref=e1426] [cursor=pointer]:
+                    - /url: /klubovi/1471/hnk-rijeka/
+                    - text: HNK Rijeka
+                    - img "HNK Rijeka" [ref=e1428]
+                  - 'link "0 : 0" [ref=e1430] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399855/hnk-rijeka-gnk-dinamo-0-0/
+                    - generic [ref=e1431]:
+                      - generic [ref=e1432]: "0"
+                      - generic [ref=e1433]: ":"
+                      - generic [ref=e1434]: "0"
+                  - link [ref=e1436] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1438]
+                  - generic [ref=e1439]: HNK Rijeka, Rijeka
+                  - link [ref=e1441] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399855/hnk-rijeka-gnk-dinamo-0-0/
+              - listitem [ref=e1443]:
+                - generic [ref=e1444]:
+                  - generic [ref=e1445]: 14.02.2026. 15:00
+                  - link [ref=e1447] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1449]
+                  - 'link "4 : 0" [ref=e1451] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399860/gnk-dinamo-nk-istra-1961-4-0/
+                    - generic [ref=e1452]:
+                      - generic [ref=e1453]: "4"
+                      - generic [ref=e1454]: ":"
+                      - generic [ref=e1455]: "0"
+                  - link [ref=e1457] [cursor=pointer]:
+                    - /url: /klubovi/1534/nk-istra-1961/
+                    - text: NK Istra 1961
+                    - img "NK Istra 1961" [ref=e1459]
+                  - generic [ref=e1460]: Stadion Maksimir, Zagreb
+                  - link [ref=e1462] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399860/gnk-dinamo-nk-istra-1961-4-0/
+              - listitem [ref=e1464]:
+                - generic [ref=e1465]:
+                  - generic [ref=e1466]: 22.02.2026. 15:00
+                  - link [ref=e1468] [cursor=pointer]:
+                    - /url: /klubovi/5355/nk-varazdin/
+                    - text: NK Varaždin
+                    - img "NK Varaždin" [ref=e1470]
+                  - 'link "0 : 4" [ref=e1472] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399865/nk-varazdin-gnk-dinamo-0-4/
+                    - generic [ref=e1473]:
+                      - generic [ref=e1474]: "0"
+                      - generic [ref=e1475]: ":"
+                      - generic [ref=e1476]: "4"
+                  - link [ref=e1478] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1480]
+                  - generic [ref=e1481]: Stadion Varteks, Varaždin
+                  - link [ref=e1483] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399865/nk-varazdin-gnk-dinamo-0-4/
+              - listitem [ref=e1485]:
+                - generic [ref=e1486]:
+                  - generic [ref=e1487]: 01.03.2026. 17:15
+                  - link [ref=e1489] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1491]
+                  - 'link "4 : 2" [ref=e1493] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399870/gnk-dinamo-hnk-gorica-sdd-4-2/
+                    - generic [ref=e1494]:
+                      - generic [ref=e1495]: "4"
+                      - generic [ref=e1496]: ":"
+                      - generic [ref=e1497]: "2"
+                  - link [ref=e1499] [cursor=pointer]:
+                    - /url: /klubovi/1274/hnk-gorica-sdd/
+                    - text: HNK Gorica s.d.d.
+                    - img "HNK Gorica s.d.d." [ref=e1501]
+                  - generic [ref=e1502]: Stadion Maksimir, Zagreb
+                  - link [ref=e1504] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399870/gnk-dinamo-hnk-gorica-sdd-4-2/
+              - listitem [ref=e1506]:
+                - generic [ref=e1507]:
+                  - generic [ref=e1508]: 08.03.2026. 15:00
+                  - link [ref=e1510] [cursor=pointer]:
+                    - /url: /klubovi/515/hnk-hajduk/
+                    - text: HNK Hajduk
+                    - img "HNK Hajduk" [ref=e1512]
+                  - 'link "1 : 3" [ref=e1514] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399875/hnk-hajduk-gnk-dinamo-1-3/
+                    - generic [ref=e1515]:
+                      - generic [ref=e1516]: "1"
+                      - generic [ref=e1517]: ":"
+                      - generic [ref=e1518]: "3"
+                  - link [ref=e1520] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1522]
+                  - generic [ref=e1523]: Gradski stadion Poljud, Split
+                  - link [ref=e1525] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399875/hnk-hajduk-gnk-dinamo-1-3/
+              - listitem [ref=e1527]:
+                - generic [ref=e1528]:
+                  - generic [ref=e1529]: 14.03.2026. 17:15
+                  - link [ref=e1531] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1533]
+                  - 'link "4 : 2" [ref=e1535] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399880/gnk-dinamo-nk-slaven-belupo-4-2/
+                    - generic [ref=e1536]:
+                      - generic [ref=e1537]: "4"
+                      - generic [ref=e1538]: ":"
+                      - generic [ref=e1539]: "2"
+                  - link [ref=e1541] [cursor=pointer]:
+                    - /url: /klubovi/914/nk-slaven-belupo/
+                    - text: NK Slaven Belupo
+                    - img "NK Slaven Belupo" [ref=e1543]
+                  - generic [ref=e1544]: Stadion Maksimir, Zagreb
+                  - link [ref=e1546] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399880/gnk-dinamo-nk-slaven-belupo-4-2/
+              - listitem [ref=e1548]:
+                - generic [ref=e1549]:
+                  - generic [ref=e1550]: 21.03.2026. 17:15
+                  - link [ref=e1552] [cursor=pointer]:
+                    - /url: /klubovi/594/nk-lokomotiva-z/
+                    - text: NK Lokomotiva (Z)
+                    - img "NK Lokomotiva (Z)" [ref=e1554]
+                  - 'link "0 : 5" [ref=e1556] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399885/nk-lokomotiva-z-gnk-dinamo-0-5/
+                    - generic [ref=e1557]:
+                      - generic [ref=e1558]: "0"
+                      - generic [ref=e1559]: ":"
+                      - generic [ref=e1560]: "5"
+                  - link [ref=e1562] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1564]
+                  - generic [ref=e1565]: Stadion Maksimir, Zagreb
+                  - link [ref=e1567] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399885/nk-lokomotiva-z-gnk-dinamo-0-5/
+              - listitem [ref=e1569]:
+                - generic [ref=e1570]:
+                  - generic [ref=e1571]: 04.04.2026. 15:00
+                  - link [ref=e1573] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1575]
+                  - 'link "7 : 0" [ref=e1577] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399890/gnk-dinamo-nk-osijek-7-0/
+                    - generic [ref=e1578]:
+                      - generic [ref=e1579]: "7"
+                      - generic [ref=e1580]: ":"
+                      - generic [ref=e1581]: "0"
+                  - link [ref=e1583] [cursor=pointer]:
+                    - /url: /klubovi/150/nk-osijek/
+                    - text: NK Osijek
+                    - img "NK Osijek" [ref=e1585]
+                  - generic [ref=e1586]: Stadion Maksimir, Zagreb
+                  - link [ref=e1588] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399890/gnk-dinamo-nk-osijek-7-0/
+              - listitem [ref=e1590]:
+                - generic [ref=e1591]:
+                  - generic [ref=e1592]: 13.04.2026. 18:00
+                  - link [ref=e1594] [cursor=pointer]:
+                    - /url: /klubovi/5361/hnk-vukovar-1991/
+                    - text: HNK Vukovar 1991
+                    - img "HNK Vukovar 1991" [ref=e1596]
+                  - 'link "1 : 4" [ref=e1598] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399895/hnk-vukovar-1991-gnk-dinamo-1-4/
+                    - generic [ref=e1599]:
+                      - generic [ref=e1600]: "1"
+                      - generic [ref=e1601]: ":"
+                      - generic [ref=e1602]: "4"
+                  - link [ref=e1604] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1606]
+                  - generic [ref=e1607]: Stadion Gradski vrt, Osijek
+                  - link [ref=e1609] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399895/hnk-vukovar-1991-gnk-dinamo-1-4/
+              - listitem [ref=e1611]:
+                - generic [ref=e1612]:
+                  - generic [ref=e1613]: 18.04.2026. 16:00
+                  - link [ref=e1615] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1617]
+                  - 'link "2 : 2" [ref=e1619] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399900/gnk-dinamo-hnk-rijeka-2-2/
+                    - generic [ref=e1620]:
+                      - generic [ref=e1621]: "2"
+                      - generic [ref=e1622]: ":"
+                      - generic [ref=e1623]: "2"
+                  - link [ref=e1625] [cursor=pointer]:
+                    - /url: /klubovi/1471/hnk-rijeka/
+                    - text: HNK Rijeka
+                    - img "HNK Rijeka" [ref=e1627]
+                  - generic [ref=e1628]: Stadion Maksimir, Zagreb
+                  - link [ref=e1630] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399900/gnk-dinamo-hnk-rijeka-2-2/
+              - listitem [ref=e1632]:
+                - generic [ref=e1633]:
+                  - generic [ref=e1634]: 22.04.2026. 20:15
+                  - link [ref=e1636] [cursor=pointer]:
+                    - /url: /klubovi/1534/nk-istra-1961/
+                    - text: NK Istra 1961
+                    - img "NK Istra 1961" [ref=e1638]
+                  - 'link "0 : 2" [ref=e1640] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399905/nk-istra-1961-gnk-dinamo-0-2/
+                    - generic [ref=e1641]:
+                      - generic [ref=e1642]: "0"
+                      - generic [ref=e1643]: ":"
+                      - generic [ref=e1644]: "2"
+                  - link [ref=e1646] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1648]
+                  - generic [ref=e1649]: Aldo Drosina, Pula
+                  - link [ref=e1651] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399905/nk-istra-1961-gnk-dinamo-0-2/
+              - listitem [ref=e1653]:
+                - generic [ref=e1654]:
+                  - generic [ref=e1655]: 26.04.2026. 18:45
+                  - link [ref=e1657] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1659]
+                  - 'link "2 : 1" [ref=e1661] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399910/gnk-dinamo-nk-varazdin-2-1/
+                    - generic [ref=e1662]:
+                      - generic [ref=e1663]: "2"
+                      - generic [ref=e1664]: ":"
+                      - generic [ref=e1665]: "1"
+                  - link [ref=e1667] [cursor=pointer]:
+                    - /url: /klubovi/5355/nk-varazdin/
+                    - text: NK Varaždin
+                    - img "NK Varaždin" [ref=e1669]
+                  - generic [ref=e1670]: Stadion Maksimir, Zagreb
+                  - link [ref=e1672] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399910/gnk-dinamo-nk-varazdin-2-1/
+              - listitem [ref=e1674]:
+                - generic [ref=e1675]:
+                  - generic [ref=e1676]: 02.05.2026. 16:00
+                  - link [ref=e1678] [cursor=pointer]:
+                    - /url: /klubovi/1274/hnk-gorica-sdd/
+                    - text: HNK Gorica s.d.d.
+                    - img "HNK Gorica s.d.d." [ref=e1680]
+                  - 'link "1 : 2" [ref=e1682] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399915/hnk-gorica-sdd-gnk-dinamo-1-2/
+                    - generic [ref=e1683]:
+                      - generic [ref=e1684]: "1"
+                      - generic [ref=e1685]: ":"
+                      - generic [ref=e1686]: "2"
+                  - link [ref=e1688] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1690]
+                  - generic [ref=e1691]: Gradski stadion, Velika Gorica
+                  - link [ref=e1693] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399915/hnk-gorica-sdd-gnk-dinamo-1-2/
+              - listitem [ref=e1695]:
+                - generic [ref=e1696]:
+                  - generic [ref=e1697]: 09.05.2026. 16:00
+                  - link [ref=e1699] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1701]
+                  - 'link "2 : 0" [ref=e1703] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399920/gnk-dinamo-hnk-hajduk-2-0/
+                    - generic [ref=e1704]:
+                      - generic [ref=e1705]: "2"
+                      - generic [ref=e1706]: ":"
+                      - generic [ref=e1707]: "0"
+                  - link [ref=e1709] [cursor=pointer]:
+                    - /url: /klubovi/515/hnk-hajduk/
+                    - text: HNK Hajduk
+                    - img "HNK Hajduk" [ref=e1711]
+                  - generic [ref=e1712]: Stadion Maksimir, Zagreb
+                  - link [ref=e1714] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399920/gnk-dinamo-hnk-hajduk-2-0/
+              - listitem [ref=e1716]:
+                - generic [ref=e1717]:
+                  - generic [ref=e1718]: 17.05.2026. 16:00
+                  - link [ref=e1720] [cursor=pointer]:
+                    - /url: /klubovi/914/nk-slaven-belupo/
+                    - text: NK Slaven Belupo
+                    - img "NK Slaven Belupo" [ref=e1722]
+                  - 'link "1 : 4" [ref=e1724] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399925/nk-slaven-belupo-gnk-dinamo-1-4/
+                    - generic [ref=e1725]:
+                      - generic [ref=e1726]: "1"
+                      - generic [ref=e1727]: ":"
+                      - generic [ref=e1728]: "4"
+                  - link [ref=e1730] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1732]
+                  - generic [ref=e1733]: Gradski stadion "Ivan Kušek Apaš", Koprivnica
+                  - link [ref=e1735] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399925/nk-slaven-belupo-gnk-dinamo-1-4/
+              - listitem [ref=e1737]:
+                - generic [ref=e1738]:
+                  - generic [ref=e1739]: 23.05.2026. 18:45
+                  - link [ref=e1741] [cursor=pointer]:
+                    - /url: /klubovi/609/gnk-dinamo/
+                    - text: GNK Dinamo
+                    - img "GNK Dinamo" [ref=e1743]
+                  - 'link "0 : 0" [ref=e1745] [cursor=pointer]':
+                    - /url: https://semafor.hns.family/utakmice/100399930/gnk-dinamo-nk-lokomotiva-z-0-0/
+                    - generic [ref=e1746]:
+                      - generic [ref=e1747]: "0"
+                      - generic [ref=e1748]: ":"
+                      - generic [ref=e1749]: "0"
+                  - link [ref=e1751] [cursor=pointer]:
+                    - /url: /klubovi/594/nk-lokomotiva-z/
+                    - text: NK Lokomotiva (Z)
+                    - img "NK Lokomotiva (Z)" [ref=e1753]
+                  - generic [ref=e1754]: Stadion Maksimir, Zagreb
+                  - link [ref=e1756] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/utakmice/100399930/gnk-dinamo-nk-lokomotiva-z-0-0/
+          - generic [ref=e1759]:
+            - list [ref=e1761]:
+              - listitem [ref=e1762] [cursor=pointer]:
+                - generic [ref=e1763]: Strijelci
+              - listitem [ref=e1764] [cursor=pointer]:
+                - generic [ref=e1765]: Kartoni
+              - listitem [ref=e1766] [cursor=pointer]:
+                - generic [ref=e1767]: Nastupi / minute
+            - list [ref=e1771]:
+              - listitem [ref=e1772]:
+                - generic [ref=e1773]:
+                  - generic [ref=e1774]: "1"
+                  - link [ref=e1777] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/198025/dion-drena-beljo/
+                    - img "Dion Drena Beljo" [ref=e1778]
+                  - heading [level=3] [ref=e1780]:
+                    - link "Dion Drena Beljo" [ref=e1781] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/198025/dion-drena-beljo/
+                  - generic [ref=e1782]: "31"
+              - listitem [ref=e1783]:
+                - generic [ref=e1784]:
+                  - generic [ref=e1785]: "2"
+                  - link [ref=e1788] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/1175914/mounsef-bakrar/
+                    - img "Mounsef Bakrar" [ref=e1789]
+                  - heading [level=3] [ref=e1791]:
+                    - link "Mounsef Bakrar" [ref=e1792] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/1175914/mounsef-bakrar/
+                  - generic [ref=e1793]: "10"
+              - listitem [ref=e1794]:
+                - generic [ref=e1795]:
+                  - generic [ref=e1796]: "3"
+                  - link [ref=e1799] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/1223868/miha-zajc/
+                    - img "Miha Zajc" [ref=e1800]
+                  - heading [level=3] [ref=e1802]:
+                    - link "Miha Zajc" [ref=e1803] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/1223868/miha-zajc/
+                  - generic [ref=e1804]: "8"
+              - listitem [ref=e1805]:
+                - generic [ref=e1806]:
+                  - generic [ref=e1807]: "4"
+                  - link [ref=e1810] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/469071/gabriel-vidovic/
+                    - img "Gabriel Vidović" [ref=e1811]
+                  - heading [level=3] [ref=e1813]:
+                    - link "Gabriel Vidović" [ref=e1814] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/469071/gabriel-vidovic/
+                  - generic [ref=e1815]: "7"
+              - listitem [ref=e1816]:
+                - generic [ref=e1817]:
+                  - generic [ref=e1818]: "4"
+                  - link [ref=e1821] [cursor=pointer]:
+                    - /url: https://semafor.hns.family/igraci/1156409/arber-hoxha/
+                    - img "Arbër Hoxha" [ref=e1822]
+                  - heading [level=3] [ref=e1824]:
+                    - link "Arbër Hoxha" [ref=e1825] [cursor=pointer]:
+                      - /url: https://semafor.hns.family/igraci/1156409/arber-hoxha/
+                  - generic [ref=e1826]: "7"
+      - generic [ref=e1827]:
+        - heading "Više informacija" [level=2] [ref=e1828]
+        - generic [ref=e1830]:
+          - list [ref=e1832]:
+            - listitem [ref=e1833] [cursor=pointer]:
+              - generic [ref=e1834]: Dokumenti
+            - listitem [ref=e1835] [cursor=pointer]:
+              - generic [ref=e1836]: O natjecanju
+          - generic [ref=e1841]:
+            - list [ref=e1842]:
+              - listitem [ref=e1843]:
+                - heading "21.05.2026." [level=4] [ref=e1845]
+                - heading [level=3] [ref=e1847]:
+                  - link "36_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1848] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/33000/36_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1850]:
+              - listitem [ref=e1851]:
+                - heading "14.05.2026." [level=4] [ref=e1853]
+                - heading [level=3] [ref=e1855]:
+                  - link "35_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1856] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32957/35_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1858]:
+              - listitem [ref=e1859]:
+                - heading "07.05.2026." [level=4] [ref=e1861]
+                - heading [level=3] [ref=e1863]:
+                  - link "34_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1864] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32914/34_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1866]:
+              - listitem [ref=e1867]:
+                - heading "30.04.2026." [level=4] [ref=e1869]
+                - heading [level=3] [ref=e1871]:
+                  - link "33_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1872] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32879/33_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1874]:
+              - listitem [ref=e1875]:
+                - heading "23.04.2026." [level=4] [ref=e1877]
+                - heading [level=3] [ref=e1879]:
+                  - link "32_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1880] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32826/32_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1882]:
+              - listitem [ref=e1883]:
+                - heading "20.04.2026." [level=4] [ref=e1885]
+                - heading [level=3] [ref=e1887]:
+                  - link "31_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1888] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32799/31_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1890]:
+              - listitem [ref=e1891]:
+                - heading "16.04.2026." [level=4] [ref=e1893]
+                - heading [level=3] [ref=e1895]:
+                  - link "30_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1896] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32784/30_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1898]:
+              - listitem [ref=e1899]:
+                - heading "09.04.2026." [level=4] [ref=e1901]
+                - heading [level=3] [ref=e1903]:
+                  - link "29_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1904] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32757/29_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1906]:
+              - listitem [ref=e1907]:
+                - heading "02.04.2026." [level=4] [ref=e1909]
+                - heading [level=3] [ref=e1911]:
+                  - link "28_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1912] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32720/28_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1914]:
+              - listitem [ref=e1915]:
+                - heading "21.03.2026." [level=4] [ref=e1917]
+                - heading [level=3] [ref=e1919]:
+                  - link "27_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1920] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32654/27_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1922]:
+              - listitem [ref=e1923]:
+                - heading "12.03.2026." [level=4] [ref=e1925]
+                - heading [level=3] [ref=e1927]:
+                  - link "26_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1928] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32611/26_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1930]:
+              - listitem [ref=e1931]:
+                - heading "05.03.2026." [level=4] [ref=e1933]
+                - heading [level=3] [ref=e1935]:
+                  - link "25_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1936] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32574/25_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1938]:
+              - listitem [ref=e1939]:
+                - heading "26.02.2026." [level=4] [ref=e1941]
+                - heading [level=3] [ref=e1943]:
+                  - link "24_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1944] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32548/24_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1946]:
+              - listitem [ref=e1947]:
+                - heading "19.02.2026." [level=4] [ref=e1949]
+                - heading [level=3] [ref=e1951]:
+                  - link "23_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1952] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32522/23_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1954]:
+              - listitem [ref=e1955]:
+                - heading "12.02.2026." [level=4] [ref=e1957]
+                - heading [level=3] [ref=e1959]:
+                  - link "22_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1960] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32496/22_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1962]:
+              - listitem [ref=e1963]:
+                - heading "05.02.2026." [level=4] [ref=e1965]
+                - heading [level=3] [ref=e1967]:
+                  - link "21_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1968] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32461/21_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1970]:
+              - listitem [ref=e1971]:
+                - heading "29.01.2026." [level=4] [ref=e1973]
+                - heading [level=3] [ref=e1975]:
+                  - link "20_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1976] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32421/20_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1978]:
+              - listitem [ref=e1979]:
+                - heading "22.01.2026." [level=4] [ref=e1981]
+                - heading [level=3] [ref=e1983]:
+                  - link "19_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1984] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32387/19_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1986]:
+              - listitem [ref=e1987]:
+                - heading "18.12.2025." [level=4] [ref=e1989]
+                - heading [level=3] [ref=e1991]:
+                  - link "18_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e1992] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32327/18_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e1994]:
+              - listitem [ref=e1995]:
+                - heading "11.12.2025." [level=4] [ref=e1997]
+                - heading [level=3] [ref=e1999]:
+                  - link "17_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2000] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32163/17_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2002]:
+              - listitem [ref=e2003]:
+                - heading "04.12.2025." [level=4] [ref=e2005]
+                - heading [level=3] [ref=e2007]:
+                  - link "16_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2008] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32131/16_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2010]:
+              - listitem [ref=e2011]:
+                - heading "27.11.2025." [level=4] [ref=e2013]
+                - heading [level=3] [ref=e2015]:
+                  - link "15_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2016] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32080/15_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2018]:
+              - listitem [ref=e2019]:
+                - heading "20.11.2025." [level=4] [ref=e2021]
+                - heading [level=3] [ref=e2023]:
+                  - link "14_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2024] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/32037/14_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2026]:
+              - listitem [ref=e2027]:
+                - heading "06.11.2025." [level=4] [ref=e2029]
+                - heading [level=3] [ref=e2031]:
+                  - link "13_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2032] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31952/13_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2034]:
+              - listitem [ref=e2035]:
+                - heading "30.10.2025." [level=4] [ref=e2037]
+                - heading [level=3] [ref=e2039]:
+                  - link "12_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2040] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31922/12_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2042]:
+              - listitem [ref=e2043]:
+                - heading "23.10.2025." [level=4] [ref=e2045]
+                - heading [level=3] [ref=e2047]:
+                  - link "11_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2048] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31886/11_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2050]:
+              - listitem [ref=e2051]:
+                - heading "16.10.2025." [level=4] [ref=e2053]
+                - heading [level=3] [ref=e2055]:
+                  - link "10_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2056] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31849/10_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2058]:
+              - listitem [ref=e2059]:
+                - heading "02.10.2025." [level=4] [ref=e2061]
+                - heading [level=3] [ref=e2063]:
+                  - link "9_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2064] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31767/9_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2066]:
+              - listitem [ref=e2067]:
+                - heading "25.09.2025." [level=4] [ref=e2069]
+                - heading [level=3] [ref=e2071]:
+                  - link "8_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2072] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31722/8_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2074]:
+              - listitem [ref=e2075]:
+                - heading "18.09.2025." [level=4] [ref=e2077]
+                - heading [level=3] [ref=e2079]:
+                  - link "7_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2080] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31684/7_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2082]:
+              - listitem [ref=e2083]:
+                - heading "11.09.2025." [level=4] [ref=e2085]
+                - heading [level=3] [ref=e2087]:
+                  - link "6_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2088] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31643/6_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2090]:
+              - listitem [ref=e2091]:
+                - heading "28.08.2025." [level=4] [ref=e2093]
+                - heading [level=3] [ref=e2095]:
+                  - link "5_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2096] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31522/5_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2098]:
+              - listitem [ref=e2099]:
+                - heading "21.08.2025." [level=4] [ref=e2101]
+                - heading [level=3] [ref=e2103]:
+                  - link "4_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2104] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31491/4_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2106]:
+              - listitem [ref=e2107]:
+                - heading "14.08.2025." [level=4] [ref=e2109]
+                - heading [level=3] [ref=e2111]:
+                  - link "3_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2112] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31476/3_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2114]:
+              - listitem [ref=e2115]:
+                - heading "07.08.2025." [level=4] [ref=e2117]
+                - heading [level=3] [ref=e2119]:
+                  - link "2_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2120] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31460/2_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+            - list [ref=e2122]:
+              - listitem [ref=e2123]:
+                - heading "31.07.2025." [level=4] [ref=e2125]
+                - heading [level=3] [ref=e2127]:
+                  - link "1_kolo_delegiranje službenih osoba SuperSport HNL" [ref=e2128] [cursor=pointer]:
+                    - /url: https://hns.family/files/documents/31450/1_kolo_delegiranje službenih osoba SuperSport HNL.pdf
+      - generic [ref=e2131]:
+        - generic [ref=e2132] [cursor=pointer]: Više
+        - heading "Politika privatnosti te točnost i ispravci podataka na Semaforu" [level=2] [ref=e2134]
+        - paragraph [ref=e2135]: Platforma hns.family prikazuje aktualne podatke iz COMET-a, platforme za vođenje nogometnih natjecanja Hrvatskog nogometnog saveza.
+      - generic [ref=e2137]:
+        - heading "Pobjednici" [level=2] [ref=e2138]
+        - list [ref=e2148]:
+          - listitem [ref=e2149]:
+            - link [ref=e2150] [cursor=pointer]:
+              - /url: /klubovi/1471/hnk-rijeka/
+              - generic [ref=e2151]:
+                - img "HNK Rijeka" [ref=e2153]
+                - generic [ref=e2154]:
+                  - heading "2024/25" [level=4] [ref=e2155]
+                  - heading "HNK Rijeka" [level=3] [ref=e2156]
+          - listitem [ref=e2157]:
+            - link [ref=e2158] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2159]:
+                - img "GNK Dinamo" [ref=e2161]
+                - generic [ref=e2162]:
+                  - heading "2023/24" [level=4] [ref=e2163]
+                  - heading "GNK Dinamo" [level=3] [ref=e2164]
+          - listitem [ref=e2165]:
+            - link [ref=e2166] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2167]:
+                - img "GNK Dinamo" [ref=e2169]
+                - generic [ref=e2170]:
+                  - heading "2022/23" [level=4] [ref=e2171]
+                  - heading "GNK Dinamo" [level=3] [ref=e2172]
+          - listitem [ref=e2173]:
+            - link [ref=e2174] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2175]:
+                - img "GNK Dinamo" [ref=e2177]
+                - generic [ref=e2178]:
+                  - heading "2021/22" [level=4] [ref=e2179]
+                  - heading "GNK Dinamo" [level=3] [ref=e2180]
+          - listitem [ref=e2181]:
+            - link [ref=e2182] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2183]:
+                - img "GNK Dinamo" [ref=e2185]
+                - generic [ref=e2186]:
+                  - heading "2020/21" [level=4] [ref=e2187]
+                  - heading "GNK Dinamo" [level=3] [ref=e2188]
+          - listitem [ref=e2189]:
+            - link [ref=e2190] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2191]:
+                - img "GNK Dinamo" [ref=e2193]
+                - generic [ref=e2194]:
+                  - heading "2019/20" [level=4] [ref=e2195]
+                  - heading "GNK Dinamo" [level=3] [ref=e2196]
+          - listitem [ref=e2197]:
+            - link [ref=e2198] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2199]:
+                - img "GNK Dinamo" [ref=e2201]
+                - generic [ref=e2202]:
+                  - heading "2018/19" [level=4] [ref=e2203]
+                  - heading "GNK Dinamo" [level=3] [ref=e2204]
+          - listitem [ref=e2205]:
+            - link [ref=e2206] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2207]:
+                - img "GNK Dinamo" [ref=e2209]
+                - generic [ref=e2210]:
+                  - heading "2017/18" [level=4] [ref=e2211]
+                  - heading "GNK Dinamo" [level=3] [ref=e2212]
+          - listitem [ref=e2213]:
+            - link [ref=e2214] [cursor=pointer]:
+              - /url: /klubovi/1471/hnk-rijeka/
+              - generic [ref=e2215]:
+                - img "HNK Rijeka" [ref=e2217]
+                - generic [ref=e2218]:
+                  - heading "2016/17" [level=4] [ref=e2219]
+                  - heading "HNK Rijeka" [level=3] [ref=e2220]
+          - listitem [ref=e2221]:
+            - link [ref=e2222] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2223]:
+                - img "GNK Dinamo" [ref=e2225]
+                - generic [ref=e2226]:
+                  - heading "2015/16" [level=4] [ref=e2227]
+                  - heading "GNK Dinamo" [level=3] [ref=e2228]
+          - listitem [ref=e2229]:
+            - link [ref=e2230] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2231]:
+                - img "GNK Dinamo" [ref=e2233]
+                - generic [ref=e2234]:
+                  - heading "2014/15" [level=4] [ref=e2235]
+                  - heading "GNK Dinamo" [level=3] [ref=e2236]
+          - listitem [ref=e2237]:
+            - link [ref=e2238] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2239]:
+                - img "GNK Dinamo" [ref=e2241]
+                - generic [ref=e2242]:
+                  - heading "2013/14" [level=4] [ref=e2243]
+                  - heading "GNK Dinamo" [level=3] [ref=e2244]
+          - listitem [ref=e2245]:
+            - link [ref=e2246] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2247]:
+                - img "GNK Dinamo" [ref=e2249]
+                - generic [ref=e2250]:
+                  - heading "2012/13" [level=4] [ref=e2251]
+                  - heading "GNK Dinamo" [level=3] [ref=e2252]
+          - listitem [ref=e2253]:
+            - link [ref=e2254] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2255]:
+                - img "GNK Dinamo" [ref=e2257]
+                - generic [ref=e2258]:
+                  - heading "2011/12" [level=4] [ref=e2259]
+                  - heading "GNK Dinamo" [level=3] [ref=e2260]
+          - listitem [ref=e2261]:
+            - link [ref=e2262] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2263]:
+                - img "GNK Dinamo" [ref=e2265]
+                - generic [ref=e2266]:
+                  - heading "2010/11" [level=4] [ref=e2267]
+                  - heading "GNK Dinamo" [level=3] [ref=e2268]
+          - listitem [ref=e2269]:
+            - link [ref=e2270] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2271]:
+                - img "GNK Dinamo" [ref=e2273]
+                - generic [ref=e2274]:
+                  - heading "2009/10" [level=4] [ref=e2275]
+                  - heading "NK Dinamo" [level=3] [ref=e2276]
+          - listitem [ref=e2277]:
+            - link [ref=e2278] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2279]:
+                - img "GNK Dinamo" [ref=e2281]
+                - generic [ref=e2282]:
+                  - heading "2008/09" [level=4] [ref=e2283]
+                  - heading "NK Dinamo" [level=3] [ref=e2284]
+          - listitem [ref=e2285]:
+            - link [ref=e2286] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2287]:
+                - img "GNK Dinamo" [ref=e2289]
+                - generic [ref=e2290]:
+                  - heading "2007/08" [level=4] [ref=e2291]
+                  - heading "NK Dinamo" [level=3] [ref=e2292]
+          - listitem [ref=e2293]:
+            - link [ref=e2294] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2295]:
+                - img "GNK Dinamo" [ref=e2297]
+                - generic [ref=e2298]:
+                  - heading "2006/07" [level=4] [ref=e2299]
+                  - heading "NK Dinamo" [level=3] [ref=e2300]
+          - listitem [ref=e2301]:
+            - link [ref=e2302] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2303]:
+                - img "GNK Dinamo" [ref=e2305]
+                - generic [ref=e2306]:
+                  - heading "2005/06" [level=4] [ref=e2307]
+                  - heading "NK Dinamo" [level=3] [ref=e2308]
+          - listitem [ref=e2309]:
+            - link [ref=e2310] [cursor=pointer]:
+              - /url: /klubovi/515/hnk-hajduk/
+              - generic [ref=e2311]:
+                - img "HNK Hajduk" [ref=e2313]
+                - generic [ref=e2314]:
+                  - heading "2004/05" [level=4] [ref=e2315]
+                  - heading "HNK Hajduk" [level=3] [ref=e2316]
+          - listitem [ref=e2317]:
+            - link [ref=e2318] [cursor=pointer]:
+              - /url: /klubovi/515/hnk-hajduk/
+              - generic [ref=e2319]:
+                - img "HNK Hajduk" [ref=e2321]
+                - generic [ref=e2322]:
+                  - heading "2003/04" [level=4] [ref=e2323]
+                  - heading "HNK Hajduk" [level=3] [ref=e2324]
+          - listitem [ref=e2325]:
+            - link [ref=e2326] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2327]:
+                - img "GNK Dinamo" [ref=e2329]
+                - generic [ref=e2330]:
+                  - heading "2002/03" [level=4] [ref=e2331]
+                  - heading "NK Dinamo" [level=3] [ref=e2332]
+          - listitem [ref=e2333]:
+            - link [ref=e2334] [cursor=pointer]:
+              - /url: /klubovi/590/nk-zagreb/
+              - generic [ref=e2335]:
+                - img "NK Zagreb" [ref=e2337]
+                - generic [ref=e2338]:
+                  - heading "2001/02" [level=4] [ref=e2339]
+                  - heading "NK Zagreb" [level=3] [ref=e2340]
+          - listitem [ref=e2341]:
+            - link [ref=e2342] [cursor=pointer]:
+              - /url: /klubovi/515/hnk-hajduk/
+              - generic [ref=e2343]:
+                - img "HNK Hajduk" [ref=e2345]
+                - generic [ref=e2346]:
+                  - heading "2000/01" [level=4] [ref=e2347]
+                  - heading "HNK Hajduk" [level=3] [ref=e2348]
+          - listitem [ref=e2349]:
+            - link [ref=e2350] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2351]:
+                - img "GNK Dinamo" [ref=e2353]
+                - generic [ref=e2354]:
+                  - heading "1999/00" [level=4] [ref=e2355]
+                  - heading "NK Dinamo" [level=3] [ref=e2356]
+          - listitem [ref=e2357]:
+            - link [ref=e2358] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2359]:
+                - img "GNK Dinamo" [ref=e2361]
+                - generic [ref=e2362]:
+                  - heading "1998/99" [level=4] [ref=e2363]
+                  - heading "NK Croatia" [level=3] [ref=e2364]
+          - listitem [ref=e2365]:
+            - link [ref=e2366] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2367]:
+                - img "GNK Dinamo" [ref=e2369]
+                - generic [ref=e2370]:
+                  - heading "1997/98" [level=4] [ref=e2371]
+                  - heading "NK Croatia" [level=3] [ref=e2372]
+          - listitem [ref=e2373]:
+            - link [ref=e2374] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2375]:
+                - img "GNK Dinamo" [ref=e2377]
+                - generic [ref=e2378]:
+                  - heading "1996/97" [level=4] [ref=e2379]
+                  - heading "NK Croatia" [level=3] [ref=e2380]
+          - listitem [ref=e2381]:
+            - link [ref=e2382] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2383]:
+                - img "GNK Dinamo" [ref=e2385]
+                - generic [ref=e2386]:
+                  - heading "1995/96" [level=4] [ref=e2387]
+                  - heading "NK Croatia" [level=3] [ref=e2388]
+          - listitem [ref=e2389]:
+            - link [ref=e2390] [cursor=pointer]:
+              - /url: /klubovi/515/hnk-hajduk/
+              - generic [ref=e2391]:
+                - img "HNK Hajduk" [ref=e2393]
+                - generic [ref=e2394]:
+                  - heading "1994/95" [level=4] [ref=e2395]
+                  - heading "HNK Hajduk" [level=3] [ref=e2396]
+          - listitem [ref=e2397]:
+            - link [ref=e2398] [cursor=pointer]:
+              - /url: /klubovi/515/hnk-hajduk/
+              - generic [ref=e2399]:
+                - img "HNK Hajduk" [ref=e2401]
+                - generic [ref=e2402]:
+                  - heading "1993/94" [level=4] [ref=e2403]
+                  - heading "HNK Hajduk" [level=3] [ref=e2404]
+          - listitem [ref=e2405]:
+            - link [ref=e2406] [cursor=pointer]:
+              - /url: /klubovi/609/gnk-dinamo/
+              - generic [ref=e2407]:
+                - img "GNK Dinamo" [ref=e2409]
+                - generic [ref=e2410]:
+                  - heading "1992/93" [level=4] [ref=e2411]
+                  - heading "NK Croatia" [level=3] [ref=e2412]
+          - listitem [ref=e2413]:
+            - link [ref=e2414] [cursor=pointer]:
+              - /url: /klubovi/515/hnk-hajduk/
+              - generic [ref=e2415]:
+                - img "HNK Hajduk" [ref=e2417]
+                - generic [ref=e2418]:
+                  - heading "1992" [level=4] [ref=e2419]
+                  - heading "HNK Hajduk" [level=3] [ref=e2420]
+  - generic [ref=e2422]:
+    - heading "Naši partneri" [level=2] [ref=e2423]
+    - list [ref=e2425]:
+      - listitem [ref=e2426]:
+        - img "SuperSport" [ref=e2428]
+      - listitem [ref=e2429]:
+        - link [ref=e2430] [cursor=pointer]:
+          - /url: https://www.uhlsport.com/en/
+          - img "Uhlsport" [ref=e2431]
+      - listitem [ref=e2432]:
+        - link [ref=e2433] [cursor=pointer]:
+          - /url: https://sorare.com/
+          - img "Sorare" [ref=e2434]
+      - listitem [ref=e2435]:
+        - link [ref=e2436] [cursor=pointer]:
+          - /url: https://paninistore.com/shp_int_en/
+          - img "Panini" [ref=e2437]
+  - contentinfo [ref=e2438]:
+    - generic [ref=e2440]:
+      - img "Hrvatski nogometni savez" [ref=e2442]
+      - list [ref=e2444]:
+        - listitem [ref=e2445]:
+          - text: "Ulica grada Vukovara 269A10000 ZagrebHrvatska / Croatia Tel:"
+          - link "+385 1 2361555" [ref=e2446] [cursor=pointer]:
+            - /url: tel:+38512361555
+          - text: "E-mail:"
+          - link "info@hns.family" [ref=e2447] [cursor=pointer]:
+            - /url: mailto:info@hns.family
+          - text: "IBAN: HR2523400091100187844OIB: 08516152078"
+        - listitem [ref=e2448]:
+          - list [ref=e2449]:
+            - listitem [ref=e2450]:
+              - link [ref=e2451] [cursor=pointer]:
+                - /url: https://qrcodes.pro/NzwYFA
+                - img "HNS Shop App" [ref=e2452]
+                - heading "HNS Shop App" [level=5] [ref=e2453]
+            - listitem [ref=e2454]:
+              - link [ref=e2455] [cursor=pointer]:
+                - /url: https://qrcodes.pro/GYxd2t
+                - img "HNS Ulaznice App" [ref=e2456]
+                - heading "HNS Ulaznice App" [level=5] [ref=e2457]
+            - listitem [ref=e2458]:
+              - link [ref=e2459] [cursor=pointer]:
+                - /url: https://qrcodes.pro/LFnVj2
+                - img "HNS Semafor App" [ref=e2460]
+                - heading "HNS Semafor App" [level=5] [ref=e2461]
+      - generic [ref=e2462]:
+        - link [ref=e2463] [cursor=pointer]:
+          - /url: https://www.uefa.com/
+          - img "UEFA" [ref=e2464]
+        - link [ref=e2465] [cursor=pointer]:
+          - /url: https://www.fifa.com/
+          - img "FIFA" [ref=e2466]
+    - list [ref=e2469]:
+      - listitem [ref=e2470]:
+        - heading "O nama" [level=3] [ref=e2471]
+        - list [ref=e2472]:
+          - listitem [ref=e2473]:
+            - link "Povijest" [ref=e2474] [cursor=pointer]:
+              - /url: https://hns.family/hns/o-nama/povijest/
+          - listitem [ref=e2475]:
+            - link "Uspjesi" [ref=e2476] [cursor=pointer]:
+              - /url: https://hns.family/hns/o-nama/uspjesi/
+          - listitem [ref=e2477]:
+            - link "Predsjednik" [ref=e2478] [cursor=pointer]:
+              - /url: https://hns.family/hns/o-nama/predsjednik/
+          - listitem [ref=e2479]:
+            - link "Glavni tajnik" [ref=e2480] [cursor=pointer]:
+              - /url: https://hns.family/hns/o-nama/glavni-tajnik/
+          - listitem [ref=e2481]:
+            - link "Izvršni odbor" [ref=e2482] [cursor=pointer]:
+              - /url: https://hns.family/hns/o-nama/izvrsni-odbor/
+          - listitem [ref=e2483]:
+            - link "Skupština" [ref=e2484] [cursor=pointer]:
+              - /url: https://hns.family/hns/o-nama/skupstina/
+          - listitem [ref=e2485]:
+            - link "Pristup informacijama" [ref=e2486] [cursor=pointer]:
+              - /url: https://hns.family/hns/info/pristup-informacijama/
+          - listitem [ref=e2487]:
+            - link "Opći uvjeti korištenja" [ref=e2488] [cursor=pointer]:
+              - /url: https://hns.family/hns/info/opci-uvjeti-koristenja-web/
+          - listitem [ref=e2489]:
+            - link "Privatnost i kolačići (hns.family)" [ref=e2490] [cursor=pointer]:
+              - /url: https://hns.family/hns/info/privatnost-korisnika-i-kolacici-hnsfamily/
+          - listitem [ref=e2491]:
+            - link "Privatnost i kolačići (hns.team)" [ref=e2492] [cursor=pointer]:
+              - /url: https://hns.family/hns/info/privatnost-korisnika-i-kolacici-hnsteam/
+          - listitem [ref=e2493]:
+            - link "Uvjeti korištenja (app Semafor)" [ref=e2494] [cursor=pointer]:
+              - /url: https://hns.family/hns/info/uvjeti-koristenja-aplikacija-semafor/
+          - listitem [ref=e2495]:
+            - link "Privatnost korisnika (app Semafor)" [ref=e2496] [cursor=pointer]:
+              - /url: https://hns.family/hns/info/politika-privatnosti-aplikacija-semafor/
+          - listitem [ref=e2497]:
+            - link "Kontakti" [ref=e2498] [cursor=pointer]:
+              - /url: https://hns.family/hns/info/kontakti/
+      - listitem [ref=e2499]:
+        - heading "HNS" [level=3] [ref=e2500]
+        - list [ref=e2501]:
+          - listitem [ref=e2502]:
+            - link "Središta" [ref=e2503] [cursor=pointer]:
+              - /url: https://hns.family/hns/hns-sredista/
+          - listitem [ref=e2504]:
+            - link "Županijski nogometni savezi" [ref=e2505] [cursor=pointer]:
+              - /url: https://hns.family/hns/zupanijski-nogometni-savezi/
+          - listitem [ref=e2506]:
+            - link "Suci" [ref=e2507] [cursor=pointer]:
+              - /url: https://hns.family/hns/suci/
+          - listitem [ref=e2508]:
+            - link "Nogometna akademija" [ref=e2509] [cursor=pointer]:
+              - /url: https://hns.family/hns/nogometna-akademija/
+          - listitem [ref=e2510]:
+            - link "Arbitražni sud" [ref=e2511] [cursor=pointer]:
+              - /url: https://hns.family/hns/arbitrazni-sud/
+          - listitem [ref=e2512]:
+            - link "Propisi i dokumenti HNS-a" [ref=e2513] [cursor=pointer]:
+              - /url: https://hns.family/dokumenti/propisi-i-dokumenti/
+          - listitem [ref=e2514]:
+            - link "Licenciranje" [ref=e2515] [cursor=pointer]:
+              - /url: https://hns.family/dokumenti/licenciranje/
+          - listitem [ref=e2516]:
+            - link "Registracije" [ref=e2517] [cursor=pointer]:
+              - /url: https://hns.family/dokumenti/registracije/
+          - listitem [ref=e2518]:
+            - link "Međunarodni transferi" [ref=e2519] [cursor=pointer]:
+              - /url: https://hns.family/dokumenti/medjunarodni-transferi/
+          - listitem [ref=e2520]:
+            - link "Posrednici" [ref=e2521] [cursor=pointer]:
+              - /url: https://hns.family/dokumenti/posrednici/
+          - listitem [ref=e2522]:
+            - link "Mediji" [ref=e2523] [cursor=pointer]:
+              - /url: https://hns.family/mediji/informacije/
+          - listitem [ref=e2524]:
+            - link "Logotipi" [ref=e2525] [cursor=pointer]:
+              - /url: https://hns.family/mediji/logotipi/
+      - listitem [ref=e2526]:
+        - heading "HNS.team" [level=3] [ref=e2527]
+        - list [ref=e2528]:
+          - listitem [ref=e2529]:
+            - link "A reprezentacija" [ref=e2530] [cursor=pointer]:
+              - /url: https://hns.team/vatreni/
+          - listitem [ref=e2531]:
+            - link "U-21" [ref=e2532] [cursor=pointer]:
+              - /url: https://hns.team/m/u-21/
+          - listitem [ref=e2533]:
+            - link "U-19" [ref=e2534] [cursor=pointer]:
+              - /url: https://hns.team/m/u-19/
+          - listitem [ref=e2535]:
+            - link "U-17" [ref=e2536] [cursor=pointer]:
+              - /url: https://hns.team/m/u-17/
+          - listitem [ref=e2537]:
+            - link "U-15" [ref=e2538] [cursor=pointer]:
+              - /url: https://hns.team/m/u-15/
+          - listitem [ref=e2539]:
+            - link "A reprezentacija (Ž)" [ref=e2540] [cursor=pointer]:
+              - /url: https://hns.team/z/a-reprezentacija/
+          - listitem [ref=e2541]:
+            - link "U-19 (Ž)" [ref=e2542] [cursor=pointer]:
+              - /url: https://hns.team/z/u-19/
+          - listitem [ref=e2543]:
+            - link "U-17 (Ž)" [ref=e2544] [cursor=pointer]:
+              - /url: https://hns.team/z/u-17/
+          - listitem [ref=e2545]:
+            - link "U-15 (Ž)" [ref=e2546] [cursor=pointer]:
+              - /url: https://hns.team/z/u-15/
+          - listitem [ref=e2547]:
+            - link "Futsal A" [ref=e2548] [cursor=pointer]:
+              - /url: https://hns.team/f/a-reprezentacija/
+          - listitem [ref=e2549]:
+            - link "Futsal A (Ž)" [ref=e2550] [cursor=pointer]:
+              - /url: https://hns.team/f-z/a-reprezentacija/
+          - listitem [ref=e2551]:
+            - link "Futsal U-19" [ref=e2552] [cursor=pointer]:
+              - /url: https://hns.team/f/u-19/
+      - listitem [ref=e2553]:
+        - heading "Natjecanja" [level=3] [ref=e2554]
+        - list [ref=e2555]:
+          - listitem [ref=e2556]:
+            - link "Supersport HNL" [ref=e2557] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/114137140/supersport-hrvatska-nogometna-liga-20262027/
+          - listitem [ref=e2558]:
+            - link "Supersport Hrvatski kup" [ref=e2559] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/100439118/supersport-hnk/
+          - listitem [ref=e2560]:
+            - link "Supersport Superkup" [ref=e2561] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/78139321/supersport-superkup/
+          - listitem [ref=e2562]:
+            - link "SuperSport Prva NL" [ref=e2563] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/114348034/supersport-prva-nl/
+          - listitem [ref=e2564]:
+            - link "SuperSport Druga NL" [ref=e2565] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/114348039/supersport-druga-nl/
+          - listitem [ref=e2566]:
+            - link "Magenta Liga" [ref=e2567] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/100511683/magenta-liga/
+          - listitem [ref=e2568]:
+            - link "SuperSport HMNL" [ref=e2569] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/101874516/supersport-hmnl/
+          - listitem [ref=e2570]:
+            - link "Hrvatski kup za žene" [ref=e2571] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/100914995/hnkz/
+          - listitem [ref=e2572]:
+            - link "Hrvatski malonogometni kup" [ref=e2573] [cursor=pointer]:
+              - /url: https://semafor.hns.family/natjecanja/105802437/hmnk/
+          - listitem [ref=e2574]:
+            - link "Sva natjecanja" [ref=e2575] [cursor=pointer]:
+              - /url: https://semafor.hns.family/
+      - listitem [ref=e2576]:
+        - heading "Obitelj" [level=3] [ref=e2577]
+        - list [ref=e2578]:
+          - listitem [ref=e2579]:
+            - link "Generacija 111" [ref=e2580] [cursor=pointer]:
+              - /url: https://hns.family/obitelj/generacija-111/
+          - listitem [ref=e2581]:
+            - link "Edukacija" [ref=e2582] [cursor=pointer]:
+              - /url: https://hns.family/edukacija/
+          - listitem [ref=e2583]:
+            - link "#JednaObitelj" [ref=e2584] [cursor=pointer]:
+              - /url: https://hns.family/vijesti/24774/svi-smo-jedna-obitelj/
+          - listitem [ref=e2585]:
+            - link "Ženski nogomet" [ref=e2586] [cursor=pointer]:
+              - /url: https://hns.family/obitelj/grassroots/zenski-nogomet/
+          - listitem [ref=e2587]:
+            - link "Veterani" [ref=e2588] [cursor=pointer]:
+              - /url: https://hns.family/obitelj/grassroots/veterani/
+          - listitem [ref=e2589]:
+            - link "Dječji i školski nogomet" [ref=e2590] [cursor=pointer]:
+              - /url: https://hns.family/obitelj/grassroots/djecji-i-skolski-nogomet/
+          - listitem [ref=e2591]:
+            - link "Osobe s invaliditetom" [ref=e2592] [cursor=pointer]:
+              - /url: https://hns.family/obitelj/grassroots/osobe-s-invaliditetom/
+          - listitem [ref=e2593]:
+            - link "UEFA Playmakers" [ref=e2594] [cursor=pointer]:
+              - /url: https://hns.family/playmakers/
+          - listitem [ref=e2595]:
+            - link "Shop" [ref=e2596] [cursor=pointer]:
+              - /url: https://shop.hns.family/
+          - listitem [ref=e2597]:
+            - link "Informativno-multimedijski centar" [ref=e2598] [cursor=pointer]:
+              - /url: https://hns.family/obitelj/navijaci/informativno-multimedijski-centar/
+          - listitem [ref=e2599]:
+            - link "Službena trgovina (app)" [ref=e2600] [cursor=pointer]:
+              - /url: https://hns.family/vijesti/30601/hns-sluzbena-trgovina-dresovi-trenirke-i-suveniri-na-dodir-prsta/
+          - listitem [ref=e2601]:
+            - link "Ulaznice (app)" [ref=e2602] [cursor=pointer]:
+              - /url: https://hns.family/vijesti/29136/aplikacija-hns-ulaznice-dostupna-za-preuzimanje/
+          - listitem [ref=e2603]:
+            - link "Semafor (app)" [ref=e2604] [cursor=pointer]:
+              - /url: https://hns.family/vijesti/28498/hns-predstavio-aplikaciju-semafor/
+      - listitem [ref=e2605]:
+        - heading "Riznica" [level=3] [ref=e2606]
+        - list [ref=e2607]:
+          - listitem [ref=e2608]:
+            - link "Povijest HNS-a" [ref=e2609] [cursor=pointer]:
+              - /url: https://riznica.hns.family/savez/
+          - listitem [ref=e2610]:
+            - link "Povijest Vatrenih" [ref=e2611] [cursor=pointer]:
+              - /url: https://riznica.hns.family/reprezentacija/
+          - listitem [ref=e2612]:
+            - link "FIFA SP 1998." [ref=e2613] [cursor=pointer]:
+              - /url: https://riznica.hns.family/reprezentacija/fifa-world-cup-1998/
+          - listitem [ref=e2614]:
+            - link "FIFA SP 2018." [ref=e2615] [cursor=pointer]:
+              - /url: https://riznica.hns.family/reprezentacija/fifa-world-cup-2018/
+          - listitem [ref=e2616]:
+            - link "FIFA SP 2022." [ref=e2617] [cursor=pointer]:
+              - /url: https://riznica.hns.family/reprezentacija/fifa-world-cup-2022/
+          - listitem [ref=e2618]:
+            - link "Liga nacija 2023." [ref=e2619] [cursor=pointer]:
+              - /url: https://riznica.hns.family/reprezentacija/uefa-nations-league-2023/
+          - listitem [ref=e2620]:
+            - link "Fotografije" [ref=e2621] [cursor=pointer]:
+              - /url: https://riznica.hns.family/foto/
+          - listitem [ref=e2622]:
+            - link "Video arhiva" [ref=e2623] [cursor=pointer]:
+              - /url: https://riznica.hns.family/video/
+          - listitem [ref=e2624]:
+            - link "Publikacije" [ref=e2625] [cursor=pointer]:
+              - /url: https://riznica.hns.family/publikacije/
+          - listitem [ref=e2626]:
+            - link "Wallpaperi" [ref=e2627] [cursor=pointer]:
+              - /url: https://riznica.hns.family/wallpaperi/
+    - generic [ref=e2628]:
+      - list [ref=e2630]:
+        - listitem [ref=e2631]:
+          - link "Facebook" [ref=e2632] [cursor=pointer]:
+            - /url: https://www.facebook.com/cff.hns
+        - listitem [ref=e2633]:
+          - link "Twitter" [ref=e2634] [cursor=pointer]:
+            - /url: https://twitter.com/HNS_CFF
+        - listitem [ref=e2635]:
+          - link "Instagram" [ref=e2636] [cursor=pointer]:
+            - /url: https://instagram.com/hns_cff
+        - listitem [ref=e2637]:
+          - link "Youtube" [ref=e2638] [cursor=pointer]:
+            - /url: https://www.youtube.com/@hns.family
+        - listitem [ref=e2639]:
+          - link "Weibo" [ref=e2640] [cursor=pointer]:
+            - /url: https://www.weibo.com/u/7375804392
+        - listitem [ref=e2641]:
+          - link "LinkedIn" [ref=e2642] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/croatian-football-federation/
+        - listitem [ref=e2643]:
+          - link "TikTok" [ref=e2644] [cursor=pointer]:
+            - /url: https://www.tiktok.com/@hns.family
+      - img "Obitelj / Family" [ref=e2647]

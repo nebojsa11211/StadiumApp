@@ -1,0 +1,111 @@
+@*
+    Navigable season banner used to scope a page to one season (or "All Seasons").
+    Reuses the dashboard's `.dash-season-bar` styling (admin-modern-dashboard.css) so it
+    looks identical to the dashboard banner, and emits a filter value using the standard
+    convention: "" = all seasons, "none" = no season, else the season id.
+*@
+@inject IStringLocalizer<SharedResources> L
+
+@if (Seasons is { Count: > 0 })
+{
+    <div id="@IdPrefix" class="dash-season-bar">
+        <button class="dash-event-nav" @onclick="SelectPrev" disabled="@(!CanGoPrev)"
+                id="@(IdPrefix)-prev-btn" title="@L["Index_PreviousSeason"]">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div class="dash-season-info">
+            <i class="bi bi-calendar-range"></i>
+            <span>@L["Index_CurrentSeason"]:</span>
+            <strong id="@(IdPrefix)-name">@DisplayName</strong>
+            @if (Current is { IsCurrent: true })
+            {
+                <span class="dash-season-live" id="@(IdPrefix)-live-badge"><i class="bi bi-broadcast"></i> @L["Index_Current"]</span>
+            }
+            @if (Current != null)
+            {
+                <span class="dash-season-dates">(@Current.StartDate.ToLocalTime().ToString("MMM yyyy") – @Current.EndDate.ToLocalTime().ToString("MMM yyyy"))</span>
+            }
+            <span class="dash-season-passes">
+                <i class="bi bi-person-badge"></i> @DisplayPassCount @L["Index_SeasonPasses"]
+            </span>
+        </div>
+
+        <div class="dash-season-controls">
+            @if (LiveSeason != null && Value != LiveSeason.Id.ToString())
+            {
+                <button class="dash-event-current" @onclick="GoToCurrent" id="@(IdPrefix)-current-btn" title="@L["Index_ReturnToCurrentSeason"]">
+                    <i class="bi bi-broadcast"></i> @L["Index_Current"]
+                </button>
+            }
+            <select class="dash-event-select" value="@Value" @onchange="OnSelect" id="@(IdPrefix)-select" title="@L["Index_SelectSeason"]">
+                <option value="">@L["Seasons_AllSeasons"]</option>
+                @foreach (var s in SeasonsOrdered)
+                {
+                    <option value="@s.Id">@s.Name</option>
+                }
+                @if (AllowNoSeason)
+                {
+                    <option value="none">@L["Index_NoSeason"]</option>
+                }
+            </select>
+            <button class="dash-event-nav" @onclick="SelectNext" disabled="@(!CanGoNext)"
+                    id="@(IdPrefix)-next-btn" title="@L["Index_NextSeason"]">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>All seasons to navigate. The banner renders nothing when this is null/empty.</summary>
+    [Parameter, EditorRequired] public List<SeasonDto>? Seasons { get; set; }
+
+    /// <summary>Current filter value: "" = all seasons, "none" = no season, else the season id.</summary>
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    /// <summary>When true, the dropdown offers a "No season" option (events with no linked season).</summary>
+    [Parameter] public bool AllowNoSeason { get; set; } = true;
+
+    /// <summary>Prefix for the element ids so multiple banners can coexist.</summary>
+    [Parameter] public string IdPrefix { get; set; } = "admin-season-banner";
+
+    private List<SeasonDto> SeasonsOrdered =>
+        (Seasons ?? new()).OrderBy(s => s.StartDate).ThenBy(s => s.Id).ToList();
+
+    private SeasonDto? LiveSeason => Seasons?.FirstOrDefault(s => s.IsCurrent);
+
+    /// <summary>The concrete season currently shown, or null for the "All"/"No season" states.</summary>
+    private SeasonDto? Current =>
+        int.TryParse(Value, out var id) ? Seasons?.FirstOrDefault(s => s.Id == id) : null;
+
+    private string DisplayName => Value switch
+    {
+        "none" => L["Index_NoSeason"],
+        _ when Current != null => Current.Name,
+        _ => L["Seasons_AllSeasons"]
+    };
+
+    private int DisplayPassCount =>
+        Current?.SeasonTicketCount ?? SeasonsOrdered.Sum(s => s.SeasonTicketCount);
+
+    // Prev/next walk this ordered track: [All] + seasons (chronological). "none" sits off the track.
+    private List<string> NavTokens =>
+        new List<string> { "" }.Concat(SeasonsOrdered.Select(s => s.Id.ToString())).ToList();
+
+    private int NavIndex => NavTokens.IndexOf(Value ?? "");
+    private bool CanGoPrev => NavIndex > 0;
+    private bool CanGoNext => NavIndex >= 0 && NavIndex < NavTokens.Count - 1;
+
+    private Task SelectPrev() => CanGoPrev ? SetValue(NavTokens[NavIndex - 1]) : Task.CompletedTask;
+    private Task SelectNext() => CanGoNext ? SetValue(NavTokens[NavIndex + 1]) : Task.CompletedTask;
+    private Task GoToCurrent() => LiveSeason != null ? SetValue(LiveSeason.Id.ToString()) : Task.CompletedTask;
+    private Task OnSelect(ChangeEventArgs e) => SetValue(e.Value?.ToString() ?? "");
+
+    private async Task SetValue(string value)
+    {
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+}

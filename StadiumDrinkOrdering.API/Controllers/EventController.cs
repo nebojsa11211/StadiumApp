@@ -240,6 +240,11 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = salesWindowError });
             }
 
+            if (!IsValidDrinkSalesWindow(request.DrinkSalesStartDate, request.DrinkSalesEndDate, out var drinkWindowError))
+            {
+                return BadRequest(new { message = drinkWindowError });
+            }
+
             var name = request.Name.Trim();
             if (await _eventService.IsEventNameTakenAsync(name))
             {
@@ -267,6 +272,8 @@ public class EventController : ControllerBase
                 EventEndDate = request.EndDate,
                 TicketSalesStartDate = request.TicketSalesStartDate,
                 TicketSalesEndDate = request.TicketSalesEndDate,
+                DrinkSalesStartDate = request.DrinkSalesStartDate,
+                DrinkSalesEndDate = request.DrinkSalesEndDate,
                 TotalSeats = stadiumCapacity > 0 ? stadiumCapacity : request.Capacity,
                 Description = request.Description,
                 BaseTicketPrice = request.BasePrice,
@@ -345,6 +352,14 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = salesWindowError });
             }
 
+            // Null in the request means "unchanged", so validate the effective (merged) drink window.
+            var newDrinkStart = request.DrinkSalesStartDate ?? existing.DrinkSalesStartDate;
+            var newDrinkEnd = request.DrinkSalesEndDate ?? existing.DrinkSalesEndDate;
+            if (!IsValidDrinkSalesWindow(newDrinkStart, newDrinkEnd, out var drinkWindowError))
+            {
+                return BadRequest(new { message = drinkWindowError });
+            }
+
             var newSeasonId = request.SeasonId ?? existing.SeasonId;
             var seasonLinkIsNew = newSeasonId != null && newSeasonId != existing.SeasonId;
 
@@ -377,6 +392,8 @@ public class EventController : ControllerBase
                 EventEndDate = newEnd,
                 TicketSalesStartDate = newSalesStart,
                 TicketSalesEndDate = newSalesEnd,
+                DrinkSalesStartDate = newDrinkStart,
+                DrinkSalesEndDate = newDrinkEnd,
                 VenueId = existing.VenueId,
                 TotalSeats = stadiumCapacity > 0 ? stadiumCapacity : (request.Capacity ?? existing.TotalSeats),
                 Description = request.Description ?? existing.Description,
@@ -431,6 +448,21 @@ public class EventController : ControllerBase
         if (start.HasValue && end.HasValue && end.Value <= start.Value)
         {
             error = "The ticket sales end time must be after the sales start time.";
+            return false;
+        }
+        error = string.Empty;
+        return true;
+    }
+
+    /// <summary>
+    /// Validates the optional drink-ordering window: when both bounds are supplied the end must come
+    /// strictly after the start. A missing start or end is allowed (that side of the window is open).
+    /// </summary>
+    private static bool IsValidDrinkSalesWindow(DateTime? start, DateTime? end, out string error)
+    {
+        if (start.HasValue && end.HasValue && end.Value <= start.Value)
+        {
+            error = "The drink ordering end time must be after the drink ordering start time.";
             return false;
         }
         error = string.Empty;
@@ -551,6 +583,30 @@ public class EventController : ControllerBase
     }
 
     /// <summary>
+    /// One-time maintenance: reconcile orders on events that are already Completed/Cancelled but still
+    /// have in-flight drink orders (historical orphans left before the on-completion sweep existed).
+    /// Reuses the same idempotent, refund-correct cancellation path, so it is safe to run repeatedly.
+    /// Optional <paramref name="eventId"/> limits the sweep to a single (terminal) event; omit it to
+    /// reconcile every terminal event. Returns the number of orders reconciled.
+    /// </summary>
+    [HttpPost("reconcile-orders")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> ReconcileTerminalEventOrders([FromQuery] int? eventId = null)
+    {
+        try
+        {
+            var reconciled = await _eventService.ReconcileTerminalEventOrdersAsync(eventId);
+            return Ok(new { reconciledOrders = reconciled });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error reconciling orders for terminal events");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
     /// Maps Event entity to EventDto
     /// </summary>
     /// <summary>
@@ -660,6 +716,8 @@ public class EventController : ControllerBase
             EndDate = evt.EventEndDate,
             TicketSalesStartDate = evt.TicketSalesStartDate,
             TicketSalesEndDate = evt.TicketSalesEndDate,
+            DrinkSalesStartDate = evt.DrinkSalesStartDate,
+            DrinkSalesEndDate = evt.DrinkSalesEndDate,
             Description = evt.Description,
             Capacity = capacity,
             AvailableSeats = Math.Max(0, capacity - soldSeats),
@@ -671,7 +729,7 @@ public class EventController : ControllerBase
             StatusName = evt.Status.ToString(),
             Phase = EventLifecycle.PhaseOf(evt.Status),
             CanSellTickets = evt.AreTicketSalesOpenAt(DateTime.UtcNow),
-            CanOrderDrinks = EventLifecycle.CanOrderDrinks(evt.Status),
+            CanOrderDrinks = evt.AreDrinkSalesOpenAt(DateTime.UtcNow),
             IsCurrentlyLive = evt.IsLiveAt(DateTime.UtcNow),
             SeasonId = evt.SeasonId,
             SeasonName = seasonName ?? evt.Season?.Name

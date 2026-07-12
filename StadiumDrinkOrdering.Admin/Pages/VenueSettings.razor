@@ -16,12 +16,10 @@
 <PageTitle>@L["Venue_PageTitle"]</PageTitle>
 
 <div id="admin-venue-main-container" class="container-fluid">
-    <div class="row mb-3" id="admin-venue-header-row">
-        <div class="col-12" id="admin-venue-header-col">
-            <h1 id="admin-venue-title" class="mb-1">@L["Venue_Heading"]</h1>
-            <p class="text-muted" id="admin-venue-subtitle">@L["Venue_Subtitle"]</p>
-        </div>
-    </div>
+    <PageHeader Id="admin-venue-header"
+                Eyebrow='@L["Venue_Eyebrow"]'
+                Title='@L["Venue_Heading"]'
+                Subtitle='@L["Venue_Subtitle"]' />
 
     @if (!string.IsNullOrEmpty(alertMessage))
     {
@@ -33,7 +31,7 @@
 
     @if (isLoading)
     {
-        <div id="admin-venue-loading" class="d-flex align-items-center text-muted">
+        <div id="admin-venue-settings-loading" class="d-flex align-items-center text-muted">
             <div class="spinner-border spinner-border-sm me-2" role="status"></div>
             <span>@L["Venue_Loading"]</span>
         </div>

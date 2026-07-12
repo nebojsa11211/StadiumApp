@@ -13,12 +13,10 @@
 <PageTitle>@L["StadiumInfo_PageTitle"]</PageTitle>
 
 <div id="admin-stadium-info-main-container" class="container-fluid">
-    <div class="row mb-3" id="admin-stadium-info-header-row">
-        <div class="col-12" id="admin-stadium-info-header-col">
-            <h1 id="admin-stadium-info-title" class="mb-1">@L["StadiumInfo_Heading"]</h1>
-            <p class="text-muted" id="admin-stadium-info-subtitle">@L["StadiumInfo_Subtitle"]</p>
-        </div>
-    </div>
+    <PageHeader Id="admin-stadium-info-header"
+                Eyebrow='@L["StadiumInfo_Eyebrow"]'
+                Title='@L["StadiumInfo_Heading"]'
+                Subtitle='@L["StadiumInfo_Subtitle"]' />
 
     @if (isLoading)
     {

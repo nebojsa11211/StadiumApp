@@ -22,18 +22,45 @@ public partial class Index : ComponentBase, IDisposable
     private List<OrderDto> _allOrders = new();
     private List<SeasonDto> _seasons = new();
 
-    // The season currently in progress (flagged IsCurrent), shown as the dashboard's season banner.
-    private SeasonDto? CurrentSeason => _seasons.FirstOrDefault(s => s.IsCurrent);
+    // The season the banner (and the season-pass tile) is currently showing. Navigable by the admin;
+    // also synced to the selected event's season whenever the event changes.
+    private SeasonDto? _selectedSeason;
 
-    // Season tile: the selected event's season, else the current season.
-    private SeasonDto? DashboardSeason =>
-        (_selectedEvent?.SeasonId is int sid ? _seasons.FirstOrDefault(s => s.Id == sid) : null)
-        ?? _seasons.FirstOrDefault(s => s.IsCurrent);
+    // All seasons in chronological order — the order the banner navigates through.
+    private List<SeasonDto> SeasonsOrdered =>
+        _seasons.OrderBy(s => s.StartDate).ThenBy(s => s.Id).ToList();
+
+    // The season currently in progress (flagged IsCurrent) — the "live" season to jump back to.
+    private SeasonDto? LiveSeason => _seasons.FirstOrDefault(s => s.IsCurrent);
+
+    // The season shown in the banner: the navigated selection, else the live season, else the first.
+    private SeasonDto? DisplaySeason =>
+        _selectedSeason ?? LiveSeason ?? SeasonsOrdered.FirstOrDefault();
+
+    // Season tile follows the banner so the two stay consistent.
+    private SeasonDto? DashboardSeason => DisplaySeason;
     private int SeasonPassCount => DashboardSeason?.SeasonTicketCount ?? 0;
 
-    /// <summary>True when the selected event belongs to a season other than the current one.</summary>
+    // ----- Season navigation -----
+    private int SelectedSeasonIndex =>
+        DisplaySeason == null ? -1 : SeasonsOrdered.FindIndex(s => s.Id == DisplaySeason.Id);
+    private bool CanGoPrevSeason => SelectedSeasonIndex > 0;
+    private bool CanGoNextSeason => SelectedSeasonIndex >= 0 && SelectedSeasonIndex < _seasons.Count - 1;
+    private bool IsOnLiveSeason => DisplaySeason != null && LiveSeason?.Id == DisplaySeason.Id;
+
+    /// <summary>Name of the selected event's season, or null when it has none.</summary>
+    private string? SelectedEventSeasonName =>
+        _selectedEvent?.SeasonId is int sid ? _seasons.FirstOrDefault(s => s.Id == sid)?.Name : null;
+
+    /// <summary>True when the selected event belongs to a season other than the one shown in the banner.</summary>
     private bool SelectedEventInOtherSeason =>
-        _selectedEvent?.SeasonId is int sid && CurrentSeason != null && sid != CurrentSeason.Id;
+        _selectedEvent?.SeasonId is int sid && DisplaySeason != null && sid != DisplaySeason.Id;
+
+    /// <summary>Events that belong to the season shown in the banner. With no seasons, the whole list.</summary>
+    private List<EventDto> SeasonEvents =>
+        DisplaySeason == null
+            ? _events
+            : _events.Where(e => e.SeasonId == DisplaySeason.Id).ToList();
 
     // Scoped metrics
     private int _ticketsSold;
@@ -97,6 +124,14 @@ public partial class Index : ComponentBase, IDisposable
 
             try { _seasons = await AdminApiService.GetAsync<List<SeasonDto>>("seasons") ?? new List<SeasonDto>(); }
             catch (Exception ex) { Logger.LogWarning(ex, "Failed to load seasons for dashboard tile"); }
+
+            // Keep an in-range selection across reloads; default to the event's season, else the live season.
+            if (_selectedSeason != null)
+                _selectedSeason = _seasons.FirstOrDefault(s => s.Id == _selectedSeason.Id);
+            SyncSeasonToEvent();
+
+            // The season scopes the dashboard: make sure the selected event lives in the displayed season.
+            EnsureEventInSeason();
 
             ApplyEventScope();
         }
@@ -262,25 +297,98 @@ public partial class Index : ComponentBase, IDisposable
     }
 
     // ----- Event navigation (re-filters already-loaded orders, no network) -----
-    private bool HasEvents => _events.Count > 0;
-    private int SelectedIndex => _selectedEvent == null ? -1 : _events.FindIndex(e => e.Id == _selectedEvent.Id);
+    private bool HasEvents => SeasonEvents.Count > 0;
+    private int SelectedIndex => _selectedEvent == null ? -1 : SeasonEvents.FindIndex(e => e.Id == _selectedEvent.Id);
     private bool CanGoPrev => SelectedIndex > 0;
-    private bool CanGoNext => SelectedIndex >= 0 && SelectedIndex < _events.Count - 1;
-    private bool IsOnDefaultEvent => _selectedEvent != null && PickDefaultEvent(_events)?.Id == _selectedEvent.Id;
+    private bool CanGoNext => SelectedIndex >= 0 && SelectedIndex < SeasonEvents.Count - 1;
+    private bool IsOnDefaultEvent => _selectedEvent != null && PickDefaultEvent(SeasonEvents)?.Id == _selectedEvent.Id;
 
     /// <summary>Re-scope the dashboard to the selected event and move the live subscription with it.</summary>
     private async Task OnSelectedEventChangedAsync()
     {
+        SyncSeasonToEvent();
         ApplyEventScope();
         StateHasChanged();
         await RejoinEventAsync();
+    }
+
+    /// <summary>Point the season banner at the selected event's season (when it has one).</summary>
+    private void SyncSeasonToEvent()
+    {
+        if (_selectedEvent?.SeasonId is int sid)
+        {
+            var season = _seasons.FirstOrDefault(s => s.Id == sid);
+            if (season != null)
+                _selectedSeason = season;
+        }
+    }
+
+    // ----- Season navigation (banner) -----
+    private async Task SelectPrevSeason()
+    {
+        if (CanGoPrevSeason)
+        {
+            _selectedSeason = SeasonsOrdered[SelectedSeasonIndex - 1];
+            await OnSeasonScopeChangedAsync();
+        }
+    }
+
+    private async Task SelectNextSeason()
+    {
+        if (CanGoNextSeason)
+        {
+            _selectedSeason = SeasonsOrdered[SelectedSeasonIndex + 1];
+            await OnSeasonScopeChangedAsync();
+        }
+    }
+
+    private async Task OnSelectSeason(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var id))
+        {
+            var match = _seasons.FirstOrDefault(s => s.Id == id);
+            if (match != null)
+            {
+                _selectedSeason = match;
+                await OnSeasonScopeChangedAsync();
+            }
+        }
+    }
+
+    private async Task GoToCurrentSeason()
+    {
+        if (LiveSeason != null)
+        {
+            _selectedSeason = LiveSeason;
+            await OnSeasonScopeChangedAsync();
+        }
+    }
+
+    /// <summary>A new season was chosen in the banner: re-scope the whole dashboard to it.</summary>
+    private async Task OnSeasonScopeChangedAsync()
+    {
+        // Selecting a season resets the event scope to a sensible default within that season.
+        _selectedEvent = PickDefaultEvent(SeasonEvents);
+        ApplyEventScope();
+        StateHasChanged();
+        await RejoinEventAsync();
+    }
+
+    /// <summary>Guarantee the selected event belongs to the displayed season; otherwise pick a default there.</summary>
+    private void EnsureEventInSeason()
+    {
+        if (DisplaySeason == null)
+            return; // no seasons configured → no season filtering
+        if (_selectedEvent != null && _selectedEvent.SeasonId == DisplaySeason.Id)
+            return;
+        _selectedEvent = PickDefaultEvent(SeasonEvents);
     }
 
     private async Task SelectPrevEvent()
     {
         if (CanGoPrev)
         {
-            _selectedEvent = _events[SelectedIndex - 1];
+            _selectedEvent = SeasonEvents[SelectedIndex - 1];
             await OnSelectedEventChangedAsync();
         }
     }
@@ -289,7 +397,7 @@ public partial class Index : ComponentBase, IDisposable
     {
         if (CanGoNext)
         {
-            _selectedEvent = _events[SelectedIndex + 1];
+            _selectedEvent = SeasonEvents[SelectedIndex + 1];
             await OnSelectedEventChangedAsync();
         }
     }
@@ -309,7 +417,7 @@ public partial class Index : ComponentBase, IDisposable
 
     private async Task GoToCurrentEvent()
     {
-        var def = PickDefaultEvent(_events);
+        var def = PickDefaultEvent(SeasonEvents);
         if (def != null)
         {
             _selectedEvent = def;

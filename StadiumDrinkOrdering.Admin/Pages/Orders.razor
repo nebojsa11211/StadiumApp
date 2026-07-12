@@ -6,21 +6,19 @@
 
 <div class="console" id="admin-orders-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-orders-header">
-        <div class="console-head__title" id="admin-orders-title-section">
-            <span class="eyebrow">@L["Orders_Eyebrow"]</span>
-            <h1>@L["Orders_Title"]</h1>
-            <p>@L["Orders_Subtitle"]</p>
-        </div>
-        <div class="console-head__actions" id="admin-orders-action-buttons">
+    <PageHeader Id="admin-orders-header"
+                Eyebrow='@L["Orders_Eyebrow"]'
+                Title='@L["Orders_Title"]'
+                Subtitle='@L["Orders_Subtitle"]'>
+        <Actions>
             <button class="pill-btn pill-btn--primary" @onclick="CreateNewOrder" id="admin-orders-create-btn">
-                <i class="oi oi-plus"></i><span>@L["Orders_NewButton"]</span>
+                <i class="bi bi-plus-lg"></i><span>@L["Orders_NewButton"]</span>
             </button>
             <button class="icon-btn" @onclick="RefreshData" disabled="@isLoading" id="admin-orders-refresh-btn" title="@L["Orders_RefreshTitle"]">
-                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i>
+                <i class="bi bi-arrow-clockwise @(isLoading ? "spin" : "")"></i>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     <!-- Key Metrics Cards -->
     <section class="metrics">
@@ -66,7 +64,7 @@
                 <span class="metric__label">@L["Orders_RevenueLabel"]</span>
                 <i class="oi oi-dollar metric__icon"></i>
             </div>
-            <div class="metric__value mono"><span class="metric__unit">$</span>@revenueToday.ToString("N0")</div>
+            <div class="metric__value mono"><span class="metric__unit">€</span>@revenueToday.ToString("N0")</div>
             <div class="metric__foot">
                 <span class="metric__hint">@L["Orders_RevenueHint"]</span>
             </div>
@@ -82,6 +80,16 @@
             </button>
         </div>
         <div class="filters" id="admin-orders-filters-container">
+            <div class="field" id="admin-orders-season-field">
+                <label class="field__label" id="admin-orders-season-label">@L["Orders_SeasonLabel"]</label>
+                <select class="field__input" id="admin-orders-season-select" @bind="selectedSeasonId" @bind:after="OnSeasonChanged">
+                    <option value="">@L["Orders_AllSeasonsOption"]</option>
+                    @foreach (var s in seasonOptions)
+                    {
+                        <option value="@s.Id">@s.Name</option>
+                    }
+                </select>
+            </div>
             <div class="field" id="admin-orders-event-field">
                 <label class="field__label" id="admin-orders-event-label">@L["Orders_EventLabel"]</label>
                 <select class="field__input" id="admin-orders-event-select" @bind="selectedEventId" @bind:after="FilterOrders">
@@ -136,11 +144,11 @@
                     <div class="stat-figures" id="admin-orders-stat-figures">
                         <div class="stat-fig" id="admin-orders-stat-revenue">
                             <span class="stat-fig__label">@L["Statistics_Revenue"]</span>
-                            <span class="stat-fig__value mono"><span class="metric__unit">$</span>@statRevenue.ToString("N2")</span>
+                            <span class="stat-fig__value mono"><span class="metric__unit">€</span>@statRevenue.ToString("N2")</span>
                         </div>
                         <div class="stat-fig" id="admin-orders-stat-avg">
                             <span class="stat-fig__label">@L["Statistics_AvgOrder"]</span>
-                            <span class="stat-fig__value mono"><span class="metric__unit">$</span>@statAvgOrder.ToString("N2")</span>
+                            <span class="stat-fig__value mono"><span class="metric__unit">€</span>@statAvgOrder.ToString("N2")</span>
                         </div>
                         <div class="stat-fig" id="admin-orders-stat-items">
                             <span class="stat-fig__label">@L["Statistics_ItemsSold"]</span>
@@ -215,7 +223,7 @@
 
     @if (isLoading)
     {
-        <div class="loading-state" id="admin-orders-loading-state">
+        <div class="loading-state" id="admin-orders-loading">
             <span class="loading-spinner" id="admin-orders-loading-spinner"></span>
             <p id="admin-orders-loading-text">@L["Orders_Loading"]</p>
         </div>
@@ -265,7 +273,7 @@
                                 <td class="mono order-table__id" id="@($"admin-orders-id-{order.Id}")">#@order.Id</td>
                                 <td id="@($"admin-orders-customer-{order.Id}")">@order.CustomerName</td>
                                 <td class="order-table__muted" id="@($"admin-orders-items-{order.Id}")">@order.OrderItems.Count @L["Orders_ItemsSuffix"]</td>
-                                <td class="num mono" id="@($"admin-orders-total-{order.Id}")">$@order.TotalAmount.ToString("N2")</td>
+                                <td class="num mono" id="@($"admin-orders-total-{order.Id}")">€@order.TotalAmount.ToString("N2")</td>
                                 <td id="@($"admin-orders-status-{order.Id}")">
                                     <span class="status @GetStatusModifier(order.Status)" id="@($"admin-orders-status-badge-{order.Id}")">
                                         <span class="status__dot"></span>@order.Status
@@ -365,15 +373,15 @@
                                 <tr>
                                     <td>@item.DrinkName</td>
                                     <td class="num mono">@item.Quantity</td>
-                                    <td class="num mono">$@item.UnitPrice.ToString("N2")</td>
-                                    <td class="num mono">$@item.TotalPrice.ToString("N2")</td>
+                                    <td class="num mono">€@item.UnitPrice.ToString("N2")</td>
+                                    <td class="num mono">€@item.TotalPrice.ToString("N2")</td>
                                 </tr>
                             }
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colspan="3" class="num">@L["Orders_TotalHeader"]</td>
-                                <td class="num mono detail-total">$@viewOrder.TotalAmount.ToString("N2")</td>
+                                <td class="num mono detail-total">€@viewOrder.TotalAmount.ToString("N2")</td>
                             </tr>
                         </tfoot>
                     </table>

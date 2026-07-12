@@ -125,21 +125,24 @@ public class AccountProvisioningService : IAccountProvisioningService
     private async Task SendActivationEmailAsync(IServiceScope scope, User shell, string token)
     {
         var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
+        var templates = scope.ServiceProvider.GetRequiredService<IEmailTemplateService>();
         var baseUrl = (_configuration["CustomerApp:BaseUrl"] ?? "https://localhost:7020").TrimEnd('/');
         var link = $"{baseUrl}/set-password?token={Uri.EscapeDataString(token)}";
         var name = $"{shell.FirstName} {shell.LastName}".Trim();
         var greeting = string.IsNullOrWhiteSpace(name) ? "Pozdrav" : $"Pozdrav {name}";
 
-        var html =
-            $"<p>{greeting},</p>" +
-            "<p>Kupili ste ulaznicu i pripremili smo vam korisnički račun kako biste mogli dodati sredstva u svoj novčanik i naručivati na stadionu.</p>" +
-            $"<p>Aktivirajte račun i postavite lozinku klikom na poveznicu: <a href=\"{link}\">Aktiviraj račun</a></p>" +
-            $"<p>Ili otvorite: {link}</p>" +
-            "<p>Poveznica vrijedi 14 dana.</p>";
-        var text =
-            $"{greeting},\n\nPripremili smo vam korisnički račun. Aktivirajte ga i postavite lozinku:\n{link}\n\nPoveznica vrijedi 14 dana.";
+        var tokens = new Dictionary<string, string?>
+        {
+            ["Greeting"] = greeting,
+            ["Name"] = name,
+            ["ActivationLink"] = link,
+            ["ExpiryDays"] = "14"
+        };
 
-        await emailSender.SendAsync(shell.Email, "Aktivirajte svoj račun — Stadium", html, text);
+        var rendered = await templates.RenderAsync(EmailTemplateCatalog.AccountActivation, tokens);
+        if (rendered is null) return; // unknown key — should never happen for a catalog constant
+
+        await emailSender.SendAsync(shell.Email, rendered.Subject, rendered.HtmlBody, rendered.TextBody);
     }
 
     private static (string? First, string? Last) SplitName(string? fullName)

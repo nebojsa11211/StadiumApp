@@ -7,6 +7,7 @@ namespace StadiumDrinkOrdering.Admin.Pages;
 public partial class EventStatistics : ComponentBase
 {
     [Inject] private IAdminApiService ApiService { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     /// <summary>Event id from the route: /admin/event-statistics/{EventId}.</summary>
     [Parameter] public int EventId { get; set; }
@@ -45,4 +46,11 @@ public partial class EventStatistics : ComponentBase
             loadError = $"An error occurred while loading statistics: {ex.Message}";
         }
     }
+
+    /// <summary>Drill into the full ticket list for this event (the Tickets page reads ?eventId).</summary>
+    private void ViewTickets() => Navigation.NavigateTo($"/tickets?eventId={EventId}");
+
+    /// <summary>Drill into this event's drink orders (the Orders page reads ?eventId and shows a
+    /// per-event drink breakdown).</summary>
+    private void ViewDrinkOrders() => Navigation.NavigateTo($"/orders?eventId={EventId}");
 }

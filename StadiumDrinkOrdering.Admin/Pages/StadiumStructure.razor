@@ -8,18 +8,16 @@
 
 <div class="console" id="admin-stadium-structure-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-stadium-structure-header">
-        <div class="console-head__title" id="admin-stadium-structure-title-section">
-            <span class="eyebrow">@L["Structure_Eyebrow"]</span>
-            <h1 id="admin-stadium-structure-heading">@L["Structure_Heading"]</h1>
-            <p id="admin-stadium-structure-subtitle">@L["Structure_Subtitle"]</p>
-        </div>
-        <div class="console-head__actions" id="admin-stadium-structure-header-actions">
+    <PageHeader Id="admin-stadium-structure-header"
+                Eyebrow='@L["Structure_Eyebrow"]'
+                Title='@L["Structure_Heading"]'
+                Subtitle='@L["Structure_Subtitle"]'>
+        <Actions>
             <a href="/admin/structure-help" class="pill-btn" id="admin-structure-help-link">
-                <i class="fas fa-question-circle"></i><span>@L["Structure_HelpLink"]</span>
+                <i class="bi bi-question-circle"></i><span>@L["Structure_HelpLink"]</span>
             </a>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     <!-- Import Structure -->
     <div class="panel" id="admin-stadium-import-panel">
@@ -138,7 +136,7 @@
             }
             else if (isLoadingSummary)
             {
-                <div class="loading-state" id="admin-stadium-loading-state">
+                <div class="loading-state" id="admin-stadium-structure-loading">
                     <span class="loading-spinner"></span>
                     <p id="admin-stadium-loading-message">@L["Structure_Loading"]</p>
                 </div>

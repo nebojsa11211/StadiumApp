@@ -1,0 +1,46 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: 20:45
+    - generic [ref=e17]:
+      - banner [ref=e18]:
+        - generic [ref=e19]: HALFTIME
+      - generic [ref=e21]:
+        - generic [ref=e22]: Stadion Maksimir · Zagreb
+        - heading "NEMA REDOVA. SAMO PIĆE." [level=1] [ref=e26]:
+          - generic [ref=e27]: NEMA
+          - generic [ref=e28]: REDOVA.
+          - generic [ref=e29]: SAMO PIĆE.
+        - paragraph [ref=e30]: Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.
+      - generic [ref=e31]:
+        - generic [ref=e32]: 2026/2027
+        - button "NEXT FIXTURE Istra Istra 14. srp 2026 20:00 – 22:00 Z Zagreb" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: NEXT FIXTURE
+          - generic [ref=e36]:
+            - generic [ref=e37]:
+              - img "Istra" [ref=e42]
+              - generic [ref=e43]: Istra
+            - generic [ref=e44]:
+              - generic [ref=e45]: 14. srp 2026
+              - generic [ref=e46]: 20:00 – 22:00
+            - generic [ref=e47]:
+              - generic [ref=e48]: Z
+              - generic [ref=e53]: Zagreb
+      - generic [ref=e54]: HALFTIME
+      - generic [ref=e55]:
+        - button "Skeniraj ulaznicu" [ref=e56] [cursor=pointer]
+        - button "Imaš pretplatu? Prijavi se" [ref=e61] [cursor=pointer]
+      - contentinfo [ref=e62]:
+        - button "Pojedinačna ulaznica? Skeniraj QR kod." [ref=e63] [cursor=pointer]
+        - group "Jezik" [ref=e67]:
+          - button "HR" [ref=e68] [cursor=pointer]
+          - generic [ref=e69]: /
+          - button "EN" [ref=e70] [cursor=pointer]
+  - generic [ref=e71]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=e72] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=e73]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

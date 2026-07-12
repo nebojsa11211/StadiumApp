@@ -1,0 +1,187 @@
+- generic [ref=f1e2]:
+  - complementary [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - generic [ref=f1e5]: 
+      - generic [ref=f1e7]:
+        - generic [ref=f1e8]: STADIUM
+        - generic [ref=f1e9]: ADMIN
+    - generic [ref=f1e10]:
+      - generic [ref=f1e11]: 21:02:07
+      - generic [ref=f1e12]: 12. 07. 26 HR
+    - navigation [ref=f1e13]:
+      - link " Nadzorna ploča" [ref=f1e14] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f1e15]: 
+        - generic [ref=f1e16]: Nadzorna ploča
+      - generic [ref=f1e17]: Poslovanje
+      - link " Narudžbe" [ref=f1e18] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f1e19]: 
+        - generic [ref=f1e20]: Narudžbe
+      - link " Pića" [ref=f1e21] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f1e22]: 
+        - generic [ref=f1e23]: Pića
+      - link " Kategorije" [ref=f1e24] [cursor=pointer]:
+        - /url: categories
+        - generic [ref=f1e25]: 
+        - generic [ref=f1e26]: Kategorije
+      - link " Novčanici" [ref=f1e27] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=f1e28]: 
+        - generic [ref=f1e29]: Novčanici
+      - generic [ref=f1e30]: Događaji i karte
+      - link " Događaji" [ref=f1e31] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f1e32]: 
+        - generic [ref=f1e33]: Događaji
+      - link " Sezone" [ref=f1e34] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=f1e35]: 
+        - generic [ref=f1e36]: Sezone
+      - link " Karte" [ref=f1e37] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f1e38]: 
+        - generic [ref=f1e39]: Karte
+      - generic [ref=f1e40]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=f1e41] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f1e42]: 👁
+        - generic [ref=f1e43]: Pregled
+      - link " Alat za crtanje" [ref=f1e44] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f1e45]: 
+        - generic [ref=f1e46]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=f1e47] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=f1e48]: 
+        - generic [ref=f1e49]: Informacije o stadionu
+      - link " Stadion i brend" [ref=f1e50] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=f1e51]: 
+        - generic [ref=f1e52]: Stadion i brend
+      - generic [ref=f1e53]: Analitika
+      - link " Analitika" [ref=f1e54] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f1e55]: 
+        - generic [ref=f1e56]: Analitika
+      - link " Kupci" [ref=f1e57] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=f1e58]: 
+        - generic [ref=f1e59]: Kupci
+      - link " Korisnička analitika" [ref=f1e60] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f1e61]: 
+        - generic [ref=f1e62]: Korisnička analitika
+      - generic [ref=f1e63]: Sustav
+      - link " Timski računi" [ref=f1e64] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f1e65]: 
+        - generic [ref=f1e66]: Timski računi
+      - link " Zapisi" [ref=f1e67] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f1e68]: 
+        - generic [ref=f1e69]: Zapisi
+      - link " Baza podataka" [ref=f1e70] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f1e71]: 
+        - generic [ref=f1e72]: Baza podataka
+      - link " Postavke" [ref=f1e73] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=f1e74]: 
+        - generic [ref=f1e75]: Postavke
+    - generic [ref=f1e76]:
+      - generic [ref=f1e77]:
+        - generic [ref=f1e78]: 
+        - generic [ref=f1e79]:
+          - generic [ref=f1e80]: Centralizirani Logging
+          - generic [ref=f1e81]: "Zadnja objava: 21:02"
+      - generic [ref=f1e82]:
+        - generic [ref=f1e83]: "N"
+        - generic [ref=f1e84]:
+          - button "Odjava" [ref=f1e85] [cursor=pointer]
+          - generic [ref=f1e86]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=f1e87]:
+        - generic [ref=f1e88]: HR/EN
+        - generic [ref=f1e89]:
+          - button "HR" [ref=f1e90] [cursor=pointer]
+          - button "EN" [ref=f1e91] [cursor=pointer]
+  - main [ref=f1e92]:
+    - generic [ref=f1e93]:
+      - generic [ref=f1e95]:
+        - generic [ref=f1e96]: Sustav
+        - heading "Postavke" [level=1] [ref=f1e97]
+        - paragraph [ref=f1e98]: Opcije na razini cijele instalacije.
+      - alert [ref=f1e167]:
+        - generic [ref=f1e168]: Postavke e-pošte spremljene.
+        - button [ref=f1e169] [cursor=pointer]
+      - generic [ref=f1e146]:
+        - heading "Prodaja ulaznica" [level=5] [ref=f1e148]
+        - generic [ref=f1e149]:
+          - generic [ref=f1e150]:
+            - switch "Prodaji ulaznice kupcima u ovoj aplikaciji" [checked] [ref=f1e151]
+            - generic [ref=f1e152]: Prodaji ulaznice kupcima u ovoj aplikaciji
+          - generic [ref=f1e153]: Kada je isključeno, aplikacija za kupce skriva kupnju, a API odbija nove kupnje. Ulaznice tada u sustav ulaze samo putem vanjske integracije.
+          - generic [ref=f1e154]:
+            - generic [ref=f1e155]: 
+            - text: Prodaja ulaznica je UKLJUČENA — kupci mogu kupovati ulaznice u aplikaciji.
+          - button "Spremi promjene" [ref=f1e157] [cursor=pointer]
+      - generic [ref=f1e104]:
+        - heading "E-pošta (SMTP)" [level=5] [ref=f1e106]
+        - generic [ref=f1e107]:
+          - paragraph [ref=f1e108]: Konfigurirajte poslužitelj odlazne pošte za poveznice aktivacije računa i obavijesti e-poštom.
+          - generic [ref=f1e109]:
+            - switch "Šalji e-poštu putem SMTP-a" [checked] [ref=f1e110]
+            - generic [ref=f1e111]: Šalji e-poštu putem SMTP-a
+            - generic [ref=f1e112]: Kada je isključeno, e-pošta se zapisuje u zapisnik aplikacije umjesto slanja.
+          - generic [ref=f1e113]:
+            - generic [ref=f1e114]:
+              - generic [ref=f1e115]: SMTP poslužitelj
+              - textbox "SMTP poslužitelj" [ref=f1e116]:
+                - /placeholder: smtp.example.com
+                - text: smtp.example.com
+            - generic [ref=f1e117]:
+              - generic [ref=f1e118]: Port
+              - spinbutton "Port" [ref=f1e119]: "587"
+            - generic [ref=f1e120]:
+              - generic [ref=f1e121]: Korisničko ime
+              - textbox "Korisničko ime" [ref=f1e122]: apikey
+            - generic [ref=f1e123]:
+              - generic [ref=f1e124]: Lozinka
+              - textbox "Lozinka" [ref=f1e125]:
+                - /placeholder: ••••••••
+              - generic [ref=f1e126]: Lozinka je spremljena. Ostavite prazno da je zadržite ili unesite novu da je zamijenite.
+            - generic [ref=f1e127]:
+              - generic [ref=f1e128]: Adresa pošiljatelja
+              - textbox "Adresa pošiljatelja" [ref=f1e129]:
+                - /placeholder: no-reply@stadium.local
+                - text: no-reply@mystadium.hr
+            - generic [ref=f1e130]:
+              - generic [ref=f1e131]: Ime pošiljatelja
+              - textbox "Ime pošiljatelja" [ref=f1e132]:
+                - /placeholder: Stadium
+                - text: My Stadium
+          - generic [ref=f1e133]:
+            - switch "Koristi SSL/TLS" [checked] [ref=f1e134]
+            - generic [ref=f1e135]: Koristi SSL/TLS
+          - button "Spremi postavke e-pošte" [ref=f1e137] [cursor=pointer]
+          - separator [ref=f1e138]
+          - heading "Pošalji probnu e-poštu" [level=6] [ref=f1e139]
+          - paragraph [ref=f1e140]: Pošaljite probnu poruku da potvrdite ispravnost SMTP konfiguracije. Koristi vrijednosti iznad; ako je polje lozinke prazno, koristi se spremljena lozinka.
+          - generic [ref=f1e141]:
+            - generic [ref=f1e142]:
+              - generic [ref=f1e143]: E-pošta primatelja
+              - textbox "E-pošta primatelja" [ref=f1e144]
+            - generic [ref=f1e145]:
+              - button " Pošalji probnu e-poštu" [disabled]:
+                - generic: 
+                - text: Pošalji probnu e-poštu
+      - generic [ref=f1e158]:
+        - heading "Opasna zona" [level=5] [ref=f1e160]
+        - generic [ref=f1e161]:
+          - paragraph [ref=f1e162]: Nepovratne radnje. Koristite oprezno.
+          - heading "Izbriši sve transakcijske podatke" [level=6] [ref=f1e163]
+          - paragraph [ref=f1e164]: Trajno uklanja sve ulaznice, narudžbe, događaje, sezone, transakcije novčanika i stanja novčanika. Korisnici, pića, struktura stadiona i oznake mjesta ostaju sačuvani. Ovu radnju nije moguće poništiti.
+          - button " Izbriši sve podatke…" [ref=f1e165] [cursor=pointer]:
+            - generic [ref=f1e166]: 
+            - text: Izbriši sve podatke…

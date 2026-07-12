@@ -9,22 +9,20 @@
 
 <div class="console" id="admin-analytics-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-analytics-header">
-        <div class="console-head__title" id="admin-analytics-title-section">
-            <span class="eyebrow">@L["Analytics_Eyebrow"]</span>
-            <h1>@L["Analytics_Title"]</h1>
-            <p>@L["Analytics_Subtitle"]</p>
-        </div>
-        <div class="console-head__actions" id="admin-analytics-action-buttons">
+    <PageHeader Id="admin-analytics-header"
+                Eyebrow='@L["Analytics_Eyebrow"]'
+                Title='@L["Analytics_Title"]'
+                Subtitle='@L["Analytics_Subtitle"]'>
+        <Actions>
             <button class="icon-btn" @onclick="LoadAnalyticsData" disabled="@isLoading" id="admin-analytics-refresh-btn" title="@L["Analytics_RefreshTitle"]">
-                <i class="fas fa-sync-alt @(isLoading ? "spin" : "")"></i>
+                <i class="bi bi-arrow-clockwise @(isLoading ? "spin" : "")"></i>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     @if (isLoading)
     {
-        <div class="loading-state">
+        <div class="loading-state" id="admin-analytics-loading">
             <span class="loading-spinner"></span>
             <p>@L["Analytics_Loading"]</p>
         </div>
@@ -56,6 +54,16 @@
                 <div class="panel" id="admin-analytics-events-panel">
                     <div class="panel__head">
                         <h2 class="panel__title"><i class="fas fa-calendar"></i> @L["Analytics_AvailableEventsTitle"]</h2>
+                        @if (seasonOptions.Any())
+                        {
+                            <select class="field__input" @onchange="OnSeasonChanged" id="admin-analytics-season-select" style="max-width:220px;">
+                                <option value="" selected="@(selectedSeasonId == null)">@L["Analytics_AllSeasonsOption"]</option>
+                                @foreach (var s in seasonOptions)
+                                {
+                                    <option value="@s.Id" selected="@(selectedSeasonId == s.Id)">@s.Name</option>
+                                }
+                            </select>
+                        }
                     </div>
                     <table class="console-table" id="admin-analytics-events-table">
                         <thead id="admin-analytics-events-table-head">

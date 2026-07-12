@@ -127,7 +127,7 @@ public class TicketAuthController : ControllerBase
                     LastAccessedAt = session.LastAccessedAt,
                     IsActive = session.IsActive,
                     CanOrderDrinks = (session.Event ?? session.Ticket?.Event) is { } evt
-                        && EventLifecycle.CanOrderDrinks(evt.Status)
+                        && evt.AreDrinkSalesOpenAt(DateTime.UtcNow)
                 }
             });
         }

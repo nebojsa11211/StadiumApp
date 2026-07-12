@@ -10,23 +10,52 @@
 
 @* The sidebar + dash-main shell is provided by DashboardLayout. *@
 
-        @* ---------- CURRENT SEASON BANNER (which season is in progress) ---------- *@
-        @if (CurrentSeason != null)
+        @* ---------- SEASON BANNER (navigable: browse every season) ---------- *@
+        @if (DisplaySeason != null)
         {
-            <div id="admin-dashboard-current-season"
-                 style="display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem;padding:.45rem .8rem;border-radius:8px;background:#ede9fe;color:#5b21b6;font-size:.85rem;">
-                <i class="bi bi-calendar-range"></i>
-                <span>@L["Index_CurrentSeason"]:</span>
-                <strong id="admin-dashboard-current-season-name">@CurrentSeason.Name</strong>
-                <span style="opacity:.75;">(@CurrentSeason.StartDate.ToLocalTime().ToString("MMM yyyy") – @CurrentSeason.EndDate.ToLocalTime().ToString("MMM yyyy"))</span>
-                <span style="margin-left:auto;display:inline-flex;align-items:center;gap:.3rem;">
-                    <i class="bi bi-person-badge"></i> @CurrentSeason.SeasonTicketCount @L["Index_SeasonPasses"]
-                </span>
+            <div id="admin-dashboard-current-season" class="dash-season-bar">
+                <button class="dash-event-nav" @onclick="SelectPrevSeason" disabled="@(!CanGoPrevSeason)"
+                        id="admin-dashboard-season-prev-btn" title="@L["Index_PreviousSeason"]">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <div class="dash-season-info">
+                    <i class="bi bi-calendar-range"></i>
+                    <span>@L["Index_CurrentSeason"]:</span>
+                    <strong id="admin-dashboard-current-season-name">@DisplaySeason.Name</strong>
+                    @if (DisplaySeason.IsCurrent)
+                    {
+                        <span class="dash-season-live" id="admin-dashboard-season-live-badge"><i class="bi bi-broadcast"></i> @L["Index_Current"]</span>
+                    }
+                    <span class="dash-season-dates">(@DisplaySeason.StartDate.ToLocalTime().ToString("MMM yyyy") – @DisplaySeason.EndDate.ToLocalTime().ToString("MMM yyyy"))</span>
+                    <span class="dash-season-passes">
+                        <i class="bi bi-person-badge"></i> @DisplaySeason.SeasonTicketCount @L["Index_SeasonPasses"]
+                    </span>
+                </div>
+
+                <div class="dash-season-controls">
+                    @if (!IsOnLiveSeason && LiveSeason != null)
+                    {
+                        <button class="dash-event-current" @onclick="GoToCurrentSeason" id="admin-dashboard-season-current-btn" title="@L["Index_ReturnToCurrentSeason"]">
+                            <i class="bi bi-broadcast"></i> @L["Index_Current"]
+                        </button>
+                    }
+                    <select class="dash-event-select" @onchange="OnSelectSeason" id="admin-dashboard-season-select" title="@L["Index_SelectSeason"]">
+                        @foreach (var s in SeasonsOrdered)
+                        {
+                            <option value="@s.Id" selected="@(s.Id == DisplaySeason.Id)">@s.Name</option>
+                        }
+                    </select>
+                    <button class="dash-event-nav" @onclick="SelectNextSeason" disabled="@(!CanGoNextSeason)"
+                            id="admin-dashboard-season-next-btn" title="@L["Index_NextSeason"]">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
             </div>
             @if (SelectedEventInOtherSeason)
             {
                 <div id="admin-dashboard-event-season-note" style="margin:-.4rem 0 .75rem;font-size:.78rem;color:#92400e;">
-                    <i class="bi bi-info-circle"></i> @L["Index_ViewingOtherSeason", DashboardSeason?.Name ?? ""]
+                    <i class="bi bi-info-circle"></i> @L["Index_ViewingOtherSeason", SelectedEventSeasonName ?? ""]
                 </div>
             }
         }
@@ -48,7 +77,7 @@
 
                 <div class="dash-event-info">
                     <div class="dash-event-meta">
-                        <span class="dash-event-pos">@L["Index_EventPosition", SelectedIndex + 1, _events.Count]</span>
+                        <span class="dash-event-pos">@L["Index_EventPosition", SelectedIndex + 1, SeasonEvents.Count]</span>
                         <span class="dash-event-phase phase-@GetPhaseModifier(_selectedEvent.Phase)">
                             <i class="dot"></i>@_selectedEvent.StatusName
                         </span>
@@ -71,7 +100,7 @@
                         </button>
                     }
                     <select class="dash-event-select" @onchange="OnSelectEvent" id="admin-dashboard-event-select" title="@L["Index_SelectEvent"]">
-                        @foreach (var ev in _events)
+                        @foreach (var ev in SeasonEvents)
                         {
                             <option value="@ev.Id" selected="@(ev.Id == _selectedEvent.Id)">@ev.Name</option>
                         }

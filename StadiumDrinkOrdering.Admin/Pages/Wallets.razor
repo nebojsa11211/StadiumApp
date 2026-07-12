@@ -8,20 +8,18 @@
 <PageTitle>@L["Wallets_PageTitle"]</PageTitle>
 
 <div class="console" id="admin-wallets-main-container">
-    <header class="console-head" id="admin-wallets-header">
-        <div class="console-head__title">
-            <span class="eyebrow">@L["Wallets_Eyebrow"]</span>
-            <h1 id="admin-wallets-title">@L["Wallets_Title"]</h1>
-            <p>@L["Wallets_Intro"]</p>
-        </div>
-        <div class="console-head__actions">
+    <PageHeader Id="admin-wallets-header"
+                Eyebrow='@L["Wallets_Eyebrow"]'
+                Title='@L["Wallets_Title"]'
+                Subtitle='@L["Wallets_Intro"]'>
+        <Actions>
             <input type="text" class="form-control" style="max-width:260px;" placeholder="@L["Wallets_SearchPlaceholder"]"
                    @bind="search" @bind:event="oninput" @onkeyup="OnSearchKey" id="admin-wallets-search" />
             <button class="pill-btn pill-btn--primary" @onclick="Load" id="admin-wallets-search-btn">
                 <i class="bi bi-search"></i><span>@L["Wallets_Search"]</span>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     @if (list == null)
     {

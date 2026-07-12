@@ -1,0 +1,55 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e3]:
+    - banner [ref=f1e4]:
+      - button "Back" [ref=f1e5] [cursor=pointer]: ‹
+      - generic [ref=f1e6]:
+        - generic [ref=f1e7]: Istra - Zagreb
+        - generic [ref=f1e8]: Football
+    - generic [ref=f1e9]:
+      - generic [ref=f1e10]:
+        - generic [ref=f1e11]:
+          - generic [ref=f1e12]: "14"
+          - generic [ref=f1e13]: srp
+        - generic [ref=f1e14]:
+          - heading "Istra - Zagreb" [level=1] [ref=f1e15]
+          - generic [ref=f1e16]: za 3 dana · 20:00
+          - generic [ref=f1e17]:
+            - generic [ref=f1e18]: 🏟️ Stadion Maksimir, Zagreb
+            - generic [ref=f1e19]: 🪑 183 slobodno
+      - paragraph [ref=f1e20]: Simulated event
+      - generic [ref=f1e22]:
+        - generic [ref=f1e23]: Standard
+        - generic [ref=f1e24]: €45
+      - generic [ref=f1e25]:
+        - generic [ref=f1e26]: Odaberi tribinu
+        - generic [ref=f1e27]: Dodirni tribinu na karti ili u popisu
+      - generic [ref=f1e31]:
+        - button "Jug1 147 / 200 slobodno €45›" [ref=f1e32] [cursor=pointer]:
+          - generic [ref=f1e33]:
+            - generic [ref=f1e34]: Jug1
+            - generic [ref=f1e35]: 147 / 200 slobodno
+          - generic [ref=f1e36]:
+            - generic [ref=f1e37]: €45
+            - generic [ref=f1e38]: ›
+        - button "Sjever1 36 / 200 slobodno €45›" [ref=f1e39] [cursor=pointer]:
+          - generic [ref=f1e40]:
+            - generic [ref=f1e41]: Sjever1
+            - generic [ref=f1e42]: 36 / 200 slobodno
+          - generic [ref=f1e43]:
+            - generic [ref=f1e44]: €45
+            - generic [ref=f1e45]: ›
+    - generic [ref=f1e47] [cursor=pointer]:
+      - generic [ref=f1e48]:
+        - generic [ref=f1e49]: "0"
+        - generic [ref=f1e50]: Tvoja košarica
+      - generic [ref=f1e51]: €0,00 ›
+    - dialog "Karta sjedala"
+  - generic [ref=f1e54]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f1e55] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=f1e56]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

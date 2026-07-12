@@ -6,18 +6,16 @@
 
 <div class="console" id="admin-customers-main-container">
     <!-- Page Header -->
-    <header class="console-head" id="admin-customers-header">
-        <div class="console-head__title" id="admin-customers-title-section">
-            <span class="eyebrow">@L["Customers_EyebrowLabel"]</span>
-            <h1>@L["Customers_MainTitle"]</h1>
-            <p>@L["Customers_Subtitle"]</p>
-        </div>
-        <div class="console-head__actions" id="admin-customers-action-buttons">
+    <PageHeader Id="admin-customers-header"
+                Eyebrow='@L["Customers_EyebrowLabel"]'
+                Title='@L["Customers_MainTitle"]'
+                Subtitle='@L["Customers_Subtitle"]'>
+        <Actions>
             <button class="icon-btn" @onclick="RefreshData" disabled="@isLoading" id="admin-customers-refresh-btn" title="@L["Users_RefreshButtonTooltip"]">
-                <i class="oi oi-reload @(isLoading ? "spin" : "")"></i>
+                <i class="bi bi-arrow-clockwise @(isLoading ? "spin" : "")"></i>
             </button>
-        </div>
-    </header>
+        </Actions>
+    </PageHeader>
 
     <!-- Key Metrics Cards -->
     <section class="metrics" id="admin-customers-summary-cards">
@@ -67,6 +65,26 @@
             </button>
         </div>
         <div class="filters" id="admin-customers-filters-row">
+            <div class="field" id="admin-customers-season-filter-col">
+                <label class="field__label">@L["Customers_SeasonFilterLabel"]</label>
+                <select class="field__input" @bind="selectedSeasonId" @bind:after="OnSeasonChanged" id="admin-customers-season-filter">
+                    <option value="">@L["Customers_AllSeasonsOption"]</option>
+                    @foreach (var s in seasons)
+                    {
+                        <option value="@s.Id">@s.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="field" id="admin-customers-event-filter-col">
+                <label class="field__label">@L["Customers_EventFilterLabel"]</label>
+                <select class="field__input" @bind="selectedEventId" @bind:after="OnEventChanged" id="admin-customers-event-filter">
+                    <option value="">@L["Customers_AllEventsOption"]</option>
+                    @foreach (var e in EventsForDropdown)
+                    {
+                        <option value="@e.Id">@EventLabel(e)</option>
+                    }
+                </select>
+            </div>
             <div class="field" id="admin-customers-status-filter-col">
                 <label class="field__label">@L["Users_StatusFilterLabel"]</label>
                 <select class="field__input" @bind="selectedStatus" @bind:after="FilterCustomers" id="admin-customers-status-filter">
@@ -85,7 +103,7 @@
 
     @if (isLoading)
     {
-        <div class="loading-state" id="admin-customers-loading-state">
+        <div class="loading-state" id="admin-customers-loading">
             <span class="loading-spinner" id="admin-customers-loading-spinner"></span>
             <p id="admin-customers-loading-text">@L["Customers_LoadingMessage"]</p>
         </div>

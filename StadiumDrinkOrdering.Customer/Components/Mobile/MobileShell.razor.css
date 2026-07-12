@@ -1,3 +1,12 @@
+/* ==========================================================================
+   Mobile shell / phone-frame presentation
+   - Phones (< 520px): device chrome collapses (display:contents); the app fills
+     the screen exactly as before, page scrolls, fixed bars anchor to the viewport.
+   - Desktop (>= 520px): the app is shown inside a realistic phone. The device
+     screen carries a transform, making it the containing block for the app's
+     position:fixed bars/sheets/scrims so they anchor to the phone, not the viewport.
+   ========================================================================== */
+
 .app-backdrop{
     min-height:100dvh;
     display:flex;
@@ -8,6 +17,10 @@
         radial-gradient(100% 60% at 50% 120%,rgba(0,226,138,.06),transparent 60%),
         var(--ground);
 }
+
+/* Device chrome collapses on phones — the app column is the only rendered box. */
+.device,.device-screen,.device-scroll{display:contents;}
+.device-statusbar{display:none;}
 
 .app-frame{
     position:relative;
@@ -21,45 +34,114 @@
     padding-bottom:var(--safe-bottom);
 }
 
-/* On desktop the phone-width column would otherwise sit stranded in a flat black
-   field. Enrich the surrounding backdrop and give the frame a defined device edge +
-   soft screen glow so it reads as an intentional "app", not an unstyled column.
-   The frame stays full-height & horizontally centred because the cart bar, seat
-   sheet and scrim are position:fixed and centred to the viewport (max-width:--app-max);
-   adding vertical margins or rounding the bottom here would detach them. */
+/* ---- Desktop: render a real phone ---------------------------------------- */
 @media (min-width:520px){
-    /* Darker than the frame so the centred column clearly separates from the field
-       instead of blending into one black expanse; brand light gives the sides life. */
     .app-backdrop{
+        align-items:center;
+        padding:26px 16px;
         background:
             radial-gradient(115% 75% at 14% -6%,rgba(255,31,107,.24),transparent 55%),
             radial-gradient(115% 78% at 88% 0%,rgba(255,77,46,.22),transparent 54%),
             radial-gradient(100% 70% at 50% 116%,rgba(0,226,138,.12),transparent 60%),
             #050609;
     }
-    .app-frame{
-        /* lifted a step above the backdrop + a defined bezel, rounded top and drop
-           shadow so it reads as an intentional device screen, not an unstyled column.
-           Bottom stays square/full-height because the cart bar, seat sheet and scrim
-           are position:fixed to the viewport bottom and must align with the frame. */
-        background:var(--ground-2);
-        border:1px solid var(--line-2);
-        border-bottom:none;
-        border-radius:22px 22px 0 0;
-        overflow:hidden;
+
+    /* Phone body: brushed-metal frame with a big soft shadow + brand rim light. */
+    .device{
+        display:block;
+        position:relative;
+        padding:13px;
+        border-radius:56px;
+        background:linear-gradient(150deg,#26272e,#0c0d12 62%);
         box-shadow:
-            0 0 0 1px rgba(0,0,0,.55),
-            0 34px 100px -22px rgba(0,0,0,.92),
-            0 0 110px -26px rgba(255,45,120,.20);
+            0 0 0 1px rgba(0,0,0,.6),
+            inset 0 0 0 1px rgba(255,255,255,.06),
+            0 40px 120px -24px rgba(0,0,0,.92),
+            0 0 150px -30px rgba(255,45,120,.22);
+    }
+
+    /* Side buttons (volume rocker left, power right). */
+    .device::before,.device::after{
+        content:"";position:absolute;background:linear-gradient(#34353d,#15161c);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+    }
+    .device::before{left:-3px;top:150px;width:3px;height:104px;border-radius:3px 0 0 3px;}
+    .device::after{right:-3px;top:188px;width:3px;height:66px;border-radius:0 3px 3px 0;}
+
+    /* The screen at the Galaxy S25 Ultra's true logical resolution: 480 x 1040 CSS px
+       (physical 1440 x 3120 @ DPR 3), a 19.5:9 panel. `aspect-ratio` locks the shape;
+       `width` renders it at a full 480 x 1040 when the window has room and scales it
+       down proportionally (ratio preserved) on shorter/narrower windows.
+       `transform` makes this the containing block for the app's position:fixed
+       elements, so the cart bar / sheets / scrims sit inside the phone. Scrolling
+       happens in .device-scroll; fixed elements stay put. */
+    .device-screen{
+        display:flex;
+        flex-direction:column;
+        position:relative;
+        width:min(480px, calc(100vw - 96px), calc((100dvh - 84px) * 9 / 19.5));
+        aspect-ratio:9 / 19.5;
+        border-radius:44px;
+        overflow:hidden;
+        background:var(--ground);
+        transform:translateZ(0);
+        box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+    }
+
+    /* Faux status bar with a centred punch-hole camera. */
+    .device-statusbar{
+        display:flex;align-items:center;justify-content:space-between;
+        position:relative;flex:0 0 auto;height:34px;padding:0 22px;
+        font-size:12px;font-weight:700;letter-spacing:.02em;
+        color:rgba(255,255,255,.92);
+    }
+    .dsb-cam{
+        position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+        width:11px;height:11px;border-radius:50%;background:#000;
+        box-shadow:inset 0 0 0 1.5px #202127,0 0 0 2px rgba(0,0,0,.7);
+    }
+    .dsb-cam::after{
+        content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+        width:4px;height:4px;border-radius:50%;
+        background:radial-gradient(circle at 35% 30%,#3b5776,#0a0f16);
+    }
+    .dsb-icons{display:flex;align-items:center;gap:7px;}
+    .dsb-signal{display:flex;align-items:flex-end;gap:1.5px;height:11px;}
+    .dsb-signal i{width:3px;border-radius:1px;background:rgba(255,255,255,.92);}
+    .dsb-signal i:nth-child(1){height:4px;}
+    .dsb-signal i:nth-child(2){height:6px;}
+    .dsb-signal i:nth-child(3){height:8px;}
+    .dsb-signal i:nth-child(4){height:11px;}
+    .dsb-batt{position:relative;width:22px;height:11px;border-radius:3px;
+        border:1.5px solid rgba(255,255,255,.6);}
+    .dsb-batt::before{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:68%;
+        border-radius:1px;background:rgba(255,255,255,.92);}
+    .dsb-batt::after{content:"";position:absolute;right:-3.5px;top:3px;bottom:3px;width:2px;
+        border-radius:0 2px 2px 0;background:rgba(255,255,255,.55);}
+
+    /* The actual scrolling viewport inside the phone. */
+    .device-scroll{
+        display:block;flex:1 1 auto;min-height:0;
+        overflow-y:auto;overflow-x:hidden;
+        -webkit-overflow-scrolling:touch;
+    }
+
+    /* App column now fills the phone screen; it no longer owns the desktop edge. */
+    .app-frame{
+        min-height:100%;
+        max-width:none;
+        border:none;border-radius:0;box-shadow:none;
+        padding-top:0;
     }
 }
 
-/* On large monitors give the device a touch more presence */
+/* Larger monitors: a touch more presence. */
 @media (min-width:1100px){
-    .app-frame{
+    .device{
         box-shadow:
-            0 0 0 1px rgba(0,0,0,.55),
-            0 44px 130px -24px rgba(0,0,0,.94),
-            0 0 140px -26px rgba(255,45,120,.24);
+            0 0 0 1px rgba(0,0,0,.6),
+            inset 0 0 0 1px rgba(255,255,255,.06),
+            0 52px 150px -26px rgba(0,0,0,.94),
+            0 0 180px -30px rgba(255,45,120,.26);
     }
 }

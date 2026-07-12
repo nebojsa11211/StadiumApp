@@ -1,0 +1,32 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: 20:45
+    - generic [ref=e16]:
+      - banner [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: Utakmice
+          - generic [ref=e20]: Odaberi događaj
+      - generic [ref=e21]:
+        - button "🔎 Filteri" [ref=e23] [cursor=pointer]
+        - button "14 srp Istra - Zagreb 14.07.2026 · 18:00 Football183 slobodno €45 ›" [ref=e25] [cursor=pointer]:
+          - generic [ref=e26]:
+            - generic [ref=e27]: "14"
+            - generic [ref=e28]: srp
+          - generic [ref=e29]:
+            - generic [ref=e30]: Istra - Zagreb
+            - generic [ref=e31]: 14.07.2026 · 18:00
+            - generic [ref=e32]:
+              - generic [ref=e33]: Football
+              - generic [ref=e34]: 183 slobodno
+          - generic [ref=e35]:
+            - generic [ref=e36]: €45
+            - generic [ref=e37]: ›
+  - generic [ref=e38]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=e39] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=e40]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

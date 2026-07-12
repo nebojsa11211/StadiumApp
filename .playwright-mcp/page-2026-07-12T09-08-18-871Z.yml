@@ -1,0 +1,249 @@
+- generic [ref=e4]:
+  - complementary [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: 
+      - generic [ref=e9]:
+        - generic [ref=e10]: STADIUM
+        - generic [ref=e11]: ADMIN
+    - generic [ref=e12]:
+      - generic [ref=e13]: 11:08:18
+      - generic [ref=e14]: 12. 07. 26 HR
+    - navigation [ref=e15]:
+      - link " Nadzorna ploča" [ref=e16] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e17]: 
+        - generic [ref=e18]: Nadzorna ploča
+      - generic [ref=e19]: Poslovanje
+      - link " Narudžbe" [ref=e20] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e21]: 
+        - generic [ref=e22]: Narudžbe
+      - link " Pića" [ref=e23] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e24]: 
+        - generic [ref=e25]: Pića
+      - link " Kategorije" [ref=e26] [cursor=pointer]:
+        - /url: categories
+        - generic [ref=e27]: 
+        - generic [ref=e28]: Kategorije
+      - link " Novčanici" [ref=e29] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=e30]: 
+        - generic [ref=e31]: Novčanici
+      - generic [ref=e32]: Događaji i karte
+      - link " Događaji" [ref=e33] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e34]: 
+        - generic [ref=e35]: Događaji
+      - link " Sezone" [ref=e36] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=e37]: 
+        - generic [ref=e38]: Sezone
+      - link " Karte" [ref=e39] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e40]: 
+        - generic [ref=e41]: Karte
+      - generic [ref=e42]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=e43] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e44]: 👁
+        - generic [ref=e45]: Pregled
+      - link " Alat za crtanje" [ref=e46] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e47]: 
+        - generic [ref=e48]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=e49] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=e50]: 
+        - generic [ref=e51]: Informacije o stadionu
+      - link " Stadion i brend" [ref=e52] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=e53]: 
+        - generic [ref=e54]: Stadion i brend
+      - generic [ref=e55]: Analitika
+      - link " Analitika" [ref=e56] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e57]: 
+        - generic [ref=e58]: Analitika
+      - link " Kupci" [ref=e59] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=e60]: 
+        - generic [ref=e61]: Kupci
+      - link " Korisnička analitika" [ref=e62] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e63]: 
+        - generic [ref=e64]: Korisnička analitika
+      - generic [ref=e65]: Sustav
+      - link " Timski računi" [ref=e66] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e67]: 
+        - generic [ref=e68]: Timski računi
+      - link " Zapisi" [ref=e69] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e70]: 
+        - generic [ref=e71]: Zapisi
+      - link " Baza podataka" [ref=e72] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e73]: 
+        - generic [ref=e74]: Baza podataka
+      - link " Postavke" [ref=e75] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=e76]: 
+        - generic [ref=e77]: Postavke
+    - generic [ref=e78]:
+      - generic [ref=e79]:
+        - generic [ref=e80]: 
+        - generic [ref=e81]:
+          - generic [ref=e82]: Centralizirani Logging
+          - generic [ref=e83]: "Zadnja objava: 11:08"
+      - generic [ref=e84]:
+        - generic [ref=e85]: "N"
+        - generic [ref=e86]:
+          - button "Odjava" [ref=e87] [cursor=pointer]
+          - generic [ref=e88]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=e89]:
+        - generic [ref=e90]: HR/EN
+        - generic [ref=e91]:
+          - button "HR" [ref=e92] [cursor=pointer]
+          - button "EN" [ref=e93] [cursor=pointer]
+  - main [ref=e94]:
+    - generic [ref=e95]:
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - generic [ref=e98]: Stadion
+          - heading "Sezone" [level=1] [ref=e99]
+          - paragraph [ref=e100]: Grupirajte utakmice u sezone (npr. 2026/2027) i prodavajte sezonske ulaznice za njih.
+        - button " Nova sezona" [ref=e102] [cursor=pointer]:
+          - generic [ref=e103]: 
+          - generic [ref=e104]: Nova sezona
+      - generic [ref=e105]:
+        - article [ref=e106]:
+          - generic [ref=e107]:
+            - generic [ref=e108]: Sezonske ulaznice
+            - generic [ref=e109]: 
+          - generic [ref=e110]: "316"
+          - generic [ref=e111]: Aktivne u svim sezonama
+        - article [ref=e113]:
+          - generic [ref=e114]:
+            - generic [ref=e115]: Prihod od pretplata
+            - generic [ref=e116]: 
+          - generic [ref=e117]: €26.400
+          - generic [ref=e118]: Od aktivnih sezonskih ulaznica
+        - article [ref=e120]:
+          - generic [ref=e121]:
+            - generic [ref=e122]: Prosj. cijena ulaznice
+            - generic [ref=e123]: 
+          - generic [ref=e124]: €83,54
+          - generic [ref=e125]: Po aktivnoj ulaznici
+        - article [ref=e127]:
+          - generic [ref=e128]:
+            - generic [ref=e129]: Popunjenost sezonom
+            - generic [ref=e130]: 
+          - generic [ref=e131]: 35 %
+          - generic [ref=e132]: 140 od 398 sjedala stadiona
+      - generic [ref=e134]:
+        - heading "Sve sezone 2" [level=2] [ref=e136]:
+          - text: Sve sezone
+          - generic [ref=e137]: "2"
+        - generic [ref=e138]:
+          - table [ref=e139]:
+            - rowgroup [ref=e140]:
+              - row [ref=e141]:
+                - columnheader "Sezona" [ref=e142] [cursor=pointer]
+                - columnheader "Razdoblje" [ref=e143] [cursor=pointer]
+                - columnheader "Trenutna" [ref=e144] [cursor=pointer]
+                - columnheader "Događaji" [ref=e145] [cursor=pointer]
+                - columnheader "Ulaznice" [ref=e146] [cursor=pointer]
+                - columnheader "Prihod" [ref=e147] [cursor=pointer]
+                - columnheader "Radnje" [ref=e148]
+            - rowgroup [ref=e149]:
+              - row [ref=e150]:
+                - cell " 2026/2027· TicketingSimulator" [ref=e151]:
+                  - button "" [ref=e152] [cursor=pointer]
+                  - strong [ref=e154]: 2026/2027
+                  - generic [ref=e155]: · TicketingSimulator
+                - cell "2026-08-01 → 2027-05-31" [ref=e156]
+                - cell [ref=e157]
+                - cell "4" [ref=e160]
+                - cell "140" [ref=e161]
+                - cell "€0" [ref=e162]
+                - cell [ref=e163]:
+                  - button " Ulaznice (140)" [ref=e164] [cursor=pointer]:
+                    - generic [ref=e165]: 
+                    - generic [ref=e166]: Ulaznice (140)
+                  - button " Uredi" [ref=e167] [cursor=pointer]:
+                    - generic [ref=e168]: 
+                    - generic [ref=e169]: Uredi
+                  - button " Obriši" [ref=e170] [cursor=pointer]:
+                    - generic [ref=e171]: 
+                    - generic [ref=e172]: Obriši
+              - row [ref=e173]:
+                - cell " 2025/26· SuperSport HNL 2025/26" [ref=e174]:
+                  - button "" [expanded] [active] [ref=e175] [cursor=pointer]
+                  - strong [ref=e177]: 2025/26
+                  - generic [ref=e178]: · SuperSport HNL 2025/26
+                - cell "2025-08-01 → 2026-05-31" [ref=e179]
+                - cell [ref=e180]
+                - cell "18" [ref=e181]
+                - cell "176" [ref=e182]
+                - cell "€26.400" [ref=e183]
+                - cell [ref=e184]:
+                  - button " Ulaznice (176)" [ref=e185] [cursor=pointer]:
+                    - generic [ref=e186]: 
+                    - generic [ref=e187]: Ulaznice (176)
+                  - button " Uredi" [ref=e188] [cursor=pointer]:
+                    - generic [ref=e189]: 
+                    - generic [ref=e190]: Uredi
+                  - button " Obriši" [ref=e191] [cursor=pointer]:
+                    - generic [ref=e192]: 
+                    - generic [ref=e193]: Obriši
+              - row [ref=e194]:
+                - 'cell "Popunjenost 44 % 176 od 398 sjedala Prihod €26.400 Prosj. cijena: €150,00 Događaji 18 0 Nadolazeći 0 Uživo 18 Završeni Vlasnici 176 Različiti vlasnici · 0 Povezani s računima Porijeklo ulaznica 0 Interne 176 Vanjske  Narudžbe pića 423 Prosj. narudžba: €15,09  Prodano pića 1.634 Prihod: €6.384  NajprodavanijeGreen Tea 237 prodano" [ref=e195]':
+                  - generic [ref=e196]:
+                    - generic [ref=e197]:
+                      - text: Popunjenost 44 %
+                      - generic [ref=e198]: 176 od 398 sjedala
+                    - generic [ref=e199]:
+                      - text: Prihod
+                      - generic [ref=e200]: €26.400
+                      - generic [ref=e201]: "Prosj. cijena: €150,00"
+                    - generic [ref=e202]:
+                      - text: Događaji 18
+                      - generic [ref=e203]:
+                        - generic [ref=e204]: 0 Nadolazeći
+                        - generic [ref=e205]: 0 Uživo
+                        - generic [ref=e206]: 18 Završeni
+                    - generic [ref=e207]:
+                      - text: Vlasnici 176
+                      - generic [ref=e208]: Različiti vlasnici · 0 Povezani s računima
+                    - generic [ref=e209]:
+                      - text: Porijeklo ulaznica
+                      - generic [ref=e210]:
+                        - generic [ref=e211]: 0 Interne
+                        - generic [ref=e212]: 176 Vanjske
+                    - generic [ref=e213]:
+                      - generic [ref=e214]:
+                        - generic [ref=e215]: 
+                        - text: Narudžbe pića
+                      - text: "423"
+                      - generic [ref=e216]: "Prosj. narudžba: €15,09"
+                    - generic [ref=e217]:
+                      - generic [ref=e218]:
+                        - generic [ref=e219]: 
+                        - text: Prodano pića
+                      - text: "1.634"
+                      - generic [ref=e220]: "Prihod: €6.384"
+                    - generic [ref=e221]:
+                      - generic [ref=e222]:
+                        - generic [ref=e223]: 
+                        - text: Najprodavanije
+                      - text: Green Tea 237 prodano
+          - generic [ref=e225]:
+            - paragraph [ref=e226]: Prikaz 1 do 2 od 2
+            - generic [ref=e227]:
+              - generic [ref=e228]: Prikaži
+              - combobox "Prikaži" [ref=e229] [cursor=pointer]:
+                - option "10"
+                - option "20" [selected]
+                - option "50"
+                - option "100"

@@ -47,24 +47,101 @@ public class SeasonService : ISeasonService
 
     public async Task<List<SeasonDto>> GetSeasonsAsync(CancellationToken ct = default)
     {
-        return await _context.Seasons
+        var now = DateTime.UtcNow;
+        var seasons = await _context.Seasons
             .AsNoTracking()
             .OrderByDescending(s => s.StartDate)
-            .Select(Project)
+            .Select(Project(now))
             .ToListAsync(ct);
+
+        var stadiumSeatCount = await _context.Seats.CountAsync(ct);
+        foreach (var s in seasons)
+            s.StadiumSeatCount = stadiumSeatCount;
+
+        await PopulateOrderDrinkStatsAsync(seasons, ct);
+        return seasons;
     }
 
     public async Task<SeasonDto?> GetSeasonAsync(int id, CancellationToken ct = default)
     {
-        return await _context.Seasons
+        var now = DateTime.UtcNow;
+        var season = await _context.Seasons
             .AsNoTracking()
             .Where(s => s.Id == id)
-            .Select(Project)
+            .Select(Project(now))
             .FirstOrDefaultAsync(ct);
+
+        if (season != null)
+        {
+            season.StadiumSeatCount = await _context.Seats.CountAsync(ct);
+            await PopulateOrderDrinkStatsAsync(new[] { season }, ct);
+        }
+
+        return season;
     }
 
-    // Projection expression EF Core can translate to SQL (inline navigation counts).
-    private static readonly System.Linq.Expressions.Expression<Func<Season, SeasonDto>> Project = s => new SeasonDto
+    /// <summary>
+    /// Fills in the drink-ordering activity (orders, revenue, drinks sold, best-seller) for each
+    /// season by aggregating the orders placed at that season's events. Runs as a few grouped queries
+    /// scoped to the given seasons rather than inflating the main projection with nested navigations.
+    /// Cancelled orders are excluded so the figures reflect real (fulfilled/in-flight) sales.
+    /// </summary>
+    private async Task PopulateOrderDrinkStatsAsync(IReadOnlyCollection<SeasonDto> seasons, CancellationToken ct)
+    {
+        var ids = seasons.Select(s => s.Id).ToList();
+        if (ids.Count == 0)
+            return;
+
+        // Order-level totals per season (count + gross value).
+        var orderStats = await _context.Orders
+            .Where(o => o.EventId != null && o.Event!.SeasonId != null
+                        && ids.Contains(o.Event.SeasonId!.Value)
+                        && o.Status != OrderStatus.Cancelled)
+            .GroupBy(o => o.Event!.SeasonId!.Value)
+            .Select(g => new { SeasonId = g.Key, OrderCount = g.Count(), Revenue = g.Sum(o => o.TotalAmount) })
+            .ToDictionaryAsync(x => x.SeasonId, ct);
+
+        // Units sold per season (sum of order-item quantities).
+        var drinkQty = await _context.OrderItems
+            .Where(oi => oi.Order.EventId != null && oi.Order.Event!.SeasonId != null
+                         && ids.Contains(oi.Order.Event.SeasonId!.Value)
+                         && oi.Order.Status != OrderStatus.Cancelled)
+            .GroupBy(oi => oi.Order.Event!.SeasonId!.Value)
+            .Select(g => new { SeasonId = g.Key, Units = g.Sum(oi => oi.Quantity) })
+            .ToDictionaryAsync(x => x.SeasonId, x => x.Units, ct);
+
+        // Best-selling drink per season: aggregate by (season, drink), then pick the top per season in memory.
+        var perDrink = await _context.OrderItems
+            .Where(oi => oi.Order.EventId != null && oi.Order.Event!.SeasonId != null
+                         && ids.Contains(oi.Order.Event.SeasonId!.Value)
+                         && oi.Order.Status != OrderStatus.Cancelled)
+            .GroupBy(oi => new { SeasonId = oi.Order.Event!.SeasonId!.Value, oi.DrinkId, oi.Drink.Name })
+            .Select(g => new { g.Key.SeasonId, g.Key.Name, Units = g.Sum(oi => oi.Quantity) })
+            .ToListAsync(ct);
+
+        var topDrinkBySeason = perDrink
+            .GroupBy(x => x.SeasonId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(x => x.Units).First());
+
+        foreach (var s in seasons)
+        {
+            if (orderStats.TryGetValue(s.Id, out var os))
+            {
+                s.OrderCount = os.OrderCount;
+                s.DrinksRevenue = os.Revenue;
+            }
+            s.DrinksSold = drinkQty.GetValueOrDefault(s.Id);
+            if (topDrinkBySeason.TryGetValue(s.Id, out var top))
+            {
+                s.TopDrinkName = top.Name;
+                s.TopDrinkQuantity = top.Units;
+            }
+        }
+    }
+
+    // Projection EF Core can translate to SQL (inline navigation counts/aggregates). Parameterised
+    // by "now" so the event-phase splits (upcoming / live / completed) are evaluated in the query.
+    private static System.Linq.Expressions.Expression<Func<Season, SeasonDto>> Project(DateTime now) => s => new SeasonDto
     {
         Id = s.Id,
         Name = s.Name,
@@ -74,7 +151,27 @@ public class SeasonService : ISeasonService
         CreatedAt = s.CreatedAt,
         SourceSystem = s.SourceSystem,
         EventCount = s.Events.Count,
-        SeasonTicketCount = s.SeasonTickets.Count(st => st.Status != TicketStatuses.Cancelled)
+        SeasonTicketCount = s.SeasonTickets.Count(st => st.Status != TicketStatuses.Cancelled),
+
+        // Revenue & holder mix — active passes only.
+        // Cast to decimal? so an empty set yields SQL NULL → 0 rather than failing to map to decimal.
+        PassRevenue = s.SeasonTickets.Where(st => st.Status != TicketStatuses.Cancelled).Sum(st => (decimal?)st.Price) ?? 0m,
+        DistinctHolderCount = s.SeasonTickets
+            .Where(st => st.Status != TicketStatuses.Cancelled && st.HolderEmail != null)
+            .Select(st => st.HolderEmail).Distinct().Count(),
+        LinkedHolderCount = s.SeasonTickets.Count(st => st.Status != TicketStatuses.Cancelled && st.UserId != null),
+        ExternalPassCount = s.SeasonTickets.Count(st => st.Status != TicketStatuses.Cancelled && st.SourceSystem != null),
+
+        // Event phase split. Completed is terminal; "live" mirrors Event.IsLiveAt (game-day status,
+        // not yet ended); everything else non-cancelled is treated as upcoming.
+        CompletedEventCount = s.Events.Count(e => e.Status == EventStatus.Completed),
+        LiveEventCount = s.Events.Count(e =>
+            (e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
+            && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date)),
+        UpcomingEventCount = s.Events.Count(e =>
+            e.Status != EventStatus.Completed && e.Status != EventStatus.Cancelled
+            && !((e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
+                 && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date)))
     };
 
     public async Task<SeasonDto> CreateSeasonAsync(CreateSeasonDto dto, CancellationToken ct = default)

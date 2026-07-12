@@ -580,10 +580,10 @@
     <value>Price Range</value>
   </data>
   <data name="Events_MinPrice" xml:space="preserve">
-    <value>Min $</value>
+    <value>Min €</value>
   </data>
   <data name="Events_MaxPrice" xml:space="preserve">
-    <value>Max $</value>
+    <value>Max €</value>
   </data>
   <data name="Events_ClearFilters" xml:space="preserve">
     <value>Clear Filters</value>

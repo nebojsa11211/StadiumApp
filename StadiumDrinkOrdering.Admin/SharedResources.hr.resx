@@ -803,7 +803,7 @@
     <value>Informacije o sektoru: {0}</value>
   </data>
   <data name="SectorEdit_PreviewField" xml:space="preserve">
-    <value>⬇️ POLJE / POZORNICA ⬇️</value>
+    <value>POLJE / POZORNICA</value>
   </data>
   <data name="SectorEdit_PreviewRow" xml:space="preserve">
     <value>Red</value>
@@ -816,6 +816,24 @@
   </data>
   <data name="SectorEdit_PreviewLegend" xml:space="preserve">
     <value>Legenda</value>
+  </data>
+  <data name="SectorEdit_PreviewSeatMargin" xml:space="preserve">
+    <value>Razmak sjedala od rubova</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSide" xml:space="preserve">
+    <value>Strana igrališta</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSideTop" xml:space="preserve">
+    <value>Postavi teren na vrh</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSideBottom" xml:space="preserve">
+    <value>Postavi teren na dno</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSideLeft" xml:space="preserve">
+    <value>Postavi teren lijevo</value>
+  </data>
+  <data name="SectorEdit_PreviewFieldSideRight" xml:space="preserve">
+    <value>Postavi teren desno</value>
   </data>
   <data name="SectorEdit_PreviewSeatType" xml:space="preserve">
     <value>{0} Sjedište</value>
@@ -1969,6 +1987,84 @@
   <data name="Drinks_DeleteButton" xml:space="preserve">
     <value>Izbriši</value>
   </data>
+  <data name="Drinks_AddStockButton" xml:space="preserve">
+    <value>Dodaj zalihu</value>
+  </data>
+  <data name="Drinks_HistoryButton" xml:space="preserve">
+    <value>Povijest</value>
+  </data>
+  <data name="Drinks_CloseButton" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Drinks_AddStockEyebrow" xml:space="preserve">
+    <value>Dodaj zalihu</value>
+  </data>
+  <data name="Drinks_RestockCurrentStock" xml:space="preserve">
+    <value>Trenutna zaliha</value>
+  </data>
+  <data name="Drinks_RestockNewStock" xml:space="preserve">
+    <value>Nova razina zalihe</value>
+  </data>
+  <data name="Drinks_RestockQuantityLabel" xml:space="preserve">
+    <value>Količina za dodati</value>
+  </data>
+  <data name="Drinks_RestockNoteLabel" xml:space="preserve">
+    <value>Napomena (neobavezno)</value>
+  </data>
+  <data name="Drinks_RestockNotePlaceholder" xml:space="preserve">
+    <value>npr. isporuka dobavljača</value>
+  </data>
+  <data name="Drinks_RestockSuccess" xml:space="preserve">
+    <value>Dodano {0} u '{1}'. Nova zaliha: {2}</value>
+  </data>
+  <data name="Drinks_RestockFailed" xml:space="preserve">
+    <value>Dodavanje zalihe nije uspjelo</value>
+  </data>
+  <data name="Drinks_RestockInvalidQuantity" xml:space="preserve">
+    <value>Unesite količinu veću od nule</value>
+  </data>
+  <data name="Drinks_HistoryEyebrow" xml:space="preserve">
+    <value>Povijest zalihe</value>
+  </data>
+  <data name="Drinks_HistoryLoading" xml:space="preserve">
+    <value>Učitavanje povijesti zalihe...</value>
+  </data>
+  <data name="Drinks_HistoryEmpty" xml:space="preserve">
+    <value>Još nema zabilježenih promjena zalihe</value>
+  </data>
+  <data name="Drinks_HistoryDateColumn" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Drinks_HistoryTypeColumn" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="Drinks_HistoryChangeColumn" xml:space="preserve">
+    <value>Promjena</value>
+  </data>
+  <data name="Drinks_HistoryBalanceColumn" xml:space="preserve">
+    <value>Stanje</value>
+  </data>
+  <data name="Drinks_HistoryByColumn" xml:space="preserve">
+    <value>Tko</value>
+  </data>
+  <data name="Drinks_HistoryNoteColumn" xml:space="preserve">
+    <value>Napomena</value>
+  </data>
+  <data name="Drinks_HistorySystemActor" xml:space="preserve">
+    <value>Sustav</value>
+  </data>
+  <data name="Drinks_MovementRestock" xml:space="preserve">
+    <value>Nadopuna</value>
+  </data>
+  <data name="Drinks_MovementSale" xml:space="preserve">
+    <value>Prodaja</value>
+  </data>
+  <data name="Drinks_MovementOrderCancelled" xml:space="preserve">
+    <value>Narudžba otkazana</value>
+  </data>
+  <data name="Drinks_MovementManualAdjustment" xml:space="preserve">
+    <value>Ručna prilagodba</value>
+  </data>
   <data name="Drinks_AddNewDrinkModalTitle" xml:space="preserve">
     <value>Dodaj novo piće</value>
   </data>
@@ -1982,7 +2078,7 @@
     <value>Opis</value>
   </data>
   <data name="Drinks_PriceLabel" xml:space="preserve">
-    <value>Cijena ($)</value>
+    <value>Cijena (€)</value>
   </data>
   <data name="Drinks_StockQuantityLabel" xml:space="preserve">
     <value>Količina zalihe</value>
@@ -2158,6 +2254,12 @@
   <data name="Tickets_ResetButton" xml:space="preserve">
     <value>Resetiraj</value>
   </data>
+  <data name="Tickets_FilterBySeasonLabel" xml:space="preserve">
+    <value>Filtriraj po sezoni</value>
+  </data>
+  <data name="Tickets_AllSeasonsOption" xml:space="preserve">
+    <value>Sve sezone</value>
+  </data>
   <data name="Tickets_FilterByEventLabel" xml:space="preserve">
     <value>Filtriraj po gebeurtenaju</value>
   </data>
@@ -2181,6 +2283,9 @@
   </data>
   <data name="Tickets_CancelledOption" xml:space="preserve">
     <value>Otkazane</value>
+  </data>
+  <data name="Tickets_ExpiredOption" xml:space="preserve">
+    <value>Istekle</value>
   </data>
   <data name="Tickets_SearchLabel" xml:space="preserve">
     <value>Pretraživanje</value>
@@ -2272,6 +2377,9 @@
   <data name="Tickets_CancelledStatus" xml:space="preserve">
     <value>Otkazana</value>
   </data>
+  <data name="Tickets_ExpiredStatus" xml:space="preserve">
+    <value>Istekla</value>
+  </data>
   <data name="Tickets_ViewOrderTitle" xml:space="preserve">
     <value>Prikaži narudžbu</value>
   </data>
@@ -2347,6 +2455,18 @@
   <data name="Events_SeatsLabel" xml:space="preserve">
     <value>mjesta</value>
   </data>
+  <data name="Events_OccupancyLabel" xml:space="preserve">
+    <value>Prodana mjesta</value>
+  </data>
+  <data name="Events_SeatsSold" xml:space="preserve">
+    <value>prodano</value>
+  </data>
+  <data name="Events_SeatsFree" xml:space="preserve">
+    <value>slobodno</value>
+  </data>
+  <data name="Events_SeasonPassNote" xml:space="preserve">
+    <value>{0} preko sezonskih ulaznica</value>
+  </data>
   <data name="Events_BasePriceLabel" xml:space="preserve">
     <value>Bazna cijena</value>
   </data>
@@ -2412,6 +2532,12 @@
   </data>
   <data name="EventStats_SeatsLabel" xml:space="preserve">
     <value>sjedala</value>
+  </data>
+  <data name="EventStats_ViewTicketsHint" xml:space="preserve">
+    <value>Prikaži sve ulaznice</value>
+  </data>
+  <data name="EventStats_ViewDrinkOrdersHint" xml:space="preserve">
+    <value>Prikaži narudžbe pića</value>
   </data>
   <data name="EventStats_OccupancyLabel" xml:space="preserve">
     <value>Popunjenost</value>
@@ -2529,6 +2655,24 @@
   </data>
   <data name="Events_SalesWindowHint" xml:space="preserve">
     <value>Neobavezno. Ostavite početak praznim za trenutno otvaranje prodaje, a kraj praznim da ostane otvorena dok je događaj u prodaji. Ulaznice se mogu prodavati samo kada je događaj „U prodaji” i unutar ovog razdoblja.</value>
+  </data>
+  <data name="Events_DrinkSalesStartDateTimeLabel" xml:space="preserve">
+    <value>Početak naručivanja pića</value>
+  </data>
+  <data name="Events_DrinkSalesEndDateTimeLabel" xml:space="preserve">
+    <value>Kraj naručivanja pića</value>
+  </data>
+  <data name="Events_DrinkSalesEndAfterStartValidation" xml:space="preserve">
+    <value>Vrijeme kraja naručivanja pića mora biti nakon vremena početka.</value>
+  </data>
+  <data name="Events_DrinkWindowHint" xml:space="preserve">
+    <value>Neobavezno. Ostavite početak praznim za otvaranje naručivanja pića čim događaj počne uživo, a kraj praznim da ostane otvoreno do kraja događaja. Piće se može naručivati samo dok je događaj uživo i unutar ovog razdoblja.</value>
+  </data>
+  <data name="Events_TicketWindowLabel" xml:space="preserve">
+    <value>Prodaja ulaznica</value>
+  </data>
+  <data name="Events_DrinkWindowLabel" xml:space="preserve">
+    <value>Naručivanje pića</value>
   </data>
   <data name="Events_CapacityFieldLabel" xml:space="preserve">
     <value>Kapacitet</value>
@@ -2667,6 +2811,12 @@
   </data>
   <data name="Orders_AllStatusesOption" xml:space="preserve">
     <value>Svi statusi</value>
+  </data>
+  <data name="Orders_SeasonLabel" xml:space="preserve">
+    <value>Sezona</value>
+  </data>
+  <data name="Orders_AllSeasonsOption" xml:space="preserve">
+    <value>Sve sezone</value>
   </data>
   <data name="Orders_EventLabel" xml:space="preserve">
     <value>Događaj</value>
@@ -2814,6 +2964,9 @@
   </data>
   <data name="Analytics_AvailableEventsTitle" xml:space="preserve">
     <value>Dostupni događaji</value>
+  </data>
+  <data name="Analytics_AllSeasonsOption" xml:space="preserve">
+    <value>Sve sezone</value>
   </data>
   <data name="Analytics_EventNameHeader" xml:space="preserve">
     <value>Naziv događaja</value>
@@ -3172,6 +3325,18 @@
   <data name="Index_ViewingOtherSeason" xml:space="preserve">
     <value>Pregledavate događaj iz sezone {0}, ne trenutne sezone.</value>
   </data>
+  <data name="Index_PreviousSeason" xml:space="preserve">
+    <value>Prethodna sezona</value>
+  </data>
+  <data name="Index_NextSeason" xml:space="preserve">
+    <value>Sljedeća sezona</value>
+  </data>
+  <data name="Index_SelectSeason" xml:space="preserve">
+    <value>Odaberi sezonu</value>
+  </data>
+  <data name="Index_ReturnToCurrentSeason" xml:space="preserve">
+    <value>Vrati se na trenutnu sezonu</value>
+  </data>
   <data name="Index_OfSeats" xml:space="preserve">
     <value>od {0} mjesta</value>
   </data>
@@ -3487,6 +3652,18 @@
   <data name="Customers_TotalText" xml:space="preserve">
     <value>ukupno kupaca</value>
   </data>
+  <data name="Customers_SeasonFilterLabel" xml:space="preserve">
+    <value>Sezona</value>
+  </data>
+  <data name="Customers_AllSeasonsOption" xml:space="preserve">
+    <value>Sve sezone</value>
+  </data>
+  <data name="Customers_EventFilterLabel" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="Customers_AllEventsOption" xml:space="preserve">
+    <value>Svi događaji</value>
+  </data>
   <data name="Customers_LoadingMessage" xml:space="preserve">
     <value>Učitavanje kupaca...</value>
   </data>
@@ -3565,6 +3742,7 @@
 <data name="Seasons_FormEnds" xml:space="preserve"><value>Završava</value></data>
 <data name="Seasons_EndAfterStart" xml:space="preserve"><value>Datum završetka mora biti nakon datuma početka.</value></data>
 <data name="Seasons_FormCurrent" xml:space="preserve"><value>Trenutna sezona (zadano za nove događaje i sezonske ulaznice)</value></data>
+  <data name="Seasons_FinishedNotCurrent" xml:space="preserve"><value>Ova sezona je već završila pa se ne može postaviti kao trenutna sezona.</value></data>
 <data name="Seasons_Cancel" xml:space="preserve"><value>Odustani</value></data>
 <data name="Seasons_CreateSeason" xml:space="preserve"><value>Kreiraj sezonu</value></data>
 <data name="Seasons_SaveChanges" xml:space="preserve"><value>Spremi promjene</value></data>
@@ -3579,6 +3757,44 @@
 <data name="Seasons_DeleteConfirm" xml:space="preserve"><value>Obrisati sezonu '{0}'? Povezani događaji bit će odvojeni.</value></data>
 <data name="Seasons_DeletedMsg" xml:space="preserve"><value>Sezona '{0}' je obrisana.</value></data>
 <data name="Seasons_DeleteFailed" xml:space="preserve"><value>Brisanje sezone nije uspjelo.</value></data>
+  <!-- Seasons statistics (KPI red, stupac prihoda, proširivi detalji po sezoni) -->
+  <data name="Seasons_KpiPassesLabel" xml:space="preserve"><value>Sezonske ulaznice</value></data>
+  <data name="Seasons_KpiPassesHint" xml:space="preserve"><value>Aktivne u svim sezonama</value></data>
+  <data name="Seasons_KpiRevenueLabel" xml:space="preserve"><value>Prihod od pretplata</value></data>
+  <data name="Seasons_KpiRevenueHint" xml:space="preserve"><value>Od aktivnih sezonskih ulaznica</value></data>
+  <data name="Seasons_KpiAvgPriceLabel" xml:space="preserve"><value>Prosj. cijena ulaznice</value></data>
+  <data name="Seasons_KpiAvgPriceHint" xml:space="preserve"><value>Po aktivnoj ulaznici</value></data>
+  <data name="Seasons_KpiOccupancyLabel" xml:space="preserve"><value>Popunjenost sezonom</value></data>
+  <data name="Seasons_KpiOccupancyHint" xml:space="preserve"><value>{0} od {1} sjedala stadiona</value></data>
+  <data name="Seasons_ColRevenue" xml:space="preserve"><value>Prihod</value></data>
+  <data name="Seasons_ExpandDetails" xml:space="preserve"><value>Prikaži statistiku</value></data>
+  <data name="Seasons_StatOccupancy" xml:space="preserve"><value>Popunjenost</value></data>
+  <data name="Seasons_StatRevenue" xml:space="preserve"><value>Prihod</value></data>
+  <data name="Seasons_StatAvgPrice" xml:space="preserve"><value>Prosj. cijena</value></data>
+  <data name="Seasons_StatEvents" xml:space="preserve"><value>Događaji</value></data>
+  <data name="Seasons_StatUpcoming" xml:space="preserve"><value>Nadolazeći</value></data>
+  <data name="Seasons_StatLive" xml:space="preserve"><value>Uživo</value></data>
+  <data name="Seasons_StatCompleted" xml:space="preserve"><value>Završeni</value></data>
+  <data name="Seasons_StatHolders" xml:space="preserve"><value>Vlasnici</value></data>
+  <data name="Seasons_StatDistinctHolders" xml:space="preserve"><value>Različiti vlasnici</value></data>
+  <data name="Seasons_StatLinkedAccounts" xml:space="preserve"><value>Povezani s računima</value></data>
+  <data name="Seasons_StatPassOrigin" xml:space="preserve"><value>Porijeklo ulaznica</value></data>
+  <data name="Seasons_StatInternal" xml:space="preserve"><value>Interne</value></data>
+  <data name="Seasons_StatExternal" xml:space="preserve"><value>Vanjske</value></data>
+  <data name="Seasons_OfCapacity" xml:space="preserve"><value>od {0} sjedala</value></data>
+  <data name="Seasons_StatOrders" xml:space="preserve"><value>Narudžbe pića</value></data>
+  <data name="Seasons_StatAvgOrder" xml:space="preserve"><value>Prosj. narudžba</value></data>
+  <data name="Seasons_StatDrinksSold" xml:space="preserve"><value>Prodano pića</value></data>
+  <data name="Seasons_StatDrinksRevenue" xml:space="preserve"><value>Prihod</value></data>
+  <data name="Seasons_StatTopDrink" xml:space="preserve"><value>Najprodavanije</value></data>
+  <data name="Seasons_StatUnits" xml:space="preserve"><value>{0} prodano</value></data>
+  <data name="Seasons_StatNoOrders" xml:space="preserve"><value>Još nema narudžbi</value></data>
+  <data name="Seasons_ChartsTitle" xml:space="preserve"><value>Usporedba sezona</value></data>
+  <data name="Seasons_ChartRevenueTitle" xml:space="preserve"><value>Prihod po sezoni (€)</value></data>
+  <data name="Seasons_ChartOccupancyTitle" xml:space="preserve"><value>Popunjenost sezonskim ulaznicama</value></data>
+  <data name="Seasons_ChartDrinksTitle" xml:space="preserve"><value>Prodano pića po sezoni</value></data>
+  <data name="Seasons_LegendPassRevenue" xml:space="preserve"><value>Prihod od pretplata</value></data>
+  <data name="Seasons_LegendDrinksRevenue" xml:space="preserve"><value>Prihod od pića</value></data>
   <!-- App Component -->
   <data name="App_InitializingApplication" xml:space="preserve"><value>Inicijalizacija aplikacije...</value></data>
   <data name="App_NotFound" xml:space="preserve"><value>Nije pronađeno</value></data>
@@ -3739,6 +3955,71 @@
   <data name="Settings_TicketSalesEnabledHint" xml:space="preserve"><value>Kada je isključeno, aplikacija za kupce skriva kupnju, a API odbija nove kupnje. Ulaznice tada u sustav ulaze samo putem vanjske integracije.</value></data>
   <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Prodaja ulaznica je UKLJUČENA — kupci mogu kupovati ulaznice u aplikaciji.</value></data>
   <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Prodaja ulaznica je ISKLJUČENA — ulaznice dolaze samo iz vanjskog sustava.</value></data>
+  <data name="Settings_EmailSection" xml:space="preserve"><value>E-pošta (SMTP)</value></data>
+  <data name="Settings_EmailSubtitle" xml:space="preserve"><value>Konfigurirajte poslužitelj odlazne pošte za poveznice aktivacije računa i obavijesti e-poštom.</value></data>
+  <data name="Settings_EmailEnabled" xml:space="preserve"><value>Šalji e-poštu putem SMTP-a</value></data>
+  <data name="Settings_EmailEnabledHint" xml:space="preserve"><value>Kada je isključeno, e-pošta se zapisuje u zapisnik aplikacije umjesto slanja.</value></data>
+  <data name="Settings_EmailHost" xml:space="preserve"><value>SMTP poslužitelj</value></data>
+  <data name="Settings_EmailPort" xml:space="preserve"><value>Port</value></data>
+  <data name="Settings_EmailUsername" xml:space="preserve"><value>Korisničko ime</value></data>
+  <data name="Settings_EmailPassword" xml:space="preserve"><value>Lozinka</value></data>
+  <data name="Settings_EmailPasswordStoredHint" xml:space="preserve"><value>Lozinka je spremljena. Ostavite prazno da je zadržite ili unesite novu da je zamijenite.</value></data>
+  <data name="Settings_EmailPasswordHint" xml:space="preserve"><value>Ostavite prazno ako poslužitelj pošte ne zahtijeva autentifikaciju.</value></data>
+  <data name="Settings_EmailUseSsl" xml:space="preserve"><value>Koristi SSL/TLS</value></data>
+  <data name="Settings_EmailFromAddress" xml:space="preserve"><value>Adresa pošiljatelja</value></data>
+  <data name="Settings_EmailFromName" xml:space="preserve"><value>Ime pošiljatelja</value></data>
+  <data name="Settings_EmailSave" xml:space="preserve"><value>Spremi postavke e-pošte</value></data>
+  <data name="Settings_EmailSaved" xml:space="preserve"><value>Postavke e-pošte spremljene.</value></data>
+  <data name="Settings_EmailSaveFailed" xml:space="preserve"><value>Spremanje postavki e-pošte nije uspjelo.</value></data>
+  <data name="Settings_EmailTestTitle" xml:space="preserve"><value>Pošalji probnu e-poštu</value></data>
+  <data name="Settings_EmailTestHint" xml:space="preserve"><value>Pošaljite probnu poruku da potvrdite ispravnost SMTP konfiguracije. Koristi vrijednosti iznad; ako je polje lozinke prazno, koristi se spremljena lozinka.</value></data>
+  <data name="Settings_EmailTestRecipient" xml:space="preserve"><value>E-pošta primatelja</value></data>
+  <data name="Settings_EmailTestButton" xml:space="preserve"><value>Pošalji probnu e-poštu</value></data>
+  <data name="Settings_EmailTestSuccess" xml:space="preserve"><value>Probna e-pošta uspješno poslana.</value></data>
+  <data name="Settings_EmailTestFailed" xml:space="preserve"><value>Probna e-pošta nije uspjela: {0}</value></data>
+  <data name="Settings_EmailTemplatesSection" xml:space="preserve"><value>Predlošci e-pošte</value></data>
+  <data name="Settings_EmailTemplatesSubtitle" xml:space="preserve"><value>Uredite predmet i sadržaj e-poruka koje sustav šalje kupcima.</value></data>
+  <data name="Settings_EmailTemplatesButton" xml:space="preserve"><value>Upravljaj predlošcima e-pošte</value></data>
+  <data name="EmailTemplates_PageTitle" xml:space="preserve"><value>Predlošci e-pošte</value></data>
+  <data name="EmailTemplates_Eyebrow" xml:space="preserve"><value>Postavke</value></data>
+  <data name="EmailTemplates_Heading" xml:space="preserve"><value>Predlošci e-pošte</value></data>
+  <data name="EmailTemplates_Subtitle" xml:space="preserve"><value>Prilagodite predmet i sadržaj transakcijskih e-poruka koje sustav šalje.</value></data>
+  <data name="EmailTemplates_BackToSettings" xml:space="preserve"><value>Natrag na postavke</value></data>
+  <data name="EmailTemplates_Loading" xml:space="preserve"><value>Učitavanje predložaka…</value></data>
+  <data name="EmailTemplates_Error" xml:space="preserve"><value>Učitavanje predložaka e-pošte nije uspjelo.</value></data>
+  <data name="EmailTemplates_Retry" xml:space="preserve"><value>Pokušaj ponovno</value></data>
+  <data name="EmailTemplates_Empty" xml:space="preserve"><value>Nema definiranih predložaka e-pošte.</value></data>
+  <data name="EmailTemplates_Customized" xml:space="preserve"><value>Prilagođeno</value></data>
+  <data name="EmailTemplates_UpdatedAt" xml:space="preserve"><value>Ažurirano</value></data>
+  <data name="EmailTemplates_Placeholders" xml:space="preserve"><value>Dostupni rezervirani znakovi</value></data>
+  <data name="EmailTemplates_PlaceholdersHint" xml:space="preserve"><value>Umetnite ove oznake u predmet ili tijelo; zamjenjuju se stvarnim vrijednostima pri slanju e-pošte.</value></data>
+  <data name="EmailTemplates_Subject" xml:space="preserve"><value>Predmet</value></data>
+  <data name="EmailTemplates_HtmlBody" xml:space="preserve"><value>HTML sadržaj</value></data>
+  <data name="EmailTemplates_TextBody" xml:space="preserve"><value>Tekstualni sadržaj</value></data>
+  <data name="EmailTemplates_TextBodyHint" xml:space="preserve"><value>Neobavezno. Prikazuje se u klijentima e-pošte koji ne prikazuju HTML.</value></data>
+  <data name="EmailTemplates_Save" xml:space="preserve"><value>Spremi</value></data>
+  <data name="EmailTemplates_Saved" xml:space="preserve"><value>Predložak spremljen.</value></data>
+  <data name="EmailTemplates_SaveFailed" xml:space="preserve"><value>Spremanje predloška nije uspjelo.</value></data>
+  <data name="EmailTemplates_Preview" xml:space="preserve"><value>Pretpregled</value></data>
+  <data name="EmailTemplates_PreviewTitle" xml:space="preserve"><value>Pretpregled (s primjerima vrijednosti)</value></data>
+  <data name="EmailTemplates_PreviewFailed" xml:space="preserve"><value>Iscrtavanje pretpregleda nije uspjelo.</value></data>
+  <data name="EmailTemplates_PreviewSampleHint" xml:space="preserve"><value>Rezervirani znakovi popunjeni su primjerima vrijednosti za ovaj pretpregled.</value></data>
+  <data name="EmailTemplates_Close" xml:space="preserve"><value>Zatvori</value></data>
+  <data name="EmailTemplates_Reset" xml:space="preserve"><value>Vrati na zadano</value></data>
+  <data name="EmailTemplates_ResetDone" xml:space="preserve"><value>Predložak vraćen na zadano.</value></data>
+  <data name="EmailTemplates_ResetFailed" xml:space="preserve"><value>Vraćanje predloška nije uspjelo.</value></data>
+  <data name="Settings_DangerSection" xml:space="preserve"><value>Opasna zona</value></data>
+  <data name="Settings_DangerSubtitle" xml:space="preserve"><value>Nepovratne radnje. Koristite oprezno.</value></data>
+  <data name="Settings_PurgeTitle" xml:space="preserve"><value>Izbriši sve transakcijske podatke</value></data>
+  <data name="Settings_PurgeHint" xml:space="preserve"><value>Trajno uklanja sve ulaznice, narudžbe, događaje, sezone, transakcije novčanika i stanja novčanika. Korisnici, pića, struktura stadiona i oznake mjesta ostaju sačuvani. Ovu radnju nije moguće poništiti.</value></data>
+  <data name="Settings_PurgeButton" xml:space="preserve"><value>Izbriši sve podatke…</value></data>
+  <data name="Settings_PurgeConfirmTitle" xml:space="preserve"><value>Izbrisati sve transakcijske podatke?</value></data>
+  <data name="Settings_PurgeConfirmBody" xml:space="preserve"><value>Ovo trajno briše SVE ulaznice, narudžbe, događaje, sezone, transakcije novčanika i stanja novčanika. Ovu radnju nije moguće poništiti.</value></data>
+  <data name="Settings_PurgeConfirmPromptLabel" xml:space="preserve"><value>Upišite DELETE za potvrdu</value></data>
+  <data name="Settings_PurgeConfirmButton" xml:space="preserve"><value>Da, izbriši sve</value></data>
+  <data name="Settings_PurgeCancel" xml:space="preserve"><value>Odustani</value></data>
+  <data name="Settings_PurgeSuccess" xml:space="preserve"><value>Svi transakcijski podaci izbrisani ({0} redaka uklonjeno).</value></data>
+  <data name="Settings_PurgeFailed" xml:space="preserve"><value>Brisanje podataka nije uspjelo. Nisu napravljene nikakve promjene.</value></data>
   <data name="Tickets_DetailViewTitle" xml:space="preserve"><value>Prikaži detalje</value></data>
   <data name="Tickets_DetailTitle" xml:space="preserve"><value>Detalji ulaznice</value></data>
   <data name="Tickets_DetailClose" xml:space="preserve"><value>Zatvori</value></data>
@@ -3765,10 +4046,16 @@
   <data name="Tickets_DetailDrinksTotal" xml:space="preserve"><value>Ukupno pića</value></data>
   <data name="Tickets_DetailGrandTotal" xml:space="preserve"><value>Sveukupno</value></data>
   <data name="Tickets_DetailCardPreview" xml:space="preserve"><value>Kartica ulaznice</value></data>
+  <data name="Tickets_DetailSeatLocation" xml:space="preserve"><value>Lokacija sjedala</value></data>
+  <data name="Tickets_DetailLocationUnknown" xml:space="preserve"><value>Lokacija nije dostupna</value></data>
   <data name="Tickets_DetailDownloadPdf" xml:space="preserve"><value>Preuzmi PDF</value></data>
   <data name="Tickets_DetailDownloadFailed" xml:space="preserve"><value>Nije moguće generirati PDF. Pokušajte ponovno.</value></data>
   <data name="Pager_Show" xml:space="preserve"><value>Prikaži</value></data>
   <data name="Pager_Showing" xml:space="preserve"><value>Prikaz {0} do {1} od {2}</value></data>
   <data name="Pager_Previous" xml:space="preserve"><value>Prethodna stranica</value></data>
   <data name="Pager_Next" xml:space="preserve"><value>Sljedeća stranica</value></data>
+  <data name="Settings_Eyebrow" xml:space="preserve"><value>Sustav</value></data>
+  <data name="Venue_Eyebrow" xml:space="preserve"><value>Stadion</value></data>
+  <data name="StadiumInfo_Eyebrow" xml:space="preserve"><value>Stadion</value></data>
+  <data name="Drawing_Eyebrow" xml:space="preserve"><value>Stadion</value></data>
 </root>

@@ -157,6 +157,73 @@ public class DemoDataController : ControllerBase
         }
     }
 
+    [HttpPost("generate-dinamo-season")]
+    public async Task<IActionResult> GenerateDinamoSeason2025()
+    {
+        try
+        {
+            _logger.LogInformation("Seeding GNK Dinamo 2025/26 home-fixture sample");
+            var result = await _demoDataService.GenerateDinamoSeason2025Async();
+
+            return Ok(new
+            {
+                success = true,
+                result.SeasonId,
+                result.SeasonName,
+                result.HomeClub,
+                result.TotalHomeMatches,
+                result.EventsCreated,
+                result.EventsSkipped,
+                message = result.EventsCreated > 0
+                    ? $"Seeded season '{result.SeasonName}' with {result.EventsCreated} GNK Dinamo home match(es) ({result.EventsSkipped} already existed)."
+                    : $"Season '{result.SeasonName}' already had all {result.TotalHomeMatches} home matches; nothing added.",
+                timestamp = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error seeding GNK Dinamo 2025/26 season");
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "An error occurred while seeding the GNK Dinamo 2025/26 season",
+                error = ex.Message
+            });
+        }
+    }
+
+    [HttpPost("generate-varied-sales")]
+    public async Task<IActionResult> GenerateVariedPerEventSales([FromQuery] int? seasonId = null)
+    {
+        try
+        {
+            _logger.LogInformation("Generating varied per-event sales (seasonId={SeasonId})", seasonId);
+            var result = await _demoDataService.GenerateVariedPerEventSalesAsync(seasonId);
+
+            return Ok(new
+            {
+                success = true,
+                result.EventsProcessed,
+                result.TicketsAdded,
+                result.OrdersAdded,
+                message = result.EventsProcessed > 0
+                    ? $"Seeded varied data for {result.EventsProcessed} event(s): +{result.TicketsAdded} single-event ticket(s), +{result.OrdersAdded} drink order(s)."
+                    : "Nothing to seed — every matched event already had single-event tickets and drink orders.",
+                timestamp = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating varied per-event sales");
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "An error occurred while generating varied per-event sales",
+                error = ex.Message
+            });
+        }
+    }
+
     [HttpPost("clear")]
     public async Task<IActionResult> ClearDemoData()
     {

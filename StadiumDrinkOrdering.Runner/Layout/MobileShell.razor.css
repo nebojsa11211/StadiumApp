@@ -1,0 +1,140 @@
+/* ==========================================================================
+   Runner mobile shell / phone-frame presentation (mirrors the Customer app).
+   - Phones (< 520px): the whole shell collapses (display:contents); the runner
+     app fills the screen exactly as before, page scrolls, fixed bars anchor to
+     the viewport.
+   - Desktop (>= 520px): the app is shown inside a realistic phone. The device
+     screen carries a transform, making it the containing block for the app's
+     position:fixed tab bar / action bar so they anchor to the phone, not the
+     viewport.
+   ========================================================================== */
+
+/* Shell is fully transparent on phones — .runner-shell renders exactly as today. */
+.runner-app-backdrop,
+.runner-device,
+.runner-device-screen,
+.runner-device-scroll,
+.runner-app-frame { display: contents; }
+.runner-device-statusbar { display: none; }
+
+/* ---- Desktop: render a real phone ---------------------------------------- */
+@media (min-width: 520px) {
+    .runner-app-backdrop {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100dvh;
+        padding: 26px 16px;
+        background:
+            radial-gradient(115% 75% at 14% -6%, rgba(31, 122, 77, .30), transparent 55%),
+            radial-gradient(115% 78% at 88% 0%, rgba(21, 99, 60, .24), transparent 54%),
+            radial-gradient(100% 70% at 50% 116%, rgba(31, 122, 77, .14), transparent 60%),
+            #060a07;
+    }
+
+    /* Phone body: brushed-metal frame with a big soft shadow + brand rim light. */
+    .runner-device {
+        display: block;
+        position: relative;
+        padding: 13px;
+        border-radius: 56px;
+        background: linear-gradient(150deg, #26272e, #0c0d12 62%);
+        box-shadow:
+            0 0 0 1px rgba(0, 0, 0, .6),
+            inset 0 0 0 1px rgba(255, 255, 255, .06),
+            0 40px 120px -24px rgba(0, 0, 0, .92),
+            0 0 150px -30px rgba(31, 122, 77, .28);
+    }
+
+    /* Side buttons (volume rocker left, power right). */
+    .runner-device::before,
+    .runner-device::after {
+        content: "";
+        position: absolute;
+        background: linear-gradient(#34353d, #15161c);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
+    }
+    .runner-device::before { left: -3px; top: 150px; width: 3px; height: 104px; border-radius: 3px 0 0 3px; }
+    .runner-device::after  { right: -3px; top: 188px; width: 3px; height: 66px;  border-radius: 0 3px 3px 0; }
+
+    /* Screen at a 19.5:9 phone shape (480 x 1040 logical). `width` renders it full
+       size when the window has room and scales it down proportionally otherwise.
+       `transform` makes this the containing block for the app's position:fixed tab
+       bar / action bar. Scrolling happens in .runner-device-scroll. */
+    .runner-device-screen {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        width: min(480px, calc(100vw - 96px), calc((100dvh - 84px) * 9 / 19.5));
+        aspect-ratio: 9 / 19.5;
+        border-radius: 44px;
+        overflow: hidden;
+        background: var(--r-bg);
+        transform: translateZ(0);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+    }
+
+    /* Faux status bar, coloured to blend straight into the green app bar below it. */
+    .runner-device-statusbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        flex: 0 0 auto;
+        height: 34px;
+        padding: 0 22px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .02em;
+        color: #fff;
+        background: var(--r-primary);
+    }
+    .rdsb-cam {
+        position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        width: 11px; height: 11px; border-radius: 50%; background: #000;
+        box-shadow: inset 0 0 0 1.5px #202127, 0 0 0 2px rgba(0, 0, 0, .7);
+    }
+    .rdsb-cam::after {
+        content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        width: 4px; height: 4px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #3b5776, #0a0f16);
+    }
+    .rdsb-icons { display: flex; align-items: center; gap: 7px; }
+    .rdsb-signal { display: flex; align-items: flex-end; gap: 1.5px; height: 11px; }
+    .rdsb-signal i { width: 3px; border-radius: 1px; background: #fff; }
+    .rdsb-signal i:nth-child(1) { height: 4px; }
+    .rdsb-signal i:nth-child(2) { height: 6px; }
+    .rdsb-signal i:nth-child(3) { height: 8px; }
+    .rdsb-signal i:nth-child(4) { height: 11px; }
+    .rdsb-batt { position: relative; width: 22px; height: 11px; border-radius: 3px; border: 1.5px solid rgba(255, 255, 255, .7); }
+    .rdsb-batt::before { content: ""; position: absolute; left: 1.5px; top: 1.5px; bottom: 1.5px; width: 68%; border-radius: 1px; background: #fff; }
+    .rdsb-batt::after  { content: ""; position: absolute; right: -3.5px; top: 3px; bottom: 3px; width: 2px; border-radius: 0 2px 2px 0; background: rgba(255, 255, 255, .6); }
+
+    /* The actual scrolling viewport inside the phone. */
+    .runner-device-scroll {
+        display: block;
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .runner-app-frame { display: block; min-height: 100%; }
+
+    /* MainLayout's .runner-shell / Login's .login-shell are child content — reach them
+       with ::deep and let them fill the phone screen instead of a full-viewport 100vh. */
+    .runner-device-scroll ::deep .runner-shell,
+    .runner-device-scroll ::deep .login-shell { min-height: 100%; }
+}
+
+/* Larger monitors: a touch more presence. */
+@media (min-width: 1100px) {
+    .runner-device {
+        box-shadow:
+            0 0 0 1px rgba(0, 0, 0, .6),
+            inset 0 0 0 1px rgba(255, 255, 255, .06),
+            0 52px 150px -26px rgba(0, 0, 0, .94),
+            0 0 180px -30px rgba(31, 122, 77, .32);
+    }
+}

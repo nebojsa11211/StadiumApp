@@ -432,6 +432,9 @@
   <data name="OrderQueue_NoSector" xml:space="preserve">
     <value>Bez sektora</value>
   </data>
+  <data name="OrderQueue_HeaderSubtitle" xml:space="preserve">
+    <value>Živa ploča narudžbi — pripremite i otpremite pića</value>
+  </data>
 
   <!-- Order Queue Page -->
   <data name="OrderQueue_Accept" xml:space="preserve">
@@ -448,6 +451,9 @@
   </data>
   <data name="OrderQueue_CollectedByRunner" xml:space="preserve">
     <value>Preuzeto — u dostavi</value>
+  </data>
+  <data name="OrderQueue_OrderNote" xml:space="preserve">
+    <value>Napomena</value>
   </data>
   <data name="OrderQueue_JustNow" xml:space="preserve">
     <value>upravo sada</value>
@@ -466,6 +472,35 @@
   </data>
   <data name="OrderQueue_OrderReadyForPickup" xml:space="preserve">
     <value>Narudžba je spremna za preuzimanje</value>
+  </data>
+
+  <!-- My Orders Page -->
+  <data name="MyOrders_PageTitle" xml:space="preserve">
+    <value>Moje narudžbe — Bar</value>
+  </data>
+  <data name="MyOrders_HeaderSubtitle" xml:space="preserve">
+    <value>Narudžbe koje ste obradili tijekom aktivnog događaja</value>
+  </data>
+  <data name="MyOrders_Empty" xml:space="preserve">
+    <value>Još niste obradili nijednu narudžbu</value>
+  </data>
+  <data name="MyOrders_EmptyHint" xml:space="preserve">
+    <value>Ovdje će se pojaviti narudžbe koje započnete, pripremite ili predate.</value>
+  </data>
+  <data name="MyOrders_ColStep" xml:space="preserve">
+    <value>Vaš korak</value>
+  </data>
+  <data name="MyOrders_StepAccepted" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="MyOrders_StepStarted" xml:space="preserve">
+    <value>Započeto</value>
+  </data>
+  <data name="MyOrders_StepPrepared" xml:space="preserve">
+    <value>Pripremljeno</value>
+  </data>
+  <data name="MyOrders_StepDelivered" xml:space="preserve">
+    <value>Dostavljeno</value>
   </data>
 
   <!-- Logs Page -->
@@ -775,5 +810,17 @@
   </data>
   <data name="TicketTopup_Fail_Generic" xml:space="preserve">
     <value>Došlo je do pogreške. Pokušajte ponovno.</value>
+  </data>
+  <data name="EventGate_Checking" xml:space="preserve">
+    <value>Provjera aktivnog događaja…</value>
+  </data>
+  <data name="EventGate_NoLiveEventTitle" xml:space="preserve">
+    <value>Trenutačno nema aktivnog događaja</value>
+  </data>
+  <data name="EventGate_NoLiveEventBody" xml:space="preserve">
+    <value>Bar se otvara kada događaj počne. Vratite se kada trenutačni događaj započne.</value>
+  </data>
+  <data name="EventGate_CheckAgain" xml:space="preserve">
+    <value>Provjeri ponovno</value>
   </data>
 </root>

@@ -80,6 +80,21 @@ public interface IEventService
     /// disable is safe. A null <paramref name="prices"/> returns null. Call before persisting.
     /// </summary>
     Task<string?> ValidateSectorDisablesAsync(int eventId, IEnumerable<EventSectorPriceInputDto>? prices);
+
+    /// <summary>
+    /// Lists every staff member (Bartender/Waiter) together with whether they are assigned to work the
+    /// event. Powers the "Staff" picker in the Admin event modal. For a new (unsaved) event pass null
+    /// (nobody is assigned yet).
+    /// </summary>
+    Task<List<EventStaffMemberDto>> GetEventStaffAsync(int? eventId);
+
+    /// <summary>
+    /// Replaces an event's staff assignments with <paramref name="staff"/>: members not in the set are
+    /// unassigned; each supplied member is assigned with their function (Runner/Barman) and covered
+    /// sectors. Ids that are not Bartenders/Waiters, and unknown sector ids, are ignored. A null
+    /// <paramref name="staff"/> is a no-op (leaves existing assignments untouched).
+    /// </summary>
+    Task SaveEventStaffAsync(int eventId, IEnumerable<EventStaffInputDto>? staff);
 }
 
 /// <summary>
@@ -392,6 +407,144 @@ public class EventService : IEventService
         return blocked.Count == 1
             ? $"Cannot disable sector {blocked[0]}: it already has tickets sold for this event."
             : $"Cannot disable sectors {string.Join(", ", blocked)}: they already have tickets sold for this event.";
+    }
+
+    // Staff eligible to be assigned to an event: the two on-the-floor roles.
+    private static readonly UserRole[] AssignableStaffRoles = { UserRole.Bartender, UserRole.Waiter };
+
+    public async Task<List<EventStaffMemberDto>> GetEventStaffAsync(int? eventId)
+    {
+        var staff = await _context.Users
+            .AsNoTracking()
+            .Where(u => AssignableStaffRoles.Contains(u.Role))
+            .OrderBy(u => u.Username)
+            .Select(u => new { u.Id, u.Username, u.FirstName, u.LastName, u.Email, u.Role, u.IsActive })
+            .ToListAsync();
+
+        var assignments = eventId == null
+            ? new Dictionary<int, EventStaffAssignment>()
+            : await _context.EventStaffAssignments
+                .AsNoTracking()
+                .Where(a => a.EventId == eventId.Value)
+                .ToDictionaryAsync(a => a.StaffId);
+
+        return staff.Select(u =>
+        {
+            assignments.TryGetValue(u.Id, out var a);
+            return new EventStaffMemberDto
+            {
+                StaffId = u.Id,
+                Username = u.Username,
+                FullName = $"{u.FirstName} {u.LastName}".Trim(),
+                Email = u.Email,
+                Role = u.Role,
+                RoleName = u.Role.ToString(),
+                IsActive = u.IsActive,
+                IsAssigned = a != null,
+                // Editing: use the stored function; otherwise default from the system role.
+                EventRole = a != null
+                    ? EventStaffRoles.Normalize(a.Role, EventStaffRoles.DefaultFor(u.Role))
+                    : EventStaffRoles.DefaultFor(u.Role),
+                SectorOverlayIds = ParseSectorIds(a?.AssignedSections)
+            };
+        }).ToList();
+    }
+
+    /// <summary>Deserializes a stored <c>AssignedSections</c> JSON array (e.g. "[12,13]") to ids; empty on error/null.</summary>
+    private static List<int> ParseSectorIds(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            return new List<int>();
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<List<int>>(json) ?? new List<int>();
+        }
+        catch
+        {
+            return new List<int>();
+        }
+    }
+
+    public async Task SaveEventStaffAsync(int eventId, IEnumerable<EventStaffInputDto>? staff)
+    {
+        if (staff == null)
+            return;
+
+        // Keep the last entry per staff member (guards against duplicate rows in the payload).
+        var desired = staff
+            .GroupBy(s => s.StaffId)
+            .ToDictionary(g => g.Key, g => g.Last());
+
+        // Only assignable staff (Bartender/Waiter) may be assigned, so a stale payload can't attach a
+        // customer/admin id. Keep each valid id's system role to default the event function.
+        var validRoleById = await _context.Users
+            .Where(u => AssignableStaffRoles.Contains(u.Role))
+            .Select(u => new { u.Id, u.Role })
+            .ToDictionaryAsync(x => x.Id, x => x.Role);
+
+        // Sector ids are validated against the live overlay sectors so a stale payload can't persist
+        // references to sectors that don't exist.
+        var validSectorIds = (await _context.StadiumSectorOverlays
+            .Where(o => !o.IsDeleted)
+            .Select(o => o.Id)
+            .ToListAsync()).ToHashSet();
+
+        var existing = await _context.EventStaffAssignments
+            .Where(a => a.EventId == eventId)
+            .ToListAsync();
+        var existingByStaff = existing.ToDictionary(a => a.StaffId);
+
+        // Remove assignments no longer wanted.
+        foreach (var row in existing)
+        {
+            if (!desired.ContainsKey(row.StaffId))
+                _context.EventStaffAssignments.Remove(row);
+        }
+
+        foreach (var (staffId, input) in desired)
+        {
+            if (!validRoleById.TryGetValue(staffId, out var systemRole))
+                continue; // ignore non-staff ids
+
+            var role = EventStaffRoles.Normalize(input.EventRole, EventStaffRoles.DefaultFor(systemRole));
+            // A barman works the bar, not sectors — never persist sector coverage for one.
+            var sectorsJson = role == EventStaffRoles.Bartender
+                ? null
+                : SerializeSectorIds(input.SectorOverlayIds, validSectorIds);
+
+            if (existingByStaff.TryGetValue(staffId, out var row))
+            {
+                // Update the existing assignment in place.
+                row.Role = role;
+                row.AssignedSections = sectorsJson;
+                row.IsActive = true;
+            }
+            else
+            {
+                _context.EventStaffAssignments.Add(new EventStaffAssignment
+                {
+                    EventId = eventId,
+                    StaffId = staffId,
+                    Role = role,
+                    AssignedSections = sectorsJson,
+                    IsActive = true
+                });
+            }
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Serializes the requested sector ids to a JSON array, keeping only ids that are real overlay
+    /// sectors (distinct, ordered). Returns null when nothing valid remains, so the column stays empty.
+    /// </summary>
+    private static string? SerializeSectorIds(IEnumerable<int>? ids, HashSet<int> validSectorIds)
+    {
+        if (ids == null)
+            return null;
+        var kept = ids.Where(validSectorIds.Contains).Distinct().OrderBy(x => x).ToList();
+        return kept.Count == 0 ? null : System.Text.Json.JsonSerializer.Serialize(kept);
     }
 
     public async Task<bool> DeleteEventAsync(int id)

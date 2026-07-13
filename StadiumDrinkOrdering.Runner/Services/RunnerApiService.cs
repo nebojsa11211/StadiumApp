@@ -40,6 +40,27 @@ public class RunnerApiService
         return null;
     }
 
+    /// <summary>
+    /// Reports whether an event is currently live: true (one is), false (the server is certain none
+    /// is), or null when the check couldn't complete (offline / transport error). The event gate
+    /// blocks only on a definitive false, so an offline runner is never locked out mid-shift. This
+    /// endpoint is anonymous and read-only, so it deliberately skips the 401 bounce.
+    /// </summary>
+    public async Task<bool?> HasLiveEventAsync()
+    {
+        try
+        {
+            var resp = await _http.GetAsync("events/live");
+            if (resp.StatusCode == HttpStatusCode.NoContent) return false;
+            if (resp.IsSuccessStatusCode) return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Live-event check failed: {ex.Message}");
+        }
+        return null;
+    }
+
     public Task<List<OrderDto>?> GetPoolAsync() => GetListAsync("orders/available-for-delivery");
 
     public Task<List<OrderDto>?> GetMyDeliveriesAsync() => GetListAsync("orders/mine");

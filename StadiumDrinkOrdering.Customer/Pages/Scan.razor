@@ -1,6 +1,10 @@
 @page "/scan"
 @layout MobileShell
+@using StadiumDrinkOrdering.Customer.Services
+@using StadiumDrinkOrdering.Shared.DTOs
 @inject NavigationManager Nav
+@inject IApiService ApiService
+@inject IWebHostEnvironment Env
 
 <PageTitle>Skeniraj ulaznicu — HALFTIME</PageTitle>
 
@@ -15,6 +19,24 @@
     </div>
 
     <p class="scan-hint">Uperi kameru svog telefona u QR kôd na ulaznici — aplikacija se otvara automatski.</p>
+
+    @* DEV-ONLY: pick a real ticket of the live event instead of typing/scanning a code. Never rendered
+       in production — the API endpoint that feeds it 404s outside Development, so _testTickets stays empty. *@
+    @if (_testTickets is { Count: > 0 })
+    {
+        <div id="customer-scan-dev-picker" class="manual">
+            <div id="customer-scan-dev-label" class="label">🧪 Test (dev): odaberi ulaznicu</div>
+            <div id="customer-scan-dev-row" class="manual-row">
+                <select id="customer-scan-dev-select" class="form-select form-select-sm" value="@_code" @onchange="OnDevPick">
+                    <option value="">— odaberi ulaznicu —</option>
+                    @foreach (var t in _testTickets)
+                    {
+                        <option value="@t.TicketNumber">@t.Label</option>
+                    }
+                </select>
+            </div>
+        </div>
+    }
 
     <div id="customer-scan-manual" class="manual">
         <div id="customer-scan-manual-label" class="label">Ne možeš skenirati?</div>
@@ -32,6 +54,24 @@
 @code {
     private string _code = "";
     private bool _error;
+    private List<TestTicketDto>? _testTickets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Only attempt the dev-only lookup in Development; in production the endpoint 404s anyway.
+        if (Env.IsDevelopment())
+        {
+            _testTickets = await ApiService.GetLiveEventTestTicketsAsync();
+        }
+    }
+
+    private void OnDevPick(ChangeEventArgs e)
+    {
+        var code = e.Value?.ToString();
+        if (string.IsNullOrWhiteSpace(code)) return;
+        _code = code;
+        Nav.NavigateTo($"/t/{code.Trim()}");
+    }
 
     private void OnKey(KeyboardEventArgs e)
     {

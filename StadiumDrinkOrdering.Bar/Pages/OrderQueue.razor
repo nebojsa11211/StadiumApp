@@ -9,19 +9,23 @@
 
 <PageTitle>@Localizer["OrderQueue_PageTitle"]</PageTitle>
 
-<div id="bar-orderqueue-page-container" class="container-fluid">
-    <div id="bar-orderqueue-page-header" class="kds-header">
-        <h1 class="kds-title">🍺 @Localizer["OrderQueue_OrderBoard"]</h1>
-        <div id="bar-orderqueue-page-header-info" class="d-flex align-items-center gap-3">
+<div id="bar-orderqueue-page-container" class="container-fluid console">
+    <div id="bar-orderqueue-header" class="console-head">
+        <div id="bar-orderqueue-header-title" class="console-head__title">
+            <span class="eyebrow">@Localizer["Dashboard_BarStation"]</span>
+            <h1>@Localizer["OrderQueue_OrderBoard"]</h1>
+            <p>@Localizer["OrderQueue_HeaderSubtitle"]</p>
+        </div>
+        <div id="bar-orderqueue-header-actions" class="console-head__actions">
             <span class="badge @(SignalRService.IsConnected ? "bg-success" : "bg-secondary")">
                 @(SignalRService.IsConnected ? Localizer["OrderQueue_Live"] : Localizer["OrderQueue_Offline"])
             </span>
             @if (lastUpdated != default)
             {
-                <small class="text-muted">@Localizer["OrderQueue_Updated"] @lastUpdated.ToString("HH:mm:ss")</small>
+                <span class="mono dash-updated">@Localizer["OrderQueue_Updated"] @lastUpdated.ToString("HH:mm:ss")</span>
             }
-            <button class="btn btn-outline-primary" @onclick="RefreshOrders" id="bar-orderqueue-refresh-btn">
-                <span class="oi oi-reload me-2"></span>@Localizer["Refresh"]
+            <button class="pill-btn" @onclick="RefreshOrders" id="bar-orderqueue-refresh-btn">
+                <i class="bi bi-arrow-clockwise"></i> @Localizer["Refresh"]
             </button>
         </div>
     </div>
@@ -232,6 +236,14 @@
         : !string.IsNullOrWhiteSpace(o.SeatNumber) ? o.SeatNumber
         : "—";
 
+    // The customer's free-text note for the whole order (what they typed at checkout), falling back to
+    // any staff-entered order note. Shown on the card so the bartender sees special requests that aren't
+    // tied to a single item. Blank when neither is present, so the block is hidden.
+    private static string OrderNote(OrderDto o) =>
+        !string.IsNullOrWhiteSpace(o.CustomerNotes) ? o.CustomerNotes!.Trim()
+        : !string.IsNullOrWhiteSpace(o.Notes) ? o.Notes!.Trim()
+        : string.Empty;
+
     private string SectorOf(OrderDto o)
     {
         var section = o.Seat?.Section?.SectionName;
@@ -373,13 +385,20 @@
                             {
                                 <div id="bar-orderqueue-page-item-@order.Id-@(order.OrderItems.IndexOf(item))" class="kds-item">
                                     <span class="kds-qty">@item.Quantity×</span> @item.DrinkName
-                                    @if (!string.IsNullOrEmpty(item.Notes))
+                                    @if (!string.IsNullOrWhiteSpace(item.SpecialInstructions))
                                     {
-                                        <span class="kds-note">(@item.Notes)</span>
+                                        <span class="kds-note">(@item.SpecialInstructions)</span>
                                     }
                                 </div>
                             }
                         </div>
+                        @{ var orderNote = OrderNote(order); }
+                        @if (!string.IsNullOrWhiteSpace(orderNote))
+                        {
+                            <div id="bar-orderqueue-page-note-@order.Id" class="kds-order-note">
+                                📝 <span class="kds-order-note-label">@Localizer["OrderQueue_OrderNote"]:</span> @orderNote
+                            </div>
+                        }
                         <div id="bar-orderqueue-page-time-@order.Id" class="d-flex justify-content-between align-items-center mb-1">
                             <span class="kds-age @AgeClass(StepTime(order))">@AgeText(StepTime(order))</span>
                             <span class="kds-step-time">@StepClock(order)</span>

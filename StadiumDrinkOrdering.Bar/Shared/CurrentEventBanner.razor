@@ -1,0 +1,69 @@
+@inject IStaffApiService ApiService
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
+
+@* The "current event" banner shown on every Bar page (not just the dashboard). It self-fetches the
+   live event so it works regardless of which page hosts it, and refreshes periodically so it stays
+   in sync as events go live/end. *@
+@if (currentEvent is { } ev)
+{
+    <div id="bar-dashboard-current-event" class="current-event-banner @(ev.IsCurrentlyLive ? "is-live" : "")">
+        <div class="current-event-banner__icon">
+            <i class="bi bi-calendar-event"></i>
+        </div>
+        <div class="current-event-banner__body">
+            <span class="eyebrow">@Localizer["Dashboard_CurrentEvent"]</span>
+            <h2 id="bar-dashboard-current-event-name">@ev.Name</h2>
+            <div class="current-event-banner__meta">
+                @if (ev.Date is { } date)
+                {
+                    <span><i class="bi bi-clock"></i> @date.ToLocalTime().ToString("ddd d MMM, HH:mm")</span>
+                }
+            </div>
+        </div>
+        <div class="current-event-banner__status">
+            @if (ev.IsCurrentlyLive)
+            {
+                <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+            }
+            else
+            {
+                <span class="status-badge">@ev.StatusName</span>
+            }
+        </div>
+    </div>
+}
+else if (!isLoading)
+{
+    <div id="bar-dashboard-no-event" class="current-event-banner is-empty">
+        <div class="current-event-banner__icon"><i class="bi bi-calendar-x"></i></div>
+        <div class="current-event-banner__body">
+            <span class="eyebrow">@Localizer["Dashboard_CurrentEvent"]</span>
+            <h2>@Localizer["Dashboard_NoActiveEvent"]</h2>
+            <div class="current-event-banner__meta"><span>@Localizer["Dashboard_OrdersWillAppear"]</span></div>
+        </div>
+    </div>
+}
+
+@code {
+    private EventDto? currentEvent;
+    private bool isLoading = true;
+    private System.Threading.Timer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+        // Refresh on its own so the banner tracks events going live/ending without a page reload.
+        timer = new System.Threading.Timer(async _ => await InvokeAsync(LoadAsync), null,
+            TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+    }
+
+    private async Task LoadAsync()
+    {
+        currentEvent = await ApiService.GetCurrentEventAsync();
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    public void Dispose() => timer?.Dispose();
+}

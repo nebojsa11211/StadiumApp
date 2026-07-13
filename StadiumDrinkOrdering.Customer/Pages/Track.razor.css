@@ -1,4 +1,5 @@
-.body{flex:1;display:flex;flex-direction:column}
+/* lifted above the shared .crowd-atmos backdrop (app.css) */
+.body{position:relative;z-index:1;flex:1;display:flex;flex-direction:column}
 
 .tload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--muted);min-height:70dvh;text-align:center;font-weight:600}
 

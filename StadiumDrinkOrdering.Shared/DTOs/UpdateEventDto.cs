@@ -65,4 +65,11 @@ public class UpdateEventDto
     /// with a null price (or omitted sectors) clear it. Null leaves existing overrides unchanged.
     /// </summary>
     public List<EventSectorPriceInputDto>? SectorPrices { get; set; }
+
+    /// <summary>
+    /// Staff assigned to work this event — for each, their function (Runner/Barman) and covered sectors.
+    /// When non-null, the supplied set fully replaces the event's existing assignments (omitted members
+    /// are unassigned). Non-staff ids are ignored. Null leaves existing assignments unchanged.
+    /// </summary>
+    public List<EventStaffInputDto>? Staff { get; set; }
 }

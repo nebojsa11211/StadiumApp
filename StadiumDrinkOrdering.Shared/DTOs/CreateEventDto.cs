@@ -73,4 +73,10 @@ public class CreateEventDto
     /// overrides that sector's default; sectors omitted (or with a null price) keep their default.
     /// </summary>
     public List<EventSectorPriceInputDto>? SectorPrices { get; set; }
+
+    /// <summary>
+    /// Optional staff assigned to work this event — for each, their function (Runner/Barman) and the
+    /// sectors they cover. Non-staff ids are ignored. Null means "no staff assigned".
+    /// </summary>
+    public List<EventStaffInputDto>? Staff { get; set; }
 }

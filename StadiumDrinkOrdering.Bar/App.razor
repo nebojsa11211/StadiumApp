@@ -25,7 +25,9 @@ else
             else
             {
                 <AuthRoute>
-                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                    <EventGate>
+                        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                    </EventGate>
                 </AuthRoute>
             }
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -33,9 +35,11 @@ else
         <NotFound>
             <PageTitle>@Localizer["App_NotFound"]</PageTitle>
             <AuthRoute>
-                <LayoutView Layout="@typeof(MainLayout)">
-                    <p role="alert">@Localizer["App_NothingAtThisAddress"]</p>
-                </LayoutView>
+                <EventGate>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        <p role="alert">@Localizer["App_NothingAtThisAddress"]</p>
+                    </LayoutView>
+                </EventGate>
             </AuthRoute>
         </NotFound>
     </Router>

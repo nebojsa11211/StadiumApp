@@ -190,4 +190,13 @@
   <data name="MyDeliveries_MarkedDelivered" xml:space="preserve">
     <value>marked delivered</value>
   </data>
+  <data name="EventGate_NoLiveEventTitle" xml:space="preserve">
+    <value>No event is live right now</value>
+  </data>
+  <data name="EventGate_NoLiveEventBody" xml:space="preserve">
+    <value>Deliveries open when an event goes live. Check back once the match begins.</value>
+  </data>
+  <data name="EventGate_CheckAgain" xml:space="preserve">
+    <value>Check again</value>
+  </data>
 </root>

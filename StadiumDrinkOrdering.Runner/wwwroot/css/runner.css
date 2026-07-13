@@ -268,6 +268,14 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
 .runner-empty-text { font-size: 1rem; font-weight: 500; line-height: 1.5; }
 .runner-empty-text a { color: var(--r-primary); font-weight: 700; }
 
+/* Event gate: muted subtitle under the "no live event" message. */
+.runner-eventgate-sub {
+    margin: 0.5rem 0 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--r-ink-muted);
+}
+
 /* Centered loading spinner (initial page load) */
 .runner-loading { display: flex; justify-content: center; padding: 3rem 1rem; }
 .runner-loading .runner-cta-spinner {

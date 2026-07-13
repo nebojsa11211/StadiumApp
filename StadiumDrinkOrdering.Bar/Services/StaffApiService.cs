@@ -1,6 +1,7 @@
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
 using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
@@ -11,6 +12,13 @@ public interface IStaffApiService
 {
     Task<List<OrderDto>?> GetActiveOrdersAsync();
     Task<EventDto?> GetCurrentEventAsync();
+
+    /// <summary>
+    /// Whether an event is currently live: true (one is), false (the server is certain none is), or
+    /// null when the check couldn't complete (API/transport error). The event gate blocks only on a
+    /// definitive false so a transient glitch never locks staff out.
+    /// </summary>
+    Task<bool?> HasLiveEventAsync();
     Task<OrderDto?> GetOrderAsync(int id);
     Task<bool> AssignOrderAsync(int orderId, int staffId);
     Task<bool> UpdateOrderStatusAsync(int id, UpdateOrderStatusDto updateDto);
@@ -135,19 +143,15 @@ public class StaffApiService : IStaffApiService
         try
         {
             await EnsureAuthHeaderAsync();
-            var response = await _httpClient.GetAsync("events/active");
+            // The API's /events/live endpoint is the single source of truth for "currently live"
+            // (Active/InProgress within its time window); 204 No Content means nothing is live.
+            var response = await _httpClient.GetAsync("events/live");
+            if (response.StatusCode == HttpStatusCode.NoContent)
+                return null;
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var events = JsonSerializer.Deserialize<List<EventDto>>(json, _jsonOptions) ?? new();
-
-                // Only an event that is currently live (Active/InProgress status within its
-                // time window) counts as the dashboard's "current event". Published but past or
-                // not-yet-live events are ignored so the banner falls back to "no active event".
-                return events
-                    .Where(e => e.IsCurrentlyLive)
-                    .OrderBy(e => e.Date ?? DateTime.MaxValue)
-                    .FirstOrDefault();
+                return JsonSerializer.Deserialize<EventDto>(json, _jsonOptions);
             }
         }
         catch (Exception ex)
@@ -155,6 +159,24 @@ public class StaffApiService : IStaffApiService
             Console.WriteLine($"Error getting current event: {ex.Message}");
         }
         return null;
+    }
+
+    public async Task<bool?> HasLiveEventAsync()
+    {
+        try
+        {
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.GetAsync("events/live");
+            if (response.StatusCode == HttpStatusCode.NoContent)
+                return false; // Server is definitive: no event is live right now.
+            if (response.IsSuccessStatusCode)
+                return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error checking for live event: {ex.Message}");
+        }
+        return null; // Unknown (API/transport error) — the gate fails open on this.
     }
 
     public async Task<OrderDto?> GetOrderAsync(int id)

@@ -94,6 +94,22 @@ img{max-width:100%;display:block}
 /* ---------- surfaces ---------- */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px}
 
+/* ---------- floodlit crowd backdrop (shared page atmosphere) ----------
+   A fixed stadium-crowd layer (same asset as /welcome) that sits behind a whole
+   screen so the dark UI reads as a lit stand, not flat black. Render it as the first
+   child of the page and lift the real content above it with position:relative;z-index:1.
+   pointer-events:none so it never blocks taps; a faint magenta top-glow ties it to the
+   brand accent. Used by /order, /cart and /track. */
+.crowd-atmos{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-color:var(--ground);
+  background-image:
+    radial-gradient(130% 70% at 50% -8%,rgba(255,31,107,.24),transparent 52%),
+    linear-gradient(180deg,rgba(10,11,16,.14) 0%,rgba(10,11,16,.32) 44%,rgba(10,11,16,.56) 100%),
+    url('/images/crowd.svg');
+  background-repeat:no-repeat;background-position:50% 0;background-size:cover;
+}
+
 /* ---------- icon button (back etc.) ---------- */
 .iconbtn{
   width:38px;height:38px;border-radius:12px;border:1px solid var(--line);

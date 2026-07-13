@@ -1,0 +1,224 @@
+@page "/my-orders"
+@using StadiumDrinkOrdering.Shared.Authentication.Interfaces
+@inject IStaffApiService ApiService
+@inject IAuthStateService AuthService
+@inject IAuthenticationStateService AuthState
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
+
+<PageTitle>@Localizer["MyOrders_PageTitle"]</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    <div id="bar-myorders-auth-container" class="container mt-5">
+        <div id="bar-myorders-auth-alert" class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">🔐 @Localizer["Dashboard_AuthenticationRequired"]</h4>
+            <p>@Localizer["Dashboard_MustBeLoggedIn"]</p>
+            <hr>
+            <p class="mb-0">
+                <a href="/login" class="btn btn-primary">@Localizer["Dashboard_GoToLogin"]</a>
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div id="bar-myorders-console" class="console">
+        <div id="bar-myorders-header" class="console-head">
+            <div id="bar-myorders-header-title" class="console-head__title">
+                <span class="eyebrow">@Localizer["Dashboard_BarStation"]</span>
+                <h1>@Localizer["MyOrders"]</h1>
+                <p>@Localizer["MyOrders_HeaderSubtitle"]</p>
+            </div>
+            <div id="bar-myorders-header-actions" class="console-head__actions">
+                @if (lastUpdated != default)
+                {
+                    <span class="mono dash-updated">@Localizer["OrderQueue_Updated"] @lastUpdated.ToString("HH:mm:ss")</span>
+                }
+                <button class="pill-btn" @onclick="Load" disabled="@isLoading" id="bar-myorders-refresh-btn">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-arrow-clockwise"></i>
+                    }
+                    @Localizer["Refresh"]
+                </button>
+            </div>
+        </div>
+
+        @if (isLoading && myOrders.Count == 0)
+        {
+            <div id="bar-myorders-loading" class="loading-state">
+                <div id="bar-myorders-spinner" class="loading-spinner"></div>
+                <p>@Localizer["Loading"]</p>
+            </div>
+        }
+        else if (myOrders.Count == 0)
+        {
+            <div id="bar-myorders-empty" class="empty">
+                <i class="bi bi-clipboard-check"></i>
+                <p>@Localizer["MyOrders_Empty"]</p>
+                <span>@Localizer["MyOrders_EmptyHint"]</span>
+            </div>
+        }
+        else
+        {
+            <div id="bar-myorders-panel" class="panel">
+                <div id="bar-myorders-panel-header" class="panel__head">
+                    <h2 class="panel__title"><i class="bi bi-clipboard-check"></i> @Localizer["MyOrders"]</h2>
+                    <span class="panel__count">@myOrders.Count</span>
+                </div>
+                <div id="bar-myorders-table-wrapper" style="overflow-x:auto;">
+                    <table id="bar-myorders-table" class="console-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["RecentOrders_OrderNumber"]</th>
+                                <th>@Localizer["RecentOrders_Seat"]</th>
+                                <th>@Localizer["RecentOrders_Items"]</th>
+                                <th>@Localizer["RecentOrders_Status"]</th>
+                                <th>@Localizer["MyOrders_ColStep"]</th>
+                                <th>@Localizer["RecentOrders_Time"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in myOrders)
+                            {
+                                <tr id="bar-myorders-row-@order.Id">
+                                    <td class="console-table__id">#@order.Id</td>
+                                    <td class="console-table__muted">@SeatLabel(order)</td>
+                                    <td>@string.Join(", ", order.OrderItems.Select(i => $"{i.Quantity}× {i.DrinkName}"))</td>
+                                    <td><span class="badge @StatusBadge(order.Status)">@StatusText(order.Status)</span></td>
+                                    <td>
+                                        @foreach (var step in MySteps(order))
+                                        {
+                                            <span class="badge bg-secondary me-1">@step</span>
+                                        }
+                                    </td>
+                                    <td class="console-table__time mono">@order.CreatedAt.ToLocalTime().ToString("MM-dd HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<OrderDto> myOrders = new();
+    private bool isLoading;
+    private DateTime lastUpdated;
+    private System.Threading.Timer? refreshTimer;
+    private const int RefreshSeconds = 15;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+            return;
+
+        // Bounce to login the moment the session ends (mirrors the other bar pages).
+        AuthService.OnAuthenticationStateChanged += OnAuthChanged;
+
+        await Load();
+
+        // Poll as a backstop so freshly-handled orders surface without a manual refresh.
+        refreshTimer = new System.Threading.Timer(async _ =>
+            await InvokeAsync(Load), null,
+            TimeSpan.FromSeconds(RefreshSeconds), TimeSpan.FromSeconds(RefreshSeconds));
+    }
+
+    // The logged-in bartender's numeric id, parsed from the JWT-derived auth state. Null when it can't
+    // be resolved, in which case no orders are attributed to "me" (an empty board rather than a wrong one).
+    private int? CurrentUserId =>
+        int.TryParse(AuthState.UserId, out var id) ? id : null;
+
+    private async Task Load()
+    {
+        if (isLoading) return;
+        isLoading = true;
+        StateHasChanged();
+        try
+        {
+            var uid = CurrentUserId;
+            var orders = await ApiService.GetActiveOrdersAsync() ?? new List<OrderDto>();
+            myOrders = uid is null
+                ? new List<OrderDto>()
+                : orders.Where(o => HandledByMe(o, uid.Value))
+                        .OrderByDescending(o => o.CreatedAt)
+                        .ToList();
+            lastUpdated = DateTime.Now;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load my orders: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    // An order is "mine" if I performed any of its fulfilment steps (accepted, started prep, prepared,
+    // or handed off). The per-step user ids are stamped server-side as each transition happens.
+    private static bool HandledByMe(OrderDto o, int uid) =>
+        o.AcceptedByUserId == uid || o.InPreparationByUserId == uid ||
+        o.PreparedByUserId == uid || o.DeliveredByUserId == uid;
+
+    private IEnumerable<string> MySteps(OrderDto o)
+    {
+        var uid = CurrentUserId;
+        if (uid is null) yield break;
+        if (o.AcceptedByUserId == uid) yield return Localizer["MyOrders_StepAccepted"].Value;
+        if (o.InPreparationByUserId == uid) yield return Localizer["MyOrders_StepStarted"].Value;
+        if (o.PreparedByUserId == uid) yield return Localizer["MyOrders_StepPrepared"].Value;
+        if (o.DeliveredByUserId == uid) yield return Localizer["MyOrders_StepDelivered"].Value;
+    }
+
+    private string StatusText(OrderStatus s) => s switch
+    {
+        OrderStatus.Pending => Localizer["OrderStatus_Pending"].Value,
+        OrderStatus.Accepted => Localizer["OrderStatus_Accepted"].Value,
+        OrderStatus.InPreparation => Localizer["OrderStatus_InPreparation"].Value,
+        OrderStatus.Ready => Localizer["OrderStatus_Ready"].Value,
+        OrderStatus.OutForDelivery => Localizer["OrderStatus_OutForDelivery"].Value,
+        OrderStatus.Delivered => Localizer["OrderStatus_Delivered"].Value,
+        OrderStatus.Cancelled => Localizer["OrderStatus_Cancelled"].Value,
+        _ => s.ToString()
+    };
+
+    private static string StatusBadge(OrderStatus s) => s switch
+    {
+        OrderStatus.Pending => "bg-secondary",
+        OrderStatus.Accepted => "bg-info",
+        OrderStatus.InPreparation => "bg-warning text-dark",
+        OrderStatus.Ready => "bg-success",
+        OrderStatus.OutForDelivery => "bg-primary",
+        OrderStatus.Delivered => "bg-dark",
+        OrderStatus.Cancelled => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    private static string SeatLabel(OrderDto o) =>
+        !string.IsNullOrWhiteSpace(o.SeatPath) ? o.SeatPath
+        : !string.IsNullOrWhiteSpace(o.SeatNumber) ? o.SeatNumber
+        : "—";
+
+    private void OnAuthChanged()
+    {
+        if (!AuthService.IsAuthenticated)
+            Navigation.NavigateTo("/login");
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        refreshTimer?.Dispose();
+        AuthService.OnAuthenticationStateChanged -= OnAuthChanged;
+    }
+}

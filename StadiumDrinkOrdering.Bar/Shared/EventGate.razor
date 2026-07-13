@@ -1,0 +1,68 @@
+@inject IStaffApiService ApiService
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
+
+@* Blocks the authenticated Bar app whenever no event is currently live. The bar station is a
+   game-day tool, so with nothing live there is nothing to serve. Rendered inside AuthRoute (so the
+   token is available) and re-checks periodically to open/close on its own as events go live/end. *@
+@if (isChecking)
+{
+    <div id="bar-eventgate-checking-container" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div id="bar-eventgate-checking-center" class="text-center">
+            <div id="bar-eventgate-spinner" class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">@Localizer["EventGate_Checking"]</span>
+            </div>
+            <p class="text-muted">@Localizer["EventGate_Checking"]</p>
+        </div>
+    </div>
+}
+else if (blocked)
+{
+    <div id="bar-eventgate-blocked-container" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div id="bar-eventgate-blocked-center" class="text-center">
+            <div id="bar-eventgate-blocked-card" class="card border-warning" style="max-width: 460px;">
+                <div id="bar-eventgate-blocked-body" class="card-body">
+                    <div id="bar-eventgate-blocked-icon" style="font-size: 2.5rem; line-height: 1;">🚫</div>
+                    <h5 class="card-title mt-2">@Localizer["EventGate_NoLiveEventTitle"]</h5>
+                    <p class="card-text text-muted">@Localizer["EventGate_NoLiveEventBody"]</p>
+                    <button class="btn btn-primary" @onclick="CheckAsync" id="bar-eventgate-recheck-btn">
+                        @Localizer["EventGate_CheckAgain"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+
+    private bool isChecking = true;
+    private bool blocked;
+    private System.Threading.Timer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAsync();
+        // Re-check periodically so the gate opens by itself once an event goes live (and closes again
+        // when it ends) without the bartender having to reload the page.
+        timer = new System.Threading.Timer(async _ => await InvokeAsync(CheckAsync), null,
+            TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+    }
+
+    private async Task CheckAsync()
+    {
+        var live = await ApiService.HasLiveEventAsync();
+        // Only a definitive "no live event" (false) blocks. Unknown (null — e.g. an API error) fails
+        // open so a transient glitch never locks staff out of a running shift.
+        blocked = live == false;
+        isChecking = false;
+        StateHasChanged();
+    }
+
+    public void Dispose() => timer?.Dispose();
+}

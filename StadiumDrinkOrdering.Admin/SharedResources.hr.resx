@@ -2716,6 +2716,30 @@
   <data name="Events_SectorPricesEmpty" xml:space="preserve">
     <value>Još nije nacrtan nijedan sektor stadiona.</value>
   </data>
+  <data name="Events_StaffLabel" xml:space="preserve">
+    <value>Osoblje</value>
+  </data>
+  <data name="Events_StaffHint" xml:space="preserve">
+    <value>Odaberite članove osoblja (konobare i šankere) koji će raditi na ovom događaju.</value>
+  </data>
+  <data name="Events_StaffEmpty" xml:space="preserve">
+    <value>Još ne postoji nijedan račun osoblja. Kreirajte šankere ili konobare u odjeljku Korisnici.</value>
+  </data>
+  <data name="Events_StaffInactiveBadge" xml:space="preserve">
+    <value>Neaktivan</value>
+  </data>
+  <data name="Events_StaffRole_Runner" xml:space="preserve">
+    <value>Dostavljač</value>
+  </data>
+  <data name="Events_StaffRole_Barman" xml:space="preserve">
+    <value>Šanker</value>
+  </data>
+  <data name="Events_StaffSectorsLabel" xml:space="preserve">
+    <value>Zaduženi sektori</value>
+  </data>
+  <data name="Events_StaffSectorsEmpty" xml:space="preserve">
+    <value>Još nije nacrtan nijedan sektor stadiona.</value>
+  </data>
   <data name="Events_StatusFieldLabel" xml:space="preserve">
     <value>Status</value>
   </data>
@@ -4020,6 +4044,33 @@
   <data name="Settings_PurgeCancel" xml:space="preserve"><value>Odustani</value></data>
   <data name="Settings_PurgeSuccess" xml:space="preserve"><value>Svi transakcijski podaci izbrisani ({0} redaka uklonjeno).</value></data>
   <data name="Settings_PurgeFailed" xml:space="preserve"><value>Brisanje podataka nije uspjelo. Nisu napravljene nikakve promjene.</value></data>
+  <data name="Settings_BackupSection" xml:space="preserve"><value>Sigurnosna kopija i vraćanje</value></data>
+  <data name="Settings_BackupSubtitle" xml:space="preserve"><value>Spremite snimku baze podataka u datoteku ili vratite odabrane tablice iz datoteke sigurnosne kopije.</value></data>
+  <data name="Settings_BackupExportTitle" xml:space="preserve"><value>Izradi sigurnosnu kopiju</value></data>
+  <data name="Settings_BackupExportHint" xml:space="preserve"><value>Odaberite tablice koje želite uključiti, a zatim preuzmite jednu JSON datoteku sigurnosne kopije. Datoteka može sadržavati osjetljive podatke (hashove lozinki, tokene, stanja novčanika) — čuvajte je na sigurnom.</value></data>
+  <data name="Settings_BackupSensitiveHint" xml:space="preserve"><value>Sadrži osjetljive podatke</value></data>
+  <data name="Settings_BackupDownload" xml:space="preserve"><value>Preuzmi sigurnosnu kopiju</value></data>
+  <data name="Settings_BackupGroupDomain" xml:space="preserve"><value>Podaci domene</value></data>
+  <data name="Settings_BackupGroupUsers" xml:space="preserve"><value>Korisnici i novčanici</value></data>
+  <data name="Settings_BackupGroupSecurity" xml:space="preserve"><value>Sigurnost i tokeni</value></data>
+  <data name="Settings_BackupGroupLogs" xml:space="preserve"><value>Zapisi</value></data>
+  <data name="Settings_BackupSuccess" xml:space="preserve"><value>Sigurnosna kopija preuzeta ({0} KB).</value></data>
+  <data name="Settings_BackupFailed" xml:space="preserve"><value>Izrada sigurnosne kopije nije uspjela.</value></data>
+  <data name="Settings_RestoreTitle" xml:space="preserve"><value>Vraćanje iz sigurnosne kopije</value></data>
+  <data name="Settings_RestoreWarning" xml:space="preserve"><value>Vraćanje ZAMJENJUJE sve retke u svakoj odabranoj tablici sadržajem datoteke sigurnosne kopije. Ovo se ne može poništiti. Za dosljedan rezultat vratite povezane tablice zajedno.</value></data>
+  <data name="Settings_RestoreSelectFile" xml:space="preserve"><value>Odaberite datoteku sigurnosne kopije (.json)</value></data>
+  <data name="Settings_RestorePreviewing" xml:space="preserve"><value>Čitanje datoteke sigurnosne kopije…</value></data>
+  <data name="Settings_RestoreFileMeta" xml:space="preserve"><value>{0} — izrađeno {1}</value></data>
+  <data name="Settings_RestoreNoKnownTables" xml:space="preserve"><value>Ova datoteka ne sadrži nijednu tablicu koju ova aplikacija prepoznaje.</value></data>
+  <data name="Settings_RestoreUnknownTables" xml:space="preserve"><value>Zanemarene nepoznate tablice u datoteci: {0}</value></data>
+  <data name="Settings_RestoreButton" xml:space="preserve"><value>Vrati odabrane tablice…</value></data>
+  <data name="Settings_RestoreInvalidFile" xml:space="preserve"><value>Ta datoteka nije valjana Stadium sigurnosna kopija.</value></data>
+  <data name="Settings_RestoreConfirmTitle" xml:space="preserve"><value>Vratiti iz sigurnosne kopije?</value></data>
+  <data name="Settings_RestoreConfirmBody" xml:space="preserve"><value>Ovo će izbrisati i zamijeniti sve retke u sljedećim tablicama ({0}) sadržajem sigurnosne kopije. Ova se radnja ne može poništiti.</value></data>
+  <data name="Settings_RestoreConfirmPromptLabel" xml:space="preserve"><value>Upišite RESTORE za potvrdu</value></data>
+  <data name="Settings_RestoreConfirmButton" xml:space="preserve"><value>Da, vrati podatke</value></data>
+  <data name="Settings_RestoreSuccess" xml:space="preserve"><value>Vraćanje dovršeno — umetnuto {0} redaka u {1} tablica.</value></data>
+  <data name="Settings_RestoreFailed" xml:space="preserve"><value>Vraćanje nije uspjelo i poništeno je: {0}</value></data>
   <data name="Tickets_DetailViewTitle" xml:space="preserve"><value>Prikaži detalje</value></data>
   <data name="Tickets_DetailTitle" xml:space="preserve"><value>Detalji ulaznice</value></data>
   <data name="Tickets_DetailClose" xml:space="preserve"><value>Zatvori</value></data>

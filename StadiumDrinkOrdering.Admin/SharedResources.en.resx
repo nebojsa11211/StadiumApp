@@ -2686,6 +2686,30 @@
   <data name="Events_SectorPricesEmpty" xml:space="preserve">
     <value>No stadium sectors have been drawn yet.</value>
   </data>
+  <data name="Events_StaffLabel" xml:space="preserve">
+    <value>Staff</value>
+  </data>
+  <data name="Events_StaffHint" xml:space="preserve">
+    <value>Select the staff members (bartenders and waiters) who will work this event.</value>
+  </data>
+  <data name="Events_StaffEmpty" xml:space="preserve">
+    <value>No staff accounts exist yet. Create bartenders or waiters under Users.</value>
+  </data>
+  <data name="Events_StaffInactiveBadge" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Events_StaffRole_Runner" xml:space="preserve">
+    <value>Runner</value>
+  </data>
+  <data name="Events_StaffRole_Barman" xml:space="preserve">
+    <value>Barman</value>
+  </data>
+  <data name="Events_StaffSectorsLabel" xml:space="preserve">
+    <value>Covered sectors</value>
+  </data>
+  <data name="Events_StaffSectorsEmpty" xml:space="preserve">
+    <value>No stadium sectors have been drawn yet.</value>
+  </data>
   <data name="Events_StatusFieldLabel" xml:space="preserve">
     <value>Status</value>
   </data>
@@ -3990,6 +4014,33 @@
   <data name="Settings_PurgeCancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Settings_PurgeSuccess" xml:space="preserve"><value>All transactional data deleted ({0} rows removed).</value></data>
   <data name="Settings_PurgeFailed" xml:space="preserve"><value>Failed to delete data. No changes were made.</value></data>
+  <data name="Settings_BackupSection" xml:space="preserve"><value>Backup &amp; restore</value></data>
+  <data name="Settings_BackupSubtitle" xml:space="preserve"><value>Save a snapshot of the database to a file, or restore selected tables from a backup file.</value></data>
+  <data name="Settings_BackupExportTitle" xml:space="preserve"><value>Create a backup</value></data>
+  <data name="Settings_BackupExportHint" xml:space="preserve"><value>Pick the tables to include, then download a single JSON backup file. The file may contain sensitive data (password hashes, tokens, wallet balances) — store it securely.</value></data>
+  <data name="Settings_BackupSensitiveHint" xml:space="preserve"><value>Contains sensitive data</value></data>
+  <data name="Settings_BackupDownload" xml:space="preserve"><value>Download backup</value></data>
+  <data name="Settings_BackupGroupDomain" xml:space="preserve"><value>Domain data</value></data>
+  <data name="Settings_BackupGroupUsers" xml:space="preserve"><value>Users &amp; wallets</value></data>
+  <data name="Settings_BackupGroupSecurity" xml:space="preserve"><value>Security &amp; tokens</value></data>
+  <data name="Settings_BackupGroupLogs" xml:space="preserve"><value>Logs</value></data>
+  <data name="Settings_BackupSuccess" xml:space="preserve"><value>Backup downloaded ({0} KB).</value></data>
+  <data name="Settings_BackupFailed" xml:space="preserve"><value>Failed to create backup.</value></data>
+  <data name="Settings_RestoreTitle" xml:space="preserve"><value>Restore from a backup</value></data>
+  <data name="Settings_RestoreWarning" xml:space="preserve"><value>Restoring REPLACES all rows in each selected table with the contents of the backup file. This cannot be undone. For a consistent result, restore related tables together.</value></data>
+  <data name="Settings_RestoreSelectFile" xml:space="preserve"><value>Select a backup file (.json)</value></data>
+  <data name="Settings_RestorePreviewing" xml:space="preserve"><value>Reading backup file…</value></data>
+  <data name="Settings_RestoreFileMeta" xml:space="preserve"><value>{0} — created {1}</value></data>
+  <data name="Settings_RestoreNoKnownTables" xml:space="preserve"><value>This file contains no tables this application recognises.</value></data>
+  <data name="Settings_RestoreUnknownTables" xml:space="preserve"><value>Ignored unknown tables in the file: {0}</value></data>
+  <data name="Settings_RestoreButton" xml:space="preserve"><value>Restore selected tables…</value></data>
+  <data name="Settings_RestoreInvalidFile" xml:space="preserve"><value>That file is not a valid Stadium backup.</value></data>
+  <data name="Settings_RestoreConfirmTitle" xml:space="preserve"><value>Restore from backup?</value></data>
+  <data name="Settings_RestoreConfirmBody" xml:space="preserve"><value>This will delete and replace all rows in the following {0} table(s) with the backup contents. This action cannot be undone.</value></data>
+  <data name="Settings_RestoreConfirmPromptLabel" xml:space="preserve"><value>Type RESTORE to confirm</value></data>
+  <data name="Settings_RestoreConfirmButton" xml:space="preserve"><value>Yes, restore data</value></data>
+  <data name="Settings_RestoreSuccess" xml:space="preserve"><value>Restore complete — {0} rows inserted across {1} table(s).</value></data>
+  <data name="Settings_RestoreFailed" xml:space="preserve"><value>Restore failed and was rolled back: {0}</value></data>
   <data name="Tickets_DetailViewTitle" xml:space="preserve"><value>View details</value></data>
   <data name="Tickets_DetailTitle" xml:space="preserve"><value>Ticket Details</value></data>
   <data name="Tickets_DetailClose" xml:space="preserve"><value>Close</value></data>

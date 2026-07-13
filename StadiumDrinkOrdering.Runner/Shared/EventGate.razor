@@ -1,0 +1,56 @@
+@inject RunnerApiService Api
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
+
+@* Blocks the authenticated Runner app whenever no event is currently live. Delivery only happens on
+   game day, so with nothing live there is nothing to run. Fails open on an unknown result (offline /
+   API error) so a runner is never locked out mid-shift, and re-checks periodically so it opens on its
+   own once an event goes live. *@
+@if (isChecking)
+{
+    <div class="runner-loading" id="runner-eventgate-loading">
+        <div class="runner-cta-spinner" id="runner-eventgate-spinner"></div>
+    </div>
+}
+else if (blocked)
+{
+    <div class="runner-page" id="runner-eventgate-blocked">
+        <div class="runner-empty" id="runner-eventgate-empty">
+            <div class="runner-empty-icon" id="runner-eventgate-icon" aria-hidden="true">🚫</div>
+            <div class="runner-empty-text" id="runner-eventgate-title">@Localizer["EventGate_NoLiveEventTitle"]</div>
+            <p class="runner-eventgate-sub" id="runner-eventgate-body">@Localizer["EventGate_NoLiveEventBody"]</p>
+            <button class="runner-linkbtn" @onclick="CheckAsync" id="runner-eventgate-recheck">@Localizer["EventGate_CheckAgain"]</button>
+        </div>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+
+    private bool isChecking = true;
+    private bool blocked;
+    private System.Threading.Timer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAsync();
+        timer = new System.Threading.Timer(async _ => await InvokeAsync(CheckAsync), null,
+            TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+    }
+
+    private async Task CheckAsync()
+    {
+        var live = await Api.HasLiveEventAsync();
+        // Only a definitive "no live event" (false) blocks. Unknown (null — offline or API error)
+        // fails open so an offline runner keeps access to their claimed deliveries.
+        blocked = live == false;
+        isChecking = false;
+        StateHasChanged();
+    }
+
+    public void Dispose() => timer?.Dispose();
+}

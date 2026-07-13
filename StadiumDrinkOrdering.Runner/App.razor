@@ -12,9 +12,15 @@ else
 {
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            @if (IsLoginPage(routeData.PageType) || Auth.IsAllowed)
+            @if (IsLoginPage(routeData.PageType))
             {
                 <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            }
+            else if (Auth.IsAllowed)
+            {
+                <EventGate>
+                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                </EventGate>
             }
             else
             {

@@ -349,6 +349,7 @@ builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<ITicketAuthService, TicketAuthService>();
 builder.Services.AddScoped<ICustomerAnalyticsService, CustomerAnalyticsService>();
 builder.Services.AddScoped<TicketingDataImportService>();
+builder.Services.AddScoped<DatabaseBackupService>();
 
 // Memory cache for stadium layout caching
 builder.Services.AddMemoryCache();

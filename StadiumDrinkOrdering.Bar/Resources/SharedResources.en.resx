@@ -432,6 +432,9 @@
   <data name="OrderQueue_NoSector" xml:space="preserve">
     <value>No sector</value>
   </data>
+  <data name="OrderQueue_HeaderSubtitle" xml:space="preserve">
+    <value>Live order board — prepare and dispatch drinks</value>
+  </data>
 
   <!-- Order Queue Page -->
   <data name="OrderQueue_Accept" xml:space="preserve">
@@ -448,6 +451,9 @@
   </data>
   <data name="OrderQueue_CollectedByRunner" xml:space="preserve">
     <value>Collected — out for delivery</value>
+  </data>
+  <data name="OrderQueue_OrderNote" xml:space="preserve">
+    <value>Note</value>
   </data>
   <data name="OrderQueue_JustNow" xml:space="preserve">
     <value>just now</value>
@@ -466,6 +472,35 @@
   </data>
   <data name="OrderQueue_OrderReadyForPickup" xml:space="preserve">
     <value>Order ready for pickup</value>
+  </data>
+
+  <!-- My Orders Page -->
+  <data name="MyOrders_PageTitle" xml:space="preserve">
+    <value>My Orders — Bar</value>
+  </data>
+  <data name="MyOrders_HeaderSubtitle" xml:space="preserve">
+    <value>Orders you've handled during the live event</value>
+  </data>
+  <data name="MyOrders_Empty" xml:space="preserve">
+    <value>You haven't handled any orders yet</value>
+  </data>
+  <data name="MyOrders_EmptyHint" xml:space="preserve">
+    <value>Orders you start, prepare or hand off will appear here.</value>
+  </data>
+  <data name="MyOrders_ColStep" xml:space="preserve">
+    <value>Your step</value>
+  </data>
+  <data name="MyOrders_StepAccepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="MyOrders_StepStarted" xml:space="preserve">
+    <value>Started</value>
+  </data>
+  <data name="MyOrders_StepPrepared" xml:space="preserve">
+    <value>Prepared</value>
+  </data>
+  <data name="MyOrders_StepDelivered" xml:space="preserve">
+    <value>Delivered</value>
   </data>
 
   <!-- Logs Page -->
@@ -775,5 +810,17 @@
   </data>
   <data name="TicketTopup_Fail_Generic" xml:space="preserve">
     <value>An error occurred. Please try again.</value>
+  </data>
+  <data name="EventGate_Checking" xml:space="preserve">
+    <value>Checking for a live event…</value>
+  </data>
+  <data name="EventGate_NoLiveEventTitle" xml:space="preserve">
+    <value>No event is live right now</value>
+  </data>
+  <data name="EventGate_NoLiveEventBody" xml:space="preserve">
+    <value>The bar station opens when an event goes live. Please check back once the current event begins.</value>
+  </data>
+  <data name="EventGate_CheckAgain" xml:space="preserve">
+    <value>Check again</value>
   </data>
 </root>

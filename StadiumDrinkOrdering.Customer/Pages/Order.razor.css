@@ -1,68 +1,45 @@
-/* ===== sticky header = the fan's live seat pass (signature) ===== */
+/* The full-page floodlit crowd backdrop is the shared `.crowd-atmos` primitive (app.css);
+   this page renders it as the first child and lifts the menu above it (see `.body` below). */
+
+/* ===== sticky header — calm and seat-aware (was: faux ticket-stub seat pass) =====
+   Transparent at the top so the fixed crowd shows behind the title + seat row, fading to
+   solid ground behind the tabs so scrolled menu cards stay masked under the sticky header. */
 .order-head{
     padding:14px 20px 0;position:sticky;top:0;z-index:20;
-    background:linear-gradient(var(--ground) 82%,transparent);
+    background:linear-gradient(180deg,transparent 0%,rgba(10,11,16,.34) 44%,rgba(10,11,16,.86) 74%,var(--ground) 100%);
 }
 
-.pass{
-    position:relative;overflow:hidden;
-    background:var(--brand-soft),var(--surface);
-    border:1px solid rgba(255,45,120,.30);border-bottom:0;
-    border-radius:var(--r-md) var(--r-md) 0 0;
-    padding:13px 16px 16px;
-}
-.pass::before{content:"";position:absolute;inset:0;background:var(--surface);z-index:-1}
+/* menu content floats above the fixed crowd backdrop */
+.body{position:relative;z-index:1}
 
-.pass-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.pass-id{flex:1;min-width:0}
-.pass-eyebrow{font-size:9.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FFB59F;margin-bottom:3px}
-.pass-match{
-    font-size:18px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.02em;
+.head-bar{display:flex;align-items:center;gap:12px}
+.head-titles{flex:1;min-width:0}
+.head-title{
+    font-size:17px;font-weight:800;letter-spacing:-.01em;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.pass-live{
-    flex:none;display:inline-flex;align-items:center;gap:6px;
-    background:rgba(0,226,138,.12);border:1px solid rgba(0,226,138,.4);color:var(--live);
-    padding:6px 10px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
-}
-.pass-live .pulse{width:7px;height:7px;border-radius:50%;background:var(--live);
-    box-shadow:0 0 0 0 rgba(0,226,138,.6);animation:pulse 1.8s infinite}
+.head-sub{font-size:12px;font-weight:600;color:var(--muted);margin-top:2px}
 
-/* three seat coordinates read like ticket cells; the seat number wears the brand gradient */
-.coords{
-    display:grid;grid-template-columns:1.2fr 1px .85fr 1px .85fr;align-items:stretch;
-    background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:var(--r-sm);padding:2px;
-}
-.coord{padding:9px 12px;min-width:0;display:flex;flex-direction:column;gap:4px}
-.coord .k{font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.coord .v{
-    font-size:21px;font-weight:900;font-style:italic;letter-spacing:-.02em;line-height:1;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.coord.seat .v{background:var(--brand);-webkit-background-clip:text;background-clip:text;color:transparent}
-.cdiv{background:var(--line);width:1px;margin:8px 0;align-self:stretch}
+/* seat coordinates — a quiet inline row; no ticket cells, gradients or italics.
+   the seat number carries the single restrained accent. */
+.seat-line{display:flex;align-items:baseline;gap:14px;padding:14px 2px 2px}
+.seat-line--center{justify-content:center;padding:4px 0 2px}
+.seat-cell{display:inline-flex;align-items:baseline;gap:7px;min-width:0}
+.seat-cell .k{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.seat-cell .v{font-size:15px;font-weight:800;color:var(--ink);line-height:1}
+.seat-cell.seat .v{color:var(--magenta)}
+.seat-dot{align-self:center;width:3px;height:3px;border-radius:50%;background:var(--muted-2);flex:none}
 
-/* perforated tear line — side notches + scallop + dashed rule, the ticket-stub tell */
-.pass-tear{
-    position:relative;height:16px;
-    background:
-        radial-gradient(circle at 0 8px,var(--ground) 7px,transparent 7.5px) left/16px 16px no-repeat,
-        radial-gradient(circle at 100% 8px,var(--ground) 7px,transparent 7.5px) right/16px 16px no-repeat,
-        radial-gradient(circle at 9px 17px,var(--ground) 5px,transparent 5.5px) 5px 0/18px 16px repeat-x;
-    border-left:1px solid rgba(255,45,120,.30);border-right:1px solid rgba(255,45,120,.30);
-}
-.pass-tear::before{content:"";position:absolute;left:18px;right:18px;top:7px;border-top:1.5px dashed rgba(255,180,150,.35)}
-
-/* ===== category tabs ===== */
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 0}
+/* ===== category tabs — quiet pills, one active accent ===== */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:16px 0 12px}
 .tab{
-    flex:none;border:1px solid var(--line-2);background:var(--surface);color:var(--muted);
-    font-family:inherit;font-weight:800;font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;
-    transition:.15s;display:flex;align-items:center;gap:7px;white-space:nowrap;
+    flex:none;border:1px solid var(--line);background:transparent;color:var(--muted);
+    font-family:inherit;font-weight:700;font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;
+    transition:.15s var(--ease);display:flex;align-items:center;gap:7px;white-space:nowrap;
 }
 .tab .tab-emoji{font-size:14px}
 .tab .cnt{
-    font-size:11px;font-weight:900;background:rgba(255,255,255,.10);color:var(--muted);
+    font-size:11px;font-weight:800;background:var(--surface-3);color:var(--muted);
     border-radius:999px;padding:1px 6px;min-width:18px;text-align:center;
 }
 .tab.on{background:var(--ink);color:var(--ground);border-color:transparent}
@@ -72,40 +49,19 @@
 
 /* ===== menu grid ===== */
 .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px 20px 20px}
-
 .loading{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);padding:60px 0;font-weight:600}
 
-/* ===== empty / blocked states — a blank seat pass, an invitation to scan ===== */
-.no-session{
-    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-    gap:16px;padding:40px 30px;min-height:80dvh;
+/* ===== empty / paused states — reuse the shared .gate primitive =====
+   The bare centred state read too dark/flat; give it the same crowd atmosphere as
+   the header, heavily dimmed so the icon, heading and copy stay legible on top. */
+.gate{
+    background-color:var(--ground);
+    background-image:
+        radial-gradient(120% 70% at 50% -10%,rgba(255,31,107,.16),transparent 60%),
+        linear-gradient(180deg,rgba(10,11,16,.62) 0%,rgba(10,11,16,.80) 55%,var(--ground) 100%),
+        url('/images/crowd.svg');
+    background-repeat:no-repeat;
+    background-position:50% 0;
+    background-size:cover;
 }
-.pass-blank{
-    width:100%;max-width:300px;position:relative;overflow:hidden;
-    background:var(--brand-soft),var(--surface);
-    border:1.5px solid rgba(255,45,120,.28);border-radius:var(--r-md);padding:22px 22px 0;
-    text-align:center;
-}
-.pass-blank::before{content:"";position:absolute;inset:0;background:var(--surface);z-index:-1}
-.pass-blank.paused{border-color:rgba(255,176,32,.30)}
-.pass-blank .pb-eyebrow{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#FFB59F;margin-bottom:12px;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pass-blank.paused .pb-eyebrow{color:var(--amber)}
-.pass-blank .pb-glyph{font-size:46px;line-height:1;margin-bottom:14px}
-.pb-slots{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
-.pb-slot{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:10px;padding:10px 6px;display:flex;flex-direction:column;gap:5px}
-.pb-slot .k{font-size:8.5px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:var(--muted-2)}
-.pb-slot .v{font-size:18px;font-weight:900;font-style:italic;color:var(--ink);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pb-status{
-    margin:0 -22px;padding:12px 22px 18px;display:flex;align-items:center;justify-content:center;gap:8px;
-    font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-}
-.pb-status .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
-.pb-status.paused{color:var(--amber)}
-/* tear inside the blank pass spans its full width */
-.pass-blank .pass-tear{margin:0 -22px;border-left:0;border-right:0}
-.pass-blank .pass-tear::before{left:22px;right:22px}
-
-.no-session h2{font-size:23px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.02em}
-.no-session p{color:var(--muted);font-size:14px;max-width:32ch}
-.no-session .btn{margin-top:6px;max-width:280px}
+.gate-icon.paused{background:rgba(255,176,32,.12);border-color:rgba(255,176,32,.30)}

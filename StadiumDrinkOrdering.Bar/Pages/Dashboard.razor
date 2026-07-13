@@ -54,46 +54,8 @@ else
             </div>
         </div>
 
-        <!-- Current Event -->
-        @if (dashboardData.CurrentEvent is { } currentEvent)
-        {
-            <div id="bar-dashboard-current-event" class="current-event-banner @(currentEvent.IsCurrentlyLive ? "is-live" : "")">
-                <div class="current-event-banner__icon">
-                    <i class="bi bi-calendar-event"></i>
-                </div>
-                <div class="current-event-banner__body">
-                    <span class="eyebrow">@Localizer["Dashboard_CurrentEvent"]</span>
-                    <h2 id="bar-dashboard-current-event-name">@currentEvent.Name</h2>
-                    <div class="current-event-banner__meta">
-                        @if (currentEvent.Date is { } date)
-                        {
-                            <span><i class="bi bi-clock"></i> @date.ToLocalTime().ToString("ddd d MMM, HH:mm")</span>
-                        }
-                    </div>
-                </div>
-                <div class="current-event-banner__status">
-                    @if (currentEvent.IsCurrentlyLive)
-                    {
-                        <span class="live-badge"><span class="live-dot"></span> LIVE</span>
-                    }
-                    else
-                    {
-                        <span class="status-badge">@currentEvent.StatusName</span>
-                    }
-                </div>
-            </div>
-        }
-        else if (!dashboardData.IsLoading)
-        {
-            <div id="bar-dashboard-no-event" class="current-event-banner is-empty">
-                <div class="current-event-banner__icon"><i class="bi bi-calendar-x"></i></div>
-                <div class="current-event-banner__body">
-                    <span class="eyebrow">@Localizer["Dashboard_CurrentEvent"]</span>
-                    <h2>@Localizer["Dashboard_NoActiveEvent"]</h2>
-                    <div class="current-event-banner__meta"><span>@Localizer["Dashboard_OrdersWillAppear"]</span></div>
-                </div>
-            </div>
-        }
+        @* The current-event banner is rendered once by MainLayout (CurrentEventBanner) so it appears
+           on every Bar page, including this dashboard — no per-page copy needed here. *@
 
         <!-- Dashboard Metrics -->
         <div id="bar-dashboard-metrics-row" class="row dashboard-metrics">

@@ -39,6 +39,11 @@ public interface IApiService
 
     // Fan wallet
     Task<WalletSummaryDto?> GetWalletSummaryAsync();
+
+    // Wallet snapshot for the walk-up (ticket-session) flow, where there is no JWT login: the balance is
+    // resolved server-side from the scanned ticket's owner. Null on transport failure; a non-existent wallet
+    // comes back as a DTO with Exists=false.
+    Task<WalletSummaryDto?> GetSessionWalletSummaryAsync(string sessionToken);
     Task<WalletTransactionListDto?> GetWalletTransactionsAsync(int page = 1, int pageSize = 20);
     Task<DepositResultDto?> DepositToWalletAsync(InitiateDepositDto dto);
     Task<DepositStatusDto?> GetDepositStatusAsync(string intentId);
@@ -92,6 +97,9 @@ public interface IApiService
 
     // Unified entry resolver — single-event ticket QR or season pass token
     Task<ValidateTicketResponse?> ResolveAccessAsync(string token);
+
+    // DEV-ONLY: tickets of the live event for the scan-page test combobox (empty/404 outside Development).
+    Task<List<TestTicketDto>?> GetLiveEventTestTicketsAsync();
     
     // Generic HTTP methods
     Task<T?> GetAsync<T>(string endpoint) where T : class;
@@ -355,6 +363,9 @@ public class ApiService : IApiService
         SetAuthorizationHeader();
         return await GetAsync<WalletSummaryDto>("api/wallet/me");
     }
+
+    public async Task<WalletSummaryDto?> GetSessionWalletSummaryAsync(string sessionToken)
+        => await GetAsync<WalletSummaryDto>($"customer/session/wallet?sessionToken={Uri.EscapeDataString(sessionToken)}");
 
     public async Task<WalletTransactionListDto?> GetWalletTransactionsAsync(int page = 1, int pageSize = 20)
     {
@@ -1133,6 +1144,11 @@ public class ApiService : IApiService
     // Season member landing (authenticated) — GetAsync injects the bearer token.
     public async Task<SeasonHomeDto?> GetSeasonHomeAsync()
         => await GetAsync<SeasonHomeDto>("customer/season/my-tickets");
+
+    // DEV-ONLY testing helper: the live event's tickets for the scan-page combobox. The API 404s this
+    // outside Development, so GetAsync returns null there and the scan page simply shows no dropdown.
+    public async Task<List<TestTicketDto>?> GetLiveEventTestTicketsAsync()
+        => await GetAsync<List<TestTicketDto>>("events/live/test-tickets");
 
     // Unified entry resolver: /t/{token} calls this so a single-event ticket QR AND a season pass token
     // both open an ordering session. Returns a ValidateTicketResponse (success or a friendly error).

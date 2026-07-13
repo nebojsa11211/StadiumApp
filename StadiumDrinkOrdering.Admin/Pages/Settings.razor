@@ -1,12 +1,17 @@
 @page "/admin/settings"
+@using System.IO
 @using System.Net.Http
 @using System.Net.Http.Json
 @using System.Net.Http.Headers
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Shared.Authentication.Interfaces
 @inject IHttpClientFactory HttpClientFactory
 @inject IConfiguration Configuration
 @inject ITokenStorageService TokenStorage
+@inject IJSRuntime JSRuntime
 @inject ILogger<Settings> Logger
 @inject IStringLocalizer<SharedResources> L
 
@@ -195,6 +200,134 @@
             </div>
         </div>
 
+        <div class="card mb-4" id="admin-settings-backup-card">
+            <div class="card-header">
+                <h5 class="mb-0" id="admin-settings-backup-title">@L["Settings_BackupSection"]</h5>
+            </div>
+            <div class="card-body" id="admin-settings-backup-body">
+                <p class="text-muted" id="admin-settings-backup-subtitle">@L["Settings_BackupSubtitle"]</p>
+
+                <h6 class="fw-semibold" id="admin-settings-backup-export-title">@L["Settings_BackupExportTitle"]</h6>
+                <p class="form-text mt-0" id="admin-settings-backup-export-hint">@L["Settings_BackupExportHint"]</p>
+
+                @if (backupTables is null)
+                {
+                    <div id="admin-settings-backup-loading" class="text-muted">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>@L["Settings_Loading"]
+                    </div>
+                }
+                else
+                {
+                    @foreach (var group in BackupGroupOrder)
+                    {
+                        var tablesInGroup = backupTables.Where(t => t.Group == group).ToList();
+                        if (tablesInGroup.Count == 0) continue;
+                        <div class="mb-3" id="@($"admin-settings-backup-group-{group}")">
+                            <div class="form-check form-check-inline fw-semibold">
+                                <input class="form-check-input" type="checkbox"
+                                       id="@($"admin-settings-backup-group-check-{group}")"
+                                       checked="@tablesInGroup.All(t => backupSelected.Contains(t.Key))"
+                                       @onchange="e => ToggleBackupGroup(group, e.Value is bool b && b)" />
+                                <label class="form-check-label" for="@($"admin-settings-backup-group-check-{group}")">
+                                    @GroupLabel(group)
+                                </label>
+                            </div>
+                            <div class="ms-4 row g-1">
+                                @foreach (var table in tablesInGroup)
+                                {
+                                    <div class="col-md-6 col-lg-4 form-check" id="@($"admin-settings-backup-item-{table.Key}")">
+                                        <input class="form-check-input" type="checkbox"
+                                               id="@($"admin-settings-backup-check-{table.Key}")"
+                                               checked="@backupSelected.Contains(table.Key)"
+                                               @onchange="e => ToggleBackupTable(table.Key, e.Value is bool b && b)" />
+                                        <label class="form-check-label small" for="@($"admin-settings-backup-check-{table.Key}")">
+                                            @table.DisplayName
+                                            <span class="text-muted">(@table.RowCount)</span>
+                                            @if (table.Sensitive)
+                                            {
+                                                <i class="bi bi-shield-lock text-warning ms-1" title="@L["Settings_BackupSensitiveHint"]"></i>
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <button type="button" id="admin-settings-backup-download-btn" class="btn btn-primary mt-2"
+                            @onclick="DownloadBackupAsync" disabled="@(isBackingUp || backupSelected.Count == 0)">
+                        @if (isBackingUp)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        <i class="bi bi-download me-1"></i>@L["Settings_BackupDownload"]
+                    </button>
+                }
+
+                <hr class="my-4" />
+
+                <h6 class="fw-semibold" id="admin-settings-restore-title">@L["Settings_RestoreTitle"]</h6>
+                <div class="alert alert-warning py-2" id="admin-settings-restore-warning">
+                    <i class="bi bi-exclamation-triangle me-1"></i>@L["Settings_RestoreWarning"]
+                </div>
+
+                <div class="mb-2" id="admin-settings-restore-file-group">
+                    <label class="form-label" for="admin-settings-restore-file-input">@L["Settings_RestoreSelectFile"]</label>
+                    <InputFile OnChange="OnRestoreFileSelected" accept=".json"
+                               class="form-control" id="admin-settings-restore-file-input" />
+                </div>
+
+                @if (isPreviewing)
+                {
+                    <div id="admin-settings-restore-previewing" class="text-muted">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>@L["Settings_RestorePreviewing"]
+                    </div>
+                }
+                else if (restorePreview is not null)
+                {
+                    <div class="border rounded p-3 mt-2" id="admin-settings-restore-preview">
+                        <div class="small text-muted mb-2" id="admin-settings-restore-preview-meta">
+                            @L["Settings_RestoreFileMeta", restoreFileName ?? "", restorePreview.Meta.CreatedUtc.ToLocalTime().ToString("g")]
+                        </div>
+
+                        @if (restorePreview.Tables.Count == 0)
+                        {
+                            <div class="text-muted" id="admin-settings-restore-empty">@L["Settings_RestoreNoKnownTables"]</div>
+                        }
+                        else
+                        {
+                            <div class="row g-1">
+                                @foreach (var table in restorePreview.Tables)
+                                {
+                                    <div class="col-md-6 col-lg-4 form-check" id="@($"admin-settings-restore-item-{table.Key}")">
+                                        <input class="form-check-input" type="checkbox"
+                                               id="@($"admin-settings-restore-check-{table.Key}")"
+                                               checked="@restoreSelected.Contains(table.Key)"
+                                               @onchange="e => ToggleRestoreTable(table.Key, e.Value is bool b && b)" />
+                                        <label class="form-check-label small" for="@($"admin-settings-restore-check-{table.Key}")">
+                                            @table.DisplayName <span class="text-muted">(@table.RowCount)</span>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (restorePreview.UnknownTables.Count > 0)
+                        {
+                            <div class="alert alert-secondary py-2 mt-2 mb-0 small" id="admin-settings-restore-unknown">
+                                @L["Settings_RestoreUnknownTables", string.Join(", ", restorePreview.UnknownTables)]
+                            </div>
+                        }
+
+                        <button type="button" id="admin-settings-restore-btn" class="btn btn-outline-danger mt-3"
+                                @onclick="OpenRestoreModal" disabled="@(isRestoring || restoreSelected.Count == 0)">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>@L["Settings_RestoreButton"]
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
         <div class="card mb-4 border-danger" id="admin-settings-danger-card">
             <div class="card-header bg-danger text-white">
                 <h5 class="mb-0" id="admin-settings-danger-title">@L["Settings_DangerSection"]</h5>
@@ -252,6 +385,52 @@
     </div>
 }
 
+@if (showRestoreModal)
+{
+    <div class="modal fade show d-block" id="admin-settings-restore-modal" tabindex="-1"
+         style="background-color: rgba(0,0,0,0.5);" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-danger" id="admin-settings-restore-modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="admin-settings-restore-modal-title">@L["Settings_RestoreConfirmTitle"]</h5>
+                    <button type="button" id="admin-settings-restore-modal-close" class="btn-close btn-close-white"
+                            @onclick="CloseRestoreModal" disabled="@isRestoring"></button>
+                </div>
+                <div class="modal-body" id="admin-settings-restore-modal-body">
+                    <p id="admin-settings-restore-modal-text">
+                        @L["Settings_RestoreConfirmBody", restoreSelected.Count]
+                    </p>
+                    <ul class="small text-muted" id="admin-settings-restore-modal-list">
+                        @foreach (var key in restoreSelected)
+                        {
+                            <li>@(restorePreview?.Tables.FirstOrDefault(t => t.Key == key)?.DisplayName ?? key)</li>
+                        }
+                    </ul>
+                    <label class="form-label fw-semibold" for="admin-settings-restore-confirm-input">
+                        @L["Settings_RestoreConfirmPromptLabel"]
+                    </label>
+                    <input type="text" id="admin-settings-restore-confirm-input" class="form-control"
+                           @bind="restoreConfirmText" @bind:event="oninput" autocomplete="off" disabled="@isRestoring" />
+                </div>
+                <div class="modal-footer" id="admin-settings-restore-modal-footer">
+                    <button type="button" id="admin-settings-restore-cancel-btn" class="btn btn-secondary"
+                            @onclick="CloseRestoreModal" disabled="@isRestoring">
+                        @L["Settings_PurgeCancel"]
+                    </button>
+                    <button type="button" id="admin-settings-restore-confirm-btn" class="btn btn-danger"
+                            @onclick="RestoreAsync" disabled="@(isRestoring || !IsRestoreConfirmed)">
+                        @if (isRestoring)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        @L["Settings_RestoreConfirmButton"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private bool isLoading = true;
     private bool loadError;
@@ -272,6 +451,34 @@
     private bool IsPurgeConfirmed =>
         string.Equals(purgeConfirmText.Trim(), "DELETE", StringComparison.Ordinal);
 
+    // Backup & restore state
+    private const long MaxBackupBytes = 512L * 1024 * 1024; // matches the API upload limit
+    private static readonly string[] BackupGroupOrder = { "Domain", "UsersWallets", "Security", "Logs" };
+
+    private List<BackupTableInfoDto>? backupTables;
+    private readonly HashSet<string> backupSelected = new(StringComparer.OrdinalIgnoreCase);
+    private bool isBackingUp;
+
+    private byte[]? restoreFileBytes;
+    private string? restoreFileName;
+    private BackupPreviewDto? restorePreview;
+    private readonly HashSet<string> restoreSelected = new(StringComparer.OrdinalIgnoreCase);
+    private bool isPreviewing;
+    private bool isRestoring;
+    private bool showRestoreModal;
+    private string restoreConfirmText = string.Empty;
+    private bool IsRestoreConfirmed =>
+        string.Equals(restoreConfirmText.Trim(), "RESTORE", StringComparison.Ordinal);
+
+    private string GroupLabel(string group) => group switch
+    {
+        "Domain" => L["Settings_BackupGroupDomain"],
+        "UsersWallets" => L["Settings_BackupGroupUsers"],
+        "Security" => L["Settings_BackupGroupSecurity"],
+        "Logs" => L["Settings_BackupGroupLogs"],
+        _ => group
+    };
+
     // The shared "AuthenticatedClient" injects the JWT via AuthenticationHandler, but that handler
     // runs in a different DI scope than the Blazor circuit, so its scoped token store is empty and
     // every authorized (write) call comes back 401. Match the VenueSettings pattern: read the
@@ -288,7 +495,191 @@
         }
     }
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+        await LoadBackupTablesAsync();
+    }
+
+    private async Task LoadBackupTablesAsync()
+    {
+        try
+        {
+            backupTables = await Api.GetFromJsonAsync<List<BackupTableInfoDto>>("api/admin/backup/tables");
+            backupSelected.Clear();
+            foreach (var t in backupTables!.Where(t => t.DefaultSelected))
+                backupSelected.Add(t.Key);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load backup tables");
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private void ToggleBackupTable(string key, bool selected)
+    {
+        if (selected) backupSelected.Add(key);
+        else backupSelected.Remove(key);
+    }
+
+    private void ToggleBackupGroup(string group, bool selected)
+    {
+        if (backupTables is null) return;
+        foreach (var t in backupTables.Where(t => t.Group == group))
+        {
+            if (selected) backupSelected.Add(t.Key);
+            else backupSelected.Remove(t.Key);
+        }
+    }
+
+    private async Task DownloadBackupAsync()
+    {
+        if (backupSelected.Count == 0) return;
+        isBackingUp = true;
+        try
+        {
+            var resp = await Api.PostAsJsonAsync("api/admin/backup/export", backupSelected.ToList());
+            if (!resp.IsSuccessStatusCode)
+            {
+                ShowAlert(L["Settings_BackupFailed"], false);
+                return;
+            }
+
+            var bytes = await resp.Content.ReadAsByteArrayAsync();
+            var fileName = resp.Content.Headers.ContentDisposition?.FileNameStar
+                ?? resp.Content.Headers.ContentDisposition?.FileName
+                ?? $"stadium-backup-{DateTime.Now:yyyyMMdd-HHmmss}.json";
+            fileName = fileName.Trim('"');
+
+            using var ms = new MemoryStream(bytes);
+            using var streamRef = new DotNetStreamReference(ms);
+            await JSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+
+            ShowAlert(L["Settings_BackupSuccess", bytes.Length / 1024], true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to export backup");
+            ShowAlert(L["Settings_BackupFailed"], false);
+        }
+        finally
+        {
+            isBackingUp = false;
+        }
+    }
+
+    private async Task OnRestoreFileSelected(InputFileChangeEventArgs e)
+    {
+        restorePreview = null;
+        restoreSelected.Clear();
+        restoreFileBytes = null;
+        restoreFileName = e.File.Name;
+        isPreviewing = true;
+        StateHasChanged();
+        try
+        {
+            using var ms = new MemoryStream();
+            await using (var stream = e.File.OpenReadStream(MaxBackupBytes))
+                await stream.CopyToAsync(ms);
+            restoreFileBytes = ms.ToArray();
+
+            using var content = BuildFileContent();
+            var resp = await Api.PostAsync("api/admin/backup/import/preview", content);
+            if (resp.IsSuccessStatusCode)
+            {
+                restorePreview = await resp.Content.ReadFromJsonAsync<BackupPreviewDto>();
+                foreach (var t in restorePreview!.Tables)
+                    restoreSelected.Add(t.Key);
+            }
+            else
+            {
+                restoreFileBytes = null;
+                ShowAlert(L["Settings_RestoreInvalidFile"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to preview backup file");
+            restoreFileBytes = null;
+            ShowAlert(L["Settings_RestoreInvalidFile"], false);
+        }
+        finally
+        {
+            isPreviewing = false;
+            StateHasChanged();
+        }
+    }
+
+    private MultipartFormDataContent BuildFileContent()
+    {
+        var content = new MultipartFormDataContent();
+        var fileContent = new ByteArrayContent(restoreFileBytes!);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        content.Add(fileContent, "file", restoreFileName ?? "backup.json");
+        return content;
+    }
+
+    private void ToggleRestoreTable(string key, bool selected)
+    {
+        if (selected) restoreSelected.Add(key);
+        else restoreSelected.Remove(key);
+    }
+
+    private void OpenRestoreModal()
+    {
+        if (restoreSelected.Count == 0) return;
+        restoreConfirmText = string.Empty;
+        showRestoreModal = true;
+    }
+
+    private void CloseRestoreModal()
+    {
+        if (isRestoring) return;
+        showRestoreModal = false;
+    }
+
+    private async Task RestoreAsync()
+    {
+        if (!IsRestoreConfirmed || restoreFileBytes is null || restoreSelected.Count == 0) return;
+        isRestoring = true;
+        try
+        {
+            using var content = BuildFileContent();
+            content.Add(new StringContent(JsonSerializer.Serialize(restoreSelected.ToList())), "selectedKeys");
+
+            var resp = await Api.PostAsync("api/admin/backup/import", content);
+            var result = await resp.Content.ReadFromJsonAsync<RestoreResultDto>();
+
+            if (resp.IsSuccessStatusCode && result?.Success == true)
+            {
+                showRestoreModal = false;
+                ShowAlert(L["Settings_RestoreSuccess", result.TotalRowsInserted, result.Tables.Count], true);
+                // Reset the restore panel and refresh live counts.
+                restorePreview = null;
+                restoreFileBytes = null;
+                restoreFileName = null;
+                restoreSelected.Clear();
+                await LoadBackupTablesAsync();
+            }
+            else
+            {
+                ShowAlert(L["Settings_RestoreFailed", result?.Error ?? "unknown error"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to restore backup");
+            ShowAlert(L["Settings_RestoreFailed", ex.Message], false);
+        }
+        finally
+        {
+            isRestoring = false;
+        }
+    }
 
     private async Task LoadAsync()
     {

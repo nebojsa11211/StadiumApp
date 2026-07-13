@@ -18,6 +18,17 @@
     margin-bottom: 0.5rem;
 }
 
+/* Force all metric tiles onto a single row on md+ regardless of how many there are.
+   The DashboardCard component hardcodes col-md-3 (4 per row); with 5 cards the last
+   one wraps. Overriding the column basis to 1/5 keeps them in one row. Below md the
+   Bootstrap col-12 fallback still stacks them for mobile. */
+@media (min-width: 768px) {
+    .dashboard-metrics > [class*="col-"] {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+}
+
 /* ===== METRIC CARDS (DashboardCard) ===== */
 /* Bootstrap bg-* utilities are neutralised: the cards become white instrument
    tiles with a colored top-accent bar + colored readout, like the Admin metrics. */
@@ -329,6 +340,16 @@
 }
 
 /* ===== CURRENT EVENT BANNER ===== */
+/* The layout-level banner sticks to the top of the scrolling content area so the current event
+   stays visible on every page no matter how far the bartender scrolls. Scoped to the layout
+   instance (direct child of the main scroll container) so it never affects other uses. */
+#bar-dashboard-main > #bar-dashboard-current-event,
+#bar-dashboard-main > #bar-dashboard-no-event {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+}
+
 .current-event-banner {
     display: flex;
     align-items: center;

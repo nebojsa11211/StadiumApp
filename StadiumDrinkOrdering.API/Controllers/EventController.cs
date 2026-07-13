@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.API.Authorization;
 using StadiumDrinkOrdering.Shared.Models;
@@ -15,17 +17,23 @@ public class EventController : ControllerBase
     private readonly IEventService _eventService;
     private readonly ISeasonService _seasonService;
     private readonly ITicketIngestionService _ingestion;
+    private readonly ApplicationDbContext _db;
+    private readonly IWebHostEnvironment _env;
     private readonly ILogger<EventController> _logger;
 
     public EventController(
         IEventService eventService,
         ISeasonService seasonService,
         ITicketIngestionService ingestion,
+        ApplicationDbContext db,
+        IWebHostEnvironment env,
         ILogger<EventController> logger)
     {
         _eventService = eventService;
         _seasonService = seasonService;
         _ingestion = ingestion;
+        _db = db;
+        _env = env;
         _logger = logger;
     }
 
@@ -63,6 +71,91 @@ public class EventController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving active events");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// The single event that is currently live — Active/InProgress and still within its time window
+    /// (<see cref="Event.IsLiveAt"/> / <see cref="EventDto.IsCurrentlyLive"/>). Returns 204 No Content
+    /// when nothing is live right now. This is the "is the venue open for game-day operations?" signal
+    /// the Bar and Runner staff apps gate on: when no event is live those tools have nothing to do and
+    /// are blocked.
+    /// </summary>
+    [HttpGet("live")]
+    public async Task<ActionResult<EventDto>> GetCurrentLiveEvent()
+    {
+        try
+        {
+            // GetActiveEventsAsync first auto-completes any elapsed events, so a stale-Active event
+            // never lingers as "live". Pick the single earliest-starting live event.
+            var events = await _eventService.GetActiveEventsAsync();
+            var now = DateTime.UtcNow;
+            var liveEvent = events
+                .Where(e => e.IsLiveAt(now))
+                .OrderBy(e => e.EventDate)
+                .FirstOrDefault();
+
+            if (liveEvent is null)
+            {
+                return NoContent();
+            }
+
+            // Map only the one live event (cheap) rather than the whole active set.
+            var dto = (await MapEventsWithSoldCountsAsync(new[] { liveEvent })).First();
+            return Ok(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving current live event");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// DEV-ONLY testing helper: the active tickets of the currently-live event, so the Customer scan
+    /// page can offer a pick-a-ticket combobox instead of forcing a developer to type/scan a real code.
+    /// 404s outside the Development environment so it can never leak ticket codes in production, and
+    /// returns an empty list when nothing is live. Unauthenticated on purpose — the public scan page
+    /// (fans scanning their own ticket) has no login at that point.
+    /// </summary>
+    [HttpGet("live/test-tickets")]
+    public async Task<ActionResult<IEnumerable<TestTicketDto>>> GetLiveEventTestTickets()
+    {
+        if (!_env.IsDevelopment())
+            return NotFound();
+
+        try
+        {
+            var events = await _eventService.GetActiveEventsAsync();
+            var now = DateTime.UtcNow;
+            var liveEvent = events
+                .Where(e => e.IsLiveAt(now))
+                .OrderBy(e => e.EventDate)
+                .FirstOrDefault();
+
+            if (liveEvent is null)
+                return Ok(Array.Empty<TestTicketDto>());
+
+            var tickets = await _db.Tickets
+                .AsNoTracking()
+                .Where(t => t.EventId == liveEvent.Id && t.IsActive)
+                .OrderBy(t => t.TicketNumber)
+                .Select(t => new TestTicketDto
+                {
+                    TicketNumber = t.TicketNumber,
+                    Label = t.SeatNumber != null
+                        ? $"{t.TicketNumber} — {t.Section} {t.SeatNumber}"
+                        : t.TicketNumber
+                })
+                .Take(200)
+                .ToListAsync();
+
+            return Ok(tickets);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving live-event test tickets");
             return StatusCode(500, "Internal server error");
         }
     }
@@ -140,6 +233,25 @@ public class EventController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving sector prices for event {EventId}", eventId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// Lists staff (Bartenders/Waiters) with a flag for whether each is assigned to the event, used by
+    /// the Admin event modal's "Staff" picker. Pass <paramref name="eventId"/> to prefill the existing
+    /// event's assignments; omit it for a new (unsaved) event.
+    /// </summary>
+    [HttpGet("staff")]
+    public async Task<ActionResult<List<EventStaffMemberDto>>> GetEventStaff([FromQuery] int? eventId = null)
+    {
+        try
+        {
+            return Ok(await _eventService.GetEventStaffAsync(eventId));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving staff for event {EventId}", eventId);
             return StatusCode(500, "Internal server error");
         }
     }
@@ -286,6 +398,9 @@ public class EventController : ControllerBase
             // Persist any per-sector price overrides supplied with the new event.
             await _eventService.SaveSectorPricesAsync(createdEvent.Id, request.SectorPrices);
 
+            // Persist the staff assigned to work the new event (function + covered sectors).
+            await _eventService.SaveEventStaffAsync(createdEvent.Id, request.Staff);
+
             // If linked to a season, extend existing season passes to cover this new event.
             if (createdEvent.SeasonId != null)
                 await _ingestion.BackfillSeasonTicketsForEventAsync(createdEvent.Id);
@@ -410,6 +525,9 @@ public class EventController : ControllerBase
 
             // Apply per-sector price overrides (null = leave existing overrides unchanged).
             await _eventService.SaveSectorPricesAsync(id, request.SectorPrices);
+
+            // Apply staff assignments — function + covered sectors (null = leave existing unchanged).
+            await _eventService.SaveEventStaffAsync(id, request.Staff);
 
             // Newly linking an event to a season backfills its existing season passes.
             if (seasonLinkIsNew)

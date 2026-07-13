@@ -11,6 +11,8 @@
 
 <PageTitle>Košarica — HALFTIME</PageTitle>
 
+<div id="customer-cart-atmos" class="crowd-atmos" aria-hidden="true"></div>
+
 <ScreenHeader Title="Tvoja košarica" Subtitle="@SubtitleText" BackHref="/order" />
 
 <div id="customer-cart-body" class="body">
@@ -116,7 +118,7 @@
 
     private decimal Total => State.Subtotal + (State.Count > 0 ? ServiceFee : 0m);
     private string SubtitleText => State.Count > 0 ? $"{State.Count} {(State.Count == 1 ? "stavka" : "stavke")}" : "Prazno";
-    private string WalletText => _wallet != null ? $"Stanje €{_wallet.Balance:F2}" : "Novčanik";
+    private string WalletText => _wallet is { Exists: true } ? $"Stanje €{_wallet.Balance:F2}" : "Novčanik";
 
     protected override void OnInitialized() => State.OnChange += StateChanged;
 
@@ -131,8 +133,13 @@
                 await State.InitFromTokenAsync(token);
         }
 
-        // Wallet balance is best-effort; failure just falls back to a generic label.
-        _wallet = await Api.GetWalletSummaryAsync();
+        // Wallet balance is best-effort; failure just falls back to a generic label. Resolved from the ticket
+        // session (this walk-up flow has no JWT login) — the API maps the scanned ticket to its owner's wallet.
+        if (State.HasSession)
+            _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
+
+        // Preselect wallet only when there's actually a wallet to charge; otherwise default to card.
+        _pay = _wallet is { Exists: true } ? "wallet" : "card";
         StateHasChanged();
     }
 
@@ -149,14 +156,19 @@
         _placing = true;
         _error = null;
 
-        // NOTE: payment selection is presentational for walk-up (no wallet); the order is created
-        // unpaid and paid at the bar / on delivery. Wallet/card wiring is a P4 follow-up.
+        // Wallet pays from the ticket owner's HALFTIME wallet (charged server-side); "card" is still
+        // presentational — that order is created unpaid and settled at the bar / on delivery.
         // The ticket session is intentionally kept so the fan can track and order again.
-        var result = await State.CheckoutAsync();
+        var result = await State.CheckoutAsync(payWithWallet: _pay == "wallet");
 
         if (result is { Success: true })
         {
             Nav.NavigateTo($"/track/{result.OrderId}");
+        }
+        else if (result is { InsufficientFunds: true })
+        {
+            _error = "Nedovoljno sredstava na novčaniku. Nadoplati novčanik ili plati karticom.";
+            _placing = false;
         }
         else
         {

@@ -1,0 +1,28 @@
+@inherits LayoutComponentBase
+
+@* Chrome-less mobile shell. On phones the runner app fills the screen exactly as before.
+   On wide viewports the whole app is presented inside a realistic phone device (metal bezel,
+   rounded screen, punch-hole camera, side buttons) so a desktop viewer sees the true mobile
+   experience — mirrors the Customer app's MobileShell. The device screen carries a transform,
+   so the app's position:fixed tab bar / action bar anchor to the phone screen, not the desktop
+   viewport. MainLayout nests inside here via `@@layout MobileShell`. *@
+
+<div id="runner-mobile-shell-backdrop" class="runner-app-backdrop">
+    <div class="runner-device">
+        <div id="runner-mobile-shell-screen" class="runner-device-screen">
+            <div class="runner-device-statusbar" aria-hidden="true">
+                <span class="rdsb-time">20:45</span>
+                <span class="rdsb-cam"></span>
+                <span class="rdsb-icons">
+                    <span class="rdsb-signal"><i></i><i></i><i></i><i></i></span>
+                    <span class="rdsb-batt"></span>
+                </span>
+            </div>
+            <div class="runner-device-scroll">
+                <div id="runner-mobile-shell-frame" class="runner-app-frame">
+                    @Body
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

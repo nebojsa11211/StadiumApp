@@ -504,6 +504,101 @@
                             </div>
                         }
                     </div>
+
+                    <div class="mb-3" id="admin-event-form-staff-group">
+                        <label class="form-label">
+                            <i class="bi bi-people"></i> @L["Events_StaffLabel"]
+                            @if (AssignedStaffCount > 0)
+                            {
+                                <span class="badge bg-primary ms-1" id="admin-event-form-staff-count">@AssignedStaffCount</span>
+                            }
+                        </label>
+                        <div class="form-text mb-2" id="admin-event-form-staff-hint">@L["Events_StaffHint"]</div>
+                        @if (eventStaff == null)
+                        {
+                            <div class="text-muted small" id="admin-event-form-staff-loading">
+                                <span class="spinner-border spinner-border-sm me-2"></span>@L["Events_Loading"]
+                            </div>
+                        }
+                        else if (!eventStaff.Any())
+                        {
+                            <div class="text-muted small" id="admin-event-form-staff-empty">@L["Events_StaffEmpty"]</div>
+                        }
+                        else
+                        {
+                            <div class="row g-2" id="admin-event-form-staff-list">
+                                @foreach (var member in eventStaff)
+                                {
+                                    <div class="col-md-6" id="admin-event-form-staff-col-@member.StaffId">
+                                        <div class="border rounded p-2 h-100 @(member.IsAssigned ? "border-primary bg-light" : null)"
+                                             id="admin-event-form-staff-row-@member.StaffId">
+                                            <div class="form-check ps-4">
+                                                <input type="checkbox" class="form-check-input" @bind="member.IsAssigned"
+                                                       id="admin-event-form-staff-check-@member.StaffId">
+                                                <label class="form-check-label d-block" for="admin-event-form-staff-check-@member.StaffId">
+                                                    <span class="fw-medium">@(string.IsNullOrWhiteSpace(member.FullName) ? member.Username : member.FullName)</span>
+                                                    <span class="badge bg-secondary ms-1">@member.RoleName</span>
+                                                    @if (!member.IsActive)
+                                                    {
+                                                        <span class="badge bg-warning text-dark ms-1">@L["Events_StaffInactiveBadge"]</span>
+                                                    }
+                                                    <span class="d-block text-muted small">@member.Email</span>
+                                                </label>
+                                            </div>
+                                            @if (member.IsAssigned)
+                                            {
+                                                <div class="mt-2 pt-2 border-top" id="admin-event-form-staff-detail-@member.StaffId">
+                                                    @* Event function: Runner (delivers to sectors) or Barman (works the bar). *@
+                                                    <div class="btn-group btn-group-sm w-100 mb-2" role="group" id="admin-event-form-staff-role-@member.StaffId">
+                                                        <input type="radio" class="btn-check" name="staff-role-@member.StaffId" autocomplete="off"
+                                                               checked="@(member.EventRole == EventStaffRoles.Runner)"
+                                                               @onchange="() => member.EventRole = EventStaffRoles.Runner"
+                                                               id="admin-event-form-staff-role-runner-@member.StaffId">
+                                                        <label class="btn btn-outline-primary" for="admin-event-form-staff-role-runner-@member.StaffId">
+                                                            <i class="bi bi-bicycle"></i> @L["Events_StaffRole_Runner"]
+                                                        </label>
+                                                        <input type="radio" class="btn-check" name="staff-role-@member.StaffId" autocomplete="off"
+                                                               checked="@(member.EventRole == EventStaffRoles.Bartender)"
+                                                               @onchange="() => member.EventRole = EventStaffRoles.Bartender"
+                                                               id="admin-event-form-staff-role-barman-@member.StaffId">
+                                                        <label class="btn btn-outline-primary" for="admin-event-form-staff-role-barman-@member.StaffId">
+                                                            <i class="bi bi-cup-straw"></i> @L["Events_StaffRole_Barman"]
+                                                        </label>
+                                                    </div>
+                                                    @* Covered sectors — only meaningful for a runner. *@
+                                                    @if (member.EventRole == EventStaffRoles.Runner)
+                                                    {
+                                                        <div id="admin-event-form-staff-sectors-@member.StaffId">
+                                                            <div class="text-muted small mb-1">@L["Events_StaffSectorsLabel"]</div>
+                                                            @if (sectorPrices == null || !sectorPrices.Any())
+                                                            {
+                                                                <div class="text-muted small fst-italic" id="admin-event-form-staff-sectors-empty-@member.StaffId">@L["Events_StaffSectorsEmpty"]</div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="d-flex flex-wrap gap-1">
+                                                                    @foreach (var sec in sectorPrices)
+                                                                    {
+                                                                        <button type="button"
+                                                                                class="btn btn-sm py-0 px-2 @(member.SectorOverlayIds.Contains(sec.SectorOverlayId) ? "btn-primary" : "btn-outline-secondary")"
+                                                                                title="@sec.SectorName"
+                                                                                @onclick="() => ToggleStaffSector(member, sec.SectorOverlayId)"
+                                                                                id="admin-event-form-staff-sector-@member.StaffId-@sec.SectorOverlayId">
+                                                                            @sec.SectorCode
+                                                                        </button>
+                                                                    }
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
                 <div class="modal-footer" id="admin-event-modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="HideEventModal" id="admin-event-modal-cancel-btn">

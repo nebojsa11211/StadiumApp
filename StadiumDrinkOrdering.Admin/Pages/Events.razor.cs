@@ -50,6 +50,12 @@ public partial class Events : ComponentBase
     private List<EventSectorPriceDto>? sectorPrices;
 
     /// <summary>
+    /// Staff (Bartenders/Waiters) shown in the modal's "Staff" picker, each with an
+    /// <see cref="EventStaffMemberDto.IsAssigned"/> flag bound to its checkbox. Null while loading.
+    /// </summary>
+    private List<EventStaffMemberDto>? eventStaff;
+
+    /// <summary>
     /// Event types offered directly in the dropdown. A value of "Other" (not listed here) reveals a
     /// free-text box so any other type can be entered. "Match" is the default/typical value.
     /// </summary>
@@ -175,8 +181,10 @@ public partial class Events : ComponentBase
             SeasonId = seasons?.FirstOrDefault(s => s.IsCurrent)?.Id
         };
         sectorPrices = null;
+        eventStaff = null;
         showEventModal = true;
         await LoadSectorPrices(null);
+        await LoadEventStaff(null);
     }
 
     private async Task ShowEditEventModal(EventDto evt)
@@ -213,8 +221,10 @@ public partial class Events : ComponentBase
             SeasonId = evt.SeasonId
         };
         sectorPrices = null;
+        eventStaff = null;
         showEventModal = true;
         await LoadSectorPrices(evt.Id);
+        await LoadEventStaff(evt.Id);
     }
 
     /// <summary>
@@ -253,12 +263,53 @@ public partial class Events : ComponentBase
             })
             .ToList();
 
+    /// <summary>
+    /// Loads the staff-assignment rows (all Bartenders/Waiters + who is assigned) for the modal. Pass
+    /// the event id when editing; null for a new event (nobody assigned yet).
+    /// </summary>
+    private async Task LoadEventStaff(int? eventId)
+    {
+        try
+        {
+            var url = eventId.HasValue ? $"events/staff?eventId={eventId.Value}" : "events/staff";
+            eventStaff = await ApiService.GetAsync<List<EventStaffMemberDto>>(url) ?? new List<EventStaffMemberDto>();
+        }
+        catch
+        {
+            eventStaff = new List<EventStaffMemberDto>();
+        }
+    }
+
+    /// <summary>The assignments (member + function + covered sectors) currently ticked, sent with a save.</summary>
+    private List<EventStaffInputDto>? BuildStaffInputs()
+        => eventStaff?
+            .Where(s => s.IsAssigned)
+            .Select(s => new EventStaffInputDto
+            {
+                StaffId = s.StaffId,
+                EventRole = s.EventRole,
+                // A barman works the bar, not sectors — don't persist stale sector picks for them.
+                SectorOverlayIds = s.EventRole == EventStaffRoles.Bartender ? new List<int>() : s.SectorOverlayIds
+            })
+            .ToList();
+
+    /// <summary>Count of staff currently ticked, shown in the section header.</summary>
+    private int AssignedStaffCount => eventStaff?.Count(s => s.IsAssigned) ?? 0;
+
+    /// <summary>Toggles an overlay sector in a staff member's covered-sectors set (used by the chips).</summary>
+    private static void ToggleStaffSector(EventStaffMemberDto member, int sectorOverlayId)
+    {
+        if (!member.SectorOverlayIds.Remove(sectorOverlayId))
+            member.SectorOverlayIds.Add(sectorOverlayId);
+    }
+
     private void HideEventModal()
     {
         showEventModal = false;
         editingEvent = null;
         eventForm = new();
         sectorPrices = null;
+        eventStaff = null;
     }
 
     private async Task SaveEvent()
@@ -341,7 +392,8 @@ public partial class Events : ComponentBase
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
                     SeasonId = eventForm.SeasonId,
-                    SectorPrices = BuildSectorPriceInputs()
+                    SectorPrices = BuildSectorPriceInputs(),
+                    Staff = BuildStaffInputs()
                 };
 
                 var response = await ApiService.Http.PostAsync("events", createDto);
@@ -378,7 +430,8 @@ public partial class Events : ComponentBase
                     BasePrice = eventForm.BasePrice,
                     IsActive = eventForm.IsActive,
                     SeasonId = eventForm.SeasonId,
-                    SectorPrices = BuildSectorPriceInputs()
+                    SectorPrices = BuildSectorPriceInputs(),
+                    Staff = BuildStaffInputs()
                 };
 
                 var response = await ApiService.Http.PostAsync($"events/{editingEvent.Id}", updateDto);

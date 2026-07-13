@@ -190,4 +190,13 @@
   <data name="MyDeliveries_MarkedDelivered" xml:space="preserve">
     <value>označeno kao dostavljeno</value>
   </data>
+  <data name="EventGate_NoLiveEventTitle" xml:space="preserve">
+    <value>Trenutačno nema aktivnog događaja</value>
+  </data>
+  <data name="EventGate_NoLiveEventBody" xml:space="preserve">
+    <value>Dostave se otvaraju kada događaj počne. Vratite se kada utakmica započne.</value>
+  </data>
+  <data name="EventGate_CheckAgain" xml:space="preserve">
+    <value>Provjeri ponovno</value>
+  </data>
 </root>

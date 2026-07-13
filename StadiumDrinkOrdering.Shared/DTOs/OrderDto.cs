@@ -88,7 +88,6 @@ public class OrderItemDto
     public decimal UnitPrice { get; set; }
     public decimal TotalPrice { get; set; }
     public string? SpecialInstructions { get; set; }
-    public string? Notes { get; set; }
 }
 
 public class CreateOrderItemDto

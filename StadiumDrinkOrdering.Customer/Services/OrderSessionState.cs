@@ -132,8 +132,10 @@ public class OrderSessionState
         OnChange?.Invoke();
     }
 
-    /// <summary>Place the order for the scanned seat. Keeps the session (so the fan can order again).</summary>
-    public async Task<SessionOrderResultDto?> CheckoutAsync(string? customerNotes = null)
+    /// <summary>Place the order for the scanned seat. Keeps the session (so the fan can order again).
+    /// When <paramref name="payWithWallet"/> is true the order is charged to the ticket owner's HALFTIME
+    /// wallet; otherwise it is created unpaid and settled at the bar / on delivery.</summary>
+    public async Task<SessionOrderResultDto?> CheckoutAsync(bool payWithWallet = false, string? customerNotes = null)
     {
         if (!HasSession || Items.Count == 0) return new SessionOrderResultDto { Success = false, Error = "Košarica je prazna." };
 
@@ -141,6 +143,7 @@ public class OrderSessionState
         {
             SessionToken = SessionToken!,
             CustomerNotes = customerNotes,
+            PayWithWallet = payWithWallet,
             Items = Items.Select(i => new SessionOrderItemDto
             {
                 DrinkId = i.DrinkId,

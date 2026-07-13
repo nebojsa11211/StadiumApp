@@ -24,12 +24,16 @@
 }
 else
 {
-    <div id="bar-topup-container" class="container mt-4" style="max-width: 640px;">
-        <div id="bar-topup-header" class="mb-4">
-            <h1 id="bar-topup-title" class="h3 mb-1">💳 @Localizer["TicketTopup_Heading"]</h1>
-            <p class="text-muted mb-0">@Localizer["TicketTopup_Subtitle"]</p>
+    <div id="bar-topup-container" class="console">
+        <div id="bar-topup-header" class="console-head">
+            <div id="bar-topup-header-title" class="console-head__title">
+                <span class="eyebrow">@Localizer["Dashboard_BarStation"]</span>
+                <h1>@Localizer["TicketTopup_Heading"]</h1>
+                <p>@Localizer["TicketTopup_Subtitle"]</p>
+            </div>
         </div>
 
+        <div id="bar-topup-body" style="max-width: @(ShowIdentifyStep ? "none" : "640px");">
         @if (result != null)
         {
             @* ---------- Step 4: Result ---------- *@
@@ -243,6 +247,7 @@ else
                 </div>
             </div>
         }
+        </div>
     </div>
 }
 
@@ -276,6 +281,12 @@ else
 
     private bool WalletActive =>
         resolved != null && string.Equals(resolved.WalletStatus, WalletStatus.Active, StringComparison.OrdinalIgnoreCase);
+
+    // Step 1 (identify) is shown when there's no result yet and no resolved account to top up.
+    // It only holds a single input row + scan button, so it gets a wider container than the
+    // later steps to use the horizontal space instead of leaving it empty on the right.
+    private bool ShowIdentifyStep =>
+        result == null && !(resolved != null && resolved.HasAccount);
 
     private decimal ParsedAmount => TryParseAmount(amountText, out var a) ? a : 0m;
 

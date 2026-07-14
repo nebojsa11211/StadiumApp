@@ -421,7 +421,7 @@
                                 </dl>
                             </div>
 
-                            @if (!string.IsNullOrEmpty(selectedDetail.CustomerName) || !string.IsNullOrEmpty(selectedDetail.CustomerEmail) || !string.IsNullOrEmpty(selectedDetail.CustomerPhone))
+                            @if (!string.IsNullOrEmpty(selectedDetail.CustomerName) || !string.IsNullOrEmpty(selectedDetail.CustomerEmail) || !string.IsNullOrEmpty(selectedDetail.CustomerPhone) || !string.IsNullOrEmpty(selectedDetail.CustomerOib) || !string.IsNullOrEmpty(selectedDetail.CustomerDocumentNumber))
                             {
                                 <div class="detail-group" id="admin-tickets-detail-customer">
                                     <span class="section-label">@L["Tickets_DetailCustomer"]</span>
@@ -437,6 +437,14 @@
                                         @if (!string.IsNullOrEmpty(selectedDetail.CustomerPhone))
                                         {
                                             <dt>@L["Tickets_DetailPhone"]</dt><dd>@selectedDetail.CustomerPhone</dd>
+                                        }
+                                        @if (!string.IsNullOrEmpty(selectedDetail.CustomerOib))
+                                        {
+                                            <dt>@L["Tickets_DetailOib"]</dt><dd id="admin-tickets-detail-oib">@selectedDetail.CustomerOib</dd>
+                                        }
+                                        @if (!string.IsNullOrEmpty(selectedDetail.CustomerDocumentNumber))
+                                        {
+                                            <dt>@L["Tickets_DetailDocument"]</dt><dd id="admin-tickets-detail-document">@selectedDetail.CustomerDocumentNumber</dd>
                                         }
                                     </dl>
                                 </div>

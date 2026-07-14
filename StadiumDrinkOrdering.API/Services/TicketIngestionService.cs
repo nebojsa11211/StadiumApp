@@ -15,6 +15,15 @@ public interface ITicketIngestionService
     Task<EventSalesSnapshotDto?> GetEventOccupancyAsync(int eventId, CancellationToken ct = default);
 
     /// <summary>
+    /// Links an event that isn't yet part of a season to the current season (when one is set) and
+    /// materializes the derived per-seat season-pass tickets, so its sales card reflects season
+    /// holders. Idempotent no-op when the event already belongs to a season or no current season
+    /// exists. Returns whether a link was made, the resolved season id, and how many derived
+    /// season-pass tickets were created.
+    /// </summary>
+    Task<(bool Linked, int? SeasonId, int DerivedCreated)> EnsureEventLinkedToCurrentSeasonAsync(int eventId, CancellationToken ct = default);
+
+    /// <summary>
     /// Real physical stadium capacity = sum of the drawing-tool overlay sectors' seats
     /// (incl. variable seating). Returns 0 when no overlay stadium has been drawn yet, so
     /// callers can fall back to an event's stored <see cref="Event.TotalSeats"/>.
@@ -408,6 +417,8 @@ public class TicketIngestionService : ITicketIngestionService
             QRCodeToken = Guid.NewGuid().ToString(),
             CustomerName = dto.CustomerName,
             CustomerEmail = dto.CustomerEmail,
+            CustomerOib = dto.CustomerOib,
+            CustomerDocumentNumber = dto.CustomerDocumentNumber,
             Price = dto.Price,
             PurchaseDate = EnsureUtc(dto.SoldAt),
             Status = TicketStatuses.Active,
@@ -426,7 +437,7 @@ public class TicketIngestionService : ITicketIngestionService
         await _context.SaveChangesAsync(ct);
 
         // Give the buyer a claimable account so they can load a wallet / be topped up at the bar.
-        await _accountProvisioning.EnsureShellAccountAsync(dto.CustomerEmail, dto.CustomerName, null, "TicketSold");
+        await _accountProvisioning.EnsureShellAccountAsync(dto.CustomerEmail, dto.CustomerName, null, "TicketSold", oib: dto.CustomerOib);
 
         var result = new TicketingWebhookResult
         {
@@ -547,6 +558,8 @@ public class TicketIngestionService : ITicketIngestionService
             SeasonTicketNumber = BuildSeasonTicketNumber(dto.ExternalSeasonTicketId),
             HolderName = dto.HolderName,
             HolderEmail = dto.HolderEmail,
+            HolderOib = dto.HolderOib,
+            HolderDocumentNumber = dto.HolderDocumentNumber,
             Price = dto.Price,
             Status = TicketStatuses.Active,
             PurchaseDate = EnsureUtc(dto.SoldAt),
@@ -559,7 +572,7 @@ public class TicketIngestionService : ITicketIngestionService
         await _context.SaveChangesAsync(ct); // assigns seat.Id + pass.Id
 
         // Give the pass holder a claimable account (also links this pass to it by email).
-        await _accountProvisioning.EnsureShellAccountAsync(dto.HolderEmail, dto.HolderName, null, "SeasonTicketSold");
+        await _accountProvisioning.EnsureShellAccountAsync(dto.HolderEmail, dto.HolderName, null, "SeasonTicketSold", oib: dto.HolderOib);
 
         // Materialize a derived access ticket for every event already in the season.
         var events = await _context.Events.Where(e => e.SeasonId == season.Id).ToListAsync(ct);
@@ -709,6 +722,8 @@ public class TicketIngestionService : ITicketIngestionService
             QRCodeToken = Guid.NewGuid().ToString(),
             CustomerName = pass.HolderName,
             CustomerEmail = pass.HolderEmail,
+            CustomerOib = pass.HolderOib,
+            CustomerDocumentNumber = pass.HolderDocumentNumber,
             Price = 0m, // access is paid for by the pass; per-event price is 0 to avoid double-counting revenue
             PurchaseDate = pass.PurchaseDate,
             Status = TicketStatuses.Active,
@@ -995,6 +1010,10 @@ public class TicketIngestionService : ITicketIngestionService
         var customerNames = new[] { "John Doe", "Jane Smith", "Mike Johnson", "Sarah Wilson", "Tom Brown", "Lisa Davis", "Chris Miller", "Anna Garcia" };
 
         var created = 0;
+        // Track which simulated buyers we've already provisioned so 1000 tickets don't re-provision
+        // the same 8 names — EnsureShellAccountAsync is idempotent anyway, but this avoids the wasted
+        // DbContext scope per ticket.
+        var provisionedEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         for (var i = 0; i < count; i++)
         {
             // Round-robin across sectors so the simulated sales spread over the whole stadium.
@@ -1005,6 +1024,8 @@ public class TicketIngestionService : ITicketIngestionService
                 continue; // this sector is full — skip it
 
             var customerName = customerNames[_rng.Next(customerNames.Length)];
+            var customerEmail = $"{customerName.Replace(" ", "").ToLower()}@example.com";
+            var customerOib = RandomOib();
             var ticket = new Ticket
             {
                 TicketNumber = $"TK{DateTime.UtcNow.Ticks}{_rng.Next(1000, 9999)}",
@@ -1013,8 +1034,9 @@ public class TicketIngestionService : ITicketIngestionService
                 QRCode = string.Empty,
                 QRCodeToken = Guid.NewGuid().ToString(),
                 CustomerName = customerName,
-                CustomerEmail = $"{customerName.Replace(" ", "").ToLower()}@example.com",
+                CustomerEmail = customerEmail,
                 CustomerPhone = $"+1-555-{_rng.Next(100, 999)}-{_rng.Next(1000, 9999)}",
+                CustomerOib = customerOib,
                 Price = basePrice + (decimal)(_rng.NextDouble() * 20), // some price variation
                 PurchaseDate = DateTime.UtcNow.AddHours(-_rng.Next(0, 72)), // within the last 3 days
                 Status = TicketStatuses.Active,
@@ -1030,6 +1052,14 @@ public class TicketIngestionService : ITicketIngestionService
             // Save per ticket so the next AllocateSeatAsync (which queries the DB) sees this seat as taken.
             await _context.SaveChangesAsync(ct);
             created++;
+
+            // Give the simulated buyer a claimable shell account too — exactly like the real webhook
+            // sale path (HandleTicketSoldAsync) — so simulated fans appear under Admin → Customers and
+            // can be topped up at the bar by OIB. No activation email is sent because these are throwaway
+            // @example.com test addresses.
+            if (provisionedEmails.Add(customerEmail))
+                await _accountProvisioning.EnsureShellAccountAsync(
+                    customerEmail, customerName, null, "SimulatedTicketSale", sendActivation: false, oib: customerOib);
         }
 
         _logger.LogInformation("Generated {Count} simulation tickets for event {EventId}", created, eventId);
@@ -1117,6 +1147,16 @@ public class TicketIngestionService : ITicketIngestionService
 
     private readonly Random _rng = new();
 
+    /// <summary>A random 11-digit string used as a simulated OIB for admin test tickets (format-only,
+    /// no checksum — matches the capture rule used across the app).</summary>
+    private string RandomOib()
+    {
+        var digits = new char[11];
+        for (var i = 0; i < digits.Length; i++)
+            digits[i] = (char)('0' + _rng.Next(0, 10));
+        return new string(digits);
+    }
+
     private async Task BroadcastAndRefreshAsync(Event evt, StadiumSection? section, string action, TicketingWebhookResult result, CancellationToken ct)
     {
         var totalSold = await CountEventSoldAsync(evt.Id, ct);
@@ -1181,6 +1221,36 @@ public class TicketIngestionService : ITicketIngestionService
     {
         var evt = await _context.Events.FirstOrDefaultAsync(e => e.Id == eventId, ct);
         return evt == null ? null : await BuildSnapshotAsync(evt, ct);
+    }
+
+    public async Task<(bool Linked, int? SeasonId, int DerivedCreated)> EnsureEventLinkedToCurrentSeasonAsync(int eventId, CancellationToken ct = default)
+    {
+        var evt = await _context.Events.FirstOrDefaultAsync(e => e.Id == eventId, ct);
+        if (evt == null)
+            return (false, null, 0);
+
+        // Already part of a season — nothing to link (idempotent).
+        if (evt.SeasonId != null)
+            return (false, evt.SeasonId, 0);
+
+        var current = await _context.Seasons.FirstOrDefaultAsync(s => s.IsCurrent, ct);
+        if (current == null)
+            return (false, null, 0);
+
+        evt.SeasonId = current.Id;
+        evt.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync(ct);
+
+        // Extend every active pass in the season to cover this event by generating a derived
+        // access ticket per pass seat (same path used when an event is created into a season).
+        var derived = await MaterializeSeasonTicketsForEventAsync(evt, ct);
+        if (derived > 0)
+            await BroadcastAndRefreshAsync(evt, null, "Sold", new TicketingWebhookResult(), ct);
+
+        _logger.LogInformation("Linked event {EventId} to current season {SeasonId}; materialized {Derived} season-pass ticket(s)",
+            evt.Id, current.Id, derived);
+
+        return (true, current.Id, derived);
     }
 
     /// <summary>

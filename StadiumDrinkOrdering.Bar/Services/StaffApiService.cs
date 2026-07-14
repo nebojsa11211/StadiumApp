@@ -50,6 +50,13 @@ public interface IStaffApiService
     Task<BarTopupResolveResultDto?> ResolveTopupAsync(string query);
     Task<BarTopupResultDto?> SubmitTopupAsync(BarTopupRequestDto request);
 
+    // Bar-counter cash history (top-ups + ticket loads + cash-outs), for the history/reconciliation page.
+    Task<BarTopupHistoryListDto?> GetBarTopupHistoryAsync(string? search, bool onlyMine, int page, int pageSize);
+
+    // Create (or reuse) a claimable account for an OIB-identified ticket with no account, so cash lands on
+    // the fan's own wallet. Returns a resolve result for that account (HasAccount=true) on success.
+    Task<BarTopupResolveResultDto?> ProvisionTopupAccountAsync(BarTopupProvisionRequestDto request);
+
     // Anonymous ticket wallet (load / cash out a bearer balance on the ticket itself, no account)
     Task<TicketWalletResultDto?> TopUpTicketWalletAsync(TicketWalletTopupRequestDto request);
     Task<TicketWalletResultDto?> CashOutTicketWalletAsync(TicketWalletCashoutRequestDto request);
@@ -568,6 +575,54 @@ public class StaffApiService : IStaffApiService
         catch (Exception ex)
         {
             Console.WriteLine($"Error submitting top-up: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Recent bar-counter cash movements for the history page. Same "api/bar/topup" prefix as resolve/submit.
+    public async Task<BarTopupHistoryListDto?> GetBarTopupHistoryAsync(string? search, bool onlyMine, int page, int pageSize)
+    {
+        try
+        {
+            var url = $"api/bar/topup/history?onlyMine={(onlyMine ? "true" : "false")}&page={page}&pageSize={pageSize}";
+            if (!string.IsNullOrWhiteSpace(search))
+                url += $"&search={Uri.EscapeDataString(search.Trim())}";
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<BarTopupHistoryListDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving bar top-up history: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Create (or reuse) a claimable account for an OIB-identified ticket with no account. On success the
+    // returned resolve result has HasAccount=true so the caller can proceed straight to the amount step.
+    public async Task<BarTopupResolveResultDto?> ProvisionTopupAccountAsync(BarTopupProvisionRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/topup/provision", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<BarTopupResolveResultDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error provisioning top-up account: {ex.Message}");
         }
         return null;
     }

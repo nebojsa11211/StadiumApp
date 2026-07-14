@@ -128,6 +128,20 @@ public class Event
             : nowUtc.Date <= EventDate.Date);
 
     /// <summary>
+    /// True when <paramref name="nowUtc"/> falls inside the event's scheduled live window — from
+    /// <see cref="EventDate"/> to <see cref="EventEndDate"/> (or, when no explicit end is set, through the
+    /// end of the start day). Unlike <see cref="IsLiveAt"/> this ignores the mutable lifecycle
+    /// <see cref="Status"/>, so it can attribute a <em>historical</em> instant (e.g. a past bar cash
+    /// top-up) to the event that was scheduled to be live then, even though that event has since moved to
+    /// <see cref="EventStatus.Completed"/>.
+    /// </summary>
+    public bool IsWithinLiveWindow(DateTime nowUtc) =>
+        nowUtc >= EventDate
+        && (EventEndDate.HasValue
+            ? nowUtc <= EventEndDate.Value
+            : nowUtc.Date <= EventDate.Date);
+
+    /// <summary>
     /// True when <paramref name="nowUtc"/> falls within the optional ticket-sales window. A null
     /// bound leaves that side open, so an event with no window configured is always "within". This
     /// is purely the time check and ignores lifecycle status (see <see cref="AreTicketSalesOpenAt"/>).

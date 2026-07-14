@@ -7,6 +7,14 @@ public class ValidateTicketRequest
     [Required(ErrorMessage = "QR Code Token is required")]
     [StringLength(100, ErrorMessage = "QR Code Token must be less than 100 characters")]
     public string QRCodeToken { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The ordering-session id this device already holds from a previous claim (persisted client-side).
+    /// Presented on a re-scan/reload so the SAME device resumes its live session; a different device that
+    /// can't supply the matching id is blocked. Null/empty on a first claim.
+    /// </summary>
+    [StringLength(100)]
+    public string? ExistingSessionToken { get; set; }
 }
 
 public class ValidateTicketResponse
@@ -25,6 +33,7 @@ public class TicketSessionDto
     public string SessionId { get; set; } = string.Empty;
     public string QRCodeToken { get; set; } = string.Empty;
     public int TicketId { get; set; }
+    public string TicketNumber { get; set; } = string.Empty;
     public int EventId { get; set; }
     public string EventName { get; set; } = string.Empty;
     public DateTime EventDate { get; set; }

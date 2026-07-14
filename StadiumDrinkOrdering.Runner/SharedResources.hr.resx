@@ -229,4 +229,136 @@
   <data name="EventGate_CheckAgain" xml:space="preserve">
     <value>Provjeri ponovno</value>
   </data>
+  <data name="Layout_TabScan" xml:space="preserve">
+    <value>Skeniraj</value>
+  </data>
+  <data name="ScanTicket_PageTitle" xml:space="preserve">
+    <value>Skeniraj ulaznicu</value>
+  </data>
+  <data name="ScanTicket_Title" xml:space="preserve">
+    <value>Skeniraj ulaznicu</value>
+  </data>
+  <data name="ScanTicket_IdentifyLabel" xml:space="preserve">
+    <value>Skenirajte QR ulaznice ili upišite broj</value>
+  </data>
+  <data name="ScanTicket_CodePlaceholder" xml:space="preserve">
+    <value>Broj ili kod ulaznice</value>
+  </data>
+  <data name="ScanTicket_ResolveBtn" xml:space="preserve">
+    <value>Pronađi</value>
+  </data>
+  <data name="ScanTicket_ScanBtn" xml:space="preserve">
+    <value>Skeniraj QR kod</value>
+  </data>
+  <data name="ScanTicket_StopScanBtn" xml:space="preserve">
+    <value>Zaustavi skeniranje</value>
+  </data>
+  <data name="ScanTicket_ScanningHint" xml:space="preserve">
+    <value>Usmjerite kameru na QR kod ulaznice</value>
+  </data>
+  <data name="ScanTicket_ScanNotSupported" xml:space="preserve">
+    <value>Skeniranje kamerom nije podržano na ovom uređaju — upišite broj ulaznice.</value>
+  </data>
+  <data name="ScanTicket_ScanError" xml:space="preserve">
+    <value>Pokretanje kamere nije uspjelo. Upišite broj ulaznice.</value>
+  </data>
+  <data name="ScanTicket_NotFound" xml:space="preserve">
+    <value>Nijedna ulaznica ne odgovara tom kodu.</value>
+  </data>
+  <data name="ScanTicket_ResolveError" xml:space="preserve">
+    <value>Dohvaćanje ulaznice nije uspjelo. Provjerite vezu i pokušajte ponovno.</value>
+  </data>
+  <data name="ScanTicket_NewScanBtn" xml:space="preserve">
+    <value>Skeniraj drugu ulaznicu</value>
+  </data>
+  <data name="ScanTicket_SectionAccess" xml:space="preserve">
+    <value>Pristup</value>
+  </data>
+  <data name="ScanTicket_ReleaseHint" xml:space="preserve">
+    <value>Ako je vlasnik izgubio pristup na svom telefonu, resetiraj ulaznicu kako bi je mogao ponovno skenirati na novom uređaju.</value>
+  </data>
+  <data name="ScanTicket_ReleaseBtn" xml:space="preserve">
+    <value>Resetiraj pristup uređaja</value>
+  </data>
+  <data name="ScanTicket_ReleaseDone" xml:space="preserve">
+    <value>Pristup je resetiran (oslobođeno sesija: {0}). Vlasnik sada može ponovno skenirati.</value>
+  </data>
+  <data name="ScanTicket_ReleaseError" xml:space="preserve">
+    <value>Resetiranje pristupa nije uspjelo. Pokušaj ponovno.</value>
+  </data>
+  <data name="ScanTicket_TicketNumber" xml:space="preserve">
+    <value>Broj ulaznice</value>
+  </data>
+  <data name="ScanTicket_Active" xml:space="preserve">
+    <value>Aktivna</value>
+  </data>
+  <data name="ScanTicket_Inactive" xml:space="preserve">
+    <value>Neaktivna</value>
+  </data>
+  <data name="ScanTicket_Used" xml:space="preserve">
+    <value>Iskorištena</value>
+  </data>
+  <data name="ScanTicket_Unused" xml:space="preserve">
+    <value>Neiskorištena</value>
+  </data>
+  <data name="ScanTicket_SectionEvent" xml:space="preserve">
+    <value>Događaj i sjedalo</value>
+  </data>
+  <data name="ScanTicket_SectionHolder" xml:space="preserve">
+    <value>Vlasnik</value>
+  </data>
+  <data name="ScanTicket_SectionSpending" xml:space="preserve">
+    <value>Potrošnja</value>
+  </data>
+  <data name="ScanTicket_SectionOrders" xml:space="preserve">
+    <value>Narudžbe pića</value>
+  </data>
+  <data name="ScanTicket_Event" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="ScanTicket_EventDate" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="ScanTicket_Seat" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="ScanTicket_RowPrefix" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="ScanTicket_Name" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="ScanTicket_Email" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="ScanTicket_Phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="ScanTicket_Oib" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="ScanTicket_Document" xml:space="preserve">
+    <value>Br. dokumenta</value>
+  </data>
+  <data name="ScanTicket_Wallet" xml:space="preserve">
+    <value>Novčanik</value>
+  </data>
+  <data name="ScanTicket_TicketPrice" xml:space="preserve">
+    <value>Cijena ulaznice</value>
+  </data>
+  <data name="ScanTicket_DrinksTotal" xml:space="preserve">
+    <value>Ukupno pića</value>
+  </data>
+  <data name="ScanTicket_GrandTotal" xml:space="preserve">
+    <value>Sveukupno</value>
+  </data>
+  <data name="ScanTicket_NoOrders" xml:space="preserve">
+    <value>Nema narudžbi pića na ovoj ulaznici.</value>
+  </data>
+  <data name="ScanTicket_KindSingle" xml:space="preserve">
+    <value>Jednokratna</value>
+  </data>
+  <data name="ScanTicket_KindSeason" xml:space="preserve">
+    <value>Sezonska</value>
+  </data>
 </root>

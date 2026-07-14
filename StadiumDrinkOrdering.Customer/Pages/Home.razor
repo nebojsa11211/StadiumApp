@@ -156,9 +156,18 @@ else
         _starting = true;
         _orderError = null;
 
-        var (ok, error) = await State.InitFromQrAsync(token);
+        // Device binding: present the SessionId this device already holds for this ticket (if any) so a
+        // re-click resumes the same session instead of being blocked as a second device.
+        var deviceKey = $"ht.session.{token}";
+        string? deviceToken = null;
+        try { deviceToken = await JS.InvokeAsync<string?>("localStorage.getItem", deviceKey); }
+        catch { /* localStorage unavailable — proceed as a fresh device */ }
+
+        var (ok, error) = await State.InitFromQrAsync(token, deviceToken);
         if (ok)
         {
+            try { await JS.InvokeVoidAsync("localStorage.setItem", deviceKey, State.SessionToken); }
+            catch { /* localStorage unavailable — same-device resume just won't be possible */ }
             await JS.InvokeVoidAsync("sessionStorage.setItem", "htSessionToken", State.SessionToken);
             Nav.NavigateTo("/order");
         }

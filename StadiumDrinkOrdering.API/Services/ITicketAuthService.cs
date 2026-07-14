@@ -6,9 +6,12 @@ namespace StadiumDrinkOrdering.API.Services;
 public interface ITicketAuthService
 {
     /// <summary>
-    /// Authenticates a ticket using its QR code token and creates a session
+    /// Authenticates a ticket using its QR code token and resolves an ordering session.
+    /// <paramref name="presentedSessionToken"/> is the SessionId the calling device already holds (from a
+    /// previous claim, persisted client-side): when it matches the ticket's active session the session is
+    /// resumed; otherwise a device with an active session elsewhere is rejected. Null on a first claim.
     /// </summary>
-    Task<TicketAuthResult> AuthenticateWithTicketAsync(string qrCodeToken);
+    Task<TicketAuthResult> AuthenticateWithTicketAsync(string qrCodeToken, string? presentedSessionToken = null);
     
     /// <summary>
     /// Validates if a ticket is currently valid for ordering
@@ -29,6 +32,13 @@ public interface ITicketAuthService
     /// Invalidates a ticket session (logout)
     /// </summary>
     Task<bool> InvalidateTicketSessionAsync(string sessionId);
+
+    /// <summary>
+    /// Staff re-issue: deactivates every active session for a ticket so a genuine holder who lost access
+    /// (switched phones, cleared their browser) can re-claim it from a new device. Returns the number of
+    /// sessions released.
+    /// </summary>
+    Task<int> ReleaseTicketSessionsAsync(int ticketId);
     
     /// <summary>
     /// Updates last accessed time for session

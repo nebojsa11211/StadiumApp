@@ -32,6 +32,10 @@ public class TicketDetailDto
     public string? CustomerName { get; set; }
     public string? CustomerEmail { get; set; }
     public string? CustomerPhone { get; set; }
+    /// <summary>Croatian OIB captured on the ticket (11 digits), or null for a foreign/legacy holder.</summary>
+    public string? CustomerOib { get; set; }
+    /// <summary>Identity document number for a foreign holder with no OIB.</summary>
+    public string? CustomerDocumentNumber { get; set; }
 
     // --- Wallet (fan stored-value account, resolved from the ticket's customer email) ---
     /// <summary>True when the ticket's customer email maps to a registered account that owns a wallet.</summary>

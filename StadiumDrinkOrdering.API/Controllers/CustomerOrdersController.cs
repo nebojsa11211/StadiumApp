@@ -48,6 +48,21 @@ public class CustomerOrdersController : ControllerBase
                 });
             }
 
+            // Identity is mandatory at purchase: a domestic buyer must supply an 11-digit OIB, a foreign
+            // buyer a document number. Enforced here (not only via model validation) so the failure comes
+            // back in the TicketOrderResultDto shape the checkout UI expects.
+            var identityError = TicketIdentity.Validate(
+                request.CustomerInfo.IsForeigner, request.CustomerInfo.Oib, request.CustomerInfo.DocumentNumber)
+                .FirstOrDefault();
+            if (identityError != null)
+            {
+                return BadRequest(new TicketOrderResultDto
+                {
+                    Success = false,
+                    ErrorMessage = identityError.ErrorMessage ?? "OIB je obavezan."
+                });
+            }
+
             // Installation master switch: when direct-to-customer sales are turned off, tickets
             // arrive only via the external integration, so reject new purchases.
             var salesEnabled = await _context.Venues
@@ -182,6 +197,8 @@ public class CustomerOrdersController : ControllerBase
                     CustomerName = customerName,
                     CustomerEmail = request.CustomerInfo.Email,
                     CustomerPhone = request.CustomerInfo.Phone,
+                    CustomerOib = request.CustomerInfo.IsForeigner ? null : request.CustomerInfo.Oib?.Trim(),
+                    CustomerDocumentNumber = request.CustomerInfo.IsForeigner ? request.CustomerInfo.DocumentNumber?.Trim() : null,
                     Price = item.Price,
                     PurchaseDate = DateTime.UtcNow,
                     Status = TicketStatuses.Active,
@@ -205,7 +222,8 @@ public class CustomerOrdersController : ControllerBase
             // Give a guest buyer a claimable account (no-op if they already have one) so the ticket's
             // wallet can be topped up at the bar.
             await _accountProvisioning.EnsureShellAccountAsync(
-                request.CustomerInfo.Email, customerName, request.CustomerInfo.Phone, "CustomerPurchase");
+                request.CustomerInfo.Email, customerName, request.CustomerInfo.Phone, "CustomerPurchase",
+                oib: request.CustomerInfo.IsForeigner ? null : request.CustomerInfo.Oib?.Trim());
 
             // Clear the shopping cart
             if (!string.IsNullOrEmpty(request.SessionId))

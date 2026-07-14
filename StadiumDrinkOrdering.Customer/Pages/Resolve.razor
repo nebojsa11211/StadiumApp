@@ -60,12 +60,25 @@
         if (!firstRender || _started) return;
         _started = true;
 
-        var (ok, error) = await State.InitFromQrAsync(Token);
+        // Device binding: the ordering session's id is a per-device secret. We persist it in localStorage
+        // keyed by this ticket's QR, so re-scanning/reloading on the SAME device presents it and resumes
+        // the live session. A different phone has no stored token → the API turns it away as a second
+        // device. Reading may throw on a locked/unavailable store; treat that as "no stored token".
+        var deviceKey = $"ht.session.{Token}";
+        string? deviceToken = null;
+        try { deviceToken = await JS.InvokeAsync<string?>("localStorage.getItem", deviceKey); }
+        catch { /* localStorage unavailable — proceed as a fresh device */ }
+
+        var (ok, error) = await State.InitFromQrAsync(Token, deviceToken);
         _phase = ok ? Phase.Ready : Phase.Failed;
         _error = error;
         StateHasChanged();
 
         if (_phase != Phase.Ready) return;
+
+        // Remember this device's claim (persistent) so a later re-scan resumes instead of being blocked.
+        try { await JS.InvokeVoidAsync("localStorage.setItem", deviceKey, State.SessionToken); }
+        catch { /* localStorage unavailable — same-device resume just won't be possible */ }
 
         // Persist the session token so a hard reload on /order or /track can recover it.
         await JS.InvokeVoidAsync("sessionStorage.setItem", "htSessionToken", State.SessionToken);

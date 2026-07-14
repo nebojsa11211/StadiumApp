@@ -940,4 +940,79 @@
   <data name="TicketWallet_Fail_ClaimGeneric" xml:space="preserve">
     <value>Saldo nije bilo moguće prebaciti.</value>
   </data>
+  <data name="TopupHistory_NavLabel" xml:space="preserve">
+    <value>Povijest nadoplata</value>
+  </data>
+  <data name="TopupHistory_PageTitle" xml:space="preserve">
+    <value>Povijest nadoplata</value>
+  </data>
+  <data name="TopupHistory_Subtitle" xml:space="preserve">
+    <value>Gotovina učitana i isplaćena na šanku.</value>
+  </data>
+  <data name="TopupHistory_SearchPlaceholder" xml:space="preserve">
+    <value>Ime, e-pošta ili ulaznica…</value>
+  </data>
+  <data name="TopupHistory_OnlyMine" xml:space="preserve">
+    <value>Samo moje</value>
+  </data>
+  <data name="TopupHistory_Clear" xml:space="preserve">
+    <value>Očisti</value>
+  </data>
+  <data name="TopupHistory_Movements" xml:space="preserve">
+    <value>Transakcije</value>
+  </data>
+  <data name="TopupHistory_TotalIn" xml:space="preserve">
+    <value>Uplaćeno</value>
+  </data>
+  <data name="TopupHistory_TotalOut" xml:space="preserve">
+    <value>Isplaćeno</value>
+  </data>
+  <data name="TopupHistory_Net" xml:space="preserve">
+    <value>Neto</value>
+  </data>
+  <data name="TopupHistory_Col_Time" xml:space="preserve">
+    <value>Vrijeme</value>
+  </data>
+  <data name="TopupHistory_Col_Type" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="TopupHistory_Col_For" xml:space="preserve">
+    <value>Za</value>
+  </data>
+  <data name="TopupHistory_Col_Event" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="TopupHistory_Col_Staff" xml:space="preserve">
+    <value>Osoblje</value>
+  </data>
+  <data name="TopupHistory_Col_Amount" xml:space="preserve">
+    <value>Iznos</value>
+  </data>
+  <data name="TopupHistory_Col_BalanceAfter" xml:space="preserve">
+    <value>Saldo nakon</value>
+  </data>
+  <data name="TopupHistory_Prev" xml:space="preserve">
+    <value>Prethodno</value>
+  </data>
+  <data name="TopupHistory_Next" xml:space="preserve">
+    <value>Sljedeće</value>
+  </data>
+  <data name="TopupHistory_PageOf" xml:space="preserve">
+    <value>Stranica {0} od {1}</value>
+  </data>
+  <data name="TopupHistory_Empty" xml:space="preserve">
+    <value>Nema pronađenih nadoplata</value>
+  </data>
+  <data name="TopupHistory_EmptyHint" xml:space="preserve">
+    <value>Pokušajte očistiti filtere iznad.</value>
+  </data>
+  <data name="TopupHistory_Type_AccountTopup" xml:space="preserve">
+    <value>Nadoplata računa</value>
+  </data>
+  <data name="TopupHistory_Type_TicketLoad" xml:space="preserve">
+    <value>Punjenje ulaznice</value>
+  </data>
+  <data name="TopupHistory_Type_CashOut" xml:space="preserve">
+    <value>Isplata</value>
+  </data>
 </root>

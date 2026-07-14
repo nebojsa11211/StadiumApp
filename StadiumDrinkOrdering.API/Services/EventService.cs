@@ -46,6 +46,16 @@ public interface IEventService
     Task<int> AutoCompleteEndedEventsAsync();
 
     /// <summary>
+    /// Time-driven counterpart to <see cref="AutoCompleteEndedEventsAsync"/> at the start of the window:
+    /// brings a sellable/published event (OnSale/SoldOut) live — transitioning it to
+    /// <see cref="EventStatus.Active"/> — once its scheduled window has opened (started, not yet ended),
+    /// so drink ordering unlocks at kickoff without a manual "make live" click. Respects the single-live
+    /// invariant (at most one Active/InProgress event), so it promotes at most one event per pass and
+    /// does nothing while another event is already live. Returns the number of events activated.
+    /// </summary>
+    Task<int> AutoActivateStartedEventsAsync();
+
+    /// <summary>
     /// One-time backfill: reconciles orders for events that are already terminal (Completed/Cancelled)
     /// but still have in-flight (non-terminal) drink orders — historical orphans left behind before the
     /// on-completion order sweep existed. Re-runs the same idempotent, refund-correct
@@ -904,6 +914,47 @@ public class EventService : IEventService
                 endedIds.Count, string.Join(", ", endedIds));
 
         return endedIds.Count;
+    }
+
+    public async Task<int> AutoActivateStartedEventsAsync()
+    {
+        var now = DateTime.UtcNow;
+
+        // Single-live invariant: only one event may be Active/InProgress at a time. If one is already
+        // live, we cannot promote another — nothing to do this pass.
+        var alreadyLive = await _context.Events
+            .AnyAsync(e => e.Status == EventStatus.Active || e.Status == EventStatus.InProgress);
+        if (alreadyLive)
+            return 0;
+
+        // Sellable/published events (OnSale/SoldOut) whose scheduled window is currently open — started
+        // but not yet ended — should go live. Evaluate the window in memory to avoid Npgsql timestamptz
+        // Kind pitfalls; the window mirrors Event.IsLiveAt (closed at EventEndDate when set, otherwise at
+        // end of the start day). Past-window events are left to the auto-completer, not activated here.
+        var candidates = await _context.Events
+            .Where(e => e.Status == EventStatus.OnSale || e.Status == EventStatus.SoldOut)
+            .Select(e => new { e.Id, e.EventDate, e.EventEndDate })
+            .ToListAsync();
+
+        var startedIds = candidates
+            .Where(e => now >= e.EventDate
+                && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date))
+            .OrderBy(e => e.EventDate) // earliest-started open event wins the single live slot
+            .Select(e => e.Id)
+            .ToList();
+
+        // Promote at most one: the first success takes the single live slot; the rest can't be promoted.
+        foreach (var id in startedIds)
+        {
+            var result = await TransitionEventStatusAsync(id, EventStatus.Active);
+            if (result.Success)
+            {
+                _logger.LogInformation("Auto-activated started event {EventId} (window open, went live)", id);
+                return 1;
+            }
+        }
+
+        return 0;
     }
 
     public async Task<int> ReconcileTerminalEventOrdersAsync(int? eventId = null)

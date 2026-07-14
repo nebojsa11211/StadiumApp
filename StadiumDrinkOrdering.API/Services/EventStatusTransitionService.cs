@@ -1,16 +1,23 @@
 namespace StadiumDrinkOrdering.API.Services;
 
 /// <summary>
-/// Periodically closes out events whose time window has elapsed, transitioning them to
-/// <see cref="Shared.Models.EventStatus.Completed"/>. This covers both events stuck in a live phase
-/// (Active/InProgress) and events that never went live (Planned/OnSale/SoldOut) but whose date has
-/// already passed. It is the scheduled counterpart to <see cref="IEventService.AutoCompleteEndedEventsAsync"/>,
-/// which otherwise only runs opportunistically on read — so a finished (or never-started) event no
-/// longer lingers as "live"/"Planned" (or as the season's "next fixture") until something queries it.
+/// Periodically advances events across the clock-driven ends of their lifecycle:
+/// <list type="bullet">
+/// <item>Closes out events whose window has elapsed to <see cref="Shared.Models.EventStatus.Completed"/> —
+/// both stale-live events (Active/InProgress) and ones that never went live (Planned/OnSale/SoldOut) but
+/// whose date has passed (<see cref="IEventService.AutoCompleteEndedEventsAsync"/>).</item>
+/// <item>Brings a sellable event (OnSale/SoldOut) live to <see cref="Shared.Models.EventStatus.Active"/>
+/// once its window opens, so drink ordering unlocks at kickoff without a manual "make live" click
+/// (<see cref="IEventService.AutoActivateStartedEventsAsync"/>).</item>
+/// </list>
+/// These are the scheduled counterparts to the same logic that otherwise only runs opportunistically on
+/// read — so a finished event doesn't linger as "live", and a started event doesn't sit at OnSale, until
+/// something queries it.
 ///
-/// Enabled by default; gate off with <c>EventLifecycle:AutoCompleteEnabled=false</c>. The work is
-/// cheap (it scans only the non-terminal events, projecting just id + dates), and each pass runs in
-/// its own DI scope so it never holds a DbContext/connection open between runs.
+/// Both halves are enabled by default; gate completion off with <c>EventLifecycle:AutoCompleteEnabled=false</c>
+/// and activation off with <c>EventLifecycle:AutoActivateEnabled=false</c>. Each pass runs in its own DI
+/// scope so it never holds a DbContext/connection open between runs. Completion runs before activation so a
+/// stale-live event is closed first, freeing the single-live slot for a newly started one.
 /// </summary>
 public class EventStatusTransitionService : BackgroundService
 {
@@ -30,16 +37,21 @@ public class EventStatusTransitionService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (!_configuration.GetValue("EventLifecycle:AutoCompleteEnabled", true))
+        var autoCompleteEnabled = _configuration.GetValue("EventLifecycle:AutoCompleteEnabled", true);
+        var autoActivateEnabled = _configuration.GetValue("EventLifecycle:AutoActivateEnabled", true);
+
+        if (!autoCompleteEnabled && !autoActivateEnabled)
         {
-            _logger.LogInformation("Event Status Transition Service is disabled (EventLifecycle:AutoCompleteEnabled=false).");
+            _logger.LogInformation("Event Status Transition Service is disabled " +
+                "(EventLifecycle:AutoCompleteEnabled=false and EventLifecycle:AutoActivateEnabled=false).");
             return;
         }
 
         var intervalMinutes = _configuration.GetValue("EventLifecycle:AutoCompleteIntervalMinutes", 5);
         var interval = TimeSpan.FromMinutes(intervalMinutes <= 0 ? 5 : intervalMinutes);
 
-        _logger.LogInformation("Event Status Transition Service started (interval: {Interval}m)", interval.TotalMinutes);
+        _logger.LogInformation("Event Status Transition Service started (interval: {Interval}m, autoComplete: {Complete}, autoActivate: {Activate})",
+            interval.TotalMinutes, autoCompleteEnabled, autoActivateEnabled);
 
         // Let the app finish starting (DB warm-up, Kestrel bind) before the first pass.
         try { await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken); }
@@ -49,11 +61,11 @@ public class EventStatusTransitionService : BackgroundService
         {
             try
             {
-                await CompleteEndedEventsAsync();
+                await RunTransitionsAsync(autoCompleteEnabled, autoActivateEnabled);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during scheduled event auto-completion");
+                _logger.LogError(ex, "Error during scheduled event status transitions");
             }
 
             try { await Task.Delay(interval, stoppingToken); }
@@ -61,10 +73,16 @@ public class EventStatusTransitionService : BackgroundService
         }
     }
 
-    private async Task CompleteEndedEventsAsync()
+    private async Task RunTransitionsAsync(bool autoCompleteEnabled, bool autoActivateEnabled)
     {
         using var scope = _serviceProvider.CreateScope();
         var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-        await eventService.AutoCompleteEndedEventsAsync();
+
+        // Close ended events first so a stale-live event frees the single-live slot before we try to
+        // bring a newly started event live.
+        if (autoCompleteEnabled)
+            await eventService.AutoCompleteEndedEventsAsync();
+        if (autoActivateEnabled)
+            await eventService.AutoActivateStartedEventsAsync();
     }
 }

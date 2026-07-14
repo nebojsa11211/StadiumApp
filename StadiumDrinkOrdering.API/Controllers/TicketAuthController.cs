@@ -38,7 +38,7 @@ public class TicketAuthController : ControllerBase
 
             _logger.LogInformation("Validating ticket with token: {Token}", request.QRCodeToken);
 
-            var result = await _ticketAuthService.AuthenticateWithTicketAsync(request.QRCodeToken);
+            var result = await _ticketAuthService.AuthenticateWithTicketAsync(request.QRCodeToken, request.ExistingSessionToken);
             
             if (result.IsSuccess)
             {

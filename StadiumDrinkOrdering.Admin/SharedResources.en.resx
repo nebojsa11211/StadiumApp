@@ -3634,6 +3634,9 @@
   <data name="Customers_Subtitle" xml:space="preserve">
     <value>View and support registered customer accounts</value>
   </data>
+  <data name="Customers_BackfillTooltip" xml:space="preserve">
+    <value>Provision accounts for existing ticket holders without one</value>
+  </data>
   <data name="Customers_TotalLabel" xml:space="preserve">
     <value>Total Customers</value>
   </data>
@@ -4052,6 +4055,8 @@
   <data name="Tickets_DetailName" xml:space="preserve"><value>Name</value></data>
   <data name="Tickets_DetailEmail" xml:space="preserve"><value>Email</value></data>
   <data name="Tickets_DetailPhone" xml:space="preserve"><value>Phone</value></data>
+  <data name="Tickets_DetailOib" xml:space="preserve"><value>OIB</value></data>
+  <data name="Tickets_DetailDocument" xml:space="preserve"><value>Document no.</value></data>
   <data name="Tickets_DetailUsed" xml:space="preserve"><value>Used</value></data>
   <data name="Tickets_DetailNotUsed" xml:space="preserve"><value>Not used</value></data>
   <data name="Tickets_DetailPurchased" xml:space="preserve"><value>Purchased</value></data>

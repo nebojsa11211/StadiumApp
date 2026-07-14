@@ -93,6 +93,12 @@ public interface IWalletService
     /// <summary>Ledger for a specific wallet (admin view, by wallet id rather than the caller's user).</summary>
     Task<WalletTransactionListDto?> GetTransactionsByWalletIdAsync(int walletId, int page, int pageSize);
 
+    /// <summary>Bar-counter cash movements (account top-ups, ticket loads, ticket cash-outs) for the staff
+    /// history / reconciliation view, newest first. Optionally scoped to a single staff member
+    /// (<paramref name="staffUserId"/>) and/or filtered by a search term matching the holder name, email,
+    /// or ticket number. Includes running in/out totals across the full filtered set.</summary>
+    Task<BarTopupHistoryListDto> GetBarTopupHistoryAsync(string? search, int? staffUserId, int page, int pageSize);
+
     /// <summary>Manual admin adjustment (signed). Negative amounts are guarded against overdraw. Posts an
     /// <see cref="WalletTransactionType.Adjustment"/> ledger entry with the reason. Returns null if the
     /// wallet is missing/frozen or a negative adjustment would overdraw.</summary>
@@ -928,6 +934,152 @@ public class WalletService : IWalletService
             .ToListAsync();
 
         return new WalletTransactionListDto { Transactions = items, TotalCount = total, Page = page, PageSize = pageSize };
+    }
+
+    public async Task<BarTopupHistoryListDto> GetBarTopupHistoryAsync(string? search, int? staffUserId, int page, int pageSize)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1 || pageSize > 100) pageSize = 50;
+
+        // The counter cash events: cash loaded onto an account wallet ("CashTopup") or a ticket
+        // ("TicketTopup"), and cash handed back on a ticket cash-out ("TicketCashOut"). Email claims and
+        // order spends are deliberately excluded — they're not bar-counter cash movements.
+        var barRefs = new[] { "CashTopup", "TicketTopup", "TicketCashOut" };
+
+        var query = from t in _context.WalletTransactions.AsNoTracking()
+                    where t.ReferenceType != null && barRefs.Contains(t.ReferenceType)
+                    join w in _context.Wallets.AsNoTracking() on t.WalletId equals w.Id
+                    join u in _context.Users.AsNoTracking() on w.UserId equals (int?)u.Id into uj
+                    from u in uj.DefaultIfEmpty()
+                    join tk in _context.Tickets.AsNoTracking() on w.TicketId equals (int?)tk.Id into tkj
+                    from tk in tkj.DefaultIfEmpty()
+                    // Resolve the event via the ticket, when this is a ticket-owned wallet. Account cash
+                    // top-ups have no ticket (tk is null) and so no event.
+                    join ev in _context.Events.AsNoTracking() on (tk != null ? (int?)tk.EventId : null) equals (int?)ev.Id into evj
+                    from ev in evj.DefaultIfEmpty()
+                    join s in _context.Users.AsNoTracking() on t.CreatedByUserId equals (int?)s.Id into sj
+                    from s in sj.DefaultIfEmpty()
+                    select new
+                    {
+                        t.Id,
+                        t.CreatedAt,
+                        t.ReferenceType,
+                        t.Amount,
+                        t.BalanceAfter,
+                        t.Currency,
+                        w.OwnerType,
+                        UserFirst = u != null ? u.FirstName : null,
+                        UserLast = u != null ? u.LastName : null,
+                        UserName = u != null ? u.Username : null,
+                        Email = u != null ? u.Email : null,
+                        TicketNumber = tk != null ? tk.TicketNumber : null,
+                        TicketName = tk != null ? tk.CustomerName : null,
+                        EventName = ev != null ? ev.EventName : null,
+                        EventDate = ev != null ? (DateTime?)ev.EventDate : null,
+                        StaffId = t.CreatedByUserId,
+                        StaffEmail = s != null ? s.Email : null
+                    };
+
+        if (staffUserId is > 0)
+            query = query.Where(x => x.StaffId == staffUserId);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            query = query.Where(x =>
+                (x.Email != null && x.Email.ToLower().Contains(term))
+                || (x.UserName != null && x.UserName.ToLower().Contains(term))
+                || (x.UserFirst != null && x.UserFirst.ToLower().Contains(term))
+                || (x.UserLast != null && x.UserLast.ToLower().Contains(term))
+                || (x.TicketNumber != null && x.TicketNumber.ToLower().Contains(term))
+                || (x.TicketName != null && x.TicketName.ToLower().Contains(term)));
+        }
+
+        var total = await query.CountAsync();
+        // Totals across the WHOLE filtered set (not just the current page) for reconciliation.
+        var totalIn = await query.Where(x => x.Amount > 0).SumAsync(x => (decimal?)x.Amount) ?? 0m;
+        var totalOut = await query.Where(x => x.Amount < 0).SumAsync(x => (decimal?)x.Amount) ?? 0m;
+
+        var rows = await query
+            .OrderByDescending(x => x.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var items = rows.Select(x =>
+        {
+            var fullName = $"{x.UserFirst} {x.UserLast}".Trim();
+            return new BarTopupHistoryItemDto
+            {
+                TransactionId = x.Id,
+                CreatedAt = x.CreatedAt,
+                ReferenceType = x.ReferenceType,
+                Amount = x.Amount,
+                BalanceAfter = x.BalanceAfter,
+                Currency = x.Currency,
+                OwnerType = x.OwnerType == WalletOwnerType.Ticket ? "Ticket" : "User",
+                CustomerName = x.OwnerType == WalletOwnerType.Ticket
+                    ? x.TicketName
+                    : (string.IsNullOrWhiteSpace(fullName) ? x.UserName : fullName),
+                Email = x.Email,
+                TicketNumber = x.TicketNumber,
+                EventName = x.EventName,
+                EventDate = x.EventDate,
+                StaffUserId = x.StaffId,
+                StaffEmail = x.StaffEmail
+            };
+        }).ToList();
+
+        // Account cash top-ups (user wallet, no ticket) carry no event of their own. Attribute each to the
+        // event that was scheduled to be LIVE at the moment it was taken — the one whose [start, end] window
+        // contains CreatedAt. We match on the schedule window rather than the current lifecycle Status
+        // because Status is mutable (a past match is now Completed), so it can't answer a historical "what
+        // was live then?" question. Only the current page's rows are resolved, so this stays cheap.
+        var unattributed = items.Where(i => i.OwnerType == "User" && string.IsNullOrEmpty(i.EventName)).ToList();
+        if (unattributed.Count > 0)
+        {
+            var minTime = unattributed.Min(i => i.CreatedAt);
+            var maxTime = unattributed.Max(i => i.CreatedAt);
+            // Generous DB pre-filter (keeps UTC kind — .Date would drop it and Npgsql rejects non-UTC);
+            // exact window containment is decided in memory below.
+            var lowerBound = minTime.AddDays(-2);
+            var candidates = await _context.Events.AsNoTracking()
+                .Where(e => e.EventDate <= maxTime
+                    && (e.EventEndDate == null ? e.EventDate >= lowerBound : e.EventEndDate >= minTime))
+                .Select(e => new { e.EventName, e.EventDate, e.EventEndDate })
+                .ToListAsync();
+
+            if (candidates.Count > 0)
+            {
+                // Mirror Event.IsWithinLiveWindow without needing the full entity.
+                static bool WindowContains(DateTime start, DateTime? end, DateTime t) =>
+                    t >= start && (end.HasValue ? t <= end.Value : t.Date <= start.Date);
+
+                foreach (var row in unattributed)
+                {
+                    // If several events overlap the instant, prefer the most recently started one.
+                    var match = candidates
+                        .Where(c => WindowContains(c.EventDate, c.EventEndDate, row.CreatedAt))
+                        .OrderByDescending(c => c.EventDate)
+                        .FirstOrDefault();
+                    if (match != null)
+                    {
+                        row.EventName = match.EventName;
+                        row.EventDate = match.EventDate;
+                    }
+                }
+            }
+        }
+
+        return new BarTopupHistoryListDto
+        {
+            Items = items,
+            TotalCount = total,
+            Page = page,
+            PageSize = pageSize,
+            TotalIn = totalIn,
+            TotalOut = -totalOut // stored negative in the ledger; report as a positive "cash out" figure
+        };
     }
 
     public async Task<WalletTransaction?> AdjustAsync(int walletId, decimal amount, string reason, int actorUserId)

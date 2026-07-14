@@ -108,3 +108,85 @@ public class BatchClaimResultDto
     public List<int> Taken { get; set; } = new();
     public List<int> NotFound { get; set; } = new();
 }
+
+// ---- Ticket scanning: full drill-down for a scanned ticket ----
+// Mirror of the API's TicketDetailDto family (StadiumDrinkOrdering.Shared/DTOs/TicketDetailDto.cs).
+
+public enum TicketKind
+{
+    SingleEvent = 0,
+    Season = 1
+}
+
+// Everything the Runner shows when a ticket is scanned: identity, event/seat, holder, wallet,
+// the spending breakdown (ticket price + every drink order) and a ready-to-render QR image.
+public class TicketDetailDto
+{
+    // Identity
+    public int Id { get; set; }
+    public string TicketNumber { get; set; } = string.Empty;
+    public TicketKind Kind { get; set; } = TicketKind.SingleEvent;
+    public string Status { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+    public bool IsUsed { get; set; }
+    public DateTime? UsedAt { get; set; }
+    public DateTime PurchaseDate { get; set; }
+
+    // Event & seat
+    public int? EventId { get; set; }
+    public string? EventName { get; set; }
+    public DateTime? EventDate { get; set; }
+    public string? Section { get; set; }
+    public string? Row { get; set; }
+    public string? SeatNumber { get; set; }
+
+    // Customer / holder
+    public string? CustomerName { get; set; }
+    public string? CustomerEmail { get; set; }
+    public string? CustomerPhone { get; set; }
+    public string? CustomerOib { get; set; }
+    public string? CustomerDocumentNumber { get; set; }
+
+    // Wallet (resolved from the ticket's customer email)
+    public bool CustomerHasWallet { get; set; }
+    public decimal? WalletBalance { get; set; }
+    public string? WalletStatus { get; set; }
+
+    // QR / card
+    public string? QRCodeToken { get; set; }
+    public string? QrImageDataUri { get; set; }
+
+    // Spending breakdown
+    public decimal TicketPrice { get; set; }
+    public List<TicketDetailOrderDto> DrinkOrders { get; set; } = new();
+    public decimal DrinksTotal { get; set; }
+    public decimal GrandTotal { get; set; }
+    public string Currency { get; set; } = "EUR";
+}
+
+public class TicketDetailOrderDto
+{
+    public int OrderId { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public decimal OrderTotal { get; set; }
+    public List<TicketDetailOrderItemDto> Items { get; set; } = new();
+    public TicketDetailPaymentDto? Payment { get; set; }
+}
+
+public class TicketDetailOrderItemDto
+{
+    public string DrinkName { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+    public decimal TotalPrice { get; set; }
+}
+
+public class TicketDetailPaymentDto
+{
+    public string Method { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public string Currency { get; set; } = "EUR";
+    public DateTime Date { get; set; }
+}

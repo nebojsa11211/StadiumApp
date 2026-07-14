@@ -117,6 +117,60 @@ public class SimulatorApiClient
         return (false, string.IsNullOrWhiteSpace(text) ? $"HTTP {(int)resp.StatusCode}" : text);
     }
 
+    /// <summary>
+    /// Adopts an event lacking an external id (e.g. one created in the Admin panel) into the
+    /// integration surface, so it can be resumed/sold/closed/deleted like a simulator-created
+    /// event. Signed like the webhook over the raw — empty — body. Returns the assigned external
+    /// id, or null if the call failed.
+    /// </summary>
+    public async Task<string?> AdoptEventAsync(int eventId)
+    {
+        const string body = ""; // no body — sign the empty string
+        var path = $"api/integration/ticketing/events/{eventId}/adopt";
+        using var req = new HttpRequestMessage(HttpMethod.Post, path);
+        req.Headers.TryAddWithoutValidation("X-Signature", "sha256=" + Sign(body));
+
+        var resp = await _http.SendAsync(req);
+        if (!resp.IsSuccessStatusCode) return null;
+
+        var result = await resp.Content.ReadFromJsonAsync<AdoptEventResult>(Json);
+        return result?.ExternalEventId;
+    }
+
+    private sealed class AdoptEventResult
+    {
+        public int EventId { get; set; }
+        public string? ExternalEventId { get; set; }
+    }
+
+    /// <summary>
+    /// Links an event that has no season to the current season and materializes its derived
+    /// season-pass seats, so the sales card fills with season holders. Signed over the empty body.
+    /// Returns whether a link was made and how many season-pass tickets were materialized (both
+    /// zero/false when the event already has a season or no current season exists).
+    /// </summary>
+    public async Task<(bool Linked, int Derived)> LinkEventToCurrentSeasonAsync(int eventId)
+    {
+        const string body = ""; // no body — sign the empty string
+        var path = $"api/integration/ticketing/events/{eventId}/link-current-season";
+        using var req = new HttpRequestMessage(HttpMethod.Post, path);
+        req.Headers.TryAddWithoutValidation("X-Signature", "sha256=" + Sign(body));
+
+        var resp = await _http.SendAsync(req);
+        if (!resp.IsSuccessStatusCode) return (false, 0);
+
+        var result = await resp.Content.ReadFromJsonAsync<LinkSeasonResult>(Json);
+        return (result?.Linked ?? false, result?.DerivedSeasonTickets ?? 0);
+    }
+
+    private sealed class LinkSeasonResult
+    {
+        public int EventId { get; set; }
+        public bool Linked { get; set; }
+        public int? SeasonId { get; set; }
+        public int DerivedSeasonTickets { get; set; }
+    }
+
     public async Task<TicketingWebhookResult> SendAsync(TicketingWebhookEnvelope envelope)
     {
         var body = JsonSerializer.Serialize(envelope, Json);

@@ -401,7 +401,14 @@
                             <tr id="simulator-index-existing-row-@e.EventId">
                                 <td>
                                     <strong>@e.EventName</strong>
-                                    <span class="text-muted small">#@e.EventId · <code>@e.ExternalEventId</code></span>
+                                    @if (!string.IsNullOrEmpty(e.ExternalEventId))
+                                    {
+                                        <span class="text-muted small">#@e.EventId · <code>@e.ExternalEventId</code></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">#@e.EventId · <span class="badge bg-light text-dark border" title="@Localizer["Index_AdminCreatedTooltip"]">@Localizer["Index_AdminCreatedBadge"]</span></span>
+                                    }
                                 </td>
                                 <td class="text-nowrap small">@e.EventDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
                                 <td class="text-nowrap small">@(e.EventEndDate is DateTime end ? end.ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "—")</td>
@@ -945,6 +952,15 @@
     private static readonly string[] Names =
         { "Ivan Horvat", "Marko Kovač", "Ana Babić", "Petra Novak", "Luka Marić", "Sara Jurić", "Tomislav Knežević", "Maja Vuković" };
 
+    // A random 11-digit OIB for a simulated buyer (format-only, no checksum — matches the app's capture
+    // rule). Lets ingested test tickets carry an OIB so the bar can resolve them to a (provisioned) account.
+    private string RandomOib()
+    {
+        var d = new char[11];
+        for (var i = 0; i < d.Length; i++) d[i] = (char)('0' + _rng.Next(0, 10));
+        return new string(d);
+    }
+
     private int TotalCapacity => sections.Sum(s => s.Capacity);
     private int TotalSold => sections.Sum(s => SoldCount(s.SectionCode));
     private int SoldCount(string code) => soldCount.TryGetValue(code, out var c) ? c : 0;
@@ -1102,6 +1118,7 @@
                 SectionCode = sectorCode,
                 Price = 0m, // price isn't relevant to the simulator — we only care which seats a pass occupies
                 HolderName = Names[_rng.Next(Names.Length)],
+                HolderOib = RandomOib(),
                 SoldAt = DateTime.UtcNow
             }
         };
@@ -1220,6 +1237,28 @@
         }
     }
 
+    // Admin-created events have no external id, but the whole simulator interaction model (resume /
+    // sell / make live / end / delete / seat maps) is keyed by external id. Before acting on such an
+    // event we ask the API to "adopt" it — lazily assigning one. Returns the external id (updating
+    // the summary in place), or null on failure.
+    private async Task<string?> EnsureExternalIdAsync(ExternalEventSummaryDto summary)
+    {
+        if (!string.IsNullOrEmpty(summary.ExternalEventId))
+            return summary.ExternalEventId;
+
+        var extId = await Api.AdoptEventAsync(summary.EventId);
+        if (extId != null)
+        {
+            summary.ExternalEventId = extId;
+            Log($"🔗 Adopted admin event '{summary.EventName}' (#{summary.EventId}) into the simulator as external {extId}");
+        }
+        else
+        {
+            Log($"❌ Could not adopt admin event '{summary.EventName}' (#{summary.EventId}) — check the API is reachable and the webhook secret is configured.");
+        }
+        return extId;
+    }
+
     private async Task SelectEventAsync(ExternalEventSummaryDto summary)
     {
         if (busy) return;
@@ -1228,7 +1267,16 @@
         expandedSeatMap = null;
         try
         {
-            var refs = await Api.GetEventTicketsAsync(summary.ExternalEventId);
+            var extId = await EnsureExternalIdAsync(summary);
+            if (extId == null) return;
+
+            // Pull current-season passes into this event (if it isn't already in a season) so the
+            // sales card fills with season holders alongside the single-match tickets.
+            var (linked, derivedSeason) = await Api.LinkEventToCurrentSeasonAsync(summary.EventId);
+            if (linked)
+                Log($"🎫 Linked '{summary.EventName}' to the current season — {derivedSeason} season-pass seat(s) filled in");
+
+            var refs = await Api.GetEventTicketsAsync(extId);
             lock (_lock)
             {
                 soldCount.Clear();
@@ -1250,7 +1298,7 @@
                 }
             }
 
-            externalEventId = summary.ExternalEventId;
+            externalEventId = extId;
             internalEventId = summary.EventId;
             eventName = summary.EventName;
             if (!string.IsNullOrWhiteSpace(summary.EventType)) eventType = summary.EventType;
@@ -1286,11 +1334,13 @@
         busy = true;
         try
         {
-            var (ok, message) = await Api.DeleteEventAsync(summary.ExternalEventId);
+            var extId = await EnsureExternalIdAsync(summary);
+            if (extId == null) return;
+            var (ok, message) = await Api.DeleteEventAsync(extId);
             if (ok)
             {
-                Log($"🗑 Deleted '{summary.EventName}' (external {summary.ExternalEventId} → stadium #{summary.EventId})");
-                if (externalEventId == summary.ExternalEventId)
+                Log($"🗑 Deleted '{summary.EventName}' (external {extId} → stadium #{summary.EventId})");
+                if (externalEventId == extId)
                 {
                     await ResetEvent(); // clears loaded event + reloads the list
                 }
@@ -1544,6 +1594,7 @@
                 SectionCode = s.SectionCode,
                 Price = basePrice,
                 CustomerName = Names[_rng.Next(Names.Length)],
+                CustomerOib = RandomOib(),
                 SoldAt = DateTime.UtcNow
             }
         };

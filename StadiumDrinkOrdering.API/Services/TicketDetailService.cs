@@ -120,6 +120,8 @@ public class TicketDetailService : ITicketDetailService
             CustomerName = ticket.CustomerName,
             CustomerEmail = ticket.CustomerEmail,
             CustomerPhone = ticket.CustomerPhone,
+            CustomerOib = ticket.CustomerOib,
+            CustomerDocumentNumber = ticket.CustomerDocumentNumber,
             CustomerHasWallet = hasWallet,
             WalletBalance = walletBalance,
             WalletStatus = walletStatus,

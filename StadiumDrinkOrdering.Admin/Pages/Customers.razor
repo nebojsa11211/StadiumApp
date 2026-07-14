@@ -11,6 +11,9 @@
                 Title='@L["Customers_MainTitle"]'
                 Subtitle='@L["Customers_Subtitle"]'>
         <Actions>
+            <button class="icon-btn" @onclick="BackfillAccounts" disabled="@(isLoading || isBackfilling)" id="admin-customers-backfill-btn" title="@L["Customers_BackfillTooltip"]">
+                <i class="bi bi-person-plus @(isBackfilling ? "spin" : "")"></i>
+            </button>
             <button class="icon-btn" @onclick="RefreshData" disabled="@isLoading" id="admin-customers-refresh-btn" title="@L["Users_RefreshButtonTooltip"]">
                 <i class="bi bi-arrow-clockwise @(isLoading ? "spin" : "")"></i>
             </button>

@@ -3664,6 +3664,9 @@
   <data name="Customers_Subtitle" xml:space="preserve">
     <value>Pregledajte i podržite registrirane račune kupaca</value>
   </data>
+  <data name="Customers_BackfillTooltip" xml:space="preserve">
+    <value>Izradi račune za postojeće vlasnike ulaznica koji ih nemaju</value>
+  </data>
   <data name="Customers_TotalLabel" xml:space="preserve">
     <value>Ukupno kupaca</value>
   </data>
@@ -4082,6 +4085,8 @@
   <data name="Tickets_DetailName" xml:space="preserve"><value>Ime</value></data>
   <data name="Tickets_DetailEmail" xml:space="preserve"><value>E-pošta</value></data>
   <data name="Tickets_DetailPhone" xml:space="preserve"><value>Telefon</value></data>
+  <data name="Tickets_DetailOib" xml:space="preserve"><value>OIB</value></data>
+  <data name="Tickets_DetailDocument" xml:space="preserve"><value>Broj dokumenta</value></data>
   <data name="Tickets_DetailUsed" xml:space="preserve"><value>Iskorišteno</value></data>
   <data name="Tickets_DetailNotUsed" xml:space="preserve"><value>Nije iskorišteno</value></data>
   <data name="Tickets_DetailPurchased" xml:space="preserve"><value>Kupljeno</value></data>

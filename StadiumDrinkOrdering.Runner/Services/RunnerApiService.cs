@@ -7,6 +7,15 @@ namespace StadiumDrinkOrdering.Runner.Services;
 
 public enum ClaimResult { Claimed, Taken, Failed }
 
+public enum ScanOutcome { Found, NotFound, Error }
+
+// Result of scanning/looking up a ticket: the outcome plus the detail when found. Lets the UI
+// distinguish a genuinely unknown ticket (NotFound) from a transport/auth failure (Error).
+public record ScanResult(ScanOutcome Outcome, TicketDetailDto? Ticket);
+
+// Result of a staff re-issue: whether the call succeeded and how many active sessions were released.
+public record ReleaseAccessResult(bool Ok, int Released);
+
 /// <summary>
 /// All API calls the Runner makes. Uses System.Net.Http.Json (web JSON defaults = camelCase,
 /// case-insensitive), matching the API. A 401 (expired/invalid token) clears the session and
@@ -161,6 +170,62 @@ public class RunnerApiService
             Console.WriteLine($"ReportDeliveryFailed {orderId} failed: {ex.Message}");
             return false;
         }
+    }
+
+    /// <summary>
+    /// Resolves a scanned/typed ticket code to its full drill-down. The code may be a scanned QR
+    /// payload (the customer deep link .../t/{token}), a bare QR token, or a printed ticket number —
+    /// the server normalizes all three. Returns NotFound for an unknown ticket and Error on a
+    /// transport/auth failure.
+    /// </summary>
+    public async Task<ScanResult> ScanTicketAsync(string code)
+    {
+        try
+        {
+            var resp = await _http.GetAsync($"tickets/scan-details?code={Uri.EscapeDataString(code)}");
+            if (await Handle401(resp)) return new ScanResult(ScanOutcome.Error, null);
+            if (resp.StatusCode == HttpStatusCode.NotFound) return new ScanResult(ScanOutcome.NotFound, null);
+            if (resp.IsSuccessStatusCode)
+            {
+                var dto = await resp.Content.ReadFromJsonAsync<TicketDetailDto>();
+                return dto == null
+                    ? new ScanResult(ScanOutcome.Error, null)
+                    : new ScanResult(ScanOutcome.Found, dto);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ScanTicket failed: {ex.Message}");
+        }
+        return new ScanResult(ScanOutcome.Error, null);
+    }
+
+    /// <summary>
+    /// Staff re-issue: releases a ticket's active ordering sessions so a genuine holder who lost access
+    /// can re-scan and claim it on a new device. Returns how many sessions were released.
+    /// </summary>
+    public async Task<ReleaseAccessResult> ReleaseTicketAccessAsync(int ticketId)
+    {
+        try
+        {
+            var resp = await _http.PostAsync($"tickets/{ticketId}/release-access", null);
+            if (await Handle401(resp)) return new ReleaseAccessResult(false, 0);
+            if (resp.IsSuccessStatusCode)
+            {
+                var body = await resp.Content.ReadFromJsonAsync<ReleaseAccessResponse>();
+                return new ReleaseAccessResult(true, body?.Released ?? 0);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ReleaseTicketAccess failed: {ex.Message}");
+        }
+        return new ReleaseAccessResult(false, 0);
+    }
+
+    private sealed class ReleaseAccessResponse
+    {
+        public int Released { get; set; }
     }
 
     private async Task<bool> Handle401(HttpResponseMessage resp)

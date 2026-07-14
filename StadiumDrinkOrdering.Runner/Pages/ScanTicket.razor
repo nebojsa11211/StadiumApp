@@ -1,0 +1,434 @@
+@page "/scan"
+@using System.Globalization
+@implements IAsyncDisposable
+@inject RunnerApiService Api
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["ScanTicket_PageTitle"]</PageTitle>
+
+<div class="runner-page" id="runner-scan-page">
+    <div class="runner-page-head" id="runner-scan-page-head">
+        <h1 class="runner-page-title" id="runner-scan-title">@Localizer["ScanTicket_Title"]</h1>
+        @if (ticket is not null)
+        {
+            <button class="runner-refresh" @onclick="ResetAll" aria-label="@Localizer["ScanTicket_NewScanBtn"]" id="runner-scan-reset">↻</button>
+        }
+    </div>
+
+    @if (ticket is null)
+    {
+        @* ---------- Identify: type or scan ---------- *@
+        <div class="runner-scan-identify" id="runner-scan-identify">
+            <label class="runner-scan-label" for="runner-scan-code-input" id="runner-scan-code-label">@Localizer["ScanTicket_IdentifyLabel"]</label>
+            <form class="runner-scan-inputrow" @onsubmit="Resolve" id="runner-scan-form">
+                <input id="runner-scan-code-input" class="runner-scan-input" type="text"
+                       @bind="codeInput" @bind:event="oninput"
+                       placeholder="@Localizer["ScanTicket_CodePlaceholder"]"
+                       disabled="@isResolving" autocomplete="off" />
+                <button id="runner-scan-resolve-btn" class="runner-scan-go" type="submit"
+                        disabled="@(isResolving || string.IsNullOrWhiteSpace(codeInput))">
+                    @if (isResolving)
+                    {
+                        <span class="runner-cta-spinner" id="runner-scan-resolve-spinner"></span>
+                    }
+                    else
+                    {
+                        <span>@Localizer["ScanTicket_ResolveBtn"]</span>
+                    }
+                </button>
+            </form>
+
+            @if (!scannerActive)
+            {
+                <button id="runner-scan-camera-btn" class="runner-cta runner-cta-secondary" @onclick="RequestScan" disabled="@isResolving">
+                    <span class="runner-cta-icon" aria-hidden="true">📷</span>
+                    <span>@Localizer["ScanTicket_ScanBtn"]</span>
+                </button>
+            }
+            else
+            {
+                <div id="runner-scan-camera" class="runner-scan-camera">
+                    <video id="@ScannerVideoId" playsinline muted class="runner-scan-video"></video>
+                    <p class="runner-scan-hint" id="runner-scan-hint">@Localizer["ScanTicket_ScanningHint"]</p>
+                    <button id="runner-scan-stop-btn" class="runner-cta runner-cta-secondary" @onclick="StopScannerAsync">
+                        @Localizer["ScanTicket_StopScanBtn"]
+                    </button>
+                </div>
+            }
+
+            @if (scannerUnsupported)
+            {
+                <div class="runner-notice runner-notice-info" id="runner-scan-unsupported">@Localizer["ScanTicket_ScanNotSupported"]</div>
+            }
+            @if (!string.IsNullOrEmpty(scannerError))
+            {
+                <div class="runner-notice runner-notice-info" id="runner-scan-cam-error">@Localizer["ScanTicket_ScanError"]</div>
+            }
+            @if (notFound)
+            {
+                <div class="runner-notice runner-notice-danger" id="runner-scan-not-found">@Localizer["ScanTicket_NotFound"]</div>
+            }
+            @if (resolveError)
+            {
+                <div class="runner-notice runner-notice-danger" id="runner-scan-resolve-error">@Localizer["ScanTicket_ResolveError"]</div>
+            }
+        </div>
+    }
+    else
+    {
+        @* ---------- Result: full ticket detail ---------- *@
+        <div class="runner-ticket" id="runner-scan-ticket">
+            <div class="runner-ticket-hero" id="runner-scan-ticket-hero">
+                <div class="runner-ticket-hero-main">
+                    <span class="runner-seat-label">@Localizer["ScanTicket_TicketNumber"]</span>
+                    <div class="runner-ticket-number" id="runner-scan-ticket-number">@ticket.TicketNumber</div>
+                    <div class="runner-ticket-badges" id="runner-scan-ticket-badges">
+                        <span class="runner-badge @(ticket.IsActive ? "runner-badge-ok" : "runner-badge-muted")" id="runner-scan-badge-active">
+                            @(ticket.IsActive ? Localizer["ScanTicket_Active"] : Localizer["ScanTicket_Inactive"])
+                        </span>
+                        <span class="runner-badge @(ticket.IsUsed ? "runner-badge-warn" : "runner-badge-muted")" id="runner-scan-badge-used">
+                            @(ticket.IsUsed ? Localizer["ScanTicket_Used"] : Localizer["ScanTicket_Unused"])
+                        </span>
+                        <span class="runner-badge runner-badge-muted" id="runner-scan-badge-kind">@KindText(ticket.Kind)</span>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(ticket.QrImageDataUri))
+                {
+                    <img class="runner-ticket-qr" id="runner-scan-ticket-qr" src="@ticket.QrImageDataUri" alt="QR" />
+                }
+            </div>
+
+            @* Event & seat *@
+            <div class="runner-ticket-section" id="runner-scan-section-event">
+                <div class="runner-ticket-section-title">@Localizer["ScanTicket_SectionEvent"]</div>
+                <dl class="runner-kv">
+                    <dt>@Localizer["ScanTicket_Event"]</dt><dd id="runner-scan-event-name">@Display(ticket.EventName)</dd>
+                    <dt>@Localizer["ScanTicket_EventDate"]</dt><dd id="runner-scan-event-date">@DateText(ticket.EventDate)</dd>
+                    <dt>@Localizer["ScanTicket_Seat"]</dt><dd id="runner-scan-seat">@SeatText()</dd>
+                </dl>
+            </div>
+
+            @* Holder *@
+            <div class="runner-ticket-section" id="runner-scan-section-holder">
+                <div class="runner-ticket-section-title">@Localizer["ScanTicket_SectionHolder"]</div>
+                <dl class="runner-kv">
+                    <dt>@Localizer["ScanTicket_Name"]</dt><dd id="runner-scan-holder-name">@Display(ticket.CustomerName)</dd>
+                    <dt>@Localizer["ScanTicket_Email"]</dt><dd id="runner-scan-holder-email">@Display(ticket.CustomerEmail)</dd>
+                    <dt>@Localizer["ScanTicket_Phone"]</dt><dd id="runner-scan-holder-phone">@Display(ticket.CustomerPhone)</dd>
+                    <dt>@Localizer["ScanTicket_Oib"]</dt><dd id="runner-scan-holder-oib">@Display(ticket.CustomerOib)</dd>
+                    @if (!string.IsNullOrWhiteSpace(ticket.CustomerDocumentNumber))
+                    {
+                        <dt>@Localizer["ScanTicket_Document"]</dt><dd id="runner-scan-holder-doc">@ticket.CustomerDocumentNumber</dd>
+                    }
+                    @if (ticket.CustomerHasWallet)
+                    {
+                        <dt>@Localizer["ScanTicket_Wallet"]</dt>
+                        <dd id="runner-scan-holder-wallet">
+                            @FormatMoney(ticket.WalletBalance ?? 0m, ticket.Currency)
+                            @if (!string.IsNullOrWhiteSpace(ticket.WalletStatus))
+                            {
+                                <span class="runner-kv-sub"> · @ticket.WalletStatus</span>
+                            }
+                        </dd>
+                    }
+                </dl>
+            </div>
+
+            @* Spending *@
+            <div class="runner-ticket-section" id="runner-scan-section-spending">
+                <div class="runner-ticket-section-title">@Localizer["ScanTicket_SectionSpending"]</div>
+                <dl class="runner-kv">
+                    <dt>@Localizer["ScanTicket_TicketPrice"]</dt><dd id="runner-scan-ticket-price">@FormatMoney(ticket.TicketPrice, ticket.Currency)</dd>
+                    <dt>@Localizer["ScanTicket_DrinksTotal"]</dt><dd id="runner-scan-drinks-total">@FormatMoney(ticket.DrinksTotal, ticket.Currency)</dd>
+                    <dt class="runner-kv-strong">@Localizer["ScanTicket_GrandTotal"]</dt>
+                    <dd class="runner-kv-strong" id="runner-scan-grand-total">@FormatMoney(ticket.GrandTotal, ticket.Currency)</dd>
+                </dl>
+            </div>
+
+            @* Drink orders *@
+            <div class="runner-ticket-section" id="runner-scan-section-orders">
+                <div class="runner-ticket-section-title">@Localizer["ScanTicket_SectionOrders"] (@ticket.DrinkOrders.Count)</div>
+                @if (ticket.DrinkOrders.Count == 0)
+                {
+                    <div class="runner-kv-empty" id="runner-scan-orders-empty">@Localizer["ScanTicket_NoOrders"]</div>
+                }
+                else
+                {
+                    @foreach (var o in ticket.DrinkOrders)
+                    {
+                        <div class="runner-scan-order" id="@($"runner-scan-order-{o.OrderId}")">
+                            <div class="runner-scan-order-top">
+                                <span class="runner-order-id">#@o.OrderId</span>
+                                <span class="runner-scan-order-meta">@o.Status · @DateText(o.CreatedAt)</span>
+                                <span class="runner-scan-order-total">@FormatMoney(o.OrderTotal, ticket.Currency)</span>
+                            </div>
+                            <div class="runner-scan-order-items">
+                                @foreach (var it in o.Items)
+                                {
+                                    <div><span class="runner-qty">@it.Quantity×</span> @it.DrinkName <span class="runner-kv-sub">@FormatMoney(it.TotalPrice, ticket.Currency)</span></div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            @* Access control (staff re-issue): reset the ticket so a genuine holder who lost access on
+               their phone can re-scan and claim it on a new device. *@
+            <div class="runner-ticket-section" id="runner-scan-section-access">
+                <div class="runner-ticket-section-title">@Localizer["ScanTicket_SectionAccess"]</div>
+                <p class="runner-kv-sub" id="runner-scan-access-hint">@Localizer["ScanTicket_ReleaseHint"]</p>
+                <button class="runner-cta runner-cta-secondary" @onclick="ReleaseAccess" disabled="@isReleasing" id="runner-scan-release-btn">
+                    @if (isReleasing)
+                    {
+                        <span class="runner-cta-spinner" id="runner-scan-release-spinner"></span>
+                    }
+                    else
+                    {
+                        <span class="runner-cta-icon" aria-hidden="true">🔓</span>
+                        <span>@Localizer["ScanTicket_ReleaseBtn"]</span>
+                    }
+                </button>
+                @if (!string.IsNullOrEmpty(releaseMessage))
+                {
+                    <div class="runner-notice @(releaseError ? "runner-notice-danger" : "runner-notice-info")" id="runner-scan-release-result">@releaseMessage</div>
+                }
+            </div>
+
+            <button class="runner-cta" @onclick="ResetAll" id="runner-scan-new-btn">
+                <span class="runner-cta-icon" aria-hidden="true">🎟️</span>
+                <span>@Localizer["ScanTicket_NewScanBtn"]</span>
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private string codeInput = string.Empty;
+    private bool isResolving;
+    private bool notFound;
+    private bool resolveError;
+    private TicketDetailDto? ticket;
+
+    // Staff re-issue (release access) state
+    private bool isReleasing;
+    private bool releaseError;
+    private string? releaseMessage;
+
+    // Scanner state
+    private bool scannerActive;
+    private bool pendingScannerStart;
+    private bool scannerUnsupported;
+    private string? scannerError;
+    private DotNetObjectReference<ScanTicket>? selfRef;
+    private const string ScannerVideoId = "runner-scan-video";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The <video> element only exists after the render that flips scannerActive on, so start the
+        // camera here (post-render) to guarantee the element is in the DOM.
+        if (pendingScannerStart)
+        {
+            pendingScannerStart = false;
+            await StartScannerAsync();
+        }
+    }
+
+    private async Task Resolve()
+    {
+        var query = codeInput?.Trim();
+        if (string.IsNullOrWhiteSpace(query) || isResolving)
+            return;
+
+        await StopScannerAsync();
+
+        isResolving = true;
+        notFound = false;
+        resolveError = false;
+        ticket = null;
+        releaseMessage = null;
+        releaseError = false;
+        StateHasChanged();
+
+        try
+        {
+            var res = await Api.ScanTicketAsync(query);
+            switch (res.Outcome)
+            {
+                case ScanOutcome.Found:
+                    ticket = res.Ticket;
+                    await Haptic();
+                    break;
+                case ScanOutcome.NotFound:
+                    notFound = true;
+                    break;
+                default:
+                    resolveError = true;
+                    break;
+            }
+        }
+        catch
+        {
+            resolveError = true;
+        }
+        finally
+        {
+            isResolving = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetAll()
+    {
+        await StopScannerAsync();
+        codeInput = string.Empty;
+        ticket = null;
+        notFound = false;
+        resolveError = false;
+        scannerUnsupported = false;
+        scannerError = null;
+        isReleasing = false;
+        releaseError = false;
+        releaseMessage = null;
+    }
+
+    // Staff re-issue: release this ticket's active ordering sessions so the holder can re-claim on a
+    // new device. After a successful release the block on a fresh scan is lifted.
+    private async Task ReleaseAccess()
+    {
+        if (ticket is null || isReleasing)
+            return;
+
+        isReleasing = true;
+        releaseError = false;
+        releaseMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var res = await Api.ReleaseTicketAccessAsync(ticket.Id);
+            if (res.Ok)
+            {
+                releaseMessage = string.Format(CultureInfo.CurrentCulture, Localizer["ScanTicket_ReleaseDone"].Value, res.Released);
+                await Haptic();
+            }
+            else
+            {
+                releaseError = true;
+                releaseMessage = Localizer["ScanTicket_ReleaseError"].Value;
+            }
+        }
+        catch
+        {
+            releaseError = true;
+            releaseMessage = Localizer["ScanTicket_ReleaseError"].Value;
+        }
+        finally
+        {
+            isReleasing = false;
+            StateHasChanged();
+        }
+    }
+
+    // ---------------- Scanner ----------------
+
+    private void RequestScan()
+    {
+        scannerUnsupported = false;
+        scannerError = null;
+        notFound = false;
+        resolveError = false;
+        scannerActive = true;       // renders the <video> element
+        pendingScannerStart = true; // OnAfterRenderAsync starts the camera once it's in the DOM
+    }
+
+    private async Task StartScannerAsync()
+    {
+        selfRef ??= DotNetObjectReference.Create(this);
+        try
+        {
+            var res = await JS.InvokeAsync<ScanStartResult>("runnerTicketScanner.start", ScannerVideoId, selfRef);
+            if (res == null || !res.Supported)
+            {
+                scannerUnsupported = true;
+                scannerActive = false;
+            }
+            else if (!res.Started)
+            {
+                scannerError = res.Error;
+                scannerActive = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            scannerError = ex.Message;
+            scannerActive = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task StopScannerAsync()
+    {
+        pendingScannerStart = false;
+        if (!scannerActive)
+            return;
+        scannerActive = false;
+        try { await JS.InvokeVoidAsync("runnerTicketScanner.stop"); }
+        catch (Exception ex) { Console.WriteLine($"Stopping scanner failed: {ex.Message}"); }
+    }
+
+    [JSInvokable]
+    public Task OnQrDecoded(string text) => InvokeAsync(async () =>
+    {
+        // JS has already released the camera on a successful decode.
+        scannerActive = false;
+        pendingScannerStart = false;
+        codeInput = text;
+        await Resolve();
+    });
+
+    private async Task Haptic()
+    {
+        try { await JS.InvokeVoidAsync("runnerHaptic", 15); } catch { /* JS unavailable — ignore */ }
+    }
+
+    // ---------------- Display helpers ----------------
+
+    private string Display(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
+
+    private string SeatText()
+    {
+        var parts = new[] { ticket?.Section, ticket?.Row is { } r && !string.IsNullOrWhiteSpace(r) ? $"{Localizer["ScanTicket_RowPrefix"]} {r}" : null, ticket?.SeatNumber }
+            .Where(p => !string.IsNullOrWhiteSpace(p));
+        var joined = string.Join(" · ", parts);
+        return string.IsNullOrWhiteSpace(joined) ? "—" : joined;
+    }
+
+    private string DateText(DateTime? dt) =>
+        dt is null ? "—" : dt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm", CultureInfo.CurrentCulture);
+
+    private string KindText(TicketKind kind) => kind switch
+    {
+        TicketKind.Season => Localizer["ScanTicket_KindSeason"].Value,
+        _ => Localizer["ScanTicket_KindSingle"].Value
+    };
+
+    private static string FormatMoney(decimal amount, string? currency) =>
+        $"{amount.ToString("0.00", CultureInfo.InvariantCulture)} {(string.IsNullOrWhiteSpace(currency) ? "EUR" : currency)}";
+
+    public async ValueTask DisposeAsync()
+    {
+        try { await JS.InvokeVoidAsync("runnerTicketScanner.stop"); }
+        catch (Exception ex) { Console.WriteLine($"Scanner disposal stop failed: {ex.Message}"); }
+        selfRef?.Dispose();
+    }
+
+    // Shape returned by runnerTicketScanner.start (camelCase JSON → these properties).
+    public class ScanStartResult
+    {
+        public bool Supported { get; set; }
+        public bool Started { get; set; }
+        public string? Error { get; set; }
+    }
+}

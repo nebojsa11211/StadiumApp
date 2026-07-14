@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StadiumDrinkOrdering.API.Authorization;
 using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
@@ -17,17 +18,20 @@ public class TicketsController : ControllerBase
     private readonly IQRCodeService _qrCodeService;
     private readonly ITicketCardPdfService _ticketCardPdfService;
     private readonly ITicketDetailService _ticketDetailService;
+    private readonly ITicketAuthService _ticketAuthService;
 
     public TicketsController(
         ApplicationDbContext context,
         IQRCodeService qrCodeService,
         ITicketCardPdfService ticketCardPdfService,
-        ITicketDetailService ticketDetailService)
+        ITicketDetailService ticketDetailService,
+        ITicketAuthService ticketAuthService)
     {
         _context = context;
         _qrCodeService = qrCodeService;
         _ticketCardPdfService = ticketCardPdfService;
         _ticketDetailService = ticketDetailService;
+        _ticketAuthService = ticketAuthService;
     }
 
     [HttpGet]
@@ -189,6 +193,68 @@ public class TicketsController : ControllerBase
     {
         var dto = await _ticketDetailService.BuildDetailAsync(id);
         return dto == null ? NotFound() : Ok(dto);
+    }
+
+    /// <summary>
+    /// Resolves a scanned ticket to its full drill-down. Accepts a scanned QR payload (the customer
+    /// deep link <c>.../t/{token}</c>), a bare QR token, or a manually typed ticket number, and
+    /// returns the same <see cref="TicketDetailDto"/> as the id-based detail endpoint. Lets the
+    /// Runner app scan a ticket at the seat and see every fact about it. Open to all staff
+    /// (Admin/Bartender/Waiter) rather than the Admin-only role check on the id endpoint.
+    /// </summary>
+    [HttpGet("scan-details")]
+    [Authorize(Policy = AuthorizationPolicies.RequireStaffRole)]
+    public async Task<ActionResult<TicketDetailDto>> GetTicketDetailsByScan([FromQuery] string code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            return BadRequest(new { message = "A ticket code is required." });
+        }
+
+        var query = code.Trim();
+
+        // A scanned ticket QR encodes the deep link ".../t/{token}", so pull the token out of a URL
+        // when present; a manually typed code arrives as the bare token or the printed ticket number.
+        var token = query;
+        var marker = query.LastIndexOf("/t/", StringComparison.OrdinalIgnoreCase);
+        if (marker >= 0)
+        {
+            token = query[(marker + 3)..].Trim('/');
+        }
+
+        var lower = query.ToLower();
+        var ticket = await _context.Tickets.AsNoTracking()
+                         .FirstOrDefaultAsync(t => t.QRCodeToken == token)
+                     ?? await _context.Tickets.AsNoTracking()
+                         .FirstOrDefaultAsync(t => t.TicketNumber.ToLower() == lower);
+
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        var dto = await _ticketDetailService.BuildDetailAsync(ticket.Id);
+        return dto == null ? NotFound() : Ok(dto);
+    }
+
+    /// <summary>
+    /// Staff re-issue: releases every active ordering session bound to a ticket so a genuine holder who
+    /// lost access (switched phones, cleared their browser) can re-scan and claim it from a new device.
+    /// The next bare-QR scan of the ticket then creates a fresh session instead of being blocked as
+    /// "already in use on another device". Open to all staff (Runner/Bar), like the scan-details lookup.
+    /// </summary>
+    [HttpPost("{id:int}/release-access")]
+    [Authorize(Policy = AuthorizationPolicies.RequireStaffRole)]
+    public async Task<IActionResult> ReleaseTicketAccess(int id)
+    {
+        var ticket = await _context.Tickets.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        var released = await _ticketAuthService.ReleaseTicketSessionsAsync(id);
+        return Ok(new { released });
     }
 
     /// <summary>

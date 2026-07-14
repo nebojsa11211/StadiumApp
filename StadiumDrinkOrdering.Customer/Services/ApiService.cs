@@ -95,8 +95,10 @@ public interface IApiService
     // Season member landing (authenticated)
     Task<SeasonHomeDto?> GetSeasonHomeAsync();
 
-    // Unified entry resolver — single-event ticket QR or season pass token
-    Task<ValidateTicketResponse?> ResolveAccessAsync(string token);
+    // Unified entry resolver — single-event ticket QR or season pass token. existingSessionToken is the
+    // SessionId this device already holds (from a previous claim) so the SAME device resumes rather than
+    // being blocked as a second device.
+    Task<ValidateTicketResponse?> ResolveAccessAsync(string token, string? existingSessionToken = null);
 
     // DEV-ONLY: tickets of the live event for the scan-page test combobox (empty/404 outside Development).
     Task<List<TestTicketDto>?> GetLiveEventTestTicketsAsync();
@@ -1152,11 +1154,11 @@ public class ApiService : IApiService
 
     // Unified entry resolver: /t/{token} calls this so a single-event ticket QR AND a season pass token
     // both open an ordering session. Returns a ValidateTicketResponse (success or a friendly error).
-    public async Task<ValidateTicketResponse?> ResolveAccessAsync(string token)
+    public async Task<ValidateTicketResponse?> ResolveAccessAsync(string token, string? existingSessionToken = null)
     {
         try
         {
-            var request = new ValidateTicketRequest { QRCodeToken = token };
+            var request = new ValidateTicketRequest { QRCodeToken = token, ExistingSessionToken = existingSessionToken };
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 

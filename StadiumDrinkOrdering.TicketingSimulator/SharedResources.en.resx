@@ -358,6 +358,12 @@
   <data name="Index_NoEventsYet" xml:space="preserve">
     <value>No events created yet. Create one above to get started.</value>
   </data>
+  <data name="Index_AdminCreatedBadge" xml:space="preserve">
+    <value>admin-created</value>
+  </data>
+  <data name="Index_AdminCreatedTooltip" xml:space="preserve">
+    <value>Created in the Admin panel — the simulator will assign it an external id when you select or delete it.</value>
+  </data>
   <data name="Index_EventColumn" xml:space="preserve">
     <value>Event</value>
   </data>

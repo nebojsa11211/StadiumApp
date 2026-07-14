@@ -1,0 +1,280 @@
+@page "/topup-history"
+@using System.Globalization
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Bar.Services
+@inject IStaffApiService ApiService
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["TopupHistory_PageTitle"]</PageTitle>
+
+<div id="bar-topup-history-console" class="console">
+    <div id="bar-topup-history-header" class="console-head">
+        <div id="bar-topup-history-header-title" class="console-head__title">
+            <span class="eyebrow">@Localizer["Dashboard_BarStation"]</span>
+            <h1>@Localizer["TopupHistory_PageTitle"]</h1>
+            <p>@Localizer["TopupHistory_Subtitle"]</p>
+        </div>
+        <div id="bar-topup-history-header-actions" class="console-head__actions">
+            <button class="pill-btn" @onclick="Refresh" id="bar-topup-history-refresh-btn" disabled="@isLoading">
+                <i class="bi bi-arrow-clockwise"></i> @Localizer["Refresh"]
+            </button>
+        </div>
+    </div>
+
+    @* ---- Filters ---- *@
+    <div id="bar-topup-history-filters-panel" class="panel">
+        <div id="bar-topup-history-filters-body" class="filters">
+            <div class="input-group" style="max-width: 340px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input id="bar-topup-history-search" type="text" class="form-control"
+                       placeholder="@Localizer["TopupHistory_SearchPlaceholder"]"
+                       @bind="search" @bind:event="oninput" @onkeyup="OnSearchKey" />
+            </div>
+            <button class="pill-btn @(onlyMine ? "pill-btn--primary" : "")" id="bar-topup-history-mine-btn"
+                    @onclick="ToggleOnlyMine">
+                <i class="bi bi-person-badge"></i> @Localizer["TopupHistory_OnlyMine"]
+            </button>
+            <button class="pill-btn pill-btn--primary" id="bar-topup-history-apply-btn" @onclick="ApplyFilters">
+                <i class="bi bi-funnel"></i> @Localizer["Search"]
+            </button>
+            @if (!string.IsNullOrWhiteSpace(search) || onlyMine)
+            {
+                <button class="pill-btn" id="bar-topup-history-clear-btn" @onclick="ClearFilters">
+                    <i class="bi bi-x-circle"></i> @Localizer["TopupHistory_Clear"]
+                </button>
+            }
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div id="bar-topup-history-loading" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>@Localizer["Loading"]</p>
+        </div>
+    }
+    else if (data != null)
+    {
+        @* ---- Totals ---- *@
+        <div id="bar-topup-history-metrics" class="metrics">
+            <div class="metric">
+                <div class="metric__head">
+                    <span class="metric__label">@Localizer["TopupHistory_Movements"]</span>
+                    <i class="bi bi-list-ol metric__icon"></i>
+                </div>
+                <div class="metric__value mono">@data.TotalCount</div>
+            </div>
+            <div class="metric">
+                <div class="metric__head">
+                    <span class="metric__label">@Localizer["TopupHistory_TotalIn"]</span>
+                    <i class="bi bi-arrow-down-circle metric__icon is-ok"></i>
+                </div>
+                <div class="metric__value mono is-ok">@Money(data.TotalIn)</div>
+            </div>
+            <div class="metric">
+                <div class="metric__head">
+                    <span class="metric__label">@Localizer["TopupHistory_TotalOut"]</span>
+                    <i class="bi bi-arrow-up-circle metric__icon admin-text-warning"></i>
+                </div>
+                <div class="metric__value mono admin-text-warning">@Money(data.TotalOut)</div>
+            </div>
+            <div class="metric metric--accent">
+                <div class="metric__head">
+                    <span class="metric__label">@Localizer["TopupHistory_Net"]</span>
+                    <i class="bi bi-cash-stack metric__icon"></i>
+                </div>
+                <div class="metric__value mono">@Money(data.TotalIn - data.TotalOut)</div>
+            </div>
+        </div>
+
+        @* ---- Table ---- *@
+        <div id="bar-topup-history-table-panel" class="panel">
+            <div class="panel__head">
+                <h2 class="panel__title"><i class="bi bi-cash-coin"></i> @Localizer["TopupHistory_PageTitle"]</h2>
+                <span class="panel__count">@data.TotalCount</span>
+            </div>
+
+            @if (data.Items.Count > 0)
+            {
+                <div id="bar-topup-history-table-wrapper" style="overflow-x:auto;">
+                    <table id="bar-topup-history-table" class="console-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["TopupHistory_Col_Time"]</th>
+                                <th>@Localizer["TopupHistory_Col_Type"]</th>
+                                <th>@Localizer["TopupHistory_Col_For"]</th>
+                                <th>@Localizer["TopupHistory_Col_Event"]</th>
+                                <th>@Localizer["TopupHistory_Col_Staff"]</th>
+                                <th class="text-end">@Localizer["TopupHistory_Col_Amount"]</th>
+                                <th class="text-end">@Localizer["TopupHistory_Col_BalanceAfter"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in data.Items)
+                            {
+                                <tr id="@($"bar-topup-history-row-{item.TransactionId}")">
+                                    <td class="console-table__time mono">@item.CreatedAt.ToLocalTime().ToString("dd.MM HH:mm:ss")</td>
+                                    <td><span class="badge @TypeBadgeClass(item.ReferenceType)">@TypeLabel(item.ReferenceType)</span></td>
+                                    <td>
+                                        <div class="fw-semibold">@Display(item.CustomerName)</div>
+                                        <div class="console-table__muted small">
+                                            @if (item.OwnerType == "Ticket")
+                                            {
+                                                <span><i class="bi bi-ticket-perforated"></i> @Display(item.TicketNumber)</span>
+                                            }
+                                            else
+                                            {
+                                                @Display(item.Email)
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(item.EventName))
+                                        {
+                                            <div class="fw-semibold">@item.EventName</div>
+                                            @if (item.EventDate.HasValue)
+                                            {
+                                                <div class="console-table__muted small mono">@item.EventDate.Value.ToLocalTime().ToString("dd.MM.yyyy")</div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="console-table__muted">—</span>
+                                        }
+                                    </td>
+                                    <td class="console-table__muted">@Display(item.StaffEmail)</td>
+                                    <td class="text-end mono fw-bold @(item.Amount < 0 ? "admin-text-error" : "is-ok")">
+                                        @SignedMoney(item.Amount, item.Currency)
+                                    </td>
+                                    <td class="text-end mono">@Money(item.BalanceAfter, item.Currency)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (TotalPages > 1)
+                {
+                    <div id="bar-topup-history-pager" class="table-foot d-flex align-items-center justify-content-between">
+                        <button class="pill-btn" id="bar-topup-history-prev-btn"
+                                @onclick="PrevPage" disabled="@(page <= 1)">
+                            <i class="bi bi-chevron-left"></i> @Localizer["TopupHistory_Prev"]
+                        </button>
+                        <span class="mono">@string.Format(Localizer["TopupHistory_PageOf"].Value, page, TotalPages)</span>
+                        <button class="pill-btn" id="bar-topup-history-next-btn"
+                                @onclick="NextPage" disabled="@(page >= TotalPages)">
+                            @Localizer["TopupHistory_Next"] <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                }
+            }
+            else
+            {
+                <div id="bar-topup-history-empty" class="empty">
+                    <i class="bi bi-inbox"></i>
+                    <p>@Localizer["TopupHistory_Empty"]</p>
+                    <span>@Localizer["TopupHistory_EmptyHint"]</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private BarTopupHistoryListDto? data;
+    private bool isLoading = true;
+
+    private string search = string.Empty;
+    private bool onlyMine;
+    private int page = 1;
+    private const int PageSize = 50;
+
+    private int TotalPages => data == null || data.TotalCount == 0
+        ? 1
+        : (int)Math.Ceiling(data.TotalCount / (double)PageSize);
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        data = await ApiService.GetBarTopupHistoryAsync(search, onlyMine, page, PageSize);
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task Refresh() => await LoadData();
+
+    private async Task ApplyFilters()
+    {
+        page = 1;
+        await LoadData();
+    }
+
+    private async Task ClearFilters()
+    {
+        search = string.Empty;
+        onlyMine = false;
+        page = 1;
+        await LoadData();
+    }
+
+    private async Task ToggleOnlyMine()
+    {
+        onlyMine = !onlyMine;
+        page = 1;
+        await LoadData();
+    }
+
+    private async Task OnSearchKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await ApplyFilters();
+    }
+
+    private async Task PrevPage()
+    {
+        if (page <= 1) return;
+        page--;
+        await LoadData();
+    }
+
+    private async Task NextPage()
+    {
+        if (page >= TotalPages) return;
+        page++;
+        await LoadData();
+    }
+
+    // ---- Display helpers ----
+
+    private string Display(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
+
+    private static string Money(decimal amount, string? currency = null) =>
+        $"{amount.ToString("0.00", CultureInfo.InvariantCulture)} {(string.IsNullOrWhiteSpace(currency) ? "EUR" : currency)}";
+
+    private static string SignedMoney(decimal amount, string? currency)
+    {
+        var sign = amount > 0 ? "+" : amount < 0 ? "−" : string.Empty;
+        return $"{sign}{Money(Math.Abs(amount), currency)}";
+    }
+
+    private string TypeLabel(string? referenceType) => referenceType switch
+    {
+        "CashTopup" => Localizer["TopupHistory_Type_AccountTopup"].Value,
+        "TicketTopup" => Localizer["TopupHistory_Type_TicketLoad"].Value,
+        "TicketCashOut" => Localizer["TopupHistory_Type_CashOut"].Value,
+        _ => referenceType ?? "—"
+    };
+
+    private static string TypeBadgeClass(string? referenceType) => referenceType switch
+    {
+        "CashTopup" => "bg-success",
+        "TicketTopup" => "bg-info text-dark",
+        "TicketCashOut" => "bg-warning text-dark",
+        _ => "bg-secondary"
+    };
+}

@@ -251,8 +251,59 @@ else
                 @Localizer["TicketTopup_CancelBtn"]
             </button>
         }
-        else if (resolved != null && resolved.AllowTicketWallet)
+        else if (resolved != null && (resolved.AllowTicketWallet || resolved.CanProvisionAccount))
         {
+            @if (resolved.CanProvisionAccount)
+            {
+                @* ---------- Create an account from the ticket's identity (OIB) ---------- *@
+                <div id="bar-provision-card" class="card mb-3">
+                    <div class="card-header">👤 Kreiraj račun gosta</div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrWhiteSpace(resolved.FullName))
+                        {
+                            <p class="mb-1" id="bar-provision-name">@resolved.FullName</p>
+                        }
+                        <dl class="row mb-2">
+                            <dt class="col-5 text-muted">OIB</dt>
+                            <dd class="col-7" id="bar-provision-oib">@Display(resolved.Oib)</dd>
+                        </dl>
+                        <p class="text-muted small">
+                            Unesite e-poštu gosta da kreirate račun — sredstva se učitavaju na njegov osobni
+                            novčanik i može ih kasnije preuzeti.
+                        </p>
+                        <label for="bar-provision-email" class="form-label">E-pošta</label>
+                        <div class="input-group mb-2">
+                            <input id="bar-provision-email" type="email" class="form-control"
+                                   @bind="provisionEmail" @bind:event="oninput"
+                                   placeholder="ime@@email.hr" disabled="@isProvisioning" />
+                            <button id="bar-provision-btn" class="btn btn-primary"
+                                    @onclick="ProvisionAsync"
+                                    disabled="@(isProvisioning || string.IsNullOrWhiteSpace(provisionEmail))">
+                                @if (isProvisioning)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Kreiram…</span>
+                                }
+                                else
+                                {
+                                    <span>Kreiraj račun i nastavi</span>
+                                }
+                            </button>
+                        </div>
+                        @if (!string.IsNullOrEmpty(provisionError))
+                        {
+                            <div id="bar-provision-error" class="alert alert-danger mb-0">@provisionError</div>
+                        }
+                        @if (resolved.AllowTicketWallet)
+                        {
+                            <p class="text-muted small mt-2 mb-0">Ili učitajte izravno na ulaznicu ispod.</p>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (resolved.AllowTicketWallet)
+            {
             @* ---------- Anonymous ticket wallet: load funds + cash out ---------- *@
             <div id="bar-ticket-wallet-card" class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -358,6 +409,7 @@ else
                     }
                 </div>
             </div>
+            }
 
             <button id="bar-ticket-wallet-cancel-btn" class="btn btn-link text-muted" @onclick="ResetAll">
                 @Localizer["TicketTopup_CancelBtn"]
@@ -496,6 +548,11 @@ else
     private bool isClaiming;
     private TicketWalletClaimResultDto? claimResult;
 
+    // ---- Provision-an-account (OIB-identified ticket with no account) ----
+    private string provisionEmail = string.Empty;
+    private bool isProvisioning;
+    private string? provisionError;
+
     // ---- Dev-only test-ticket picker ----
     private List<TestTicketDto>? _testTickets;
 
@@ -519,7 +576,7 @@ else
     // it gets a wider container than the later steps to use the horizontal space.
     private bool ShowIdentifyStep =>
         result == null && ticketResult == null && claimResult == null
-        && !(resolved != null && (resolved.HasAccount || resolved.AllowTicketWallet));
+        && !(resolved != null && (resolved.HasAccount || resolved.AllowTicketWallet || resolved.CanProvisionAccount));
 
     private decimal ParsedAmount => TryParseAmount(amountText, out var a) ? a : 0m;
 
@@ -589,10 +646,29 @@ else
             {
                 notFound = true;
             }
+            else if (!res.HasAccount && (res.AllowTicketWallet || res.CanProvisionAccount))
+            {
+                // No linked account, but a concrete ticket was scanned. Show the actionable card(s):
+                // create an account from the ticket's identity (CanProvisionAccount) and/or load funds
+                // directly on the ticket as a bearer balance (AllowTicketWallet).
+                resolved = res;
+                amountText = string.Empty;
+                submitError = null;
+                // Prefill the provision email with the address the ticket already carries so the
+                // bartender only confirms it (they can still edit) instead of retyping it.
+                provisionEmail = res.Email ?? string.Empty;
+                provisionError = null;
+
+                // If the ticket already carries an email, provision the account automatically and go
+                // straight to the amount step — no manual confirm. On failure ProvisionAsync surfaces
+                // the error and the (prefilled) provision card stays visible for the bartender to fix.
+                if (res.CanProvisionAccount && !string.IsNullOrWhiteSpace(res.Email))
+                    await ProvisionAsync();
+            }
             else if (!res.HasAccount)
             {
-                // Matched a ticket/pass but no linked account — surface the server message so the
-                // bartender can tell the fan to sign in / register first. Cannot top up.
+                // Matched a pass/email/OIB but no linked account and nothing to bind a bearer balance
+                // to — surface the server message so the bartender tells the fan to sign in / register.
                 noAccountMessage = string.IsNullOrWhiteSpace(res.Message)
                     ? Localizer["TicketTopup_NoAccount"].Value
                     : res.Message;
@@ -808,6 +884,48 @@ else
         _ => Localizer["TicketWallet_Fail_ClaimGeneric"].Value
     };
 
+    // Create a claimable account from the scanned ticket's identity (name + OIB) using the email the
+    // bartender collected. On success the resolve result becomes an account, so the amount form renders.
+    private async Task ProvisionAsync()
+    {
+        if (isProvisioning || resolved?.TicketId is not int ticketId)
+            return;
+        var email = provisionEmail?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(email))
+            return;
+
+        isProvisioning = true;
+        provisionError = null;
+        StateHasChanged();
+
+        try
+        {
+            var request = new BarTopupProvisionRequestDto { TicketId = ticketId, Email = email };
+            var res = await ApiService.ProvisionTopupAccountAsync(request);
+            if (res is { HasAccount: true })
+            {
+                resolved = res;        // now a real account — the amount step renders next
+                amountText = string.Empty;
+                submitError = null;
+            }
+            else
+            {
+                provisionError = string.IsNullOrWhiteSpace(res?.Message)
+                    ? Localizer["TicketTopup_Fail_Generic"].Value
+                    : res!.Message;
+            }
+        }
+        catch (Exception ex)
+        {
+            provisionError = ex.Message;
+        }
+        finally
+        {
+            isProvisioning = false;
+            StateHasChanged();
+        }
+    }
+
     private async Task ResetAll()
     {
         await StopScannerAsync();
@@ -820,6 +938,9 @@ else
         claimEmail = string.Empty;
         claimResult = null;
         isClaiming = false;
+        provisionEmail = string.Empty;
+        provisionError = null;
+        isProvisioning = false;
         notFound = false;
         noAccountMessage = null;
         resolveError = null;

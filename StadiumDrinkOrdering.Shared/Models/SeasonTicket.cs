@@ -43,6 +43,16 @@ public class SeasonTicket
     [StringLength(20)]
     public string? HolderPhone { get; set; }
 
+    /// <summary>Croatian OIB of the pass holder — 11 digits when set. Copied onto each derived per-event
+    /// <see cref="Ticket.CustomerOib"/>. Null for foreign holders (see <see cref="HolderDocumentNumber"/>).</summary>
+    [StringLength(11)]
+    public string? HolderOib { get; set; }
+
+    /// <summary>Identity document number for a foreign pass holder with no OIB. Mutually exclusive with
+    /// <see cref="HolderOib"/>; copied onto derived tickets' <see cref="Ticket.CustomerDocumentNumber"/>.</summary>
+    [StringLength(50)]
+    public string? HolderDocumentNumber { get; set; }
+
     [Range(0.01, 999999.99)]
     public decimal Price { get; set; }
 

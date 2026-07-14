@@ -358,6 +358,12 @@
   <data name="Index_NoEventsYet" xml:space="preserve">
     <value>Nema kreiranog događaja. Kreirajte jedan iznad kako biste počeli.</value>
   </data>
+  <data name="Index_AdminCreatedBadge" xml:space="preserve">
+    <value>iz admin panela</value>
+  </data>
+  <data name="Index_AdminCreatedTooltip" xml:space="preserve">
+    <value>Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete.</value>
+  </data>
   <data name="Index_EventColumn" xml:space="preserve">
     <value>Događaj</value>
   </data>

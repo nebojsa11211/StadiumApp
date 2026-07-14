@@ -179,11 +179,12 @@ public class IntegrationController : ControllerBase
     [HttpGet("events")]
     public async Task<ActionResult<List<ExternalEventSummaryDto>>> GetEvents(CancellationToken ct)
     {
-        // Project raw fields (incl. Status) first, then compute the lifecycle flags in memory —
-        // EventLifecycle rules don't translate to SQL.
+        // Lists every event — both externally-synced ones and those created in the Admin panel
+        // (which have no ExternalEventId until the simulator adopts them). Project raw fields
+        // (incl. Status) first, then compute the lifecycle flags in memory — EventLifecycle
+        // rules don't translate to SQL.
         var rows = await _context.Events
             .AsNoTracking()
-            .Where(e => e.ExternalEventId != null)
             .OrderByDescending(e => e.CreatedAt)
             .Select(e => new
             {
@@ -209,7 +210,7 @@ public class IntegrationController : ControllerBase
         var events = rows.Select(e => new ExternalEventSummaryDto
         {
             EventId = e.Id,
-            ExternalEventId = e.ExternalEventId!,
+            ExternalEventId = e.ExternalEventId,
             EventName = e.EventName,
             EventType = e.EventType,
             HomeTeam = e.HomeTeam,
@@ -228,6 +229,75 @@ public class IntegrationController : ControllerBase
         }).ToList();
 
         return Ok(events);
+    }
+
+    /// <summary>
+    /// Adopts an event that did not originate from the external system (e.g. one created in the
+    /// Admin panel) into the integration surface by lazily assigning it an external id, so the
+    /// simulator can resume/sell/close/delete it exactly like an externally-created event.
+    /// Idempotent: an event that already has an external id is returned unchanged. Signed like
+    /// the webhook over the raw — empty — body.
+    /// </summary>
+    [HttpPost("events/{eventId:int}/adopt")]
+    public async Task<IActionResult> AdoptEvent(int eventId, CancellationToken ct)
+    {
+        // POST carries no body; read (empty) and verify the HMAC over exactly what was signed.
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
+        if (!VerifySignature(body, Request.Headers[SignatureHeader].ToString()))
+        {
+            _logger.LogWarning("Rejected adopt-event: invalid or missing signature");
+            return Unauthorized(new { message = "Invalid signature" });
+        }
+
+        var evt = await _context.Events.FirstOrDefaultAsync(e => e.Id == eventId, ct);
+        if (evt == null)
+            return NotFound(new { message = $"Event {eventId} not found" });
+
+        if (string.IsNullOrEmpty(evt.ExternalEventId))
+        {
+            evt.ExternalEventId = "ADM-" + Guid.NewGuid().ToString("N")[..8].ToUpperInvariant();
+            if (string.IsNullOrEmpty(evt.SourceSystem))
+                evt.SourceSystem = "TicketingSimulator";
+            await _context.SaveChangesAsync(ct);
+            _logger.LogInformation("Adopted admin event {EventId} into integration surface as {ExternalId}",
+                evt.Id, evt.ExternalEventId);
+        }
+
+        return Ok(new { eventId = evt.Id, externalEventId = evt.ExternalEventId });
+    }
+
+    /// <summary>
+    /// Links an event that isn't part of a season to the current season (if one is set) and
+    /// materializes its derived per-seat season-pass tickets, so the sales card reflects season
+    /// holders. Idempotent: an event already in a season — or when no current season exists — is a
+    /// no-op. Signed like the webhook over the raw — empty — body.
+    /// </summary>
+    [HttpPost("events/{eventId:int}/link-current-season")]
+    public async Task<IActionResult> LinkEventToCurrentSeason(int eventId, CancellationToken ct)
+    {
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
+        if (!VerifySignature(body, Request.Headers[SignatureHeader].ToString()))
+        {
+            _logger.LogWarning("Rejected link-current-season: invalid or missing signature");
+            return Unauthorized(new { message = "Invalid signature" });
+        }
+
+        var exists = await _context.Events.AsNoTracking().AnyAsync(e => e.Id == eventId, ct);
+        if (!exists)
+            return NotFound(new { message = $"Event {eventId} not found" });
+
+        var (linked, seasonId, derived) = await _ingestion.EnsureEventLinkedToCurrentSeasonAsync(eventId, ct);
+        return Ok(new { eventId, linked, seasonId, derivedSeasonTickets = derived });
     }
 
     /// <summary>

@@ -104,6 +104,13 @@ public class ExternalSeasonTicketDto
     public decimal Price { get; set; }
     public string? HolderName { get; set; }
     public string? HolderEmail { get; set; }
+
+    /// <summary>Croatian OIB of the pass holder (11 digits), when the external system captured one.</summary>
+    public string? HolderOib { get; set; }
+
+    /// <summary>Identity document number for a foreign pass holder with no OIB.</summary>
+    public string? HolderDocumentNumber { get; set; }
+
     public DateTime SoldAt { get; set; }
 }
 
@@ -119,6 +126,13 @@ public class ExternalTicketDto
     public decimal Price { get; set; }
     public string? CustomerName { get; set; }
     public string? CustomerEmail { get; set; }
+
+    /// <summary>Croatian OIB of the buyer (11 digits), when the external system captured one.</summary>
+    public string? CustomerOib { get; set; }
+
+    /// <summary>Identity document number for a foreign buyer with no OIB.</summary>
+    public string? CustomerDocumentNumber { get; set; }
+
     public DateTime SoldAt { get; set; }
 }
 
@@ -176,13 +190,19 @@ public class SectorSalesDto
 }
 
 /// <summary>
-/// Summary of an externally-originated event, so the external system/simulator can list the
-/// events it has already created and resume selling into one (e.g. after a page reload).
+/// Summary of an event the external system/simulator can list and resume selling into (e.g.
+/// after a page reload). Includes events created in the Admin panel that have no external id
+/// yet — for those <see cref="ExternalEventId"/> is null until the simulator adopts them.
 /// </summary>
 public class ExternalEventSummaryDto
 {
     public int EventId { get; set; }
-    public string ExternalEventId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The external ticketing id, or null for an Admin-created event that has not been adopted
+    /// into the integration surface yet (see the adopt endpoint / EnsureExternalIdAsync).
+    /// </summary>
+    public string? ExternalEventId { get; set; }
     public string EventName { get; set; } = string.Empty;
     public string EventType { get; set; } = string.Empty;
     public string? HomeTeam { get; set; }

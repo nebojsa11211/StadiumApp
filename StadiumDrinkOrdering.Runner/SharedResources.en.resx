@@ -229,4 +229,136 @@
   <data name="EventGate_CheckAgain" xml:space="preserve">
     <value>Check again</value>
   </data>
+  <data name="Layout_TabScan" xml:space="preserve">
+    <value>Scan</value>
+  </data>
+  <data name="ScanTicket_PageTitle" xml:space="preserve">
+    <value>Scan Ticket</value>
+  </data>
+  <data name="ScanTicket_Title" xml:space="preserve">
+    <value>Scan ticket</value>
+  </data>
+  <data name="ScanTicket_IdentifyLabel" xml:space="preserve">
+    <value>Scan a ticket QR or type its number</value>
+  </data>
+  <data name="ScanTicket_CodePlaceholder" xml:space="preserve">
+    <value>Ticket number or code</value>
+  </data>
+  <data name="ScanTicket_ResolveBtn" xml:space="preserve">
+    <value>Look up</value>
+  </data>
+  <data name="ScanTicket_ScanBtn" xml:space="preserve">
+    <value>Scan QR code</value>
+  </data>
+  <data name="ScanTicket_StopScanBtn" xml:space="preserve">
+    <value>Stop scanning</value>
+  </data>
+  <data name="ScanTicket_ScanningHint" xml:space="preserve">
+    <value>Point the camera at the ticket's QR code</value>
+  </data>
+  <data name="ScanTicket_ScanNotSupported" xml:space="preserve">
+    <value>Camera scanning isn't supported on this device — type the ticket number instead.</value>
+  </data>
+  <data name="ScanTicket_ScanError" xml:space="preserve">
+    <value>Couldn't start the camera. Type the ticket number instead.</value>
+  </data>
+  <data name="ScanTicket_NotFound" xml:space="preserve">
+    <value>No ticket matches that code.</value>
+  </data>
+  <data name="ScanTicket_ResolveError" xml:space="preserve">
+    <value>Couldn't look up the ticket. Check your connection and try again.</value>
+  </data>
+  <data name="ScanTicket_NewScanBtn" xml:space="preserve">
+    <value>Scan another ticket</value>
+  </data>
+  <data name="ScanTicket_SectionAccess" xml:space="preserve">
+    <value>Access</value>
+  </data>
+  <data name="ScanTicket_ReleaseHint" xml:space="preserve">
+    <value>If the holder lost access on their phone, reset the ticket so they can scan it again on a new device.</value>
+  </data>
+  <data name="ScanTicket_ReleaseBtn" xml:space="preserve">
+    <value>Reset device access</value>
+  </data>
+  <data name="ScanTicket_ReleaseDone" xml:space="preserve">
+    <value>Access reset ({0} session(s) released). The holder can now scan again.</value>
+  </data>
+  <data name="ScanTicket_ReleaseError" xml:space="preserve">
+    <value>Could not reset access. Please try again.</value>
+  </data>
+  <data name="ScanTicket_TicketNumber" xml:space="preserve">
+    <value>Ticket number</value>
+  </data>
+  <data name="ScanTicket_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ScanTicket_Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="ScanTicket_Used" xml:space="preserve">
+    <value>Used</value>
+  </data>
+  <data name="ScanTicket_Unused" xml:space="preserve">
+    <value>Not used</value>
+  </data>
+  <data name="ScanTicket_SectionEvent" xml:space="preserve">
+    <value>Event &amp; seat</value>
+  </data>
+  <data name="ScanTicket_SectionHolder" xml:space="preserve">
+    <value>Holder</value>
+  </data>
+  <data name="ScanTicket_SectionSpending" xml:space="preserve">
+    <value>Spending</value>
+  </data>
+  <data name="ScanTicket_SectionOrders" xml:space="preserve">
+    <value>Drink orders</value>
+  </data>
+  <data name="ScanTicket_Event" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="ScanTicket_EventDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="ScanTicket_Seat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="ScanTicket_RowPrefix" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="ScanTicket_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ScanTicket_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="ScanTicket_Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="ScanTicket_Oib" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="ScanTicket_Document" xml:space="preserve">
+    <value>Document no.</value>
+  </data>
+  <data name="ScanTicket_Wallet" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="ScanTicket_TicketPrice" xml:space="preserve">
+    <value>Ticket price</value>
+  </data>
+  <data name="ScanTicket_DrinksTotal" xml:space="preserve">
+    <value>Drinks total</value>
+  </data>
+  <data name="ScanTicket_GrandTotal" xml:space="preserve">
+    <value>Grand total</value>
+  </data>
+  <data name="ScanTicket_NoOrders" xml:space="preserve">
+    <value>No drink orders on this ticket.</value>
+  </data>
+  <data name="ScanTicket_KindSingle" xml:space="preserve">
+    <value>Single event</value>
+  </data>
+  <data name="ScanTicket_KindSeason" xml:space="preserve">
+    <value>Season</value>
+  </data>
 </root>

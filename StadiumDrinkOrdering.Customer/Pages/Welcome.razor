@@ -143,6 +143,33 @@
     <div id="customer-welcome-cta" class="welcome-cta">
         @if (_hasSession)
         {
+            @* Scanned-ticket banner: greet the holder by name and show the balance they can spend on drinks
+               (their HALFTIME wallet, or the bearer balance loaded on the ticket at the bar). *@
+            <div id="customer-welcome-fancard" class="wl-fancard">
+                <div id="customer-welcome-fan-id" class="wl-fan-id">
+                    <div id="customer-welcome-fan-avatar" class="wl-fan-avatar">@Initials(FanName)</div>
+                    <div id="customer-welcome-fan-meta" class="wl-fan-meta">
+                        <div id="customer-welcome-fan-hi" class="wl-fan-hi">Dobrodošao natrag</div>
+                        <div id="customer-welcome-fan-name" class="wl-fan-name">@FanName</div>
+                        @if (!string.IsNullOrWhiteSpace(State.TicketNumber))
+                        {
+                            <div id="customer-welcome-fan-ticket" class="wl-fan-ticket">🎟️ @State.TicketNumber</div>
+                        }
+                    </div>
+                </div>
+                <div id="customer-welcome-fan-wallet" class="wl-fan-wallet">
+                    <div id="customer-welcome-fan-wallet-label" class="wl-fan-wallet-label">@WalletLabel</div>
+                    @if (_wallet is { Exists: true })
+                    {
+                        <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt">€@_wallet.Balance.ToString("F2")</div>
+                    }
+                    else
+                    {
+                        <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt empty">Nema stanja</div>
+                    }
+                </div>
+            </div>
+
             @* Ticket already scanned this session — jump back into ordering instead of scanning again. *@
             <button id="customer-welcome-continue-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/order"))">
                 <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
@@ -180,6 +207,14 @@
     private CurrentSeasonDto? _season;
     private VenueDto? _venue;
     private bool _hasSession;
+    private WalletSummaryDto? _wallet;
+
+    // Ticket holder's name for the "welcome back" banner; falls back to a neutral label for anonymous tickets.
+    private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? "Gost" : State.CustomerName;
+
+    // Label matches the wallet kind the balance came from: a registered fan's HALFTIME wallet vs the bearer
+    // balance loaded on the scanned ticket at the bar counter.
+    private string WalletLabel => _wallet is { IsTicketWallet: true } ? "Saldo na ulaznici" : "HALFTIME novčanik";
 
     private static readonly string[] MonthsHr =
         { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
@@ -226,26 +261,38 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender) return;
+
         // On a fresh page load / QR reopen the in-memory session is gone, but the token was
         // persisted to sessionStorage on scan. Rehydrate it (interactive-only, never during
         // prerender) so the CTA offers "continue ordering" instead of "scan again".
-        if (!firstRender || _hasSession) return;
-
-        string? token = null;
-        try { token = await JS.InvokeAsync<string?>("sessionStorage.getItem", "htSessionToken"); }
-        catch { /* prerender / no JS — ignore */ }
-        if (string.IsNullOrEmpty(token)) return;
-
-        if (await State.InitFromTokenAsync(token))
+        if (!_hasSession)
         {
-            _hasSession = true;
-            StateHasChanged();
+            string? token = null;
+            try { token = await JS.InvokeAsync<string?>("sessionStorage.getItem", "htSessionToken"); }
+            catch { /* prerender / no JS — ignore */ }
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                if (await State.InitFromTokenAsync(token))
+                {
+                    _hasSession = true;
+                }
+                else
+                {
+                    // Stale/expired token — drop it so we don't keep probing a dead session.
+                    try { await JS.InvokeVoidAsync("sessionStorage.removeItem", "htSessionToken"); }
+                    catch { /* ignore */ }
+                }
+            }
         }
-        else
+
+        // With a live session, pull the fan's spendable balance for the banner. Best-effort — a failure
+        // just leaves the wallet portion showing "no balance"; the name still renders from the session.
+        if (_hasSession)
         {
-            // Stale/expired token — drop it so we don't keep probing a dead session.
-            try { await JS.InvokeVoidAsync("sessionStorage.removeItem", "htSessionToken"); }
-            catch { /* ignore */ }
+            _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
+            StateHasChanged();
         }
     }
 

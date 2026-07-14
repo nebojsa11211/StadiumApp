@@ -486,3 +486,116 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     font-weight: 700;
     cursor: pointer;
 }
+
+/* =============================================================================
+   Ticket scan page (/scan) — identify (type/scan) + full ticket drill-down.
+   ============================================================================= */
+
+.runner-scan-identify { display: flex; flex-direction: column; gap: 0.75rem; }
+.runner-scan-label { font-size: 0.9rem; font-weight: 600; color: var(--r-ink-muted); }
+.runner-scan-inputrow { display: flex; gap: 0.5rem; }
+.runner-scan-input {
+    flex: 1;
+    min-height: 48px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--r-border);
+    border-radius: var(--r-radius-btn);
+    background: var(--r-surface);
+    color: var(--r-ink);
+    font-size: 1.05rem;
+}
+.runner-scan-input:focus {
+    outline: none;
+    border-color: var(--r-primary);
+    box-shadow: 0 0 0 3px var(--r-primary-tint);
+}
+.runner-scan-go {
+    min-width: 84px;
+    min-height: 48px;
+    padding: 0 1rem;
+    border: none;
+    border-radius: var(--r-radius-btn);
+    background: var(--r-primary);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.runner-scan-go:disabled { background: var(--r-disabled-bg); color: var(--r-disabled-ink); cursor: default; }
+
+.runner-scan-camera { display: flex; flex-direction: column; gap: 0.5rem; }
+.runner-scan-video {
+    width: 100%;
+    max-height: 320px;
+    background: #000;
+    border-radius: var(--r-radius-card);
+}
+.runner-scan-hint { font-size: 0.85rem; color: var(--r-ink-muted); text-align: center; margin: 0; }
+
+/* ---- Ticket detail ---- */
+.runner-ticket { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.runner-ticket-hero {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--r-surface);
+    border-radius: var(--r-radius-card);
+    box-shadow: var(--r-shadow-card);
+    padding: 0.9rem 1rem;
+}
+.runner-ticket-hero-main { min-width: 0; }
+.runner-ticket-number { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.01em; color: var(--r-ink); word-break: break-all; }
+.runner-ticket-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.45rem; }
+.runner-ticket-qr { width: 96px; height: 96px; border-radius: 8px; flex-shrink: 0; }
+
+.runner-badge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+.runner-badge-ok { background: var(--r-primary-tint); color: var(--r-success-ink); }
+.runner-badge-warn { background: var(--r-warn-tint); color: var(--r-warn-ink); }
+.runner-badge-muted { background: var(--r-pending-tint); color: var(--r-pending); }
+
+.runner-ticket-section {
+    background: var(--r-surface);
+    border-radius: var(--r-radius-card);
+    box-shadow: var(--r-shadow-card);
+    padding: 0.85rem 1rem;
+}
+.runner-ticket-section-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--r-ink-muted);
+    margin-bottom: 0.6rem;
+}
+
+.runner-kv {
+    display: grid;
+    grid-template-columns: minmax(90px, 40%) 1fr;
+    gap: 0.35rem 0.75rem;
+    margin: 0;
+}
+.runner-kv dt { color: var(--r-ink-muted); font-size: 0.9rem; }
+.runner-kv dd { margin: 0; color: var(--r-ink); font-size: 0.95rem; font-weight: 500; word-break: break-word; }
+.runner-kv-strong { font-weight: 800 !important; color: var(--r-ink) !important; font-size: 1.05rem !important; }
+.runner-kv-sub { color: var(--r-ink-muted); font-weight: 500; font-size: 0.85rem; }
+.runner-kv-empty { color: var(--r-ink-muted); font-size: 0.95rem; }
+
+.runner-scan-order { border-top: 1px solid var(--r-border); padding-top: 0.55rem; margin-top: 0.55rem; }
+.runner-scan-order:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.runner-scan-order-top { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+.runner-scan-order-meta { color: var(--r-ink-muted); font-size: 0.82rem; flex: 1; }
+.runner-scan-order-total { font-weight: 800; }
+.runner-scan-order-items { margin-top: 0.35rem; font-size: 0.95rem; line-height: 1.5; }
+.runner-scan-order-items .runner-qty { font-weight: 700; }

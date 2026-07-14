@@ -365,7 +365,9 @@
 
 .current-event-banner.is-live {
     border-left-color: var(--pitch);
-    background: linear-gradient(90deg, rgba(5, 150, 105, 0.06), #ffffff 45%);
+    /* Tint layered over a solid white base so the banner stays fully opaque —
+       a bare gradient starting at a low-alpha color left the left edge see-through. */
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.06), rgba(255, 255, 255, 0) 45%), #ffffff;
 }
 
 .current-event-banner.is-empty {

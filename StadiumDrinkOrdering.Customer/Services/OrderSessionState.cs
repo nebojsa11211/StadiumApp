@@ -25,6 +25,13 @@ public class OrderSessionState
     public string SeatRow { get; private set; } = "";
     public string SeatNumber { get; private set; } = "";
 
+    /// <summary>Name of the ticket holder, surfaced on the landing/welcome banner after a scan. Empty for
+    /// anonymous tickets that carry no holder name.</summary>
+    public string CustomerName { get; private set; } = "";
+
+    /// <summary>Human-readable ticket number (e.g. "TK001" / "SEA-6-E17"), shown on the welcome banner.</summary>
+    public string TicketNumber { get; private set; } = "";
+
     /// <summary>
     /// True only while the event is live (Active/InProgress). A session survives after the match ends, but
     /// ordering must be blocked — the /order and /cart pages use this to gate the menu and checkout. The API
@@ -57,9 +64,9 @@ public class OrderSessionState
     /// Entry: resolve a scanned token (single-event ticket QR OR season pass token) into a ticket
     /// session bound to the seat. Also used by the season home to start ordering from a derived ticket.
     /// </summary>
-    public async Task<(bool Ok, string? Error)> InitFromQrAsync(string qrToken)
+    public async Task<(bool Ok, string? Error)> InitFromQrAsync(string qrToken, string? existingSessionToken = null)
     {
-        var resp = await _api.ResolveAccessAsync(qrToken);
+        var resp = await _api.ResolveAccessAsync(qrToken, existingSessionToken);
         if (resp is { Success: true } && !string.IsNullOrEmpty(resp.SessionToken))
         {
             SessionToken = resp.SessionToken;
@@ -68,6 +75,8 @@ public class OrderSessionState
             SeatSection = resp.SeatInfo?.SectionName ?? resp.SeatInfo?.Section ?? resp.Ticket?.Section ?? "";
             SeatRow = resp.SeatInfo?.Row ?? resp.Ticket?.Row ?? "";
             SeatNumber = resp.SeatInfo?.SeatNumber ?? resp.Ticket?.SeatNumber ?? "";
+            CustomerName = resp.Ticket?.CustomerName ?? resp.TicketSession?.CustomerName ?? "";
+            TicketNumber = resp.Ticket?.TicketNumber ?? resp.TicketSession?.TicketNumber ?? "";
             // Resolve only succeeds for a live event, so ordering is open; honour the flag if the API sends it.
             CanOrderDrinks = resp.TicketSession?.CanOrderDrinks ?? true;
             OnChange?.Invoke();
@@ -87,6 +96,8 @@ public class OrderSessionState
         SeatSection = string.IsNullOrWhiteSpace(s.Section) ? SeatSection : s.Section;
         SeatRow = string.IsNullOrWhiteSpace(s.Row) ? SeatRow : s.Row;
         SeatNumber = string.IsNullOrWhiteSpace(s.SeatNumber) ? SeatNumber : s.SeatNumber;
+        CustomerName = string.IsNullOrWhiteSpace(s.CustomerName) ? CustomerName : s.CustomerName;
+        TicketNumber = string.IsNullOrWhiteSpace(s.TicketNumber) ? TicketNumber : s.TicketNumber;
         CanOrderDrinks = s.CanOrderDrinks;
         OnChange?.Invoke();
         return true;

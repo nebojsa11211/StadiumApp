@@ -25,6 +25,7 @@ public class BarTopupController : ControllerBase
     private readonly ApplicationDbContext _db;
     private readonly IStadiumAuthorizationService _authorizationService;
     private readonly ILoggingService _loggingService;
+    private readonly IAccountProvisioningService _accountProvisioning;
     private readonly ILogger<BarTopupController> _logger;
 
     public BarTopupController(
@@ -32,12 +33,14 @@ public class BarTopupController : ControllerBase
         ApplicationDbContext db,
         IStadiumAuthorizationService authorizationService,
         ILoggingService loggingService,
+        IAccountProvisioningService accountProvisioning,
         ILogger<BarTopupController> logger)
     {
         _walletService = walletService;
         _db = db;
         _authorizationService = authorizationService;
         _loggingService = loggingService;
+        _accountProvisioning = accountProvisioning;
         _logger = logger;
     }
 
@@ -57,6 +60,7 @@ public class BarTopupController : ControllerBase
         string? email = null;
         int? userId = null;
         string? matchedBy = null;
+        string? oib = null; // identity carried by the matched ticket/pass, used to resolve or provision an account
 
         // 1) A direct ticket QR token, or 2) a printed ticket number typed manually (case-insensitive).
         var ticket = await _db.Tickets.AsNoTracking().FirstOrDefaultAsync(t => t.QRCodeToken == query)
@@ -64,6 +68,7 @@ public class BarTopupController : ControllerBase
         if (ticket != null)
         {
             email = ticket.CustomerEmail;
+            oib = ticket.CustomerOib;
             matchedBy = "Ticket";
         }
 
@@ -75,6 +80,7 @@ public class BarTopupController : ControllerBase
             {
                 userId = pass.UserId;
                 email = pass.HolderEmail;
+                oib = pass.HolderOib;
                 matchedBy = "SeasonPass";
             }
         }
@@ -89,6 +95,7 @@ public class BarTopupController : ControllerBase
         // 5) A raw OIB (11 digits) typed in.
         if (matchedBy == null && lower.Length == 11 && lower.All(char.IsDigit))
         {
+            oib = query;
             var byOib = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Oib == query);
             if (byOib != null)
             {
@@ -100,12 +107,20 @@ public class BarTopupController : ControllerBase
         if (matchedBy == null)
             return Ok(new BarTopupResolveResultDto { Found = false, Message = "Ništa nije pronađeno za taj kôd." });
 
-        // Resolve to a registered account: prefer an explicit UserId, else match the email.
+        // Resolve to a registered account: prefer an explicit UserId, else the email, else the OIB captured
+        // on the ticket/pass — so a fan whose account was created without an email (or under a different one)
+        // is still found by the OIB printed on their ticket.
         User? user = null;
         if (userId is > 0)
             user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null && !string.IsNullOrWhiteSpace(email))
             user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email.ToLower() == email!.ToLower());
+        if (user == null && !string.IsNullOrWhiteSpace(oib))
+        {
+            user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Oib == oib);
+            if (user != null)
+                matchedBy = "Oib";
+        }
 
         if (user == null)
         {
@@ -116,14 +131,20 @@ public class BarTopupController : ControllerBase
             {
                 var tw = await _walletService.GetTicketWalletSummaryAsync(ticket.Id);
                 var closed = string.Equals(tw.Status, WalletStatus.Closed, StringComparison.OrdinalIgnoreCase);
+                // The ticket carries a real identity (OIB) → the bartender can create a claimable account on
+                // the spot (enter an email) so cash lands on the fan's own wallet. Independent of the ticket
+                // wallet being closed — provisioning is about the person, not that bearer balance.
+                var canProvision = !string.IsNullOrWhiteSpace(ticket.CustomerOib);
                 return Ok(new BarTopupResolveResultDto
                 {
                     Found = true,
                     HasAccount = false,
                     AllowTicketWallet = true,
+                    CanProvisionAccount = canProvision,
                     MatchedBy = matchedBy,
                     Email = email,
                     FullName = ticket.CustomerName,
+                    Oib = ticket.CustomerOib,
                     TicketId = ticket.Id,
                     TicketNumber = ticket.TicketNumber,
                     Balance = tw.Balance,
@@ -133,7 +154,9 @@ public class BarTopupController : ControllerBase
                     TicketWalletMaxBalance = _walletService.TicketWalletMaxBalance,
                     Message = closed
                         ? "Ova ulaznica je već isplaćena — saldo je zatvoren."
-                        : "Nema povezanog računa. Sredstva možete učitati izravno na ulaznicu."
+                        : canProvision
+                            ? "Nema povezanog računa. Unesite e-poštu da kreirate račun (sredstva idu na osobni novčanik gosta) ili učitajte izravno na ulaznicu."
+                            : "Nema povezanog računa. Sredstva možete učitati izravno na ulaznicu."
                 });
             }
 
@@ -165,6 +188,15 @@ public class BarTopupController : ControllerBase
                 Message = "Korisnički račun je deaktiviran."
             });
 
+        // Link the OIB carried by the scanned ticket onto an account that has none, so this fan resolves by
+        // OIB on future scans even if the match this time was by email/UserId.
+        if (!string.IsNullOrWhiteSpace(oib) && string.IsNullOrWhiteSpace(user.Oib))
+        {
+            await _db.Users.Where(u => u.Id == user.Id && (u.Oib == null || u.Oib == ""))
+                .ExecuteUpdateAsync(s => s.SetProperty(u => u.Oib, oib));
+            user.Oib = oib; // reflect in the response
+        }
+
         var summary = await _walletService.GetSummaryAsync(user.Id);
 
         return Ok(new BarTopupResolveResultDto
@@ -182,6 +214,28 @@ public class BarTopupController : ControllerBase
             WalletExists = summary.Exists,
             MatchedBy = matchedBy
         });
+    }
+
+    /// <summary>
+    /// Recent bar-counter cash movements (account top-ups, ticket loads, ticket cash-outs) for the staff
+    /// history / cash-drawer reconciliation view. <paramref name="onlyMine"/> scopes to the calling staff
+    /// member; <paramref name="search"/> filters by holder name, email, or ticket number.
+    /// </summary>
+    [HttpGet("history")]
+    public async Task<ActionResult<BarTopupHistoryListDto>> History(
+        [FromQuery] string? search = null, [FromQuery] bool onlyMine = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 50)
+    {
+        int? staffFilter = null;
+        if (onlyMine)
+        {
+            var staffId = _authorizationService.GetCurrentUserId(User);
+            if (staffId is null or 0)
+                return Unauthorized();
+            staffFilter = staffId;
+        }
+
+        return Ok(await _walletService.GetBarTopupHistoryAsync(search, staffFilter, page, pageSize));
     }
 
     /// <summary>Credits the confirmed cash amount onto the resolved account's wallet.</summary>
@@ -220,6 +274,59 @@ public class BarTopupController : ControllerBase
             Success = true,
             NewBalance = txn?.BalanceAfter ?? 0m,
             WalletTransactionId = txn?.Id ?? 0
+        });
+    }
+
+    /// <summary>
+    /// Creates (or reuses) a claimable account for an OIB-identified ticket that has no account yet, keyed
+    /// on the email the bartender collected at the counter, and returns a resolve result for that account so
+    /// the cash top-up can proceed onto the fan's own wallet. The name/OIB come from the ticket; a
+    /// set-password link is emailed for a freshly created shell.
+    /// </summary>
+    [HttpPost("provision")]
+    public async Task<ActionResult<BarTopupResolveResultDto>> Provision([FromBody] BarTopupProvisionRequestDto request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var staffId = _authorizationService.GetCurrentUserId(User);
+        if (staffId is null or 0)
+            return Unauthorized();
+
+        var ticket = await _db.Tickets.AsNoTracking().FirstOrDefaultAsync(t => t.Id == request.TicketId);
+        if (ticket == null)
+            return Ok(new BarTopupResolveResultDto { Found = false, Message = "Ulaznica nije pronađena." });
+
+        var userId = await _accountProvisioning.ProvisionAndGetUserIdAsync(
+            request.Email.Trim(), ticket.CustomerName, ticket.CustomerPhone, ticket.CustomerOib, "BarProvision");
+        if (userId is null or 0)
+            return Ok(new BarTopupResolveResultDto { Found = false, Message = "Račun nije moguće kreirati. Provjerite e-poštu." });
+
+        var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+            return Ok(new BarTopupResolveResultDto { Found = false, Message = "Račun nije moguće kreirati." });
+
+        await _loggingService.LogUserActionAsync(
+            action: "BarProvisionAccount",
+            category: "Audit",
+            userId: staffId.Value.ToString(),
+            details: $"Provisioned account #{user.Id} from ticket #{ticket.Id} (email {request.Email}) at bar");
+
+        var summary = await _walletService.GetSummaryAsync(user.Id);
+        return Ok(new BarTopupResolveResultDto
+        {
+            Found = true,
+            HasAccount = true,
+            UserId = user.Id,
+            FullName = FullName(user),
+            Email = user.Email,
+            Oib = user.Oib,
+            PhoneNumber = user.PhoneNumber,
+            Balance = summary.Balance,
+            Currency = summary.Currency,
+            WalletStatus = summary.Status,
+            WalletExists = summary.Exists,
+            MatchedBy = "Provisioned"
         });
     }
 

@@ -940,4 +940,79 @@
   <data name="TicketWallet_Fail_ClaimGeneric" xml:space="preserve">
     <value>The balance could not be claimed.</value>
   </data>
+  <data name="TopupHistory_NavLabel" xml:space="preserve">
+    <value>Top-up History</value>
+  </data>
+  <data name="TopupHistory_PageTitle" xml:space="preserve">
+    <value>Top-up History</value>
+  </data>
+  <data name="TopupHistory_Subtitle" xml:space="preserve">
+    <value>Cash loaded and cashed out at the bar counter.</value>
+  </data>
+  <data name="TopupHistory_SearchPlaceholder" xml:space="preserve">
+    <value>Name, email or ticket…</value>
+  </data>
+  <data name="TopupHistory_OnlyMine" xml:space="preserve">
+    <value>Only mine</value>
+  </data>
+  <data name="TopupHistory_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="TopupHistory_Movements" xml:space="preserve">
+    <value>Movements</value>
+  </data>
+  <data name="TopupHistory_TotalIn" xml:space="preserve">
+    <value>Cash in</value>
+  </data>
+  <data name="TopupHistory_TotalOut" xml:space="preserve">
+    <value>Cash out</value>
+  </data>
+  <data name="TopupHistory_Net" xml:space="preserve">
+    <value>Net</value>
+  </data>
+  <data name="TopupHistory_Col_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="TopupHistory_Col_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="TopupHistory_Col_For" xml:space="preserve">
+    <value>For</value>
+  </data>
+  <data name="TopupHistory_Col_Event" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="TopupHistory_Col_Staff" xml:space="preserve">
+    <value>Staff</value>
+  </data>
+  <data name="TopupHistory_Col_Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="TopupHistory_Col_BalanceAfter" xml:space="preserve">
+    <value>Balance after</value>
+  </data>
+  <data name="TopupHistory_Prev" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="TopupHistory_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="TopupHistory_PageOf" xml:space="preserve">
+    <value>Page {0} of {1}</value>
+  </data>
+  <data name="TopupHistory_Empty" xml:space="preserve">
+    <value>No top-ups found</value>
+  </data>
+  <data name="TopupHistory_EmptyHint" xml:space="preserve">
+    <value>Try clearing the filters above.</value>
+  </data>
+  <data name="TopupHistory_Type_AccountTopup" xml:space="preserve">
+    <value>Account top-up</value>
+  </data>
+  <data name="TopupHistory_Type_TicketLoad" xml:space="preserve">
+    <value>Ticket load</value>
+  </data>
+  <data name="TopupHistory_Type_CashOut" xml:space="preserve">
+    <value>Cash-out</value>
+  </data>
 </root>

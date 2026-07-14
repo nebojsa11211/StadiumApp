@@ -38,7 +38,24 @@ public class Ticket
     
     [StringLength(20)]
     public string? CustomerPhone { get; set; }
-    
+
+    /// <summary>
+    /// Croatian personal identifier (OIB) of the ticket holder — exactly 11 digits when set. Captured
+    /// at purchase for every domestic buyer; the stable key a bar top-up resolves to (and can provision
+    /// an account from) even when no email was given. Null for foreign holders (see
+    /// <see cref="CustomerDocumentNumber"/>) and for legacy/simulated tickets created before capture.
+    /// </summary>
+    [StringLength(11)]
+    public string? CustomerOib { get; set; }
+
+    /// <summary>
+    /// Identity document number for a foreign holder who has no Croatian OIB (passport / ID card).
+    /// Free-form. Mutually exclusive with <see cref="CustomerOib"/>: a domestic buyer supplies the OIB,
+    /// a foreigner supplies this instead.
+    /// </summary>
+    [StringLength(50)]
+    public string? CustomerDocumentNumber { get; set; }
+
     public DateTime PurchaseDate { get; set; } = DateTime.UtcNow;
     
     [Required]

@@ -80,6 +80,33 @@ else
                     <InputText class="co-input" @bind-Value="checkoutForm.Phone" placeholder="+385 91 234 5678" />
                     <ValidationMessage For="@(() => checkoutForm.Phone)" class="co-err" />
                 </div>
+
+                <label id="customer-checkout-foreigner-label" class="co-terms">
+                    <InputCheckbox id="customer-checkout-foreigner-input" @bind-Value="checkoutForm.IsForeigner" />
+                    <span>Strani državljanin (nemam OIB)</span>
+                </label>
+
+                @if (!checkoutForm.IsForeigner)
+                {
+                    <div id="customer-checkout-field-oib" class="field">
+                        <label>OIB</label>
+                        <InputText class="co-input" @bind-Value="checkoutForm.Oib" placeholder="12345678901" maxlength="11" inputmode="numeric" />
+                        <ValidationMessage For="@(() => checkoutForm.Oib)" class="co-err" />
+                    </div>
+                }
+                else
+                {
+                    <div id="customer-checkout-field-document" class="field">
+                        <label>Broj dokumenta (putovnica / osobna)</label>
+                        <InputText class="co-input" @bind-Value="checkoutForm.DocumentNumber" placeholder="HR1234567" maxlength="50" />
+                        <ValidationMessage For="@(() => checkoutForm.DocumentNumber)" class="co-err" />
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(identityError))
+                {
+                    <div id="customer-checkout-identity-error" class="co-err">@identityError</div>
+                }
             </div>
 
             <!-- Payment -->
@@ -151,6 +178,7 @@ else
     private CustomerServices.ShoppingCartDto? cart;
     private bool isProcessing = false;
     private bool showProcessingModal = false;
+    private string? identityError;
 
     private decimal subtotal => cart?.Items?.Sum(i => i.Price) ?? 0;
     private decimal serviceFee => subtotal * 0.10m; // 10% service fee
@@ -207,6 +235,17 @@ else
             return;
         }
 
+        // Identity is mandatory: a domestic buyer must give an 11-digit OIB, a foreigner a document
+        // number. The [RegularExpression] on Oib treats empty as valid, so the "required" rule is
+        // enforced here (client) as well as in the API.
+        identityError = TicketIdentity.Validate(checkoutForm.IsForeigner, checkoutForm.Oib, checkoutForm.DocumentNumber)
+            .FirstOrDefault()?.ErrorMessage;
+        if (identityError != null)
+        {
+            StateHasChanged();
+            return;
+        }
+
         try
         {
             isProcessing = true;
@@ -222,7 +261,10 @@ else
                     FirstName = checkoutForm.FirstName,
                     LastName = checkoutForm.LastName,
                     Email = checkoutForm.Email,
-                    Phone = checkoutForm.Phone
+                    Phone = checkoutForm.Phone,
+                    IsForeigner = checkoutForm.IsForeigner,
+                    Oib = checkoutForm.IsForeigner ? null : checkoutForm.Oib?.Trim(),
+                    DocumentNumber = checkoutForm.IsForeigner ? checkoutForm.DocumentNumber?.Trim() : null
                 },
                 PaymentInfo = new PaymentInfoDto
                 {

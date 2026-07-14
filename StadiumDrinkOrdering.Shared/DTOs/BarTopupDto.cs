@@ -69,6 +69,29 @@ public class BarTopupResolveResultDto
 
     /// <summary>Per-ticket balance cap, for the UI to show/enforce the top-up limit.</summary>
     public decimal TicketWalletMaxBalance { get; set; }
+
+    // ---- Provision-an-account (OIB-identified ticket with no account yet) ----
+
+    /// <summary>True when the matched ticket carries a real identity (name + OIB) but no account exists
+    /// yet: the bartender can create one on the spot by entering an email, so cash lands on the fan's own
+    /// (claimable) wallet rather than a bearer ticket balance. <see cref="FullName"/>/<see cref="Oib"/>
+    /// carry the ticket's identity to confirm, and <see cref="TicketId"/> the ticket to provision from.
+    /// Usually accompanies <see cref="AllowTicketWallet"/> — loading on the ticket stays the fallback.</summary>
+    public bool CanProvisionAccount { get; set; }
+}
+
+/// <summary>Staff request to create (or reuse) a claimable account for an OIB-identified ticket that has
+/// no account yet, so cash can be loaded onto the fan's own wallet. The name/OIB come from the ticket;
+/// only the email — which the account is keyed on — is collected at the counter.</summary>
+public class BarTopupProvisionRequestDto
+{
+    [Required]
+    public int TicketId { get; set; }
+
+    [Required]
+    [EmailAddress]
+    [StringLength(200)]
+    public string Email { get; set; } = string.Empty;
 }
 
 /// <summary>Staff request to credit cash onto a fan's wallet. <see cref="UserId"/> comes from a prior
@@ -95,4 +118,59 @@ public class BarTopupResultDto
 
     /// <summary>Set on failure: "WalletFrozen", "AccountNotFound", "InvalidAmount".</summary>
     public string? FailureReason { get; set; }
+}
+
+/// <summary>
+/// One row of the bar-counter cash history: a top-up onto an account wallet, a load onto an anonymous
+/// ticket wallet, or a ticket cash-out. Carries who it was for (account holder or ticket) and which
+/// staff member performed it, for the bar's own history / cash-drawer reconciliation view.
+/// </summary>
+public class BarTopupHistoryItemDto
+{
+    public long TransactionId { get; set; }
+    public DateTime CreatedAt { get; set; }
+
+    /// <summary>Underlying ledger reference: "CashTopup", "TicketTopup", or "TicketCashOut".</summary>
+    public string? ReferenceType { get; set; }
+
+    /// <summary>Signed amount — credits (top-ups) positive, cash handed back (cash-out) negative.</summary>
+    public decimal Amount { get; set; }
+    public decimal BalanceAfter { get; set; }
+    public string Currency { get; set; } = "EUR";
+
+    /// <summary>"User" for an account wallet, "Ticket" for an anonymous bearer balance.</summary>
+    public string OwnerType { get; set; } = "User";
+
+    /// <summary>Display name of the account holder, or the ticket's holder name for a bearer wallet.</summary>
+    public string? CustomerName { get; set; }
+    public string? Email { get; set; }
+
+    /// <summary>Set for a ticket-owned wallet — the number the bartender can read back.</summary>
+    public string? TicketNumber { get; set; }
+
+    /// <summary>Event the movement relates to, resolved via the ticket for ticket/cash-out rows. Null for
+    /// account cash top-ups, which aren't tied to a specific ticket (and so no event).</summary>
+    public string? EventName { get; set; }
+
+    /// <summary>Date of <see cref="EventName"/>, when known.</summary>
+    public DateTime? EventDate { get; set; }
+
+    /// <summary>Staff member who performed it (for cash-drawer reconciliation).</summary>
+    public int? StaffUserId { get; set; }
+    public string? StaffEmail { get; set; }
+}
+
+/// <summary>Paginated bar-counter cash history plus running totals across the FULL filtered set.</summary>
+public class BarTopupHistoryListDto
+{
+    public List<BarTopupHistoryItemDto> Items { get; set; } = new();
+    public int TotalCount { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+
+    /// <summary>Total cash taken in (sum of positive amounts) across the whole filtered set.</summary>
+    public decimal TotalIn { get; set; }
+
+    /// <summary>Total cash handed back (sum of cash-outs, as a positive figure) across the whole set.</summary>
+    public decimal TotalOut { get; set; }
 }

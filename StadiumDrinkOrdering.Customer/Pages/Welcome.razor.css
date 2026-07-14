@@ -137,6 +137,32 @@
 
 /* ---------- CTAs ---------- */
 .welcome-cta{position:relative;z-index:1;display:flex;flex-direction:column;gap:13px;padding:10px 24px 0}
+
+/* scanned-ticket banner: holder name + spendable balance */
+.wl-fancard{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:12px 14px;
+    background:
+        radial-gradient(120% 120% at 0% 0%,rgba(41,120,255,.16),transparent 55%),
+        radial-gradient(120% 120% at 100% 100%,rgba(0,214,120,.18),transparent 55%),
+        rgba(14,17,24,.72);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    box-shadow:0 20px 44px -26px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.wl-fan-id{display:flex;align-items:center;gap:11px;min-width:0;flex:1 1 auto}
+.wl-fan-avatar{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;
+    font-weight:900;font-style:italic;font-size:15px;letter-spacing:-.02em;color:#fff;
+    background:linear-gradient(135deg,#2978FF,#00D678);box-shadow:0 6px 14px -6px rgba(0,0,0,.6)}
+.wl-fan-meta{min-width:0}
+.wl-fan-hi{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#AEB2C0}
+.wl-fan-name{font-size:16px;font-weight:800;letter-spacing:-.01em;color:#fff;
+    overflow-wrap:anywhere;word-break:break-word}
+.wl-fan-ticket{margin-top:2px;font-size:12px;font-weight:700;color:#9AA0B2;letter-spacing:.02em;
+    overflow-wrap:anywhere;word-break:break-word}
+.wl-fan-wallet{text-align:right;flex:none}
+.wl-fan-wallet-label{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9AA0B2}
+.wl-fan-wallet-amt{font-size:20px;font-weight:900;color:#00E28A;letter-spacing:-.01em}
+.wl-fan-wallet-amt.empty{color:#9AA0B2;font-size:13px;font-weight:700}
 .wl-scan{background:#E62630;color:#fff;box-shadow:0 16px 34px -16px rgba(230,38,48,.8)}
 .wl-scan:hover{background:#F2313B;transform:translateY(-2px);box-shadow:0 22px 44px -16px rgba(230,38,48,.9)}
 .btn-ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;

@@ -359,18 +359,26 @@ public class AuthController : ControllerBase
         [FromServices] Data.ApplicationDbContext db,
         [FromQuery] bool sendEmail = false)
     {
-        // Distinct ticket-holder emails, with a display name, that have no account yet.
+        // Distinct ticket-holder emails, with a display name and OIB, that have no account yet. Carrying the
+        // OIB matters: it's stamped on the new shell so a backfilled holder is resolvable at the bar by OIB.
         var ticketHolders = await db.Tickets
             .Where(t => t.CustomerEmail != null && t.CustomerEmail != "")
-            .Select(t => new { Email = t.CustomerEmail!, Name = t.CustomerName })
+            .Select(t => new { Email = t.CustomerEmail!, Name = t.CustomerName, Oib = t.CustomerOib })
             .Union(db.SeasonTickets
                 .Where(s => s.HolderEmail != null && s.HolderEmail != "")
-                .Select(s => new { Email = s.HolderEmail!, Name = s.HolderName }))
+                .Select(s => new { Email = s.HolderEmail!, Name = s.HolderName, Oib = s.HolderOib }))
             .ToListAsync();
 
+        // First non-empty OIB per email wins, so a holder whose OIB was captured on one ticket but not
+        // another still gets it onto the shell.
         var byEmail = ticketHolders
             .GroupBy(x => x.Email.ToLower())
-            .Select(g => g.First())
+            .Select(g => new
+            {
+                g.First().Email,
+                g.First().Name,
+                Oib = g.Select(x => x.Oib).FirstOrDefault(o => !string.IsNullOrWhiteSpace(o))
+            })
             .ToList();
 
         var existingEmails = (await db.Users.Select(u => u.Email.ToLower()).ToListAsync()).ToHashSet();
@@ -380,7 +388,7 @@ public class AuthController : ControllerBase
         {
             if (existingEmails.Contains(holder.Email.ToLower()))
                 continue;
-            await provisioning.EnsureShellAccountAsync(holder.Email, holder.Name, null, "Backfill", sendActivation: sendEmail);
+            await provisioning.EnsureShellAccountAsync(holder.Email, holder.Name, null, "Backfill", sendActivation: sendEmail, oib: holder.Oib);
             created++;
         }
 

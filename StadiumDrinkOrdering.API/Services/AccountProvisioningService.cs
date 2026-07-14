@@ -17,8 +17,18 @@ public interface IAccountProvisioningService
     /// account already exists or the email is empty/invalid. Never throws.
     /// <para><paramref name="sendActivation"/> (default true) mints an activation token and emails the
     /// set-password link. Pass false for a <b>silent</b> shell (e.g. a bulk backfill that must not blast
-    /// thousands of emails) — the fan can still claim it by registering with the same email.</para></summary>
-    Task EnsureShellAccountAsync(string? email, string? fullName, string? phone, string source, bool sendActivation = true);
+    /// thousands of emails) — the fan can still claim it by registering with the same email.</para>
+    /// <para><paramref name="oib"/>, when supplied, is stamped on a newly created shell and back-filled onto
+    /// an existing account that has none — so the fan's OIB (captured on the ticket) becomes resolvable at
+    /// the bar even if this account was created without it.</para></summary>
+    Task EnsureShellAccountAsync(string? email, string? fullName, string? phone, string source, bool sendActivation = true, string? oib = null);
+
+    /// <summary>Bar counter: create (or reuse) a claimable account keyed on <paramref name="email"/> for a
+    /// fan identified by an OIB-bearing ticket, stamping <paramref name="oib"/>, and return its user id so
+    /// the cash top-up can proceed onto that account's wallet. Unlike <see cref="EnsureShellAccountAsync"/>
+    /// this is synchronous to the caller and returns the id (null only if the email is unusable or creation
+    /// genuinely fails). Sends the set-password activation link for a freshly created shell.</summary>
+    Task<int?> ProvisionAndGetUserIdAsync(string email, string? fullName, string? phone, string? oib, string source);
 }
 
 public class AccountProvisioningService : IAccountProvisioningService
@@ -37,82 +47,104 @@ public class AccountProvisioningService : IAccountProvisioningService
         _logger = logger;
     }
 
-    public async Task EnsureShellAccountAsync(string? email, string? fullName, string? phone, string source, bool sendActivation = true)
+    public async Task EnsureShellAccountAsync(string? email, string? fullName, string? phone, string source, bool sendActivation = true, string? oib = null)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
-                return;
-
-            var normalized = email.Trim();
-            var lower = normalized.ToLowerInvariant();
-
-            // Fresh scope → isolated DbContext, so we don't flush the caller's half-built entity graph or
-            // get rolled back if their ingestion transaction later fails.
-            using var scope = _scopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            var existing = await db.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == lower);
-            if (existing != null)
-            {
-                // Account already exists (real or a shell from an earlier ticket) — nothing to create.
-                // Still make sure any season passes under this email are linked to it.
-                await LinkSeasonTicketsAsync(db, existing.Id, lower);
-                return;
-            }
-
-            var (first, last) = SplitName(fullName);
-            var shell = new User
-            {
-                // Email is unique, so it doubles as a guaranteed-unique username for the shell.
-                Username = normalized.Length > 100 ? normalized[..100] : normalized,
-                Email = normalized,
-                FirstName = first,
-                LastName = last,
-                PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim(),
-                // Not a real login — a random hash just satisfies the required column until the fan claims it.
-                PasswordHash = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N"),
-                Role = UserRole.Customer,
-                IsShellAccount = true,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-            };
-            db.Users.Add(shell);
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                // Lost a race — another ticket for the same email created the account first. Reload + link.
-                db.ChangeTracker.Clear();
-                var winner = await db.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == lower);
-                if (winner == null) throw;
-                await LinkSeasonTicketsAsync(db, winner.Id, lower);
-                return;
-            }
-
-            await LinkSeasonTicketsAsync(db, shell.Id, lower);
-
-            // Optionally mint an activation token and email the set-password link. Skipped for a silent
-            // backfill — the shell is still claimable by registering with this email (register-claim).
-            if (sendActivation)
-            {
-                var token = AccountActivationToken.Create(shell.Id);
-                db.AccountActivationTokens.Add(token);
-                await db.SaveChangesAsync();
-                await SendActivationEmailAsync(scope, shell, token.Token);
-            }
-
-            _logger.LogInformation("Provisioned shell account #{UserId} for {Email} (source: {Source}, email: {Sent})",
-                shell.Id, normalized, source, sendActivation);
+            await EnsureCoreAsync(email, fullName, phone, oib, source, sendActivation);
         }
         catch (Exception ex)
         {
             // Provisioning must never break ticket creation.
             _logger.LogError(ex, "Failed to provision shell account for {Email} (source: {Source})", email, source);
         }
+    }
+
+    public async Task<int?> ProvisionAndGetUserIdAsync(string email, string? fullName, string? phone, string? oib, string source)
+        // Same create-or-reuse logic, but the bar flow needs the resulting id, so exceptions surface to the
+        // caller (which reports a clean failure) instead of being swallowed.
+        => await EnsureCoreAsync(email, fullName, phone, oib, source, sendActivation: true);
+
+    /// <summary>Create-or-reuse the account keyed on <paramref name="email"/> and return its id. Stamps
+    /// <paramref name="oib"/> on a new shell and back-fills it onto an existing account that lacks one.
+    /// Returns null only when the email is empty/invalid.</summary>
+    private async Task<int?> EnsureCoreAsync(string? email, string? fullName, string? phone, string? oib, string source, bool sendActivation)
+    {
+        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+            return null;
+
+        var normalized = email.Trim();
+        var lower = normalized.ToLowerInvariant();
+        var normalizedOib = string.IsNullOrWhiteSpace(oib) ? null : oib.Trim();
+
+        // Fresh scope → isolated DbContext, so we don't flush the caller's half-built entity graph or
+        // get rolled back if their ingestion transaction later fails.
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        var existing = await db.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == lower);
+        if (existing != null)
+        {
+            // Account already exists (real or a shell from an earlier ticket) — don't recreate. Back-fill
+            // the OIB when the account has none so the fan becomes resolvable by OIB at the bar.
+            if (normalizedOib != null && string.IsNullOrWhiteSpace(existing.Oib))
+            {
+                existing.Oib = normalizedOib;
+                await db.SaveChangesAsync();
+            }
+            // Still make sure any season passes under this email are linked to it.
+            await LinkSeasonTicketsAsync(db, existing.Id, lower);
+            return existing.Id;
+        }
+
+        var (first, last) = SplitName(fullName);
+        var shell = new User
+        {
+            // Email is unique, so it doubles as a guaranteed-unique username for the shell.
+            Username = normalized.Length > 100 ? normalized[..100] : normalized,
+            Email = normalized,
+            FirstName = first,
+            LastName = last,
+            PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim(),
+            Oib = normalizedOib,
+            // Not a real login — a random hash just satisfies the required column until the fan claims it.
+            PasswordHash = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N"),
+            Role = UserRole.Customer,
+            IsShellAccount = true,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
+        db.Users.Add(shell);
+
+        try
+        {
+            await db.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // Lost a race — another ticket for the same email created the account first. Reload + link.
+            db.ChangeTracker.Clear();
+            var winner = await db.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == lower);
+            if (winner == null) throw;
+            await LinkSeasonTicketsAsync(db, winner.Id, lower);
+            return winner.Id;
+        }
+
+        await LinkSeasonTicketsAsync(db, shell.Id, lower);
+
+        // Optionally mint an activation token and email the set-password link. Skipped for a silent
+        // backfill — the shell is still claimable by registering with this email (register-claim).
+        if (sendActivation)
+        {
+            var token = AccountActivationToken.Create(shell.Id);
+            db.AccountActivationTokens.Add(token);
+            await db.SaveChangesAsync();
+            await SendActivationEmailAsync(scope, shell, token.Token);
+        }
+
+        _logger.LogInformation("Provisioned shell account #{UserId} for {Email} (source: {Source}, email: {Sent})",
+            shell.Id, normalized, source, sendActivation);
+        return shell.Id;
     }
 
     private static async Task LinkSeasonTicketsAsync(ApplicationDbContext db, int userId, string lowerEmail)

@@ -161,6 +161,44 @@ public partial class Customers : ComponentBase
         await JSRuntime.InvokeVoidAsync("showToast", "Customers refreshed successfully", "success");
     }
 
+    private bool isBackfilling = false;
+
+    // One-time maintenance: create claimable shell accounts for ticket/season-pass holders (e.g. previously
+    // simulated tickets) whose email has no account yet, so they show up here. Silent — sends no emails.
+    private async Task BackfillAccounts()
+    {
+        if (isBackfilling) return;
+        isBackfilling = true;
+        StateHasChanged();
+        try
+        {
+            var result = await AdminApiService.PostAsync<BackfillAccountsResult>("Auth/backfill-shell-accounts");
+            var created = result?.Provisioned ?? 0;
+            await LoadCustomers();
+            await JSRuntime.InvokeVoidAsync("showToast",
+                created > 0 ? $"Provisioned {created} account(s) from existing tickets" : "No missing accounts to provision",
+                "success");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Backfill failed:", ex.Message);
+            await JSRuntime.InvokeVoidAsync("showToast", "Failed to provision accounts", "error");
+        }
+        finally
+        {
+            isBackfilling = false;
+            StateHasChanged();
+        }
+    }
+
+    // Matches AuthController.BackfillShellAccounts response: { provisioned, candidates, emailsSent }.
+    private sealed class BackfillAccountsResult
+    {
+        public int Provisioned { get; set; }
+        public int Candidates { get; set; }
+        public bool EmailsSent { get; set; }
+    }
+
     // Season changed: it narrows the event dropdown, so reset the event selection (its option may no
     // longer be listed) and reload. Season/event scoping is applied server-side.
     private async Task OnSeasonChanged()

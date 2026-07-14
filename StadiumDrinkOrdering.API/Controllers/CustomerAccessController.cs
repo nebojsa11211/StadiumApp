@@ -40,10 +40,11 @@ public class CustomerAccessController : ControllerBase
             return BadRequest(new ValidateTicketResponse { Success = false, ErrorMessage = "Nedostaje kôd ulaznice." });
 
         var token = request.QRCodeToken.Trim();
+        var deviceToken = string.IsNullOrWhiteSpace(request.ExistingSessionToken) ? null : request.ExistingSessionToken.Trim();
 
         // 1) A direct ticket QR (single-event ticket, or an already-materialized season derived ticket).
         if (await _db.Tickets.AnyAsync(t => t.QRCodeToken == token))
-            return Map(await _ticketAuth.AuthenticateWithTicketAsync(token));
+            return Map(await _ticketAuth.AuthenticateWithTicketAsync(token, deviceToken));
 
         // 2) A human-readable ticket number typed in manually (e.g. "SEA-6-E17" or "TK001") — the printed
         //    QR carries a GUID, but someone who can't scan reads the visible number off the ticket. Resolve
@@ -53,7 +54,7 @@ public class CustomerAccessController : ControllerBase
             .Select(t => t.QRCodeToken)
             .FirstOrDefaultAsync();
         if (!string.IsNullOrEmpty(tokenByNumber))
-            return Map(await _ticketAuth.AuthenticateWithTicketAsync(tokenByNumber));
+            return Map(await _ticketAuth.AuthenticateWithTicketAsync(tokenByNumber, deviceToken));
 
         // 3) A season pass token: resolve to the holder's derived ticket for the live match.
         var pass = await _db.SeasonTickets
@@ -82,7 +83,7 @@ public class CustomerAccessController : ControllerBase
                 ErrorMessage = "Naručivanje trenutno nije dostupno za ovu utakmicu."
             });
 
-        return Map(await _ticketAuth.AuthenticateWithTicketAsync(derived.QRCodeToken));
+        return Map(await _ticketAuth.AuthenticateWithTicketAsync(derived.QRCodeToken, deviceToken));
     }
 
     private ActionResult<ValidateTicketResponse> Map(TicketAuthResult result)

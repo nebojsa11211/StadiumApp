@@ -61,9 +61,10 @@ public enum PaymentMethod
 {
     CreditCard = 1,
     DebitCard = 2,
-    DigitalWallet = 3,
+    DigitalWallet = 3,   // registered fan's user wallet
     BankTransfer = 4,
-    Cash = 5
+    Cash = 5,
+    TicketWallet = 6     // anonymous bearer balance loaded on the order's ticket
 }
 
 public enum PaymentStatus

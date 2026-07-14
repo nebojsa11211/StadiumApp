@@ -452,6 +452,30 @@
   <data name="OrderQueue_CollectedByRunner" xml:space="preserve">
     <value>Collected — out for delivery</value>
   </data>
+  <data name="OrderQueue_Returns" xml:space="preserve">
+    <value>Returns</value>
+  </data>
+  <data name="OrderQueue_AttemptsCount" xml:space="preserve">
+    <value>{0} attempts</value>
+  </data>
+  <data name="OrderQueue_RetryDelivery" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="OrderQueue_CancelRefund" xml:space="preserve">
+    <value>Cancel &amp; refund</value>
+  </data>
+  <data name="OrderQueue_ReasonNotAtSeat" xml:space="preserve">
+    <value>Fan not at the seat</value>
+  </data>
+  <data name="OrderQueue_ReasonRefused" xml:space="preserve">
+    <value>Fan refused it</value>
+  </data>
+  <data name="OrderQueue_ReasonWrongSeat" xml:space="preserve">
+    <value>Wrong or empty seat</value>
+  </data>
+  <data name="OrderQueue_ReasonOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
   <data name="OrderQueue_OrderNote" xml:space="preserve">
     <value>Note</value>
   </data>
@@ -822,5 +846,98 @@
   </data>
   <data name="EventGate_CheckAgain" xml:space="preserve">
     <value>Check again</value>
+  </data>
+  <data name="TicketWallet_LoadOnTicketTitle" xml:space="preserve">
+    <value>Load funds on ticket</value>
+  </data>
+  <data name="TicketWallet_TicketLabel" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="TicketWallet_CurrentBalance" xml:space="preserve">
+    <value>Current balance</value>
+  </data>
+  <data name="TicketWallet_BearerWarning" xml:space="preserve">
+    <value>This balance stays on the ticket, like cash. Tell the guest to keep the ticket safe — a lost ticket means a lost balance.</value>
+  </data>
+  <data name="TicketWallet_CapHint" xml:space="preserve">
+    <value>Up to {0} can be held on one ticket.</value>
+  </data>
+  <data name="TicketWallet_LoadBtn" xml:space="preserve">
+    <value>Load on ticket</value>
+  </data>
+  <data name="TicketWallet_CashOutBtn" xml:space="preserve">
+    <value>Cash out {0}</value>
+  </data>
+  <data name="TicketWallet_CashingOut" xml:space="preserve">
+    <value>Cashing out…</value>
+  </data>
+  <data name="TicketWallet_ClosedNotice" xml:space="preserve">
+    <value>This ticket has already been cashed out. Its balance is closed and cannot be topped up.</value>
+  </data>
+  <data name="TicketWallet_OverCap" xml:space="preserve">
+    <value>Amount exceeds the ticket limit (remaining {0}).</value>
+  </data>
+  <data name="TicketWallet_LoadedTitle" xml:space="preserve">
+    <value>Funds loaded on ticket</value>
+  </data>
+  <data name="TicketWallet_CashedOutTitle" xml:space="preserve">
+    <value>Cash to hand back</value>
+  </data>
+  <data name="TicketWallet_HandBack" xml:space="preserve">
+    <value>Hand this cash to the guest:</value>
+  </data>
+  <data name="TicketWallet_Fail_LimitExceeded" xml:space="preserve">
+    <value>That amount would exceed the ticket balance limit.</value>
+  </data>
+  <data name="TicketWallet_Fail_TicketNotFound" xml:space="preserve">
+    <value>Ticket not found.</value>
+  </data>
+  <data name="TicketWallet_Fail_AlreadyCashedOut" xml:space="preserve">
+    <value>This ticket was already cashed out — nothing to pay.</value>
+  </data>
+  <data name="TicketWallet_Fail_NothingToCashOut" xml:space="preserve">
+    <value>Nothing to cash out — the ticket balance is empty.</value>
+  </data>
+  <data name="TicketWallet_Fail_WalletFrozen" xml:space="preserve">
+    <value>This ticket wallet is frozen.</value>
+  </data>
+  <data name="TicketWallet_Fail_Generic" xml:space="preserve">
+    <value>The operation could not be completed.</value>
+  </data>
+  <data name="TicketWallet_ClaimTitle" xml:space="preserve">
+    <value>Or move the balance to an account</value>
+  </data>
+  <data name="TicketWallet_ClaimEmailPlaceholder" xml:space="preserve">
+    <value>guest@email.com</value>
+  </data>
+  <data name="TicketWallet_ClaimBtn" xml:space="preserve">
+    <value>Claim to account</value>
+  </data>
+  <data name="TicketWallet_Claiming" xml:space="preserve">
+    <value>Claiming…</value>
+  </data>
+  <data name="TicketWallet_ClaimHint" xml:space="preserve">
+    <value>Moves the balance off the ticket onto an account and emails a link to set a password — recoverable, no cash-out queue.</value>
+  </data>
+  <data name="TicketWallet_ClaimedTitle" xml:space="preserve">
+    <value>Balance moved to account</value>
+  </data>
+  <data name="TicketWallet_ClaimedMsg" xml:space="preserve">
+    <value>{0} moved to {1}.</value>
+  </data>
+  <data name="TicketWallet_ClaimedEmailNote" xml:space="preserve">
+    <value>We've emailed a link to set a password and finish signing up.</value>
+  </data>
+  <data name="TicketWallet_Fail_AlreadyClaimed" xml:space="preserve">
+    <value>This ticket balance was already claimed or cashed out.</value>
+  </data>
+  <data name="TicketWallet_Fail_NothingToClaim" xml:space="preserve">
+    <value>Nothing to claim — the ticket balance is empty.</value>
+  </data>
+  <data name="TicketWallet_Fail_InvalidEmail" xml:space="preserve">
+    <value>Enter a valid email address.</value>
+  </data>
+  <data name="TicketWallet_Fail_ClaimGeneric" xml:space="preserve">
+    <value>The balance could not be claimed.</value>
   </data>
 </root>

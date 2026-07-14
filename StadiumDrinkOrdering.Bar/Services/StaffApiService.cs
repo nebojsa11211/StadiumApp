@@ -22,6 +22,13 @@ public interface IStaffApiService
     Task<OrderDto?> GetOrderAsync(int id);
     Task<bool> AssignOrderAsync(int orderId, int staffId);
     Task<bool> UpdateOrderStatusAsync(int id, UpdateOrderStatusDto updateDto);
+
+    /// <summary>Bar triage: requeue a returned (DeliveryFailed) order for another delivery attempt.</summary>
+    Task<bool> RetryFailedDeliveryAsync(int orderId);
+
+    /// <summary>Bar triage: cancel a returned (DeliveryFailed) order and refund any wallet payment.</summary>
+    Task<bool> CancelFailedDeliveryAsync(int orderId);
+
     Task<List<OrderDto>?> GetAssignedOrdersAsync(int staffId);
     Task<List<OrderDto>?> GetOrderQueueAsync();
     Task<bool> AcceptOrderAsync(int orderId);
@@ -42,6 +49,16 @@ public interface IStaffApiService
     // Bar cash wallet top-up (bartender loads cash onto a fan's wallet at the counter)
     Task<BarTopupResolveResultDto?> ResolveTopupAsync(string query);
     Task<BarTopupResultDto?> SubmitTopupAsync(BarTopupRequestDto request);
+
+    // Anonymous ticket wallet (load / cash out a bearer balance on the ticket itself, no account)
+    Task<TicketWalletResultDto?> TopUpTicketWalletAsync(TicketWalletTopupRequestDto request);
+    Task<TicketWalletResultDto?> CashOutTicketWalletAsync(TicketWalletCashoutRequestDto request);
+    Task<TicketWalletClaimResultDto?> ClaimTicketWalletAsync(TicketWalletClaimRequestDto request);
+
+    // DEV-ONLY: real tickets of the currently-live event, so the top-up page can offer a
+    // pick-a-ticket combobox instead of forcing a code to be typed/scanned. The endpoint 404s
+    // outside Development, so this returns an empty list there.
+    Task<List<TestTicketDto>?> GetLiveEventTestTicketsAsync();
 
     string? Token { get; set; }
 }
@@ -122,7 +139,7 @@ public class StaffApiService : IStaffApiService
             // runner-collected ones on the board (greyed) until they're delivered. Delivered orders
             // are fetched too so the dashboard can tally the "Preuzeto"/"Dostavljeno" metrics; the
             // KDS board simply ignores delivered orders (no column renders them).
-            var response = await _httpClient.GetAsync("orders?status=pending,accepted,in-preparation,ready,out-for-delivery,delivered");
+            var response = await _httpClient.GetAsync("orders?status=pending,accepted,in-preparation,ready,out-for-delivery,delivery-failed,delivered");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -231,6 +248,36 @@ public class StaffApiService : IStaffApiService
         catch (Exception ex)
         {
             Console.WriteLine($"Error updating order status: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> RetryFailedDeliveryAsync(int orderId)
+    {
+        try
+        {
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync($"orders/{orderId}/retry-delivery", null);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrying delivery for order {orderId}: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> CancelFailedDeliveryAsync(int orderId)
+    {
+        try
+        {
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync($"orders/{orderId}/cancel-failed", null);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cancelling failed delivery for order {orderId}: {ex.Message}");
             return false;
         }
     }
@@ -521,6 +568,100 @@ public class StaffApiService : IStaffApiService
         catch (Exception ex)
         {
             Console.WriteLine($"Error submitting top-up: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Anonymous ticket wallet: load cash onto the ticket itself (no account). IdempotencyKey per
+    // confirmed attempt makes a retried submit a safe server-side no-op.
+    public async Task<TicketWalletResultDto?> TopUpTicketWalletAsync(TicketWalletTopupRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/ticket-wallet/topup", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<TicketWalletResultDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading ticket wallet: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Anonymous ticket wallet: hand back the remaining balance and close the wallet. A fresh
+    // IdempotencyKey per attempt lets a network retry complete the same payout while a re-scan of an
+    // already-cashed-out ticket comes back as AlreadyCashedOut (nothing to pay).
+    public async Task<TicketWalletResultDto?> CashOutTicketWalletAsync(TicketWalletCashoutRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/ticket-wallet/cashout", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<TicketWalletResultDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cashing out ticket wallet: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Anonymous ticket wallet: move the balance onto a registered account by email (and email a
+    // set-password link). Idempotent per ticket server-side.
+    public async Task<TicketWalletClaimResultDto?> ClaimTicketWalletAsync(TicketWalletClaimRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/ticket-wallet/claim", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<TicketWalletClaimResultDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error claiming ticket wallet: {ex.Message}");
+        }
+        return null;
+    }
+
+    // DEV-ONLY helper feeding the top-up page's test-ticket picker. Unauthenticated on the API side
+    // and 404s outside Development, so we return an empty list on any non-success/failure rather than
+    // surfacing an error to the bartender.
+    public async Task<List<TestTicketDto>?> GetLiveEventTestTicketsAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("events/live/test-tickets");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<TestTicketDto>>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving live-event test tickets: {ex.Message}");
         }
         return null;
     }

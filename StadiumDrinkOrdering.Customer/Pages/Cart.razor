@@ -55,9 +55,9 @@
 
             <div id="customer-cart-payment-label" class="label" style="margin:22px 0 12px">Plaćanje</div>
             <div id="customer-cart-pay-wallet" class="pay-opt @(_pay == "wallet" ? "sel" : "")" @onclick="@(() => _pay = "wallet")">
-                <div id="customer-cart-wallet-icon" class="pic">👛</div>
+                <div id="customer-cart-wallet-icon" class="pic">@(_wallet is { IsTicketWallet: true } ? "🎟️" : "👛")</div>
                 <div id="customer-cart-wallet-info" class="pb">
-                    <div id="customer-cart-wallet-title" class="t">HALFTIME novčanik</div>
+                    <div id="customer-cart-wallet-title" class="t">@WalletTitle</div>
                     <div id="customer-cart-wallet-balance" class="s tnum">@WalletText</div>
                 </div>
                 <div class="radio"></div>
@@ -119,6 +119,8 @@
     private decimal Total => State.Subtotal + (State.Count > 0 ? ServiceFee : 0m);
     private string SubtitleText => State.Count > 0 ? $"{State.Count} {(State.Count == 1 ? "stavka" : "stavke")}" : "Prazno";
     private string WalletText => _wallet is { Exists: true } ? $"Stanje €{_wallet.Balance:F2}" : "Novčanik";
+    // Anonymous bearer balance loaded on the scanned ticket vs a registered fan's personal wallet.
+    private string WalletTitle => _wallet is { IsTicketWallet: true } ? "Saldo na ulaznici" : "HALFTIME novčanik";
 
     protected override void OnInitialized() => State.OnChange += StateChanged;
 
@@ -167,7 +169,9 @@
         }
         else if (result is { InsufficientFunds: true })
         {
-            _error = "Nedovoljno sredstava na novčaniku. Nadoplati novčanik ili plati karticom.";
+            _error = _wallet is { IsTicketWallet: true }
+                ? "Nedovoljno sredstava na ulaznici. Nadoplati na šanku ili plati karticom."
+                : "Nedovoljno sredstava na novčaniku. Nadoplati novčanik ili plati karticom.";
             _placing = false;
         }
         else

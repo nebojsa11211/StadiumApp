@@ -140,6 +140,29 @@ public class RunnerApiService
         }
     }
 
+    /// <summary>
+    /// Reports that this runner couldn't deliver an order (fan absent, refused, wrong seat…). The API
+    /// treats an already-failed order as an idempotent success, so the offline outbox can safely retry.
+    /// A 409 means it's no longer this runner's to fail (e.g. reassigned); treated as "done" so the
+    /// queued action is dropped rather than retried forever.
+    /// </summary>
+    public async Task<bool> ReportDeliveryFailedAsync(int orderId, DeliveryFailureReason reason, Guid clientActionId, string? notes = null)
+    {
+        try
+        {
+            var dto = new ReportDeliveryFailedDto { Reason = reason, Notes = notes, ClientActionId = clientActionId };
+            var resp = await _http.PostAsJsonAsync($"orders/{orderId}/delivery-failed", dto);
+            if (await Handle401(resp)) return false;
+            if (resp.StatusCode == HttpStatusCode.Conflict) return true; // no longer ours — stop retrying
+            return resp.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ReportDeliveryFailed {orderId} failed: {ex.Message}");
+            return false;
+        }
+    }
+
     private async Task<bool> Handle401(HttpResponseMessage resp)
     {
         if (resp.StatusCode == HttpStatusCode.Unauthorized)

@@ -452,6 +452,30 @@
   <data name="OrderQueue_CollectedByRunner" xml:space="preserve">
     <value>Preuzeto — u dostavi</value>
   </data>
+  <data name="OrderQueue_Returns" xml:space="preserve">
+    <value>Povrati</value>
+  </data>
+  <data name="OrderQueue_AttemptsCount" xml:space="preserve">
+    <value>{0} pokušaja</value>
+  </data>
+  <data name="OrderQueue_RetryDelivery" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="OrderQueue_CancelRefund" xml:space="preserve">
+    <value>Otkaži i vrati novac</value>
+  </data>
+  <data name="OrderQueue_ReasonNotAtSeat" xml:space="preserve">
+    <value>Navijača nema na sjedalu</value>
+  </data>
+  <data name="OrderQueue_ReasonRefused" xml:space="preserve">
+    <value>Navijač je odbio</value>
+  </data>
+  <data name="OrderQueue_ReasonWrongSeat" xml:space="preserve">
+    <value>Pogrešno ili prazno sjedalo</value>
+  </data>
+  <data name="OrderQueue_ReasonOther" xml:space="preserve">
+    <value>Ostalo</value>
+  </data>
   <data name="OrderQueue_OrderNote" xml:space="preserve">
     <value>Napomena</value>
   </data>
@@ -822,5 +846,98 @@
   </data>
   <data name="EventGate_CheckAgain" xml:space="preserve">
     <value>Provjeri ponovno</value>
+  </data>
+  <data name="TicketWallet_LoadOnTicketTitle" xml:space="preserve">
+    <value>Učitaj sredstva na ulaznicu</value>
+  </data>
+  <data name="TicketWallet_TicketLabel" xml:space="preserve">
+    <value>Ulaznica</value>
+  </data>
+  <data name="TicketWallet_CurrentBalance" xml:space="preserve">
+    <value>Trenutačni saldo</value>
+  </data>
+  <data name="TicketWallet_BearerWarning" xml:space="preserve">
+    <value>Saldo ostaje na ulaznici, poput gotovine. Recite gostu da čuva ulaznicu — izgubljena ulaznica znači izgubljen saldo.</value>
+  </data>
+  <data name="TicketWallet_CapHint" xml:space="preserve">
+    <value>Na jednu ulaznicu moguće je učitati najviše {0}.</value>
+  </data>
+  <data name="TicketWallet_LoadBtn" xml:space="preserve">
+    <value>Učitaj na ulaznicu</value>
+  </data>
+  <data name="TicketWallet_CashOutBtn" xml:space="preserve">
+    <value>Isplati {0}</value>
+  </data>
+  <data name="TicketWallet_CashingOut" xml:space="preserve">
+    <value>Isplaćujem…</value>
+  </data>
+  <data name="TicketWallet_ClosedNotice" xml:space="preserve">
+    <value>Ova ulaznica je već isplaćena. Saldo je zatvoren i nije ga moguće nadopuniti.</value>
+  </data>
+  <data name="TicketWallet_OverCap" xml:space="preserve">
+    <value>Iznos premašuje ograničenje ulaznice (preostalo {0}).</value>
+  </data>
+  <data name="TicketWallet_LoadedTitle" xml:space="preserve">
+    <value>Sredstva učitana na ulaznicu</value>
+  </data>
+  <data name="TicketWallet_CashedOutTitle" xml:space="preserve">
+    <value>Iznos za isplatu</value>
+  </data>
+  <data name="TicketWallet_HandBack" xml:space="preserve">
+    <value>Isplatite ovaj iznos gostu:</value>
+  </data>
+  <data name="TicketWallet_Fail_LimitExceeded" xml:space="preserve">
+    <value>Taj bi iznos premašio ograničenje salda ulaznice.</value>
+  </data>
+  <data name="TicketWallet_Fail_TicketNotFound" xml:space="preserve">
+    <value>Ulaznica nije pronađena.</value>
+  </data>
+  <data name="TicketWallet_Fail_AlreadyCashedOut" xml:space="preserve">
+    <value>Ova ulaznica je već isplaćena — nema ništa za isplatu.</value>
+  </data>
+  <data name="TicketWallet_Fail_NothingToCashOut" xml:space="preserve">
+    <value>Nema ništa za isplatu — saldo ulaznice je prazan.</value>
+  </data>
+  <data name="TicketWallet_Fail_WalletFrozen" xml:space="preserve">
+    <value>Novčanik ove ulaznice je zamrznut.</value>
+  </data>
+  <data name="TicketWallet_Fail_Generic" xml:space="preserve">
+    <value>Radnju nije bilo moguće dovršiti.</value>
+  </data>
+  <data name="TicketWallet_ClaimTitle" xml:space="preserve">
+    <value>Ili prebaci saldo na račun</value>
+  </data>
+  <data name="TicketWallet_ClaimEmailPlaceholder" xml:space="preserve">
+    <value>gost@email.com</value>
+  </data>
+  <data name="TicketWallet_ClaimBtn" xml:space="preserve">
+    <value>Prebaci na račun</value>
+  </data>
+  <data name="TicketWallet_Claiming" xml:space="preserve">
+    <value>Prebacujem…</value>
+  </data>
+  <data name="TicketWallet_ClaimHint" xml:space="preserve">
+    <value>Prebacuje saldo s ulaznice na račun i šalje e-poštom poveznicu za postavljanje lozinke — povrativo, bez čekanja u redu za isplatu.</value>
+  </data>
+  <data name="TicketWallet_ClaimedTitle" xml:space="preserve">
+    <value>Saldo prebačen na račun</value>
+  </data>
+  <data name="TicketWallet_ClaimedMsg" xml:space="preserve">
+    <value>{0} prebačeno na {1}.</value>
+  </data>
+  <data name="TicketWallet_ClaimedEmailNote" xml:space="preserve">
+    <value>Poslali smo e-poštom poveznicu za postavljanje lozinke i dovršetak registracije.</value>
+  </data>
+  <data name="TicketWallet_Fail_AlreadyClaimed" xml:space="preserve">
+    <value>Saldo ove ulaznice je već prebačen ili isplaćen.</value>
+  </data>
+  <data name="TicketWallet_Fail_NothingToClaim" xml:space="preserve">
+    <value>Nema ništa za prebacivanje — saldo ulaznice je prazan.</value>
+  </data>
+  <data name="TicketWallet_Fail_InvalidEmail" xml:space="preserve">
+    <value>Unesite ispravnu e-adresu.</value>
+  </data>
+  <data name="TicketWallet_Fail_ClaimGeneric" xml:space="preserve">
+    <value>Saldo nije bilo moguće prebaciti.</value>
   </data>
 </root>

@@ -1,4 +1,5 @@
 using Microsoft.JSInterop;
+using StadiumDrinkOrdering.Runner.Models;
 
 namespace StadiumDrinkOrdering.Runner.Services;
 
@@ -10,6 +11,8 @@ public class OutboxAction
     public int OrderId { get; set; }
     public DateTime EnqueuedAt { get; set; }
     public int RetryCount { get; set; }
+    // Only used by the "delivery-failed" action type: why the runner couldn't hand the order over.
+    public DeliveryFailureReason Reason { get; set; }
 }
 
 /// <summary>
@@ -81,6 +84,31 @@ public class OutboxService : IAsyncDisposable
         _ = FlushAsync(); // fire-and-forget; if offline the send fails and the item stays queued
     }
 
+    /// <summary>Queue a "couldn't deliver" report and try to sync it immediately (no-op if offline).</summary>
+    public async Task EnqueueDeliveryFailedAsync(int orderId, DeliveryFailureReason reason)
+    {
+        var action = new OutboxAction
+        {
+            Id = Guid.NewGuid(),
+            Type = "delivery-failed",
+            OrderId = orderId,
+            Reason = reason,
+            EnqueuedAt = DateTime.UtcNow
+        };
+
+        try
+        {
+            if (_module != null) await _module.InvokeVoidAsync("add", action);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Outbox enqueue failed: {ex.Message}");
+        }
+
+        await RefreshPendingAsync();
+        _ = FlushAsync(); // fire-and-forget; if offline the send fails and the item stays queued
+    }
+
     public async Task FlushAsync()
     {
         if (_flushing || _module == null || !_auth.IsAuthenticated) return;
@@ -93,6 +121,7 @@ public class OutboxService : IAsyncDisposable
                 var sent = a.Type switch
                 {
                     "deliver" => await _api.MarkDeliveredAsync(a.OrderId, a.Id),
+                    "delivery-failed" => await _api.ReportDeliveryFailedAsync(a.OrderId, a.Reason, a.Id),
                     _ => true // unknown action type — drop it rather than retry forever
                 };
                 if (sent)
@@ -114,6 +143,9 @@ public class OutboxService : IAsyncDisposable
 
     public bool IsPendingDeliver(int orderId) =>
         Pending.Any(p => p.Type == "deliver" && p.OrderId == orderId);
+
+    public bool IsPendingDeliveryFailed(int orderId) =>
+        Pending.Any(p => p.Type == "delivery-failed" && p.OrderId == orderId);
 
     private async Task RefreshPendingAsync()
     {

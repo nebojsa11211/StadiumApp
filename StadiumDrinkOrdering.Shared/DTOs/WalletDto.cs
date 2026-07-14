@@ -19,6 +19,11 @@ public class WalletSummaryDto
     /// <summary>False when the user is eligible but no wallet has been created yet.</summary>
     public bool Exists { get; set; }
 
+    /// <summary>True when this summary describes an anonymous <b>ticket</b> wallet (a bearer balance loaded
+    /// on the scanned ticket) rather than a registered fan's personal wallet — lets the walk-up cart label
+    /// it accurately ("ticket balance" vs the HALFTIME wallet).</summary>
+    public bool IsTicketWallet { get; set; }
+
     /// <summary>True when the configured gateway settles asynchronously and the browser must collect +
     /// confirm card details (real gateway, e.g. Stripe). False for the synchronous mock, which credits
     /// immediately on submit and needs no card entry.</summary>
@@ -116,9 +121,19 @@ public class DepositStatusDto
 public class WalletAdminDto
 {
     public int WalletId { get; set; }
+
+    /// <summary>"User" (registered fan wallet) or "Ticket" (anonymous bearer wallet).</summary>
+    public string OwnerType { get; set; } = "User";
+
+    // Set for user-owned wallets.
     public int UserId { get; set; }
     public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+
+    // Set for ticket-owned (anonymous) wallets.
+    public int? TicketId { get; set; }
+    public string? TicketNumber { get; set; }
+
     public decimal Balance { get; set; }
     public string Currency { get; set; } = "EUR";
     public string Status { get; set; } = WalletStatus.Active;
@@ -163,5 +178,6 @@ public enum WalletDebitOutcome
     InsufficientFunds,
     WalletNotFound,
     WalletFrozen,
-    AlreadyApplied // idempotent replay of a prior debit with the same key
+    AlreadyApplied, // idempotent replay of a prior debit with the same key
+    LimitExceeded   // credit would push a (ticket) wallet over its configured max balance
 }

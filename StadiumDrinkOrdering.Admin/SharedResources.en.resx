@@ -4079,4 +4079,7 @@
   <data name="Venue_Eyebrow" xml:space="preserve"><value>Stadium</value></data>
   <data name="StadiumInfo_Eyebrow" xml:space="preserve"><value>Stadium</value></data>
   <data name="Drawing_Eyebrow" xml:space="preserve"><value>Stadium</value></data>
+  <data name="Wallets_TicketBadge" xml:space="preserve"><value>Ticket</value></data>
+  <data name="Wallets_TicketOwner" xml:space="preserve"><value>Ticket</value></data>
+  <data name="Wallets_Anonymous" xml:space="preserve"><value>Anonymous — no account</value></data>
 </root>

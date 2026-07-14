@@ -190,6 +190,36 @@
   <data name="MyDeliveries_MarkedDelivered" xml:space="preserve">
     <value>označeno kao dostavljeno</value>
   </data>
+  <data name="MyDeliveries_CantDeliverButton" xml:space="preserve">
+    <value>Nije moguće dostaviti</value>
+  </data>
+  <data name="MyDeliveries_ReasonSheetTitle" xml:space="preserve">
+    <value>Zašto ne možete dostaviti?</value>
+  </data>
+  <data name="MyDeliveries_ReasonSheetHint" xml:space="preserve">
+    <value>Piće se vraća na šank kako bi ga konobar ponovno pokušao dostaviti ili vratio novac.</value>
+  </data>
+  <data name="MyDeliveries_ReasonNotAtSeat" xml:space="preserve">
+    <value>Navijača nema na sjedalu</value>
+  </data>
+  <data name="MyDeliveries_ReasonRefused" xml:space="preserve">
+    <value>Navijač je odbio</value>
+  </data>
+  <data name="MyDeliveries_ReasonWrongSeat" xml:space="preserve">
+    <value>Pogrešno ili prazno sjedalo</value>
+  </data>
+  <data name="MyDeliveries_ReasonOther" xml:space="preserve">
+    <value>Ostalo</value>
+  </data>
+  <data name="MyDeliveries_ReasonCancel" xml:space="preserve">
+    <value>Odustani</value>
+  </data>
+  <data name="MyDeliveries_ReturnedSection" xml:space="preserve">
+    <value>Vraćeno na šank · čeka sinkronizaciju</value>
+  </data>
+  <data name="MyDeliveries_MarkedReturned" xml:space="preserve">
+    <value>vraćeno na šank</value>
+  </data>
   <data name="EventGate_NoLiveEventTitle" xml:space="preserve">
     <value>Trenutačno nema aktivnog događaja</value>
   </data>

@@ -19,6 +19,28 @@ public interface IOrderService
     Task<bool> CancelOrderAsync(int orderId, int userId);
 
     /// <summary>
+    /// A runner reporting they couldn't hand an order over at the seat. Moves the order from
+    /// OutForDelivery to DeliveryFailed, records the reason/attempt/time/runner, and releases the
+    /// runner's claim so it leaves their queue and surfaces on the Bar returns triage. Idempotent:
+    /// a replay (offline-outbox retry) for an order already DeliveryFailed is a no-op success.
+    /// </summary>
+    Task<DeliveryFailedOutcome> ReportDeliveryFailedAsync(int orderId, int runnerId, ReportDeliveryFailedDto dto);
+
+    /// <summary>
+    /// Bar triage — retry a returned (DeliveryFailed) order by putting it back into the shared
+    /// delivery pool (Ready, unassigned) for another attempt. The drink still exists, so stock is
+    /// untouched. Returns false if the order isn't currently DeliveryFailed.
+    /// </summary>
+    Task<bool> RetryFailedDeliveryAsync(int orderId, int userId);
+
+    /// <summary>
+    /// Bar triage — give up on a returned (DeliveryFailed) order: mark it Cancelled and refund any
+    /// wallet-funded payment. The drink was already poured and is discarded, so stock is deliberately
+    /// NOT restored (that would overstate inventory). Returns false if the order isn't DeliveryFailed.
+    /// </summary>
+    Task<bool> CancelFailedDeliveryAsync(int orderId, int userId);
+
+    /// <summary>
     /// Cancels every still-in-flight (non-terminal) order for an event. Called when the event reaches a
     /// terminal lifecycle state so no order is left stranded (e.g. as OutForDelivery) after the event is
     /// over. Mirrors <see cref="CancelOrderAsync"/> for each order: restores drink stock, stamps the
@@ -34,6 +56,15 @@ public enum ClaimOutcome
     Claimed,
     NotFound,
     AlreadyClaimed
+}
+
+/// <summary>Result of a runner reporting a failed delivery, so the controller can map it to a status.</summary>
+public enum DeliveryFailedOutcome
+{
+    Recorded,     // moved OutForDelivery → DeliveryFailed
+    NotFound,     // no such order
+    AlreadyFailed,// already DeliveryFailed (idempotent outbox retry) — treated as success
+    NotDeliverable// not in a state a runner can fail (e.g. not OutForDelivery, or not held by this runner)
 }
 
 /// <summary>Outcome of creating an order, distinguishing ordinary validation failures from
@@ -237,6 +268,41 @@ public class OrderService : IOrderService
                 OrderId = order.Id,
                 WalletTransactionId = debit.Transaction!.Id,
                 PaymentMethod = PaymentMethod.DigitalWallet.ToString(),
+                TransactionId = debit.Transaction.Id.ToString(),
+                Amount = totalAmount,
+                Currency = debit.Transaction.Currency,
+                Status = "Completed",
+                PaymentDate = DateTime.UtcNow,
+                ProcessedAt = DateTime.UtcNow
+            });
+            await _context.SaveChangesAsync();
+        }
+        // Ticket-wallet payment: charge the anonymous bearer balance loaded on THIS order's ticket. Same
+        // shape as the user-wallet path — order exists first, an insufficient/closed result moves no money
+        // and we undo the order. Server-authoritative and online-only by construction (there is no offline
+        // debit path); a client must get this 200 before treating the order as paid.
+        else if (createOrderDto.PaymentMethod == PaymentMethod.TicketWallet)
+        {
+            var debit = await _walletService.TryDebitTicketWalletAsync(
+                ticket.Id, totalAmount, idempotencyKey: $"order-{order.Id}",
+                referenceType: "Order", referenceId: order.Id, description: $"Drink order #{order.Id}");
+
+            if (debit.Outcome is not (WalletDebitOutcome.Success or WalletDebitOutcome.AlreadyApplied))
+            {
+                await CompensateUnpaidOrderAsync(order.Id);
+                return debit.Outcome switch
+                {
+                    WalletDebitOutcome.InsufficientFunds => CreateOrderResult.Fail(CreateOrderOutcome.InsufficientFunds, "Insufficient ticket balance for this order."),
+                    WalletDebitOutcome.WalletFrozen => CreateOrderResult.Fail(CreateOrderOutcome.WalletFrozen, "This ticket's balance is closed or frozen."),
+                    _ => CreateOrderResult.Fail(CreateOrderOutcome.NoWallet, "No funds are loaded on this ticket.")
+                };
+            }
+
+            _context.Payments.Add(new Payment
+            {
+                OrderId = order.Id,
+                WalletTransactionId = debit.Transaction!.Id,
+                PaymentMethod = PaymentMethod.TicketWallet.ToString(),
                 TransactionId = debit.Transaction.Id.ToString(),
                 Amount = totalAmount,
                 Currency = debit.Transaction.Currency,
@@ -476,6 +542,88 @@ public class OrderService : IOrderService
         return result;
     }
 
+    public async Task<DeliveryFailedOutcome> ReportDeliveryFailedAsync(int orderId, int runnerId, ReportDeliveryFailedDto dto)
+    {
+        var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+        if (order == null)
+            return DeliveryFailedOutcome.NotFound;
+
+        // Idempotent replay: the Runner's offline outbox may resend this after a lost response. An
+        // order already parked as DeliveryFailed is reported as success without re-stamping.
+        if (order.Status == OrderStatus.DeliveryFailed)
+            return DeliveryFailedOutcome.AlreadyFailed;
+
+        // Only the runner who actually holds the order (OutForDelivery, assigned to them) can fail it.
+        if (order.Status != OrderStatus.OutForDelivery || order.AssignedStaffId != runnerId)
+            return DeliveryFailedOutcome.NotDeliverable;
+
+        order.Status = OrderStatus.DeliveryFailed;
+        order.DeliveryAttempts += 1;
+        order.LastDeliveryFailureReason = dto.Reason;
+        order.LastDeliveryAttemptAt = DateTime.UtcNow;
+        order.LastDeliveryAttemptByUserId = runnerId;
+        // Release the claim so it drops off the runner's queue and becomes triageable at the bar.
+        order.AssignedStaffId = null;
+        order.Notes = AppendNote(order.Notes, $"Delivery failed ({dto.Reason})"
+            + (string.IsNullOrWhiteSpace(dto.Notes) ? "" : $": {dto.Notes.Trim()}"));
+
+        await _context.SaveChangesAsync();
+        return DeliveryFailedOutcome.Recorded;
+    }
+
+    public async Task<bool> RetryFailedDeliveryAsync(int orderId, int userId)
+    {
+        var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+        if (order == null || order.Status != OrderStatus.DeliveryFailed)
+            return false;
+
+        // Back into the shared pool: Ready + unassigned re-satisfies GetAvailableForDeliveryAsync so
+        // any runner can pick it up again. DeliveryAttempts is kept as history (not reset).
+        order.Status = OrderStatus.Ready;
+        order.AssignedStaffId = null;
+        order.Notes = AppendNote(order.Notes, "Retry queued");
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> CancelFailedDeliveryAsync(int orderId, int userId)
+    {
+        var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+        if (order == null || order.Status != OrderStatus.DeliveryFailed)
+            return false;
+
+        // Detect wallet funding before mutating (WalletService clears the change tracker on refund).
+        var walletPayment = await _context.Payments.AsNoTracking()
+            .FirstOrDefaultAsync(p => p.OrderId == orderId
+                && (p.PaymentMethod == "DigitalWallet" || p.PaymentMethod == "TicketWallet")
+                && p.Status == "Completed");
+
+        // Deliberately NO stock restore: the drink was already poured and is discarded, so putting it
+        // back would overstate inventory (unlike a Pending cancel, where nothing was ever made).
+        order.Status = OrderStatus.Cancelled;
+        order.CancelledAt = DateTime.UtcNow;
+        order.Notes = AppendNote(order.Notes, "Cancelled after failed delivery");
+        await _context.SaveChangesAsync();
+
+        // Refund after the cancel commits; idempotent (key refund-order-{id}) so a retry can't double-credit.
+        if (walletPayment?.WalletTransactionId != null)
+        {
+            var walletId = await _context.WalletTransactions.AsNoTracking()
+                .Where(t => t.Id == walletPayment.WalletTransactionId)
+                .Select(t => (int?)t.WalletId)
+                .FirstOrDefaultAsync();
+            if (walletId != null)
+            {
+                await _walletService.RefundAsync(
+                    walletId.Value, walletPayment.Amount, idempotencyKey: $"refund-order-{orderId}",
+                    referenceType: "Order", referenceId: orderId,
+                    description: $"Refund for undeliverable order #{orderId}", actorUserId: userId);
+            }
+        }
+
+        return true;
+    }
+
     public async Task<bool> UpdateOrderStatusAsync(int orderId, UpdateOrderStatusDto updateDto, int userId)
     {
         var order = await _context.Orders.FindAsync(orderId);
@@ -539,12 +687,13 @@ public class OrderService : IOrderService
             return false;
         }
 
-        // Detect wallet funding before mutating anything.
+        // Detect wallet funding before mutating anything. Covers both a registered user wallet
+        // (DigitalWallet) and an anonymous ticket wallet (TicketWallet); the funding transaction pins the
+        // exact wallet to refund, so the same code serves both owner types.
         var walletPayment = await _context.Payments.AsNoTracking()
             .FirstOrDefaultAsync(p => p.OrderId == orderId
-                && p.PaymentMethod == "DigitalWallet"
+                && (p.PaymentMethod == "DigitalWallet" || p.PaymentMethod == "TicketWallet")
                 && p.Status == "Completed");
-        var customerId = order.CustomerId;
 
         // Restore stock and record the return to inventory in the ledger.
         foreach (var orderItem in order.OrderItems)
@@ -568,15 +717,18 @@ public class OrderService : IOrderService
         // Refund the wallet AFTER the cancellation is committed. Done last because WalletService clears
         // the change tracker; the refund is idempotent (key refund-order-{id}) so it can't double-credit,
         // and a failure here leaves the order cancelled-but-unrefunded for reconciliation rather than
-        // blocking the cancel.
-        if (walletPayment != null)
+        // blocking the cancel. A cashed-out (Closed) ticket wallet can't receive the credit — the guarded
+        // refund simply no-ops and the case is left for reconciliation.
+        if (walletPayment?.WalletTransactionId != null)
         {
-            var wallet = await _context.Wallets.AsNoTracking()
-                .FirstOrDefaultAsync(w => w.UserId == customerId);
-            if (wallet != null)
+            var walletId = await _context.WalletTransactions.AsNoTracking()
+                .Where(t => t.Id == walletPayment.WalletTransactionId)
+                .Select(t => (int?)t.WalletId)
+                .FirstOrDefaultAsync();
+            if (walletId != null)
             {
                 await _walletService.RefundAsync(
-                    wallet.Id, walletPayment.Amount, idempotencyKey: $"refund-order-{orderId}",
+                    walletId.Value, walletPayment.Amount, idempotencyKey: $"refund-order-{orderId}",
                     referenceType: "Order", referenceId: orderId,
                     description: $"Refund for cancelled order #{orderId}", actorUserId: userId);
             }
@@ -605,16 +757,22 @@ public class OrderService : IOrderService
         var orderIds = orders.Select(o => o.Id).ToList();
 
         // Detect wallet funding for every affected order before mutating anything, so refunds can be
-        // issued after the cancellations commit (WalletService clears the change tracker).
+        // issued after the cancellations commit (WalletService clears the change tracker). Covers user
+        // (DigitalWallet) and ticket (TicketWallet) wallets; the funding transaction pins the wallet.
         var walletPayments = await _context.Payments.AsNoTracking()
             .Where(p => p.OrderId != null && orderIds.Contains(p.OrderId.Value)
-                && p.PaymentMethod == "DigitalWallet"
+                && (p.PaymentMethod == "DigitalWallet" || p.PaymentMethod == "TicketWallet")
                 && p.Status == "Completed")
             .ToListAsync();
         var paymentByOrderId = walletPayments
             .GroupBy(p => p.OrderId!.Value)
             .ToDictionary(g => g.Key, g => g.First());
-        var customerByOrderId = orders.ToDictionary(o => o.Id, o => o.CustomerId);
+        // Wallet to refund per funding transaction id (owner-agnostic).
+        var txnIds = walletPayments.Where(p => p.WalletTransactionId != null)
+            .Select(p => p.WalletTransactionId!.Value).ToList();
+        var walletIdByTxnId = await _context.WalletTransactions.AsNoTracking()
+            .Where(t => txnIds.Contains(t.Id))
+            .ToDictionaryAsync(t => t.Id, t => t.WalletId);
 
         var now = DateTime.UtcNow;
         foreach (var order in orders)
@@ -648,15 +806,14 @@ public class OrderService : IOrderService
         // cancelled-but-unrefunded for reconciliation rather than blocking the whole sweep.
         foreach (var (orderId, payment) in paymentByOrderId)
         {
-            var wallet = await _context.Wallets.AsNoTracking()
-                .FirstOrDefaultAsync(w => w.UserId == customerByOrderId[orderId]);
-            if (wallet != null)
-            {
-                await _walletService.RefundAsync(
-                    wallet.Id, payment.Amount, idempotencyKey: $"refund-order-{orderId}",
-                    referenceType: "Order", referenceId: orderId,
-                    description: $"Refund for order #{orderId} ({reason})", actorUserId: actorUserId);
-            }
+            if (payment.WalletTransactionId is not long txnId
+                || !walletIdByTxnId.TryGetValue(txnId, out var walletId))
+                continue;
+
+            await _walletService.RefundAsync(
+                walletId, payment.Amount, idempotencyKey: $"refund-order-{orderId}",
+                referenceType: "Order", referenceId: orderId,
+                description: $"Refund for order #{orderId} ({reason})", actorUserId: actorUserId);
         }
 
         return orders.Count;
@@ -709,6 +866,9 @@ public class OrderService : IOrderService
             DeliveredByUserName = order.DeliveredByUser?.Username,
             Notes = order.Notes,
             CustomerNotes = order.CustomerNotes,
+            DeliveryAttempts = order.DeliveryAttempts,
+            LastDeliveryFailureReason = order.LastDeliveryFailureReason,
+            LastDeliveryAttemptAt = order.LastDeliveryAttemptAt,
             Event = order.Event,
             Seat = order.Seat,
             OrderItems = order.OrderItems.Select(oi => new OrderItemDto

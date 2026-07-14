@@ -355,20 +355,33 @@ public class ApplicationDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull);
         });
 
-        // Wallet (fan stored-value account) configuration
+        // Wallet (stored-value account — user- or ticket-owned) configuration
         modelBuilder.Entity<Wallet>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Balance).HasPrecision(10, 2);
             entity.Property(e => e.Currency).HasMaxLength(3);
             entity.Property(e => e.Status).HasMaxLength(20);
+            entity.Property(e => e.OwnerType).HasConversion<int>();
 
-            // One wallet per user.
-            entity.HasIndex(e => e.UserId).IsUnique();
+            // Exactly one owner: a wallet is owned by a user XOR a ticket, never both/neither.
+            entity.ToTable(t => t.HasCheckConstraint(
+                "CK_Wallets_OneOwner", "(\"UserId\" IS NULL) <> (\"TicketId\" IS NULL)"));
+
+            // One wallet per user — filtered so the many ticket wallets (UserId NULL) don't collide.
+            entity.HasIndex(e => e.UserId).IsUnique().HasFilter("\"UserId\" IS NOT NULL");
             entity.HasOne(e => e.User)
                 .WithOne(u => u.Wallet)
                 .HasForeignKey<Wallet>(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // One wallet per ticket — filtered for the same reason (user wallets have TicketId NULL).
+            entity.HasIndex(e => e.TicketId).IsUnique().HasFilter("\"TicketId\" IS NOT NULL");
+            // Restrict: a ticket carrying a stored-value balance must not be deletable out from under it.
+            entity.HasOne(e => e.Ticket)
+                .WithMany()
+                .HasForeignKey(e => e.TicketId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Map the PostgreSQL xmin system column as the optimistic-concurrency token. Npgsql
             // recognises xmin/xid and does NOT emit a physical column for it in the migration.

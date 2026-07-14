@@ -80,7 +80,12 @@ public enum WalletTransactionType
     /// <summary>Reversal of a prior entry, e.g. a failed/charged-back deposit (debit).</summary>
     Reversal = 3,
     /// <summary>Manual admin correction/comp, positive or negative, with a mandatory reason.</summary>
-    Adjustment = 4
+    Adjustment = 4,
+    /// <summary>Anonymous ticket wallet: remaining balance handed back as cash at the counter (debit, terminal).</summary>
+    CashOut = 5,
+    /// <summary>Anonymous ticket wallet balance moved onto a registered user wallet via email claim
+    /// (debit on the ticket wallet paired with a credit on the user wallet).</summary>
+    Claim = 6
 }
 
 /// <summary>Status of a single ledger entry. String constants match the codebase's status-column style.</summary>

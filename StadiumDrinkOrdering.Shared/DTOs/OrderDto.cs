@@ -34,6 +34,11 @@ public class OrderDto
     public string? Notes { get; set; }
     public string? CustomerNotes { get; set; }
     public string? AcceptedByUser { get; set; }
+    // Delivery-exception fields — populated when a runner reported "couldn't deliver". Surfaced on the
+    // Bar returns triage so the bartender sees why it came back, how many attempts, and by whom.
+    public int DeliveryAttempts { get; set; }
+    public DeliveryFailureReason? LastDeliveryFailureReason { get; set; }
+    public DateTime? LastDeliveryAttemptAt { get; set; }
     public Event? Event { get; set; }
     public Seat? Seat { get; set; }
     public List<OrderItemDto> OrderItems { get; set; } = new();
@@ -75,6 +80,22 @@ public class UpdateOrderStatusDto
     /// PWA's offline outbox so a retried request (e.g. a "Delivered" whose response was lost in a
     /// dead zone) can be correlated/de-duplicated. Safe to omit for server-rendered callers.
     /// </summary>
+    public Guid? ClientActionId { get; set; }
+}
+
+/// <summary>
+/// A runner reporting they couldn't hand an order over at the seat. Carries the reason from the
+/// Runner's reason sheet plus an optional free-text note, and (like <see cref="UpdateOrderStatusDto"/>)
+/// an optional client-generated id so the Runner's offline outbox can retry idempotently.
+/// </summary>
+public class ReportDeliveryFailedDto
+{
+    [Required]
+    public DeliveryFailureReason Reason { get; set; }
+
+    [StringLength(500)]
+    public string? Notes { get; set; }
+
     public Guid? ClientActionId { get; set; }
 }
 

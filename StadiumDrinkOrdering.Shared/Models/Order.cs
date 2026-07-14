@@ -53,6 +53,14 @@ public class Order
     public int? InPreparationByUserId { get; set; }
     public int? PreparedByUserId { get; set; }
     public int? DeliveredByUserId { get; set; }
+
+    // Delivery-exception tracking. Populated when a runner reports they couldn't hand the order over
+    // (fan not at the seat, refused, etc.). Kept as history even after the order is retried or
+    // cancelled, so "how many attempts and why" survives the next transition.
+    public int DeliveryAttempts { get; set; }
+    public DeliveryFailureReason? LastDeliveryFailureReason { get; set; }
+    public DateTime? LastDeliveryAttemptAt { get; set; }
+    public int? LastDeliveryAttemptByUserId { get; set; }
     
     [StringLength(500)]
     public string? Notes { get; set; }
@@ -86,6 +94,18 @@ public enum OrderStatus
     Ready = 4,
     OutForDelivery = 5,
     Delivered = 6,
-    Cancelled = 7
+    Cancelled = 7,
+    // A runner picked the order up but couldn't hand it over at the seat. A distinct, auditable
+    // exception state (not Cancelled): the drink returns to the bar for triage — retry or refund.
+    DeliveryFailed = 8
+}
+
+// Why a runner couldn't complete a delivery, captured from the Runner's reason sheet.
+public enum DeliveryFailureReason
+{
+    CustomerNotAtSeat = 1,
+    CustomerRefused = 2,
+    WrongSeat = 3,
+    Other = 99
 }
 

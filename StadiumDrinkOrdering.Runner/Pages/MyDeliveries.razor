@@ -48,12 +48,16 @@
                     <span class="runner-cta-icon" aria-hidden="true">✓</span>
                     <span>@Localizer["MyDeliveries_MarkDeliveredButton"]</span>
                 </button>
+                <button class="runner-cta runner-cta-secondary" @onclick="() => OpenReasonSheet(o.Id)" id="runner-mine-cant-deliver-@o.Id">
+                    <span class="runner-cta-icon" aria-hidden="true">↩</span>
+                    <span>@Localizer["MyDeliveries_CantDeliverButton"]</span>
+                </button>
             </div>
         }
 
         @if (syncing.Count > 0)
         {
-            <div class="runner-sync-head" id="runner-my-deliveries-sync-head">@Localizer["MyDeliveries_DeliveredSection"] (@syncing.Count)</div>
+            <div class="runner-sync-head" id="runner-my-deliveries-sync-head">@(syncing.Any(o => Outbox.IsPendingDeliveryFailed(o.Id)) ? Localizer["MyDeliveries_ReturnedSection"] : Localizer["MyDeliveries_DeliveredSection"]) (@syncing.Count)</div>
             @foreach (var o in syncing)
             {
                 <div class="runner-card runner-card-pending" id="runner-mine-pending-@o.Id">
@@ -70,7 +74,7 @@
                     </div>
                     <div class="runner-seat" id="@($"runner-mine-pending-{o.Id}-seat")">@SeatText(o)</div>
                     <div class="runner-items" id="@($"runner-mine-pending-{o.Id}-items")">
-                        <span class="runner-order-id">#@o.Id</span> · @Localizer["MyDeliveries_MarkedDelivered"]
+                        <span class="runner-order-id">#@o.Id</span> · @(Outbox.IsPendingDeliveryFailed(o.Id) ? Localizer["MyDeliveries_MarkedReturned"] : Localizer["MyDeliveries_MarkedDelivered"])
                     </div>
                 </div>
             }
@@ -78,11 +82,28 @@
     }
 </div>
 
+@if (failingOrderId is not null)
+{
+    <div class="runner-sheet-backdrop" @onclick="CloseReasonSheet" id="runner-mine-reason-backdrop">
+        <div class="runner-sheet" @onclick:stopPropagation="true" role="dialog" aria-modal="true" id="runner-mine-reason-sheet">
+            <div class="runner-sheet-title" id="runner-mine-reason-title">@Localizer["MyDeliveries_ReasonSheetTitle"]</div>
+            <div class="runner-sheet-hint" id="runner-mine-reason-hint">@Localizer["MyDeliveries_ReasonSheetHint"]</div>
+            <button class="runner-sheet-option" @onclick="() => PickReason(DeliveryFailureReason.CustomerNotAtSeat)" id="runner-mine-reason-not-at-seat">@Localizer["MyDeliveries_ReasonNotAtSeat"]</button>
+            <button class="runner-sheet-option" @onclick="() => PickReason(DeliveryFailureReason.CustomerRefused)" id="runner-mine-reason-refused">@Localizer["MyDeliveries_ReasonRefused"]</button>
+            <button class="runner-sheet-option" @onclick="() => PickReason(DeliveryFailureReason.WrongSeat)" id="runner-mine-reason-wrong-seat">@Localizer["MyDeliveries_ReasonWrongSeat"]</button>
+            <button class="runner-sheet-option" @onclick="() => PickReason(DeliveryFailureReason.Other)" id="runner-mine-reason-other">@Localizer["MyDeliveries_ReasonOther"]</button>
+            <button class="runner-sheet-cancel" @onclick="CloseReasonSheet" id="runner-mine-reason-cancel">@Localizer["MyDeliveries_ReasonCancel"]</button>
+        </div>
+    </div>
+}
+
 @code {
     private List<OrderDto>? mine;
     private List<OrderDto> active = new();
     private List<OrderDto> syncing = new();
     private bool loading;
+    // The order whose "why couldn't you deliver?" reason sheet is open, or null when none is.
+    private int? failingOrderId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,9 +123,37 @@
     private void Recompute()
     {
         var outForDelivery = mine?.Where(o => o.Status == OrderStatus.OutForDelivery).ToList() ?? new();
-        // An order whose delivery is queued in the outbox is shown as "syncing", not still-to-deliver.
-        active = outForDelivery.Where(o => !Outbox.IsPendingDeliver(o.Id)).ToList();
-        syncing = outForDelivery.Where(o => Outbox.IsPendingDeliver(o.Id)).ToList();
+        // An order whose delivery OR couldn't-deliver report is queued in the outbox is shown as
+        // "syncing", not still-to-deliver — so tapping either action drops the card immediately.
+        bool Queued(OrderDto o) => Outbox.IsPendingDeliver(o.Id) || Outbox.IsPendingDeliveryFailed(o.Id);
+        active = outForDelivery.Where(o => !Queued(o)).ToList();
+        syncing = outForDelivery.Where(Queued).ToList();
+    }
+
+    private void OpenReasonSheet(int orderId)
+    {
+        failingOrderId = orderId;
+        _ = Haptic();
+    }
+
+    private void CloseReasonSheet() => failingOrderId = null;
+
+    private async Task PickReason(DeliveryFailureReason reason)
+    {
+        var orderId = failingOrderId;
+        failingOrderId = null;
+        if (orderId is null) return;
+
+        await Haptic();
+        // Optimistic + offline-safe: queue the report, reflect immediately, let the outbox sync later.
+        await Outbox.EnqueueDeliveryFailedAsync(orderId.Value, reason);
+        Recompute();
+        StateHasChanged();
+    }
+
+    private async Task Haptic()
+    {
+        try { await JS.InvokeVoidAsync("runnerHaptic", 15); } catch { /* JS unavailable — ignore */ }
     }
 
     private async Task Deliver(int orderId)

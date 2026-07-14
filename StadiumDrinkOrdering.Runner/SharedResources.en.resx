@@ -190,6 +190,36 @@
   <data name="MyDeliveries_MarkedDelivered" xml:space="preserve">
     <value>marked delivered</value>
   </data>
+  <data name="MyDeliveries_CantDeliverButton" xml:space="preserve">
+    <value>Couldn't deliver</value>
+  </data>
+  <data name="MyDeliveries_ReasonSheetTitle" xml:space="preserve">
+    <value>Why couldn't you deliver?</value>
+  </data>
+  <data name="MyDeliveries_ReasonSheetHint" xml:space="preserve">
+    <value>The drink goes back to the bar for the bartender to retry or refund.</value>
+  </data>
+  <data name="MyDeliveries_ReasonNotAtSeat" xml:space="preserve">
+    <value>Fan not at the seat</value>
+  </data>
+  <data name="MyDeliveries_ReasonRefused" xml:space="preserve">
+    <value>Fan refused it</value>
+  </data>
+  <data name="MyDeliveries_ReasonWrongSeat" xml:space="preserve">
+    <value>Wrong or empty seat</value>
+  </data>
+  <data name="MyDeliveries_ReasonOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="MyDeliveries_ReasonCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="MyDeliveries_ReturnedSection" xml:space="preserve">
+    <value>Returned to bar · waiting to sync</value>
+  </data>
+  <data name="MyDeliveries_MarkedReturned" xml:space="preserve">
+    <value>returned to bar</value>
+  </data>
   <data name="EventGate_NoLiveEventTitle" xml:space="preserve">
     <value>No event is live right now</value>
   </data>

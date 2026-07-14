@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject IStringLocalizer<SharedResources> Localizer
+@inject IWebHostEnvironment Env
 @implements IAsyncDisposable
 
 <PageTitle>@Localizer["TicketTopup_PageTitle"]</PageTitle>
@@ -73,6 +74,89 @@ else
                                     @Localizer["TicketTopup_NewTopupBtn"]
                                 </button>
                             </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (ticketResult != null)
+        {
+            @* ---------- Ticket wallet result (load or cash-out) ---------- *@
+            <div id="bar-ticket-wallet-result" class="card">
+                <div class="card-body text-center">
+                    @if (ticketResult.Success)
+                    {
+                        @if (ticketResult.RefundAmount.HasValue)
+                        {
+                            <div id="bar-ticket-wallet-result-cashout">
+                                <div class="display-5 mb-2">💶</div>
+                                <h2 class="h4 mb-3">@Localizer["TicketWallet_CashedOutTitle"]</h2>
+                                <p class="mb-1">@Localizer["TicketWallet_HandBack"]</p>
+                                <div id="bar-ticket-wallet-result-refund" class="display-6 fw-bold text-danger mb-4">
+                                    @FormatMoney(ticketResult.RefundAmount.Value, resolved?.Currency)
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="bar-ticket-wallet-result-loaded">
+                                <div class="display-5 mb-2">✅</div>
+                                <h2 class="h4 mb-3">@Localizer["TicketWallet_LoadedTitle"]</h2>
+                                <p class="mb-1">@Localizer["TicketTopup_NewBalance"]:</p>
+                                <div id="bar-ticket-wallet-result-balance" class="display-6 fw-bold text-success mb-4">
+                                    @FormatMoney(ticketResult.NewBalance, resolved?.Currency)
+                                </div>
+                            </div>
+                        }
+                        <button id="bar-ticket-wallet-new-btn" class="btn btn-primary btn-lg" @onclick="ResetAll">
+                            @Localizer["TicketTopup_NewTopupBtn"]
+                        </button>
+                    }
+                    else
+                    {
+                        <div id="bar-ticket-wallet-result-failure">
+                            <div class="display-5 mb-2">⚠️</div>
+                            <div id="bar-ticket-wallet-result-failure-reason" class="alert alert-danger">
+                                @TicketFailureText(ticketResult.FailureReason)
+                            </div>
+                            <button id="bar-ticket-wallet-fail-new-btn" class="btn btn-primary" @onclick="ResetAll">
+                                @Localizer["TicketTopup_NewTopupBtn"]
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (claimResult != null)
+        {
+            @* ---------- Claim-to-account result ---------- *@
+            <div id="bar-ticket-wallet-claim-result" class="card">
+                <div class="card-body text-center">
+                    @if (claimResult.Success)
+                    {
+                        <div id="bar-ticket-wallet-claim-success">
+                            <div class="display-5 mb-2">📧</div>
+                            <h2 class="h4 mb-3">@Localizer["TicketWallet_ClaimedTitle"]</h2>
+                            <p class="mb-1" id="bar-ticket-wallet-claim-success-msg">
+                                @string.Format(Localizer["TicketWallet_ClaimedMsg"].Value,
+                                    FormatMoney(claimResult.ClaimedAmount, resolved?.Currency), claimResult.Email)
+                            </p>
+                            <p class="text-muted small mb-4">@Localizer["TicketWallet_ClaimedEmailNote"]</p>
+                            <button id="bar-ticket-wallet-claim-new-btn" class="btn btn-primary btn-lg" @onclick="ResetAll">
+                                @Localizer["TicketTopup_NewTopupBtn"]
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="bar-ticket-wallet-claim-failure">
+                            <div class="display-5 mb-2">⚠️</div>
+                            <div id="bar-ticket-wallet-claim-failure-reason" class="alert alert-danger">
+                                @ClaimFailureText(claimResult.FailureReason)
+                            </div>
+                            <button id="bar-ticket-wallet-claim-fail-new-btn" class="btn btn-primary" @onclick="ResetAll">
+                                @Localizer["TicketTopup_NewTopupBtn"]
+                            </button>
                         </div>
                     }
                 </div>
@@ -167,11 +251,143 @@ else
                 @Localizer["TicketTopup_CancelBtn"]
             </button>
         }
+        else if (resolved != null && resolved.AllowTicketWallet)
+        {
+            @* ---------- Anonymous ticket wallet: load funds + cash out ---------- *@
+            <div id="bar-ticket-wallet-card" class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>🎟️ @Localizer["TicketWallet_LoadOnTicketTitle"]</span>
+                    <span class="badge bg-secondary">@Localizer["TicketWallet_TicketLabel"]: @Display(resolved.TicketNumber)</span>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrWhiteSpace(resolved.FullName))
+                    {
+                        <p class="mb-1 text-muted" id="bar-ticket-wallet-holder">@resolved.FullName</p>
+                    }
+                    <dl class="row mb-2">
+                        <dt class="col-5 text-muted">@Localizer["TicketWallet_CurrentBalance"]</dt>
+                        <dd class="col-7 fw-bold" id="bar-ticket-wallet-balance">@FormatMoney(resolved.Balance, resolved.Currency)</dd>
+                    </dl>
+
+                    @if (TicketWalletClosed)
+                    {
+                        <div id="bar-ticket-wallet-closed" class="alert alert-secondary mb-0">
+                            @Localizer["TicketWallet_ClosedNotice"]
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="bar-ticket-wallet-bearer-warning" class="alert alert-warning">
+                            ⚠️ @Localizer["TicketWallet_BearerWarning"]
+                        </div>
+
+                        <label for="bar-ticket-wallet-amount-input" class="form-label">@Localizer["TicketTopup_AmountLabel"]</label>
+                        <input id="bar-ticket-wallet-amount-input" type="number" min="0" step="0.01" inputmode="decimal"
+                               class="form-control form-control-lg mb-2" @bind="amountText" @bind:event="oninput"
+                               placeholder="@Localizer["TicketTopup_AmountPlaceholder"]" disabled="@isSubmitting" />
+
+                        <div id="bar-ticket-wallet-quick-amounts" class="d-flex gap-2 mb-2">
+                            @foreach (var quick in quickAmounts)
+                            {
+                                <button type="button" class="btn btn-outline-secondary flex-fill"
+                                        id="bar-ticket-wallet-quick-@quick" @onclick="() => SetQuickAmount(quick)"
+                                        disabled="@isSubmitting">
+                                    @quick
+                                </button>
+                            }
+                        </div>
+
+                        <p class="text-muted small mb-2" id="bar-ticket-wallet-cap-hint">
+                            @string.Format(Localizer["TicketWallet_CapHint"].Value, FormatMoney(resolved.TicketWalletMaxBalance, resolved.Currency))
+                        </p>
+
+                        @if (!string.IsNullOrEmpty(submitError))
+                        {
+                            <div id="bar-ticket-wallet-submit-error" class="alert alert-danger">@submitError</div>
+                        }
+
+                        <button id="bar-ticket-wallet-load-btn" class="btn btn-success btn-lg w-100 mb-2"
+                                @onclick="ConfirmTicketTopupAsync" disabled="@(isSubmitting || ParsedAmount <= 0)">
+                            @if (isSubmitting && !isCashingOut)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <span>@Localizer["TicketTopup_Submitting"]</span>
+                            }
+                            else
+                            {
+                                <span>@Localizer["TicketWallet_LoadBtn"]</span>
+                            }
+                        </button>
+
+                        @if (resolved.Balance > 0)
+                        {
+                            <button id="bar-ticket-wallet-cashout-btn" class="btn btn-outline-danger btn-lg w-100"
+                                    @onclick="CashOutAsync" disabled="@isSubmitting">
+                                @if (isCashingOut)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>@Localizer["TicketWallet_CashingOut"]</span>
+                                }
+                                else
+                                {
+                                    <span>@string.Format(Localizer["TicketWallet_CashOutBtn"].Value, FormatMoney(resolved.Balance, resolved.Currency))</span>
+                                }
+                            </button>
+
+                            <hr class="my-3" />
+                            <label for="bar-ticket-wallet-claim-email" class="form-label">@Localizer["TicketWallet_ClaimTitle"]</label>
+                            <div class="input-group mb-2">
+                                <input id="bar-ticket-wallet-claim-email" type="email" class="form-control"
+                                       @bind="claimEmail" @bind:event="oninput"
+                                       placeholder="@Localizer["TicketWallet_ClaimEmailPlaceholder"]" disabled="@isSubmitting" />
+                                <button id="bar-ticket-wallet-claim-btn" class="btn btn-outline-primary"
+                                        @onclick="ClaimAsync" disabled="@(isSubmitting || string.IsNullOrWhiteSpace(claimEmail))">
+                                    @if (isClaiming)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        <span>@Localizer["TicketWallet_Claiming"]</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@Localizer["TicketWallet_ClaimBtn"]</span>
+                                    }
+                                </button>
+                            </div>
+                            <p class="text-muted small mb-0" id="bar-ticket-wallet-claim-hint">@Localizer["TicketWallet_ClaimHint"]</p>
+                        }
+                    }
+                </div>
+            </div>
+
+            <button id="bar-ticket-wallet-cancel-btn" class="btn btn-link text-muted" @onclick="ResetAll">
+                @Localizer["TicketTopup_CancelBtn"]
+            </button>
+        }
         else
         {
             @* ---------- Step 1: Identify ---------- *@
             <div id="bar-topup-identify-card" class="card">
                 <div class="card-body">
+                    @* DEV-ONLY: pick a real ticket of the live event instead of typing/scanning a code.
+                       Never rendered in production — the API endpoint that feeds it 404s outside
+                       Development, so _testTickets stays empty. *@
+                    @if (_testTickets is { Count: > 0 })
+                    {
+                        <div id="bar-topup-dev-picker" class="mb-3">
+                            <label id="bar-topup-dev-label" for="bar-topup-dev-select" class="form-label">
+                                🧪 Test (dev): odaberi ulaznicu
+                            </label>
+                            <select id="bar-topup-dev-select" class="form-select" value="@codeInput"
+                                    @onchange="OnDevPick" disabled="@isResolving">
+                                <option value="">— odaberi ulaznicu —</option>
+                                @foreach (var t in _testTickets)
+                                {
+                                    <option value="@t.TicketNumber">@t.Label</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
                     <form id="bar-topup-identify-form" @onsubmit="ResolveAsync">
                         <label for="bar-topup-code-input" class="form-label">@Localizer["TicketTopup_IdentifyLabel"]</label>
                         <div class="input-group input-group-lg mb-3">
@@ -271,6 +487,18 @@ else
     // ---- Result ----
     private BarTopupResultDto? result;
 
+    // ---- Anonymous ticket wallet ----
+    private TicketWalletResultDto? ticketResult;
+    private bool isCashingOut;
+
+    // ---- Claim-to-account ----
+    private string claimEmail = string.Empty;
+    private bool isClaiming;
+    private TicketWalletClaimResultDto? claimResult;
+
+    // ---- Dev-only test-ticket picker ----
+    private List<TestTicketDto>? _testTickets;
+
     // ---- Scanner ----
     private bool scannerActive;
     private bool pendingScannerStart;
@@ -282,11 +510,16 @@ else
     private bool WalletActive =>
         resolved != null && string.Equals(resolved.WalletStatus, WalletStatus.Active, StringComparison.OrdinalIgnoreCase);
 
-    // Step 1 (identify) is shown when there's no result yet and no resolved account to top up.
-    // It only holds a single input row + scan button, so it gets a wider container than the
-    // later steps to use the horizontal space instead of leaving it empty on the right.
+    // A cashed-out ticket wallet is terminal (Closed) — no more top-ups or cash-outs.
+    private bool TicketWalletClosed =>
+        resolved != null && string.Equals(resolved.WalletStatus, WalletStatus.Closed, StringComparison.OrdinalIgnoreCase);
+
+    // Step 1 (identify) is shown only when nothing else is: no result (account or ticket), and no
+    // resolved account or ticket wallet to act on. It only holds a single input row + scan button, so
+    // it gets a wider container than the later steps to use the horizontal space.
     private bool ShowIdentifyStep =>
-        result == null && !(resolved != null && resolved.HasAccount);
+        result == null && ticketResult == null && claimResult == null
+        && !(resolved != null && (resolved.HasAccount || resolved.AllowTicketWallet));
 
     private decimal ParsedAmount => TryParseAmount(amountText, out var a) ? a : 0m;
 
@@ -294,6 +527,23 @@ else
     {
         // Bounce to login the moment the session ends (mirrors Dashboard/OrderQueue behaviour).
         AuthService.OnAuthenticationStateChanged += OnAuthStateChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Only attempt the dev-only lookup in Development; in production the endpoint 404s anyway.
+        if (Env.IsDevelopment())
+            _testTickets = await ApiService.GetLiveEventTestTicketsAsync();
+    }
+
+    // Dev picker: selecting a ticket fills the code box and resolves it, same as typing + submit.
+    private async Task OnDevPick(ChangeEventArgs e)
+    {
+        var code = e.Value?.ToString();
+        if (string.IsNullOrWhiteSpace(code))
+            return;
+        codeInput = code;
+        await ResolveAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -324,6 +574,8 @@ else
         resolveError = null;
         resolved = null;
         result = null;
+        ticketResult = null;
+        claimResult = null;
         StateHasChanged();
 
         try
@@ -415,6 +667,147 @@ else
         submitError = null;
     }
 
+    // ---------------- Anonymous ticket wallet ----------------
+
+    private async Task ConfirmTicketTopupAsync()
+    {
+        if (isSubmitting || resolved?.TicketId is not int ticketId || !WalletActive)
+            return;
+        if (!TryParseAmount(amountText, out var amount) || amount <= 0)
+            return;
+
+        // Client-side cap check for immediate feedback; the server enforces it authoritatively too.
+        var remaining = resolved.TicketWalletMaxBalance - resolved.Balance;
+        if (amount > remaining)
+        {
+            submitError = string.Format(Localizer["TicketWallet_OverCap"].Value,
+                FormatMoney(remaining < 0 ? 0m : remaining, resolved.Currency));
+            return;
+        }
+
+        isSubmitting = true;
+        submitError = null;
+        StateHasChanged();
+
+        try
+        {
+            var request = new TicketWalletTopupRequestDto
+            {
+                TicketId = ticketId,
+                Amount = amount,
+                // Fresh key per confirmed attempt so a network retry is a safe server-side no-op.
+                IdempotencyKey = Guid.NewGuid().ToString()
+            };
+
+            var res = await ApiService.TopUpTicketWalletAsync(request);
+            if (res == null)
+                submitError = Localizer["TicketWallet_Fail_Generic"].Value;
+            else
+                ticketResult = res;
+        }
+        catch (Exception ex)
+        {
+            submitError = ex.Message;
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CashOutAsync()
+    {
+        if (isSubmitting || resolved?.TicketId is not int ticketId)
+            return;
+
+        isSubmitting = true;
+        isCashingOut = true;
+        submitError = null;
+        StateHasChanged();
+
+        try
+        {
+            var request = new TicketWalletCashoutRequestDto
+            {
+                TicketId = ticketId,
+                // Fresh key per attempt: a retry completes the same payout; a re-scan of an already
+                // cashed-out ticket comes back as AlreadyCashedOut with nothing to pay.
+                IdempotencyKey = Guid.NewGuid().ToString()
+            };
+
+            var res = await ApiService.CashOutTicketWalletAsync(request);
+            if (res == null)
+                submitError = Localizer["TicketWallet_Fail_Generic"].Value;
+            else
+                ticketResult = res;
+        }
+        catch (Exception ex)
+        {
+            submitError = ex.Message;
+        }
+        finally
+        {
+            isSubmitting = false;
+            isCashingOut = false;
+            StateHasChanged();
+        }
+    }
+
+    private string TicketFailureText(string? reason) => reason switch
+    {
+        "LimitExceeded" => Localizer["TicketWallet_Fail_LimitExceeded"].Value,
+        "TicketNotFound" => Localizer["TicketWallet_Fail_TicketNotFound"].Value,
+        "AlreadyCashedOut" => Localizer["TicketWallet_Fail_AlreadyCashedOut"].Value,
+        "NothingToCashOut" => Localizer["TicketWallet_Fail_NothingToCashOut"].Value,
+        "WalletFrozen" => Localizer["TicketWallet_Fail_WalletFrozen"].Value,
+        _ => Localizer["TicketWallet_Fail_Generic"].Value
+    };
+
+    private async Task ClaimAsync()
+    {
+        if (isSubmitting || resolved?.TicketId is not int ticketId)
+            return;
+        var email = claimEmail?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(email))
+            return;
+
+        isSubmitting = true;
+        isClaiming = true;
+        submitError = null;
+        StateHasChanged();
+
+        try
+        {
+            var request = new TicketWalletClaimRequestDto { TicketId = ticketId, Email = email };
+            var res = await ApiService.ClaimTicketWalletAsync(request);
+            if (res == null)
+                submitError = Localizer["TicketWallet_Fail_ClaimGeneric"].Value;
+            else
+                claimResult = res;
+        }
+        catch (Exception ex)
+        {
+            submitError = ex.Message;
+        }
+        finally
+        {
+            isSubmitting = false;
+            isClaiming = false;
+            StateHasChanged();
+        }
+    }
+
+    private string ClaimFailureText(string? reason) => reason switch
+    {
+        "AlreadyClaimed" => Localizer["TicketWallet_Fail_AlreadyClaimed"].Value,
+        "NothingToClaim" => Localizer["TicketWallet_Fail_NothingToClaim"].Value,
+        "TicketNotFound" => Localizer["TicketWallet_Fail_TicketNotFound"].Value,
+        "WalletFrozen" => Localizer["TicketWallet_Fail_WalletFrozen"].Value,
+        "InvalidEmail" => Localizer["TicketWallet_Fail_InvalidEmail"].Value,
+        _ => Localizer["TicketWallet_Fail_ClaimGeneric"].Value
+    };
+
     private async Task ResetAll()
     {
         await StopScannerAsync();
@@ -422,6 +815,11 @@ else
         amountText = string.Empty;
         resolved = null;
         result = null;
+        ticketResult = null;
+        isCashingOut = false;
+        claimEmail = string.Empty;
+        claimResult = null;
+        isClaiming = false;
         notFound = false;
         noAccountMessage = null;
         resolveError = null;

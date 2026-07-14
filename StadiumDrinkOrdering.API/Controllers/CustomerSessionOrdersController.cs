@@ -77,11 +77,24 @@ public class CustomerSessionOrdersController : ControllerBase
         if (request.PayWithWallet)
         {
             var ownerId = await ResolveWalletOwnerAsync(session);
-            if (ownerId is null)
+            if (ownerId is not null)
+            {
+                // Registered fan: charge and attribute the order to their user wallet.
+                customerId = ownerId.Value;
+                paymentMethod = PaymentMethod.DigitalWallet;
+            }
+            else if (await HasActiveTicketWalletAsync(session))
+            {
+                // Anonymous bearer balance loaded on the ticket itself. Attribute to the shared walk-up
+                // guest (there is no fan account) and pay via TicketWallet — that debit targets the
+                // ticket's wallet by ticket id, independent of the order's customer.
+                customerId = await GetGuestCustomerIdAsync();
+                paymentMethod = PaymentMethod.TicketWallet;
+            }
+            else
+            {
                 return BadRequest(new SessionOrderResultDto { Error = "No wallet is linked to this ticket." });
-
-            customerId = ownerId.Value;
-            paymentMethod = PaymentMethod.DigitalWallet;
+            }
         }
         else
         {
@@ -169,10 +182,40 @@ public class CustomerSessionOrdersController : ControllerBase
             return Unauthorized("Your session has expired. Please scan your ticket again.");
 
         var userId = await ResolveWalletOwnerAsync(session);
-        if (userId is null)
-            return Ok(new WalletSummaryDto { Exists = false, IsEligible = false });
+        if (userId is not null)
+            return Ok(await _walletService.GetSummaryAsync(userId.Value));
 
-        return Ok(await _walletService.GetSummaryAsync(userId.Value));
+        // No linked account: fall back to the anonymous bearer balance loaded on the ticket itself, so the
+        // cart can still offer "pay with ticket balance".
+        var ticketId = session.Ticket?.Id;
+        if (ticketId is not null)
+        {
+            var tw = await _walletService.GetTicketWalletSummaryAsync(ticketId.Value);
+            if (tw.Exists)
+                return Ok(new WalletSummaryDto
+                {
+                    Exists = true,
+                    Balance = tw.Balance,
+                    Currency = tw.Currency,
+                    Status = tw.Status,
+                    IsEligible = true,
+                    IsTicketWallet = true
+                });
+        }
+
+        return Ok(new WalletSummaryDto { Exists = false, IsEligible = false });
+    }
+
+    /// <summary>True when the scanned ticket carries its own Active (anonymous, bearer) wallet — the balance
+    /// loaded on the ticket at the counter. Balance sufficiency is left to the guarded debit (→ 402 on
+    /// insufficient funds); this only decides whether the ticket-wallet payment path applies at all.</summary>
+    private async Task<bool> HasActiveTicketWalletAsync(TicketSession session)
+    {
+        var ticketId = session.Ticket?.Id;
+        if (ticketId is null)
+            return false;
+        var tw = await _walletService.GetTicketWalletSummaryAsync(ticketId.Value);
+        return tw.Exists && string.Equals(tw.Status, WalletStatus.Active, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

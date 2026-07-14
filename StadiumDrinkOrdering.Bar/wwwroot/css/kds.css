@@ -263,3 +263,32 @@
     .kds-board { grid-template-columns: 1fr; }
     .kds-col { min-height: auto; }
 }
+
+/* ---- Returns column (couldn't-deliver triage) ------------------------------ */
+/* When any returns are present a 4th column appears; only widen the grid on large
+   screens — the base responsive rules still collapse it to 2/1 columns below. */
+@media (min-width: 1101px) {
+    .kds-board-returns { grid-template-columns: repeat(4, 1fr); }
+}
+
+.kds-col-returns .kds-col-head { color: var(--stadium-danger, #b91c1c); }
+.kds-col-returns .kds-count { background: var(--stadium-danger, #b91c1c); }
+.kds-col-returns .kds-card.kds-card-returned {
+    border-left-color: var(--stadium-danger, #b91c1c);
+    background: #fff7f7;
+}
+
+.kds-return-reason {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--stadium-danger, #b91c1c);
+    margin: 0.35rem 0 0.5rem;
+    line-height: 1.35;
+}
+.kds-return-attempts { color: var(--stadium-gray-600); font-weight: 500; }
+
+.kds-return-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.kds-return-actions .kds-btn { flex: 1; }

@@ -109,16 +109,44 @@ public class BarTopupController : ControllerBase
 
         if (user == null)
         {
-            // Message depends on how they searched: a scanned ticket/pass exists but isn't linked to an
+            // No linked account. If a CONCRETE ticket was scanned, offer an anonymous ticket wallet
+            // (load funds on the ticket itself) instead of a dead end. A season pass with no account, or
+            // a raw email/OIB, has no ticket to bind a bearer balance to, so those stay a dead end.
+            if (ticket != null)
+            {
+                var tw = await _walletService.GetTicketWalletSummaryAsync(ticket.Id);
+                var closed = string.Equals(tw.Status, WalletStatus.Closed, StringComparison.OrdinalIgnoreCase);
+                return Ok(new BarTopupResolveResultDto
+                {
+                    Found = true,
+                    HasAccount = false,
+                    AllowTicketWallet = true,
+                    MatchedBy = matchedBy,
+                    Email = email,
+                    FullName = ticket.CustomerName,
+                    TicketId = ticket.Id,
+                    TicketNumber = ticket.TicketNumber,
+                    Balance = tw.Balance,
+                    Currency = tw.Currency,
+                    WalletStatus = tw.Status,
+                    WalletExists = tw.Exists,
+                    TicketWalletMaxBalance = _walletService.TicketWalletMaxBalance,
+                    Message = closed
+                        ? "Ova ulaznica je već isplaćena — saldo je zatvoren."
+                        : "Nema povezanog računa. Sredstva možete učitati izravno na ulaznicu."
+                });
+            }
+
+            // Message depends on how they searched: a scanned pass exists but isn't linked to an
             // account, vs. a typed email/OIB that simply matches no account at all.
-            var noAccountMessage = matchedBy is "Ticket" or "SeasonPass"
-                ? "Ulaznica je pronađena, ali nije povezana s korisničkim računom. Gost se mora prijaviti ili izraditi račun."
+            var noAccountMessage = matchedBy == "SeasonPass"
+                ? "Sezonska ulaznica je pronađena, ali nije povezana s korisničkim računom. Gost se mora prijaviti ili izraditi račun."
                 : matchedBy == "Oib"
                     ? "Nijedan korisnički račun nema taj OIB. Gost mora izraditi račun."
                     : "Nijedan korisnički račun nema tu e-poštu. Gost mora izraditi račun.";
             return Ok(new BarTopupResolveResultDto
             {
-                Found = matchedBy is "Ticket" or "SeasonPass", // a raw email/OIB with no account isn't really a "find"
+                Found = matchedBy == "SeasonPass", // a raw email/OIB with no account isn't really a "find"
                 HasAccount = false,
                 MatchedBy = matchedBy,
                 Email = email,

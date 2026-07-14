@@ -14,7 +14,17 @@ public enum OrderStatus
     Ready = 4,
     OutForDelivery = 5,
     Delivered = 6,
-    Cancelled = 7
+    Cancelled = 7,
+    DeliveryFailed = 8
+}
+
+// Why a runner couldn't complete a delivery — mirrors the server enum by numeric value.
+public enum DeliveryFailureReason
+{
+    CustomerNotAtSeat = 1,
+    CustomerRefused = 2,
+    WrongSeat = 3,
+    Other = 99
 }
 
 public enum UserRole
@@ -73,6 +83,15 @@ public class OrderItemDto
 public class UpdateOrderStatusDto
 {
     public OrderStatus Status { get; set; }
+    public string? Notes { get; set; }
+    public Guid? ClientActionId { get; set; }
+}
+
+// A runner reporting they couldn't hand an order over at the seat. ClientActionId carries the
+// outbox action id so a retried send is idempotent server-side (mirrors UpdateOrderStatusDto).
+public class ReportDeliveryFailedDto
+{
+    public DeliveryFailureReason Reason { get; set; }
     public string? Notes { get; set; }
     public Guid? ClientActionId { get; set; }
 }

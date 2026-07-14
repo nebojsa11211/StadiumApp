@@ -4109,4 +4109,7 @@
   <data name="Venue_Eyebrow" xml:space="preserve"><value>Stadion</value></data>
   <data name="StadiumInfo_Eyebrow" xml:space="preserve"><value>Stadion</value></data>
   <data name="Drawing_Eyebrow" xml:space="preserve"><value>Stadion</value></data>
+  <data name="Wallets_TicketBadge" xml:space="preserve"><value>Ulaznica</value></data>
+  <data name="Wallets_TicketOwner" xml:space="preserve"><value>Ulaznica</value></data>
+  <data name="Wallets_Anonymous" xml:space="preserve"><value>Anonimno — bez računa</value></data>
 </root>

@@ -51,10 +51,14 @@
         </div>
     }
 
-    <div id="bar-orderqueue-page-board" class="kds-board">
+    <div id="bar-orderqueue-page-board" class="kds-board @(returnedOrders.Count > 0 ? "kds-board-returns" : "")">
         @RenderColumn(Localizer["OrderStatus_Pending"].Value, "kds-col-pending", pendingOrders.Concat(legacyAcceptedOrders).ToList(), OrderStatus.Pending)
         @RenderColumn(Localizer["OrderStatus_InPreparation"].Value, "kds-col-prep", inPreparationOrders, OrderStatus.InPreparation)
         @RenderColumn(Localizer["OrderStatus_Ready"].Value, "kds-col-ready", readyOrders.Concat(collectedOrders).ToList(), OrderStatus.Ready)
+        @if (returnedOrders.Count > 0)
+        {
+            @RenderReturnsColumn()
+        }
     </div>
 </div>
 
@@ -69,6 +73,9 @@
     // Orders a runner has picked up (OutForDelivery). Shown greyed in the Ready column so the
     // bartender still sees them until delivered, but no longer as actionable "to make" work.
     private List<OrderDto> collectedOrders = new();
+    // Returns: orders a runner couldn't hand over (DeliveryFailed). The drink is physically back at
+    // the bar; the bartender triages each — retry (back to the pool) or cancel & refund.
+    private List<OrderDto> returnedOrders = new();
 
     private HashSet<int> knownIds = new();
     private HashSet<int> flashIds = new();
@@ -206,6 +213,8 @@
                              .OrderBy(o => o.CreatedAt).ToList();
         collectedOrders = visible.Where(o => o.Status == OrderStatus.OutForDelivery)
                                  .OrderBy(o => o.CreatedAt).ToList();
+        returnedOrders = visible.Where(o => o.Status == OrderStatus.DeliveryFailed)
+                                .OrderBy(o => o.LastDeliveryAttemptAt ?? o.CreatedAt).ToList();
 
         // Detect genuinely new incoming (pending) orders since the last partition.
         var currentIds = visible.Select(o => o.Id).ToHashSet();
@@ -442,6 +451,94 @@
                 break;
         }
     };
+
+    // Returns column: orders a runner couldn't deliver, back at the bar for triage. Each card shows the
+    // reason and attempt count, and offers Retry (requeue to the pool) or Cancel & refund.
+    private RenderFragment RenderReturnsColumn() => __builder =>
+    {
+        <div id="bar-orderqueue-page-col-kds-col-returns" class="kds-col kds-col-returns">
+            <div id="bar-orderqueue-page-col-head-returns" class="kds-col-head">
+                <span>↩ @Localizer["OrderQueue_Returns"]</span>
+                <span class="kds-count">@returnedOrders.Count</span>
+            </div>
+            @foreach (var order in returnedOrders)
+            {
+                <div class="kds-card kds-card-returned" id="bar-kds-return-card-@order.Id">
+                    <div id="bar-orderqueue-page-return-top-@order.Id" class="kds-card-top">
+                        <span class="kds-order-id">#@order.Id</span>
+                        <span class="kds-seat">@SeatLabel(order)</span>
+                    </div>
+                    <div id="bar-orderqueue-page-return-items-@order.Id" class="kds-items">
+                        @foreach (var item in order.OrderItems)
+                        {
+                            <div id="bar-orderqueue-page-return-item-@order.Id-@(order.OrderItems.IndexOf(item))" class="kds-item">
+                                <span class="kds-qty">@item.Quantity×</span> @item.DrinkName
+                            </div>
+                        }
+                    </div>
+                    <div id="bar-orderqueue-page-return-reason-@order.Id" class="kds-return-reason">
+                        ⚠ @ReasonText(order.LastDeliveryFailureReason)
+                        @if (order.DeliveryAttempts > 1)
+                        {
+                            <span class="kds-return-attempts">· @string.Format(Localizer["OrderQueue_AttemptsCount"].Value, order.DeliveryAttempts)</span>
+                        }
+                    </div>
+                    <div id="bar-orderqueue-page-return-actions-@order.Id" class="kds-return-actions">
+                        <button class="btn btn-success kds-btn" @onclick="() => RetryDelivery(order.Id)"
+                                disabled="@busyReturns.Contains(order.Id)" id="bar-kds-return-retry-btn-@order.Id">
+                            @Localizer["OrderQueue_RetryDelivery"]
+                        </button>
+                        <button class="btn btn-outline-danger kds-btn" @onclick="() => CancelFailed(order.Id)"
+                                disabled="@busyReturns.Contains(order.Id)" id="bar-kds-return-cancel-btn-@order.Id">
+                            @Localizer["OrderQueue_CancelRefund"]
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    };
+
+    private string ReasonText(DeliveryFailureReason? reason) => reason switch
+    {
+        DeliveryFailureReason.CustomerNotAtSeat => Localizer["OrderQueue_ReasonNotAtSeat"].Value,
+        DeliveryFailureReason.CustomerRefused => Localizer["OrderQueue_ReasonRefused"].Value,
+        DeliveryFailureReason.WrongSeat => Localizer["OrderQueue_ReasonWrongSeat"].Value,
+        DeliveryFailureReason.Other => Localizer["OrderQueue_ReasonOther"].Value,
+        _ => Localizer["OrderQueue_ReasonOther"].Value
+    };
+
+    // Orders currently being retried/cancelled, so their buttons disable to prevent a double-tap.
+    private readonly HashSet<int> busyReturns = new();
+
+    private async Task RetryDelivery(int orderId)
+    {
+        if (!busyReturns.Add(orderId)) return;
+        try
+        {
+            if (await ApiService.RetryFailedDeliveryAsync(orderId))
+            {
+                await LoadOrders();
+                try { await SignalRService.SendOrderStatusChanged(orderId, OrderStatus.Ready, ""); }
+                catch (Exception ex) { Console.WriteLine($"Status broadcast failed: {ex.Message}"); }
+            }
+        }
+        finally { busyReturns.Remove(orderId); }
+    }
+
+    private async Task CancelFailed(int orderId)
+    {
+        if (!busyReturns.Add(orderId)) return;
+        try
+        {
+            if (await ApiService.CancelFailedDeliveryAsync(orderId))
+            {
+                await LoadOrders();
+                try { await SignalRService.SendOrderStatusChanged(orderId, OrderStatus.Cancelled, ""); }
+                catch (Exception ex) { Console.WriteLine($"Status broadcast failed: {ex.Message}"); }
+            }
+        }
+        finally { busyReturns.Remove(orderId); }
+    }
 
     private string AgeText(DateTime createdUtc)
     {

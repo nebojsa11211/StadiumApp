@@ -31,10 +31,22 @@ public partial class Wallets : ComponentBase
     private readonly TableSortState sortState = new();
     private static readonly Dictionary<string, Func<WalletAdminDto, object?>> SortSelectors = new()
     {
-        ["user"] = w => w.Username,
+        // Sort by whichever owner identifier the wallet carries (username for user wallets, ticket
+        // number for anonymous ones) so both kinds interleave sensibly.
+        ["user"] = w => string.IsNullOrEmpty(w.Username) ? w.TicketNumber : w.Username,
         ["balance"] = w => w.Balance,
         ["status"] = w => w.Status,
     };
+
+    // Primary owner label for a wallet row / the manage modal title.
+    private string OwnerName(WalletAdminDto w) =>
+        w.OwnerType == "Ticket"
+            ? $"{L["Wallets_TicketOwner"]} {w.TicketNumber}".Trim()
+            : w.Username;
+
+    // Secondary line under the owner name.
+    private string OwnerSub(WalletAdminDto w) =>
+        w.OwnerType == "Ticket" ? L["Wallets_Anonymous"] : w.Email;
 
     private IEnumerable<WalletAdminDto> SortedWallets =>
         sortState.Column is null ? list!.Wallets : sortState.Apply(list!.Wallets, SortSelectors);

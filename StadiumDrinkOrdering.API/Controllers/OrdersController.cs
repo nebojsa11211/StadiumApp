@@ -299,6 +299,112 @@ public class OrdersController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// A runner reporting they couldn't hand order {id} over at the seat (fan absent, refused, wrong
+    /// seat…). Moves it OutForDelivery → DeliveryFailed, releasing the runner's claim so it leaves
+    /// their queue and surfaces on the Bar returns triage. Idempotent for the Runner's offline outbox:
+    /// a replay for an order already DeliveryFailed is a success.
+    /// </summary>
+    [HttpPost("{id}/delivery-failed")]
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
+    public async Task<IActionResult> ReportDeliveryFailed(int id, [FromBody] ReportDeliveryFailedDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var userId = GetCurrentUserId();
+        var outcome = await _orderService.ReportDeliveryFailedAsync(id, userId, dto);
+
+        switch (outcome)
+        {
+            case DeliveryFailedOutcome.NotFound:
+                return NotFound();
+
+            case DeliveryFailedOutcome.NotDeliverable:
+                return Conflict(new { message = "Order is not out for delivery by you and cannot be marked failed." });
+
+            default: // Recorded or AlreadyFailed (idempotent) — both success
+                await _loggingService.LogBusinessEventAsync(new LogUserActionRequest
+                {
+                    Action = BusinessEventActions.OrderUpdated,
+                    Category = BusinessEventCategories.OrderProcessing,
+                    UserId = userId.ToString(),
+                    UserEmail = User.FindFirst(ClaimTypes.Email)?.Value,
+                    UserRole = GetCurrentUserRole(),
+                    Details = $"Order #{id} delivery failed ({dto.Reason})",
+                    RequestPath = Request.Path,
+                    HttpMethod = Request.Method,
+                    Source = "API",
+                    BusinessEntityType = "Order",
+                    BusinessEntityId = id.ToString(),
+                    BusinessEntityName = $"Order #{id}",
+                    StatusAfter = OrderStatus.DeliveryFailed.ToString()
+                });
+                return NoContent();
+        }
+    }
+
+    /// <summary>
+    /// Bar triage — requeue a returned (DeliveryFailed) order for another delivery attempt: back to
+    /// Ready + unassigned so it re-enters the shared pool.
+    /// </summary>
+    [HttpPost("{id}/retry-delivery")]
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
+    public async Task<IActionResult> RetryFailedDelivery(int id)
+    {
+        var userId = GetCurrentUserId();
+        var ok = await _orderService.RetryFailedDeliveryAsync(id, userId);
+        if (!ok)
+            return Conflict(new { message = "Order is not in a failed-delivery state." });
+
+        await _loggingService.LogBusinessEventAsync(new LogUserActionRequest
+        {
+            Action = BusinessEventActions.OrderReady,
+            Category = BusinessEventCategories.OrderProcessing,
+            UserId = userId.ToString(),
+            UserEmail = User.FindFirst(ClaimTypes.Email)?.Value,
+            UserRole = GetCurrentUserRole(),
+            Details = $"Order #{id} requeued for delivery after a failed attempt",
+            Source = "API",
+            BusinessEntityType = "Order",
+            BusinessEntityId = id.ToString(),
+            BusinessEntityName = $"Order #{id}",
+            StatusAfter = OrderStatus.Ready.ToString()
+        });
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Bar triage — give up on a returned (DeliveryFailed) order: mark it Cancelled and refund any
+    /// wallet-funded payment. Guarded by CanUpdateOrders (Bartender+) so it doesn't need the broader
+    /// delete policy the generic /cancel endpoint requires; the drink was poured, so stock is not restored.
+    /// </summary>
+    [HttpPost("{id}/cancel-failed")]
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
+    public async Task<IActionResult> CancelFailedDelivery(int id)
+    {
+        var userId = GetCurrentUserId();
+        var ok = await _orderService.CancelFailedDeliveryAsync(id, userId);
+        if (!ok)
+            return Conflict(new { message = "Order is not in a failed-delivery state." });
+
+        await _loggingService.LogBusinessEventAsync(new LogUserActionRequest
+        {
+            Action = BusinessEventActions.OrderCancelled,
+            Category = BusinessEventCategories.OrderProcessing,
+            UserId = userId.ToString(),
+            UserEmail = User.FindFirst(ClaimTypes.Email)?.Value,
+            UserRole = GetCurrentUserRole(),
+            Details = $"Order #{id} cancelled and refunded after a failed delivery",
+            Source = "API",
+            BusinessEntityType = "Order",
+            BusinessEntityId = id.ToString(),
+            BusinessEntityName = $"Order #{id}",
+            StatusAfter = OrderStatus.Cancelled.ToString()
+        });
+        return NoContent();
+    }
+
     [HttpPut("{id}/status")]
     [Authorize(Policy = AuthorizationPolicies.CanUpdateOrders)]
     public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] UpdateOrderStatusDto updateDto)

@@ -419,3 +419,70 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     .runner-cta:active:not(:disabled) { transform: none; }
     .runner-cta-spinner { animation-duration: 1.4s; }
 }
+
+/* ---- Couldn't-deliver: secondary CTA + reason sheet ------------------------ */
+/* Secondary action under "Mark delivered": a low-emphasis outline button so the
+   primary (deliver) stays dominant. Sits directly below with a small gap. */
+.runner-cta-secondary {
+    margin-top: 0.5rem;
+    min-height: 48px;
+    background: var(--r-surface);
+    color: var(--r-danger);
+    border: 1px solid var(--r-border);
+    box-shadow: none;
+    font-size: 1rem;
+}
+.runner-cta-secondary:active:not(:disabled) { background: var(--r-danger-tint); transform: scale(0.98); }
+
+/* Bottom-sheet reason picker. Backdrop dims the page; the sheet slides up from the
+   bottom on mobile so options sit under the thumb. */
+.runner-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+.runner-sheet {
+    width: 100%;
+    max-width: 480px;
+    background: var(--r-surface);
+    border-radius: 16px 16px 0 0;
+    padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    animation: runner-sheet-up 0.18s ease-out;
+}
+@keyframes runner-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.runner-sheet-title { font-size: 1.15rem; font-weight: 800; color: var(--r-ink); margin-bottom: 0.25rem; }
+.runner-sheet-hint { font-size: 0.9rem; color: var(--r-ink-muted); margin-bottom: 0.85rem; line-height: 1.35; }
+.runner-sheet-option {
+    display: block;
+    width: 100%;
+    min-height: 52px;
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    border: 1px solid var(--r-border);
+    border-radius: var(--r-radius-btn);
+    background: var(--r-surface);
+    color: var(--r-ink);
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.runner-sheet-option:active { background: var(--r-primary-tint); transform: scale(0.99); }
+.runner-sheet-cancel {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 0.25rem;
+    border: none;
+    border-radius: var(--r-radius-btn);
+    background: transparent;
+    color: var(--r-ink-muted);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+}

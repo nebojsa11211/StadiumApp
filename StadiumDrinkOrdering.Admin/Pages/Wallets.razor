@@ -53,8 +53,14 @@
                     {
                         <tr id="admin-wallet-row-@w.WalletId">
                             <td>
-                                <div class="fw-semibold">@w.Username</div>
-                                <div class="text-muted small">@w.Email</div>
+                                <div class="fw-semibold" id="admin-wallet-owner-@w.WalletId">
+                                    @if (w.OwnerType == "Ticket")
+                                    {
+                                        <span class="badge bg-info-subtle text-info-emphasis me-1">🎟️ @L["Wallets_TicketBadge"]</span>
+                                    }
+                                    @OwnerName(w)
+                                </div>
+                                <div class="text-muted small">@OwnerSub(w)</div>
                             </td>
                             <td class="text-end fw-bold" id="admin-wallet-balance-@w.WalletId">@FormatMoney(w.Balance, w.Currency)</td>
                             <td>
@@ -82,7 +88,7 @@
             <div class="modal-content" id="admin-wallet-modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="admin-wallet-modal-title">
-                        @L["Wallets_ManageTitle"]: @managed.Username
+                        @L["Wallets_ManageTitle"]: @OwnerName(managed)
                         <span class="badge @(managed.Status == WalletStatus.Active ? "bg-success" : "bg-danger") ms-2">@managed.Status</span>
                     </h5>
                     <button type="button" class="btn-close" @onclick="() => managed = null" id="admin-wallet-modal-close"></button>

@@ -51,6 +51,24 @@ public class BarTopupResolveResultDto
 
     /// <summary>Human-readable explanation shown when <see cref="HasAccount"/> is false.</summary>
     public string? Message { get; set; }
+
+    // ---- Anonymous ticket wallet (no-account bearer balance loaded on the ticket itself) ----
+
+    /// <summary>The matched ticket's id, set when a concrete ticket was scanned/typed. Required to load
+    /// or cash out an anonymous ticket wallet.</summary>
+    public int? TicketId { get; set; }
+
+    /// <summary>True when this match can use an anonymous ticket wallet — i.e. a concrete ticket was
+    /// matched but it has no linked account, so funds can be loaded on the ticket instead. When true,
+    /// <see cref="Balance"/>/<see cref="WalletStatus"/>/<see cref="WalletExists"/> describe that ticket
+    /// wallet (a Closed status means it was already cashed out and cannot be topped up again).</summary>
+    public bool AllowTicketWallet { get; set; }
+
+    /// <summary>Ticket the wallet is bound to (number the bartender can read back to the guest).</summary>
+    public string? TicketNumber { get; set; }
+
+    /// <summary>Per-ticket balance cap, for the UI to show/enforce the top-up limit.</summary>
+    public decimal TicketWalletMaxBalance { get; set; }
 }
 
 /// <summary>Staff request to credit cash onto a fan's wallet. <see cref="UserId"/> comes from a prior

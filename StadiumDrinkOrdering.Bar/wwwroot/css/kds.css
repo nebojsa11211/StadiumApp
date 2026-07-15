@@ -180,6 +180,32 @@
 }
 .kds-order-note-label { font-weight: 700; color: var(--stadium-gray-900); }
 
+/* Payment badge: how the order settles at hand-off. Amber "collect" for cash/card the runner must
+   take money for; green "paid" for an already-charged wallet order. */
+.kds-pay {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.35rem 0;
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+.kds-pay-ic { font-size: 0.95rem; }
+.kds-pay-state { font-weight: 600; text-transform: lowercase; opacity: 0.85; }
+.kds-pay-due {
+    background: color-mix(in srgb, var(--stadium-warning) 16%, transparent);
+    color: #b45309;
+    border: 1px solid color-mix(in srgb, var(--stadium-warning) 45%, transparent);
+}
+.kds-pay-paid {
+    background: color-mix(in srgb, var(--stadium-success) 16%, transparent);
+    color: #15803d;
+    border: 1px solid color-mix(in srgb, var(--stadium-success) 45%, transparent);
+}
+
 .kds-age {
     font-family: var(--stadium-font-mono);
     font-size: 0.88rem;

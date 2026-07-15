@@ -44,6 +44,14 @@ public interface IApiService
     // resolved server-side from the scanned ticket's owner. Null on transport failure; a non-existent wallet
     // comes back as a DTO with Exists=false.
     Task<WalletSummaryDto?> GetSessionWalletSummaryAsync(string sessionToken);
+
+    // Online (card) top-up of the wallet behind a scanned ticket, for the walk-up flow with no JWT login.
+    // The wallet is resolved server-side from the session token.
+    Task<DepositResultDto?> TopUpSessionWalletAsync(SessionWalletTopupRequestDto request);
+
+    // Online withdrawal (refund to card) of the wallet behind a scanned ticket, for the walk-up flow with no
+    // JWT login. The wallet is resolved server-side from the session token.
+    Task<WalletWithdrawResultDto?> WithdrawSessionWalletAsync(SessionWalletWithdrawRequestDto request);
     Task<WalletTransactionListDto?> GetWalletTransactionsAsync(int page = 1, int pageSize = 20);
     Task<DepositResultDto?> DepositToWalletAsync(InitiateDepositDto dto);
     Task<DepositStatusDto?> GetDepositStatusAsync(string intentId);
@@ -368,6 +376,60 @@ public class ApiService : IApiService
 
     public async Task<WalletSummaryDto?> GetSessionWalletSummaryAsync(string sessionToken)
         => await GetAsync<WalletSummaryDto>($"customer/session/wallet?sessionToken={Uri.EscapeDataString(sessionToken)}");
+
+    public async Task<DepositResultDto?> TopUpSessionWalletAsync(SessionWalletTopupRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("customer/session/wallet/topup", content);
+            var body = await response.Content.ReadAsStringAsync();
+
+            // Success and business declines (over-cap, frozen, expired) both carry a DepositResultDto body.
+            try
+            {
+                var result = JsonSerializer.Deserialize<DepositResultDto>(body, _jsonOptions);
+                if (result != null) return result;
+            }
+            catch { /* fall through */ }
+
+            return new DepositResultDto { Success = false, FailureReason = "Error" };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error topping up session wallet: {ex.Message}");
+            return new DepositResultDto { Success = false, FailureReason = "Network" };
+        }
+    }
+
+    public async Task<WalletWithdrawResultDto?> WithdrawSessionWalletAsync(SessionWalletWithdrawRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("customer/session/wallet/withdraw", content);
+            var body = await response.Content.ReadAsStringAsync();
+
+            // Success and business declines (insufficient funds, frozen, expired) both carry a result body.
+            try
+            {
+                var result = JsonSerializer.Deserialize<WalletWithdrawResultDto>(body, _jsonOptions);
+                if (result != null) return result;
+            }
+            catch { /* fall through */ }
+
+            return new WalletWithdrawResultDto { Success = false, FailureReason = "Error" };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error withdrawing from session wallet: {ex.Message}");
+            return new WalletWithdrawResultDto { Success = false, FailureReason = "Network" };
+        }
+    }
 
     public async Task<WalletTransactionListDto?> GetWalletTransactionsAsync(int page = 1, int pageSize = 20)
     {

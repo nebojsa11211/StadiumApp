@@ -479,6 +479,21 @@
   <data name="OrderQueue_OrderNote" xml:space="preserve">
     <value>Napomena</value>
   </data>
+  <data name="OrderQueue_PayCash" xml:space="preserve">
+    <value>Gotovina</value>
+  </data>
+  <data name="OrderQueue_PayCard" xml:space="preserve">
+    <value>Kartica</value>
+  </data>
+  <data name="OrderQueue_PayWallet" xml:space="preserve">
+    <value>Novčanik</value>
+  </data>
+  <data name="OrderQueue_PayCollect" xml:space="preserve">
+    <value>naplati</value>
+  </data>
+  <data name="OrderQueue_PayPaid" xml:space="preserve">
+    <value>plaćeno</value>
+  </data>
   <data name="OrderQueue_JustNow" xml:space="preserve">
     <value>upravo sada</value>
   </data>

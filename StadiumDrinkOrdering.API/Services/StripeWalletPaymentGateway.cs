@@ -33,6 +33,13 @@ public class StripeWalletPaymentGateway : IWalletPaymentGateway
     public Task<WalletGatewayResult> AuthorizeDepositAsync(decimal amount, string currency, string method, string reference)
         => throw new NotSupportedException("Stripe settles asynchronously via CreateDepositIntentAsync + webhook.");
 
+    // Self-service inline card payout isn't wired for the async Stripe path (a real refund needs the original
+    // charge/PaymentIntent id, which the withdrawal request doesn't carry). Decline cleanly so the wallet is
+    // never debited without money moving; withdrawals stay a mock/dev capability until a payout flow is built.
+    public Task<WalletGatewayResult> AuthorizePayoutAsync(decimal amount, string currency, string method, string reference)
+        => Task.FromResult(new WalletGatewayResult(false, string.Empty, "GatewayUnavailable",
+            "{\"provider\":\"stripe\",\"status\":\"payout_unsupported\"}"));
+
     public async Task<WalletDepositIntent> CreateDepositIntentAsync(decimal amount, string currency, WalletDepositContext context)
     {
         var options = new PaymentIntentCreateOptions

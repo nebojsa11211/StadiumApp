@@ -12,19 +12,19 @@ namespace StadiumDrinkOrdering.API.Controllers;
 /// Anonymous drink ordering for walk-up fans. Every action is gated by possession of a valid, active
 /// <see cref="TicketSession"/> token (issued by <c>POST /TicketAuth/validate</c> after a QR scan) — so
 /// there is no login, but a caller can only order for the seat they scanned and only read their own
-/// orders. Orders are attributed to a shared "walk-up guest" user; delivery routing uses the order's
-/// ticket/seat, and status reads are scoped by the originating ticket session.
+/// orders. Orders are attributed to the ticket holder's real (or auto-provisioned claimable) account —
+/// falling back to a shared "walk-up guest" only for an identity-less ticket; delivery routing uses the
+/// order's ticket/seat, and status reads are scoped by the originating ticket session.
 /// </summary>
 [ApiController]
 [Route("customer/session")]
 [AllowAnonymous]
 public class CustomerSessionOrdersController : ControllerBase
 {
-    private const string GuestEmail = "walkup-guest@stadium.local";
-
     private readonly ITicketAuthService _ticketAuth;
     private readonly IOrderService _orderService;
     private readonly IWalletService _walletService;
+    private readonly IWalkUpAccountResolver _walkUpAccounts;
     private readonly ApplicationDbContext _db;
     private readonly ILogger<CustomerSessionOrdersController> _logger;
 
@@ -32,20 +32,24 @@ public class CustomerSessionOrdersController : ControllerBase
         ITicketAuthService ticketAuth,
         IOrderService orderService,
         IWalletService walletService,
+        IWalkUpAccountResolver walkUpAccounts,
         ApplicationDbContext db,
         ILogger<CustomerSessionOrdersController> logger)
     {
         _ticketAuth = ticketAuth;
         _orderService = orderService;
         _walletService = walletService;
+        _walkUpAccounts = walkUpAccounts;
         _db = db;
         _logger = logger;
     }
 
     /// <summary>
-    /// Places a drink order for the scanned seat. Created unpaid by default (settled at the bar / on
-    /// delivery); when <see cref="SessionOrderRequest.PayWithWallet"/> is set, it is charged to the HALFTIME
-    /// wallet of the account behind the ticket and the order is attributed to that account.
+    /// Places a drink order for the scanned seat. When <see cref="SessionOrderRequest.PayWithWallet"/> is set,
+    /// it is charged to the HALFTIME wallet of the account behind the ticket and attributed to that account.
+    /// Otherwise it is created unpaid (settled at the bar / on delivery); the fan's chosen offline method from
+    /// <see cref="SessionOrderRequest.PaymentMethod"/> (cash / card) is recorded as a Pending payment so staff
+    /// know how it will be settled.
     /// </summary>
     [HttpPost("order")]
     public async Task<ActionResult<SessionOrderResultDto>> CreateSessionOrder([FromBody] SessionOrderRequest request)
@@ -85,10 +89,11 @@ public class CustomerSessionOrdersController : ControllerBase
             }
             else if (await HasActiveTicketWalletAsync(session))
             {
-                // Anonymous bearer balance loaded on the ticket itself. Attribute to the shared walk-up
-                // guest (there is no fan account) and pay via TicketWallet — that debit targets the
-                // ticket's wallet by ticket id, independent of the order's customer.
-                customerId = await GetGuestCustomerIdAsync();
+                // Anonymous bearer balance loaded on the ticket itself. Pay via TicketWallet — that debit
+                // targets the ticket's wallet by ticket id, independent of the order's customer — but still
+                // attribute the order to the ticket holder's real account when the ticket identifies one
+                // (only a truly identity-less ticket falls back to the shared guest).
+                customerId = await _walkUpAccounts.ResolveCustomerIdAsync(session.Ticket);
                 paymentMethod = PaymentMethod.TicketWallet;
             }
             else
@@ -98,8 +103,14 @@ public class CustomerSessionOrdersController : ControllerBase
         }
         else
         {
-            customerId = await GetGuestCustomerIdAsync();
-            paymentMethod = null; // created unpaid
+            customerId = await _walkUpAccounts.ResolveCustomerIdAsync(session.Ticket);
+            // Offline payment: no money moves here (settled at the bar / on delivery), but keep the fan's
+            // chosen method so staff see cash vs card up front. Only accept genuine offline methods — a
+            // wallet enum value must never reach a wallet via this unpaid path. Null stays fully unpaid.
+            paymentMethod = request.PaymentMethod is PaymentMethod.Cash or PaymentMethod.CreditCard
+                or PaymentMethod.DebitCard or PaymentMethod.BankTransfer
+                ? request.PaymentMethod
+                : null;
         }
 
         var createDto = new CreateOrderDto
@@ -206,6 +217,89 @@ public class CustomerSessionOrdersController : ControllerBase
         return Ok(new WalletSummaryDto { Exists = false, IsEligible = false });
     }
 
+    /// <summary>
+    /// Fan-initiated ONLINE top-up (card) of the wallet behind the scanned ticket, from the walk-up flow
+    /// where there is no login. Gated by the session token like every action here; the wallet is resolved
+    /// server-side — the registered fan's HALFTIME wallet when the ticket maps to an account, otherwise the
+    /// ticket's own bearer wallet (created on first top-up). Idempotent on the request's idempotency key.
+    /// </summary>
+    [HttpPost("wallet/topup")]
+    public async Task<ActionResult<DepositResultDto>> TopUpSessionWallet([FromBody] SessionWalletTopupRequestDto request)
+    {
+        if (request is null || string.IsNullOrWhiteSpace(request.SessionToken))
+            return BadRequest(new DepositResultDto { Success = false, FailureReason = "MissingSession" });
+        if (!ModelState.IsValid)
+            return BadRequest(new DepositResultDto { Success = false, FailureReason = "InvalidAmount" });
+
+        var session = await _ticketAuth.GetTicketSessionAsync(request.SessionToken);
+        if (session is null || !session.IsActive || session.ExpiresAt <= DateTime.UtcNow)
+            return Unauthorized(new DepositResultDto { Success = false, FailureReason = "SessionExpired" });
+
+        var dto = new InitiateDepositDto
+        {
+            Amount = request.Amount,
+            Method = request.Method,
+            IdempotencyKey = request.IdempotencyKey
+        };
+
+        // Fund whichever wallet the balance is displayed from, mirroring GetSessionWallet's resolution: the
+        // registered fan's account wallet when the ticket links to one, otherwise the ticket's bearer wallet.
+        var userId = await ResolveWalletOwnerAsync(session);
+        DepositResultDto result;
+        if (userId is not null)
+        {
+            result = await _walletService.InitiateDepositAsync(userId.Value, dto);
+        }
+        else
+        {
+            var ticketId = session.Ticket?.Id;
+            if (ticketId is null)
+                return BadRequest(new DepositResultDto { Success = false, FailureReason = "TicketNotFound" });
+            result = await _walletService.InitiateTicketDepositAsync(ticketId.Value, dto);
+        }
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Fan-initiated self-service WITHDRAWAL (refund to card) of part or all of the balance in the wallet
+    /// behind the scanned ticket, from the walk-up flow where there is no login. Gated by the session token
+    /// like every action here; the wallet is resolved server-side — the registered fan's HALFTIME wallet when
+    /// the ticket maps to an account, otherwise the ticket's own bearer wallet. Idempotent on the request's
+    /// idempotency key.
+    /// </summary>
+    [HttpPost("wallet/withdraw")]
+    public async Task<ActionResult<WalletWithdrawResultDto>> WithdrawFromSessionWallet([FromBody] SessionWalletWithdrawRequestDto request)
+    {
+        if (request is null || string.IsNullOrWhiteSpace(request.SessionToken))
+            return BadRequest(new WalletWithdrawResultDto { Success = false, FailureReason = "MissingSession" });
+        if (!ModelState.IsValid)
+            return BadRequest(new WalletWithdrawResultDto { Success = false, FailureReason = "InvalidAmount" });
+
+        var session = await _ticketAuth.GetTicketSessionAsync(request.SessionToken);
+        if (session is null || !session.IsActive || session.ExpiresAt <= DateTime.UtcNow)
+            return Unauthorized(new WalletWithdrawResultDto { Success = false, FailureReason = "SessionExpired" });
+
+        // Withdraw from whichever wallet the balance is displayed from, mirroring GetSessionWallet's
+        // resolution: the registered fan's account wallet when the ticket links to one, else the ticket's
+        // bearer wallet.
+        var userId = await ResolveWalletOwnerAsync(session);
+        WalletWithdrawResultDto result;
+        if (userId is not null)
+        {
+            result = await _walletService.WithdrawAsync(userId.Value, request.Amount, request.IdempotencyKey);
+        }
+        else
+        {
+            var ticketId = session.Ticket?.Id;
+            if (ticketId is null)
+                return BadRequest(new WalletWithdrawResultDto { Success = false, FailureReason = "TicketNotFound" });
+            result = await _walletService.WithdrawFromTicketWalletAsync(ticketId.Value, request.Amount, request.IdempotencyKey);
+        }
+
+        return Ok(result);
+    }
+
     /// <summary>True when the scanned ticket carries its own Active (anonymous, bearer) wallet — the balance
     /// loaded on the ticket at the counter. Balance sufficiency is left to the guarded debit (→ 402 on
     /// insufficient funds); this only decides whether the ticket-wallet payment path applies at all.</summary>
@@ -255,27 +349,4 @@ public class CustomerSessionOrdersController : ControllerBase
         return string.Join(" · ", parts);
     }
 
-    /// <summary>
-    /// Resolves the shared "walk-up guest" customer that anonymous orders are attributed to, creating it
-    /// on first use. Orders still carry the real ticket/seat, so this never affects delivery routing.
-    /// </summary>
-    private async Task<int> GetGuestCustomerIdAsync()
-    {
-        var guest = await _db.Users.FirstOrDefaultAsync(u => u.Email == GuestEmail);
-        if (guest is not null)
-            return guest.Id;
-
-        guest = new User
-        {
-            Username = "Walk-up Guest",
-            Email = GuestEmail,
-            PasswordHash = "!disabled!", // non-usable; this account never logs in
-            Role = UserRole.Customer,
-            CreatedAt = DateTime.UtcNow
-        };
-        _db.Users.Add(guest);
-        await _db.SaveChangesAsync();
-        _logger.LogInformation("Created walk-up guest customer #{Id}", guest.Id);
-        return guest.Id;
-    }
 }

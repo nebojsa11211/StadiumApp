@@ -1,5 +1,6 @@
 using StadiumDrinkOrdering.Customer.Models;
 using StadiumDrinkOrdering.Shared.DTOs;
+using StadiumDrinkOrdering.Shared.Models;
 
 namespace StadiumDrinkOrdering.Customer.Services;
 
@@ -39,6 +40,15 @@ public class OrderSessionState
     /// </summary>
     public bool CanOrderDrinks { get; private set; }
 
+    /// <summary>
+    /// Id of the fan's most recently placed order while it is still in flight (not Delivered/Cancelled).
+    /// Lets the ordering flow offer a jump back to <c>/track/{id}</c> after the fan leaves the tracking
+    /// page to order more. Set on checkout, refreshed when a live order is opened on /track, and cleared
+    /// once it reaches a terminal state. Persisted to sessionStorage at the page level so it survives a
+    /// hard reload.
+    /// </summary>
+    public int? ActiveOrderId { get; private set; }
+
     // --- client-side cart ---
     public List<CartLine> Items { get; private set; } = new();
 
@@ -56,6 +66,24 @@ public class OrderSessionState
             if (!string.IsNullOrWhiteSpace(SeatNumber)) parts.Add($"Sjed. {SeatNumber}");
             return parts.Count > 0 ? string.Join(" · ", parts) : "Tvoje mjesto";
         }
+    }
+
+    /// <summary>Remember an in-flight order so the ordering flow can offer a jump back to /track/{id}.
+    /// No-op for a non-positive id or when it's already the active order (avoids a redundant re-render).</summary>
+    public void SetActiveOrder(int orderId)
+    {
+        if (orderId <= 0 || ActiveOrderId == orderId) return;
+        ActiveOrderId = orderId;
+        OnChange?.Invoke();
+    }
+
+    /// <summary>Forget the active order once it's delivered/cancelled, so the "track your order" affordance
+    /// disappears from the ordering flow.</summary>
+    public void ClearActiveOrder()
+    {
+        if (ActiveOrderId == null) return;
+        ActiveOrderId = null;
+        OnChange?.Invoke();
     }
 
     public event Action? OnChange;
@@ -145,8 +173,9 @@ public class OrderSessionState
 
     /// <summary>Place the order for the scanned seat. Keeps the session (so the fan can order again).
     /// When <paramref name="payWithWallet"/> is true the order is charged to the ticket owner's HALFTIME
-    /// wallet; otherwise it is created unpaid and settled at the bar / on delivery.</summary>
-    public async Task<SessionOrderResultDto?> CheckoutAsync(bool payWithWallet = false, string? customerNotes = null)
+    /// wallet; otherwise it is created unpaid and settled at the bar / on delivery, with the fan's chosen
+    /// offline <paramref name="paymentMethod"/> (cash / card) recorded on the order for staff.</summary>
+    public async Task<SessionOrderResultDto?> CheckoutAsync(bool payWithWallet = false, PaymentMethod? paymentMethod = null, string? customerNotes = null)
     {
         if (!HasSession || Items.Count == 0) return new SessionOrderResultDto { Success = false, Error = "Košarica je prazna." };
 
@@ -155,6 +184,7 @@ public class OrderSessionState
             SessionToken = SessionToken!,
             CustomerNotes = customerNotes,
             PayWithWallet = payWithWallet,
+            PaymentMethod = paymentMethod,
             Items = Items.Select(i => new SessionOrderItemDto
             {
                 DrinkId = i.DrinkId,
@@ -167,6 +197,7 @@ public class OrderSessionState
         if (result is { Success: true })
         {
             Items = new();
+            if (result.OrderId > 0) ActiveOrderId = result.OrderId;
             OnChange?.Invoke();
         }
         return result;

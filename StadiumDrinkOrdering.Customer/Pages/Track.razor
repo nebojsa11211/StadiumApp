@@ -14,6 +14,7 @@
 <div id="customer-track-atmos" class="crowd-atmos" aria-hidden="true"></div>
 
 <div id="customer-track-body" class="body">
+    <button id="customer-track-back-top" class="track-back" @onclick="@(() => Nav.NavigateTo("/order"))" aria-label="Natrag na naručivanje">‹</button>
     @if (_loading)
     {
         <div id="customer-track-loading" class="tload"><span class="spinner"></span> Učitavam narudžbu…</div>
@@ -105,6 +106,7 @@
         {
             _token = State.SessionToken;
             await Reload();
+            SyncActiveOrderState();
             _loading = false;
             StartPoll();
         }
@@ -117,6 +119,8 @@
         // Hard reload: recover the session token from sessionStorage.
         _token ??= await JS.InvokeAsync<string?>("sessionStorage.getItem", "htSessionToken");
         await Reload();
+        SyncActiveOrderState();
+        await PersistActiveOrder();
         _loading = false;
         StartPoll();
         StateHasChanged();
@@ -132,11 +136,42 @@
     {
         if (_order is { Status: OrderStatus.Delivered } or { Status: OrderStatus.Cancelled })
         {
+            SyncActiveOrderState();
+            await PersistActiveOrder();
             _poll?.Dispose();
             return;
         }
         await Reload();
+        SyncActiveOrderState();
+        await PersistActiveOrder();
         StateHasChanged();
+    }
+
+    // Mirror this order's in-flight status into the shared session so the ordering flow's "track your order"
+    // banner appears while active and disappears once it's delivered/cancelled. State-only (no JS) — safe to
+    // call during prerender; the sessionStorage copy is written separately by PersistActiveOrder.
+    private void SyncActiveOrderState()
+    {
+        if (_order == null) return;
+        if (_order.Status is OrderStatus.Delivered or OrderStatus.Cancelled)
+            State.ClearActiveOrder();
+        else
+            State.SetActiveOrder(_order.Id);
+    }
+
+    // Persist (or drop) the in-flight order id in sessionStorage so it survives a hard reload of the ordering
+    // pages. Interactive-only; guarded because JS isn't available during prerender.
+    private async Task PersistActiveOrder()
+    {
+        if (_order == null) return;
+        try
+        {
+            if (_order.Status is OrderStatus.Delivered or OrderStatus.Cancelled)
+                await JS.InvokeVoidAsync("sessionStorage.removeItem", "htActiveOrderId");
+            else
+                await JS.InvokeVoidAsync("sessionStorage.setItem", "htActiveOrderId", _order.Id);
+        }
+        catch { /* prerender / no JS — the in-circuit mirror is still updated */ }
     }
 
     private async Task Reload()

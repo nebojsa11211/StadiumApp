@@ -309,6 +309,42 @@ public class AuthService : IAuthService
             return MapToUserDto(existingByEmail);
         }
 
+        // No account owns this email, but the fan supplied an OIB (Croatian personal id, unique per person).
+        // A shell may already exist for that OIB — provisioned from an OIB-bearing ticket under a different
+        // (or placeholder) email. Registering *claims* that shell and adopts the real email the fan is
+        // registering with, rather than creating a duplicate account for the same person. If a *real*
+        // (already-claimed) account carries this OIB, the person already has an account under another email
+        // and should log in instead — so we reject.
+        if (!string.IsNullOrWhiteSpace(registerDto.Oib))
+        {
+            var oib = registerDto.Oib.Trim();
+            var accountsByOib = await _context.Users.Where(u => u.Oib == oib).ToListAsync();
+            if (accountsByOib.Count > 0)
+            {
+                var shell = accountsByOib.FirstOrDefault(u => u.IsShellAccount);
+                if (shell == null)
+                    return null; // a claimed account already exists for this OIB
+
+                // The email is free (no email match above), so the shell can safely adopt it as its real,
+                // claimable address — future email logins/claims and season-ticket linking now key on it.
+                var usernameTaken = await _context.Users
+                    .AnyAsync(u => u.Id != shell.Id && u.Username == registerDto.Username);
+                if (!usernameTaken && !string.IsNullOrWhiteSpace(registerDto.Username))
+                    shell.Username = registerDto.Username;
+
+                shell.Email = registerDto.Email;
+                shell.PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
+                if (!string.IsNullOrWhiteSpace(registerDto.FirstName)) shell.FirstName = registerDto.FirstName.Trim();
+                if (!string.IsNullOrWhiteSpace(registerDto.LastName)) shell.LastName = registerDto.LastName.Trim();
+                shell.IsShellAccount = false;
+
+                await ConsumeActivationTokensAsync(shell.Id);
+                await _context.SaveChangesAsync();
+                await LinkSeasonTicketsByEmailAsync(shell);
+                return MapToUserDto(shell);
+            }
+        }
+
         // Brand-new account: the username must be free.
         if (await _context.Users.AnyAsync(u => u.Username == registerDto.Username))
             return null;

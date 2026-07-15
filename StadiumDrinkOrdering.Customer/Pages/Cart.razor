@@ -70,6 +70,14 @@
                 </div>
                 <div class="radio"></div>
             </div>
+            <div id="customer-cart-pay-cash" class="pay-opt @(_pay == "cash" ? "sel" : "")" @onclick="@(() => _pay = "cash")">
+                <div id="customer-cart-cash-icon" class="pic">💵</div>
+                <div id="customer-cart-cash-info" class="pb">
+                    <div id="customer-cart-cash-title" class="t">Gotovina</div>
+                    <div id="customer-cart-cash-subtitle" class="s">Plati pri dostavi</div>
+                </div>
+                <div class="radio"></div>
+            </div>
 
             <div id="customer-cart-summary" class="summary">
                 <div id="customer-cart-summary-subtotal" class="sr"><span>Međuzbroj</span><b class="tnum">€@State.Subtotal.ToString("F2")</b></div>
@@ -158,13 +166,24 @@
         _placing = true;
         _error = null;
 
-        // Wallet pays from the ticket owner's HALFTIME wallet (charged server-side); "card" is still
-        // presentational — that order is created unpaid and settled at the bar / on delivery.
-        // The ticket session is intentionally kept so the fan can track and order again.
-        var result = await State.CheckoutAsync(payWithWallet: _pay == "wallet");
+        // Wallet pays from the ticket owner's HALFTIME wallet (charged server-side); "card" and "cash" move
+        // no money at checkout — the order is created unpaid and settled at the bar / on delivery — but the
+        // chosen method is recorded so staff know cash vs card. The ticket session is intentionally kept so
+        // the fan can track and order again.
+        var method = _pay switch
+        {
+            "cash" => PaymentMethod.Cash,
+            "card" => PaymentMethod.CreditCard,
+            _ => (PaymentMethod?)null
+        };
+        var result = await State.CheckoutAsync(payWithWallet: _pay == "wallet", paymentMethod: method);
 
         if (result is { Success: true })
         {
+            // Remember the in-flight order so the fan can jump back to /track after leaving to order more.
+            // sessionStorage survives a hard reload; OrderSessionState already mirrors it in-circuit.
+            try { await JS.InvokeVoidAsync("sessionStorage.setItem", "htActiveOrderId", result.OrderId); }
+            catch { /* no JS — the in-circuit mirror still carries it */ }
             Nav.NavigateTo($"/track/{result.OrderId}");
         }
         else if (result is { InsufficientFunds: true })

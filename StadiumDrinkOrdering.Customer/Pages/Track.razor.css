@@ -3,6 +3,18 @@
 
 .tload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--muted);min-height:70dvh;text-align:center;font-weight:600}
 
+/* back to the ordering flow — a quiet floating chevron over the celebratory hero.
+   Anchored to the position:relative .body above. */
+.track-back{
+    position:absolute;top:12px;left:14px;z-index:5;
+    width:38px;height:38px;border-radius:50%;
+    border:1px solid var(--line-2);background:color-mix(in srgb,var(--surface) 72%,transparent);
+    color:var(--ink);font-size:22px;line-height:1;cursor:pointer;
+    display:grid;place-items:center;backdrop-filter:blur(6px);transition:.15s var(--ease);
+}
+.track-back:hover{background:var(--surface)}
+.track-back:focus-visible{outline:2px solid var(--live);outline-offset:2px}
+
 .track-hero{
     padding:60px 24px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;
     background:radial-gradient(120% 60% at 50% 0%,rgba(0,226,138,.14),transparent 60%);

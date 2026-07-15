@@ -140,7 +140,7 @@
 
 /* scanned-ticket banner: holder name + spendable balance */
 .wl-fancard{
-    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    display:flex;flex-direction:column;
     border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:12px 14px;
     background:
         radial-gradient(120% 120% at 0% 0%,rgba(41,120,255,.16),transparent 55%),
@@ -149,6 +149,25 @@
     -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
     box-shadow:0 20px 44px -26px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.03);
 }
+/* Clickable header row — the previous fancard layout, now a toggle for the details panel. */
+.wl-fancard-head{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.wl-fancard-head:focus-visible{outline:2px solid #00E28A;outline-offset:4px;border-radius:12px}
+.wl-fan-chev{width:18px;height:18px;flex:none;fill:none;stroke:#9AA0B2;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+.wl-fancard.open .wl-fan-chev{transform:rotate(180deg)}
+
+/* Expanded account details — quiet key/value rows under a hairline divider. */
+.wl-fan-details{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);
+    display:flex;flex-direction:column;gap:9px}
+.wl-fan-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.wl-fan-row .k{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:#9AA0B2;flex:none}
+.wl-fan-row .v{font-size:13px;font-weight:700;color:#fff;text-align:right;
+    overflow-wrap:anywhere;word-break:break-word}
+
 .wl-fan-id{display:flex;align-items:center;gap:11px;min-width:0;flex:1 1 auto}
 .wl-fan-avatar{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;
     font-weight:900;font-style:italic;font-size:15px;letter-spacing:-.02em;color:#fff;
@@ -185,3 +204,85 @@
 .wl-lang button.on{color:#fff}
 .wl-lang button:hover{color:var(--ink)}
 .wl-lang button:focus-visible{outline:2px solid var(--live);outline-offset:2px;border-radius:4px}
+
+/* ---------- tappable balance → online top-up ---------- */
+.wl-fan-wallet{cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:12px;
+    transition:transform .15s ease}
+.wl-fan-wallet:active{transform:scale(.97)}
+.wl-fan-wallet:focus-visible{outline:2px solid #00E28A;outline-offset:4px}
+.wl-fan-wallet-topup{margin-top:3px;font-size:11px;font-weight:800;letter-spacing:.04em;color:#00E28A}
+
+/* ---------- online top-up bottom sheet ---------- */
+.wl-sheet-scrim{position:fixed;inset:0;z-index:40;background:rgba(4,6,10,.62);
+    -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);animation:wl-fade .18s ease}
+.wl-sheet{
+    position:fixed;left:0;right:0;bottom:0;z-index:41;
+    display:flex;flex-direction:column;gap:14px;
+    padding:10px 22px calc(22px + var(--safe-bottom));
+    border-top-left-radius:22px;border-top-right-radius:22px;
+    border:1px solid rgba(255,255,255,.14);border-bottom:0;
+    background:
+        radial-gradient(120% 120% at 0% 0%,rgba(41,120,255,.16),transparent 55%),
+        radial-gradient(120% 120% at 100% 100%,rgba(0,214,120,.16),transparent 55%),
+        #0E1118;
+    box-shadow:0 -24px 60px -20px rgba(0,0,0,.9);
+    animation:wl-rise .22s var(--ease);
+}
+.wl-sheet-grip{width:40px;height:4px;border-radius:99px;background:rgba(255,255,255,.2);margin:2px auto 4px}
+.wl-sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.wl-sheet-title{font-size:18px;font-weight:900;letter-spacing:-.01em;color:#fff}
+.wl-sheet-sub{margin-top:2px;font-size:11px;font-weight:800;letter-spacing:.1em;
+    text-transform:uppercase;color:#9AA0B2}
+.wl-sheet-x{flex:none;width:32px;height:32px;border-radius:50%;border:0;cursor:pointer;
+    background:rgba(255,255,255,.08);color:#C9CCD8;font-size:15px;line-height:1}
+.wl-sheet-x:hover{background:rgba(255,255,255,.14);color:#fff}
+
+/* segmented top-up / withdraw toggle */
+.wl-seg{display:flex;gap:6px;padding:4px;border-radius:13px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12)}
+.wl-seg-btn{flex:1;padding:9px 0;border:0;border-radius:10px;cursor:pointer;background:transparent;
+    color:#9AA0B2;font-size:13px;font-weight:800;letter-spacing:.02em;
+    transition:background .15s,color .15s}
+.wl-seg-btn.on{background:rgba(255,255,255,.1);color:#fff}
+.wl-seg-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* withdraw: available-balance row + "withdraw all" link */
+.wl-withdraw-avail{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:2px 2px 0}
+.wl-withdraw-avail .k{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9AA0B2}
+.wl-withdraw-avail .v{font-size:20px;font-weight:900;color:#00E28A;letter-spacing:-.01em}
+.wl-linkbtn{align-self:center;background:none;border:0;cursor:pointer;color:#9AA0B2;
+    font-size:13px;font-weight:800;letter-spacing:.02em;padding:2px 6px;text-decoration:underline}
+.wl-linkbtn:hover{color:#fff}
+.wl-linkbtn:disabled{opacity:.5;cursor:not-allowed}
+
+.wl-amt-chips{display:flex;gap:10px}
+.wl-amt-chip{flex:1;padding:13px 0;border-radius:13px;cursor:pointer;
+    border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);
+    color:#EDEFF5;font-size:16px;font-weight:900;letter-spacing:-.01em;
+    transition:border-color .15s,background .15s,transform .1s}
+.wl-amt-chip:hover{border-color:rgba(255,255,255,.3)}
+.wl-amt-chip:active{transform:scale(.97)}
+.wl-amt-chip.on{border-color:#00E28A;background:rgba(0,226,138,.14);color:#fff}
+
+.wl-amt-field{display:flex;flex-direction:column;gap:6px}
+.wl-amt-field label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9AA0B2}
+.wl-amt-field input{width:100%;padding:13px 14px;border-radius:13px;
+    border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);
+    color:#fff;font-size:18px;font-weight:800;-webkit-appearance:none;appearance:none}
+.wl-amt-field input:focus{outline:none;border-color:#00E28A;background:rgba(0,226,138,.06)}
+
+.wl-sheet-err{font-size:13px;font-weight:700;color:#FF9A8F;
+    background:rgba(230,38,48,.12);border:1px solid rgba(230,38,48,.3);border-radius:11px;padding:10px 12px}
+
+.wl-sheet-pay{margin-top:2px}
+.wl-sheet-note{text-align:center;font-size:12px;font-weight:600;color:#9AA0B2;margin:0}
+
+/* success toast */
+.wl-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(22px + var(--safe-bottom));z-index:50;
+    max-width:calc(100% - 40px);padding:12px 18px;border-radius:13px;
+    background:#00C776;color:#04120C;font-size:14px;font-weight:800;text-align:center;
+    box-shadow:0 16px 40px -12px rgba(0,199,118,.6);animation:wl-toast-in .22s var(--ease)}
+
+@keyframes wl-fade{from{opacity:0}to{opacity:1}}
+@keyframes wl-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wl-toast-in{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}

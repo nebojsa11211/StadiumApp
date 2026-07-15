@@ -1,3 +1,5 @@
+using StadiumDrinkOrdering.Shared.Models;
+
 namespace StadiumDrinkOrdering.Shared.DTOs;
 
 /// <summary>
@@ -14,6 +16,13 @@ public class SessionOrderRequest
     /// (resolved server-side from the ticket — the client never supplies a wallet/user id). When false the
     /// order is created unpaid and settled at the bar / on delivery, as before.</summary>
     public bool PayWithWallet { get; set; }
+
+    /// <summary>The fan's chosen offline method (<see cref="PaymentMethod.Cash"/> or a card) when
+    /// <see cref="PayWithWallet"/> is false. No money moves at checkout — it's recorded as a Pending payment
+    /// on the order so staff know how it will be settled at the bar / on delivery. Ignored when paying by
+    /// wallet (that path is resolved server-side). Null keeps the legacy "unpaid, method unspecified"
+    /// behaviour.</summary>
+    public PaymentMethod? PaymentMethod { get; set; }
 }
 
 public class SessionOrderItemDto

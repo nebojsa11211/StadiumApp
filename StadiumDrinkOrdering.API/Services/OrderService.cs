@@ -312,6 +312,23 @@ public class OrderService : IOrderService
             });
             await _context.SaveChangesAsync();
         }
+        // Offline method chosen at checkout (cash / card): no money moves now — it's collected at the bar
+        // or on delivery — but record the fan's intended method as a Pending payment so staff see cash vs
+        // card up front. (Legacy callers that omit PaymentMethod skip this and stay fully unpaid.)
+        else if (createOrderDto.PaymentMethod is PaymentMethod.Cash or PaymentMethod.CreditCard
+            or PaymentMethod.DebitCard or PaymentMethod.BankTransfer)
+        {
+            _context.Payments.Add(new Payment
+            {
+                OrderId = order.Id,
+                PaymentMethod = createOrderDto.PaymentMethod.Value.ToString(),
+                Amount = totalAmount,
+                Currency = "EUR",
+                Status = "Pending",
+                PaymentDate = DateTime.UtcNow
+            });
+            await _context.SaveChangesAsync();
+        }
 
         var dto = await GetOrderByIdAsync(order.Id);
         return dto != null
@@ -362,6 +379,8 @@ public class OrderService : IOrderService
             .Include(o => o.Event)
             .Include(o => o.Seat)
                 .ThenInclude(s => s.Section)
+            .Include(o => o.TicketSession!)
+                .ThenInclude(ts => ts.Ticket)
             .FirstOrDefaultAsync(o => o.Id == orderId);
 
         return order != null ? MapToOrderDto(order) : null;
@@ -383,6 +402,8 @@ public class OrderService : IOrderService
     .Include(o => o.Event)
     .Include(o => o.Seat)
         .ThenInclude(s => s.Section)
+    .Include(o => o.TicketSession!)
+        .ThenInclude(ts => ts.Ticket)
     .AsQueryable();
 
             if (status.HasValue)
@@ -415,6 +436,8 @@ public class OrderService : IOrderService
             .Include(o => o.Event)
             .Include(o => o.Seat)
                 .ThenInclude(s => s.Section)
+            .Include(o => o.TicketSession!)
+                .ThenInclude(ts => ts.Ticket)
             .Where(o => o.CustomerId == customerId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -436,6 +459,8 @@ public class OrderService : IOrderService
             .Include(o => o.Event)
             .Include(o => o.Seat)
                 .ThenInclude(s => s.Section)
+            .Include(o => o.TicketSession!)
+                .ThenInclude(ts => ts.Ticket)
             .Where(o => o.AssignedStaffId == staffId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -458,6 +483,8 @@ public class OrderService : IOrderService
             .Include(o => o.Event)
             .Include(o => o.Seat)
                 .ThenInclude(s => s.Section)
+            .Include(o => o.TicketSession!)
+                .ThenInclude(ts => ts.Ticket)
             .Where(o => o.Status == OrderStatus.Ready && o.AssignedStaffId == null)
             .OrderBy(o => o.CreatedAt)
             .ToListAsync();
@@ -598,6 +625,13 @@ public class OrderService : IOrderService
                 && (p.PaymentMethod == "DigitalWallet" || p.PaymentMethod == "TicketWallet")
                 && p.Status == "Completed");
 
+        // Void any Pending offline (cash / card) payment intent — the order was never handed over, so
+        // nothing is collected. Completed wallet payments are refunded below instead.
+        var pendingOffline = await _context.Payments
+            .FirstOrDefaultAsync(p => p.OrderId == orderId && p.Status == "Pending");
+        if (pendingOffline != null)
+            pendingOffline.Status = "Cancelled";
+
         // Deliberately NO stock restore: the drink was already poured and is discarded, so putting it
         // back would overstate inventory (unlike a Pending cancel, where nothing was ever made).
         order.Status = OrderStatus.Cancelled;
@@ -666,9 +700,24 @@ public class OrderService : IOrderService
                 order.PreparedAt = DateTime.UtcNow;
                 break;
             case OrderStatus.Delivered:
+            {
                 order.DeliveredByUserId = userId;
                 order.DeliveredAt = DateTime.UtcNow;
+                // Offline (cash / card) orders are collected at hand-off: settle the Pending payment that
+                // was recorded at checkout so it now reads Completed with a processed timestamp. Wallet
+                // payments are already Completed (charged at creation) and are left untouched; the replayed-
+                // Delivered no-op above means this can't double-settle.
+                var offlinePayment = await _context.Payments.FirstOrDefaultAsync(p =>
+                    p.OrderId == order.Id && p.Status == "Pending"
+                    && (p.PaymentMethod == "Cash" || p.PaymentMethod == "CreditCard"
+                        || p.PaymentMethod == "DebitCard" || p.PaymentMethod == "BankTransfer"));
+                if (offlinePayment != null)
+                {
+                    offlinePayment.Status = "Completed";
+                    offlinePayment.ProcessedAt = DateTime.UtcNow;
+                }
                 break;
+            }
         }
 
         await _context.SaveChangesAsync();
@@ -710,6 +759,13 @@ public class OrderService : IOrderService
                 CreatedAt = DateTime.UtcNow
             });
         }
+
+        // Void any Pending offline (cash / card) payment intent — the order is cancelled before hand-off,
+        // so nothing is collected. Completed wallet payments are refunded below instead.
+        var pendingOffline = await _context.Payments
+            .FirstOrDefaultAsync(p => p.OrderId == orderId && p.Status == "Pending");
+        if (pendingOffline != null)
+            pendingOffline.Status = "Cancelled";
 
         order.Status = OrderStatus.Cancelled;
         await _context.SaveChangesAsync();
@@ -799,6 +855,14 @@ public class OrderService : IOrderService
             order.Notes = AppendNote(order.Notes, reason);
         }
 
+        // Void any Pending offline (cash / card) payment intents for the swept orders — none were handed
+        // over, so nothing is collected. Completed wallet payments are refunded below instead.
+        var pendingOffline = await _context.Payments
+            .Where(p => p.OrderId != null && orderIds.Contains(p.OrderId.Value) && p.Status == "Pending")
+            .ToListAsync();
+        foreach (var p in pendingOffline)
+            p.Status = "Cancelled";
+
         await _context.SaveChangesAsync();
 
         // Refund wallet-funded orders after the cancellations are committed. Each refund is idempotent
@@ -837,6 +901,26 @@ public class OrderService : IOrderService
         return order.SeatNumber;
     }
 
+    // Staff-facing customer label. Prefers the holder's real name from the attributed account (set on
+    // registered fans and on shell accounts provisioned from a ticket's CustomerName), so a walk-up order
+    // reads "Marko Marić" rather than the shell's email-derived username. When the order is still on a
+    // name-less account (the shared "Walk-up Guest" — only a ticket with no email, OIB, or season link),
+    // it falls back to the name carried on the scanned ticket, so the bar still sees who ordered rather
+    // than "Walk-up Guest". Username is the last resort.
+    private static string FormatCustomerName(Order order)
+    {
+        var customer = order.Customer;
+        var accountName = $"{customer?.FirstName} {customer?.LastName}".Trim();
+        if (!string.IsNullOrWhiteSpace(accountName))
+            return accountName;
+
+        var ticketName = order.TicketSession?.Ticket?.CustomerName;
+        if (!string.IsNullOrWhiteSpace(ticketName))
+            return ticketName;
+
+        return customer?.Username ?? "Guest";
+    }
+
     private static OrderDto MapToOrderDto(Order order)
     {
         return new OrderDto
@@ -846,7 +930,7 @@ public class OrderService : IOrderService
             SeatNumber = order.SeatNumber,
             SeatPath = BuildSeatPath(order),
             CustomerId = order.CustomerId,
-            CustomerName = order.Customer.Username,
+            CustomerName = FormatCustomerName(order),
             TotalAmount = order.TotalAmount,
             Status = order.Status,
             CreatedAt = order.CreatedAt,

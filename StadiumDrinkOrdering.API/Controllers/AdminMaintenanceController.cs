@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Authorization;
 using StadiumDrinkOrdering.API.Data;
+using StadiumDrinkOrdering.API.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
 
 namespace StadiumDrinkOrdering.API.Controllers;
@@ -102,5 +103,49 @@ public class AdminMaintenanceController : ControllerBase
             _logger.LogError(ex, "Admin purge of transactional data failed and was rolled back");
             return StatusCode(500, new { message = "Failed to delete data. No changes were made.", error = ex.Message });
         }
+    }
+
+    /// <summary>
+    /// One-off: re-attribute existing walk-up (ticket-session) orders that are still pinned to the shared
+    /// "walk-up guest" account to the real account behind their ticket — the same resolution new orders
+    /// now use (season owner → email account, provisioning a claimable shell when the ticket carries an
+    /// email but has none yet). Orders whose ticket carries no resolvable identity stay on the guest.
+    /// Idempotent: re-running only touches orders still on the guest, so it is safe to run repeatedly.
+    /// </summary>
+    [HttpPost("backfill-walkup-order-accounts")]
+    public async Task<ActionResult> BackfillWalkUpOrderAccounts([FromServices] IWalkUpAccountResolver resolver)
+    {
+        var guestId = await resolver.GetGuestCustomerIdAsync();
+
+        // Only guest-attributed orders that still carry their ticket link can be re-resolved.
+        var guestOrders = await _context.Orders
+            .Where(o => o.CustomerId == guestId && o.TicketSessionId != null)
+            .Include(o => o.TicketSession!)
+                .ThenInclude(ts => ts.Ticket)
+            .ToListAsync();
+
+        var reattributed = 0;
+        foreach (var order in guestOrders)
+        {
+            var ticket = order.TicketSession?.Ticket;
+            if (ticket is null)
+                continue;
+
+            var resolvedId = await resolver.ResolveCustomerIdAsync(ticket);
+            if (resolvedId != guestId)
+            {
+                order.CustomerId = resolvedId;
+                reattributed++;
+            }
+        }
+
+        if (reattributed > 0)
+            await _context.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Backfill re-attributed {Reattributed} walk-up order(s) from the guest account to real accounts (of {Candidates} guest-attributed candidates).",
+            reattributed, guestOrders.Count);
+
+        return Ok(new { reattributed, candidates = guestOrders.Count });
     }
 }

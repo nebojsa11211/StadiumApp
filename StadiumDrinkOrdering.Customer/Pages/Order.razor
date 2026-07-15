@@ -60,6 +60,18 @@ else
             <span id="customer-order-cdiv-2" class="seat-dot"></span>
             <span id="customer-order-coord-seat" class="seat-cell seat"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></span>
         </div>
+        @* Who's ordering + what they can spend: the ticket holder's name and their spendable balance
+           (the scanned ticket's bearer balance, or a registered fan's HALFTIME wallet). *@
+        <div id="customer-order-fan-strip" class="fan-strip">
+            <div id="customer-order-fan-id" class="fan-id">
+                <span id="customer-order-fan-avatar" class="fan-avatar">@Initials(FanName)</span>
+                <span id="customer-order-fan-name" class="fan-name">@FanName</span>
+            </div>
+            <div id="customer-order-fan-wallet" class="fan-wallet">
+                <span id="customer-order-fan-wallet-ic" class="fan-wallet-ic">@(_wallet is { IsTicketWallet: true } ? "🎟️" : "👛")</span>
+                <span id="customer-order-fan-wallet-amt" class="fan-wallet-amt tnum">@WalletText</span>
+            </div>
+        </div>
         <div id="customer-order-tabs" class="tabs no-scrollbar">
             @foreach (var cat in _categories)
             {
@@ -76,6 +88,16 @@ else
     </div>
 
     <div id="customer-order-body" class="body no-scrollbar" style="padding-bottom:120px">
+        @if (State.ActiveOrderId is { } activeOrderId)
+        {
+            @* The fan placed an order, then came back here to order more — offer a jump back to tracking it. *@
+            <button id="customer-order-track-active-btn" class="track-active"
+                    @onclick="@(() => Nav.NavigateTo($"/track/{activeOrderId}"))">
+                <span id="customer-order-track-active-dot" class="ta-ic"><span class="pulse"></span></span>
+                <span id="customer-order-track-active-text" class="ta-txt">Narudžba #@activeOrderId je u tijeku</span>
+                <span id="customer-order-track-active-go" class="ta-go">Prati ›</span>
+            </button>
+        }
         @if (_loading)
         {
             <div id="customer-order-loading" class="loading"><span class="spinner"></span> Učitavam ponudu…</div>
@@ -107,6 +129,13 @@ else
     private List<CatTab> _categories = new();
     private int _selected;
     private DrinkDto? _sheetDrink;
+    private WalletSummaryDto? _wallet;
+
+    // Ticket holder's name for the header; anonymous tickets carry no name, so fall back to a neutral label.
+    private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? "Gost" : State.CustomerName;
+
+    // Spendable balance shown next to the name; an em dash until a wallet is confirmed (best-effort load).
+    private string WalletText => _wallet is { Exists: true } ? $"€{_wallet.Balance:F2}" : "—";
 
     // Lightweight category descriptor for the tab strip, built from the loaded drinks.
     private record CatTab(int Id, string Icon, string Label);
@@ -126,6 +155,7 @@ else
         }
 
         await LoadDrinks();
+        await LoadWallet();
         _loading = false;
     }
 
@@ -144,7 +174,19 @@ else
             if (!string.IsNullOrEmpty(token) && await State.InitFromTokenAsync(token))
             {
                 await LoadDrinks();
+                await LoadWallet();
                 _loading = false;
+                StateHasChanged();
+            }
+        }
+
+        // Recover the in-flight order after a hard reload so the "track your order" banner reappears.
+        if (State.ActiveOrderId == null)
+        {
+            var active = await JS.InvokeAsync<string?>("sessionStorage.getItem", "htActiveOrderId");
+            if (int.TryParse(active, out var activeId) && activeId > 0)
+            {
+                State.SetActiveOrder(activeId);
                 StateHasChanged();
             }
         }
@@ -162,6 +204,26 @@ else
             .ToList();
         if (_categories.Any() && _categories.All(c => c.Id != _selected))
             _selected = _categories.First().Id;
+    }
+
+    // Best-effort spendable balance for the scanned ticket; a failure just leaves the header showing "—".
+    private async Task LoadWallet()
+    {
+        if (!State.HasSession) return;
+        _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
+    }
+
+    // Monogram avatar — first letter of each word, up to two, digits ignored.
+    private static string Initials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var letters = name
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Where(w => char.IsLetter(w[0]))
+            .Select(w => char.ToUpperInvariant(w[0]))
+            .Take(2);
+        var s = string.Concat(letters);
+        return s.Length > 0 ? s : "?";
     }
 
     private IEnumerable<DrinkDto> Filtered() =>

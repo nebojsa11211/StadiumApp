@@ -30,7 +30,11 @@
         </div>
     </div>
 
-    @if (knownSectors.Count > 1)
+    @* Show the filter whenever there's a choice to make OR a selection is active. The second clause is
+       essential: a selection restored from a previous session may target a sector that has no orders
+       right now, which would otherwise leave the board silently filtered to empty with no visible way
+       to clear it (knownSectors could be a single current sector). *@
+    @if (knownSectors.Count > 1 || selectedSectors.Count > 0)
     {
         <div id="bar-orderqueue-page-sector-filter" class="kds-sector-filter">
             <span class="kds-filter-label">@Localizer["OrderQueue_Sectors"]</span>
@@ -145,6 +149,10 @@
                 // A selection saved under a bare code (before its name was known) must be migrated to
                 // the structured name learned during the initial load, or it would match nothing.
                 ReconcileSectorNames();
+                // Ensure every restored sector has a chip even when it has no orders in the current
+                // event — otherwise a stale selection filters the board to empty with no way to undo it.
+                foreach (var sector in selectedSectors)
+                    knownSectors.Add(sector);
                 suppressChimeOnce = true;
                 await Partition();
                 StateHasChanged();
@@ -252,6 +260,24 @@
         !string.IsNullOrWhiteSpace(o.CustomerNotes) ? o.CustomerNotes!.Trim()
         : !string.IsNullOrWhiteSpace(o.Notes) ? o.Notes!.Trim()
         : string.Empty;
+
+    // How the order settles, shown on the card so the bartender/runner knows what to do at hand-off:
+    // cash and card are collected on delivery (amber "collect"); a wallet order is already charged
+    // (green "paid"). Paid keys off the payment Status (Completed) rather than the method, so a settled
+    // offline order would still read as paid. Null when the order carries no payment record (legacy
+    // unpaid, method unspecified) so no badge renders.
+    private (string Icon, string Label, bool Paid)? PayBadge(OrderDto o)
+    {
+        if (o.Payment is null) return null;
+        var paid = o.Payment.Status == PaymentStatus.Completed;
+        return o.Payment.Method switch
+        {
+            PaymentMethod.Cash => ("💵", Localizer["OrderQueue_PayCash"].Value, paid),
+            PaymentMethod.CreditCard or PaymentMethod.DebitCard => ("💳", Localizer["OrderQueue_PayCard"].Value, paid),
+            PaymentMethod.DigitalWallet or PaymentMethod.TicketWallet => ("👛", Localizer["OrderQueue_PayWallet"].Value, paid),
+            _ => ((string, string, bool)?)null
+        };
+    }
 
     private string SectorOf(OrderDto o)
     {
@@ -401,6 +427,15 @@
                                 </div>
                             }
                         </div>
+                        @{ var pay = PayBadge(order); }
+                        @if (pay is { } p)
+                        {
+                            <div id="bar-orderqueue-page-pay-@order.Id" class="kds-pay @(p.Paid ? "kds-pay-paid" : "kds-pay-due")">
+                                <span class="kds-pay-ic">@p.Icon</span>
+                                <span class="kds-pay-label">@p.Label</span>
+                                <span class="kds-pay-state">· @(p.Paid ? Localizer["OrderQueue_PayPaid"] : Localizer["OrderQueue_PayCollect"])</span>
+                            </div>
+                        }
                         @{ var orderNote = OrderNote(order); }
                         @if (!string.IsNullOrWhiteSpace(orderNote))
                         {

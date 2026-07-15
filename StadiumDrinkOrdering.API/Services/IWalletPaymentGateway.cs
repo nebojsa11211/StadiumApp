@@ -23,6 +23,12 @@ public interface IWalletPaymentGateway
     /// <summary>Synchronous authorize + capture. Only called when <see cref="SettlesAsynchronously"/> is false.</summary>
     Task<WalletGatewayResult> AuthorizeDepositAsync(decimal amount, string currency, string method, string reference);
 
+    /// <summary>Synchronous payout / refund back to the funding instrument — the money-out side of a
+    /// self-service wallet withdrawal. A gateway that cannot pay out inline (e.g. the async Stripe path,
+    /// which would need the original charge id) returns <c>Success = false</c> with reason
+    /// <c>"GatewayUnavailable"</c> so the wallet is never debited without money actually moving.</summary>
+    Task<WalletGatewayResult> AuthorizePayoutAsync(decimal amount, string currency, string method, string reference);
+
     /// <summary>Create a provider payment intent for an async deposit. Only called when
     /// <see cref="SettlesAsynchronously"/> is true. Returns the client secret the browser uses to confirm.</summary>
     Task<WalletDepositIntent> CreateDepositIntentAsync(decimal amount, string currency, WalletDepositContext context);
@@ -63,6 +69,13 @@ public class MockWalletPaymentGateway : IWalletPaymentGateway
     {
         var gatewayTxnId = $"mock_{reference}";
         var raw = $"{{\"provider\":\"mock\",\"amount\":{amount},\"currency\":\"{currency}\",\"method\":\"{method}\",\"status\":\"captured\"}}";
+        return Task.FromResult(new WalletGatewayResult(true, gatewayTxnId, null, raw));
+    }
+
+    public Task<WalletGatewayResult> AuthorizePayoutAsync(decimal amount, string currency, string method, string reference)
+    {
+        var gatewayTxnId = $"mock_payout_{reference}";
+        var raw = $"{{\"provider\":\"mock\",\"amount\":{amount},\"currency\":\"{currency}\",\"method\":\"{method}\",\"status\":\"refunded\"}}";
         return Task.FromResult(new WalletGatewayResult(true, gatewayTxnId, null, raw));
     }
 

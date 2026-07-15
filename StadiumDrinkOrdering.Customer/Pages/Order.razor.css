@@ -12,6 +12,31 @@
 /* menu content floats above the fixed crowd backdrop */
 .body{position:relative;z-index:1}
 
+/* ===== active-order banner — jump back to /track for the in-flight order =====
+   Echoes the track page's live-green accent so the fan reads it as "your order is on its way".
+   Aligns to the menu grid's 20px gutters. */
+.track-active{
+    display:flex;align-items:center;gap:10px;width:calc(100% - 40px);margin:8px 20px 2px;
+    padding:11px 14px;border-radius:14px;cursor:pointer;font-family:inherit;text-align:left;
+    background:color-mix(in srgb,var(--live) 12%,transparent);
+    border:1px solid color-mix(in srgb,var(--live) 38%,transparent);
+    color:var(--ink);transition:.15s var(--ease);
+}
+.track-active:hover{background:color-mix(in srgb,var(--live) 18%,transparent)}
+.track-active:focus-visible{outline:2px solid var(--live);outline-offset:2px}
+.track-active .ta-ic{flex:none;width:12px;display:grid;place-items:center}
+.track-active .ta-ic .pulse{
+    width:9px;height:9px;border-radius:50%;background:var(--live);
+    animation:ta-pulse 1.6s ease-out infinite;
+}
+.track-active .ta-txt{flex:1;min-width:0;font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-active .ta-go{flex:none;font-size:12px;font-weight:900;color:var(--live)}
+@keyframes ta-pulse{
+    0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--live) 55%,transparent)}
+    70%{box-shadow:0 0 0 7px transparent}
+    100%{box-shadow:0 0 0 0 transparent}
+}
+
 .head-bar{display:flex;align-items:center;gap:12px}
 .head-titles{flex:1;min-width:0}
 .head-title{
@@ -29,6 +54,28 @@
 .seat-cell .v{font-size:15px;font-weight:800;color:var(--ink);line-height:1}
 .seat-cell.seat .v{color:var(--magenta)}
 .seat-dot{align-self:center;width:3px;height:3px;border-radius:50%;background:var(--muted-2);flex:none}
+
+/* ===== fan strip — who's ordering + spendable balance =====
+   A quiet row under the seat coordinates: monogram avatar + holder name on the left,
+   a wallet chip on the right. Restrained to match the calm header. */
+.fan-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px 2px}
+.fan-id{display:flex;align-items:center;gap:9px;min-width:0}
+.fan-avatar{
+    flex:none;width:26px;height:26px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:800;color:var(--ground);background:var(--ink);
+}
+.fan-name{
+    font-size:13px;font-weight:700;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.fan-wallet{
+    flex:none;display:inline-flex;align-items:center;gap:7px;
+    padding:5px 11px;border-radius:999px;
+    background:var(--surface-3);border:1px solid var(--line);
+}
+.fan-wallet-ic{font-size:13px;line-height:1}
+.fan-wallet-amt{font-size:13px;font-weight:800;color:var(--live)}
 
 /* ===== category tabs — quiet pills, one active accent ===== */
 .tabs{display:flex;gap:8px;overflow-x:auto;padding:16px 0 12px}

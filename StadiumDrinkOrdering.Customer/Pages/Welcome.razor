@@ -145,29 +145,68 @@
         {
             @* Scanned-ticket banner: greet the holder by name and show the balance they can spend on drinks
                (their HALFTIME wallet, or the bearer balance loaded on the ticket at the bar). *@
-            <div id="customer-welcome-fancard" class="wl-fancard">
-                <div id="customer-welcome-fan-id" class="wl-fan-id">
-                    <div id="customer-welcome-fan-avatar" class="wl-fan-avatar">@Initials(FanName)</div>
-                    <div id="customer-welcome-fan-meta" class="wl-fan-meta">
-                        <div id="customer-welcome-fan-hi" class="wl-fan-hi">Dobrodošao natrag</div>
-                        <div id="customer-welcome-fan-name" class="wl-fan-name">@FanName</div>
-                        @if (!string.IsNullOrWhiteSpace(State.TicketNumber))
-                        {
-                            <div id="customer-welcome-fan-ticket" class="wl-fan-ticket">🎟️ @State.TicketNumber</div>
-                        }
+            <div id="customer-welcome-fancard" class="wl-fancard @(_detailsOpen ? "open" : "")">
+                @* Tap the banner to expand full account details (seat, fixture, wallet kind). Uses the same
+                   role=button pattern as the fixture cards so it works without login on a ticket session. *@
+                <div id="customer-welcome-fancard-toggle" class="wl-fancard-head" role="button" tabindex="0"
+                     aria-expanded="@_detailsOpen" aria-controls="customer-welcome-fancard-details"
+                     @onclick="@(() => _detailsOpen = !_detailsOpen)"
+                     @onkeydown="@(e => { if (e.Key is "Enter" or " ") _detailsOpen = !_detailsOpen; })">
+                    <div id="customer-welcome-fan-id" class="wl-fan-id">
+                        <div id="customer-welcome-fan-avatar" class="wl-fan-avatar">@Initials(FanName)</div>
+                        <div id="customer-welcome-fan-meta" class="wl-fan-meta">
+                            <div id="customer-welcome-fan-hi" class="wl-fan-hi">Dobrodošao natrag</div>
+                            <div id="customer-welcome-fan-name" class="wl-fan-name">@FanName</div>
+                            @if (!string.IsNullOrWhiteSpace(State.TicketNumber))
+                            {
+                                <div id="customer-welcome-fan-ticket" class="wl-fan-ticket">🎟️ @State.TicketNumber</div>
+                            }
+                        </div>
                     </div>
+                    @* Tap the balance to open the online top-up sheet. Stops propagation so it doesn't also
+                       toggle the account-details panel that the rest of this header row controls. *@
+                    <div id="customer-welcome-fan-wallet" class="wl-fan-wallet" role="button" tabindex="0"
+                         aria-label="Nadoplati novčanik"
+                         @onclick="OpenTopup" @onclick:stopPropagation="true"
+                         @onkeydown="@(e => { if (e.Key is "Enter" or " ") OpenTopup(); })" @onkeydown:stopPropagation="true">
+                        <div id="customer-welcome-fan-wallet-label" class="wl-fan-wallet-label">@WalletLabel</div>
+                        @if (_wallet is { Exists: true })
+                        {
+                            <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt">€@_wallet.Balance.ToString("F2")</div>
+                        }
+                        else
+                        {
+                            <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt empty">Nema stanja</div>
+                        }
+                        <div id="customer-welcome-fan-wallet-topup" class="wl-fan-wallet-topup">＋ Nadoplati</div>
+                    </div>
+                    <svg id="customer-welcome-fan-chev" class="wl-fan-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
-                <div id="customer-welcome-fan-wallet" class="wl-fan-wallet">
-                    <div id="customer-welcome-fan-wallet-label" class="wl-fan-wallet-label">@WalletLabel</div>
-                    @if (_wallet is { Exists: true })
-                    {
-                        <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt">€@_wallet.Balance.ToString("F2")</div>
-                    }
-                    else
-                    {
-                        <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt empty">Nema stanja</div>
-                    }
-                </div>
+
+                @if (_detailsOpen)
+                {
+                    <div id="customer-welcome-fancard-details" class="wl-fan-details">
+                        <div class="wl-fan-row">
+                            <span class="k">Mjesto</span>
+                            <span id="customer-welcome-fan-detail-seat" class="v tnum">@State.SeatText</span>
+                        </div>
+                        <div class="wl-fan-row">
+                            <span class="k">Utakmica</span>
+                            <span id="customer-welcome-fan-detail-event" class="v">@EventTitle</span>
+                        </div>
+                        @if (State.EventDate is { } dt)
+                        {
+                            <div class="wl-fan-row">
+                                <span class="k">Datum</span>
+                                <span id="customer-welcome-fan-detail-date" class="v tnum">@dt.ToLocalTime().ToString("dd.MM.yyyy · HH:mm")</span>
+                            </div>
+                        }
+                        <div class="wl-fan-row">
+                            <span class="k">Novčanik</span>
+                            <span id="customer-welcome-fan-detail-wallet" class="v">@WalletKind</span>
+                        </div>
+                    </div>
+                }
             </div>
 
             @* Ticket already scanned this session — jump back into ordering instead of scanning again. *@
@@ -201,6 +240,110 @@
             <button id="customer-welcome-lang-en-btn" class="@(IsHr ? "" : "on")" @onclick='() => SetCulture("en")'>EN</button>
         </div>
     </footer>
+
+    @* Online wallet bottom sheet — opened by tapping the wallet balance. Top up (card charge) or withdraw
+       (refund to card) the session's wallet — the registered HALFTIME account wallet, or the ticket's bearer
+       balance — via the payment gateway. *@
+    @if (_sheetOpen)
+    {
+        <div id="customer-welcome-topup-scrim" class="wl-sheet-scrim" @onclick="CloseSheet"></div>
+        <div id="customer-welcome-topup-sheet" class="wl-sheet" role="dialog" aria-modal="true" aria-label="Novčanik">
+            <div class="wl-sheet-grip" aria-hidden="true"></div>
+            <div class="wl-sheet-head">
+                <div>
+                    <div id="customer-welcome-topup-title" class="wl-sheet-title">@(_withdrawMode ? "Isplata na karticu" : "Nadoplati novčanik")</div>
+                    <div class="wl-sheet-sub">@WalletLabel</div>
+                </div>
+                <button id="customer-welcome-topup-close" class="wl-sheet-x" @onclick="CloseSheet" aria-label="Zatvori">✕</button>
+            </div>
+
+            @* Segmented toggle between top-up and withdraw. Withdraw is disabled with no balance to pay out. *@
+            <div id="customer-welcome-sheet-modes" class="wl-seg" role="tablist" aria-label="Način">
+                <button id="customer-welcome-mode-topup" class="wl-seg-btn @(_withdrawMode ? "" : "on")"
+                        role="tab" aria-selected="@(!_withdrawMode)" @onclick="@(() => SetSheetMode(false))">＋ Nadoplati</button>
+                <button id="customer-welcome-mode-withdraw" class="wl-seg-btn @(_withdrawMode ? "on" : "")"
+                        role="tab" aria-selected="@_withdrawMode"
+                        disabled="@(!(_wallet is { Exists: true } && _wallet.Balance > 0))"
+                        @onclick="@(() => SetSheetMode(true))">↓ Isplati</button>
+            </div>
+
+            @if (!_withdrawMode)
+            {
+                @* --- Top up (charge card → credit wallet) --- *@
+                <div id="customer-welcome-topup-chips" class="wl-amt-chips">
+                    @foreach (var p in _presets)
+                    {
+                        <button id="customer-welcome-topup-preset-@p" class="wl-amt-chip @(_topupAmount == p ? "on" : "")"
+                                @onclick="@(() => SelectPreset(p))">€@p</button>
+                    }
+                </div>
+
+                <div class="wl-amt-field">
+                    <label for="customer-welcome-topup-amount">Iznos (EUR)</label>
+                    <input id="customer-welcome-topup-amount" type="number" min="1" step="1" inputmode="decimal"
+                           @bind="_topupAmount" @bind:event="oninput" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(_sheetError))
+                {
+                    <div id="customer-welcome-topup-error" class="wl-sheet-err" role="alert">@_sheetError</div>
+                }
+
+                <button id="customer-welcome-topup-submit" class="btn wl-scan wl-sheet-pay"
+                        @onclick="SubmitTopup" disabled="@(_sheetBusy || _topupAmount <= 0)">
+                    @if (_sheetBusy)
+                    {
+                        <span class="spinner"></span> <span>Obrađujem…</span>
+                    }
+                    else
+                    {
+                        <span>Uplati €@_topupAmount.ToString("0.##")</span>
+                    }
+                </button>
+                <p class="wl-sheet-note">Sredstva su odmah dostupna za naručivanje pića.</p>
+            }
+            else
+            {
+                @* --- Withdraw (debit wallet → refund to card) --- *@
+                <div id="customer-welcome-withdraw-avail" class="wl-withdraw-avail">
+                    <span class="k">Dostupno za isplatu</span>
+                    <span id="customer-welcome-withdraw-bal" class="v tnum">€@((_wallet?.Balance ?? 0m).ToString("F2"))</span>
+                </div>
+
+                <div class="wl-amt-field">
+                    <label for="customer-welcome-withdraw-amount">Iznos za isplatu (EUR)</label>
+                    <input id="customer-welcome-withdraw-amount" type="number" min="1" step="1" inputmode="decimal"
+                           @bind="_withdrawAmount" @bind:event="oninput" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(_sheetError))
+                {
+                    <div id="customer-welcome-withdraw-error" class="wl-sheet-err" role="alert">@_sheetError</div>
+                }
+
+                <button id="customer-welcome-withdraw-submit" class="btn wl-scan wl-sheet-pay"
+                        @onclick="SubmitWithdraw" disabled="@(_sheetBusy || _withdrawAmount <= 0)">
+                    @if (_sheetBusy)
+                    {
+                        <span class="spinner"></span> <span>Obrađujem…</span>
+                    }
+                    else
+                    {
+                        <span>Isplati €@_withdrawAmount.ToString("0.##")</span>
+                    }
+                </button>
+                <button id="customer-welcome-withdraw-all" class="wl-linkbtn" @onclick="WithdrawAll" disabled="@_sheetBusy">
+                    Isplati cijelo stanje
+                </button>
+                <p class="wl-sheet-note">Iznos se vraća na tvoju karticu.</p>
+            }
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(_toast))
+    {
+        <div id="customer-welcome-topup-toast" class="wl-toast" role="status">@_toast</div>
+    }
 </div>
 
 @code {
@@ -209,12 +352,34 @@
     private bool _hasSession;
     private WalletSummaryDto? _wallet;
 
+    // Whether the tapped fancard is expanded to show full account details.
+    private bool _detailsOpen;
+
+    // Wallet bottom sheet (opened by tapping the balance). Top-up and withdraw share the open/busy/error
+    // state and toggle via _withdrawMode.
+    private bool _sheetOpen;
+    private bool _sheetBusy;
+    private bool _withdrawMode;
+    private string _sheetError = "";
+    private decimal _topupAmount = 20m;
+    private decimal _withdrawAmount;
+    private string _toast = "";
+    private static readonly int[] _presets = { 10, 20, 50 };
+
     // Ticket holder's name for the "welcome back" banner; falls back to a neutral label for anonymous tickets.
     private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? "Gost" : State.CustomerName;
 
     // Label matches the wallet kind the balance came from: a registered fan's HALFTIME wallet vs the bearer
     // balance loaded on the scanned ticket at the bar counter.
     private string WalletLabel => _wallet is { IsTicketWallet: true } ? "Saldo na ulaznici" : "HALFTIME novčanik";
+
+    // Fixture name for the expanded details; em dash when the session carries no event name.
+    private string EventTitle => string.IsNullOrWhiteSpace(State.EventName) ? "—" : State.EventName;
+
+    // Which wallet the balance is drawn from, spelled out for the details panel.
+    private string WalletKind => _wallet is { Exists: true }
+        ? (_wallet.IsTicketWallet ? "Saldo na ulaznici" : "HALFTIME novčanik")
+        : "Nema novčanika";
 
     private static readonly string[] MonthsHr =
         { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
@@ -301,6 +466,162 @@
         if (culture == CultureInfo.CurrentUICulture.TwoLetterISOLanguageName) return;
         await JS.InvokeVoidAsync("blazorCulture.set", culture);
         Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+
+    // ---- Online wallet top-up / withdrawal ----
+
+    private void OpenTopup()
+    {
+        _sheetError = "";
+        _withdrawMode = false;
+        if (_topupAmount <= 0) _topupAmount = 20m;
+        _sheetOpen = true;
+    }
+
+    private void CloseSheet() => _sheetOpen = false;
+
+    // Switch the sheet between top-up and withdraw. Entering withdraw seeds the amount to the full available
+    // balance — "withdraw the remaining funds" is the common case.
+    private void SetSheetMode(bool withdraw)
+    {
+        _withdrawMode = withdraw;
+        _sheetError = "";
+        if (withdraw)
+        {
+            var bal = _wallet?.Balance ?? 0m;
+            if (_withdrawAmount <= 0 || _withdrawAmount > bal) _withdrawAmount = bal;
+        }
+    }
+
+    private void WithdrawAll()
+    {
+        _withdrawAmount = _wallet?.Balance ?? 0m;
+        _sheetError = "";
+    }
+
+    private void SelectPreset(int amount)
+    {
+        _topupAmount = amount;
+        _sheetError = "";
+    }
+
+    // Charge the chosen amount to the wallet behind the scanned ticket. The server resolves which wallet
+    // (registered HALFTIME account wallet vs the ticket's bearer balance); we just re-read the summary after
+    // so the banner reflects the authoritative balance and correct wallet kind.
+    private async Task SubmitTopup()
+    {
+        if (_sheetBusy || _topupAmount <= 0 || string.IsNullOrEmpty(State.SessionToken)) return;
+        _sheetBusy = true;
+        _sheetError = "";
+        try
+        {
+            var req = new SessionWalletTopupRequestDto
+            {
+                SessionToken = State.SessionToken!,
+                Amount = _topupAmount,
+                Method = "CreditCard",
+                IdempotencyKey = Guid.NewGuid().ToString("N")
+            };
+            var result = await Api.TopUpSessionWalletAsync(req);
+            if (result is { Success: true })
+            {
+                _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
+                _sheetOpen = false;
+                ShowToast($"Novčanik nadoplaćen · €{result.NewBalance.ToString("F2")}");
+            }
+            else
+            {
+                _sheetError = TranslateTopupFailure(result?.FailureReason);
+            }
+        }
+        catch (Exception ex)
+        {
+            _sheetError = "Nešto je pošlo po zlu. Pokušaj ponovno.";
+            Console.WriteLine($"Top-up failed: {ex.Message}");
+        }
+        finally
+        {
+            _sheetBusy = false;
+        }
+    }
+
+    // Refund the chosen amount from the session's wallet back to card. Same server-side wallet resolution as
+    // top-up; we re-read the summary after so the banner reflects the authoritative balance.
+    private async Task SubmitWithdraw()
+    {
+        var bal = _wallet?.Balance ?? 0m;
+        if (_sheetBusy || _withdrawAmount <= 0 || string.IsNullOrEmpty(State.SessionToken)) return;
+        if (_withdrawAmount > bal)
+        {
+            _sheetError = "Iznos prelazi dostupno stanje.";
+            return;
+        }
+        _sheetBusy = true;
+        _sheetError = "";
+        try
+        {
+            var req = new SessionWalletWithdrawRequestDto
+            {
+                SessionToken = State.SessionToken!,
+                Amount = _withdrawAmount,
+                IdempotencyKey = Guid.NewGuid().ToString("N")
+            };
+            var result = await Api.WithdrawSessionWalletAsync(req);
+            if (result is { Success: true })
+            {
+                _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
+                _sheetOpen = false;
+                ShowToast($"Isplaćeno €{result.Amount.ToString("F2")} · stanje €{result.NewBalance.ToString("F2")}");
+            }
+            else
+            {
+                _sheetError = TranslateWithdrawFailure(result?.FailureReason);
+            }
+        }
+        catch (Exception ex)
+        {
+            _sheetError = "Nešto je pošlo po zlu. Pokušaj ponovno.";
+            Console.WriteLine($"Withdraw failed: {ex.Message}");
+        }
+        finally
+        {
+            _sheetBusy = false;
+        }
+    }
+
+    private static string TranslateTopupFailure(string? reason) => reason switch
+    {
+        "LimitExceeded" => "Iznos prelazi najveće dopušteno stanje novčanika.",
+        "WalletFrozen" => "Novčanik je zamrznut.",
+        "GatewayDeclined" => "Plaćanje je odbijeno. Pokušaj s drugom karticom.",
+        "GatewayUnavailable" => "Online nadoplata trenutno nije dostupna.",
+        "SessionExpired" => "Sesija je istekla. Skeniraj ulaznicu ponovno.",
+        "TicketNotFound" => "Novčanik nije pronađen.",
+        "NotEligible" => "Novčanik nije dostupan za ovaj račun.",
+        "InvalidAmount" => "Unesi ispravan iznos.",
+        _ => "Nadoplata nije uspjela. Pokušaj ponovno."
+    };
+
+    private static string TranslateWithdrawFailure(string? reason) => reason switch
+    {
+        "InsufficientFunds" => "Nemaš dovoljno sredstava za isplatu.",
+        "WalletFrozen" => "Novčanik je zamrznut.",
+        "GatewayDeclined" => "Isplata je odbijena. Pokušaj ponovno.",
+        "GatewayUnavailable" => "Online isplata trenutno nije dostupna.",
+        "SessionExpired" => "Sesija je istekla. Skeniraj ulaznicu ponovno.",
+        "TicketNotFound" or "WalletNotFound" => "Novčanik nije pronađen.",
+        "InvalidAmount" => "Unesi ispravan iznos.",
+        _ => "Isplata nije uspjela. Pokušaj ponovno."
+    };
+
+    private void ShowToast(string message)
+    {
+        _toast = message;
+        _ = Task.Delay(4000).ContinueWith(_ =>
+        {
+            _toast = "";
+            InvokeAsync(StateHasChanged);
+        });
     }
 
     // Prefer the event's explicit team fields; fall back to parsing the title for legacy events that

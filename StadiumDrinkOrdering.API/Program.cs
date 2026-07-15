@@ -330,6 +330,7 @@ builder.Services.AddSingleton(emailSettings);
 builder.Services.AddScoped<IEmailSender, DbBackedEmailSender>();
 builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<IAccountProvisioningService, AccountProvisioningService>();
+builder.Services.AddScoped<IWalkUpAccountResolver, WalkUpAccountResolver>();
 
 builder.Services.AddScoped<ITicketCardPdfService, TicketCardPdfService>();
 builder.Services.AddScoped<ITicketDetailService, TicketDetailService>();

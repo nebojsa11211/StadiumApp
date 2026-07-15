@@ -479,6 +479,21 @@
   <data name="OrderQueue_OrderNote" xml:space="preserve">
     <value>Note</value>
   </data>
+  <data name="OrderQueue_PayCash" xml:space="preserve">
+    <value>Cash</value>
+  </data>
+  <data name="OrderQueue_PayCard" xml:space="preserve">
+    <value>Card</value>
+  </data>
+  <data name="OrderQueue_PayWallet" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="OrderQueue_PayCollect" xml:space="preserve">
+    <value>collect</value>
+  </data>
+  <data name="OrderQueue_PayPaid" xml:space="preserve">
+    <value>paid</value>
+  </data>
   <data name="OrderQueue_JustNow" xml:space="preserve">
     <value>just now</value>
   </data>

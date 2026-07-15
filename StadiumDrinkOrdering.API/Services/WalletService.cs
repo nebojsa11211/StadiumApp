@@ -51,6 +51,19 @@ public interface IWalletService
     Task<(WalletDebitOutcome Outcome, WalletTransaction? Transaction)> StaffCashDepositAsync(
         int userId, decimal amount, int staffUserId, string idempotencyKey);
 
+    // ---- Self-service withdrawal (payout / refund to card) ----
+
+    /// <summary>Fan-initiated self-service withdrawal (payout back to card) from a registered account's
+    /// wallet, via the payment gateway. Pays out <paramref name="amount"/> then debits the wallet (guarded
+    /// against overdraw) and records the payout <see cref="Payment"/>, atomically. Idempotent on
+    /// <paramref name="idempotencyKey"/> — a replay returns the original result and pays nothing further.</summary>
+    Task<WalletWithdrawResultDto> WithdrawAsync(int userId, decimal amount, string idempotencyKey);
+
+    /// <summary>Fan-initiated self-service withdrawal (payout back to card) from an anonymous ticket's bearer
+    /// wallet, via the payment gateway. The wallet stays Active — a full withdrawal just leaves it at zero
+    /// (unlike the terminal staff cash-out). Idempotent on <paramref name="idempotencyKey"/>.</summary>
+    Task<WalletWithdrawResultDto> WithdrawFromTicketWalletAsync(int ticketId, decimal amount, string idempotencyKey);
+
     // ---- Anonymous ticket wallet (bearer balance loaded on a ticket, no account) ----
 
     /// <summary>Per-ticket balance cap (config <c>TicketWallet:MaxBalance</c>, default €100).</summary>
@@ -66,6 +79,12 @@ public interface IWalletService
     /// (<see cref="WalletDebitOutcome.WalletFrozen"/>).</summary>
     Task<(WalletDebitOutcome Outcome, WalletTransaction? Transaction)> TopUpTicketWalletAsync(
         int ticketId, decimal amount, int staffUserId, string idempotencyKey);
+
+    /// <summary>Fan-initiated ONLINE top-up of a ticket wallet (card, via the payment gateway) from the
+    /// walk-up ticket-session flow — no staff, no cash drawer. Creates the wallet on first use, enforces
+    /// <see cref="TicketWalletMaxBalance"/>, and captures + credits synchronously with the mock gateway.
+    /// Idempotent on <see cref="InitiateDepositDto.IdempotencyKey"/>.</summary>
+    Task<DepositResultDto> InitiateTicketDepositAsync(int ticketId, InitiateDepositDto dto);
 
     /// <summary>Atomically hand back a ticket wallet's whole balance and move it to Closed (terminal).
     /// Idempotent on <paramref name="idempotencyKey"/>: a replay/re-scan returns the original refund and
@@ -503,6 +522,111 @@ public class WalletService : IWalletService
             actorUserId: staffUserId, requireFunds: false);
     }
 
+    // ---- Self-service withdrawal (payout / refund to card) ----
+
+    public async Task<WalletWithdrawResultDto> WithdrawAsync(int userId, decimal amount, string idempotencyKey)
+    {
+        var wallet = await _context.Wallets.AsNoTracking().FirstOrDefaultAsync(w => w.UserId == userId);
+        if (wallet == null)
+            return new WalletWithdrawResultDto { Success = false, FailureReason = "WalletNotFound" };
+
+        return await PayoutFromWalletAsync(wallet.Id, amount, idempotencyKey,
+            referenceType: "Withdrawal", referenceId: null,
+            description: "Self-service withdrawal to card", actorUserId: userId);
+    }
+
+    public async Task<WalletWithdrawResultDto> WithdrawFromTicketWalletAsync(int ticketId, decimal amount, string idempotencyKey)
+    {
+        var wallet = await _context.Wallets.AsNoTracking().FirstOrDefaultAsync(w => w.TicketId == ticketId);
+        if (wallet == null)
+            return new WalletWithdrawResultDto { Success = false, FailureReason = "WalletNotFound" };
+
+        return await PayoutFromWalletAsync(wallet.Id, amount, idempotencyKey,
+            referenceType: "Withdrawal", referenceId: ticketId,
+            description: $"Self-service withdrawal to card (ticket #{ticketId})", actorUserId: null);
+    }
+
+    /// <summary>Shared payout core (owner-agnostic, by wallet id). Mirrors the deposit path in reverse: the
+    /// idempotency pre-check runs BEFORE the gateway call so a replay never pays out twice; the gateway pays
+    /// the money out; then the guarded ledger debit + payout <see cref="Payment"/> commit atomically. A debit
+    /// rejection AFTER a successful payout is only reachable if a concurrent spend/freeze slipped in past the
+    /// pre-check — with the synchronous mock no real money moved, so we surface the reason and leave the
+    /// append-only ledger authoritative (reconciliation would catch a real gateway divergence).</summary>
+    private async Task<WalletWithdrawResultDto> PayoutFromWalletAsync(
+        int walletId, decimal amount, string idempotencyKey,
+        string referenceType, int? referenceId, string description, int? actorUserId)
+    {
+        if (amount <= 0)
+            return new WalletWithdrawResultDto { Success = false, FailureReason = "InvalidAmount" };
+
+        // Idempotent replay: same key already recorded → return its outcome without paying out again.
+        var existing = await _context.WalletTransactions.AsNoTracking()
+            .FirstOrDefaultAsync(t => t.IdempotencyKey == idempotencyKey);
+        if (existing != null)
+            return new WalletWithdrawResultDto
+            {
+                Success = existing.Status == WalletTransactionStatus.Completed,
+                WalletTransactionId = existing.Id,
+                Amount = Math.Abs(existing.Amount),
+                NewBalance = existing.BalanceAfter
+            };
+
+        var wallet = await _context.Wallets.AsNoTracking().FirstOrDefaultAsync(w => w.Id == walletId);
+        if (wallet == null)
+            return new WalletWithdrawResultDto { Success = false, FailureReason = "WalletNotFound" };
+        if (wallet.Status != WalletStatus.Active)
+            return new WalletWithdrawResultDto { Success = false, FailureReason = "WalletFrozen", NewBalance = wallet.Balance };
+        // Best-effort pre-check for a friendly message; the guarded UPDATE below is the authoritative one.
+        if (wallet.Balance < amount)
+            return new WalletWithdrawResultDto { Success = false, FailureReason = "InsufficientFunds", NewBalance = wallet.Balance };
+
+        // Money out first (mirrors deposit's capture-then-credit). The synchronous mock settles inline; an
+        // async gateway that can't pay out inline declines here, so the wallet is never debited for nothing.
+        var payout = await _gateway.AuthorizePayoutAsync(amount, wallet.Currency, "CardRefund", reference: idempotencyKey);
+        if (!payout.Success)
+            return new WalletWithdrawResultDto { Success = false, FailureReason = payout.FailureReason ?? "GatewayDeclined", NewBalance = wallet.Balance };
+
+        // Debit the wallet (concurrency-safe, idempotent) and record the payout Payment atomically. CashOut is
+        // the "balance leaves to the holder" ledger type; ReferenceType "Withdrawal" keeps it OUT of the
+        // bar-counter cash reconciliation (which counts only CashTopup/TicketTopup/TicketCashOut).
+        var applied = await ApplyLedgerEntryToWalletAsync(
+            wallet.Id, WalletTransactionType.CashOut, -amount, idempotencyKey,
+            referenceType, referenceId, description, actorUserId, requireFunds: true,
+            afterInsert: (ctx, txn) => ctx.Payments.Add(new Payment
+            {
+                WalletTransaction = txn,
+                PaymentMethod = "CardRefund",
+                TransactionId = payout.GatewayTransactionId,
+                Amount = amount,
+                Currency = wallet.Currency,
+                Status = "Completed",
+                PaymentDate = DateTime.UtcNow,
+                ProcessedAt = DateTime.UtcNow,
+                RefundAmount = amount,
+                RefundDate = DateTime.UtcNow,
+                PaymentGatewayResponse = payout.RawResponse
+            }));
+
+        if (applied.Outcome is not (WalletDebitOutcome.Success or WalletDebitOutcome.AlreadyApplied))
+        {
+            var reason = applied.Outcome switch
+            {
+                WalletDebitOutcome.InsufficientFunds => "InsufficientFunds",
+                WalletDebitOutcome.WalletFrozen => "WalletFrozen",
+                _ => "WithdrawalFailed"
+            };
+            return new WalletWithdrawResultDto { Success = false, FailureReason = reason, NewBalance = wallet.Balance };
+        }
+
+        return new WalletWithdrawResultDto
+        {
+            Success = true,
+            WalletTransactionId = applied.Transaction?.Id ?? 0,
+            Amount = amount,
+            NewBalance = applied.Transaction?.BalanceAfter ?? wallet.Balance
+        };
+    }
+
     // ---- Anonymous ticket wallet (bearer balance loaded on a ticket) ----
 
     public async Task<TicketWalletSummary> GetTicketWalletSummaryAsync(int ticketId)
@@ -588,6 +712,73 @@ public class WalletService : IWalletService
                 PaymentDate = DateTime.UtcNow,
                 ProcessedAt = DateTime.UtcNow
             }));
+    }
+
+    public async Task<DepositResultDto> InitiateTicketDepositAsync(int ticketId, InitiateDepositDto dto)
+    {
+        if (dto.Amount <= 0)
+            return new DepositResultDto { Success = false, FailureReason = "InvalidAmount" };
+
+        // Idempotent replay: same key already recorded → return its outcome without re-charging.
+        var existing = await _context.WalletTransactions.AsNoTracking()
+            .FirstOrDefaultAsync(t => t.IdempotencyKey == dto.IdempotencyKey);
+        if (existing != null)
+            return new DepositResultDto
+            {
+                Success = existing.Status == WalletTransactionStatus.Completed,
+                WalletTransactionId = existing.Id,
+                Status = existing.Status,
+                NewBalance = existing.BalanceAfter
+            };
+
+        var wallet = await GetOrCreateTicketWalletAsync(ticketId);
+        if (wallet == null)
+            return new DepositResultDto { Success = false, FailureReason = "TicketNotFound" };
+        if (wallet.Status != WalletStatus.Active)
+            return new DepositResultDto { Success = false, FailureReason = "WalletFrozen", NewBalance = wallet.Balance };
+
+        // Business cap (money entering the closed-loop bearer wallet). Checked before the charge so we never
+        // capture funds we'd then refuse to credit.
+        if (wallet.Balance + dto.Amount > TicketWalletMaxBalance)
+            return new DepositResultDto { Success = false, FailureReason = "LimitExceeded", NewBalance = wallet.Balance };
+
+        // An online bearer top-up must capture funds before crediting. The synchronous mock gateway does that
+        // inline; the async (Stripe) path would settle later via a user-keyed webhook that has no ticket
+        // wallet to credit, so decline it rather than credit money that was never captured.
+        if (_gateway.SettlesAsynchronously)
+            return new DepositResultDto { Success = false, FailureReason = "GatewayUnavailable", NewBalance = wallet.Balance };
+
+        var gatewayResult = await _gateway.AuthorizeDepositAsync(
+            dto.Amount, wallet.Currency, dto.Method, reference: dto.IdempotencyKey);
+        if (!gatewayResult.Success)
+            return new DepositResultDto { Success = false, FailureReason = gatewayResult.FailureReason ?? "GatewayDeclined", NewBalance = wallet.Balance };
+
+        // Credit the ticket wallet (concurrency-safe, idempotent) and record the funding Payment atomically.
+        var applied = await ApplyLedgerEntryToWalletAsync(
+            wallet.Id, WalletTransactionType.Deposit, +dto.Amount, dto.IdempotencyKey,
+            referenceType: "TicketTopup", referenceId: ticketId,
+            description: $"Online top-up on ticket #{ticketId} via {dto.Method}",
+            actorUserId: null, requireFunds: false,
+            afterInsert: (ctx, txn) => ctx.Payments.Add(new Payment
+            {
+                WalletTransaction = txn,
+                PaymentMethod = dto.Method,
+                TransactionId = gatewayResult.GatewayTransactionId,
+                Amount = dto.Amount,
+                Currency = wallet.Currency,
+                Status = "Completed",
+                PaymentDate = DateTime.UtcNow,
+                ProcessedAt = DateTime.UtcNow,
+                PaymentGatewayResponse = gatewayResult.RawResponse
+            }));
+
+        return new DepositResultDto
+        {
+            Success = applied.Outcome is WalletDebitOutcome.Success or WalletDebitOutcome.AlreadyApplied,
+            WalletTransactionId = applied.Transaction?.Id ?? 0,
+            Status = applied.Transaction?.Status ?? WalletTransactionStatus.Failed,
+            NewBalance = applied.Transaction?.BalanceAfter ?? wallet.Balance
+        };
     }
 
     public async Task<(WalletDebitOutcome Outcome, WalletTransaction? Transaction)> TryDebitTicketWalletAsync(

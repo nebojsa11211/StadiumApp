@@ -72,6 +72,64 @@ public class InitiateDepositDto
     public string IdempotencyKey { get; set; } = string.Empty;
 }
 
+/// <summary>Anonymous ticket-session request to top up online (card) the wallet behind the scanned ticket.
+/// The wallet — the ticket holder's HALFTIME account wallet if the ticket resolves to one, otherwise the
+/// ticket's own bearer wallet — is resolved server-side from <see cref="SessionToken"/>; the client never
+/// supplies a wallet or user id. Mirrors <see cref="InitiateDepositDto"/> for the funding fields.</summary>
+public class SessionWalletTopupRequestDto
+{
+    [Required]
+    public string SessionToken { get; set; } = string.Empty;
+
+    [Range(0.01, 100000)]
+    public decimal Amount { get; set; }
+
+    /// <summary>Funding method presented to the gateway (CreditCard, PayPal, …).</summary>
+    [Required]
+    [StringLength(50)]
+    public string Method { get; set; } = "CreditCard";
+
+    [Required]
+    [StringLength(100)]
+    public string IdempotencyKey { get; set; } = string.Empty;
+}
+
+/// <summary>Anonymous ticket-session request to withdraw (refund to card) part or all of the balance in the
+/// wallet behind the scanned ticket. The wallet — the ticket holder's HALFTIME account wallet if the ticket
+/// resolves to one, otherwise the ticket's own bearer wallet — is resolved server-side from
+/// <see cref="SessionToken"/>; the client never supplies a wallet or user id. Idempotent on
+/// <see cref="IdempotencyKey"/> (a re-submitted withdrawal never pays out twice).</summary>
+public class SessionWalletWithdrawRequestDto
+{
+    [Required]
+    public string SessionToken { get; set; } = string.Empty;
+
+    [Range(0.01, 100000)]
+    public decimal Amount { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string IdempotencyKey { get; set; } = string.Empty;
+}
+
+/// <summary>Outcome of a self-service wallet withdrawal (refund to card). With the mock gateway the payout
+/// settles immediately and the wallet is debited inline (<see cref="Success"/> = true). Business declines
+/// (insufficient funds, frozen wallet, gateway unavailable) carry a <see cref="FailureReason"/> and leave
+/// the balance unchanged.</summary>
+public class WalletWithdrawResultDto
+{
+    public bool Success { get; set; }
+    public long WalletTransactionId { get; set; }
+
+    /// <summary>Amount actually paid out (0 on a decline).</summary>
+    public decimal Amount { get; set; }
+
+    /// <summary>Wallet balance after the withdrawal (or the unchanged balance on a decline).</summary>
+    public decimal NewBalance { get; set; }
+
+    public string? FailureReason { get; set; }
+}
+
 /// <summary>Outcome of initiating a deposit. With the mock gateway the deposit settles immediately
 /// (<see cref="Status"/> = Completed); a real gateway would return <c>Pending</c> plus a
 /// <see cref="RedirectUrl"/>/client secret and settle later via webhook.</summary>

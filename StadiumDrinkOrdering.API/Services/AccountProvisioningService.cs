@@ -29,6 +29,16 @@ public interface IAccountProvisioningService
     /// this is synchronous to the caller and returns the id (null only if the email is unusable or creation
     /// genuinely fails). Sends the set-password activation link for a freshly created shell.</summary>
     Task<int?> ProvisionAndGetUserIdAsync(string email, string? fullName, string? phone, string? oib, string source);
+
+    /// <summary>Provision (or reuse) a claimable account for a ticket holder identified only by
+    /// <paramref name="oib"/> — no email. The shell is keyed on a synthetic, non-deliverable placeholder
+    /// email derived from the OIB, so <b>no activation mail is sent</b> (there is no real address to send
+    /// to). Idempotent per OIB: reuses any existing account already carrying the OIB (a real fan, or a
+    /// shell provisioned from an email-bearing ticket) instead of creating a duplicate. The fan later
+    /// claims it by registering with their real email + this OIB — the OIB merge in registration turns
+    /// that into a claim and swaps the placeholder for their real email. Returns the user id, or null when
+    /// the OIB is blank.</summary>
+    Task<int?> ProvisionOibShellAndGetUserIdAsync(string? oib, string? fullName, string? phone, string source);
 }
 
 public class AccountProvisioningService : IAccountProvisioningService
@@ -64,6 +74,68 @@ public class AccountProvisioningService : IAccountProvisioningService
         // Same create-or-reuse logic, but the bar flow needs the resulting id, so exceptions surface to the
         // caller (which reports a clean failure) instead of being swallowed.
         => await EnsureCoreAsync(email, fullName, phone, oib, source, sendActivation: true);
+
+    /// <summary>Reserved, non-routable domain for placeholder emails on OIB-only shells. An address here is
+    /// never a real inbox — no mail is ever sent to it, and it is swapped for the fan's real email on claim.</summary>
+    public const string OibPlaceholderEmailDomain = "oib.stadium.local";
+
+    private static string SyntheticOibEmail(string oib) => $"{oib}@{OibPlaceholderEmailDomain}";
+
+    public async Task<int?> ProvisionOibShellAndGetUserIdAsync(string? oib, string? fullName, string? phone, string source)
+    {
+        if (string.IsNullOrWhiteSpace(oib))
+            return null;
+
+        var normalizedOib = oib.Trim();
+
+        // Fresh scope → isolated DbContext, consistent with the email path.
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        // Reuse any account that already carries this OIB (a registered fan, or a shell provisioned from an
+        // email-bearing ticket whose OIB was stamped) rather than creating a second row for the same person.
+        var existing = await db.Users.FirstOrDefaultAsync(u => u.Oib == normalizedOib);
+        if (existing != null)
+            return existing.Id;
+
+        var syntheticEmail = SyntheticOibEmail(normalizedOib);
+        var (first, last) = SplitName(fullName);
+        var shell = new User
+        {
+            // Deterministic per OIB and unique (Email + Username are both unique), so repeated orders reuse
+            // the same shell. The placeholder address is never emailed.
+            Username = syntheticEmail,
+            Email = syntheticEmail,
+            FirstName = first,
+            LastName = last,
+            PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim(),
+            Oib = normalizedOib,
+            PasswordHash = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N"),
+            Role = UserRole.Customer,
+            IsShellAccount = true,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
+        db.Users.Add(shell);
+
+        try
+        {
+            await db.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // Lost a race — a concurrent order for the same OIB created the shell first. Reload + reuse.
+            db.ChangeTracker.Clear();
+            var winner = await db.Users.FirstOrDefaultAsync(u => u.Oib == normalizedOib)
+                         ?? await db.Users.FirstOrDefaultAsync(u => u.Email == syntheticEmail);
+            if (winner == null) throw;
+            return winner.Id;
+        }
+
+        _logger.LogInformation("Provisioned OIB-only shell account #{UserId} for OIB {Oib} (source: {Source})",
+            shell.Id, normalizedOib, source);
+        return shell.Id;
+    }
 
     /// <summary>Create-or-reuse the account keyed on <paramref name="email"/> and return its id. Stamps
     /// <paramref name="oib"/> on a new shell and back-fills it onto an existing account that lacks one.

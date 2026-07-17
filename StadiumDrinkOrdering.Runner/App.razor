@@ -1,11 +1,12 @@
 @inject RunnerAuthService Auth
 @inject OutboxService Outbox
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
 @if (!initialized)
 {
     <div class="d-flex justify-content-center align-items-center" style="height:100vh">
-        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">@Localizer["Global_Loading"]</span></div>
     </div>
 }
 else
@@ -29,9 +30,9 @@ else
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
-            <PageTitle>Not found</PageTitle>
+            <PageTitle>@Localizer["Error_NotFoundTitle"]</PageTitle>
             <LayoutView Layout="@typeof(MainLayout)">
-                <p role="alert">Sorry, there's nothing at this address.</p>
+                <p role="alert">@Localizer["Error_NotFoundMessage"]</p>
             </LayoutView>
         </NotFound>
     </Router>

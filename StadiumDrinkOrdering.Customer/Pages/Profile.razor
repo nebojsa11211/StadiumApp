@@ -6,23 +6,24 @@
 @inject IApiService ApiService
 @inject ICustomerAuthStateService AuthStateService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Profil — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Profile_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Profil" Subtitle="Moji podaci" BackHref="/home" />
+<ScreenHeader Title="@Localizer["Profile_ScreenHeader_Title"]" Subtitle="@Localizer["Profile_ScreenHeader_Subtitle"]" BackHref="/home" />
 
 <AuthenticationGuard>
     <div id="customer-profile-container" class="prof-body no-scrollbar">
 
         @if (isLoading)
         {
-            <div id="customer-profile-loading" class="prof-state"><span class="spinner"></span> Učitavam profil…</div>
+            <div id="customer-profile-loading" class="prof-state"><span class="spinner"></span> @Localizer["Profile_Loading"]</div>
         }
         else
         {
             <div id="customer-profile-note" class="prof-note">
                 <span class="prof-note-icon">🪪</span>
-                <span>Popuni ime, prezime i OIB — koriste se za provjeru identiteta kad na baru dodaješ novac u novčanik.</span>
+                <span>@Localizer["Profile_InfoNote"]</span>
             </div>
 
             <EditForm Model="@profileModel" OnValidSubmit="@HandleSave" class="prof-form" id="customer-profile-form">
@@ -38,53 +39,53 @@
                 }
 
                 <div id="customer-profile-username-group" class="field">
-                    <label for="customer-profile-username-input">Korisničko ime</label>
+                    <label for="customer-profile-username-input">@Localizer["Profile_UsernameLabel"]</label>
                     <input id="customer-profile-username-input" type="text" value="@username" readonly disabled />
                 </div>
 
                 <div id="customer-profile-email-group" class="field">
-                    <label for="customer-profile-email-input">Email</label>
+                    <label for="customer-profile-email-input">@Localizer["Profile_EmailLabel"]</label>
                     <input id="customer-profile-email-input" type="email" value="@email" readonly disabled />
                 </div>
 
                 <div id="customer-profile-firstname-group" class="field">
-                    <label for="customer-profile-firstname-input">Ime</label>
-                    <InputText id="customer-profile-firstname-input" @bind-Value="profileModel.FirstName" placeholder="npr. Ivan" autocomplete="given-name" />
+                    <label for="customer-profile-firstname-input">@Localizer["Profile_FirstNameLabel"]</label>
+                    <InputText id="customer-profile-firstname-input" @bind-Value="profileModel.FirstName" placeholder="@Localizer["Profile_FirstNamePlaceholder"]" autocomplete="given-name" />
                     <ValidationMessage For="@(() => profileModel.FirstName)" class="verr" />
                 </div>
 
                 <div id="customer-profile-lastname-group" class="field">
-                    <label for="customer-profile-lastname-input">Prezime</label>
-                    <InputText id="customer-profile-lastname-input" @bind-Value="profileModel.LastName" placeholder="npr. Horvat" autocomplete="family-name" />
+                    <label for="customer-profile-lastname-input">@Localizer["Profile_LastNameLabel"]</label>
+                    <InputText id="customer-profile-lastname-input" @bind-Value="profileModel.LastName" placeholder="@Localizer["Profile_LastNamePlaceholder"]" autocomplete="family-name" />
                     <ValidationMessage For="@(() => profileModel.LastName)" class="verr" />
                 </div>
 
                 <div id="customer-profile-phone-group" class="field">
-                    <label for="customer-profile-phone-input">Telefon</label>
-                    <InputText id="customer-profile-phone-input" type="tel" @bind-Value="profileModel.PhoneNumber" placeholder="npr. +385 91 234 5678" autocomplete="tel" />
+                    <label for="customer-profile-phone-input">@Localizer["Profile_PhoneLabel"]</label>
+                    <InputText id="customer-profile-phone-input" type="tel" @bind-Value="profileModel.PhoneNumber" placeholder="@Localizer["Profile_PhonePlaceholder"]" autocomplete="tel" />
                     <ValidationMessage For="@(() => profileModel.PhoneNumber)" class="verr" />
                 </div>
 
                 <div id="customer-profile-oib-group" class="field">
-                    <label for="customer-profile-oib-input">OIB</label>
-                    <InputText id="customer-profile-oib-input" @bind-Value="profileModel.Oib" placeholder="11 znamenki" inputmode="numeric" maxlength="11" autocomplete="off" />
+                    <label for="customer-profile-oib-input">@Localizer["Profile_OIBLabel"]</label>
+                    <InputText id="customer-profile-oib-input" @bind-Value="profileModel.Oib" placeholder="@Localizer["Profile_OIBPlaceholder"]" inputmode="numeric" maxlength="11" autocomplete="off" />
                     <ValidationMessage For="@(() => profileModel.Oib)" class="verr" />
-                    <span class="prof-hint">Točno 11 znamenki. Ostavi prazno ako ga ne želiš spremiti.</span>
+                    <span class="prof-hint">@Localizer["Profile_OIBHint"]</span>
                 </div>
 
                 <button type="submit" class="btn btn-primary" disabled="@isSaving" id="customer-profile-save-btn">
                     @if (isSaving)
                     {
-                        <span class="spinner" id="customer-profile-spinner"></span> <span>Spremam…</span>
+                        <span class="spinner" id="customer-profile-spinner"></span> <span>@Localizer["Profile_Saving"]</span>
                     }
                     else
                     {
-                        <span>Spremi promjene</span>
+                        <span>@Localizer["Profile_SaveButton"]</span>
                     }
                 </button>
             </EditForm>
 
-            <button id="customer-profile-logout-btn" class="btn btn-ghost" @onclick="HandleLogout">Odjava</button>
+            <button id="customer-profile-logout-btn" class="btn btn-ghost" @onclick="HandleLogout">@Localizer["Profile_LogoutButton"]</button>
         }
     </div>
 </AuthenticationGuard>
@@ -135,7 +136,7 @@
         }
         else
         {
-            errorMessage = "Nije moguće učitati profil. Pokušaj ponovno.";
+            errorMessage = Localizer["Profile_LoadError"];
         }
         isLoading = false;
         StateHasChanged();
@@ -170,21 +171,21 @@
                     PhoneNumber = updated.PhoneNumber,
                     Oib = updated.Oib
                 };
-                successMessage = "Podaci su spremljeni.";
+                successMessage = Localizer["Profile_SaveSuccess"];
                 await ApiService.LogUserActionAsync("CustomerProfileUpdated", "UserAction", "Customer updated their profile");
             }
             else
             {
-                errorMessage = "Spremanje nije uspjelo. Provjeri podatke i pokušaj ponovno.";
+                errorMessage = Localizer["Profile_SaveError"];
             }
         }
         catch (HttpRequestException)
         {
-            errorMessage = "Nije moguće spojiti se na poslužitelj.";
+            errorMessage = Localizer["Profile_ConnectionError"];
         }
         catch (Exception ex)
         {
-            errorMessage = "Došlo je do neočekivane pogreške.";
+            errorMessage = Localizer["Profile_UnexpectedError"];
             Console.WriteLine($"Profile save error: {ex.Message}");
         }
         finally

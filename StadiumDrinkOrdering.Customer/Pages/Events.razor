@@ -2,30 +2,32 @@
 @layout MobileShell
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Shared.DTOs
+@using Microsoft.Extensions.Localization
 @inject IApiService ApiService
 @inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Utakmice — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Events_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Utakmice" Subtitle="Odaberi događaj" ShowBack="true" BackHref="/" />
+<ScreenHeader Title="@Localizer["Events_ScreenHeader_Title"]" Subtitle="@Localizer["Events_ScreenHeader_Subtitle"]" ShowBack="true" BackHref="/" />
 
 <div id="customer-events-page" class="evl-body no-scrollbar">
 
     @if (!salesEnabled)
     {
         <div id="customer-events-sales-disabled" class="evl-state evl-empty">
-            🎟️ Prodaja ulaznica putem aplikacije trenutno nije dostupna. Događaje možete pregledati u nastavku.
+            @Localizer["Events_SalesDisabled"]
         </div>
     }
 
     <!-- Filter bar -->
     <div id="customer-events-filterbar" class="evl-filterbar">
         <button id="customer-events-filter-toggle" class="evl-chip @(showFilters ? "on" : "")" @onclick="() => showFilters = !showFilters">
-            🔎 Filteri@(activeFilterCount > 0 ? $" · {activeFilterCount}" : "")
+            @Localizer["Events_FiltersToggle"]@(activeFilterCount > 0 ? $" · {activeFilterCount}" : "")
         </button>
         @if (activeFilterCount > 0)
         {
-            <button id="customer-events-clear-filters-btn" class="evl-chip evl-chip-ghost" @onclick="ClearFilters">Poništi</button>
+            <button id="customer-events-clear-filters-btn" class="evl-chip evl-chip-ghost" @onclick="ClearFilters">@Localizer["Events_ClearFilters"]</button>
         }
     </div>
 
@@ -33,42 +35,42 @@
     {
         <div id="customer-events-filters" class="evl-filters">
             <div class="evl-field">
-                <label>Vrsta događaja</label>
+                <label>@Localizer["Events_EventTypeLabel"]</label>
                 <select id="customer-events-filter-type-select" class="evl-input" @bind="filterEventType">
-                    <option value="">Sve vrste</option>
-                    <option value="Match">⚽ Utakmica</option>
-                    <option value="Concert">🎵 Koncert</option>
-                    <option value="Other">🎭 Ostalo</option>
+                    <option value="">@Localizer["Events_AllTypes"]</option>
+                    <option value="Match">@Localizer["Events_Match"]</option>
+                    <option value="Concert">@Localizer["Events_Concert"]</option>
+                    <option value="Other">@Localizer["Events_Other"]</option>
                 </select>
             </div>
             <div class="evl-grid2">
                 <div class="evl-field">
-                    <label>Od datuma</label>
+                    <label>@Localizer["Events_FromDateLabel"]</label>
                     <input id="customer-events-filter-datefrom-input" type="date" class="evl-input" @bind="filterDateFrom" />
                 </div>
                 <div class="evl-field">
-                    <label>Do datuma</label>
+                    <label>@Localizer["Events_ToDateLabel"]</label>
                     <input id="customer-events-filter-dateto-input" type="date" class="evl-input" @bind="filterDateTo" />
                 </div>
             </div>
             <div class="evl-grid2">
                 <div class="evl-field">
-                    <label>Min. cijena (€)</label>
+                    <label>@Localizer["Events_MinPriceLabel"]</label>
                     <input id="customer-events-filter-minprice-input" type="number" class="evl-input" placeholder="0" @bind="filterMinPrice" step="10" />
                 </div>
                 <div class="evl-field">
-                    <label>Maks. cijena (€)</label>
+                    <label>@Localizer["Events_MaxPriceLabel"]</label>
                     <input id="customer-events-filter-maxprice-input" type="number" class="evl-input" placeholder="500" @bind="filterMaxPrice" step="10" />
                 </div>
             </div>
             <button id="customer-events-apply-filters-btn" class="btn btn-primary" @onclick="ApplyFilters" disabled="@isLoading">
                 @if (isLoading)
                 {
-                    <span class="spinner"></span> <span>Tražim…</span>
+                    <span class="spinner"></span> <span>@Localizer["Events_Searching"]</span>
                 }
                 else
                 {
-                    <span>Primijeni filtere</span>
+                    <span>@Localizer["Events_ApplyFilters"]</span>
                 }
             </button>
         </div>
@@ -76,15 +78,15 @@
 
     @if (isLoading && events == null)
     {
-        <div id="customer-events-loading" class="evl-state"><span class="spinner"></span> Učitavam utakmice…</div>
+        <div id="customer-events-loading" class="evl-state"><span class="spinner"></span> @Localizer["Events_Loading"]</div>
     }
     else if (events == null || !events.Any())
     {
         <div id="customer-events-empty" class="evl-state evl-empty">
             <div class="evl-emoji">🎭</div>
-            <h2>Nema utakmica</h2>
-            <p>Trenutno nema događaja koji odgovaraju tvojim filterima.</p>
-            <button id="customer-events-empty-clear-btn" class="btn btn-primary" @onclick="ClearFilters">Poništi filtere</button>
+            <h2>@Localizer["Events_Empty_Title"]</h2>
+            <p>@Localizer["Events_Empty_Message"]</p>
+            <button id="customer-events-empty-clear-btn" class="btn btn-primary" @onclick="ClearFilters">@Localizer["Events_ClearFiltersButton"]</button>
         </div>
     }
     else
@@ -108,15 +110,15 @@
                             <span class="evl-tag">@evt.EventType</span>
                             @if (isSoldOut)
                             {
-                                <span class="evl-tag is-none">Rasprodano</span>
+                                <span class="evl-tag is-none">@Localizer["Events_SoldOut"]</span>
                             }
                             else if (isSellingFast)
                             {
-                                <span class="evl-tag is-low">⚡ Još @avail</span>
+                                <span class="evl-tag is-low">@Localizer["Events_SellingFast", avail]</span>
                             }
                             else
                             {
-                                <span class="evl-tag is-ok">@avail slobodno</span>
+                                <span class="evl-tag is-ok">@Localizer["Events_Available", avail]</span>
                             }
                         </div>
                     </div>

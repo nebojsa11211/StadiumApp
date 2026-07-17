@@ -1030,4 +1030,25 @@
   <data name="TopupHistory_Type_CashOut" xml:space="preserve">
     <value>Isplata</value>
   </data>
+  <data name="TicketTopup_ProvisionAccountTitle" xml:space="preserve">
+    <value>👤 Kreiraj račun gosta</value>
+  </data>
+  <data name="TicketTopup_ProvisionAccountHint" xml:space="preserve">
+    <value>Unesite e-poštu gosta da kreirate račun — sredstva se učitavaju na njegov osobni novčanik i može ih kasnije preuzeti.</value>
+  </data>
+  <data name="TicketTopup_EmailLabel" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="TicketTopup_EmailPlaceholder" xml:space="preserve">
+    <value>ime@email.hr</value>
+  </data>
+  <data name="TicketTopup_ProvisioningButton" xml:space="preserve">
+    <value>Kreiram…</value>
+  </data>
+  <data name="TicketTopup_ProvisionAndContinueBtn" xml:space="preserve">
+    <value>Kreiraj račun i nastavi</value>
+  </data>
+  <data name="TicketTopup_ProvisionAlternativeHint" xml:space="preserve">
+    <value>Ili učitajte izravno na ulaznicu ispod.</value>
+  </data>
 </root>

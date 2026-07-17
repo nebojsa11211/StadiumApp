@@ -7,21 +7,22 @@
 @inject IApiService Api
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<PageTitle>Košarica — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Cart_PageTitle"]</PageTitle>
 
 <div id="customer-cart-atmos" class="crowd-atmos" aria-hidden="true"></div>
 
-<ScreenHeader Title="Tvoja košarica" Subtitle="@SubtitleText" BackHref="/order" />
+<ScreenHeader Title="@Localizer["Cart_ScreenHeaderTitle"]" Subtitle="@SubtitleText" BackHref="/order" />
 
 <div id="customer-cart-body" class="body">
     @if (State.Count == 0)
     {
         <div id="customer-cart-empty" class="empty">
             <div id="customer-cart-emoji" class="e-emoji">🛒</div>
-            <p>Košarica je prazna.</p>
-            <button id="customer-cart-back-btn" class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">Natrag na ponudu</button>
+            <p>@Localizer["Cart_EmptyMessage"]</p>
+            <button id="customer-cart-back-btn" class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">@Localizer["Cart_BackMenuButton"]</button>
         </div>
     }
     else
@@ -29,7 +30,7 @@
         <div id="customer-cart-deliver-banner" class="deliver-banner">
             <span class="ic">📍</span>
             <div id="customer-cart-delivery-info">
-                <div id="customer-cart-delivery-title" class="t">Dostava na tvoje mjesto</div>
+                <div id="customer-cart-delivery-title" class="t">@Localizer["Cart_DeliveryTitle"]</div>
                 <div id="customer-cart-delivery-seat" class="s tnum">@State.SeatText</div>
             </div>
         </div>
@@ -42,18 +43,18 @@
                         <div id="customer-cart-item-icon-@item.DrinkId" class="th">🥤</div>
                         <div id="customer-cart-item-info-@item.DrinkId" class="ci">
                             <div id="customer-cart-item-name-@item.DrinkId" class="n">@item.DrinkName</div>
-                            <div id="customer-cart-item-price-@item.DrinkId" class="p tnum">€@item.UnitPrice.ToString("F2") / kom</div>
+                            <div id="customer-cart-item-price-@item.DrinkId" class="p tnum">@Localizer["Cart_UnitPriceLabel", item.UnitPrice.ToString("F2")]</div>
                         </div>
                         <div id="customer-cart-item-step-@item.DrinkId" class="mini-step">
-                            <button id="customer-cart-item-qty-dec-@item.DrinkId" @onclick="() => Change(item.DrinkId, item.Quantity - 1)" aria-label="Manje">−</button>
+                            <button id="customer-cart-item-qty-dec-@item.DrinkId" @onclick="() => Change(item.DrinkId, item.Quantity - 1)" aria-label="@Localizer["Cart_DecreaseButton_Aria"]">−</button>
                             <span id="customer-cart-item-qty-@item.DrinkId" class="q tnum">@item.Quantity</span>
-                            <button id="customer-cart-item-qty-inc-@item.DrinkId" @onclick="() => Change(item.DrinkId, item.Quantity + 1)" aria-label="Više">+</button>
+                            <button id="customer-cart-item-qty-inc-@item.DrinkId" @onclick="() => Change(item.DrinkId, item.Quantity + 1)" aria-label="@Localizer["Cart_IncreaseButton_Aria"]">+</button>
                         </div>
                     </div>
                 }
             </div>
 
-            <div id="customer-cart-payment-label" class="label" style="margin:22px 0 12px">Plaćanje</div>
+            <div id="customer-cart-payment-label" class="label" style="margin:22px 0 12px">@Localizer["Cart_PaymentLabel"]</div>
             <div id="customer-cart-pay-wallet" class="pay-opt @(_pay == "wallet" ? "sel" : "")" @onclick="@(() => _pay = "wallet")">
                 <div id="customer-cart-wallet-icon" class="pic">@(_wallet is { IsTicketWallet: true } ? "🎟️" : "👛")</div>
                 <div id="customer-cart-wallet-info" class="pb">
@@ -65,29 +66,29 @@
             <div id="customer-cart-pay-card" class="pay-opt @(_pay == "card" ? "sel" : "")" @onclick="@(() => _pay = "card")">
                 <div id="customer-cart-card-icon" class="pic">💳</div>
                 <div id="customer-cart-card-info" class="pb">
-                    <div id="customer-cart-card-title" class="t">Kartica</div>
-                    <div id="customer-cart-card-subtitle" class="s">Visa · Mastercard</div>
+                    <div id="customer-cart-card-title" class="t">@Localizer["Cart_CardTitle"]</div>
+                    <div id="customer-cart-card-subtitle" class="s">@Localizer["Cart_CardSubtitle"]</div>
                 </div>
                 <div class="radio"></div>
             </div>
             <div id="customer-cart-pay-cash" class="pay-opt @(_pay == "cash" ? "sel" : "")" @onclick="@(() => _pay = "cash")">
                 <div id="customer-cart-cash-icon" class="pic">💵</div>
                 <div id="customer-cart-cash-info" class="pb">
-                    <div id="customer-cart-cash-title" class="t">Gotovina</div>
-                    <div id="customer-cart-cash-subtitle" class="s">Plati pri dostavi</div>
+                    <div id="customer-cart-cash-title" class="t">@Localizer["Cart_CashTitle"]</div>
+                    <div id="customer-cart-cash-subtitle" class="s">@Localizer["Cart_CashSubtitle"]</div>
                 </div>
                 <div class="radio"></div>
             </div>
 
             <div id="customer-cart-summary" class="summary">
-                <div id="customer-cart-summary-subtotal" class="sr"><span>Međuzbroj</span><b class="tnum">€@State.Subtotal.ToString("F2")</b></div>
-                <div id="customer-cart-summary-fee" class="sr"><span>Naknada za uslugu</span><b class="tnum">€@ServiceFee.ToString("F2")</b></div>
-                <div id="customer-cart-summary-total" class="sr total"><span>Ukupno</span><b class="tnum">€@Total.ToString("F2")</b></div>
+                <div id="customer-cart-summary-subtotal" class="sr"><span>@Localizer["Cart_SubtotalLabel"]</span><b class="tnum">€@State.Subtotal.ToString("F2")</b></div>
+                <div id="customer-cart-summary-fee" class="sr"><span>@Localizer["Cart_FeeLabel"]</span><b class="tnum">€@ServiceFee.ToString("F2")</b></div>
+                <div id="customer-cart-summary-total" class="sr total"><span>@Localizer["Cart_TotalLabel"]</span><b class="tnum">€@Total.ToString("F2")</b></div>
             </div>
 
             @if (State.HasSession && !State.CanOrderDrinks)
             {
-                <div id="customer-cart-error-closed" class="err">Naručivanje je zatvoreno jer utakmica trenutno ne traje.</div>
+                <div id="customer-cart-error-closed" class="err">@Localizer["Cart_OrderingClosed"]</div>
             }
             @if (!string.IsNullOrEmpty(_error))
             {
@@ -103,15 +104,15 @@
         <button id="customer-cart-checkout-btn" class="btn btn-primary" @onclick="PlaceOrder" disabled="@(_placing || !State.CanOrderDrinks)">
             @if (_placing)
             {
-                <span class="spinner"></span> <span>Šaljem…</span>
+                <span class="spinner"></span> <span>@Localizer["Cart_Placing"]</span>
             }
             else if (!State.CanOrderDrinks)
             {
-                <span>Naručivanje nije dostupno</span>
+                <span>@Localizer["Cart_OrderingUnavailable"]</span>
             }
             else
             {
-                <span>Naruči · €@Total.ToString("F2")</span>
+                <span>@Localizer["Cart_PlaceOrderButton", Total.ToString("F2")]</span>
             }
         </button>
     </div>
@@ -125,10 +126,10 @@
     private WalletSummaryDto? _wallet;
 
     private decimal Total => State.Subtotal + (State.Count > 0 ? ServiceFee : 0m);
-    private string SubtitleText => State.Count > 0 ? $"{State.Count} {(State.Count == 1 ? "stavka" : "stavke")}" : "Prazno";
-    private string WalletText => _wallet is { Exists: true } ? $"Stanje €{_wallet.Balance:F2}" : "Novčanik";
+    private string SubtitleText => State.Count > 0 ? Localizer["Cart_ItemCountSubtitle", State.Count, State.Count == 1 ? Localizer["Cart_Item"] : Localizer["Cart_Items"]] : Localizer["Cart_EmptySubtitle"];
+    private string WalletText => _wallet is { Exists: true } ? $"Stanje €{_wallet.Balance:F2}" : Localizer["Cart_WalletPlaceholder"];
     // Anonymous bearer balance loaded on the scanned ticket vs a registered fan's personal wallet.
-    private string WalletTitle => _wallet is { IsTicketWallet: true } ? "Saldo na ulaznici" : "HALFTIME novčanik";
+    private string WalletTitle => _wallet is { IsTicketWallet: true } ? Localizer["Cart_TicketWalletTitle"] : Localizer["Cart_PersonalWalletTitle"];
 
     protected override void OnInitialized() => State.OnChange += StateChanged;
 
@@ -160,7 +161,7 @@
         if (_placing) return;
         if (!State.CanOrderDrinks)
         {
-            _error = "Naručivanje je zatvoreno jer utakmica trenutno ne traje.";
+            _error = Localizer["Cart_OrderingClosed"];
             return;
         }
         _placing = true;
@@ -189,13 +190,13 @@
         else if (result is { InsufficientFunds: true })
         {
             _error = _wallet is { IsTicketWallet: true }
-                ? "Nedovoljno sredstava na ulaznici. Nadoplati na šanku ili plati karticom."
-                : "Nedovoljno sredstava na novčaniku. Nadoplati novčanik ili plati karticom.";
+                ? Localizer["Cart_InsufficientTicketBalance"]
+                : Localizer["Cart_InsufficientWalletBalance"];
             _placing = false;
         }
         else
         {
-            _error = result?.Error ?? "Narudžbu nije bilo moguće poslati. Pokušaj ponovno.";
+            _error = result?.Error ?? Localizer["Cart_OrderFailed"];
             _placing = false;
         }
     }

@@ -3,19 +3,21 @@
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Customer.Services
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.Extensions.Localization
 @inject IApiService ApiService
 @inject ICustomerAuthStateService AuthStateService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Registracija — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Register_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Registracija" Subtitle="Novi račun" BackHref="/login" />
+<ScreenHeader Title="@Localizer["Register_ScreenHeader_Title"]" Subtitle="@Localizer["Register_ScreenHeader_Subtitle"]" BackHref="/login" />
 
 <div id="customer-register-body" class="reg-body">
     <div id="customer-register-hero" class="reg-hero">
-        <div id="customer-register-badge" class="badge">🎟️ Novi navijač</div>
-        <h1 id="customer-register-title" class="display">STVORI<br /><span class="grad-text">RAČUN</span></h1>
-        <p id="customer-register-intro">Registriraj se za brže naručivanje i praćenje svojih narudžbi.</p>
+        <div id="customer-register-badge" class="badge">@Localizer["Register_Badge"]</div>
+        <h1 id="customer-register-title" class="display">@Localizer["Register_CreateTitle"]</h1>
+        <p id="customer-register-intro">@Localizer["Register_IntroText"]</p>
     </div>
 
     <EditForm Model="@registerModel" OnValidSubmit="@HandleRegister" class="reg-form" id="customer-register-form">
@@ -31,71 +33,71 @@
         }
 
         <div id="customer-register-username-group" class="field">
-            <label for="customer-register-username-input">Korisničko ime</label>
+            <label for="customer-register-username-input">@Localizer["Register_UsernameLabel"]</label>
             <InputText id="customer-register-username-input" @bind-Value="registerModel.Username" placeholder="npr. ivan.horvat" autocomplete="username" />
             <ValidationMessage For="@(() => registerModel.Username)" class="verr" />
         </div>
 
         <div id="customer-register-email-group" class="field">
-            <label for="customer-register-email-input">Email</label>
+            <label for="customer-register-email-input">@Localizer["Register_EmailLabel"]</label>
             <InputText id="customer-register-email-input" type="email" @bind-Value="registerModel.Email" placeholder="ime@email.hr" autocomplete="email" />
             <ValidationMessage For="@(() => registerModel.Email)" class="verr" />
         </div>
 
         <div id="customer-register-firstname-group" class="field">
-            <label for="customer-register-firstname-input">Ime</label>
+            <label for="customer-register-firstname-input">@Localizer["Register_FirstNameLabel"]</label>
             <InputText id="customer-register-firstname-input" @bind-Value="registerModel.FirstName" placeholder="npr. Ivan" autocomplete="given-name" />
             <ValidationMessage For="@(() => registerModel.FirstName)" class="verr" />
         </div>
 
         <div id="customer-register-lastname-group" class="field">
-            <label for="customer-register-lastname-input">Prezime</label>
+            <label for="customer-register-lastname-input">@Localizer["Register_LastNameLabel"]</label>
             <InputText id="customer-register-lastname-input" @bind-Value="registerModel.LastName" placeholder="npr. Horvat" autocomplete="family-name" />
             <ValidationMessage For="@(() => registerModel.LastName)" class="verr" />
         </div>
 
         <div id="customer-register-oib-group" class="field">
-            <label for="customer-register-oib-input">OIB</label>
+            <label for="customer-register-oib-input">@Localizer["Register_OIBLabel"]</label>
             <InputText id="customer-register-oib-input" @bind-Value="registerModel.Oib" placeholder="11 znamenki" inputmode="numeric" maxlength="11" autocomplete="off" />
             <ValidationMessage For="@(() => registerModel.Oib)" class="verr" />
-            <span class="reg-hint">Koristi se za provjeru identiteta pri uplati na baru.</span>
+            <span class="reg-hint">@Localizer["Register_OIBHint"]</span>
         </div>
 
         <div id="customer-register-password-group" class="field">
-            <label for="customer-register-password-input">Lozinka</label>
+            <label for="customer-register-password-input">@Localizer["Register_PasswordLabel"]</label>
             <InputText id="customer-register-password-input" type="password" @bind-Value="registerModel.Password" placeholder="••••••••" autocomplete="new-password" />
             <ValidationMessage For="@(() => registerModel.Password)" class="verr" />
-            <span class="reg-hint">Najmanje 6 znakova.</span>
+            <span class="reg-hint">@Localizer["Register_PasswordHint"]</span>
         </div>
 
         <div id="customer-register-confirm-password-group" class="field">
-            <label for="customer-register-confirm-password-input">Potvrdi lozinku</label>
+            <label for="customer-register-confirm-password-input">@Localizer["Register_ConfirmPasswordLabel"]</label>
             <InputText id="customer-register-confirm-password-input" type="password" @bind-Value="registerModel.ConfirmPassword" placeholder="••••••••" autocomplete="new-password" />
             <ValidationMessage For="@(() => registerModel.ConfirmPassword)" class="verr" />
         </div>
 
         <label id="customer-register-terms-group" class="reg-terms">
             <InputCheckbox id="customer-register-terms-input" @bind-Value="acceptTerms" />
-            <span>Prihvaćam <a href="/terms" target="_blank">uvjete korištenja</a> i <a href="/privacy" target="_blank">pravila privatnosti</a>.</span>
+            <span>Prihvaćam <a href="/terms" target="_blank">@Localizer["Register_TermsOfService"]</a> i <a href="/privacy" target="_blank">@Localizer["Register_PrivacyPolicy"]</a>.</span>
         </label>
         @if (!acceptTerms && showTermsError)
         {
-            <div id="customer-register-terms-error" class="verr">Moraš prihvatiti uvjete korištenja.</div>
+            <div id="customer-register-terms-error" class="verr">@Localizer["Register_TermsError"]</div>
         }
 
         <button type="submit" class="btn btn-primary" disabled="@isLoading" id="customer-register-submit-btn">
             @if (isLoading)
             {
-                <span class="spinner" id="customer-register-spinner"></span> <span>Stvaram račun…</span>
+                <span class="spinner" id="customer-register-spinner"></span> <span>@Localizer["Register_CreatingAccount"]</span>
             }
             else
             {
-                <span>Stvori račun</span>
+                <span>@Localizer["Register_CreateAccountButton"]</span>
             }
         </button>
     </EditForm>
 
-    <p class="alt" id="customer-register-login-section">Već imaš račun? <a href="/login" id="customer-register-login-link">Prijavi se</a>.</p>
+    <p class="alt" id="customer-register-login-section">@Localizer["Register_AlreadyHasAccount"] <a href="/login" id="customer-register-login-link">@Localizer["Register_SignInLink"]</a>.</p>
 </div>
 
 @code {
@@ -185,7 +187,7 @@
                     await AuthStateService.LoginAsync(loginResult.Token, loginResult.User);
                     await ApiService.LogUserActionAsync("CustomerRegistration", "Authentication", $"New customer registered and logged in: {registerModel.Email}");
 
-                    successMessage = "Račun je stvoren! Preusmjeravam…";
+                    successMessage = Localizer["Register_AccountCreatedRedirecting"];
                     StateHasChanged();
 
                     await Task.Delay(1200);
@@ -193,24 +195,24 @@
                 }
                 else
                 {
-                    successMessage = "Račun je stvoren. Sada se možeš prijaviti.";
+                    successMessage = Localizer["Register_AccountCreatedSignIn"];
                     registerModel = new RegisterModel();
                     acceptTerms = false;
                 }
             }
             else
             {
-                errorMessage = "Registracija nije uspjela. Pokušaj ponovno.";
+                errorMessage = Localizer["Register_RegistrationFailed"];
                 await ApiService.LogUserActionAsync("CustomerRegistrationFailed", "Authentication", $"Failed registration attempt for {registerModel.Email}");
             }
         }
         catch (HttpRequestException)
         {
-            errorMessage = "Nije moguće spojiti se na poslužitelj.";
+            errorMessage = Localizer["Register_ConnectionError"];
         }
         catch (Exception ex)
         {
-            errorMessage = "Došlo je do neočekivane pogreške.";
+            errorMessage = Localizer["Register_UnexpectedError"];
             await ApiService.LogUserActionAsync("CustomerRegistrationError", "Authentication", $"Registration error for {registerModel.Email}: {ex.Message}");
             Console.WriteLine($"Registration error: {ex.Message}");
         }

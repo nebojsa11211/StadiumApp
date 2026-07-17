@@ -361,4 +361,31 @@
   <data name="ScanTicket_KindSeason" xml:space="preserve">
     <value>Sezonska</value>
   </data>
+  <data name="Global_Loading" xml:space="preserve">
+    <value>Učitavanje…</value>
+  </data>
+  <data name="Error_NotFoundTitle" xml:space="preserve">
+    <value>Nije pronađeno</value>
+  </data>
+  <data name="Error_NotFoundMessage" xml:space="preserve">
+    <value>Nažalost, na ovoj adresi nema ničega.</value>
+  </data>
+  <data name="Login_Eyebrow" xml:space="preserve">
+    <value>Stadium Runner</value>
+  </data>
+  <data name="Login_ErrorInvalidOrUnreachable" xml:space="preserve">
+    <value>Neispravni podaci za prijavu ili poslužitelj nije dostupan.</value>
+  </data>
+  <data name="Login_ErrorNotRunnerRole" xml:space="preserve">
+    <value>Ova je aplikacija za dostavljače. Vaš račun nema pristup.</value>
+  </data>
+  <data name="Home_AgeJustNow" xml:space="preserve">
+    <value>upravo sad</value>
+  </data>
+  <data name="Home_AgeOneMinAgo" xml:space="preserve">
+    <value>prije 1 min</value>
+  </data>
+  <data name="Home_AgeMinutesAgo" xml:space="preserve">
+    <value>prije {0} min</value>
+  </data>
 </root>

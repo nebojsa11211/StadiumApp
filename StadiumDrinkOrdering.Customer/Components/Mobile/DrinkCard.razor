@@ -1,4 +1,6 @@
 @using StadiumDrinkOrdering.Shared.DTOs
+@inject IStringLocalizer<SharedResources> Localizer
+
 @* Grid tile for a single drink. Whole card opens the detail sheet. When qty is 0 the + does a
    one-tap add; once in the cart a −/qty/+ stepper lets the fan adjust without opening the sheet. *@
 
@@ -16,19 +18,19 @@
             @if (Qty > 0)
             {
                 <div id="customer-drink-card-stepper-@Drink.Id" class="stepper-mini">
-                    <button id="customer-drink-card-dec-@Drink.Id" class="minus" @onclick="OnDec" @onclick:stopPropagation="true" aria-label="Manje @Drink.Name">−</button>
+                    <button id="customer-drink-card-dec-@Drink.Id" class="minus" @onclick="OnDec" @onclick:stopPropagation="true" aria-label="@Localizer["DrinkCard_Decrease"] @Drink.Name">−</button>
                     <span id="customer-drink-card-qty-@Drink.Id" class="q tnum">@Qty</span>
-                    <button id="customer-drink-card-inc-@Drink.Id" class="plus" @onclick="OnInc" @onclick:stopPropagation="true" aria-label="Više @Drink.Name">+</button>
+                    <button id="customer-drink-card-inc-@Drink.Id" class="plus" @onclick="OnInc" @onclick:stopPropagation="true" aria-label="@Localizer["DrinkCard_Increase"] @Drink.Name">+</button>
                 </div>
             }
             else
             {
-                <button id="customer-drink-card-add-@Drink.Id" class="add" @onclick="OnAdd" @onclick:stopPropagation="true" aria-label="Dodaj @Drink.Name">+</button>
+                <button id="customer-drink-card-add-@Drink.Id" class="add" @onclick="OnAdd" @onclick:stopPropagation="true" aria-label="@Localizer["DrinkCard_Add"] @Drink.Name">+</button>
             }
         }
         else
         {
-            <span class="soldout-badge">Rasprodano</span>
+            <span class="soldout-badge">@Localizer["DrinkCard_SoldOut"]</span>
         }
     </div>
 </div>

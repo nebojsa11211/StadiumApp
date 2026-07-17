@@ -3,68 +3,69 @@
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Moja aktivnost — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Logs_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Moja aktivnost" Subtitle="Zapisi & privatnost" ShowBack="false" />
+<ScreenHeader Title="@Localizer["Logs_Title"]" Subtitle="@Localizer["Logs_Subtitle"]" ShowBack="false" />
 
 <AuthenticationGuard>
     <div id="customer-logs-container" class="act-body no-scrollbar">
 
         <div id="customer-logs-info-alert" class="act-note">
-            ℹ️ Ova stranica prikazuje tvoju aktivnost u sustavu naručivanja. Radnje se bilježe kako bismo poboljšali iskustvo i pružili podršku.
+            ℹ️ @Localizer["Logs_InfoAlert"]
         </div>
 
         <div id="customer-logs-cards" class="act-cards">
             <div id="customer-logs-order-card" class="act-card">
                 <div class="act-card-icon">🍺</div>
                 <div class="act-card-body">
-                    <span class="act-card-title">Narudžbe</span>
-                    <span class="act-card-desc">Sve narudžbe pića, izmjene i plaćanja bilježe se u tvojoj evidenciji.</span>
+                    <span class="act-card-title">@Localizer["Logs_OrdersTitle"]</span>
+                    <span class="act-card-desc">@Localizer["Logs_OrdersDesc"]</span>
                 </div>
-                <button id="customer-log-order-activity-btn" class="btn btn-ghost btn-sm" @onclick="@(() => LogSampleActivity("PlaceOrder", "UserAction", "Viewed order activity information"))">Zabilježi primjer</button>
+                <button id="customer-log-order-activity-btn" class="btn btn-ghost btn-sm" @onclick="@(() => LogSampleActivity("PlaceOrder", "UserAction", "Viewed order activity information"))">@Localizer["Logs_LogExample"]</button>
             </div>
 
             <div id="customer-logs-qr-card" class="act-card">
                 <div class="act-card-icon">🎫</div>
                 <div class="act-card-body">
-                    <span class="act-card-title">Provjera ulaznice</span>
-                    <span class="act-card-desc">Skeniranja QR koda i provjere ulaznica bilježe se radi sigurnosti.</span>
+                    <span class="act-card-title">@Localizer["Logs_QRTitle"]</span>
+                    <span class="act-card-desc">@Localizer["Logs_QRDesc"]</span>
                 </div>
-                <button id="customer-log-qr-activity-btn" class="btn btn-ghost btn-sm" @onclick="@(() => LogSampleActivity("ScanQRCode", "UserAction", "Viewed QR code activity information"))">Zabilježi primjer</button>
+                <button id="customer-log-qr-activity-btn" class="btn btn-ghost btn-sm" @onclick="@(() => LogSampleActivity("ScanQRCode", "UserAction", "Viewed QR code activity information"))">@Localizer["Logs_LogExample"]</button>
             </div>
 
             <div id="customer-logs-auth-card" class="act-card">
                 <div class="act-card-icon">🔐</div>
                 <div class="act-card-body">
-                    <span class="act-card-title">Prijava</span>
-                    <span class="act-card-desc">Pokušaji prijave i sigurnosne radnje prate se radi zaštite računa.</span>
+                    <span class="act-card-title">@Localizer["Logs_AuthTitle"]</span>
+                    <span class="act-card-desc">@Localizer["Logs_AuthDesc"]</span>
                 </div>
-                <button id="customer-log-auth-activity-btn" class="btn btn-ghost btn-sm" @onclick="@(() => LogSampleActivity("Login", "Authentication", "Viewed authentication activity information"))">Zabilježi primjer</button>
+                <button id="customer-log-auth-activity-btn" class="btn btn-ghost btn-sm" @onclick="@(() => LogSampleActivity("Login", "Authentication", "Viewed authentication activity information"))">@Localizer["Logs_LogExample"]</button>
             </div>
         </div>
 
         <div id="customer-logs-info-section-card" class="act-info">
-            <span class="act-info-title">Zašto bilježimo aktivnost?</span>
+            <span class="act-info-title">@Localizer["Logs_WhyTitle"]</span>
             <ul class="act-list">
-                <li><strong>Povijest narudžbi</strong> — potpuna evidencija svih narudžbi i kupnji.</li>
-                <li><strong>Podrška</strong> — detaljni zapisi pomažu našem timu da ti brže pomogne.</li>
-                <li><strong>Sigurnost</strong> — praćenje prijava i autentifikacije radi zaštite računa.</li>
-                <li><strong>Poboljšanja</strong> — obrasci korištenja pomažu nam unaprijediti iskustvo.</li>
+                <li><strong>@Localizer["Logs_History"]</strong> — @Localizer["Logs_HistoryDesc"]</li>
+                <li><strong>@Localizer["Logs_Support"]</strong> — @Localizer["Logs_SupportDesc"]</li>
+                <li><strong>@Localizer["Logs_Security"]</strong> — @Localizer["Logs_SecurityDesc"]</li>
+                <li><strong>@Localizer["Logs_Improvements"]</strong> — @Localizer["Logs_ImprovementsDesc"]</li>
             </ul>
 
             <div id="customer-logs-privacy-alert" class="act-privacy">
-                🛡️ <strong>Privatnost:</strong> tvoji su zapisi povjerljivi i koriste se samo za poboljšanje usluge i podršku. Pristup imaju samo administratori i ovlašteno osoblje.
+                🛡️ <strong>@Localizer["Logs_PrivacyLabel"]</strong> @Localizer["Logs_PrivacyDesc"]
             </div>
 
-            <span class="act-info-title">Nedavne aktivnosti uključuju</span>
+            <span class="act-info-title">@Localizer["Logs_RecentTitle"]</span>
             <ul class="act-checks">
-                <li>Navigaciju stranicama (Meni, Narudžbe…)</li>
-                <li>Skeniranje i provjeru QR koda</li>
-                <li>Dodavanje pića u košaricu</li>
-                <li>Slanje i izmjene narudžbi</li>
-                <li>Plaćanja</li>
-                <li>Prijave i autentifikaciju</li>
+                <li>@Localizer["Logs_RecentActivity1"]</li>
+                <li>@Localizer["Logs_RecentActivity2"]</li>
+                <li>@Localizer["Logs_RecentActivity3"]</li>
+                <li>@Localizer["Logs_RecentActivity4"]</li>
+                <li>@Localizer["Logs_RecentActivity5"]</li>
+                <li>@Localizer["Logs_RecentActivity6"]</li>
             </ul>
         </div>
     </div>
@@ -73,7 +74,7 @@
     {
         <div id="customer-logs-status-alert" class="act-toast @(isSuccessMessage ? "ok" : "bad")">
             <span>@statusMessage</span>
-            <button id="customer-log-alert-close-btn" class="act-toast-x" @onclick="() => statusMessage = null" aria-label="Zatvori">✕</button>
+            <button id="customer-log-alert-close-btn" class="act-toast-x" @onclick="() => statusMessage = null" aria-label="@Localizer["Logs_Close"]">✕</button>
         </div>
     }
 </AuthenticationGuard>
@@ -94,18 +95,18 @@
             var success = await ApiService.LogUserActionAsync(action, category, details);
             if (success)
             {
-                statusMessage = $"Aktivnost „{action}\" je zabilježena. Ovako pratimo tvoje radnje.";
+                statusMessage = string.Format(Localizer["Logs_ActivityLogged"], action);
                 isSuccessMessage = true;
             }
             else
             {
-                statusMessage = "Bilježenje nije uspjelo. Pokušaj ponovno.";
+                statusMessage = Localizer["Logs_ActivityFailed"];
                 isSuccessMessage = false;
             }
         }
         catch (Exception ex)
         {
-            statusMessage = $"Pogreška pri bilježenju: {ex.Message}";
+            statusMessage = $"{Localizer["Logs_LoggingError"]} {ex.Message}";
             isSuccessMessage = false;
         }
 

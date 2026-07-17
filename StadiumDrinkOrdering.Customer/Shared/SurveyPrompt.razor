@@ -1,12 +1,14 @@
-﻿<div id="customer-survey-container" class="alert alert-secondary mt-4">
+﻿@inject IStringLocalizer<SharedResources> Localizer
+
+<div id="customer-survey-container" class="alert alert-secondary mt-4">
     <span class="oi oi-pencil me-2" aria-hidden="true"></span>
     <strong>@Title</strong>
 
     <span class="text-nowrap">
-        Please take our
-        <a id="customer-survey-link" target="_blank" class="font-weight-bold link-dark" href="https://go.microsoft.com/fwlink/?linkid=2149017">brief survey</a>
+        @Localizer["SurveyPrompt_Text1"]
+        <a id="customer-survey-link" target="_blank" class="font-weight-bold link-dark" href="https://go.microsoft.com/fwlink/?linkid=2149017">@Localizer["SurveyPrompt_SurveyLink"]</a>
     </span>
-    and tell us what you think.
+    @Localizer["SurveyPrompt_Text2"]
 </div>
 
 @code {

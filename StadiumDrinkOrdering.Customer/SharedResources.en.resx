@@ -1267,4 +1267,1759 @@
   <data name="Wallet_Available" xml:space="preserve">
     <value>available</value>
   </data>
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Sign in — HALFTIME</value>
+  </data>
+  <data name="Login_ScreenHeader_Title" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="Login_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Season members</value>
+  </data>
+  <data name="Login_Badge" xml:space="preserve">
+    <value>⭐ Season</value>
+  </data>
+  <data name="Login_WelcomeLine1" xml:space="preserve">
+    <value>WELCOME</value>
+  </data>
+  <data name="Login_WelcomeLine2" xml:space="preserve">
+    <value>BACK</value>
+  </data>
+  <data name="Login_IntroText" xml:space="preserve">
+    <value>Sign in to see your next match and order from your seat.</value>
+  </data>
+  <data name="Login_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Login_EmailPlaceholder" xml:space="preserve">
+    <value>name@example.com</value>
+  </data>
+  <data name="Login_PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Login_SigningIn" xml:space="preserve">
+    <value>Signing in…</value>
+  </data>
+  <data name="Login_SignInButton" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="Login_AltText" xml:space="preserve">
+    <value>Here just for this match?</value>
+  </data>
+  <data name="Login_ScanLink" xml:space="preserve">
+    <value>Scan your ticket</value>
+  </data>
+  <data name="Login_InvalidCredentials" xml:space="preserve">
+    <value>Incorrect email or password.</value>
+  </data>
+  <data name="Login_ConnectionError" xml:space="preserve">
+    <value>Can't connect to the server.</value>
+  </data>
+  <data name="Login_UnexpectedError" xml:space="preserve">
+    <value>Something went wrong. Please try again.</value>
+  </data>
+  <data name="Checkout_ScreenHeaderTitle" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="Checkout_ScreenHeaderSubtitle" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="Checkout_CartEmptyTitle" xml:space="preserve">
+    <value>Cart is empty</value>
+  </data>
+  <data name="Checkout_CartEmptyMessage" xml:space="preserve">
+    <value>Add tickets before payment.</value>
+  </data>
+  <data name="Checkout_BrowseEventsButton" xml:space="preserve">
+    <value>Browse matches</value>
+  </data>
+  <data name="Checkout_SummaryLabel" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="Checkout_DefaultEventName" xml:space="preserve">
+    <value>Match</value>
+  </data>
+  <data name="Checkout_SectorPrefix" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Checkout_SubtotalLine" xml:space="preserve">
+    <value>Subtotal ({0})</value>
+  </data>
+  <data name="Checkout_ServiceFeeLine" xml:space="preserve">
+    <value>Service fee</value>
+  </data>
+  <data name="Checkout_ProcessingFeeLine" xml:space="preserve">
+    <value>Processing fee</value>
+  </data>
+  <data name="Checkout_TotalLine" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Checkout_CustomerInfoSection" xml:space="preserve">
+    <value>Customer Information</value>
+  </data>
+  <data name="Checkout_FirstNameLabel" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="Checkout_FirstNamePlaceholder" xml:space="preserve">
+    <value>John</value>
+  </data>
+  <data name="Checkout_LastNameLabel" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Checkout_LastNamePlaceholder" xml:space="preserve">
+    <value>Doe</value>
+  </data>
+  <data name="Checkout_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Checkout_EmailPlaceholder" xml:space="preserve">
+    <value>name@example.com</value>
+  </data>
+  <data name="Checkout_PhoneLabel" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Checkout_PhonePlaceholder" xml:space="preserve">
+    <value>+385 91 234 5678</value>
+  </data>
+  <data name="Checkout_ForeignerLabel" xml:space="preserve">
+    <value>Foreign national (no OIB)</value>
+  </data>
+  <data name="Checkout_OIBLabel" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="Checkout_DocumentLabel" xml:space="preserve">
+    <value>Document Number (Passport / ID Card)</value>
+  </data>
+  <data name="Checkout_PaymentSection" xml:space="preserve">
+    <value>Card Payment</value>
+  </data>
+  <data name="Checkout_SampleDataButton" xml:space="preserve">
+    <value>Test Data</value>
+  </data>
+  <data name="Checkout_CardNumberLabel" xml:space="preserve">
+    <value>Card Number</value>
+  </data>
+  <data name="Checkout_ExpiryLabel" xml:space="preserve">
+    <value>Expires</value>
+  </data>
+  <data name="Checkout_ExpiryPlaceholder" xml:space="preserve">
+    <value>MM/YY</value>
+  </data>
+  <data name="Checkout_CVVLabel" xml:space="preserve">
+    <value>CVV</value>
+  </data>
+  <data name="Checkout_CardholderLabel" xml:space="preserve">
+    <value>Name on Card</value>
+  </data>
+  <data name="Checkout_CardholderPlaceholder" xml:space="preserve">
+    <value>JOHN DOE</value>
+  </data>
+  <data name="Checkout_TermsAccept" xml:space="preserve">
+    <value>I accept</value>
+  </data>
+  <data name="Checkout_TermsLinkText" xml:space="preserve">
+    <value>terms of service</value>
+  </data>
+  <data name="Checkout_TermsAnd" xml:space="preserve">
+    <value>and</value>
+  </data>
+  <data name="Checkout_PrivacyLinkText" xml:space="preserve">
+    <value>privacy policy</value>
+  </data>
+  <data name="Checkout_TermsDot" xml:space="preserve">
+    <value>.</value>
+  </data>
+  <data name="Checkout_ProcessingText" xml:space="preserve">
+    <value>Processing…</value>
+  </data>
+  <data name="Checkout_PayButton" xml:space="preserve">
+    <value>🔒 Pay €{0}</value>
+  </data>
+  <data name="Checkout_ProcessingPaymentTitle" xml:space="preserve">
+    <value>Processing Payment…</value>
+  </data>
+  <data name="Checkout_WaitMessage" xml:space="preserve">
+    <value>Please wait, do not close the application.</value>
+  </data>
+  <data name="Checkout_EmptyCartAlert" xml:space="preserve">
+    <value>Cart is empty. Add tickets before payment.</value>
+  </data>
+  <data name="Checkout_PaymentFailedAlert" xml:space="preserve">
+    <value>Payment failed: {0}</value>
+  </data>
+  <data name="Checkout_UnknownError" xml:space="preserve">
+    <value>Unknown error.</value>
+  </data>
+  <data name="Checkout_ErrorAlert" xml:space="preserve">
+    <value>An error occurred: {0}</value>
+  </data>
+  <data name="CartBar_ViewCart" xml:space="preserve">
+    <value>View Cart</value>
+  </data>
+  <data name="DrinkCard_Decrease" xml:space="preserve">
+    <value>Less</value>
+  </data>
+  <data name="DrinkCard_Increase" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="DrinkCard_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="DrinkCard_SoldOut" xml:space="preserve">
+    <value>Sold Out</value>
+  </data>
+  <data name="DrinkSheet_DefaultDescription" xml:space="preserve">
+    <value>Served cold and delivered to your seat.</value>
+  </data>
+  <data name="DrinkSheet_Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="DrinkSheet_Decrease" xml:space="preserve">
+    <value>Less</value>
+  </data>
+  <data name="DrinkSheet_Increase" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="DrinkSheet_SpecialInstructions" xml:space="preserve">
+    <value>Special instructions (e.g., no ice, extra cup)</value>
+  </data>
+  <data name="DrinkSheet_AddToCart" xml:space="preserve">
+    <value>Add to Cart ·</value>
+  </data>
+  <data name="OrderTimeline_Status1" xml:space="preserve">
+    <value>Order Received</value>
+  </data>
+  <data name="OrderTimeline_Status2" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="OrderTimeline_Status3" xml:space="preserve">
+    <value>In Preparation</value>
+  </data>
+  <data name="OrderTimeline_Status4" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="OrderTimeline_Status5" xml:space="preserve">
+    <value>Out for Delivery</value>
+  </data>
+  <data name="OrderTimeline_Status6" xml:space="preserve">
+    <value>Delivered to Your Seat</value>
+  </data>
+  <data name="OrderTimeline_Status6Prefix" xml:space="preserve">
+    <value>Delivered ·</value>
+  </data>
+  <data name="OrderTimeline_Status6Sub" xml:space="preserve">
+    <value>Enjoy the game ⚽</value>
+  </data>
+  <data name="InstallPrompt_Title" xml:space="preserve">
+    <value>Install Stadium Orders</value>
+  </data>
+  <data name="InstallPrompt_Description" xml:space="preserve">
+    <value>Get the app for faster access and offline ordering</value>
+  </data>
+  <data name="InstallPrompt_Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="InstallPrompt_Later" xml:space="preserve">
+    <value>Not Now</value>
+  </data>
+  <data name="InstallPrompt_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Toast_JustNow" xml:space="preserve">
+    <value>Just now</value>
+  </data>
+  <data name="Toast_SecondsAgo" xml:space="preserve">
+    <value>{0}s ago</value>
+  </data>
+  <data name="Toast_MinutesAgo" xml:space="preserve">
+    <value>{0}m ago</value>
+  </data>
+  <data name="Toast_Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Toast_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Toast_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Toast_Info" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="ThemeSwitcher_ToDarkMode" xml:space="preserve">
+    <value>Switch to dark mode</value>
+  </data>
+  <data name="ThemeSwitcher_ToLightMode" xml:space="preserve">
+    <value>Switch to light mode</value>
+  </data>
+  <data name="SurveyPrompt_Text1" xml:space="preserve">
+    <value>Please take our</value>
+  </data>
+  <data name="SurveyPrompt_SurveyLink" xml:space="preserve">
+    <value>brief survey</value>
+  </data>
+  <data name="SurveyPrompt_Text2" xml:space="preserve">
+    <value>and tell us what you think.</value>
+  </data>
+  <data name="Logs_Title" xml:space="preserve">
+    <value>My Activity</value>
+  </data>
+  <data name="Logs_Subtitle" xml:space="preserve">
+    <value>Records &amp; Privacy</value>
+  </data>
+  <data name="Logs_InfoAlert" xml:space="preserve">
+    <value>This page shows your activity in the ordering system. Actions are logged to improve your experience and provide support.</value>
+  </data>
+  <data name="Logs_OrdersTitle" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="Logs_OrdersDesc" xml:space="preserve">
+    <value>All drink orders, changes and payments are recorded in your history.</value>
+  </data>
+  <data name="Logs_QRTitle" xml:space="preserve">
+    <value>Ticket Check</value>
+  </data>
+  <data name="Logs_QRDesc" xml:space="preserve">
+    <value>QR code scans and ticket checks are logged for security.</value>
+  </data>
+  <data name="Logs_AuthTitle" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="Logs_AuthDesc" xml:space="preserve">
+    <value>Sign-in attempts and security actions are tracked to protect your account.</value>
+  </data>
+  <data name="Logs_LogExample" xml:space="preserve">
+    <value>Log Example</value>
+  </data>
+  <data name="Logs_WhyTitle" xml:space="preserve">
+    <value>Why do we log activity?</value>
+  </data>
+  <data name="Logs_History" xml:space="preserve">
+    <value>Order History</value>
+  </data>
+  <data name="Logs_HistoryDesc" xml:space="preserve">
+    <value>Complete record of all orders and purchases.</value>
+  </data>
+  <data name="Logs_Support" xml:space="preserve">
+    <value>Support</value>
+  </data>
+  <data name="Logs_SupportDesc" xml:space="preserve">
+    <value>Detailed records help our team assist you faster.</value>
+  </data>
+  <data name="Logs_Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="Logs_SecurityDesc" xml:space="preserve">
+    <value>Login and authentication tracking protects your account.</value>
+  </data>
+  <data name="Logs_Improvements" xml:space="preserve">
+    <value>Improvements</value>
+  </data>
+  <data name="Logs_ImprovementsDesc" xml:space="preserve">
+    <value>Usage patterns help us improve your experience.</value>
+  </data>
+  <data name="Logs_PrivacyLabel" xml:space="preserve">
+    <value>Privacy:</value>
+  </data>
+  <data name="Logs_PrivacyDesc" xml:space="preserve">
+    <value>Your records are confidential and used only for service improvement and support. Only admins and authorized staff have access.</value>
+  </data>
+  <data name="Logs_RecentTitle" xml:space="preserve">
+    <value>Recent activities include</value>
+  </data>
+  <data name="Logs_RecentActivity1" xml:space="preserve">
+    <value>Page navigation (Menu, Orders...)</value>
+  </data>
+  <data name="Logs_RecentActivity2" xml:space="preserve">
+    <value>QR code scanning and ticket checks</value>
+  </data>
+  <data name="Logs_RecentActivity3" xml:space="preserve">
+    <value>Adding drinks to cart</value>
+  </data>
+  <data name="Logs_RecentActivity4" xml:space="preserve">
+    <value>Placing and modifying orders</value>
+  </data>
+  <data name="Logs_RecentActivity5" xml:space="preserve">
+    <value>Payments</value>
+  </data>
+  <data name="Logs_RecentActivity6" xml:space="preserve">
+    <value>Sign-ins and authentication</value>
+  </data>
+  <data name="Logs_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Logs_ActivityLogged" xml:space="preserve">
+    <value>Activity "{0}" has been logged. This is how we track your actions.</value>
+  </data>
+  <data name="Logs_ActivityFailed" xml:space="preserve">
+    <value>Logging failed. Try again.</value>
+  </data>
+  <data name="Logs_LoggingError" xml:space="preserve">
+    <value>Error logging activity:</value>
+  </data>
+  <data name="EventDetails_Loading" xml:space="preserve">
+    <value>Loading event…</value>
+  </data>
+  <data name="EventDetails_NotFound_Title" xml:space="preserve">
+    <value>Match not found</value>
+  </data>
+  <data name="EventDetails_NotFound_Message" xml:space="preserve">
+    <value>This match is no longer available.</value>
+  </data>
+  <data name="EventDetails_NotFound_Home_Button" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="EventDetails_Available" xml:space="preserve">
+    <value>{0} available</value>
+  </data>
+  <data name="EventDetails_SalesDisabled" xml:space="preserve">
+    <value>Ticket sales via the app are currently unavailable.</value>
+  </data>
+  <data name="EventDetails_SelectSection_Label" xml:space="preserve">
+    <value>Choose a stand</value>
+  </data>
+  <data name="EventDetails_SelectSection_Hint" xml:space="preserve">
+    <value>Tap a stand on the map or in the list</value>
+  </data>
+  <data name="EventDetails_Section_Unavailable" xml:space="preserve">
+    <value>Unavailable</value>
+  </data>
+  <data name="EventDetails_Section_SoldOut" xml:space="preserve">
+    <value>Sold out</value>
+  </data>
+  <data name="EventDetails_Section_Available" xml:space="preserve">
+    <value>{0} / {1} available</value>
+  </data>
+  <data name="EventDetails_NoPublishedSeats" xml:space="preserve">
+    <value>No seats have been published for this match yet.</value>
+  </data>
+  <data name="EventDetails_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="EventDetails_Legend_Free" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="EventDetails_Legend_Selected" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="EventDetails_Legend_Taken" xml:space="preserve">
+    <value>Taken</value>
+  </data>
+  <data name="EventDetails_Pitch" xml:space="preserve">
+    <value>⚽ Pitch</value>
+  </data>
+  <data name="EventDetails_SeatAriaLabel_Available" xml:space="preserve">
+    <value>Row {0}, seat {1}, €{2} — available</value>
+  </data>
+  <data name="EventDetails_SeatAriaLabel_Selected" xml:space="preserve">
+    <value>Row {0}, seat {1}, €{2} — selected</value>
+  </data>
+  <data name="EventDetails_SeatAriaLabel_Taken" xml:space="preserve">
+    <value>Row {0}, seat {1} — taken</value>
+  </data>
+  <data name="EventDetails_ShowSeatOnMap_Title" xml:space="preserve">
+    <value>Show seat on map</value>
+  </data>
+  <data name="EventDetails_ShowSeatOnMap_AriaLabel" xml:space="preserve">
+    <value>Show seat {0}, row {1} on stadium map</value>
+  </data>
+  <data name="EventDetails_NoSeatsInSection" xml:space="preserve">
+    <value>No available seats in this stand.</value>
+  </data>
+  <data name="EventDetails_RemoveSeat" xml:space="preserve">
+    <value>Remove: Row {0}, seat {1}</value>
+  </data>
+  <data name="EventDetails_SeatChip" xml:space="preserve">
+    <value>Row {0} · {1}</value>
+  </data>
+  <data name="EventDetails_AddSeats_One" xml:space="preserve">
+    <value>Add {0} seat · €{1}</value>
+  </data>
+  <data name="EventDetails_AddSeats_Many" xml:space="preserve">
+    <value>Add {0} seats · €{1}</value>
+  </data>
+  <data name="EventDetails_CartSheet_Title" xml:space="preserve">
+    <value>Cart</value>
+  </data>
+  <data name="EventDetails_CartItem_One" xml:space="preserve">
+    <value>{0} seat</value>
+  </data>
+  <data name="EventDetails_CartItems_Many" xml:space="preserve">
+    <value>{0} seats</value>
+  </data>
+  <data name="EventDetails_CartEmpty_Message" xml:space="preserve">
+    <value>Your cart is empty. Choose seats from a stand.</value>
+  </data>
+  <data name="EventDetails_CartItem_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="EventDetails_CartTotal_Label" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="EventDetails_CartCheckout_Button" xml:space="preserve">
+    <value>Proceed to checkout</value>
+  </data>
+  <data name="EventDetails_CartClear_Button" xml:space="preserve">
+    <value>Clear cart</value>
+  </data>
+  <data name="EventDetails_Locator_DefaultSector" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="EventDetails_Locator_SeatLocation" xml:space="preserve">
+    <value>Row {0} · Seat {1}</value>
+  </data>
+  <data name="Events_ScreenHeader_Title" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="Events_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Choose an event</value>
+  </data>
+  <data name="Events_SalesDisabled" xml:space="preserve">
+    <value>🎟️ Ticket sales via the app are not currently available. You can view events below.</value>
+  </data>
+  <data name="Events_FiltersToggle" xml:space="preserve">
+    <value>🔎 Filters</value>
+  </data>
+  <data name="Events_EventTypeLabel" xml:space="preserve">
+    <value>Event type</value>
+  </data>
+  <data name="Events_AllTypes" xml:space="preserve">
+    <value>All types</value>
+  </data>
+  <data name="Events_Match" xml:space="preserve">
+    <value>⚽ Match</value>
+  </data>
+  <data name="Events_Concert" xml:space="preserve">
+    <value>🎵 Concert</value>
+  </data>
+  <data name="Events_Other" xml:space="preserve">
+    <value>🎭 Other</value>
+  </data>
+  <data name="Events_FromDateLabel" xml:space="preserve">
+    <value>From date</value>
+  </data>
+  <data name="Events_ToDateLabel" xml:space="preserve">
+    <value>To date</value>
+  </data>
+  <data name="Events_MinPriceLabel" xml:space="preserve">
+    <value>Min. price (€)</value>
+  </data>
+  <data name="Events_MaxPriceLabel" xml:space="preserve">
+    <value>Max. price (€)</value>
+  </data>
+  <data name="Events_Loading" xml:space="preserve">
+    <value>Loading events…</value>
+  </data>
+  <data name="Events_Empty_Title" xml:space="preserve">
+    <value>No events</value>
+  </data>
+  <data name="Events_Empty_Message" xml:space="preserve">
+    <value>No events match your filters right now.</value>
+  </data>
+  <data name="Events_ClearFiltersButton" xml:space="preserve">
+    <value>Clear filters</value>
+  </data>
+  <data name="Home_PageTitle" xml:space="preserve">
+    <value>My Season — HALFTIME</value>
+  </data>
+  <data name="Home_NoPass_Title" xml:space="preserve">
+    <value>You don't have a season pass</value>
+  </data>
+  <data name="Home_NoPass_Message" xml:space="preserve">
+    <value>No season ticket found on this account. Here for a single match? Scan your ticket.</value>
+  </data>
+  <data name="Home_ScanButton" xml:space="preserve">
+    <value>Scan ticket</value>
+  </data>
+  <data name="Home_MyTickets" xml:space="preserve">
+    <value>🎟️ My tickets</value>
+  </data>
+  <data name="Home_ProfileButton" xml:space="preserve">
+    <value>👤 My profile</value>
+  </data>
+  <data name="Home_LogoutButton" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="Home_Greeting" xml:space="preserve">
+    <value>Good evening,</value>
+  </data>
+  <data name="Home_ProfileTooltip" xml:space="preserve">
+    <value>My profile</value>
+  </data>
+  <data name="Home_SeasonPass" xml:space="preserve">
+    <value>⭐ Season pass</value>
+  </data>
+  <data name="Home_YourSeat" xml:space="preserve">
+    <value>Your seat</value>
+  </data>
+  <data name="Home_MyTicketsAccountsLink" xml:space="preserve">
+    <value>🎟️ My tickets &amp; accounts</value>
+  </data>
+  <data name="Home_LiveNow" xml:space="preserve">
+    <value>Live now</value>
+  </data>
+  <data name="Home_Live" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="Home_OpeningMenu" xml:space="preserve">
+    <value>Opening menu…</value>
+  </data>
+  <data name="Home_OrderButton" xml:space="preserve">
+    <value>🍺 Order to your seat</value>
+  </data>
+  <data name="Home_OrderingSoon" xml:space="preserve">
+    <value>Ordering coming soon</value>
+  </data>
+  <data name="Home_UpcomingFixture" xml:space="preserve">
+    <value>Next match</value>
+  </data>
+  <data name="Home_NoLiveEvent" xml:space="preserve">
+    <value>No live match right now. Ordering opens when the match starts.</value>
+  </data>
+  <data name="Home_Schedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="Profile_PageTitle" xml:space="preserve">
+    <value>Profile — HALFTIME</value>
+  </data>
+  <data name="Profile_ScreenHeader_Title" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Profile_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>My information</value>
+  </data>
+  <data name="Profile_Loading" xml:space="preserve">
+    <value>Loading profile…</value>
+  </data>
+  <data name="Profile_InfoNote" xml:space="preserve">
+    <value>Fill in your first name, last name, and OIB — they're used to verify your identity when you add money to your wallet at the bar.</value>
+  </data>
+  <data name="Profile_UsernameLabel" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Profile_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Profile_FirstNameLabel" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="Profile_FirstNamePlaceholder" xml:space="preserve">
+    <value>e.g. John</value>
+  </data>
+  <data name="Profile_LastNameLabel" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="Profile_LastNamePlaceholder" xml:space="preserve">
+    <value>e.g. Smith</value>
+  </data>
+  <data name="Profile_PhoneLabel" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Profile_PhonePlaceholder" xml:space="preserve">
+    <value>e.g. +385 91 234 5678</value>
+  </data>
+  <data name="Profile_OIBLabel" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="Profile_OIBPlaceholder" xml:space="preserve">
+    <value>11 digits</value>
+  </data>
+  <data name="Profile_OIBHint" xml:space="preserve">
+    <value>Exactly 11 digits. Leave empty if you don't want to save it.</value>
+  </data>
+  <data name="Profile_Saving" xml:space="preserve">
+    <value>Saving…</value>
+  </data>
+  <data name="Profile_SaveButton" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="Profile_LogoutButton" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="Profile_LoadError" xml:space="preserve">
+    <value>Could not load profile. Try again.</value>
+  </data>
+  <data name="Profile_SaveSuccess" xml:space="preserve">
+    <value>Changes saved.</value>
+  </data>
+  <data name="Profile_SaveError" xml:space="preserve">
+    <value>Save failed. Check your information and try again.</value>
+  </data>
+  <data name="Profile_ConnectionError" xml:space="preserve">
+    <value>Could not connect to the server.</value>
+  </data>
+  <data name="Profile_UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred.</value>
+  </data>
+  <data name="Menu_ScreenTitle" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="Menu_ScreenSubtitle" xml:space="preserve">
+    <value>Drinks &amp; Snacks</value>
+  </data>
+  <data name="Menu_Loading" xml:space="preserve">
+    <value>Loading menu...</value>
+  </data>
+  <data name="Menu_EmptyTitle" xml:space="preserve">
+    <value>Menu is empty</value>
+  </data>
+  <data name="Menu_EmptyDescription" xml:space="preserve">
+    <value>No drinks or snacks available right now.</value>
+  </data>
+  <data name="Menu_FilterAllButtonText" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Menu_AddButtonText" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Menu_OutOfStockText" xml:space="preserve">
+    <value>Out of stock</value>
+  </data>
+  <data name="Menu_YourOrderLabel" xml:space="preserve">
+    <value>Your order</value>
+  </data>
+  <data name="Menu_CloseAriaLabel" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Menu_CartEmptyText" xml:space="preserve">
+    <value>Cart is empty.</value>
+  </data>
+  <data name="Menu_PricePerUnit" xml:space="preserve">
+    <value>/ each</value>
+  </data>
+  <data name="Menu_TotalLabel" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Menu_TicketNumberLabel" xml:space="preserve">
+    <value>Ticket number</value>
+  </data>
+  <data name="Menu_TicketNumberPlaceholder" xml:space="preserve">
+    <value>Enter ticket number</value>
+  </data>
+  <data name="Menu_NotesLabel" xml:space="preserve">
+    <value>Notes (optional)</value>
+  </data>
+  <data name="Menu_NotesPlaceholder" xml:space="preserve">
+    <value>Special requests?</value>
+  </data>
+  <data name="Menu_PayWithWalletText" xml:space="preserve">
+    <value>Pay with wallet</value>
+  </data>
+  <data name="Menu_AvailableText" xml:space="preserve">
+    <value>available</value>
+  </data>
+  <data name="Menu_InsufficientFundsText" xml:space="preserve">
+    <value>Insufficient wallet balance.</value>
+  </data>
+  <data name="Menu_TopUpLinkText" xml:space="preserve">
+    <value>Top up</value>
+  </data>
+  <data name="Menu_SendingButtonText" xml:space="preserve">
+    <value>Sending...</value>
+  </data>
+  <data name="Menu_OrderButtonText" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="Menu_ClearButtonText" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Menu_AddedAlertText" xml:space="preserve">
+    <value>Added: {0} × {1}</value>
+  </data>
+  <data name="Menu_OrderSentAlertText" xml:space="preserve">
+    <value>Order #{0} sent!</value>
+  </data>
+  <data name="Menu_OrderNotSentMessage" xml:space="preserve">
+    <value>Order not sent. Check ticket number and try again.</value>
+  </data>
+  <data name="Menu_ErrorSendingOrderMessage" xml:space="preserve">
+    <value>Error sending order: {0}</value>
+  </data>
+  <data name="OrderConfirmation_ScreenHeader" xml:space="preserve">
+    <value>Order Confirmation</value>
+  </data>
+  <data name="OrderConfirmation_Loading" xml:space="preserve">
+    <value>Loading confirmation…</value>
+  </data>
+  <data name="OrderConfirmation_NotFound_Title" xml:space="preserve">
+    <value>Order not found</value>
+  </data>
+  <data name="OrderConfirmation_NotFound_Message" xml:space="preserve">
+    <value>We cannot find this order. Check the link or try again.</value>
+  </data>
+  <data name="OrderConfirmation_BackToEvents" xml:space="preserve">
+    <value>Browse events</value>
+  </data>
+  <data name="OrderConfirmation_Success" xml:space="preserve">
+    <value>Payment successful!</value>
+  </data>
+  <data name="OrderConfirmation_SuccessMessage" xml:space="preserve">
+    <value>Your tickets are confirmed and ready.</value>
+  </data>
+  <data name="OrderConfirmation_Order_Label" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="OrderConfirmation_Date_Label" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="OrderConfirmation_Customer_Label" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="OrderConfirmation_Payment_Label" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="OrderConfirmation_Event_Label" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="OrderConfirmation_EventDate_Label" xml:space="preserve">
+    <value>Date &amp; Time</value>
+  </data>
+  <data name="OrderConfirmation_TicketSector" xml:space="preserve">
+    <value>Sector · {0}</value>
+  </data>
+  <data name="OrderConfirmation_Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="OrderConfirmation_TicketsLine" xml:space="preserve">
+    <value>Tickets ({0})</value>
+  </data>
+  <data name="OrderConfirmation_PrintButton" xml:space="preserve">
+    <value>🖨️ Print</value>
+  </data>
+  <data name="OrderConfirmation_DownloadButton" xml:space="preserve">
+    <value>⬇️ PDF</value>
+  </data>
+  <data name="OrderConfirmation_EmailButton" xml:space="preserve">
+    <value>✉️ Email</value>
+  </data>
+  <data name="OrderConfirmation_ImportantInfo" xml:space="preserve">
+    <value>ℹ️ Important Information</value>
+  </data>
+  <data name="OrderConfirmation_ArriveEarly" xml:space="preserve">
+    <value>Arrive at least 30 minutes before the event.</value>
+  </data>
+  <data name="OrderConfirmation_ShowQRCode" xml:space="preserve">
+    <value>Show the QR code from your ticket at the entrance.</value>
+  </data>
+  <data name="OrderConfirmation_KeepSafe" xml:space="preserve">
+    <value>Keep your tickets safe — each QR code is valid only once.</value>
+  </data>
+  <data name="OrderConfirmation_SupportContact" xml:space="preserve">
+    <value>For help, contact our support team.</value>
+  </data>
+  <data name="OrderConfirmation_BrowseMore" xml:space="preserve">
+    <value>Browse more events</value>
+  </data>
+  <data name="OrderConfirmation_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="OrderConfirmation_DownloadNotReady" xml:space="preserve">
+    <value>PDF download will be available soon.</value>
+  </data>
+  <data name="OrderConfirmation_EmailSent" xml:space="preserve">
+    <value>Tickets have been sent to your email address.</value>
+  </data>
+  <data name="Orders_ScreenHeader_Title" xml:space="preserve">
+    <value>My Orders</value>
+  </data>
+  <data name="Orders_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Drinks &amp; Snacks</value>
+  </data>
+  <data name="Orders_Loading" xml:space="preserve">
+    <value>Loading orders…</value>
+  </data>
+  <data name="Orders_Empty_Title" xml:space="preserve">
+    <value>No orders yet</value>
+  </data>
+  <data name="Orders_Empty_Message" xml:space="preserve">
+    <value>When you order a drink or snack, your orders will appear here.</value>
+  </data>
+  <data name="Orders_OpenMenu" xml:space="preserve">
+    <value>Open Menu</value>
+  </data>
+  <data name="Orders_OrderNumber" xml:space="preserve">
+    <value>Order #{0}</value>
+  </data>
+  <data name="Orders_OrderDate" xml:space="preserve">
+    <value>📅 {0}</value>
+  </data>
+  <data name="Orders_OrderSeat" xml:space="preserve">
+    <value>🎫 Seat {0}</value>
+  </data>
+  <data name="Orders_DetailsButton" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Orders_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Orders_ModalTitle" xml:space="preserve">
+    <value>Order #{0}</value>
+  </data>
+  <data name="Orders_CloseButton_Aria" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Orders_StatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Orders_TicketLabel" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="Orders_SeatLabel" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Orders_TotalLabel" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Orders_Timeline" xml:space="preserve">
+    <value>Timeline</value>
+  </data>
+  <data name="Orders_CancelledSuccess" xml:space="preserve">
+    <value>Order cancelled.</value>
+  </data>
+  <data name="Orders_CancelFailed" xml:space="preserve">
+    <value>Cancellation failed.</value>
+  </data>
+  <data name="Orders_CancelError" xml:space="preserve">
+    <value>Error cancelling order: {0}</value>
+  </data>
+  <data name="Orders_Status_Ordered" xml:space="preserve">
+    <value>Ordered</value>
+  </data>
+  <data name="Orders_Status_Accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Orders_Status_Prepared" xml:space="preserve">
+    <value>Prepared</value>
+  </data>
+  <data name="Orders_Status_Delivered" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="Orders_Status_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Orders_Status_Accepted_Text" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Orders_Status_InPreparation" xml:space="preserve">
+    <value>In Preparation</value>
+  </data>
+  <data name="Orders_Status_Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Orders_Status_Delivered_Text" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="Orders_Status_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Order_PageTitle" xml:space="preserve">
+    <value>Order Drinks — HALFTIME</value>
+  </data>
+  <data name="Order_NoSession_Title" xml:space="preserve">
+    <value>No Active Order</value>
+  </data>
+  <data name="Order_NoSession_Message" xml:space="preserve">
+    <value>Scan the QR code on your ticket and your drink will arrive at your seat — no queue waiting.</value>
+  </data>
+  <data name="Order_ScanTicketButton" xml:space="preserve">
+    <value>Scan Ticket</value>
+  </data>
+  <data name="Order_Paused_Title" xml:space="preserve">
+    <value>Ordering is Paused</value>
+  </data>
+  <data name="Order_Paused_Message" xml:space="preserve">
+    <value>You can only order drinks during the match. Your seat is waiting — come back when the referee starts the game.</value>
+  </data>
+  <data name="Order_SectorLabel" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Order_RowLabel" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="Order_SeatLabel" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Order_HomeButton" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Order_Event_Label" xml:space="preserve">
+    <value>Match</value>
+  </data>
+  <data name="Order_EventSubtitle" xml:space="preserve">
+    <value>Drinks arrive at your seat</value>
+  </data>
+  <data name="Order_LiveBadge" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="Order_CoordSector" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Order_CoordRow" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="Order_CoordSeat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Order_Loading" xml:space="preserve">
+    <value>Loading drinks…</value>
+  </data>
+  <data name="Order_GuestName" xml:space="preserve">
+    <value>Guest</value>
+  </data>
+  <data name="Order_TrackActive" xml:space="preserve">
+    <value>Order #{0} is in progress</value>
+  </data>
+  <data name="Track_PageTitle" xml:space="preserve">
+    <value>Track Order — HALFTIME</value>
+  </data>
+  <data name="Track_BackButton_Aria" xml:space="preserve">
+    <value>Back to ordering</value>
+  </data>
+  <data name="Track_Loading" xml:space="preserve">
+    <value>Loading order…</value>
+  </data>
+  <data name="Track_NotFound_Message" xml:space="preserve">
+    <value>Order not found.</value>
+  </data>
+  <data name="Track_BackMenu_Button" xml:space="preserve">
+    <value>Back to Menu</value>
+  </data>
+  <data name="Track_OrderNumber" xml:space="preserve">
+    <value>Order #{0}</value>
+  </data>
+  <data name="Track_ETA_Label" xml:space="preserve">
+    <value>⏱️ Arrives in ~{0} min</value>
+  </data>
+  <data name="Track_CancelledMessage" xml:space="preserve">
+    <value>Order cancelled.</value>
+  </data>
+  <data name="Track_ItemsLabel" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="Track_TotalLabel" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Track_OrderMoreButton" xml:space="preserve">
+    <value>Order More</value>
+  </data>
+  <data name="Track_Status_Delivered" xml:space="preserve">
+    <value>Delivered!</value>
+  </data>
+  <data name="Track_Status_OutForDelivery" xml:space="preserve">
+    <value>Coming to your seat</value>
+  </data>
+  <data name="Track_Status_Ready" xml:space="preserve">
+    <value>Ready — coming to you</value>
+  </data>
+  <data name="Track_Status_InPreparation" xml:space="preserve">
+    <value>We're preparing your order</value>
+  </data>
+  <data name="Track_Status_Cancelled" xml:space="preserve">
+    <value>Order cancelled</value>
+  </data>
+  <data name="Track_Status_Default" xml:space="preserve">
+    <value>Order confirmed</value>
+  </data>
+  <data name="Cart_PageTitle" xml:space="preserve">
+    <value>Cart — HALFTIME</value>
+  </data>
+  <data name="Cart_ScreenHeaderTitle" xml:space="preserve">
+    <value>Your Cart</value>
+  </data>
+  <data name="Cart_EmptyMessage" xml:space="preserve">
+    <value>Cart is empty.</value>
+  </data>
+  <data name="Cart_BackMenuButton" xml:space="preserve">
+    <value>Back to Menu</value>
+  </data>
+  <data name="Cart_DeliveryTitle" xml:space="preserve">
+    <value>Delivery to your seat</value>
+  </data>
+  <data name="Cart_UnitPriceLabel" xml:space="preserve">
+    <value>€{0} / each</value>
+  </data>
+  <data name="Cart_DecreaseButton_Aria" xml:space="preserve">
+    <value>Decrease</value>
+  </data>
+  <data name="Cart_IncreaseButton_Aria" xml:space="preserve">
+    <value>Increase</value>
+  </data>
+  <data name="Cart_PaymentLabel" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="Cart_CardTitle" xml:space="preserve">
+    <value>Card</value>
+  </data>
+  <data name="Cart_CardSubtitle" xml:space="preserve">
+    <value>Visa · Mastercard</value>
+  </data>
+  <data name="Cart_CashTitle" xml:space="preserve">
+    <value>Cash</value>
+  </data>
+  <data name="Cart_CashSubtitle" xml:space="preserve">
+    <value>Pay on delivery</value>
+  </data>
+  <data name="Cart_SubtotalLabel" xml:space="preserve">
+    <value>Subtotal</value>
+  </data>
+  <data name="Cart_FeeLabel" xml:space="preserve">
+    <value>Service Fee</value>
+  </data>
+  <data name="Cart_TotalLabel" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Cart_OrderingClosed" xml:space="preserve">
+    <value>Ordering is closed because the match is not happening right now.</value>
+  </data>
+  <data name="Cart_Placing" xml:space="preserve">
+    <value>Placing…</value>
+  </data>
+  <data name="Cart_OrderingUnavailable" xml:space="preserve">
+    <value>Ordering not available</value>
+  </data>
+  <data name="Cart_PlaceOrderButton" xml:space="preserve">
+    <value>Order · €{0}</value>
+  </data>
+  <data name="Cart_Item" xml:space="preserve">
+    <value>item</value>
+  </data>
+  <data name="Cart_Items" xml:space="preserve">
+    <value>items</value>
+  </data>
+  <data name="Cart_ItemCountSubtitle" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
+  <data name="Cart_EmptySubtitle" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="Cart_WalletPlaceholder" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="Cart_TicketWalletTitle" xml:space="preserve">
+    <value>Ticket Balance</value>
+  </data>
+  <data name="Cart_PersonalWalletTitle" xml:space="preserve">
+    <value>HALFTIME Wallet</value>
+  </data>
+  <data name="Cart_InsufficientTicketBalance" xml:space="preserve">
+    <value>Insufficient balance on ticket. Top up at the bar or pay with card.</value>
+  </data>
+  <data name="Cart_InsufficientWalletBalance" xml:space="preserve">
+    <value>Insufficient wallet balance. Top up wallet or pay with card.</value>
+  </data>
+  <data name="Cart_OrderFailed" xml:space="preserve">
+    <value>Could not send order. Please try again.</value>
+  </data>
+  <data name="Register_ScreenHeader_Title" xml:space="preserve">
+    <value>Registration</value>
+  </data>
+  <data name="Register_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>New Account</value>
+  </data>
+  <data name="Register_Badge" xml:space="preserve">
+    <value>🎟️ New Fan</value>
+  </data>
+  <data name="Register_CreateTitle" xml:space="preserve">
+    <value>CREATE ACCOUNT</value>
+  </data>
+  <data name="Register_IntroText" xml:space="preserve">
+    <value>Register for faster ordering and tracking your orders.</value>
+  </data>
+  <data name="Register_UsernameLabel" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Register_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Register_FirstNameLabel" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="Register_LastNameLabel" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Register_OIBLabel" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="Register_OIBHint" xml:space="preserve">
+    <value>Used for identity verification when adding funds at the bar.</value>
+  </data>
+  <data name="Register_PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Register_PasswordHint" xml:space="preserve">
+    <value>At least 6 characters.</value>
+  </data>
+  <data name="Register_ConfirmPasswordLabel" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="Register_TermsError" xml:space="preserve">
+    <value>You must accept the terms of service.</value>
+  </data>
+  <data name="Register_CreateAccountButton" xml:space="preserve">
+    <value>Create Account</value>
+  </data>
+  <data name="Register_AlreadyHasAccount" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="Register_SignInLink" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="Register_ConnectionError" xml:space="preserve">
+    <value>Cannot connect to server.</value>
+  </data>
+  <data name="Scan_PageTitle" xml:space="preserve">
+    <value>Scan Ticket — HALFTIME</value>
+  </data>
+  <data name="Scan_ScreenHeader" xml:space="preserve">
+    <value>Scan Ticket</value>
+  </data>
+  <data name="Scan_HintText" xml:space="preserve">
+    <value>Point your phone's camera at the QR code on the ticket — the app opens automatically.</value>
+  </data>
+  <data name="Scan_DevLabel" xml:space="preserve">
+    <value>🧪 Test (dev): choose ticket</value>
+  </data>
+  <data name="Scan_DevPlaceholder" xml:space="preserve">
+    <value>— choose ticket —</value>
+  </data>
+  <data name="Scan_ManualLabel" xml:space="preserve">
+    <value>Can't scan?</value>
+  </data>
+  <data name="Scan_ManualPlaceholder" xml:space="preserve">
+    <value>Enter code from ticket</value>
+  </data>
+  <data name="Scan_ContinueButton" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="Scan_InvalidCode" xml:space="preserve">
+    <value>Enter a valid ticket code.</value>
+  </data>
+  <data name="SetPassword_PageTitle" xml:space="preserve">
+    <value>Account Activation — HALFTIME</value>
+  </data>
+  <data name="SetPassword_ScreenHeader_Title" xml:space="preserve">
+    <value>Account Activation</value>
+  </data>
+  <data name="SetPassword_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
+  <data name="SetPassword_CheckingLink" xml:space="preserve">
+    <value>Checking link...</value>
+  </data>
+  <data name="SetPassword_LinkInvalid_Badge" xml:space="preserve">
+    <value>⚠️ Link</value>
+  </data>
+  <data name="SetPassword_LinkInvalid_Title" xml:space="preserve">
+    <value>LINK INVALID</value>
+  </data>
+  <data name="SetPassword_LoginLink" xml:space="preserve">
+    <value>Go to Sign In</value>
+  </data>
+  <data name="SetPassword_Welcome_Badge" xml:space="preserve">
+    <value>🎟️ Welcome</value>
+  </data>
+  <data name="SetPassword_SetPassword_Title" xml:space="preserve">
+    <value>SET PASSWORD</value>
+  </data>
+  <data name="SetPassword_GreetingHi" xml:space="preserve">
+    <value>Hi, {0}! </value>
+  </data>
+  <data name="SetPassword_GreetingMain" xml:space="preserve">
+    <value>Set password to activate your account{0}.</value>
+  </data>
+  <data name="SetPassword_NewPasswordLabel" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="SetPassword_PasswordHint" xml:space="preserve">
+    <value>At least 6 characters.</value>
+  </data>
+  <data name="SetPassword_ConfirmPasswordLabel" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="SetPassword_ActivatingButton" xml:space="preserve">
+    <value>Activating...</value>
+  </data>
+  <data name="SetPassword_ActivateButton" xml:space="preserve">
+    <value>Activate Account</value>
+  </data>
+  <data name="SetPassword_LinkNotFound" xml:space="preserve">
+    <value>Link not found</value>
+  </data>
+  <data name="SetPassword_LinkExpired" xml:space="preserve">
+    <value>Link expired</value>
+  </data>
+  <data name="SetPassword_LinkAlreadyUsed" xml:space="preserve">
+    <value>Link already used</value>
+  </data>
+  <data name="SetPassword_AccountAlreadyActive" xml:space="preserve">
+    <value>Account already activated</value>
+  </data>
+  <data name="SetPassword_LinkInvalid" xml:space="preserve">
+    <value>Link is invalid</value>
+  </data>
+  <data name="SetPassword_CheckError" xml:space="preserve">
+    <value>An error occurred while checking the link.</value>
+  </data>
+  <data name="SetPassword_ActivationFailed" xml:space="preserve">
+    <value>Activation failed. Try again.</value>
+  </data>
+  <data name="SetPassword_GeneralError" xml:space="preserve">
+    <value>An error occurred. Try again.</value>
+  </data>
+  <data name="Resolve_ValidatingTicket" xml:space="preserve">
+    <value>Validating your ticket...</value>
+  </data>
+  <data name="Resolve_Ready_Title" xml:space="preserve">
+    <value>You're ready!</value>
+  </data>
+  <data name="Resolve_Seat_Label" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Resolve_Redirecting" xml:space="preserve">
+    <value>Taking you to menu...</value>
+  </data>
+  <data name="Resolve_StartOrdering_Button" xml:space="preserve">
+    <value>Start Ordering</value>
+  </data>
+  <data name="Resolve_Error_Title" xml:space="preserve">
+    <value>Oops...</value>
+  </data>
+  <data name="Resolve_RescanButton" xml:space="preserve">
+    <value>Scan Again</value>
+  </data>
+  <data name="Resolve_Home_Button" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="MyTickets_PageTitle" xml:space="preserve">
+    <value>My Tickets — HALFTIME</value>
+  </data>
+  <data name="MyTickets_ScreenHeader_Title" xml:space="preserve">
+    <value>My Tickets</value>
+  </data>
+  <data name="MyTickets_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Tickets &amp; Spending</value>
+  </data>
+  <data name="MyTickets_Loading" xml:space="preserve">
+    <value>Loading tickets…</value>
+  </data>
+  <data name="MyTickets_Empty_Title" xml:space="preserve">
+    <value>No tickets yet</value>
+  </data>
+  <data name="MyTickets_Empty_Message" xml:space="preserve">
+    <value>When you buy a ticket, it will appear here with a receipt and PDF card.</value>
+  </data>
+  <data name="MyTickets_BrowseEvents" xml:space="preserve">
+    <value>Browse Events</value>
+  </data>
+  <data name="MyTickets_SeasonBadge" xml:space="preserve">
+    <value>Season</value>
+  </data>
+  <data name="MyTickets_TicketTitle" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="MyTickets_DetailsLoading" xml:space="preserve">
+    <value>Loading…</value>
+  </data>
+  <data name="MyTickets_DetailsError" xml:space="preserve">
+    <value>Unable to load ticket details.</value>
+  </data>
+  <data name="MyTickets_TicketEntry" xml:space="preserve">
+    <value>STADIUM ENTRY</value>
+  </data>
+  <data name="MyTickets_SeasonTicket" xml:space="preserve">
+    <value>SEASON</value>
+  </data>
+  <data name="MyTickets_DateField" xml:space="preserve">
+    <value>DATE</value>
+  </data>
+  <data name="MyTickets_SectorField" xml:space="preserve">
+    <value>SECTOR</value>
+  </data>
+  <data name="MyTickets_RowField" xml:space="preserve">
+    <value>ROW</value>
+  </data>
+  <data name="MyTickets_SeatField" xml:space="preserve">
+    <value>SEAT</value>
+  </data>
+  <data name="MyTickets_PriceLabel" xml:space="preserve">
+    <value>TICKET PRICE</value>
+  </data>
+  <data name="MyTickets_DownloadLoading" xml:space="preserve">
+    <value>Preparing…</value>
+  </data>
+  <data name="MyTickets_DownloadButton" xml:space="preserve">
+    <value>⬇ Download PDF Ticket</value>
+  </data>
+  <data name="MyTickets_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="MyTickets_SpendingLabel" xml:space="preserve">
+    <value>Spending</value>
+  </data>
+  <data name="MyTickets_TicketPrice_Row" xml:space="preserve">
+    <value>Ticket Price</value>
+  </data>
+  <data name="MyTickets_DrinksOrders" xml:space="preserve">
+    <value>Drinks &amp; Orders</value>
+  </data>
+  <data name="MyTickets_NoOrders" xml:space="preserve">
+    <value>No drink orders for this ticket.</value>
+  </data>
+  <data name="MyTickets_DrinksTotal_Row" xml:space="preserve">
+    <value>Total Drinks</value>
+  </data>
+  <data name="MyTickets_GrandTotal" xml:space="preserve">
+    <value>Grand Total</value>
+  </data>
+  <data name="MyTickets_SeatRowText" xml:space="preserve">
+    <value>Row {0}</value>
+  </data>
+  <data name="MyTickets_SeatAbbrText" xml:space="preserve">
+    <value>Seat {0}</value>
+  </data>
+  <data name="MyTickets_PDFGenerationError" xml:space="preserve">
+    <value>Unable to generate PDF. Try again.</value>
+  </data>
+  <data name="Wallet_ScreenHeader_Title" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="Wallet_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Balance &amp; Transactions</value>
+  </data>
+  <data name="Wallet_Loading" xml:space="preserve">
+    <value>Loading wallet…</value>
+  </data>
+  <data name="Wallet_NotEligible_Title" xml:space="preserve">
+    <value>Wallet Unavailable</value>
+  </data>
+  <data name="Wallet_NotEligible_Message" xml:space="preserve">
+    <value>Wallet is only available to season pass holders.</value>
+  </data>
+  <data name="Wallet_Balance_Label" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Wallet_FrozenBadge" xml:space="preserve">
+    <value>❄ Frozen</value>
+  </data>
+  <data name="Wallet_AmountLabel" xml:space="preserve">
+    <value>Amount ({0})</value>
+  </data>
+  <data name="Wallet_CardDataLabel" xml:space="preserve">
+    <value>Card Details</value>
+  </data>
+  <data name="Wallet_MethodLabel" xml:space="preserve">
+    <value>Payment Method</value>
+  </data>
+  <data name="Wallet_CreditCard" xml:space="preserve">
+    <value>Credit Card</value>
+  </data>
+  <data name="Wallet_PayPal" xml:space="preserve">
+    <value>PayPal</value>
+  </data>
+  <data name="Wallet_DepositButton" xml:space="preserve">
+    <value>Deposit</value>
+  </data>
+  <data name="Wallet_Transactions_Label" xml:space="preserve">
+    <value>Transactions</value>
+  </data>
+  <data name="Wallet_TransactionType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Wallet_TransactionDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Wallet_AlertCloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Wallet_CardUnavailable" xml:space="preserve">
+    <value>Card payments are currently unavailable.</value>
+  </data>
+  <data name="Wallet_CardNotReady" xml:space="preserve">
+    <value>Card payments are not ready. Refresh the page.</value>
+  </data>
+  <data name="Wallet_ConfirmingCard" xml:space="preserve">
+    <value>Confirming card…</value>
+  </data>
+  <data name="Wallet_BookingDeposit" xml:space="preserve">
+    <value>Processing deposit…</value>
+  </data>
+  <data name="Wallet_PaymentReceived" xml:space="preserve">
+    <value>Payment received. Funds will be available shortly.</value>
+  </data>
+  <data name="Wallet_Processing" xml:space="preserve">
+    <value>Processing…</value>
+  </data>
+  <data name="Wallet_FrozenError" xml:space="preserve">
+    <value>Wallet is frozen.</value>
+  </data>
+  <data name="Wallet_DeclinedError" xml:space="preserve">
+    <value>Payment was declined.</value>
+  </data>
+  <data name="Wallet_NotAvailableError" xml:space="preserve">
+    <value>Wallet is not available.</value>
+  </data>
+  <data name="StadiumMap_ScreenHeader_Title" xml:space="preserve">
+    <value>Stadium Map</value>
+  </data>
+  <data name="StadiumMap_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Stands &amp; Sectors</value>
+  </data>
+  <data name="StadiumMap_RefreshButton" xml:space="preserve">
+    <value>🔄 Refresh</value>
+  </data>
+  <data name="StadiumMap_Loading" xml:space="preserve">
+    <value>Loading map…</value>
+  </data>
+  <data name="StadiumMap_CardTitle" xml:space="preserve">
+    <value>Stadium map with stands</value>
+  </data>
+  <data name="StadiumMap_North" xml:space="preserve">
+    <value>NORTH</value>
+  </data>
+  <data name="StadiumMap_South" xml:space="preserve">
+    <value>SOUTH</value>
+  </data>
+  <data name="StadiumMap_East" xml:space="preserve">
+    <value>EAST</value>
+  </data>
+  <data name="StadiumMap_West" xml:space="preserve">
+    <value>WEST</value>
+  </data>
+  <data name="StadiumMap_SectorLabel" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="StadiumMap_TypeLabel" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="StadiumMap_StatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StadiumMap_SelectPrompt" xml:space="preserve">
+    <value>👆 Tap a stand for sector details.</value>
+  </data>
+  <data name="StadiumMap_SectionType_North" xml:space="preserve">
+    <value>Ultras</value>
+  </data>
+  <data name="StadiumMap_SectionType_South" xml:space="preserve">
+    <value>Family</value>
+  </data>
+  <data name="StadiumMap_SectionType_East" xml:space="preserve">
+    <value>VIP</value>
+  </data>
+  <data name="StadiumMap_SectionType_West" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="StadiumMap_StatusUnknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="StadiumMap_StatusPlentyAvailable" xml:space="preserve">
+    <value>Plenty Available</value>
+  </data>
+  <data name="StadiumMap_StatusPartial" xml:space="preserve">
+    <value>Partially Full</value>
+  </data>
+  <data name="StadiumMap_StatusAlmostFull" xml:space="preserve">
+    <value>Almost Full</value>
+  </data>
+  <data name="Welcome_PageTitle" xml:space="preserve">
+    <value>HALFTIME</value>
+  </data>
+  <data name="Welcome_Wordmark_Part1" xml:space="preserve">
+    <value>HALF</value>
+  </data>
+  <data name="Welcome_Wordmark_Part2" xml:space="preserve">
+    <value>TIME</value>
+  </data>
+  <data name="Welcome_HeroLine1" xml:space="preserve">
+    <value>NO LINES</value>
+  </data>
+  <data name="Welcome_HeroLine2" xml:space="preserve">
+    <value>JUST DRINKS</value>
+  </data>
+  <data name="Welcome_HeroLine3" xml:space="preserve">
+    <value>JUST DRINKS</value>
+  </data>
+  <data name="Welcome_HeroLede" xml:space="preserve">
+    <value>Order from your seat, we'll bring it to the stand. Never miss a goal over a beer.</value>
+  </data>
+  <data name="Welcome_LiveNow" xml:space="preserve">
+    <value>LIVE NOW</value>
+  </data>
+  <data name="Welcome_NextFixture" xml:space="preserve">
+    <value>NEXT FIXTURE</value>
+  </data>
+  <data name="Welcome_Fixture" xml:space="preserve">
+    <value>FIXTURE</value>
+  </data>
+  <data name="Welcome_Live" xml:space="preserve">
+    <value>LIVE</value>
+  </data>
+  <data name="Welcome_NoFixtures" xml:space="preserve">
+    <value>No fixtures published yet.</value>
+  </data>
+  <data name="Welcome_WelcomeBack" xml:space="preserve">
+    <value>Welcome back</value>
+  </data>
+  <data name="Welcome_TicketNumber" xml:space="preserve">
+    <value>🎟️ {0}</value>
+  </data>
+  <data name="Welcome_TopUpAriaLabel" xml:space="preserve">
+    <value>Top up wallet</value>
+  </data>
+  <data name="Welcome_NoBalance" xml:space="preserve">
+    <value>No balance</value>
+  </data>
+  <data name="Welcome_TopUpButton" xml:space="preserve">
+    <value>+ Top up</value>
+  </data>
+  <data name="Welcome_SeatLabel" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="Welcome_EventLabel" xml:space="preserve">
+    <value>Match</value>
+  </data>
+  <data name="Welcome_DateLabel" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Welcome_WalletLabel" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="Welcome_ContinueOrdering" xml:space="preserve">
+    <value>Continue ordering</value>
+  </data>
+  <data name="Welcome_ScanTicket" xml:space="preserve">
+    <value>Scan ticket</value>
+  </data>
+  <data name="Welcome_SignIn" xml:space="preserve">
+    <value>Have a subscription? Sign in</value>
+  </data>
+  <data name="Welcome_SingleTicketScan" xml:space="preserve">
+    <value>Single ticket? Scan QR code.</value>
+  </data>
+  <data name="Welcome_WalletSheetLabel" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="Welcome_TopUpSheetTitle" xml:space="preserve">
+    <value>Top up wallet</value>
+  </data>
+  <data name="Welcome_WithdrawTitle" xml:space="preserve">
+    <value>Withdraw to card</value>
+  </data>
+  <data name="Welcome_CloseLabel" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Welcome_ModeLabel" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="Welcome_TopUpMode" xml:space="preserve">
+    <value>+ Top up</value>
+  </data>
+  <data name="Welcome_WithdrawMode" xml:space="preserve">
+    <value>↓ Withdraw</value>
+  </data>
+  <data name="Welcome_AmountLabel" xml:space="preserve">
+    <value>Amount (EUR)</value>
+  </data>
+  <data name="Welcome_Processing" xml:space="preserve">
+    <value>Processing…</value>
+  </data>
+  <data name="Welcome_PayAmount" xml:space="preserve">
+    <value>Pay €{0}</value>
+  </data>
+  <data name="Welcome_FundsAvailableNote" xml:space="preserve">
+    <value>Funds are immediately available for ordering drinks.</value>
+  </data>
+  <data name="Welcome_AvailableForWithdraw" xml:space="preserve">
+    <value>Available for withdrawal</value>
+  </data>
+  <data name="Welcome_WithdrawAmountLabel" xml:space="preserve">
+    <value>Withdrawal amount (EUR)</value>
+  </data>
+  <data name="Welcome_WithdrawAmount" xml:space="preserve">
+    <value>Withdraw €{0}</value>
+  </data>
+  <data name="Welcome_WithdrawAll" xml:space="preserve">
+    <value>Withdraw all</value>
+  </data>
+  <data name="Welcome_RefundNote" xml:space="preserve">
+    <value>Amount is refunded to your card.</value>
+  </data>
+  <data name="Welcome_GuestName" xml:space="preserve">
+    <value>Guest</value>
+  </data>
+  <data name="Welcome_TicketBalance" xml:space="preserve">
+    <value>Ticket balance</value>
+  </data>
+  <data name="Welcome_HalftimeWallet" xml:space="preserve">
+    <value>HALFTIME wallet</value>
+  </data>
+  <data name="Welcome_NoWallet" xml:space="preserve">
+    <value>No wallet</value>
+  </data>
+  <data name="Welcome_GeneralError" xml:space="preserve">
+    <value>Something went wrong. Try again.</value>
+  </data>
+  <data name="Welcome_InsufficientFunds" xml:space="preserve">
+    <value>Amount exceeds available balance.</value>
+  </data>
+  <data name="Welcome_TopupError_LimitExceeded" xml:space="preserve">
+    <value>Amount exceeds maximum wallet balance.</value>
+  </data>
+  <data name="Welcome_TopupError_WalletFrozen" xml:space="preserve">
+    <value>Wallet is frozen.</value>
+  </data>
+  <data name="Welcome_TopupError_GatewayDeclined" xml:space="preserve">
+    <value>Payment declined. Try another card.</value>
+  </data>
+  <data name="Welcome_TopupError_GatewayUnavailable" xml:space="preserve">
+    <value>Online top-up currently unavailable.</value>
+  </data>
+  <data name="Welcome_TopupError_SessionExpired" xml:space="preserve">
+    <value>Session expired. Scan your ticket again.</value>
+  </data>
+  <data name="Welcome_TopupError_TicketNotFound" xml:space="preserve">
+    <value>Wallet not found.</value>
+  </data>
+  <data name="Welcome_TopupError_NotEligible" xml:space="preserve">
+    <value>Wallet not available for this account.</value>
+  </data>
+  <data name="Welcome_TopupError_InvalidAmount" xml:space="preserve">
+    <value>Enter a valid amount.</value>
+  </data>
+  <data name="Welcome_TopupError_General" xml:space="preserve">
+    <value>Top-up failed. Try again.</value>
+  </data>
+  <data name="Welcome_WithdrawError_InsufficientFunds" xml:space="preserve">
+    <value>You don't have enough funds for withdrawal.</value>
+  </data>
+  <data name="Welcome_WithdrawError_WalletFrozen" xml:space="preserve">
+    <value>Wallet is frozen.</value>
+  </data>
+  <data name="Welcome_WithdrawError_GatewayDeclined" xml:space="preserve">
+    <value>Withdrawal declined. Try again.</value>
+  </data>
+  <data name="Welcome_WithdrawError_GatewayUnavailable" xml:space="preserve">
+    <value>Online withdrawal currently unavailable.</value>
+  </data>
+  <data name="Welcome_WithdrawError_SessionExpired" xml:space="preserve">
+    <value>Session expired. Scan your ticket again.</value>
+  </data>
+  <data name="Welcome_WithdrawError_WalletNotFound" xml:space="preserve">
+    <value>Wallet not found.</value>
+  </data>
+  <data name="Welcome_WithdrawError_InvalidAmount" xml:space="preserve">
+    <value>Enter a valid amount.</value>
+  </data>
+  <data name="Welcome_WithdrawError_General" xml:space="preserve">
+    <value>Withdrawal failed. Try again.</value>
+  </data>
+  <data name="Welcome_Day_Yesterday" xml:space="preserve">
+    <value>Yesterday</value>
+  </data>
+  <data name="Welcome_Day_Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Welcome_Day_Tomorrow" xml:space="preserve">
+    <value>Tomorrow</value>
+  </data>
 </root>

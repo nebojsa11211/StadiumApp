@@ -3,9 +3,11 @@
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components.Stadium
 @using StadiumDrinkOrdering.Shared.Models
+@using Microsoft.Extensions.Localization
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 
 <PageTitle>@EventTitle — HALFTIME</PageTitle>
 
@@ -13,15 +15,15 @@
 
 @if (isLoading)
 {
-    <div id="customer-event-details-loading" class="ev-state"><span class="spinner"></span> Učitavam utakmicu…</div>
+    <div id="customer-event-details-loading" class="ev-state"><span class="spinner"></span> @Localizer["EventDetails_Loading"]</div>
 }
 else if (eventDetails == null)
 {
     <div id="customer-event-details-notfound" class="ev-state ev-notfound">
         <div id="customer-event-details-emoji" class="ev-emoji">🚫</div>
-        <h2>Utakmica nije pronađena</h2>
-        <p>Ova utakmica više nije dostupna.</p>
-        <button id="customer-event-details-notfound-home-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/welcome"))">Početna</button>
+        <h2>@Localizer["EventDetails_NotFound_Title"]</h2>
+        <p>@Localizer["EventDetails_NotFound_Message"]</p>
+        <button id="customer-event-details-notfound-home-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/welcome"))">@Localizer["EventDetails_NotFound_Home_Button"]</button>
     </div>
 }
 else
@@ -37,7 +39,7 @@ else
                 <div class="ev-when">@CroatianDay(eventDetails.EventDate.ToLocalTime()) · @eventDetails.EventDate.ToLocalTime().ToString("HH:mm")</div>
                 <div id="customer-event-details-meta" class="ev-meta">
                     <span class="ev-tag">🏟️ @eventDetails.VenueInfo</span>
-                    <span class="ev-tag @AvailClass(eventDetails.AvailableSeats)">🪑 @eventDetails.AvailableSeats slobodno</span>
+                    <span class="ev-tag @AvailClass(eventDetails.AvailableSeats)">🪑 @Localizer["EventDetails_Available", eventDetails.AvailableSeats]</span>
                 </div>
             </div>
         </div>
@@ -64,14 +66,14 @@ else
         @if (!salesEnabled)
         {
             <div id="customer-event-details-sales-disabled" class="ev-empty">
-                🎟️ Prodaja ulaznica putem aplikacije trenutno nije dostupna.
+                🎟️ @Localizer["EventDetails_SalesDisabled"]
             </div>
         }
         else
         {
             <div id="customer-event-details-section-head" class="ev-section-head">
-                <span class="label">Odaberi tribinu</span>
-                <span class="ev-hint">Dodirni tribinu na karti ili u popisu</span>
+                <span class="label">@Localizer["EventDetails_SelectSection_Label"]</span>
+                <span class="ev-hint">@Localizer["EventDetails_SelectSection_Hint"]</span>
             </div>
 
             @if (eventDetails.SectionAvailability.Any())
@@ -95,15 +97,15 @@ else
                                 <span class="ev-sec-avail @AvailClass(sec.AvailableSeats)">
                                     @if (isDisabled)
                                     {
-                                        <span>Nedostupno</span>
+                                        <span>@Localizer["EventDetails_Section_Unavailable"]</span>
                                     }
                                     else if (soldOut)
                                     {
-                                        <span>Rasprodano</span>
+                                        <span>@Localizer["EventDetails_Section_SoldOut"]</span>
                                     }
                                     else
                                     {
-                                        <span>@sec.AvailableSeats / @sec.TotalSeats slobodno</span>
+                                        <span>@Localizer["EventDetails_Section_Available", sec.AvailableSeats, sec.TotalSeats]</span>
                                     }
                                 </span>
                             </div>
@@ -120,14 +122,14 @@ else
             }
             else
             {
-                <div id="customer-event-details-empty" class="ev-empty">Još nema objavljenih mjesta za ovu utakmicu.</div>
+                <div id="customer-event-details-empty" class="ev-empty">@Localizer["EventDetails_NoPublishedSeats"]</div>
             }
         }
     </div>
 
     @if (salesEnabled)
     {
-        <CartBar Count="cartItems.Count" Total="CartTotal" Label="Tvoja košarica" OnView="() => showCart = true" />
+        <CartBar Count="cartItems.Count" Total="CartTotal" Label="@Localizer["EventDetails_YourCart"]" OnView="() => showCart = true" />
     }
 }
 
@@ -140,35 +142,35 @@ else
         <div id="customer-event-details-sheet-head-seats" class="sheet-head">
             <div id="customer-event-details-sheet-title-seats">
                 <div class="sheet-title">@selectedSection.SectionName</div>
-                <div class="sheet-sub">@(string.IsNullOrWhiteSpace(selectedSection.TribuneName) ? "Odaberi mjesta" : selectedSection.TribuneName)</div>
+                <div class="sheet-sub">@(string.IsNullOrWhiteSpace(selectedSection.TribuneName) ? Localizer["EventDetails_SelectSeats"] : selectedSection.TribuneName)</div>
             </div>
-            <button id="customer-event-details-sheet-close-seats-btn" class="iconbtn" @onclick="CloseSeatSheet" aria-label="Zatvori">✕</button>
+            <button id="customer-event-details-sheet-close-seats-btn" class="iconbtn" @onclick="CloseSeatSheet" aria-label="@Localizer["EventDetails_CloseButton"]">✕</button>
         </div>
 
         @if (isLoadingSeats)
         {
-            <div id="customer-event-details-loading-seats" class="ev-state"><span class="spinner"></span> Učitavam mjesta…</div>
+            <div id="customer-event-details-loading-seats" class="ev-state"><span class="spinner"></span> @Localizer["EventDetails_LoadingSeats"]</div>
         }
         else if (selectedSection.Seats.Any())
         {
             <div id="customer-event-details-seat-legend" class="seat-legend">
-                <span id="customer-event-details-seat-legend-free" class="lg"><i class="sw sw-free" aria-hidden="true"></i> Slobodno</span>
-                <span id="customer-event-details-seat-legend-selected" class="lg"><i class="sw sw-sel" aria-hidden="true"></i> Odabrano</span>
-                <span id="customer-event-details-seat-legend-taken" class="lg"><i class="sw sw-taken" aria-hidden="true"></i> Zauzeto</span>
+                <span id="customer-event-details-seat-legend-free" class="lg"><i class="sw sw-free" aria-hidden="true"></i> @Localizer["EventDetails_Legend_Free"]</span>
+                <span id="customer-event-details-seat-legend-selected" class="lg"><i class="sw sw-sel" aria-hidden="true"></i> @Localizer["EventDetails_Legend_Selected"]</span>
+                <span id="customer-event-details-seat-legend-taken" class="lg"><i class="sw sw-taken" aria-hidden="true"></i> @Localizer["EventDetails_Legend_Taken"]</span>
             </div>
 
             <div id="customer-event-details-seat-pitch" class="seat-pitch">
                 <svg class="pitch-arc" viewBox="0 0 320 40" preserveAspectRatio="none" aria-hidden="true">
                     <path d="M6 34 Q160 4 314 34" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" opacity=".55" />
                 </svg>
-                <span class="pitch-label">⚽ Teren</span>
+                <span class="pitch-label">@Localizer["EventDetails_Pitch"]</span>
             </div>
 
             <div id="customer-event-details-seats-scroll" class="seats-scroll no-scrollbar" role="group" aria-label="Raspored mjesta u tribini">
                 @foreach (var rowGroup in selectedSection.Seats.GroupBy(s => s.RowNumber).OrderBy(g => g.Key))
                 {
                     <div id="customer-event-details-seat-row-@rowGroup.Key" class="seat-row">
-                        <span id="customer-event-details-seat-row-label-@rowGroup.Key" class="rl">Red @rowGroup.Key</span>
+                        <span id="customer-event-details-seat-row-label-@rowGroup.Key" class="rl">@Localizer["EventDetails_Row", rowGroup.Key]</span>
                         <div id="customer-event-details-seats-@rowGroup.Key" class="seats">
                             @foreach (var seat in rowGroup.OrderBy(s => s.SeatNumber))
                             {
@@ -179,7 +181,7 @@ else
                                         <button id="customer-event-details-seat-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat @(isSel ? "sel" : "")"
                                                 @onclick="@(() => ToggleSeatSelection(seat))"
                                                 aria-pressed="@isSel"
-                                                aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber}, €{seat.Price.ToString("F0")} — {(isSel ? "odabrano" : "slobodno")}")'
+                                                aria-label='@(isSel ? Localizer["EventDetails_SeatAriaLabel_Selected", seat.RowNumber, seat.SeatNumber, seat.Price.ToString("F0")] : Localizer["EventDetails_SeatAriaLabel_Available", seat.RowNumber, seat.SeatNumber, seat.Price.ToString("F0")])'
                                                 title="@SeatTitle(seat)">
                                             @seat.SeatNumber
                                         </button>
@@ -187,14 +189,14 @@ else
                                     else
                                     {
                                         <button id="customer-event-details-seat-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat taken" disabled aria-disabled="true"
-                                                aria-label='@($"Red {seat.RowNumber}, mjesto {seat.SeatNumber} — zauzeto")'>
+                                                aria-label='@Localizer["EventDetails_SeatAriaLabel_Taken", seat.RowNumber, seat.SeatNumber]'>
                                             @seat.SeatNumber
                                         </button>
                                     }
                                     <button id="customer-event-details-seat-locate-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat-loc"
                                             @onclick="@(() => OpenSeatLocator(seat))"
-                                            title="Prikaži sjedalo na karti"
-                                            aria-label='@($"Prikaži mjesto {seat.SeatNumber}, red {seat.RowNumber} na karti stadiona")'>📍</button>
+                                            title="@Localizer["EventDetails_ShowSeatOnMap_Title"]"
+                                            aria-label='@Localizer["EventDetails_ShowSeatOnMap_AriaLabel", seat.SeatNumber, seat.RowNumber]'>📍</button>
                                 </div>
                             }
                         </div>
@@ -204,7 +206,7 @@ else
         }
         else
         {
-            <div id="customer-event-details-empty-seats" class="ev-empty">Nema dostupnih mjesta u ovoj tribini.</div>
+            <div id="customer-event-details-empty-seats" class="ev-empty">@Localizer["EventDetails_NoSeatsInSection"]</div>
         }
 
         @if (!string.IsNullOrEmpty(seatSheetError))
@@ -218,8 +220,8 @@ else
                 @foreach (var seat in selectedSeats.OrderBy(s => s.RowNumber).ThenBy(s => s.SeatNumber))
                 {
                     <button id="customer-event-details-seat-chip-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat-chip" @onclick="@(() => ToggleSeatSelection(seat))"
-                            aria-label='@($"Ukloni: Red {seat.RowNumber}, mjesto {seat.SeatNumber}")'>
-                        <span>Red @seat.RowNumber · @seat.SeatNumber</span>
+                            aria-label='@Localizer["EventDetails_RemoveSeat", seat.RowNumber, seat.SeatNumber]'>
+                        <span>@Localizer["EventDetails_SeatChip", seat.RowNumber, seat.SeatNumber]</span>
                         <span class="x" aria-hidden="true">✕</span>
                     </button>
                 }
@@ -229,11 +231,18 @@ else
         <button id="customer-event-details-add-seats-btn" class="btn btn-primary sheet-cta" disabled="@(!selectedSeats.Any())" @onclick="AddSelectedSeatsToCart">
             @if (selectedSeats.Any())
             {
-                <span>Dodaj @selectedSeats.Count @Seats(selectedSeats.Count) · €@SelectedTotal</span>
+                @if (selectedSeats.Count == 1)
+                {
+                    <span>@Localizer["EventDetails_AddSeats_One", selectedSeats.Count, SelectedTotal]</span>
+                }
+                else
+                {
+                    <span>@Localizer["EventDetails_AddSeats_Many", selectedSeats.Count, SelectedTotal]</span>
+                }
             }
             else
             {
-                <span>Odaberi mjesta</span>
+                <span>@Localizer["EventDetails_SelectSeats"]</span>
             }
         </button>
     }
@@ -246,10 +255,10 @@ else
     {
         <div class="locator-head">
             <div>
-                <div id="customer-event-details-locator-title" class="locator-title">@(locatorOverlay?.Name ?? locatorOverlay?.SectorCode ?? "Sektor")</div>
-                <div id="customer-event-details-locator-sub" class="locator-sub">📍 Red @locatorSeat.RowNumber · Mjesto @locatorSeat.SeatNumber</div>
+                <div id="customer-event-details-locator-title" class="locator-title">@(locatorOverlay?.Name ?? locatorOverlay?.SectorCode ?? Localizer["EventDetails_Locator_DefaultSector"])</div>
+                <div id="customer-event-details-locator-sub" class="locator-sub">📍 @Localizer["EventDetails_Locator_SeatLocation", locatorSeat.RowNumber, locatorSeat.SeatNumber]</div>
             </div>
-            <button id="customer-event-details-locator-close-btn" class="iconbtn" @onclick="CloseSeatLocator" aria-label="Zatvori">✕</button>
+            <button id="customer-event-details-locator-close-btn" class="iconbtn" @onclick="CloseSeatLocator" aria-label="@Localizer["EventDetails_CloseButton"]">✕</button>
         </div>
         <div class="locator-canvas-wrap" id="customer-event-details-locator-canvas-wrap">
             <canvas id="customer-seat-locator-canvas" width="900" height="600"></canvas>
@@ -273,15 +282,15 @@ else
         <div id="customer-event-details-sheet-grab-cart" class="grab"></div>
         <div id="customer-event-details-sheet-head-cart" class="sheet-head">
             <div id="customer-event-details-sheet-title-cart">
-                <div class="sheet-title">Košarica</div>
-                <div class="sheet-sub">@cartItems.Count @Seats(cartItems.Count)</div>
+                <div class="sheet-title">@Localizer["EventDetails_CartSheet_Title"]</div>
+                <div class="sheet-sub">@(cartItems.Count == 1 ? Localizer["EventDetails_CartItem_One", cartItems.Count] : Localizer["EventDetails_CartItems_Many", cartItems.Count])</div>
             </div>
-            <button id="customer-event-details-sheet-close-cart-btn" class="iconbtn" @onclick="@(() => showCart = false)" aria-label="Zatvori">✕</button>
+            <button id="customer-event-details-sheet-close-cart-btn" class="iconbtn" @onclick="@(() => showCart = false)" aria-label="@Localizer["EventDetails_CloseButton"]">✕</button>
         </div>
 
         @if (!cartItems.Any())
         {
-            <div class="ev-empty">Košarica je prazna. Odaberi mjesta u nekoj tribini.</div>
+            <div class="ev-empty">@Localizer["EventDetails_CartEmpty_Message"]</div>
         }
         else
         {
@@ -296,19 +305,19 @@ else
                         </div>
                         <div id="customer-event-details-cart-item-right-@_cartIndex" class="ci-r">
                             <span class="ci-price tnum">€@item.Price.ToString("F2")</span>
-                            <button class="ci-del" @onclick="@(() => RemoveSeatFromCart(item))" aria-label="Ukloni">✕</button>
+                            <button class="ci-del" @onclick="@(() => RemoveSeatFromCart(item))" aria-label="@Localizer["EventDetails_CartItem_Remove"]">✕</button>
                         </div>
                     </div>
                 }
             </div>
 
             <div id="customer-event-details-cart-total" class="cart-total">
-                <span>Ukupno</span>
+                <span>@Localizer["EventDetails_CartTotal_Label"]</span>
                 <span class="tnum">€@CartTotal.ToString("F2")</span>
             </div>
 
-            <button id="customer-event-details-cart-checkout-btn" class="btn btn-primary" @onclick="ProceedToCheckout">Nastavi na plaćanje</button>
-            <button id="customer-event-details-cart-clear-btn" class="btn btn-ghost cart-clear" @onclick="ClearCart">Isprazni košaricu</button>
+            <button id="customer-event-details-cart-checkout-btn" class="btn btn-primary" @onclick="ProceedToCheckout">@Localizer["EventDetails_CartCheckout_Button"]</button>
+            <button id="customer-event-details-cart-clear-btn" class="btn btn-ghost cart-clear" @onclick="ClearCart">@Localizer["EventDetails_CartClear_Button"]</button>
         }
     }
 </div>

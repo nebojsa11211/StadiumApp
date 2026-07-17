@@ -1030,4 +1030,25 @@
   <data name="TopupHistory_Type_CashOut" xml:space="preserve">
     <value>Cash-out</value>
   </data>
+  <data name="TicketTopup_ProvisionAccountTitle" xml:space="preserve">
+    <value>👤 Create guest account</value>
+  </data>
+  <data name="TicketTopup_ProvisionAccountHint" xml:space="preserve">
+    <value>Enter the guest's email to create an account — funds load onto their personal wallet and they can claim it later.</value>
+  </data>
+  <data name="TicketTopup_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="TicketTopup_EmailPlaceholder" xml:space="preserve">
+    <value>name@example.com</value>
+  </data>
+  <data name="TicketTopup_ProvisioningButton" xml:space="preserve">
+    <value>Creating…</value>
+  </data>
+  <data name="TicketTopup_ProvisionAndContinueBtn" xml:space="preserve">
+    <value>Create account &amp; continue</value>
+  </data>
+  <data name="TicketTopup_ProvisionAlternativeHint" xml:space="preserve">
+    <value>Or load funds directly onto the ticket below.</value>
+  </data>
 </root>

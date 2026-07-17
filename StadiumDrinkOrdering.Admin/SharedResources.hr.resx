@@ -4117,4 +4117,8 @@
   <data name="Wallets_TicketBadge" xml:space="preserve"><value>Ulaznica</value></data>
   <data name="Wallets_TicketOwner" xml:space="preserve"><value>Ulaznica</value></data>
   <data name="Wallets_Anonymous" xml:space="preserve"><value>Anonimno — bez računa</value></data>
+  <data name="Events_Season" xml:space="preserve"><value>Sezona</value></data>
+  <data name="Events_NoSeasonOption" xml:space="preserve"><value>(bez sezone)</value></data>
+  <data name="Events_CurrentSeasonSuffix" xml:space="preserve"><value>(trenutna)</value></data>
+  <data name="Events_SeasonHint" xml:space="preserve"><value>Povezivanje popunjava propusnice ove sezone kartom za utakmicu.</value></data>
 </root>

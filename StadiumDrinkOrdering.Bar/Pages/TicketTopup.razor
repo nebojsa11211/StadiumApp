@@ -257,36 +257,35 @@ else
             {
                 @* ---------- Create an account from the ticket's identity (OIB) ---------- *@
                 <div id="bar-provision-card" class="card mb-3">
-                    <div class="card-header">👤 Kreiraj račun gosta</div>
+                    <div class="card-header">@Localizer["TicketTopup_ProvisionAccountTitle"]</div>
                     <div class="card-body">
                         @if (!string.IsNullOrWhiteSpace(resolved.FullName))
                         {
                             <p class="mb-1" id="bar-provision-name">@resolved.FullName</p>
                         }
                         <dl class="row mb-2">
-                            <dt class="col-5 text-muted">OIB</dt>
+                            <dt class="col-5 text-muted">@Localizer["TicketTopup_Oib"]</dt>
                             <dd class="col-7" id="bar-provision-oib">@Display(resolved.Oib)</dd>
                         </dl>
                         <p class="text-muted small">
-                            Unesite e-poštu gosta da kreirate račun — sredstva se učitavaju na njegov osobni
-                            novčanik i može ih kasnije preuzeti.
+                            @Localizer["TicketTopup_ProvisionAccountHint"]
                         </p>
-                        <label for="bar-provision-email" class="form-label">E-pošta</label>
+                        <label for="bar-provision-email" class="form-label">@Localizer["TicketTopup_EmailLabel"]</label>
                         <div class="input-group mb-2">
                             <input id="bar-provision-email" type="email" class="form-control"
                                    @bind="provisionEmail" @bind:event="oninput"
-                                   placeholder="ime@@email.hr" disabled="@isProvisioning" />
+                                   placeholder='@Localizer["TicketTopup_EmailPlaceholder"]' disabled="@isProvisioning" />
                             <button id="bar-provision-btn" class="btn btn-primary"
                                     @onclick="ProvisionAsync"
                                     disabled="@(isProvisioning || string.IsNullOrWhiteSpace(provisionEmail))">
                                 @if (isProvisioning)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                                    <span>Kreiram…</span>
+                                    <span>@Localizer["TicketTopup_ProvisioningButton"]</span>
                                 }
                                 else
                                 {
-                                    <span>Kreiraj račun i nastavi</span>
+                                    <span>@Localizer["TicketTopup_ProvisionAndContinueBtn"]</span>
                                 }
                             </button>
                         </div>
@@ -296,7 +295,7 @@ else
                         }
                         @if (resolved.AllowTicketWallet)
                         {
-                            <p class="text-muted small mt-2 mb-0">Ili učitajte izravno na ulaznicu ispod.</p>
+                            <p class="text-muted small mt-2 mb-0">@Localizer["TicketTopup_ProvisionAlternativeHint"]</p>
                         }
                     </div>
                 </div>

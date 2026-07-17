@@ -1,4 +1,5 @@
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 
 <div id="customer-theme-switcher" class="theme-switcher" title="@GetThemeTooltip()">
     <button type="button"
@@ -67,12 +68,12 @@
 
     private string GetThemeTooltip()
     {
-        return isDarkMode ? "Switch to light mode" : "Switch to dark mode";
+        return isDarkMode ? Localizer["ThemeSwitcher_ToLightMode"] : Localizer["ThemeSwitcher_ToDarkMode"];
     }
 
     private string GetAriaLabel()
     {
-        return isDarkMode ? "Switch to light mode" : "Switch to dark mode";
+        return isDarkMode ? Localizer["ThemeSwitcher_ToLightMode"] : Localizer["ThemeSwitcher_ToDarkMode"];
     }
 
     [JSInvokable]

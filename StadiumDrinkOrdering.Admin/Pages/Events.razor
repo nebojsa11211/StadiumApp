@@ -154,7 +154,7 @@
                                         }
                                         <dt><i class="bi bi-cash"></i> @L["Events_BasePriceLabel"]</dt>
                                         <dd class="mono" id="admin-event-price-@evt.Id">€@evt.BasePrice.ToString("F2")</dd>
-                                        <dt><i class="bi bi-calendar-range"></i> Season</dt>
+                                        <dt><i class="bi bi-calendar-range"></i> @L["Events_Season"]</dt>
                                         <dd id="admin-event-season-@evt.Id">
                                             @if (!string.IsNullOrEmpty(evt.SeasonName))
                                             {
@@ -418,18 +418,18 @@
                         </div>
                         <div class="col-md-6" id="admin-event-form-season-col">
                             <div class="mb-3" id="admin-event-form-season-group">
-                                <label class="form-label" for="admin-event-form-season"><i class="bi bi-calendar-range"></i> Season</label>
+                                <label class="form-label" for="admin-event-form-season"><i class="bi bi-calendar-range"></i> @L["Events_Season"]</label>
                                 <select class="form-control" @bind="eventForm.SeasonId" id="admin-event-form-season">
-                                    <option value="">(no season)</option>
+                                    <option value="">@L["Events_NoSeasonOption"]</option>
                                     @if (seasons != null)
                                     {
                                         @foreach (var s in seasons.OrderByDescending(x => x.StartDate))
                                         {
-                                            <option value="@s.Id">@s.Name @(s.IsCurrent ? "(current)" : "")</option>
+                                            <option value="@s.Id">@s.Name @(s.IsCurrent ? L["Events_CurrentSeasonSuffix"].Value : "")</option>
                                         }
                                     }
                                 </select>
-                                <div class="form-text" id="admin-event-form-season-hint">Linking backfills this season's passes with a match ticket.</div>
+                                <div class="form-text" id="admin-event-form-season-hint">@L["Events_SeasonHint"]</div>
                             </div>
                         </div>
                     </div>

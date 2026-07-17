@@ -7,8 +7,9 @@
 @inject OrderSessionState State
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Moja sezona — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Home_PageTitle"]</PageTitle>
 
 @if (_loading)
 {
@@ -18,45 +19,45 @@ else if (_home is null || !_home.HasPass)
 {
     <div id="customer-home-no-pass" class="center pad">
         <div id="customer-home-emoji" style="font-size:52px">🎟️</div>
-        <h2>Nemaš sezonsku pretplatu</h2>
-        <p class="muted">Na ovom računu nije pronađena sezonska ulaznica. Došao si na pojedinačnu utakmicu? Skeniraj ulaznicu.</p>
-        <button id="customer-home-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
-        <button id="customer-home-my-tickets-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/my-tickets"))">🎟️ Moje ulaznice</button>
-        <button id="customer-layout-profile-link" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/profile"))">👤 Moj profil</button>
-        <button id="customer-home-logout-btn" class="btn btn-ghost" @onclick="Logout">Odjava</button>
+        <h2>@Localizer["Home_NoPass_Title"]</h2>
+        <p class="muted">@Localizer["Home_NoPass_Message"]</p>
+        <button id="customer-home-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">@Localizer["Home_ScanButton"]</button>
+        <button id="customer-home-my-tickets-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/my-tickets"))">@Localizer["Home_MyTickets"]</button>
+        <button id="customer-layout-profile-link" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/profile"))">@Localizer["Home_ProfileButton"]</button>
+        <button id="customer-home-logout-btn" class="btn btn-ghost" @onclick="Logout">@Localizer["Home_LogoutButton"]</button>
     </div>
 }
 else
 {
     <div id="customer-home-greeting" class="home-hi">
         <div id="customer-home-greeting-text">
-            <div class="greet">Dobra večer,</div>
+            <div class="greet">@Localizer["Home_Greeting"]</div>
             <div class="name">@FirstName 👋</div>
         </div>
-        <button id="customer-home-avatar-btn" class="avatar" @onclick="@(() => Nav.NavigateTo("/profile"))" title="Moj profil">@Initials</button>
+        <button id="customer-home-avatar-btn" class="avatar" @onclick="@(() => Nav.NavigateTo("/profile"))" title="@Localizer["Home_ProfileTooltip"]">@Initials</button>
     </div>
 
     <div id="customer-home-pass" class="pass">
         <div id="customer-home-pass-info" class="info">
-            <div class="t">⭐ Sezonska pretplata</div>
+            <div class="t">@Localizer["Home_SeasonPass"]</div>
             <div class="s">@_home.SeatLabel</div>
             <div class="m tnum">@_home.SeasonName · @_home.PassNumber</div>
         </div>
-        <span class="chip-seat"><b>Tvoje mjesto</b></span>
+        <span class="chip-seat"><b>@Localizer["Home_YourSeat"]</b></span>
     </div>
 
     <a id="customer-home-my-tickets-link" href="/my-tickets" class="home-tickets-link">
-        <span>🎟️ Moje ulaznice & računi</span>
+        <span>@Localizer["Home_MyTicketsAccountsLink"]</span>
         <span class="chev">›</span>
     </a>
 
     @if (_home.LiveEvent is not null)
     {
-        <div id="customer-home-live-title" class="sec-title"><h3>Trenutno uživo</h3></div>
+        <div id="customer-home-live-title" class="sec-title"><h3>@Localizer["Home_LiveNow"]</h3></div>
         <div id="customer-home-live-card" class="livecard">
             <div id="customer-home-live-glow" class="glow"></div>
             <div id="customer-home-live-top" class="lc-top">
-                <div class="live-badge"><span class="pulse"></span> Uživo</div>
+                <div class="live-badge"><span class="pulse"></span> @Localizer["Home_Live"]</div>
             </div>
             <div class="lc-match">@_home.LiveEvent.EventName</div>
             <div class="lc-meta tnum">@_home.LiveEvent.EventDate.ToLocalTime().ToString("HH:mm")</div>
@@ -70,33 +71,33 @@ else
                     <button id="customer-home-live-order-btn" class="btn btn-primary" @onclick="() => StartOrdering(_home.LiveEvent.SessionQrToken!)" disabled="@_starting">
                         @if (_starting)
                         {
-                            <span class="spinner"></span> <span>Otvaram meni…</span>
+                            <span class="spinner"></span> <span>@Localizer["Home_OpeningMenu"]</span>
                         }
                         else
                         {
-                            <span>🍺 Naruči na svoje mjesto</span>
+                            <span>@Localizer["Home_OrderButton"]</span>
                         }
                     </button>
                 }
                 else
                 {
-                    <div class="soon">Naručivanje uskoro dostupno</div>
+                    <div class="soon">@Localizer["Home_OrderingSoon"]</div>
                 }
             </div>
         </div>
     }
     else
     {
-        <div id="customer-home-next-title" class="sec-title"><h3>Sljedeća utakmica</h3></div>
+        <div id="customer-home-next-title" class="sec-title"><h3>@Localizer["Home_UpcomingFixture"]</h3></div>
         <div id="customer-home-no-live" class="nolive">
             <div id="customer-home-no-live-emoji" class="nl-emoji">⏳</div>
-            <p>Trenutno nema utakmice uživo. Naručivanje se otvara kad utakmica počne.</p>
+            <p>@Localizer["Home_NoLiveEvent"]</p>
         </div>
     }
 
     @if (_home.Upcoming.Any())
     {
-        <div id="customer-home-upcoming-title" class="sec-title"><h3>Raspored</h3></div>
+        <div id="customer-home-upcoming-title" class="sec-title"><h3>@Localizer["Home_Schedule"]</h3></div>
         @foreach (var fx in _home.Upcoming)
         {
             var _fixtureIndex = System.Array.IndexOf(_home.Upcoming.ToArray(), fx);

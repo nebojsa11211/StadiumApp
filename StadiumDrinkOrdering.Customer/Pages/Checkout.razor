@@ -3,21 +3,23 @@
 @using CustomerServices = StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Shared.DTOs
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
 @inject CustomerServices.IApiService ApiService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Plaćanje — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Checkout_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Plaćanje" Subtitle="Ulaznice" OnBack="GoBack" />
+<ScreenHeader Title="@Localizer["Checkout_ScreenHeaderTitle"]" Subtitle="@Localizer["Checkout_ScreenHeaderSubtitle"]" OnBack="GoBack" />
 
 @if (cart == null || !cart.Items.Any())
 {
     <div id="customer-checkout-empty" class="co-empty">
         <div id="customer-checkout-emoji" class="co-emoji">🛒</div>
-        <h2>Košarica je prazna</h2>
-        <p>Dodaj ulaznice prije plaćanja.</p>
-        <button id="customer-checkout-empty-browse-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">Pregledaj utakmice</button>
+        <h2>@Localizer["Checkout_CartEmptyTitle"]</h2>
+        <p>@Localizer["Checkout_CartEmptyMessage"]</p>
+        <button id="customer-checkout-empty-browse-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">@Localizer["Checkout_BrowseEventsButton"]</button>
     </div>
 }
 else
@@ -29,8 +31,8 @@ else
             <!-- Order summary -->
             <div id="customer-checkout-card" class="co-card">
                 <div id="customer-checkout-card-head" class="co-card-head">
-                    <span class="label">Sažetak</span>
-                    <span class="co-event">@(cart.Items.FirstOrDefault()?.EventName ?? "Utakmica")</span>
+                    <span class="label">@Localizer["Checkout_SummaryLabel"]</span>
+                    <span class="co-event">@(cart.Items.FirstOrDefault()?.EventName ?? Localizer["Checkout_DefaultEventName"])</span>
                 </div>
 
                 <div id="customer-checkout-seats" class="co-seats">
@@ -40,7 +42,7 @@ else
                         <div id="customer-checkout-seat-@_itemIndex" class="co-seat">
                             <div id="customer-checkout-seat-left-@_itemIndex" class="co-seat-l">
                                 <span class="co-seat-code">@SeatLabel(item)</span>
-                                <span class="co-seat-sec">@(string.IsNullOrWhiteSpace(item.SectionName) ? ("Sektor " + item.SectorId) : item.SectionName)</span>
+                                <span class="co-seat-sec">@(string.IsNullOrWhiteSpace(item.SectionName) ? (Localizer["Checkout_SectorPrefix"].Value + item.SectorId) : item.SectionName)</span>
                             </div>
                             <span class="co-seat-price tnum">€@item.Price.ToString("F2")</span>
                         </div>
@@ -48,48 +50,48 @@ else
                 </div>
 
                 <div id="customer-checkout-lines" class="co-lines">
-                    <div id="customer-checkout-line-subtotal" class="co-line"><span>Međuzbroj (@cart.Items.Count)</span><span class="tnum">€@subtotal.ToString("F2")</span></div>
-                    <div id="customer-checkout-line-service" class="co-line"><span>Naknada za uslugu</span><span class="tnum">€@serviceFee.ToString("F2")</span></div>
-                    <div id="customer-checkout-line-processing" class="co-line"><span>Naknada za obradu</span><span class="tnum">€@processingFee.ToString("F2")</span></div>
-                    <div id="customer-checkout-line-total" class="co-line co-line-total"><span>Ukupno</span><span class="tnum">€@total.ToString("F2")</span></div>
+                    <div id="customer-checkout-line-subtotal" class="co-line"><span>@Localizer["Checkout_SubtotalLine", cart.Items.Count]</span><span class="tnum">€@subtotal.ToString("F2")</span></div>
+                    <div id="customer-checkout-line-service" class="co-line"><span>@Localizer["Checkout_ServiceFeeLine"]</span><span class="tnum">€@serviceFee.ToString("F2")</span></div>
+                    <div id="customer-checkout-line-processing" class="co-line"><span>@Localizer["Checkout_ProcessingFeeLine"]</span><span class="tnum">€@processingFee.ToString("F2")</span></div>
+                    <div id="customer-checkout-line-total" class="co-line co-line-total"><span>@Localizer["Checkout_TotalLine"]</span><span class="tnum">€@total.ToString("F2")</span></div>
                 </div>
             </div>
 
             <!-- Customer info -->
             <div id="customer-checkout-customer-info" class="co-section">
-                <span class="label">Podaci o kupcu</span>
+                <span class="label">@Localizer["Checkout_CustomerInfoSection"]</span>
                 <div id="customer-checkout-grid-name" class="co-grid2">
                     <div id="customer-checkout-field-firstname" class="field">
-                        <label>Ime</label>
-                        <InputText class="co-input" @bind-Value="checkoutForm.FirstName" placeholder="Ivan" />
+                        <label>@Localizer["Checkout_FirstNameLabel"]</label>
+                        <InputText class="co-input" @bind-Value="checkoutForm.FirstName" placeholder="@Localizer["Checkout_FirstNamePlaceholder"]" />
                         <ValidationMessage For="@(() => checkoutForm.FirstName)" class="co-err" />
                     </div>
                     <div id="customer-checkout-field-lastname" class="field">
-                        <label>Prezime</label>
-                        <InputText class="co-input" @bind-Value="checkoutForm.LastName" placeholder="Horvat" />
+                        <label>@Localizer["Checkout_LastNameLabel"]</label>
+                        <InputText class="co-input" @bind-Value="checkoutForm.LastName" placeholder="@Localizer["Checkout_LastNamePlaceholder"]" />
                         <ValidationMessage For="@(() => checkoutForm.LastName)" class="co-err" />
                     </div>
                 </div>
                 <div id="customer-checkout-field-email" class="field">
-                    <label>Email</label>
-                    <InputText type="email" class="co-input" @bind-Value="checkoutForm.Email" placeholder="ime@email.hr" />
+                    <label>@Localizer["Checkout_EmailLabel"]</label>
+                    <InputText type="email" class="co-input" @bind-Value="checkoutForm.Email" placeholder="@Localizer["Checkout_EmailPlaceholder"]" />
                     <ValidationMessage For="@(() => checkoutForm.Email)" class="co-err" />
                 </div>
                 <div id="customer-checkout-field-phone" class="field">
-                    <label>Telefon</label>
-                    <InputText class="co-input" @bind-Value="checkoutForm.Phone" placeholder="+385 91 234 5678" />
+                    <label>@Localizer["Checkout_PhoneLabel"]</label>
+                    <InputText class="co-input" @bind-Value="checkoutForm.Phone" placeholder="@Localizer["Checkout_PhonePlaceholder"]" />
                     <ValidationMessage For="@(() => checkoutForm.Phone)" class="co-err" />
                 </div>
 
                 <label id="customer-checkout-foreigner-label" class="co-terms">
                     <InputCheckbox id="customer-checkout-foreigner-input" @bind-Value="checkoutForm.IsForeigner" />
-                    <span>Strani državljanin (nemam OIB)</span>
+                    <span>@Localizer["Checkout_ForeignerLabel"]</span>
                 </label>
 
                 @if (!checkoutForm.IsForeigner)
                 {
                     <div id="customer-checkout-field-oib" class="field">
-                        <label>OIB</label>
+                        <label>@Localizer["Checkout_OIBLabel"]</label>
                         <InputText class="co-input" @bind-Value="checkoutForm.Oib" placeholder="12345678901" maxlength="11" inputmode="numeric" />
                         <ValidationMessage For="@(() => checkoutForm.Oib)" class="co-err" />
                     </div>
@@ -97,7 +99,7 @@ else
                 else
                 {
                     <div id="customer-checkout-field-document" class="field">
-                        <label>Broj dokumenta (putovnica / osobna)</label>
+                        <label>@Localizer["Checkout_DocumentLabel"]</label>
                         <InputText class="co-input" @bind-Value="checkoutForm.DocumentNumber" placeholder="HR1234567" maxlength="50" />
                         <ValidationMessage For="@(() => checkoutForm.DocumentNumber)" class="co-err" />
                     </div>
@@ -112,29 +114,29 @@ else
             <!-- Payment -->
             <div id="customer-checkout-payment-section" class="co-section">
                 <div id="customer-checkout-payment-head" class="co-section-head">
-                    <span class="label">Plaćanje karticom</span>
-                    <button id="customer-checkout-sample-data-btn" type="button" class="btn btn-ghost btn-sm" @onclick="FillSamplePaymentData">Testni podaci</button>
+                    <span class="label">@Localizer["Checkout_PaymentSection"]</span>
+                    <button id="customer-checkout-sample-data-btn" type="button" class="btn btn-ghost btn-sm" @onclick="FillSamplePaymentData">@Localizer["Checkout_SampleDataButton"]</button>
                 </div>
                 <div id="customer-checkout-field-cardnumber" class="field">
-                    <label>Broj kartice</label>
+                    <label>@Localizer["Checkout_CardNumberLabel"]</label>
                     <InputText class="co-input" @bind-Value="checkoutForm.CardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
                     <ValidationMessage For="@(() => checkoutForm.CardNumber)" class="co-err" />
                 </div>
                 <div id="customer-checkout-grid-carddetails" class="co-grid2">
                     <div id="customer-checkout-field-expiry" class="field">
-                        <label>Vrijedi do</label>
-                        <InputText class="co-input" @bind-Value="checkoutForm.ExpiryDate" placeholder="MM/GG" maxlength="5" />
+                        <label>@Localizer["Checkout_ExpiryLabel"]</label>
+                        <InputText class="co-input" @bind-Value="checkoutForm.ExpiryDate" placeholder="@Localizer["Checkout_ExpiryPlaceholder"]" maxlength="5" />
                         <ValidationMessage For="@(() => checkoutForm.ExpiryDate)" class="co-err" />
                     </div>
                     <div id="customer-checkout-field-cvv" class="field">
-                        <label>CVV</label>
+                        <label>@Localizer["Checkout_CVVLabel"]</label>
                         <InputText class="co-input" @bind-Value="checkoutForm.CVV" placeholder="123" maxlength="4" />
                         <ValidationMessage For="@(() => checkoutForm.CVV)" class="co-err" />
                     </div>
                 </div>
                 <div id="customer-checkout-field-cardholder" class="field">
-                    <label>Ime na kartici</label>
-                    <InputText class="co-input" @bind-Value="checkoutForm.CardholderName" placeholder="IVAN HORVAT" />
+                    <label>@Localizer["Checkout_CardholderLabel"]</label>
+                    <InputText class="co-input" @bind-Value="checkoutForm.CardholderName" placeholder="@Localizer["Checkout_CardholderPlaceholder"]" />
                     <ValidationMessage For="@(() => checkoutForm.CardholderName)" class="co-err" />
                 </div>
             </div>
@@ -142,7 +144,7 @@ else
             <!-- Terms -->
             <label id="customer-checkout-terms-label" class="co-terms">
                 <InputCheckbox id="customer-checkout-terms-input" @bind-Value="checkoutForm.AgreeToTerms" />
-                <span>Prihvaćam <a href="/terms" target="_blank">uvjete korištenja</a> i <a href="/privacy" target="_blank">pravila privatnosti</a>.</span>
+                <span>@Localizer["Checkout_TermsAccept"] <a href="/terms" target="_blank">@Localizer["Checkout_TermsLinkText"]</a> @Localizer["Checkout_TermsAnd"] <a href="/privacy" target="_blank">@Localizer["Checkout_PrivacyLinkText"]</a>@Localizer["Checkout_TermsDot"]</span>
             </label>
             <ValidationMessage For="@(() => checkoutForm.AgreeToTerms)" class="co-err" />
         </div>
@@ -151,11 +153,11 @@ else
             <button id="customer-checkout-submit-btn" type="submit" class="btn btn-primary" disabled="@isProcessing">
                 @if (isProcessing)
                 {
-                    <span class="spinner"></span> <span>Obrađujem…</span>
+                    <span class="spinner"></span> <span>@Localizer["Checkout_ProcessingText"]</span>
                 }
                 else
                 {
-                    <span>🔒 Plati €@total.ToString("F2")</span>
+                    <span>@Localizer["Checkout_PayButton", total.ToString("F2")]</span>
                 }
             </button>
         </div>
@@ -167,8 +169,8 @@ else
     <div id="customer-checkout-overlay" class="co-overlay">
         <div id="customer-checkout-overlay-box" class="co-overlay-box">
             <span class="spinner co-big-spin"></span>
-            <h3>Obrađujem plaćanje…</h3>
-            <p>Molimo pričekaj, ne zatvaraj aplikaciju.</p>
+            <h3>@Localizer["Checkout_ProcessingPaymentTitle"]</h3>
+            <p>@Localizer["Checkout_WaitMessage"]</p>
         </div>
     </div>
 }
@@ -231,7 +233,7 @@ else
     {
         if (cart == null || !cart.Items.Any())
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Košarica je prazna. Dodaj ulaznice prije plaćanja.");
+            await JSRuntime.InvokeVoidAsync("alert", Localizer["Checkout_EmptyCartAlert"].Value);
             return;
         }
 
@@ -296,12 +298,13 @@ else
             }
             else
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Plaćanje nije uspjelo: " + (orderResult?.ErrorMessage ?? "Nepoznata pogreška."));
+                var errorMsg = orderResult?.ErrorMessage ?? Localizer["Checkout_UnknownError"].Value;
+                await JSRuntime.InvokeVoidAsync("alert", Localizer["Checkout_PaymentFailedAlert", errorMsg].Value);
             }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Došlo je do pogreške: " + ex.Message);
+            await JSRuntime.InvokeVoidAsync("alert", Localizer["Checkout_ErrorAlert", ex.Message].Value);
         }
         finally
         {

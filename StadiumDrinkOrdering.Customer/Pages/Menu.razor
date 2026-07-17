@@ -4,34 +4,36 @@
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components
+@using Microsoft.Extensions.Localization
 @inject IApiService ApiService
 @inject ICartService CartService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<PageTitle>Meni — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Menu_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Meni" Subtitle="Piće & zalogaji" ShowBack="false" />
+<ScreenHeader Title="@Localizer["Menu_ScreenTitle"]" Subtitle="@Localizer["Menu_ScreenSubtitle"]" ShowBack="false" />
 
 <TicketProtectedRoute>
     <div id="customer-menu-container" class="menu-body no-scrollbar">
 
         @if (drinks == null)
         {
-            <div id="customer-menu-loading" class="menu-state"><span class="spinner"></span> Učitavam ponudu…</div>
+            <div id="customer-menu-loading" class="menu-state"><span class="spinner"></span> @Localizer["Menu_Loading"]</div>
         }
         else if (!drinks.Any())
         {
             <div id="customer-menu-empty" class="menu-state menu-emptystate">
                 <div class="menu-emoji">🥤</div>
-                <h2>Ponuda je prazna</h2>
-                <p>Trenutno nema dostupnih pića ni zalogaja.</p>
+                <h2>@Localizer["Menu_EmptyTitle"]</h2>
+                <p>@Localizer["Menu_EmptyDescription"]</p>
             </div>
         }
         else
         {
             <div id="customer-category-filters" class="menu-cats no-scrollbar">
-                <button id="customer-category-all" class="menu-chip @(selectedCategory == null ? "on" : "")" @onclick="() => FilterByCategory(null)">Sve</button>
+                <button id="customer-category-all" class="menu-chip @(selectedCategory == null ? "on" : "")" @onclick="() => FilterByCategory(null)">@Localizer["Menu_FilterAllButtonText"]</button>
                 @foreach (var category in MenuCategories)
                 {
                     <button id="customer-category-@category.Id" class="menu-chip @(selectedCategory == category.Id ? "on" : "")" @onclick="() => FilterByCategory(category.Id)">@category.Icon @category.Label</button>
@@ -71,11 +73,11 @@
                                         <span id="customer-quantity-input-@drink.Id" class="menu-qty tnum">@qty</span>
                                         <button id="customer-increase-btn-@drink.Id" class="menu-step" @onclick="() => IncreaseQuantity(drink.Id)" disabled="@(qty >= drink.StockQuantity)">+</button>
                                     </div>
-                                    <button id="customer-add-to-cart-btn-@drink.Id" class="btn btn-primary btn-sm menu-add" @onclick="() => AddToCart(drink)" disabled="@(qty <= 0)">Dodaj</button>
+                                    <button id="customer-add-to-cart-btn-@drink.Id" class="btn btn-primary btn-sm menu-add" @onclick="() => AddToCart(drink)" disabled="@(qty <= 0)">@Localizer["Menu_AddButtonText"]</button>
                                 }
                                 else
                                 {
-                                    <span id="customer-out-of-stock-btn-@drink.Id" class="menu-oos">Nema na zalihi</span>
+                                    <span id="customer-out-of-stock-btn-@drink.Id" class="menu-oos">@Localizer["Menu_OutOfStockText"]</span>
                                 }
                             </div>
                         </div>
@@ -85,7 +87,7 @@
         }
     </div>
 
-    <CartBar Count="CartService.GetTotalItems()" Total="CartService.GetTotalPrice()" Label="Tvoja narudžba" OnView="() => showCart = true" />
+    <CartBar Count="CartService.GetTotalItems()" Total="CartService.GetTotalPrice()" Label="@Localizer["Menu_YourOrderLabel"]" OnView="() => showCart = true" />
 
     @if (showCart)
     {
@@ -93,14 +95,14 @@
         <div id="customer-cart-card" class="menu-sheet show">
             <div class="grab"></div>
             <div class="menu-sheet-head">
-                <div id="customer-cart-title" class="menu-sheet-title">Tvoja narudžba</div>
-                <button class="iconbtn" @onclick="() => showCart = false" aria-label="Zatvori">✕</button>
+                <div id="customer-cart-title" class="menu-sheet-title">@Localizer["Menu_YourOrderLabel"]</div>
+                <button class="iconbtn" @onclick="() => showCart = false" aria-label="@Localizer["Menu_CloseAriaLabel"]">✕</button>
             </div>
 
             <div class="menu-sheet-body no-scrollbar">
                 @if (!CartService.Items.Any())
                 {
-                    <p id="customer-cart-empty" class="menu-cart-empty">Košarica je prazna.</p>
+                    <p id="customer-cart-empty" class="menu-cart-empty">@Localizer["Menu_CartEmptyText"]</p>
                 }
                 else
                 {
@@ -110,7 +112,7 @@
                             <div id="customer-cart-item-@item.Drink.Id" class="menu-cart-item">
                                 <div class="menu-ci-l">
                                     <span id="customer-cart-item-name-@item.Drink.Id" class="menu-ci-name">@item.Quantity × @item.Drink.Name</span>
-                                    <span id="customer-cart-item-price-@item.Drink.Id" class="menu-ci-sub tnum">€@item.Drink.Price.ToString("F2") / kom</span>
+                                    <span id="customer-cart-item-price-@item.Drink.Id" class="menu-ci-sub tnum">€@item.Drink.Price.ToString("F2") @Localizer["Menu_PricePerUnit"]</span>
                                     @if (!string.IsNullOrEmpty(item.SpecialInstructions))
                                     {
                                         <span id="customer-cart-item-notes-@item.Drink.Id" class="menu-ci-note">💬 @item.SpecialInstructions</span>
@@ -124,30 +126,30 @@
                         }
                     </div>
 
-                    <div id="customer-cart-total-row" class="menu-cart-total"><span>Ukupno</span><span class="tnum">€@CartService.GetTotalPrice().ToString("F2")</span></div>
+                    <div id="customer-cart-total-row" class="menu-cart-total"><span>@Localizer["Menu_TotalLabel"]</span><span class="tnum">€@CartService.GetTotalPrice().ToString("F2")</span></div>
 
                     <div id="customer-ticket-input-group" class="field">
-                        <label for="customer-ticket-input">Broj ulaznice</label>
-                        <input id="customer-ticket-input" type="text" @bind="ticketNumber" placeholder="Unesi broj ulaznice" />
+                        <label for="customer-ticket-input">@Localizer["Menu_TicketNumberLabel"]</label>
+                        <input id="customer-ticket-input" type="text" @bind="ticketNumber" placeholder='@Localizer["Menu_TicketNumberPlaceholder"]' />
                     </div>
 
                     <div id="customer-notes-input-group" class="field">
-                        <label for="customer-notes-input">Napomena (nije obavezno)</label>
-                        <textarea id="customer-notes-input" @bind="orderNotes" placeholder="Posebne želje?" rows="2"></textarea>
+                        <label for="customer-notes-input">@Localizer["Menu_NotesLabel"]</label>
+                        <textarea id="customer-notes-input" @bind="orderNotes" placeholder='@Localizer["Menu_NotesPlaceholder"]' rows="2"></textarea>
                     </div>
 
                     @if (walletSummary is { Exists: true })
                     {
                         <label id="customer-menu-pay-wallet-group" class="menu-wallet">
                             <input id="customer-menu-pay-wallet-check" type="checkbox" @bind="payWithWallet" />
-                            <span>Plati novčanikom <span class="menu-wallet-bal">(@FormatWalletMoney(walletSummary.Balance) dostupno)</span></span>
+                            <span>@Localizer["Menu_PayWithWalletText"] <span class="menu-wallet-bal">(@FormatWalletMoney(walletSummary.Balance) @Localizer["Menu_AvailableText"])</span></span>
                         </label>
                     }
                     @if (showTopUpPrompt)
                     {
                         <div id="customer-menu-topup-prompt" class="menu-topup">
-                            Nedovoljno sredstava na novčaniku.
-                            <a id="customer-menu-topup-link" href="/wallet">Nadoplati</a>
+                            @Localizer["Menu_InsufficientFundsText"]
+                            <a id="customer-menu-topup-link" href="/wallet">@Localizer["Menu_TopUpLinkText"]</a>
                         </div>
                     }
 
@@ -155,14 +157,14 @@
                         <button id="customer-place-order-btn" class="btn btn-primary" @onclick="PlaceOrder" disabled="@(string.IsNullOrWhiteSpace(ticketNumber) || isPlacingOrder)">
                             @if (isPlacingOrder)
                             {
-                                <span class="spinner"></span> <span>Šaljem…</span>
+                                <span class="spinner"></span> <span>@Localizer["Menu_SendingButtonText"]</span>
                             }
                             else
                             {
-                                <span>Naruči</span>
+                                <span>@Localizer["Menu_OrderButtonText"]</span>
                             }
                         </button>
-                        <button id="customer-clear-cart-btn" class="btn btn-ghost" @onclick="CartService.ClearCart">Isprazni</button>
+                        <button id="customer-clear-cart-btn" class="btn btn-ghost" @onclick="CartService.ClearCart">@Localizer["Menu_ClearButtonText"]</button>
                     </div>
                 }
             </div>
@@ -174,7 +176,7 @@
 {
     <div id="customer-alert-container" class="menu-toast @(alertType == "success" ? "ok" : "bad")">
         <span>@alertMessage</span>
-        <button id="customer-menu-alert-close-btn" class="menu-toast-x" @onclick="ClearAlert" aria-label="Zatvori">✕</button>
+        <button id="customer-menu-alert-close-btn" class="menu-toast-x" @onclick="ClearAlert" aria-label="@Localizer["Menu_CloseAriaLabel"]">✕</button>
     </div>
 }
 
@@ -243,7 +245,7 @@
         {
             CartService.AddItem(drink, quantity);
             quantities[drink.Id] = 0;
-            ShowAlert($"Dodano: {quantity} × {drink.Name}", "success");
+            ShowAlert(Localizer["Menu_AddedAlertText", quantity, drink.Name].Value, "success");
         }
     }
 
@@ -280,23 +282,23 @@
                 ticketNumber = "";
                 orderNotes = "";
                 showCart = false;
-                ShowAlert($"Narudžba #{result.Order?.Id} je poslana!", "success");
+                ShowAlert(Localizer["Menu_OrderSentAlertText", result.Order?.Id].Value, "success");
                 if (payWithWallet)
                     walletSummary = await ApiService.GetWalletSummaryAsync();
             }
             else if (result.InsufficientFunds)
             {
                 showTopUpPrompt = true;
-                ShowAlert("Nedovoljno sredstava na novčaniku.", "danger");
+                ShowAlert(Localizer["Menu_InsufficientFundsText"].Value, "danger");
             }
             else
             {
-                ShowAlert("Narudžba nije poslana. Provjeri broj ulaznice i pokušaj ponovno.", "danger");
+                ShowAlert(Localizer["Menu_OrderNotSentMessage"].Value, "danger");
             }
         }
         catch (Exception ex)
         {
-            ShowAlert($"Pogreška pri slanju narudžbe: {ex.Message}", "danger");
+            ShowAlert(Localizer["Menu_ErrorSendingOrderMessage", ex.Message].Value, "danger");
         }
         finally
         {

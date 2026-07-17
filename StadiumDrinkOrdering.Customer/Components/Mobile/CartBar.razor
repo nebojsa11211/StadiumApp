@@ -1,3 +1,5 @@
+@inject IStringLocalizer<SharedResources> Localizer
+
 @* Sticky cart summary that rises from the bottom when the cart is non-empty. *@
 
 <div id="customer-cart-bar-container" class="cartbar @(Count > 0 ? "show" : "")">
@@ -14,6 +16,6 @@
 @code {
     [Parameter] public int Count { get; set; }
     [Parameter] public decimal Total { get; set; }
-    [Parameter] public string Label { get; set; } = "Pogledaj košaricu";
+    [Parameter] public string Label { get; set; } = "Cart";  // Will be set by parent or use default from Localizer
     [Parameter] public EventCallback OnView { get; set; }
 }

@@ -210,10 +210,12 @@
         return string.IsNullOrWhiteSpace(o.SeatNumber) ? "—" : o.SeatNumber;
     }
 
-    private static string Age(OrderDto o)
+    private string Age(OrderDto o)
     {
         var mins = (int)Math.Floor((DateTime.UtcNow - DateTime.SpecifyKind(o.CreatedAt, DateTimeKind.Utc)).TotalMinutes);
-        return mins <= 0 ? "just now" : (mins == 1 ? "1 min ago" : $"{mins} min ago");
+        return mins <= 0 ? Localizer["Home_AgeJustNow"]
+             : mins == 1 ? Localizer["Home_AgeOneMinAgo"]
+             : Localizer["Home_AgeMinutesAgo", mins];
     }
 
     public void Dispose()

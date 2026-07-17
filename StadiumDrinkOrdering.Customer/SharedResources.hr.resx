@@ -1267,4 +1267,1759 @@
   <data name="Wallet_Available" xml:space="preserve">
     <value>dostupno</value>
   </data>
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Prijava — HALFTIME</value>
+  </data>
+  <data name="Login_ScreenHeader_Title" xml:space="preserve">
+    <value>Prijava</value>
+  </data>
+  <data name="Login_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Pretplatnici</value>
+  </data>
+  <data name="Login_Badge" xml:space="preserve">
+    <value>⭐ Sezona</value>
+  </data>
+  <data name="Login_WelcomeLine1" xml:space="preserve">
+    <value>DOBRO</value>
+  </data>
+  <data name="Login_WelcomeLine2" xml:space="preserve">
+    <value>DOŠAO</value>
+  </data>
+  <data name="Login_IntroText" xml:space="preserve">
+    <value>Prijavi se da vidiš svoju sljedeću utakmicu i naručuješ na svoje mjesto.</value>
+  </data>
+  <data name="Login_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Login_EmailPlaceholder" xml:space="preserve">
+    <value>ime@email.hr</value>
+  </data>
+  <data name="Login_PasswordLabel" xml:space="preserve">
+    <value>Lozinka</value>
+  </data>
+  <data name="Login_SigningIn" xml:space="preserve">
+    <value>Prijavljujem…</value>
+  </data>
+  <data name="Login_SignInButton" xml:space="preserve">
+    <value>Prijavi se</value>
+  </data>
+  <data name="Login_AltText" xml:space="preserve">
+    <value>Došao si samo na ovu utakmicu?</value>
+  </data>
+  <data name="Login_ScanLink" xml:space="preserve">
+    <value>Skeniraj ulaznicu</value>
+  </data>
+  <data name="Login_InvalidCredentials" xml:space="preserve">
+    <value>Neispravan email ili lozinka.</value>
+  </data>
+  <data name="Login_ConnectionError" xml:space="preserve">
+    <value>Nije moguće spojiti se na poslužitelj.</value>
+  </data>
+  <data name="Login_UnexpectedError" xml:space="preserve">
+    <value>Došlo je do pogreške. Pokušaj ponovno.</value>
+  </data>
+  <data name="Checkout_ScreenHeaderTitle" xml:space="preserve">
+    <value>Plaćanje</value>
+  </data>
+  <data name="Checkout_ScreenHeaderSubtitle" xml:space="preserve">
+    <value>Ulaznice</value>
+  </data>
+  <data name="Checkout_CartEmptyTitle" xml:space="preserve">
+    <value>Košarica je prazna</value>
+  </data>
+  <data name="Checkout_CartEmptyMessage" xml:space="preserve">
+    <value>Dodaj ulaznice prije plaćanja.</value>
+  </data>
+  <data name="Checkout_BrowseEventsButton" xml:space="preserve">
+    <value>Pregledaj utakmice</value>
+  </data>
+  <data name="Checkout_SummaryLabel" xml:space="preserve">
+    <value>Sažetak</value>
+  </data>
+  <data name="Checkout_DefaultEventName" xml:space="preserve">
+    <value>Utakmica</value>
+  </data>
+  <data name="Checkout_SectorPrefix" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="Checkout_SubtotalLine" xml:space="preserve">
+    <value>Međuzbroj ({0})</value>
+  </data>
+  <data name="Checkout_ServiceFeeLine" xml:space="preserve">
+    <value>Naknada za uslugu</value>
+  </data>
+  <data name="Checkout_ProcessingFeeLine" xml:space="preserve">
+    <value>Naknada za obradu</value>
+  </data>
+  <data name="Checkout_TotalLine" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="Checkout_CustomerInfoSection" xml:space="preserve">
+    <value>Podaci o kupcu</value>
+  </data>
+  <data name="Checkout_FirstNameLabel" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="Checkout_FirstNamePlaceholder" xml:space="preserve">
+    <value>Ivan</value>
+  </data>
+  <data name="Checkout_LastNameLabel" xml:space="preserve">
+    <value>Prezime</value>
+  </data>
+  <data name="Checkout_LastNamePlaceholder" xml:space="preserve">
+    <value>Horvat</value>
+  </data>
+  <data name="Checkout_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Checkout_EmailPlaceholder" xml:space="preserve">
+    <value>ime@email.hr</value>
+  </data>
+  <data name="Checkout_PhoneLabel" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="Checkout_PhonePlaceholder" xml:space="preserve">
+    <value>+385 91 234 5678</value>
+  </data>
+  <data name="Checkout_ForeignerLabel" xml:space="preserve">
+    <value>Strani državljanin (nemam OIB)</value>
+  </data>
+  <data name="Checkout_OIBLabel" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="Checkout_DocumentLabel" xml:space="preserve">
+    <value>Broj dokumenta (putovnica / osobna)</value>
+  </data>
+  <data name="Checkout_PaymentSection" xml:space="preserve">
+    <value>Plaćanje karticom</value>
+  </data>
+  <data name="Checkout_SampleDataButton" xml:space="preserve">
+    <value>Testni podaci</value>
+  </data>
+  <data name="Checkout_CardNumberLabel" xml:space="preserve">
+    <value>Broj kartice</value>
+  </data>
+  <data name="Checkout_ExpiryLabel" xml:space="preserve">
+    <value>Vrijedi do</value>
+  </data>
+  <data name="Checkout_ExpiryPlaceholder" xml:space="preserve">
+    <value>MM/GG</value>
+  </data>
+  <data name="Checkout_CVVLabel" xml:space="preserve">
+    <value>CVV</value>
+  </data>
+  <data name="Checkout_CardholderLabel" xml:space="preserve">
+    <value>Ime na kartici</value>
+  </data>
+  <data name="Checkout_CardholderPlaceholder" xml:space="preserve">
+    <value>IVAN HORVAT</value>
+  </data>
+  <data name="Checkout_TermsAccept" xml:space="preserve">
+    <value>Prihvaćam</value>
+  </data>
+  <data name="Checkout_TermsLinkText" xml:space="preserve">
+    <value>uvjete korištenja</value>
+  </data>
+  <data name="Checkout_TermsAnd" xml:space="preserve">
+    <value>i</value>
+  </data>
+  <data name="Checkout_PrivacyLinkText" xml:space="preserve">
+    <value>pravila privatnosti</value>
+  </data>
+  <data name="Checkout_TermsDot" xml:space="preserve">
+    <value>.</value>
+  </data>
+  <data name="Checkout_ProcessingText" xml:space="preserve">
+    <value>Obrađujem…</value>
+  </data>
+  <data name="Checkout_PayButton" xml:space="preserve">
+    <value>🔒 Plati €{0}</value>
+  </data>
+  <data name="Checkout_ProcessingPaymentTitle" xml:space="preserve">
+    <value>Obrađujem plaćanje…</value>
+  </data>
+  <data name="Checkout_WaitMessage" xml:space="preserve">
+    <value>Molimo pričekaj, ne zatvaraj aplikaciju.</value>
+  </data>
+  <data name="Checkout_EmptyCartAlert" xml:space="preserve">
+    <value>Košarica je prazna. Dodaj ulaznice prije plaćanja.</value>
+  </data>
+  <data name="Checkout_PaymentFailedAlert" xml:space="preserve">
+    <value>Plaćanje nije uspjelo: {0}</value>
+  </data>
+  <data name="Checkout_UnknownError" xml:space="preserve">
+    <value>Nepoznata pogreška.</value>
+  </data>
+  <data name="Checkout_ErrorAlert" xml:space="preserve">
+    <value>Došlo je do pogreške: {0}</value>
+  </data>
+  <data name="CartBar_ViewCart" xml:space="preserve">
+    <value>Pogledaj košaricu</value>
+  </data>
+  <data name="DrinkCard_Decrease" xml:space="preserve">
+    <value>Manje</value>
+  </data>
+  <data name="DrinkCard_Increase" xml:space="preserve">
+    <value>Više</value>
+  </data>
+  <data name="DrinkCard_Add" xml:space="preserve">
+    <value>Dodaj</value>
+  </data>
+  <data name="DrinkCard_SoldOut" xml:space="preserve">
+    <value>Rasprodano</value>
+  </data>
+  <data name="DrinkSheet_DefaultDescription" xml:space="preserve">
+    <value>Poslužuje se hladno i donosi na tvoje mjesto.</value>
+  </data>
+  <data name="DrinkSheet_Quantity" xml:space="preserve">
+    <value>Količina</value>
+  </data>
+  <data name="DrinkSheet_Decrease" xml:space="preserve">
+    <value>Manje</value>
+  </data>
+  <data name="DrinkSheet_Increase" xml:space="preserve">
+    <value>Više</value>
+  </data>
+  <data name="DrinkSheet_SpecialInstructions" xml:space="preserve">
+    <value>Posebne napomene (npr. bez leda, dodatna čaša)</value>
+  </data>
+  <data name="DrinkSheet_AddToCart" xml:space="preserve">
+    <value>Dodaj u košaricu ·</value>
+  </data>
+  <data name="OrderTimeline_Status1" xml:space="preserve">
+    <value>Narudžba zaprimljena</value>
+  </data>
+  <data name="OrderTimeline_Status2" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="OrderTimeline_Status3" xml:space="preserve">
+    <value>U pripremi</value>
+  </data>
+  <data name="OrderTimeline_Status4" xml:space="preserve">
+    <value>Spremno</value>
+  </data>
+  <data name="OrderTimeline_Status5" xml:space="preserve">
+    <value>Dostava u tijeku</value>
+  </data>
+  <data name="OrderTimeline_Status6" xml:space="preserve">
+    <value>Dostavljeno na tvoje mjestu</value>
+  </data>
+  <data name="OrderTimeline_Status6Prefix" xml:space="preserve">
+    <value>Dostavljeno ·</value>
+  </data>
+  <data name="OrderTimeline_Status6Sub" xml:space="preserve">
+    <value>Uživaj u utakmici ⚽</value>
+  </data>
+  <data name="InstallPrompt_Title" xml:space="preserve">
+    <value>Instaliraj Stadium Orders</value>
+  </data>
+  <data name="InstallPrompt_Description" xml:space="preserve">
+    <value>Preuzmi aplikaciju za brži pristup i naručivanje bez interneta</value>
+  </data>
+  <data name="InstallPrompt_Install" xml:space="preserve">
+    <value>Instaliraj</value>
+  </data>
+  <data name="InstallPrompt_Later" xml:space="preserve">
+    <value>Kasnije</value>
+  </data>
+  <data name="InstallPrompt_Close" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Toast_JustNow" xml:space="preserve">
+    <value>Upravo sada</value>
+  </data>
+  <data name="Toast_SecondsAgo" xml:space="preserve">
+    <value>{0}s unazad</value>
+  </data>
+  <data name="Toast_MinutesAgo" xml:space="preserve">
+    <value>{0}m unazad</value>
+  </data>
+  <data name="Toast_Success" xml:space="preserve">
+    <value>Uspješno</value>
+  </data>
+  <data name="Toast_Error" xml:space="preserve">
+    <value>Greška</value>
+  </data>
+  <data name="Toast_Warning" xml:space="preserve">
+    <value>Upozorenje</value>
+  </data>
+  <data name="Toast_Info" xml:space="preserve">
+    <value>Informacija</value>
+  </data>
+  <data name="ThemeSwitcher_ToDarkMode" xml:space="preserve">
+    <value>Prebaci na tamni način</value>
+  </data>
+  <data name="ThemeSwitcher_ToLightMode" xml:space="preserve">
+    <value>Prebaci na svijetli način</value>
+  </data>
+  <data name="SurveyPrompt_Text1" xml:space="preserve">
+    <value>Molimo ispunite naš</value>
+  </data>
+  <data name="SurveyPrompt_SurveyLink" xml:space="preserve">
+    <value>kratki upitnik</value>
+  </data>
+  <data name="SurveyPrompt_Text2" xml:space="preserve">
+    <value>i recite nam što mislite.</value>
+  </data>
+  <data name="Logs_Title" xml:space="preserve">
+    <value>Moja aktivnost</value>
+  </data>
+  <data name="Logs_Subtitle" xml:space="preserve">
+    <value>Zapisi &amp; privatnost</value>
+  </data>
+  <data name="Logs_InfoAlert" xml:space="preserve">
+    <value>Ova stranica prikazuje tvoju aktivnost u sustavu naručivanja. Radnje se bilježe kako bismo poboljšali iskustvo i pružili podršku.</value>
+  </data>
+  <data name="Logs_OrdersTitle" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="Logs_OrdersDesc" xml:space="preserve">
+    <value>Sve narudžbe pića, izmjene i plaćanja bilježe se u tvojoj evidenciji.</value>
+  </data>
+  <data name="Logs_QRTitle" xml:space="preserve">
+    <value>Provjera ulaznice</value>
+  </data>
+  <data name="Logs_QRDesc" xml:space="preserve">
+    <value>Skeniranja QR koda i provjere ulaznica bilježe se radi sigurnosti.</value>
+  </data>
+  <data name="Logs_AuthTitle" xml:space="preserve">
+    <value>Prijava</value>
+  </data>
+  <data name="Logs_AuthDesc" xml:space="preserve">
+    <value>Pokušaji prijave i sigurnosne radnje prate se radi zaštite računa.</value>
+  </data>
+  <data name="Logs_LogExample" xml:space="preserve">
+    <value>Zabilježi primjer</value>
+  </data>
+  <data name="Logs_WhyTitle" xml:space="preserve">
+    <value>Zašto bilježimo aktivnost?</value>
+  </data>
+  <data name="Logs_History" xml:space="preserve">
+    <value>povijest narudžbi</value>
+  </data>
+  <data name="Logs_HistoryDesc" xml:space="preserve">
+    <value>Potpuna evidencija svih narudžbi i kupnji.</value>
+  </data>
+  <data name="Logs_Support" xml:space="preserve">
+    <value>Podrška</value>
+  </data>
+  <data name="Logs_SupportDesc" xml:space="preserve">
+    <value>Detaljni zapisi pomažu našem timu da ti brže pomogne.</value>
+  </data>
+  <data name="Logs_Security" xml:space="preserve">
+    <value>Sigurnost</value>
+  </data>
+  <data name="Logs_SecurityDesc" xml:space="preserve">
+    <value>Praćenje prijava i autentifikacije radi zaštite računa.</value>
+  </data>
+  <data name="Logs_Improvements" xml:space="preserve">
+    <value>Poboljšanja</value>
+  </data>
+  <data name="Logs_ImprovementsDesc" xml:space="preserve">
+    <value>Obrasci korištenja pomažu nam unaprijediti iskustvo.</value>
+  </data>
+  <data name="Logs_PrivacyLabel" xml:space="preserve">
+    <value>Privatnost:</value>
+  </data>
+  <data name="Logs_PrivacyDesc" xml:space="preserve">
+    <value>Tvoji su zapisi povjerljivi i koriste se samo za poboljšanje usluge i podršku. Pristup imaju samo administratori i ovlašteno osoblje.</value>
+  </data>
+  <data name="Logs_RecentTitle" xml:space="preserve">
+    <value>Nedavne aktivnosti uključuju</value>
+  </data>
+  <data name="Logs_RecentActivity1" xml:space="preserve">
+    <value>Navigaciju stranicama (Meni, Narudžbe…)</value>
+  </data>
+  <data name="Logs_RecentActivity2" xml:space="preserve">
+    <value>Skeniranje i provjeru QR koda</value>
+  </data>
+  <data name="Logs_RecentActivity3" xml:space="preserve">
+    <value>Dodavanje pića u košaricu</value>
+  </data>
+  <data name="Logs_RecentActivity4" xml:space="preserve">
+    <value>Slanje i izmjene narudžbi</value>
+  </data>
+  <data name="Logs_RecentActivity5" xml:space="preserve">
+    <value>Plaćanja</value>
+  </data>
+  <data name="Logs_RecentActivity6" xml:space="preserve">
+    <value>Prijave i autentifikaciju</value>
+  </data>
+  <data name="Logs_Close" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Logs_ActivityLogged" xml:space="preserve">
+    <value>Aktivnost „{0}" je zabilježena. Ovako pratimo tvoje radnje.</value>
+  </data>
+  <data name="Logs_ActivityFailed" xml:space="preserve">
+    <value>Bilježenje nije uspjelo. Pokušaj ponovno.</value>
+  </data>
+  <data name="Logs_LoggingError" xml:space="preserve">
+    <value>Pogreška pri bilježenju:</value>
+  </data>
+  <data name="EventDetails_Loading" xml:space="preserve">
+    <value>Učitavam utakmicu…</value>
+  </data>
+  <data name="EventDetails_NotFound_Title" xml:space="preserve">
+    <value>Utakmica nije pronađena</value>
+  </data>
+  <data name="EventDetails_NotFound_Message" xml:space="preserve">
+    <value>Ova utakmica više nije dostupna.</value>
+  </data>
+  <data name="EventDetails_NotFound_Home_Button" xml:space="preserve">
+    <value>Početna</value>
+  </data>
+  <data name="EventDetails_Available" xml:space="preserve">
+    <value>{0} slobodno</value>
+  </data>
+  <data name="EventDetails_SalesDisabled" xml:space="preserve">
+    <value>Prodaja ulaznica putem aplikacije trenutno nije dostupna.</value>
+  </data>
+  <data name="EventDetails_SelectSection_Label" xml:space="preserve">
+    <value>Odaberi tribinu</value>
+  </data>
+  <data name="EventDetails_SelectSection_Hint" xml:space="preserve">
+    <value>Dodirni tribinu na karti ili u popisu</value>
+  </data>
+  <data name="EventDetails_Section_Unavailable" xml:space="preserve">
+    <value>Nedostupno</value>
+  </data>
+  <data name="EventDetails_Section_SoldOut" xml:space="preserve">
+    <value>Rasprodano</value>
+  </data>
+  <data name="EventDetails_Section_Available" xml:space="preserve">
+    <value>{0} / {1} slobodno</value>
+  </data>
+  <data name="EventDetails_NoPublishedSeats" xml:space="preserve">
+    <value>Još nema objavljenih mjesta za ovu utakmicu.</value>
+  </data>
+  <data name="EventDetails_CloseButton" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="EventDetails_Legend_Free" xml:space="preserve">
+    <value>Slobodno</value>
+  </data>
+  <data name="EventDetails_Legend_Selected" xml:space="preserve">
+    <value>Odabrano</value>
+  </data>
+  <data name="EventDetails_Legend_Taken" xml:space="preserve">
+    <value>Zauzeto</value>
+  </data>
+  <data name="EventDetails_Pitch" xml:space="preserve">
+    <value>⚽ Teren</value>
+  </data>
+  <data name="EventDetails_SeatAriaLabel_Available" xml:space="preserve">
+    <value>Red {0}, mjesto {1}, €{2} — slobodno</value>
+  </data>
+  <data name="EventDetails_SeatAriaLabel_Selected" xml:space="preserve">
+    <value>Red {0}, mjesto {1}, €{2} — odabrano</value>
+  </data>
+  <data name="EventDetails_SeatAriaLabel_Taken" xml:space="preserve">
+    <value>Red {0}, mjesto {1} — zauzeto</value>
+  </data>
+  <data name="EventDetails_ShowSeatOnMap_Title" xml:space="preserve">
+    <value>Prikaži sjedalo na karti</value>
+  </data>
+  <data name="EventDetails_ShowSeatOnMap_AriaLabel" xml:space="preserve">
+    <value>Prikaži mjesto {0}, red {1} na karti stadiona</value>
+  </data>
+  <data name="EventDetails_NoSeatsInSection" xml:space="preserve">
+    <value>Nema dostupnih mjesta u ovoj tribini.</value>
+  </data>
+  <data name="EventDetails_RemoveSeat" xml:space="preserve">
+    <value>Ukloni: Red {0}, mjesto {1}</value>
+  </data>
+  <data name="EventDetails_SeatChip" xml:space="preserve">
+    <value>Red {0} · {1}</value>
+  </data>
+  <data name="EventDetails_AddSeats_One" xml:space="preserve">
+    <value>Dodaj {0} mjesto · €{1}</value>
+  </data>
+  <data name="EventDetails_AddSeats_Many" xml:space="preserve">
+    <value>Dodaj {0} mjesta · €{1}</value>
+  </data>
+  <data name="EventDetails_CartSheet_Title" xml:space="preserve">
+    <value>Košarica</value>
+  </data>
+  <data name="EventDetails_CartItem_One" xml:space="preserve">
+    <value>{0} mjesto</value>
+  </data>
+  <data name="EventDetails_CartItems_Many" xml:space="preserve">
+    <value>{0} mjesta</value>
+  </data>
+  <data name="EventDetails_CartEmpty_Message" xml:space="preserve">
+    <value>Košarica je prazna. Odaberi mjesta u nekoj tribini.</value>
+  </data>
+  <data name="EventDetails_CartItem_Remove" xml:space="preserve">
+    <value>Ukloni</value>
+  </data>
+  <data name="EventDetails_CartTotal_Label" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="EventDetails_CartCheckout_Button" xml:space="preserve">
+    <value>Nastavi na plaćanje</value>
+  </data>
+  <data name="EventDetails_CartClear_Button" xml:space="preserve">
+    <value>Isprazni košaricu</value>
+  </data>
+  <data name="EventDetails_Locator_DefaultSector" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="EventDetails_Locator_SeatLocation" xml:space="preserve">
+    <value>Red {0} · Mjesto {1}</value>
+  </data>
+  <data name="Events_ScreenHeader_Title" xml:space="preserve">
+    <value>Utakmice</value>
+  </data>
+  <data name="Events_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Odaberi događaj</value>
+  </data>
+  <data name="Events_SalesDisabled" xml:space="preserve">
+    <value>🎟️ Prodaja ulaznica putem aplikacije trenutno nije dostupna. Događaje možete pregledati u nastavku.</value>
+  </data>
+  <data name="Events_FiltersToggle" xml:space="preserve">
+    <value>🔎 Filteri</value>
+  </data>
+  <data name="Events_EventTypeLabel" xml:space="preserve">
+    <value>Vrsta događaja</value>
+  </data>
+  <data name="Events_AllTypes" xml:space="preserve">
+    <value>Sve vrste</value>
+  </data>
+  <data name="Events_Match" xml:space="preserve">
+    <value>⚽ Utakmica</value>
+  </data>
+  <data name="Events_Concert" xml:space="preserve">
+    <value>🎵 Koncert</value>
+  </data>
+  <data name="Events_Other" xml:space="preserve">
+    <value>🎭 Ostalo</value>
+  </data>
+  <data name="Events_FromDateLabel" xml:space="preserve">
+    <value>Od datuma</value>
+  </data>
+  <data name="Events_ToDateLabel" xml:space="preserve">
+    <value>Do datuma</value>
+  </data>
+  <data name="Events_MinPriceLabel" xml:space="preserve">
+    <value>Min. cijena (€)</value>
+  </data>
+  <data name="Events_MaxPriceLabel" xml:space="preserve">
+    <value>Maks. cijena (€)</value>
+  </data>
+  <data name="Events_Loading" xml:space="preserve">
+    <value>Učitavam utakmice…</value>
+  </data>
+  <data name="Events_Empty_Title" xml:space="preserve">
+    <value>Nema utakmica</value>
+  </data>
+  <data name="Events_Empty_Message" xml:space="preserve">
+    <value>Trenutno nema događaja koji odgovaraju tvojim filterima.</value>
+  </data>
+  <data name="Events_ClearFiltersButton" xml:space="preserve">
+    <value>Poništi filtere</value>
+  </data>
+  <data name="Home_PageTitle" xml:space="preserve">
+    <value>Moja sezona — HALFTIME</value>
+  </data>
+  <data name="Home_NoPass_Title" xml:space="preserve">
+    <value>Nemaš sezonsku pretplatu</value>
+  </data>
+  <data name="Home_NoPass_Message" xml:space="preserve">
+    <value>Na ovom računu nije pronađena sezonska ulaznica. Došao si na pojedinačnu utakmicu? Skeniraj ulaznicu.</value>
+  </data>
+  <data name="Home_ScanButton" xml:space="preserve">
+    <value>Skeniraj ulaznicu</value>
+  </data>
+  <data name="Home_MyTickets" xml:space="preserve">
+    <value>🎟️ Moje ulaznice</value>
+  </data>
+  <data name="Home_ProfileButton" xml:space="preserve">
+    <value>👤 Moj profil</value>
+  </data>
+  <data name="Home_LogoutButton" xml:space="preserve">
+    <value>Odjava</value>
+  </data>
+  <data name="Home_Greeting" xml:space="preserve">
+    <value>Dobra večer,</value>
+  </data>
+  <data name="Home_ProfileTooltip" xml:space="preserve">
+    <value>Moj profil</value>
+  </data>
+  <data name="Home_SeasonPass" xml:space="preserve">
+    <value>⭐ Sezonska pretplata</value>
+  </data>
+  <data name="Home_YourSeat" xml:space="preserve">
+    <value>Tvoje mjesto</value>
+  </data>
+  <data name="Home_MyTicketsAccountsLink" xml:space="preserve">
+    <value>🎟️ Moje ulaznice &amp; računi</value>
+  </data>
+  <data name="Home_LiveNow" xml:space="preserve">
+    <value>Trenutno uživo</value>
+  </data>
+  <data name="Home_Live" xml:space="preserve">
+    <value>Uživo</value>
+  </data>
+  <data name="Home_OpeningMenu" xml:space="preserve">
+    <value>Otvaram meni…</value>
+  </data>
+  <data name="Home_OrderButton" xml:space="preserve">
+    <value>🍺 Naruči na svoje mjesto</value>
+  </data>
+  <data name="Home_OrderingSoon" xml:space="preserve">
+    <value>Naručivanje uskoro dostupno</value>
+  </data>
+  <data name="Home_UpcomingFixture" xml:space="preserve">
+    <value>Sljedeća utakmica</value>
+  </data>
+  <data name="Home_NoLiveEvent" xml:space="preserve">
+    <value>Trenutno nema utakmice uživo. Naručivanje se otvara kad utakmica počne.</value>
+  </data>
+  <data name="Home_Schedule" xml:space="preserve">
+    <value>Raspored</value>
+  </data>
+  <data name="Profile_PageTitle" xml:space="preserve">
+    <value>Profil — HALFTIME</value>
+  </data>
+  <data name="Profile_ScreenHeader_Title" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="Profile_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Moji podaci</value>
+  </data>
+  <data name="Profile_Loading" xml:space="preserve">
+    <value>Učitavam profil…</value>
+  </data>
+  <data name="Profile_InfoNote" xml:space="preserve">
+    <value>Popuni ime, prezime i OIB — koriste se za provjeru identiteta kad na baru dodaješ novac u novčanik.</value>
+  </data>
+  <data name="Profile_UsernameLabel" xml:space="preserve">
+    <value>Korisničko ime</value>
+  </data>
+  <data name="Profile_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Profile_FirstNameLabel" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="Profile_FirstNamePlaceholder" xml:space="preserve">
+    <value>npr. Ivan</value>
+  </data>
+  <data name="Profile_LastNameLabel" xml:space="preserve">
+    <value>Prezime</value>
+  </data>
+  <data name="Profile_LastNamePlaceholder" xml:space="preserve">
+    <value>npr. Horvat</value>
+  </data>
+  <data name="Profile_PhoneLabel" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="Profile_PhonePlaceholder" xml:space="preserve">
+    <value>npr. +385 91 234 5678</value>
+  </data>
+  <data name="Profile_OIBLabel" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="Profile_OIBPlaceholder" xml:space="preserve">
+    <value>11 znamenki</value>
+  </data>
+  <data name="Profile_OIBHint" xml:space="preserve">
+    <value>Točno 11 znamenki. Ostavi prazno ako ga ne želiš spremiti.</value>
+  </data>
+  <data name="Profile_Saving" xml:space="preserve">
+    <value>Spremam…</value>
+  </data>
+  <data name="Profile_SaveButton" xml:space="preserve">
+    <value>Spremi promjene</value>
+  </data>
+  <data name="Profile_LogoutButton" xml:space="preserve">
+    <value>Odjava</value>
+  </data>
+  <data name="Profile_LoadError" xml:space="preserve">
+    <value>Nije moguće učitati profil. Pokušaj ponovno.</value>
+  </data>
+  <data name="Profile_SaveSuccess" xml:space="preserve">
+    <value>Podaci su spremljeni.</value>
+  </data>
+  <data name="Profile_SaveError" xml:space="preserve">
+    <value>Spremanje nije uspjelo. Provjeri podatke i pokušaj ponovno.</value>
+  </data>
+  <data name="Profile_ConnectionError" xml:space="preserve">
+    <value>Nije moguće spojiti se na poslužitelj.</value>
+  </data>
+  <data name="Profile_UnexpectedError" xml:space="preserve">
+    <value>Došlo je do neočekivane pogreške.</value>
+  </data>
+  <data name="Menu_ScreenTitle" xml:space="preserve">
+    <value>Meni</value>
+  </data>
+  <data name="Menu_ScreenSubtitle" xml:space="preserve">
+    <value>Piće &amp; zalogaji</value>
+  </data>
+  <data name="Menu_Loading" xml:space="preserve">
+    <value>Učitavam ponudu…</value>
+  </data>
+  <data name="Menu_EmptyTitle" xml:space="preserve">
+    <value>Ponuda je prazna</value>
+  </data>
+  <data name="Menu_EmptyDescription" xml:space="preserve">
+    <value>Trenutno nema dostupnih pića ni zalogaja.</value>
+  </data>
+  <data name="Menu_FilterAllButtonText" xml:space="preserve">
+    <value>Sve</value>
+  </data>
+  <data name="Menu_AddButtonText" xml:space="preserve">
+    <value>Dodaj</value>
+  </data>
+  <data name="Menu_OutOfStockText" xml:space="preserve">
+    <value>Nema na zalihi</value>
+  </data>
+  <data name="Menu_YourOrderLabel" xml:space="preserve">
+    <value>Tvoja narudžba</value>
+  </data>
+  <data name="Menu_CloseAriaLabel" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Menu_CartEmptyText" xml:space="preserve">
+    <value>Košarica je prazna.</value>
+  </data>
+  <data name="Menu_PricePerUnit" xml:space="preserve">
+    <value>/ kom</value>
+  </data>
+  <data name="Menu_TotalLabel" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="Menu_TicketNumberLabel" xml:space="preserve">
+    <value>Broj ulaznice</value>
+  </data>
+  <data name="Menu_TicketNumberPlaceholder" xml:space="preserve">
+    <value>Unesi broj ulaznice</value>
+  </data>
+  <data name="Menu_NotesLabel" xml:space="preserve">
+    <value>Napomena (nije obavezno)</value>
+  </data>
+  <data name="Menu_NotesPlaceholder" xml:space="preserve">
+    <value>Posebne želje?</value>
+  </data>
+  <data name="Menu_PayWithWalletText" xml:space="preserve">
+    <value>Plati novčanikom</value>
+  </data>
+  <data name="Menu_AvailableText" xml:space="preserve">
+    <value>dostupno</value>
+  </data>
+  <data name="Menu_InsufficientFundsText" xml:space="preserve">
+    <value>Nedovoljno sredstava na novčaniku.</value>
+  </data>
+  <data name="Menu_TopUpLinkText" xml:space="preserve">
+    <value>Nadoplati</value>
+  </data>
+  <data name="Menu_SendingButtonText" xml:space="preserve">
+    <value>Šaljem…</value>
+  </data>
+  <data name="Menu_OrderButtonText" xml:space="preserve">
+    <value>Naruči</value>
+  </data>
+  <data name="Menu_ClearButtonText" xml:space="preserve">
+    <value>Isprazni</value>
+  </data>
+  <data name="Menu_AddedAlertText" xml:space="preserve">
+    <value>Dodano: {0} × {1}</value>
+  </data>
+  <data name="Menu_OrderSentAlertText" xml:space="preserve">
+    <value>Narudžba #{0} je poslana!</value>
+  </data>
+  <data name="Menu_OrderNotSentMessage" xml:space="preserve">
+    <value>Narudžba nije poslana. Provjeri broj ulaznice i pokušaj ponovno.</value>
+  </data>
+  <data name="Menu_ErrorSendingOrderMessage" xml:space="preserve">
+    <value>Pogreška pri slanju narudžbe: {0}</value>
+  </data>
+  <data name="OrderConfirmation_ScreenHeader" xml:space="preserve">
+    <value>Potvrda narudžbe</value>
+  </data>
+  <data name="OrderConfirmation_Loading" xml:space="preserve">
+    <value>Učitavam potvrdu…</value>
+  </data>
+  <data name="OrderConfirmation_NotFound_Title" xml:space="preserve">
+    <value>Narudžba nije pronađena</value>
+  </data>
+  <data name="OrderConfirmation_NotFound_Message" xml:space="preserve">
+    <value>Ne možemo pronaći ovu narudžbu. Provjeri poveznicu ili pokušaj ponovno.</value>
+  </data>
+  <data name="OrderConfirmation_BackToEvents" xml:space="preserve">
+    <value>Pregledaj utakmice</value>
+  </data>
+  <data name="OrderConfirmation_Success" xml:space="preserve">
+    <value>Plaćanje uspješno!</value>
+  </data>
+  <data name="OrderConfirmation_SuccessMessage" xml:space="preserve">
+    <value>Tvoje ulaznice su potvrđene i spremne.</value>
+  </data>
+  <data name="OrderConfirmation_Order_Label" xml:space="preserve">
+    <value>Narudžba</value>
+  </data>
+  <data name="OrderConfirmation_Date_Label" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="OrderConfirmation_Customer_Label" xml:space="preserve">
+    <value>Kupac</value>
+  </data>
+  <data name="OrderConfirmation_Payment_Label" xml:space="preserve">
+    <value>Plaćanje</value>
+  </data>
+  <data name="OrderConfirmation_Event_Label" xml:space="preserve">
+    <value>Utakmica</value>
+  </data>
+  <data name="OrderConfirmation_EventDate_Label" xml:space="preserve">
+    <value>Termin</value>
+  </data>
+  <data name="OrderConfirmation_TicketSector" xml:space="preserve">
+    <value>Sektor · {0}</value>
+  </data>
+  <data name="OrderConfirmation_Summary" xml:space="preserve">
+    <value>Sažetak</value>
+  </data>
+  <data name="OrderConfirmation_TicketsLine" xml:space="preserve">
+    <value>Ulaznice ({0})</value>
+  </data>
+  <data name="OrderConfirmation_PrintButton" xml:space="preserve">
+    <value>🖨️ Ispiši</value>
+  </data>
+  <data name="OrderConfirmation_DownloadButton" xml:space="preserve">
+    <value>⬇️ PDF</value>
+  </data>
+  <data name="OrderConfirmation_EmailButton" xml:space="preserve">
+    <value>✉️ Email</value>
+  </data>
+  <data name="OrderConfirmation_ImportantInfo" xml:space="preserve">
+    <value>ℹ️ Važne informacije</value>
+  </data>
+  <data name="OrderConfirmation_ArriveEarly" xml:space="preserve">
+    <value>Dođi barem 30 minuta prije početka utakmice.</value>
+  </data>
+  <data name="OrderConfirmation_ShowQRCode" xml:space="preserve">
+    <value>Pokaži QR kod ulaznice na ulazu.</value>
+  </data>
+  <data name="OrderConfirmation_KeepSafe" xml:space="preserve">
+    <value>Čuvaj ulaznice — svaki QR kod vrijedi samo jednom.</value>
+  </data>
+  <data name="OrderConfirmation_SupportContact" xml:space="preserve">
+    <value>Za pomoć se javi našoj podršci.</value>
+  </data>
+  <data name="OrderConfirmation_BrowseMore" xml:space="preserve">
+    <value>Pregledaj još utakmica</value>
+  </data>
+  <data name="OrderConfirmation_Total" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="OrderConfirmation_DownloadNotReady" xml:space="preserve">
+    <value>Preuzimanje PDF-a bit će uskoro dostupno.</value>
+  </data>
+  <data name="OrderConfirmation_EmailSent" xml:space="preserve">
+    <value>Ulaznice su poslane na tvoju email adresu.</value>
+  </data>
+  <data name="Orders_ScreenHeader_Title" xml:space="preserve">
+    <value>Moje narudžbe</value>
+  </data>
+  <data name="Orders_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Piće &amp; zalogaji</value>
+  </data>
+  <data name="Orders_Loading" xml:space="preserve">
+    <value>Učitavam narudžbe…</value>
+  </data>
+  <data name="Orders_Empty_Title" xml:space="preserve">
+    <value>Još nema narudžbi</value>
+  </data>
+  <data name="Orders_Empty_Message" xml:space="preserve">
+    <value>Kad naručiš piće ili zalogaj, narudžbe će se pojaviti ovdje.</value>
+  </data>
+  <data name="Orders_OpenMenu" xml:space="preserve">
+    <value>Otvori meni</value>
+  </data>
+  <data name="Orders_OrderNumber" xml:space="preserve">
+    <value>Narudžba #{0}</value>
+  </data>
+  <data name="Orders_OrderDate" xml:space="preserve">
+    <value>📅 {0}</value>
+  </data>
+  <data name="Orders_OrderSeat" xml:space="preserve">
+    <value>🎫 Sjedalo {0}</value>
+  </data>
+  <data name="Orders_DetailsButton" xml:space="preserve">
+    <value>Detalji</value>
+  </data>
+  <data name="Orders_CancelButton" xml:space="preserve">
+    <value>Otkaži</value>
+  </data>
+  <data name="Orders_ModalTitle" xml:space="preserve">
+    <value>Narudžba #{0}</value>
+  </data>
+  <data name="Orders_CloseButton_Aria" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Orders_StatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Orders_TicketLabel" xml:space="preserve">
+    <value>Ulaznica</value>
+  </data>
+  <data name="Orders_SeatLabel" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="Orders_TotalLabel" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="Orders_Timeline" xml:space="preserve">
+    <value>Tijek</value>
+  </data>
+  <data name="Orders_CancelledSuccess" xml:space="preserve">
+    <value>Narudžba je otkazana.</value>
+  </data>
+  <data name="Orders_CancelFailed" xml:space="preserve">
+    <value>Otkazivanje nije uspjelo.</value>
+  </data>
+  <data name="Orders_CancelError" xml:space="preserve">
+    <value>Pogreška pri otkazivanju: {0}</value>
+  </data>
+  <data name="Orders_Status_Ordered" xml:space="preserve">
+    <value>Naručeno</value>
+  </data>
+  <data name="Orders_Status_Accepted" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="Orders_Status_Prepared" xml:space="preserve">
+    <value>Pripremljeno</value>
+  </data>
+  <data name="Orders_Status_Delivered" xml:space="preserve">
+    <value>Dostavljeno</value>
+  </data>
+  <data name="Orders_Status_Pending" xml:space="preserve">
+    <value>Na čekanju</value>
+  </data>
+  <data name="Orders_Status_Accepted_Text" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="Orders_Status_InPreparation" xml:space="preserve">
+    <value>U pripremi</value>
+  </data>
+  <data name="Orders_Status_Ready" xml:space="preserve">
+    <value>Spremno</value>
+  </data>
+  <data name="Orders_Status_Delivered_Text" xml:space="preserve">
+    <value>Dostavljeno</value>
+  </data>
+  <data name="Orders_Status_Cancelled" xml:space="preserve">
+    <value>Otkazano</value>
+  </data>
+  <data name="Order_PageTitle" xml:space="preserve">
+    <value>Naruči piće — HALFTIME</value>
+  </data>
+  <data name="Order_NoSession_Title" xml:space="preserve">
+    <value>Nema aktivne narudžbe</value>
+  </data>
+  <data name="Order_NoSession_Message" xml:space="preserve">
+    <value>Skeniraj QR kod s ulaznice pa ti piće stigne točno na tvoje mjesto — bez čekanja u redu.</value>
+  </data>
+  <data name="Order_ScanTicketButton" xml:space="preserve">
+    <value>Skeniraj ulaznicu</value>
+  </data>
+  <data name="Order_Paused_Title" xml:space="preserve">
+    <value>Naručivanje je na pauzi</value>
+  </data>
+  <data name="Order_Paused_Message" xml:space="preserve">
+    <value>Piće možeš naručiti samo dok utakmica traje. Tvoje mjesto te čeka — vrati se kad sudac svira početak.</value>
+  </data>
+  <data name="Order_SectorLabel" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="Order_RowLabel" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Order_SeatLabel" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="Order_HomeButton" xml:space="preserve">
+    <value>Početna</value>
+  </data>
+  <data name="Order_Event_Label" xml:space="preserve">
+    <value>Utakmica</value>
+  </data>
+  <data name="Order_EventSubtitle" xml:space="preserve">
+    <value>Piće stiže na tvoje mjesto</value>
+  </data>
+  <data name="Order_LiveBadge" xml:space="preserve">
+    <value>Uživo</value>
+  </data>
+  <data name="Order_CoordSector" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="Order_CoordRow" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Order_CoordSeat" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="Order_Loading" xml:space="preserve">
+    <value>Učitavam ponudu…</value>
+  </data>
+  <data name="Order_GuestName" xml:space="preserve">
+    <value>Gost</value>
+  </data>
+  <data name="Order_TrackActive" xml:space="preserve">
+    <value>Narudžba #{0} je u tijeku</value>
+  </data>
+  <data name="Track_PageTitle" xml:space="preserve">
+    <value>Praćenje narudžbe — HALFTIME</value>
+  </data>
+  <data name="Track_BackButton_Aria" xml:space="preserve">
+    <value>Natrag na naručivanje</value>
+  </data>
+  <data name="Track_Loading" xml:space="preserve">
+    <value>Učitavam narudžbu…</value>
+  </data>
+  <data name="Track_NotFound_Message" xml:space="preserve">
+    <value>Narudžbu nije moguće pronaći.</value>
+  </data>
+  <data name="Track_BackMenu_Button" xml:space="preserve">
+    <value>Natrag na ponudu</value>
+  </data>
+  <data name="Track_OrderNumber" xml:space="preserve">
+    <value>Narudžba #{0}</value>
+  </data>
+  <data name="Track_ETA_Label" xml:space="preserve">
+    <value>⏱️ Stiže za ~{0} min</value>
+  </data>
+  <data name="Track_CancelledMessage" xml:space="preserve">
+    <value>Narudžba je otkazana.</value>
+  </data>
+  <data name="Track_ItemsLabel" xml:space="preserve">
+    <value>Stavke</value>
+  </data>
+  <data name="Track_TotalLabel" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="Track_OrderMoreButton" xml:space="preserve">
+    <value>Naruči još</value>
+  </data>
+  <data name="Track_Status_Delivered" xml:space="preserve">
+    <value>Dostavljeno!</value>
+  </data>
+  <data name="Track_Status_OutForDelivery" xml:space="preserve">
+    <value>Stiže na tvoje mjesto</value>
+  </data>
+  <data name="Track_Status_Ready" xml:space="preserve">
+    <value>Spremno — kreće k tebi</value>
+  </data>
+  <data name="Track_Status_InPreparation" xml:space="preserve">
+    <value>Pripremamo tvoju narudžbu</value>
+  </data>
+  <data name="Track_Status_Cancelled" xml:space="preserve">
+    <value>Narudžba otkazana</value>
+  </data>
+  <data name="Track_Status_Default" xml:space="preserve">
+    <value>Narudžba potvrđena</value>
+  </data>
+  <data name="Cart_PageTitle" xml:space="preserve">
+    <value>Košarica — HALFTIME</value>
+  </data>
+  <data name="Cart_ScreenHeaderTitle" xml:space="preserve">
+    <value>Tvoja košarica</value>
+  </data>
+  <data name="Cart_EmptyMessage" xml:space="preserve">
+    <value>Košarica je prazna.</value>
+  </data>
+  <data name="Cart_BackMenuButton" xml:space="preserve">
+    <value>Natrag na ponudu</value>
+  </data>
+  <data name="Cart_DeliveryTitle" xml:space="preserve">
+    <value>Dostava na tvoje mjesto</value>
+  </data>
+  <data name="Cart_UnitPriceLabel" xml:space="preserve">
+    <value>€{0} / kom</value>
+  </data>
+  <data name="Cart_DecreaseButton_Aria" xml:space="preserve">
+    <value>Manje</value>
+  </data>
+  <data name="Cart_IncreaseButton_Aria" xml:space="preserve">
+    <value>Više</value>
+  </data>
+  <data name="Cart_PaymentLabel" xml:space="preserve">
+    <value>Plaćanje</value>
+  </data>
+  <data name="Cart_CardTitle" xml:space="preserve">
+    <value>Kartica</value>
+  </data>
+  <data name="Cart_CardSubtitle" xml:space="preserve">
+    <value>Visa · Mastercard</value>
+  </data>
+  <data name="Cart_CashTitle" xml:space="preserve">
+    <value>Gotovina</value>
+  </data>
+  <data name="Cart_CashSubtitle" xml:space="preserve">
+    <value>Plati pri dostavi</value>
+  </data>
+  <data name="Cart_SubtotalLabel" xml:space="preserve">
+    <value>Međuzbroj</value>
+  </data>
+  <data name="Cart_FeeLabel" xml:space="preserve">
+    <value>Naknada za uslugu</value>
+  </data>
+  <data name="Cart_TotalLabel" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="Cart_OrderingClosed" xml:space="preserve">
+    <value>Naručivanje je zatvoreno jer utakmica trenutno ne traje.</value>
+  </data>
+  <data name="Cart_Placing" xml:space="preserve">
+    <value>Šaljem…</value>
+  </data>
+  <data name="Cart_OrderingUnavailable" xml:space="preserve">
+    <value>Naručivanje nije dostupno</value>
+  </data>
+  <data name="Cart_PlaceOrderButton" xml:space="preserve">
+    <value>Naruči · €{0}</value>
+  </data>
+  <data name="Cart_Item" xml:space="preserve">
+    <value>stavka</value>
+  </data>
+  <data name="Cart_Items" xml:space="preserve">
+    <value>stavke</value>
+  </data>
+  <data name="Cart_ItemCountSubtitle" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
+  <data name="Cart_EmptySubtitle" xml:space="preserve">
+    <value>Prazno</value>
+  </data>
+  <data name="Cart_WalletPlaceholder" xml:space="preserve">
+    <value>Novčanik</value>
+  </data>
+  <data name="Cart_TicketWalletTitle" xml:space="preserve">
+    <value>Saldo na ulaznici</value>
+  </data>
+  <data name="Cart_PersonalWalletTitle" xml:space="preserve">
+    <value>HALFTIME novčanik</value>
+  </data>
+  <data name="Cart_InsufficientTicketBalance" xml:space="preserve">
+    <value>Nedovoljno sredstava na ulaznici. Nadoplati na šanku ili plati karticom.</value>
+  </data>
+  <data name="Cart_InsufficientWalletBalance" xml:space="preserve">
+    <value>Nedovoljno sredstava na novčaniku. Nadoplati novčanik ili plati karticom.</value>
+  </data>
+  <data name="Cart_OrderFailed" xml:space="preserve">
+    <value>Narudžbu nije bilo moguće poslati. Pokušaj ponovno.</value>
+  </data>
+  <data name="Register_ScreenHeader_Title" xml:space="preserve">
+    <value>Registracija</value>
+  </data>
+  <data name="Register_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Novi račun</value>
+  </data>
+  <data name="Register_Badge" xml:space="preserve">
+    <value>🎟️ Novi navijač</value>
+  </data>
+  <data name="Register_CreateTitle" xml:space="preserve">
+    <value>STVORI RAČUN</value>
+  </data>
+  <data name="Register_IntroText" xml:space="preserve">
+    <value>Registriraj se za brže naručivanje i praćenje svojih narudžbi.</value>
+  </data>
+  <data name="Register_UsernameLabel" xml:space="preserve">
+    <value>Korisničko ime</value>
+  </data>
+  <data name="Register_EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Register_FirstNameLabel" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="Register_LastNameLabel" xml:space="preserve">
+    <value>Prezime</value>
+  </data>
+  <data name="Register_OIBLabel" xml:space="preserve">
+    <value>OIB</value>
+  </data>
+  <data name="Register_OIBHint" xml:space="preserve">
+    <value>Koristi se za provjeru identiteta pri uplati na baru.</value>
+  </data>
+  <data name="Register_PasswordLabel" xml:space="preserve">
+    <value>Lozinka</value>
+  </data>
+  <data name="Register_PasswordHint" xml:space="preserve">
+    <value>Najmanje 6 znakova.</value>
+  </data>
+  <data name="Register_ConfirmPasswordLabel" xml:space="preserve">
+    <value>Potvrdi lozinku</value>
+  </data>
+  <data name="Register_TermsError" xml:space="preserve">
+    <value>Moraš prihvatiti uvjete korištenja.</value>
+  </data>
+  <data name="Register_CreateAccountButton" xml:space="preserve">
+    <value>Stvori račun</value>
+  </data>
+  <data name="Register_AlreadyHasAccount" xml:space="preserve">
+    <value>Već imaš račun?</value>
+  </data>
+  <data name="Register_SignInLink" xml:space="preserve">
+    <value>Prijavi se</value>
+  </data>
+  <data name="Register_ConnectionError" xml:space="preserve">
+    <value>Nije moguće spojiti se na poslužitelj.</value>
+  </data>
+  <data name="Scan_PageTitle" xml:space="preserve">
+    <value>Skeniraj ulaznicu — HALFTIME</value>
+  </data>
+  <data name="Scan_ScreenHeader" xml:space="preserve">
+    <value>Skeniraj ulaznicu</value>
+  </data>
+  <data name="Scan_HintText" xml:space="preserve">
+    <value>Uperi kameru svog telefona u QR kôd na ulaznici — aplikacija se otvara automatski.</value>
+  </data>
+  <data name="Scan_DevLabel" xml:space="preserve">
+    <value>🧪 Test (dev): odaberi ulaznicu</value>
+  </data>
+  <data name="Scan_DevPlaceholder" xml:space="preserve">
+    <value>— odaberi ulaznicu —</value>
+  </data>
+  <data name="Scan_ManualLabel" xml:space="preserve">
+    <value>Ne možeš skenirati?</value>
+  </data>
+  <data name="Scan_ManualPlaceholder" xml:space="preserve">
+    <value>Unesi kôd s ulaznice</value>
+  </data>
+  <data name="Scan_ContinueButton" xml:space="preserve">
+    <value>Nastavi</value>
+  </data>
+  <data name="Scan_InvalidCode" xml:space="preserve">
+    <value>Unesi važeći kôd s ulaznice.</value>
+  </data>
+  <data name="SetPassword_PageTitle" xml:space="preserve">
+    <value>Aktivacija računa — HALFTIME</value>
+  </data>
+  <data name="SetPassword_ScreenHeader_Title" xml:space="preserve">
+    <value>Aktivacija računa</value>
+  </data>
+  <data name="SetPassword_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Postavi lozinku</value>
+  </data>
+  <data name="SetPassword_CheckingLink" xml:space="preserve">
+    <value>Provjeravam poveznicu…</value>
+  </data>
+  <data name="SetPassword_LinkInvalid_Badge" xml:space="preserve">
+    <value>⚠️ Poveznica</value>
+  </data>
+  <data name="SetPassword_LinkInvalid_Title" xml:space="preserve">
+    <value>POVEZNICA NEVAŽEĆA</value>
+  </data>
+  <data name="SetPassword_LoginLink" xml:space="preserve">
+    <value>Idi na prijavu</value>
+  </data>
+  <data name="SetPassword_Welcome_Badge" xml:space="preserve">
+    <value>🎟️ Dobrodošao</value>
+  </data>
+  <data name="SetPassword_SetPassword_Title" xml:space="preserve">
+    <value>POSTAVI LOZINKU</value>
+  </data>
+  <data name="SetPassword_GreetingHi" xml:space="preserve">
+    <value>Bok, {0}!</value>
+  </data>
+  <data name="SetPassword_GreetingMain" xml:space="preserve">
+    <value>Postavi lozinku da aktiviraš svoj račun{0}.</value>
+  </data>
+  <data name="SetPassword_NewPasswordLabel" xml:space="preserve">
+    <value>Nova lozinka</value>
+  </data>
+  <data name="SetPassword_PasswordHint" xml:space="preserve">
+    <value>Najmanje 6 znakova.</value>
+  </data>
+  <data name="SetPassword_ConfirmPasswordLabel" xml:space="preserve">
+    <value>Potvrdi lozinku</value>
+  </data>
+  <data name="SetPassword_ActivatingButton" xml:space="preserve">
+    <value>Aktiviram…</value>
+  </data>
+  <data name="SetPassword_ActivateButton" xml:space="preserve">
+    <value>Aktiviraj račun</value>
+  </data>
+  <data name="SetPassword_LinkNotFound" xml:space="preserve">
+    <value>Poveznica nije pronađena</value>
+  </data>
+  <data name="SetPassword_LinkExpired" xml:space="preserve">
+    <value>Poveznica je istekla</value>
+  </data>
+  <data name="SetPassword_LinkAlreadyUsed" xml:space="preserve">
+    <value>Poveznica je već iskorištena</value>
+  </data>
+  <data name="SetPassword_AccountAlreadyActive" xml:space="preserve">
+    <value>Račun je već aktiviran</value>
+  </data>
+  <data name="SetPassword_LinkInvalid" xml:space="preserve">
+    <value>Poveznica nije važeća</value>
+  </data>
+  <data name="SetPassword_CheckError" xml:space="preserve">
+    <value>Došlo je do pogreške pri provjeri povezave.</value>
+  </data>
+  <data name="SetPassword_ActivationFailed" xml:space="preserve">
+    <value>Aktivacija nije uspjela. Pokušaj ponovno.</value>
+  </data>
+  <data name="SetPassword_GeneralError" xml:space="preserve">
+    <value>Došlo je do pogreške. Pokušaj ponovno.</value>
+  </data>
+  <data name="Resolve_ValidatingTicket" xml:space="preserve">
+    <value>Provjeravam tvoju ulaznicu…</value>
+  </data>
+  <data name="Resolve_Ready_Title" xml:space="preserve">
+    <value>Spreman si!</value>
+  </data>
+  <data name="Resolve_Seat_Label" xml:space="preserve">
+    <value>Mjesto</value>
+  </data>
+  <data name="Resolve_Redirecting" xml:space="preserve">
+    <value>Vodim te na meni…</value>
+  </data>
+  <data name="Resolve_StartOrdering_Button" xml:space="preserve">
+    <value>Započni naručivanje</value>
+  </data>
+  <data name="Resolve_Error_Title" xml:space="preserve">
+    <value>Ups…</value>
+  </data>
+  <data name="Resolve_RescanButton" xml:space="preserve">
+    <value>Skeniraj ponovno</value>
+  </data>
+  <data name="Resolve_Home_Button" xml:space="preserve">
+    <value>Početna</value>
+  </data>
+  <data name="MyTickets_PageTitle" xml:space="preserve">
+    <value>Moje ulaznice — HALFTIME</value>
+  </data>
+  <data name="MyTickets_ScreenHeader_Title" xml:space="preserve">
+    <value>Moje ulaznice</value>
+  </data>
+  <data name="MyTickets_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Ulaznice &amp; potrošnja</value>
+  </data>
+  <data name="MyTickets_Loading" xml:space="preserve">
+    <value>Učitavam ulaznice…</value>
+  </data>
+  <data name="MyTickets_Empty_Title" xml:space="preserve">
+    <value>Još nema ulaznica</value>
+  </data>
+  <data name="MyTickets_Empty_Message" xml:space="preserve">
+    <value>Kad kupiš ulaznicu, pojavit će se ovdje s računom i PDF karticom.</value>
+  </data>
+  <data name="MyTickets_BrowseEvents" xml:space="preserve">
+    <value>Pogledaj događaje</value>
+  </data>
+  <data name="MyTickets_SeasonBadge" xml:space="preserve">
+    <value>Sezonska</value>
+  </data>
+  <data name="MyTickets_TicketTitle" xml:space="preserve">
+    <value>Ulaznica</value>
+  </data>
+  <data name="MyTickets_DetailsLoading" xml:space="preserve">
+    <value>Učitavam…</value>
+  </data>
+  <data name="MyTickets_DetailsError" xml:space="preserve">
+    <value>Ne mogu učitati detalje ulaznice.</value>
+  </data>
+  <data name="MyTickets_TicketEntry" xml:space="preserve">
+    <value>ULAZ NA STADION</value>
+  </data>
+  <data name="MyTickets_SeasonTicket" xml:space="preserve">
+    <value>SEZONSKA</value>
+  </data>
+  <data name="MyTickets_DateField" xml:space="preserve">
+    <value>DATUM</value>
+  </data>
+  <data name="MyTickets_SectorField" xml:space="preserve">
+    <value>SEKTOR</value>
+  </data>
+  <data name="MyTickets_RowField" xml:space="preserve">
+    <value>RED</value>
+  </data>
+  <data name="MyTickets_SeatField" xml:space="preserve">
+    <value>SJEDALO</value>
+  </data>
+  <data name="MyTickets_PriceLabel" xml:space="preserve">
+    <value>CIJENA ULAZNICE</value>
+  </data>
+  <data name="MyTickets_DownloadLoading" xml:space="preserve">
+    <value>Pripremam…</value>
+  </data>
+  <data name="MyTickets_DownloadButton" xml:space="preserve">
+    <value>⬇ Preuzmi PDF ulaznicu</value>
+  </data>
+  <data name="MyTickets_CloseButton" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="MyTickets_SpendingLabel" xml:space="preserve">
+    <value>Potrošnja</value>
+  </data>
+  <data name="MyTickets_TicketPrice_Row" xml:space="preserve">
+    <value>Cijena ulaznice</value>
+  </data>
+  <data name="MyTickets_DrinksOrders" xml:space="preserve">
+    <value>Pića i narudžbe</value>
+  </data>
+  <data name="MyTickets_NoOrders" xml:space="preserve">
+    <value>Nema narudžbi pića za ovu ulaznicu.</value>
+  </data>
+  <data name="MyTickets_DrinksTotal_Row" xml:space="preserve">
+    <value>Ukupno pića</value>
+  </data>
+  <data name="MyTickets_GrandTotal" xml:space="preserve">
+    <value>Sveukupno</value>
+  </data>
+  <data name="MyTickets_SeatRowText" xml:space="preserve">
+    <value>Red {0}</value>
+  </data>
+  <data name="MyTickets_SeatAbbrText" xml:space="preserve">
+    <value>Sj. {0}</value>
+  </data>
+  <data name="MyTickets_PDFGenerationError" xml:space="preserve">
+    <value>Nije moguće generirati PDF. Pokušaj ponovno.</value>
+  </data>
+  <data name="Wallet_ScreenHeader_Title" xml:space="preserve">
+    <value>Novčanik</value>
+  </data>
+  <data name="Wallet_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Stanje &amp; transakcije</value>
+  </data>
+  <data name="Wallet_Loading" xml:space="preserve">
+    <value>Učitavam novčanik…</value>
+  </data>
+  <data name="Wallet_NotEligible_Title" xml:space="preserve">
+    <value>Novčanik nije dostupan</value>
+  </data>
+  <data name="Wallet_NotEligible_Message" xml:space="preserve">
+    <value>Novčanik je dostupan samo vlasnicima sezonske ulaznice.</value>
+  </data>
+  <data name="Wallet_Balance_Label" xml:space="preserve">
+    <value>Stanje</value>
+  </data>
+  <data name="Wallet_FrozenBadge" xml:space="preserve">
+    <value>❄ Zamrznut</value>
+  </data>
+  <data name="Wallet_AmountLabel" xml:space="preserve">
+    <value>Iznos ({0})</value>
+  </data>
+  <data name="Wallet_CardDataLabel" xml:space="preserve">
+    <value>Podaci o kartici</value>
+  </data>
+  <data name="Wallet_MethodLabel" xml:space="preserve">
+    <value>Način plaćanja</value>
+  </data>
+  <data name="Wallet_CreditCard" xml:space="preserve">
+    <value>Kreditna kartica</value>
+  </data>
+  <data name="Wallet_PayPal" xml:space="preserve">
+    <value>PayPal</value>
+  </data>
+  <data name="Wallet_DepositButton" xml:space="preserve">
+    <value>Uplati</value>
+  </data>
+  <data name="Wallet_Transactions_Label" xml:space="preserve">
+    <value>Transakcije</value>
+  </data>
+  <data name="Wallet_TransactionType" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="Wallet_TransactionDate" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Wallet_AlertCloseButton" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Wallet_CardUnavailable" xml:space="preserve">
+    <value>Kartično plaćanje trenutno nije dostupno.</value>
+  </data>
+  <data name="Wallet_CardNotReady" xml:space="preserve">
+    <value>Kartično plaćanje nije spremno. Osvježite stranicu.</value>
+  </data>
+  <data name="Wallet_ConfirmingCard" xml:space="preserve">
+    <value>Potvrđujem karticu…</value>
+  </data>
+  <data name="Wallet_BookingDeposit" xml:space="preserve">
+    <value>Knjižim uplatu…</value>
+  </data>
+  <data name="Wallet_PaymentReceived" xml:space="preserve">
+    <value>Plaćanje je zaprimljeno. Sredstva će biti vidljiva za koji trenutak.</value>
+  </data>
+  <data name="Wallet_Processing" xml:space="preserve">
+    <value>Obrađujem…</value>
+  </data>
+  <data name="Wallet_FrozenError" xml:space="preserve">
+    <value>Novčanik je zamrznut.</value>
+  </data>
+  <data name="Wallet_DeclinedError" xml:space="preserve">
+    <value>Plaćanje je odbijeno.</value>
+  </data>
+  <data name="Wallet_NotAvailableError" xml:space="preserve">
+    <value>Novčanik nije dostupan.</value>
+  </data>
+  <data name="StadiumMap_ScreenHeader_Title" xml:space="preserve">
+    <value>Karta stadiona</value>
+  </data>
+  <data name="StadiumMap_ScreenHeader_Subtitle" xml:space="preserve">
+    <value>Tribine &amp; sektori</value>
+  </data>
+  <data name="StadiumMap_RefreshButton" xml:space="preserve">
+    <value>🔄 Osvježi</value>
+  </data>
+  <data name="StadiumMap_Loading" xml:space="preserve">
+    <value>Učitavam kartu…</value>
+  </data>
+  <data name="StadiumMap_CardTitle" xml:space="preserve">
+    <value>Karta stadiona s tribinama</value>
+  </data>
+  <data name="StadiumMap_North" xml:space="preserve">
+    <value>SJEVER</value>
+  </data>
+  <data name="StadiumMap_South" xml:space="preserve">
+    <value>JUG</value>
+  </data>
+  <data name="StadiumMap_East" xml:space="preserve">
+    <value>ISTOK</value>
+  </data>
+  <data name="StadiumMap_West" xml:space="preserve">
+    <value>ZAPAD</value>
+  </data>
+  <data name="StadiumMap_SectorLabel" xml:space="preserve">
+    <value>Sektor</value>
+  </data>
+  <data name="StadiumMap_TypeLabel" xml:space="preserve">
+    <value>Tip</value>
+  </data>
+  <data name="StadiumMap_StatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StadiumMap_SelectPrompt" xml:space="preserve">
+    <value>👆 Dodirni tribinu za detalje sektora.</value>
+  </data>
+  <data name="StadiumMap_SectionType_North" xml:space="preserve">
+    <value>Ultras</value>
+  </data>
+  <data name="StadiumMap_SectionType_South" xml:space="preserve">
+    <value>Obiteljska</value>
+  </data>
+  <data name="StadiumMap_SectionType_East" xml:space="preserve">
+    <value>VIP</value>
+  </data>
+  <data name="StadiumMap_SectionType_West" xml:space="preserve">
+    <value>Opća</value>
+  </data>
+  <data name="StadiumMap_StatusUnknown" xml:space="preserve">
+    <value>Nepoznato</value>
+  </data>
+  <data name="StadiumMap_StatusPlentyAvailable" xml:space="preserve">
+    <value>Puno slobodnih</value>
+  </data>
+  <data name="StadiumMap_StatusPartial" xml:space="preserve">
+    <value>Djelomično popunjeno</value>
+  </data>
+  <data name="StadiumMap_StatusAlmostFull" xml:space="preserve">
+    <value>Gotovo popunjeno</value>
+  </data>
+  <data name="Welcome_PageTitle" xml:space="preserve">
+    <value>HALFTIME</value>
+  </data>
+  <data name="Welcome_Wordmark_Part1" xml:space="preserve">
+    <value>HALF</value>
+  </data>
+  <data name="Welcome_Wordmark_Part2" xml:space="preserve">
+    <value>TIME</value>
+  </data>
+  <data name="Welcome_HeroLine1" xml:space="preserve">
+    <value>NEMA</value>
+  </data>
+  <data name="Welcome_HeroLine2" xml:space="preserve">
+    <value>REDOVA.</value>
+  </data>
+  <data name="Welcome_HeroLine3" xml:space="preserve">
+    <value>SAMO PIĆE.</value>
+  </data>
+  <data name="Welcome_HeroLede" xml:space="preserve">
+    <value>Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.</value>
+  </data>
+  <data name="Welcome_LiveNow" xml:space="preserve">
+    <value>LIVE NOW</value>
+  </data>
+  <data name="Welcome_NextFixture" xml:space="preserve">
+    <value>NEXT FIXTURE</value>
+  </data>
+  <data name="Welcome_Fixture" xml:space="preserve">
+    <value>FIXTURE</value>
+  </data>
+  <data name="Welcome_Live" xml:space="preserve">
+    <value>UŽIVO</value>
+  </data>
+  <data name="Welcome_NoFixtures" xml:space="preserve">
+    <value>Još nema objavljenih utakmica.</value>
+  </data>
+  <data name="Welcome_WelcomeBack" xml:space="preserve">
+    <value>Dobrodošao natrag</value>
+  </data>
+  <data name="Welcome_TicketNumber" xml:space="preserve">
+    <value>🎟️ {0}</value>
+  </data>
+  <data name="Welcome_TopUpAriaLabel" xml:space="preserve">
+    <value>Nadoplati novčanik</value>
+  </data>
+  <data name="Welcome_NoBalance" xml:space="preserve">
+    <value>Nema stanja</value>
+  </data>
+  <data name="Welcome_TopUpButton" xml:space="preserve">
+    <value>＋ Nadoplati</value>
+  </data>
+  <data name="Welcome_SeatLabel" xml:space="preserve">
+    <value>Mjesto</value>
+  </data>
+  <data name="Welcome_EventLabel" xml:space="preserve">
+    <value>Utakmica</value>
+  </data>
+  <data name="Welcome_DateLabel" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Welcome_WalletLabel" xml:space="preserve">
+    <value>Novčanik</value>
+  </data>
+  <data name="Welcome_ContinueOrdering" xml:space="preserve">
+    <value>Nastavi naručivanje</value>
+  </data>
+  <data name="Welcome_ScanTicket" xml:space="preserve">
+    <value>Skeniraj ulaznicu</value>
+  </data>
+  <data name="Welcome_SignIn" xml:space="preserve">
+    <value>Imaš pretplatu? Prijavi se</value>
+  </data>
+  <data name="Welcome_SingleTicketScan" xml:space="preserve">
+    <value>Pojedinačna ulaznica? Skeniraj QR kod.</value>
+  </data>
+  <data name="Welcome_WalletSheetLabel" xml:space="preserve">
+    <value>Novčanik</value>
+  </data>
+  <data name="Welcome_TopUpSheetTitle" xml:space="preserve">
+    <value>Nadoplati novčanik</value>
+  </data>
+  <data name="Welcome_WithdrawTitle" xml:space="preserve">
+    <value>Isplata na karticu</value>
+  </data>
+  <data name="Welcome_CloseLabel" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Welcome_ModeLabel" xml:space="preserve">
+    <value>Način</value>
+  </data>
+  <data name="Welcome_TopUpMode" xml:space="preserve">
+    <value>＋ Nadoplati</value>
+  </data>
+  <data name="Welcome_WithdrawMode" xml:space="preserve">
+    <value>↓ Isplati</value>
+  </data>
+  <data name="Welcome_AmountLabel" xml:space="preserve">
+    <value>Iznos (EUR)</value>
+  </data>
+  <data name="Welcome_Processing" xml:space="preserve">
+    <value>Obrađujem…</value>
+  </data>
+  <data name="Welcome_PayAmount" xml:space="preserve">
+    <value>Uplati €{0}</value>
+  </data>
+  <data name="Welcome_FundsAvailableNote" xml:space="preserve">
+    <value>Sredstva su odmah dostupna za naručivanje pića.</value>
+  </data>
+  <data name="Welcome_AvailableForWithdraw" xml:space="preserve">
+    <value>Dostupno za isplatu</value>
+  </data>
+  <data name="Welcome_WithdrawAmountLabel" xml:space="preserve">
+    <value>Iznos za isplatu (EUR)</value>
+  </data>
+  <data name="Welcome_WithdrawAmount" xml:space="preserve">
+    <value>Isplati €{0}</value>
+  </data>
+  <data name="Welcome_WithdrawAll" xml:space="preserve">
+    <value>Isplati cijelo stanje</value>
+  </data>
+  <data name="Welcome_RefundNote" xml:space="preserve">
+    <value>Iznos se vraća na tvoju karticu.</value>
+  </data>
+  <data name="Welcome_GuestName" xml:space="preserve">
+    <value>Gost</value>
+  </data>
+  <data name="Welcome_TicketBalance" xml:space="preserve">
+    <value>Saldo na ulaznici</value>
+  </data>
+  <data name="Welcome_HalftimeWallet" xml:space="preserve">
+    <value>HALFTIME novčanik</value>
+  </data>
+  <data name="Welcome_NoWallet" xml:space="preserve">
+    <value>Nema novčanika</value>
+  </data>
+  <data name="Welcome_GeneralError" xml:space="preserve">
+    <value>Nešto je pošlo po zlu. Pokušaj ponovno.</value>
+  </data>
+  <data name="Welcome_InsufficientFunds" xml:space="preserve">
+    <value>Iznos prelazi dostupno stanje.</value>
+  </data>
+  <data name="Welcome_TopupError_LimitExceeded" xml:space="preserve">
+    <value>Iznos prelazi najveće dopušteno stanje novčanika.</value>
+  </data>
+  <data name="Welcome_TopupError_WalletFrozen" xml:space="preserve">
+    <value>Novčanik je zamrznut.</value>
+  </data>
+  <data name="Welcome_TopupError_GatewayDeclined" xml:space="preserve">
+    <value>Plaćanje je odbijeno. Pokušaj s drugom karticom.</value>
+  </data>
+  <data name="Welcome_TopupError_GatewayUnavailable" xml:space="preserve">
+    <value>Online nadoplata trenutno nije dostupna.</value>
+  </data>
+  <data name="Welcome_TopupError_SessionExpired" xml:space="preserve">
+    <value>Sesija je istekla. Skeniraj ulaznicu ponovno.</value>
+  </data>
+  <data name="Welcome_TopupError_TicketNotFound" xml:space="preserve">
+    <value>Novčanik nije pronađen.</value>
+  </data>
+  <data name="Welcome_TopupError_NotEligible" xml:space="preserve">
+    <value>Novčanik nije dostupan za ovaj račun.</value>
+  </data>
+  <data name="Welcome_TopupError_InvalidAmount" xml:space="preserve">
+    <value>Unesi ispravan iznos.</value>
+  </data>
+  <data name="Welcome_TopupError_General" xml:space="preserve">
+    <value>Nadoplata nije uspjela. Pokušaj ponovno.</value>
+  </data>
+  <data name="Welcome_WithdrawError_InsufficientFunds" xml:space="preserve">
+    <value>Nemaš dovoljno sredstava za isplatu.</value>
+  </data>
+  <data name="Welcome_WithdrawError_WalletFrozen" xml:space="preserve">
+    <value>Novčanik je zamrznut.</value>
+  </data>
+  <data name="Welcome_WithdrawError_GatewayDeclined" xml:space="preserve">
+    <value>Isplata je odbijena. Pokušaj ponovno.</value>
+  </data>
+  <data name="Welcome_WithdrawError_GatewayUnavailable" xml:space="preserve">
+    <value>Online isplata trenutno nije dostupna.</value>
+  </data>
+  <data name="Welcome_WithdrawError_SessionExpired" xml:space="preserve">
+    <value>Sesija je istekla. Skeniraj ulaznicu ponovno.</value>
+  </data>
+  <data name="Welcome_WithdrawError_WalletNotFound" xml:space="preserve">
+    <value>Novčanik nije pronađen.</value>
+  </data>
+  <data name="Welcome_WithdrawError_InvalidAmount" xml:space="preserve">
+    <value>Unesi ispravan iznos.</value>
+  </data>
+  <data name="Welcome_WithdrawError_General" xml:space="preserve">
+    <value>Isplata nije uspjela. Pokušaj ponovno.</value>
+  </data>
+  <data name="Welcome_Day_Yesterday" xml:space="preserve">
+    <value>Jučer</value>
+  </data>
+  <data name="Welcome_Day_Today" xml:space="preserve">
+    <value>Danas</value>
+  </data>
+  <data name="Welcome_Day_Tomorrow" xml:space="preserve">
+    <value>Sutra</value>
+  </data>
 </root>

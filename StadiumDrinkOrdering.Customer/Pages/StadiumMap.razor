@@ -2,29 +2,31 @@
 @layout MobileShell
 @using StadiumDrinkOrdering.Shared.DTOs
 @using StadiumDrinkOrdering.Customer.Services
+@using Microsoft.Extensions.Localization
 @inject IApiService ApiService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Karta stadiona — HALFTIME</PageTitle>
+<PageTitle>@Localizer["StadiumMap_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Karta stadiona" Subtitle="Tribine & sektori" ShowBack="false" />
+<ScreenHeader Title="@Localizer["StadiumMap_ScreenHeader_Title"]" Subtitle="@Localizer["StadiumMap_ScreenHeader_Subtitle"]" ShowBack="false" />
 
 <div id="customer-stadium-map-container" class="map-body no-scrollbar">
 
     <div id="customer-stadium-map-controls" class="map-actions">
-        <button id="customer-stadium-map-refresh-btn" class="btn btn-ghost btn-sm" @onclick="RefreshMap">🔄 Osvježi</button>
-        <a id="customer-stadium-map-order-btn" class="btn btn-primary btn-sm" href="/menu">🍺 Naruči piće</a>
+        <button id="customer-stadium-map-refresh-btn" class="btn btn-ghost btn-sm" @onclick="RefreshMap">@Localizer["StadiumMap_RefreshButton"]</button>
+        <a id="customer-stadium-map-order-btn" class="btn btn-primary btn-sm" href="/menu">@Localizer["StadiumMap_OrderDrinks"]</a>
     </div>
 
     @if (stadiumLayout == null)
     {
-        <div id="customer-stadium-map-loading" class="map-state"><span class="spinner"></span> Učitavam kartu…</div>
+        <div id="customer-stadium-map-loading" class="map-state"><span class="spinner"></span> @Localizer["StadiumMap_Loading"]</div>
     }
     else
     {
         <div class="map-svg-wrap">
             <svg viewBox="0 0 400 300" class="map-svg" id="stadium-layout-svg" aria-labelledby="stadium-title" role="img">
-                <title id="stadium-title">Karta stadiona s tribinama</title>
+                <title id="stadium-title">@Localizer["StadiumMap_CardTitle"]</title>
 
                 <!-- Field -->
                 <rect x="100" y="100" width="200" height="100" fill="#22c55e" stroke="#16a34a" stroke-width="1" class="stadium-field" rx="3" />
@@ -34,33 +36,33 @@
                 <!-- North / Sjever -->
                 <g class="stand-group" data-sector="north" @onclick="SelectNorth" @onmouseenter="HoverNorth" @onmouseleave="HandleStandLeave">
                     <rect x="125" y="40" width="150" height="40" fill="#2563eb" stroke="#1e40af" stroke-width="1" class="@GetStandClass("north")" rx="3" />
-                    <text x="200" y="62" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="stand-label">SJEVER</text>
+                    <text x="200" y="62" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="stand-label">@Localizer["StadiumMap_North"]</text>
                     <text x="200" y="75" text-anchor="middle" fill="#e2e8f0" font-size="9" class="stand-info">@GetSectorInfo("north")</text>
                 </g>
 
                 <!-- South / Jug -->
                 <g class="stand-group" data-sector="south" @onclick="SelectSouth" @onmouseenter="HoverSouth" @onmouseleave="HandleStandLeave">
                     <rect x="125" y="220" width="150" height="40" fill="#dc2626" stroke="#b91c1c" stroke-width="1" class="@GetStandClass("south")" rx="3" />
-                    <text x="200" y="242" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="stand-label">JUG</text>
+                    <text x="200" y="242" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="stand-label">@Localizer["StadiumMap_South"]</text>
                     <text x="200" y="255" text-anchor="middle" fill="#fecaca" font-size="9" class="stand-info">@GetSectorInfo("south")</text>
                 </g>
 
                 <!-- East / Istok -->
                 <g class="stand-group" data-sector="east" @onclick="SelectEast" @onmouseenter="HoverEast" @onmouseleave="HandleStandLeave">
                     <rect x="310" y="110" width="40" height="80" fill="#16a34a" stroke="#15803d" stroke-width="1" class="@GetStandClass("east")" rx="3" />
-                    <text x="330" y="150" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="stand-label" transform="rotate(90, 330, 150)">ISTOK</text>
+                    <text x="330" y="150" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="stand-label" transform="rotate(90, 330, 150)">@Localizer["StadiumMap_East"]</text>
                     <text x="330" y="175" text-anchor="middle" fill="#dcfce7" font-size="9" class="stand-info" transform="rotate(90, 330, 175)">@GetSectorInfo("east")</text>
                 </g>
 
                 <!-- West / Zapad -->
                 <g class="stand-group" data-sector="west" @onclick="SelectWest" @onmouseenter="HoverWest" @onmouseleave="HandleStandLeave">
                     <rect x="50" y="110" width="40" height="80" fill="#7c3aed" stroke="#6d28d9" stroke-width="1" class="@GetStandClass("west")" rx="3" />
-                    <text x="70" y="150" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="stand-label" transform="rotate(-90, 70, 150)">ZAPAD</text>
+                    <text x="70" y="150" text-anchor="middle" fill="white" font-size="12" font-weight="bold" class="stand-label" transform="rotate(-90, 70, 150)">@Localizer["StadiumMap_West"]</text>
                     <text x="70" y="125" text-anchor="middle" fill="#e9d5ff" font-size="9" class="stand-info" transform="rotate(-90, 70, 125)">@GetSectorInfo("west")</text>
                 </g>
 
                 <circle cx="200" cy="280" r="3" fill="#6b7280" class="entrance" />
-                <text x="200" y="290" text-anchor="middle" font-size="8" fill="#9aa0ac">Ulaz</text>
+                <text x="200" y="290" text-anchor="middle" font-size="8" fill="#9aa0ac">@Localizer["StadiumMap_Entrance"]</text>
             </svg>
         </div>
 
@@ -73,16 +75,16 @@
                             <span class="map-dot" style="background:@GetSectionColor(selectedSection.SectionName)"></span>
                             @selectedSection.DisplayName
                         </div>
-                        <button id="customer-stadium-order-from-sector-btn" class="btn btn-primary btn-sm" @onclick="() => NavigateToMenu(selectedSection.SectionName)">🍺 Naruči ovdje</button>
+                        <button id="customer-stadium-order-from-sector-btn" class="btn btn-primary btn-sm" @onclick="() => NavigateToMenu(selectedSection.SectionName)">@Localizer["StadiumMap_OrderHere"]</button>
                     </div>
                     <div class="map-detail-grid">
-                        <div class="map-stat"><span class="map-stat-k">Sektor</span><span class="map-stat-v">@selectedSection.SectionName</span></div>
-                        <div class="map-stat"><span class="map-stat-k">Tip</span><span class="map-stat-v">@GetSectionType(selectedSection.SectionName)</span></div>
-                        <div class="map-stat"><span class="map-stat-k">Ukupno mjesta</span><span class="map-stat-v tnum">@selectedSection.TotalSeats</span></div>
-                        <div class="map-stat"><span class="map-stat-k">Slobodno</span><span class="map-stat-v tnum">@(selectedSection.TotalSeats - selectedSection.ActiveOrders)</span></div>
-                        <div class="map-stat"><span class="map-stat-k">Aktivne narudžbe</span><span class="map-stat-v tnum">@selectedSection.ActiveOrders</span></div>
+                        <div class="map-stat"><span class="map-stat-k">@Localizer["StadiumMap_SectorLabel"]</span><span class="map-stat-v">@selectedSection.SectionName</span></div>
+                        <div class="map-stat"><span class="map-stat-k">@Localizer["StadiumMap_TypeLabel"]</span><span class="map-stat-v">@GetSectionType(selectedSection.SectionName)</span></div>
+                        <div class="map-stat"><span class="map-stat-k">@Localizer["StadiumMap_TotalSeats"]</span><span class="map-stat-v tnum">@selectedSection.TotalSeats</span></div>
+                        <div class="map-stat"><span class="map-stat-k">@Localizer["StadiumMap_Available"]</span><span class="map-stat-v tnum">@(selectedSection.TotalSeats - selectedSection.ActiveOrders)</span></div>
+                        <div class="map-stat"><span class="map-stat-k">@Localizer["StadiumMap_ActiveOrders"]</span><span class="map-stat-v tnum">@selectedSection.ActiveOrders</span></div>
                         <div class="map-stat">
-                            <span class="map-stat-k">Status</span>
+                            <span class="map-stat-k">@Localizer["StadiumMap_StatusLabel"]</span>
                             <span class="map-status @GetStatusClass(selectedSection.ActiveOrders, selectedSection.TotalSeats)">@GetStatusText(selectedSection.ActiveOrders, selectedSection.TotalSeats)</span>
                         </div>
                     </div>
@@ -90,7 +92,7 @@
             }
             else
             {
-                <div id="customer-stadium-select-prompt" class="map-prompt">👆 Dodirni tribinu za detalje sektora.</div>
+                <div id="customer-stadium-select-prompt" class="map-prompt">@Localizer["StadiumMap_SelectPrompt"]</div>
             }
         </div>
     }
@@ -160,10 +162,10 @@
 
     private string GetSectionType(string sectionName) => sectionName.ToLowerInvariant() switch
     {
-        "north" => "Ultras",
-        "south" => "Obiteljska",
-        "east" => "VIP",
-        "west" => "Opća",
+        "north" => Localizer["StadiumMap_SectionType_North"],
+        "south" => Localizer["StadiumMap_SectionType_South"],
+        "east" => Localizer["StadiumMap_SectionType_East"],
+        "west" => Localizer["StadiumMap_SectionType_West"],
         _ => "Standard"
     };
 
@@ -176,9 +178,9 @@
 
     private string GetStatusText(int activeOrders, int totalSeats)
     {
-        if (totalSeats <= 0) return "Nepoznato";
+        if (totalSeats <= 0) return Localizer["StadiumMap_StatusUnknown"];
         var pct = (double)(totalSeats - activeOrders) / totalSeats;
-        return pct switch { > 0.7 => "Puno slobodnih", > 0.3 => "Djelomično popunjeno", _ => "Gotovo popunjeno" };
+        return pct switch { > 0.7 => Localizer["StadiumMap_StatusPlentyAvailable"], > 0.3 => Localizer["StadiumMap_StatusPartial"], _ => Localizer["StadiumMap_StatusAlmostFull"] };
     }
 
     private string GetStandClass(string sector)

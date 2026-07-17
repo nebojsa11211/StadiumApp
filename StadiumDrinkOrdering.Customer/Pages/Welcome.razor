@@ -9,14 +9,15 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 @inject OrderSessionState State
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>HALFTIME</PageTitle>
+<PageTitle>@Localizer["Welcome_PageTitle"]</PageTitle>
 
 <div id="customer-welcome-container" class="welcome">
     <div id="customer-welcome-crowd" class="wl-crowd"></div>
 
     <header class="wl-top">
-        <div id="customer-welcome-logo" class="wl-logo">HALF<span>TIME</span></div>
+        <div id="customer-welcome-logo" class="wl-logo">@Localizer["Welcome_Wordmark_Part1"]<span>@Localizer["Welcome_Wordmark_Part2"]</span></div>
     </header>
 
     <div id="customer-welcome-hero" class="hero">
@@ -28,11 +29,11 @@
                 <span>@PlaceLabel</span>
             </div>
             <h1 class="display big-mark">
-                <span>NEMA</span>
-                <span class="grad-text">REDOVA.</span>
-                <span class="grad-text">SAMO PIĆE.</span>
+                <span>@Localizer["Welcome_HeroLine1"]</span>
+                <span class="grad-text">@Localizer["Welcome_HeroLine2"]</span>
+                <span class="grad-text">@Localizer["Welcome_HeroLine3"]</span>
             </h1>
-            <p class="hero-lede">Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.</p>
+            <p class="hero-lede">@Localizer["Welcome_HeroLede"]</p>
         </div>
     </div>
 
@@ -55,7 +56,7 @@
                     var away = CrestColors(teams.away);
                     var start = evt.EventDate.ToLocalTime();
                     var end = evt.EventEndDate?.ToLocalTime();
-                    var label = evt.IsLive ? "LIVE NOW" : (isFirst ? "NEXT FIXTURE" : "FIXTURE");
+                    var label = evt.IsLive ? Localizer["Welcome_LiveNow"].Value : (isFirst ? Localizer["Welcome_NextFixture"].Value : Localizer["Welcome_Fixture"].Value);
                     <div id="customer-welcome-vs-card-@evt.Id" class="vs-card" role="button" tabindex="0"
                          @onclick="@(() => Nav.NavigateTo($"/events/{evt.Id}"))"
                          @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{evt.Id}"); })">
@@ -85,7 +86,7 @@
                                     <span id="customer-welcome-vs-time-@evt.Id" class="vs-time tnum">@TimeRange(start, end)</span>
                                     @if (evt.IsLive)
                                     {
-                                        <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
+                                        <span class="vs-live"><span class="pulse"></span>@Localizer["Welcome_Live"]</span>
                                     }
                                 </div>
                                 <div id="customer-welcome-vs-team-away-@evt.Id" class="vs-team">
@@ -117,7 +118,7 @@
                                     <span id="customer-welcome-vs-time-@evt.Id" class="vs-time tnum">@TimeRange(start, end)</span>
                                     @if (evt.IsLive)
                                     {
-                                        <span class="vs-live"><span class="pulse"></span>UŽIVO</span>
+                                        <span class="vs-live"><span class="pulse"></span>@Localizer["Welcome_Live"]</span>
                                     }
                                 </div>
                             </div>
@@ -134,11 +135,11 @@
             {
                 <div id="customer-welcome-season-empty" class="wl-season">@_season!.Name</div>
             }
-            <div id="customer-welcome-fixture-empty" class="fixture-empty">Još nema objavljenih utakmica.</div>
+            <div id="customer-welcome-fixture-empty" class="fixture-empty">@Localizer["Welcome_NoFixtures"]</div>
         </div>
     }
 
-    <div id="customer-welcome-wl-mark" class="wl-mark">HALF<span>TIME</span></div>
+    <div id="customer-welcome-wl-mark" class="wl-mark">@Localizer["Welcome_Wordmark_Part1"]<span>@Localizer["Welcome_Wordmark_Part2"]</span></div>
 
     <div id="customer-welcome-cta" class="welcome-cta">
         @if (_hasSession)
@@ -155,18 +156,18 @@
                     <div id="customer-welcome-fan-id" class="wl-fan-id">
                         <div id="customer-welcome-fan-avatar" class="wl-fan-avatar">@Initials(FanName)</div>
                         <div id="customer-welcome-fan-meta" class="wl-fan-meta">
-                            <div id="customer-welcome-fan-hi" class="wl-fan-hi">Dobrodošao natrag</div>
+                            <div id="customer-welcome-fan-hi" class="wl-fan-hi">@Localizer["Welcome_WelcomeBack"]</div>
                             <div id="customer-welcome-fan-name" class="wl-fan-name">@FanName</div>
                             @if (!string.IsNullOrWhiteSpace(State.TicketNumber))
                             {
-                                <div id="customer-welcome-fan-ticket" class="wl-fan-ticket">🎟️ @State.TicketNumber</div>
+                                <div id="customer-welcome-fan-ticket" class="wl-fan-ticket">@string.Format(Localizer["Welcome_TicketNumber"].Value, State.TicketNumber)</div>
                             }
                         </div>
                     </div>
                     @* Tap the balance to open the online top-up sheet. Stops propagation so it doesn't also
                        toggle the account-details panel that the rest of this header row controls. *@
                     <div id="customer-welcome-fan-wallet" class="wl-fan-wallet" role="button" tabindex="0"
-                         aria-label="Nadoplati novčanik"
+                         aria-label="@Localizer["Welcome_TopUpAriaLabel"]"
                          @onclick="OpenTopup" @onclick:stopPropagation="true"
                          @onkeydown="@(e => { if (e.Key is "Enter" or " ") OpenTopup(); })" @onkeydown:stopPropagation="true">
                         <div id="customer-welcome-fan-wallet-label" class="wl-fan-wallet-label">@WalletLabel</div>
@@ -176,9 +177,9 @@
                         }
                         else
                         {
-                            <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt empty">Nema stanja</div>
+                            <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt empty">@Localizer["Welcome_NoBalance"]</div>
                         }
-                        <div id="customer-welcome-fan-wallet-topup" class="wl-fan-wallet-topup">＋ Nadoplati</div>
+                        <div id="customer-welcome-fan-wallet-topup" class="wl-fan-wallet-topup">@Localizer["Welcome_TopUpButton"]</div>
                     </div>
                     <svg id="customer-welcome-fan-chev" class="wl-fan-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
@@ -187,22 +188,22 @@
                 {
                     <div id="customer-welcome-fancard-details" class="wl-fan-details">
                         <div class="wl-fan-row">
-                            <span class="k">Mjesto</span>
+                            <span class="k">@Localizer["Welcome_SeatLabel"]</span>
                             <span id="customer-welcome-fan-detail-seat" class="v tnum">@State.SeatText</span>
                         </div>
                         <div class="wl-fan-row">
-                            <span class="k">Utakmica</span>
+                            <span class="k">@Localizer["Welcome_EventLabel"]</span>
                             <span id="customer-welcome-fan-detail-event" class="v">@EventTitle</span>
                         </div>
                         @if (State.EventDate is { } dt)
                         {
                             <div class="wl-fan-row">
-                                <span class="k">Datum</span>
+                                <span class="k">@Localizer["Welcome_DateLabel"]</span>
                                 <span id="customer-welcome-fan-detail-date" class="v tnum">@dt.ToLocalTime().ToString("dd.MM.yyyy · HH:mm")</span>
                             </div>
                         }
                         <div class="wl-fan-row">
-                            <span class="k">Novčanik</span>
+                            <span class="k">@Localizer["Welcome_WalletLabel"]</span>
                             <span id="customer-welcome-fan-detail-wallet" class="v">@WalletKind</span>
                         </div>
                     </div>
@@ -212,16 +213,16 @@
             @* Ticket already scanned this session — jump back into ordering instead of scanning again. *@
             <button id="customer-welcome-continue-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/order"))">
                 <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-                Nastavi naručivanje
+                @Localizer["Welcome_ContinueOrdering"]
             </button>
         }
         else
         {
             <button id="customer-welcome-scan-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
                 <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M6 9.5v5M18 9.5v5"/></svg>
-                Skeniraj ulaznicu
+                @Localizer["Welcome_ScanTicket"]
             </button>
-            <button id="customer-welcome-login-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">Imaš pretplatu? Prijavi se</button>
+            <button id="customer-welcome-login-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">@Localizer["Welcome_SignIn"]</button>
         }
     </div>
 
@@ -230,7 +231,7 @@
         {
             @* Redundant once a ticket is scanned — the CTA above already offers "continue ordering". *@
             <button id="customer-welcome-foot-scan" class="wl-foot-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
-                <span>Pojedinačna ulaznica? Skeniraj QR kod.</span>
+                <span>@Localizer["Welcome_SingleTicketScan"]</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm0 3h2v-2h3v2h-2v-1h-1v3h-2v-2Zm3-3h2v2h-2v-2Z"/></svg>
             </button>
         }
@@ -247,24 +248,24 @@
     @if (_sheetOpen)
     {
         <div id="customer-welcome-topup-scrim" class="wl-sheet-scrim" @onclick="CloseSheet"></div>
-        <div id="customer-welcome-topup-sheet" class="wl-sheet" role="dialog" aria-modal="true" aria-label="Novčanik">
+        <div id="customer-welcome-topup-sheet" class="wl-sheet" role="dialog" aria-modal="true" aria-label="@Localizer["Welcome_WalletSheetLabel"]">
             <div class="wl-sheet-grip" aria-hidden="true"></div>
             <div class="wl-sheet-head">
                 <div>
-                    <div id="customer-welcome-topup-title" class="wl-sheet-title">@(_withdrawMode ? "Isplata na karticu" : "Nadoplati novčanik")</div>
+                    <div id="customer-welcome-topup-title" class="wl-sheet-title">@(_withdrawMode ? Localizer["Welcome_WithdrawTitle"] : Localizer["Welcome_TopUpSheetTitle"])</div>
                     <div class="wl-sheet-sub">@WalletLabel</div>
                 </div>
-                <button id="customer-welcome-topup-close" class="wl-sheet-x" @onclick="CloseSheet" aria-label="Zatvori">✕</button>
+                <button id="customer-welcome-topup-close" class="wl-sheet-x" @onclick="CloseSheet" aria-label="@Localizer["Welcome_CloseLabel"]">✕</button>
             </div>
 
             @* Segmented toggle between top-up and withdraw. Withdraw is disabled with no balance to pay out. *@
-            <div id="customer-welcome-sheet-modes" class="wl-seg" role="tablist" aria-label="Način">
+            <div id="customer-welcome-sheet-modes" class="wl-seg" role="tablist" aria-label="@Localizer["Welcome_ModeLabel"]">
                 <button id="customer-welcome-mode-topup" class="wl-seg-btn @(_withdrawMode ? "" : "on")"
-                        role="tab" aria-selected="@(!_withdrawMode)" @onclick="@(() => SetSheetMode(false))">＋ Nadoplati</button>
+                        role="tab" aria-selected="@(!_withdrawMode)" @onclick="@(() => SetSheetMode(false))">@Localizer["Welcome_TopUpMode"]</button>
                 <button id="customer-welcome-mode-withdraw" class="wl-seg-btn @(_withdrawMode ? "on" : "")"
                         role="tab" aria-selected="@_withdrawMode"
                         disabled="@(!(_wallet is { Exists: true } && _wallet.Balance > 0))"
-                        @onclick="@(() => SetSheetMode(true))">↓ Isplati</button>
+                        @onclick="@(() => SetSheetMode(true))">@Localizer["Welcome_WithdrawMode"]</button>
             </div>
 
             @if (!_withdrawMode)
@@ -279,7 +280,7 @@
                 </div>
 
                 <div class="wl-amt-field">
-                    <label for="customer-welcome-topup-amount">Iznos (EUR)</label>
+                    <label for="customer-welcome-topup-amount">@Localizer["Welcome_AmountLabel"]</label>
                     <input id="customer-welcome-topup-amount" type="number" min="1" step="1" inputmode="decimal"
                            @bind="_topupAmount" @bind:event="oninput" />
                 </div>
@@ -293,25 +294,25 @@
                         @onclick="SubmitTopup" disabled="@(_sheetBusy || _topupAmount <= 0)">
                     @if (_sheetBusy)
                     {
-                        <span class="spinner"></span> <span>Obrađujem…</span>
+                        <span class="spinner"></span> <span>@Localizer["Welcome_Processing"]</span>
                     }
                     else
                     {
-                        <span>Uplati €@_topupAmount.ToString("0.##")</span>
+                        <span>@string.Format(Localizer["Welcome_PayAmount"].Value, _topupAmount.ToString("0.##"))</span>
                     }
                 </button>
-                <p class="wl-sheet-note">Sredstva su odmah dostupna za naručivanje pića.</p>
+                <p class="wl-sheet-note">@Localizer["Welcome_FundsAvailableNote"]</p>
             }
             else
             {
                 @* --- Withdraw (debit wallet → refund to card) --- *@
                 <div id="customer-welcome-withdraw-avail" class="wl-withdraw-avail">
-                    <span class="k">Dostupno za isplatu</span>
+                    <span class="k">@Localizer["Welcome_AvailableForWithdraw"]</span>
                     <span id="customer-welcome-withdraw-bal" class="v tnum">€@((_wallet?.Balance ?? 0m).ToString("F2"))</span>
                 </div>
 
                 <div class="wl-amt-field">
-                    <label for="customer-welcome-withdraw-amount">Iznos za isplatu (EUR)</label>
+                    <label for="customer-welcome-withdraw-amount">@Localizer["Welcome_WithdrawAmountLabel"]</label>
                     <input id="customer-welcome-withdraw-amount" type="number" min="1" step="1" inputmode="decimal"
                            @bind="_withdrawAmount" @bind:event="oninput" />
                 </div>
@@ -325,17 +326,17 @@
                         @onclick="SubmitWithdraw" disabled="@(_sheetBusy || _withdrawAmount <= 0)">
                     @if (_sheetBusy)
                     {
-                        <span class="spinner"></span> <span>Obrađujem…</span>
+                        <span class="spinner"></span> <span>@Localizer["Welcome_Processing"]</span>
                     }
                     else
                     {
-                        <span>Isplati €@_withdrawAmount.ToString("0.##")</span>
+                        <span>@string.Format(Localizer["Welcome_WithdrawAmount"].Value, _withdrawAmount.ToString("0.##"))</span>
                     }
                 </button>
                 <button id="customer-welcome-withdraw-all" class="wl-linkbtn" @onclick="WithdrawAll" disabled="@_sheetBusy">
-                    Isplati cijelo stanje
+                    @Localizer["Welcome_WithdrawAll"]
                 </button>
-                <p class="wl-sheet-note">Iznos se vraća na tvoju karticu.</p>
+                <p class="wl-sheet-note">@Localizer["Welcome_RefundNote"]</p>
             }
         </div>
     }
@@ -367,19 +368,19 @@
     private static readonly int[] _presets = { 10, 20, 50 };
 
     // Ticket holder's name for the "welcome back" banner; falls back to a neutral label for anonymous tickets.
-    private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? "Gost" : State.CustomerName;
+    private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? Localizer["Welcome_GuestName"].Value : State.CustomerName;
 
     // Label matches the wallet kind the balance came from: a registered fan's HALFTIME wallet vs the bearer
     // balance loaded on the scanned ticket at the bar counter.
-    private string WalletLabel => _wallet is { IsTicketWallet: true } ? "Saldo na ulaznici" : "HALFTIME novčanik";
+    private string WalletLabel => _wallet is { IsTicketWallet: true } ? Localizer["Welcome_TicketBalance"].Value : Localizer["Welcome_HalftimeWallet"].Value;
 
     // Fixture name for the expanded details; em dash when the session carries no event name.
     private string EventTitle => string.IsNullOrWhiteSpace(State.EventName) ? "—" : State.EventName;
 
     // Which wallet the balance is drawn from, spelled out for the details panel.
     private string WalletKind => _wallet is { Exists: true }
-        ? (_wallet.IsTicketWallet ? "Saldo na ulaznici" : "HALFTIME novčanik")
-        : "Nema novčanika";
+        ? (_wallet.IsTicketWallet ? Localizer["Welcome_TicketBalance"].Value : Localizer["Welcome_HalftimeWallet"].Value)
+        : Localizer["Welcome_NoWallet"].Value;
 
     private static readonly string[] MonthsHr =
         { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
@@ -536,7 +537,7 @@
         }
         catch (Exception ex)
         {
-            _sheetError = "Nešto je pošlo po zlu. Pokušaj ponovno.";
+            _sheetError = Localizer["Welcome_GeneralError"].Value;
             Console.WriteLine($"Top-up failed: {ex.Message}");
         }
         finally
@@ -553,7 +554,7 @@
         if (_sheetBusy || _withdrawAmount <= 0 || string.IsNullOrEmpty(State.SessionToken)) return;
         if (_withdrawAmount > bal)
         {
-            _sheetError = "Iznos prelazi dostupno stanje.";
+            _sheetError = Localizer["Welcome_InsufficientFunds"].Value;
             return;
         }
         _sheetBusy = true;
@@ -580,7 +581,7 @@
         }
         catch (Exception ex)
         {
-            _sheetError = "Nešto je pošlo po zlu. Pokušaj ponovno.";
+            _sheetError = Localizer["Welcome_GeneralError"].Value;
             Console.WriteLine($"Withdraw failed: {ex.Message}");
         }
         finally
@@ -589,29 +590,29 @@
         }
     }
 
-    private static string TranslateTopupFailure(string? reason) => reason switch
+    private string TranslateTopupFailure(string? reason) => reason switch
     {
-        "LimitExceeded" => "Iznos prelazi najveće dopušteno stanje novčanika.",
-        "WalletFrozen" => "Novčanik je zamrznut.",
-        "GatewayDeclined" => "Plaćanje je odbijeno. Pokušaj s drugom karticom.",
-        "GatewayUnavailable" => "Online nadoplata trenutno nije dostupna.",
-        "SessionExpired" => "Sesija je istekla. Skeniraj ulaznicu ponovno.",
-        "TicketNotFound" => "Novčanik nije pronađen.",
-        "NotEligible" => "Novčanik nije dostupan za ovaj račun.",
-        "InvalidAmount" => "Unesi ispravan iznos.",
-        _ => "Nadoplata nije uspjela. Pokušaj ponovno."
+        "LimitExceeded" => Localizer["Welcome_TopupError_LimitExceeded"].Value,
+        "WalletFrozen" => Localizer["Welcome_TopupError_WalletFrozen"].Value,
+        "GatewayDeclined" => Localizer["Welcome_TopupError_GatewayDeclined"].Value,
+        "GatewayUnavailable" => Localizer["Welcome_TopupError_GatewayUnavailable"].Value,
+        "SessionExpired" => Localizer["Welcome_TopupError_SessionExpired"].Value,
+        "TicketNotFound" => Localizer["Welcome_TopupError_TicketNotFound"].Value,
+        "NotEligible" => Localizer["Welcome_TopupError_NotEligible"].Value,
+        "InvalidAmount" => Localizer["Welcome_TopupError_InvalidAmount"].Value,
+        _ => Localizer["Welcome_TopupError_General"].Value
     };
 
-    private static string TranslateWithdrawFailure(string? reason) => reason switch
+    private string TranslateWithdrawFailure(string? reason) => reason switch
     {
-        "InsufficientFunds" => "Nemaš dovoljno sredstava za isplatu.",
-        "WalletFrozen" => "Novčanik je zamrznut.",
-        "GatewayDeclined" => "Isplata je odbijena. Pokušaj ponovno.",
-        "GatewayUnavailable" => "Online isplata trenutno nije dostupna.",
-        "SessionExpired" => "Sesija je istekla. Skeniraj ulaznicu ponovno.",
-        "TicketNotFound" or "WalletNotFound" => "Novčanik nije pronađen.",
-        "InvalidAmount" => "Unesi ispravan iznos.",
-        _ => "Isplata nije uspjela. Pokušaj ponovno."
+        "InsufficientFunds" => Localizer["Welcome_WithdrawError_InsufficientFunds"].Value,
+        "WalletFrozen" => Localizer["Welcome_WithdrawError_WalletFrozen"].Value,
+        "GatewayDeclined" => Localizer["Welcome_WithdrawError_GatewayDeclined"].Value,
+        "GatewayUnavailable" => Localizer["Welcome_WithdrawError_GatewayUnavailable"].Value,
+        "SessionExpired" => Localizer["Welcome_WithdrawError_SessionExpired"].Value,
+        "TicketNotFound" or "WalletNotFound" => Localizer["Welcome_WithdrawError_WalletNotFound"].Value,
+        "InvalidAmount" => Localizer["Welcome_WithdrawError_InvalidAmount"].Value,
+        _ => Localizer["Welcome_WithdrawError_General"].Value
     };
 
     private void ShowToast(string message)
@@ -674,17 +675,16 @@
         return ("#3A5B87", "#1A2942", "#FFFFFF");
     }
 
-    // The day portion of the fixture label. "Jučer"/"Danas"/"Sutra" only for the exact adjacent
-    // days (a night match that kicked off yesterday is still "Jučer", never "Danas"); every other
-    // date is shown explicitly as "6. srp 2026".
-    private static string DayLabel(DateTime local)
+    // The day portion of the fixture label. Previous day / Today / Tomorrow for adjacent days;
+    // otherwise shown explicitly as "6. srp 2026".
+    private string DayLabel(DateTime local)
     {
         var days = (local.Date - DateTime.Today).Days;
         return days switch
         {
-            -1 => "Jučer",
-            0 => "Danas",
-            1 => "Sutra",
+            -1 => Localizer["Welcome_Day_Yesterday"].Value,
+            0 => Localizer["Welcome_Day_Today"].Value,
+            1 => Localizer["Welcome_Day_Tomorrow"].Value,
             _ => $"{local.Day}. {MonthsHr[local.Month - 1]} {local.Year}"
         };
     }

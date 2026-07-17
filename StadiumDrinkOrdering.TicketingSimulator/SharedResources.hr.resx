@@ -562,4 +562,10 @@
   <data name="Index_NoActivityYet" xml:space="preserve">
     <value>Nema aktivnosti.</value>
   </data>
+  <data name="App_NotFoundTitle" xml:space="preserve">
+    <value>Nije pronađeno</value>
+  </data>
+  <data name="App_NotFoundMessage" xml:space="preserve">
+    <value>Nažalost, na ovoj adresi nema ničega.</value>
+  </data>
 </root>

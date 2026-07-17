@@ -1,9 +1,11 @@
 @page "/t/{Token}"
 @layout MobileShell
 @using StadiumDrinkOrdering.Customer.Services
+@using Microsoft.Extensions.Localization
 @inject OrderSessionState State
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
 <PageTitle>HALFTIME</PageTitle>
@@ -13,30 +15,30 @@
     {
         <div id="customer-resolve-validating" class="center">
             <span class="spinner big"></span>
-            <p>Provjeravam tvoju ulaznicu…</p>
+            <p>@Localizer["Resolve_ValidatingTicket"]</p>
         </div>
     }
     else if (_phase == Phase.Ready)
     {
         <div id="customer-resolve-ready" class="center">
             <div id="customer-resolve-tick" class="tick">✓</div>
-            <h2>Spreman si!</h2>
+            <h2>@Localizer["Resolve_Ready_Title"]</h2>
             <div id="customer-resolve-seatcard" class="seatcard">
                 <div id="customer-resolve-match" class="match">@State.EventName</div>
-                <div id="customer-resolve-row" class="row"><span>Mjesto</span><b>@State.SeatText</b></div>
+                <div id="customer-resolve-row" class="row"><span>@Localizer["Resolve_Seat_Label"]</span><b>@State.SeatText</b></div>
             </div>
-            <div id="customer-resolve-redirecting" class="redirecting"><span class="spinner"></span> Vodim te na meni…</div>
-            <button id="customer-resolve-start-order-btn" class="btn btn-primary" @onclick="Go">Započni naručivanje</button>
+            <div id="customer-resolve-redirecting" class="redirecting"><span class="spinner"></span> @Localizer["Resolve_Redirecting"]</div>
+            <button id="customer-resolve-start-order-btn" class="btn btn-primary" @onclick="Go">@Localizer["Resolve_StartOrdering_Button"]</button>
         </div>
     }
     else
     {
         <div id="customer-resolve-error" class="center">
             <div id="customer-resolve-cross" class="cross">✕</div>
-            <h2>Ups…</h2>
+            <h2>@Localizer["Resolve_Error_Title"]</h2>
             <p class="err">@_error</p>
-            <button id="customer-resolve-retry-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ponovno</button>
-            <button id="customer-resolve-home-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/welcome"))">Početna</button>
+            <button id="customer-resolve-retry-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">@Localizer["Resolve_RescanButton"]</button>
+            <button id="customer-resolve-home-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/welcome"))">@Localizer["Resolve_Home_Button"]</button>
         </div>
     }
 </div>

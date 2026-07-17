@@ -8,18 +8,19 @@
 @inject IApiService Api
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<PageTitle>Naruči piće — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Order_PageTitle"]</PageTitle>
 
 @if (!State.HasSession && !_loading)
 {
     <div id="customer-order-no-session-1" class="gate">
         <div id="customer-order-no-session-emoji-1" class="gate-icon">🎟️</div>
-        <h2 id="customer-order-no-session-heading-1">Nema aktivne narudžbe</h2>
-        <p id="customer-order-no-session-message-1">Skeniraj QR kod s ulaznice pa ti piće stigne točno na tvoje mjesto — bez čekanja u redu.</p>
+        <h2 id="customer-order-no-session-heading-1">@Localizer["Order_NoSession_Title"]</h2>
+        <p id="customer-order-no-session-message-1">@Localizer["Order_NoSession_Message"]</p>
         <div class="gate-actions">
-            <button id="customer-order-scan-btn-1" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</button>
+            <button id="customer-order-scan-btn-1" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">@Localizer["Order_ScanTicketButton"]</button>
         </div>
     </div>
 }
@@ -27,17 +28,17 @@ else if (State.HasSession && !State.CanOrderDrinks && !_loading)
 {
     <div id="customer-order-no-session-2" class="gate">
         <div id="customer-order-no-session-emoji-2" class="gate-icon paused">⏸️</div>
-        <h2 id="customer-order-no-session-heading-2">Naručivanje je na pauzi</h2>
-        <p id="customer-order-no-session-message-2">Piće možeš naručiti samo dok utakmica traje. Tvoje mjesto te čeka — vrati se kad sudac svira početak.</p>
+        <h2 id="customer-order-no-session-heading-2">@Localizer["Order_Paused_Title"]</h2>
+        <p id="customer-order-no-session-message-2">@Localizer["Order_Paused_Message"]</p>
         <div id="customer-order-no-session-slots-2" class="seat-line seat-line--center">
-            <span id="customer-order-no-session-slot-4" class="seat-cell"><span class="k">Sektor</span><span class="v tnum">@Coord(State.SeatSection)</span></span>
+            <span id="customer-order-no-session-slot-4" class="seat-cell"><span class="k">@Localizer["Order_SectorLabel"]</span><span class="v tnum">@Coord(State.SeatSection)</span></span>
             <span class="seat-dot"></span>
-            <span id="customer-order-no-session-slot-5" class="seat-cell"><span class="k">Red</span><span class="v tnum">@Coord(State.SeatRow)</span></span>
+            <span id="customer-order-no-session-slot-5" class="seat-cell"><span class="k">@Localizer["Order_RowLabel"]</span><span class="v tnum">@Coord(State.SeatRow)</span></span>
             <span class="seat-dot"></span>
-            <span id="customer-order-no-session-slot-6" class="seat-cell seat"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></span>
+            <span id="customer-order-no-session-slot-6" class="seat-cell seat"><span class="k">@Localizer["Order_SeatLabel"]</span><span class="v tnum">@Coord(State.SeatNumber)</span></span>
         </div>
         <div class="gate-actions">
-            <button id="customer-order-home-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/"))">Početna</button>
+            <button id="customer-order-home-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/"))">@Localizer["Order_HomeButton"]</button>
         </div>
     </div>
 }
@@ -48,17 +49,17 @@ else
         <div id="customer-order-top" class="head-bar">
             <button id="customer-order-back-btn" class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="Natrag">‹</button>
             <div id="customer-order-match-info" class="head-titles">
-                <div id="customer-order-pass-match" class="head-title">@(string.IsNullOrWhiteSpace(State.EventName) ? "Utakmica" : State.EventName)</div>
-                <div id="customer-order-pass-eyebrow" class="head-sub">Piće stiže na tvoje mjesto</div>
+                <div id="customer-order-pass-match" class="head-title">@(string.IsNullOrWhiteSpace(State.EventName) ? Localizer["Order_Event_Label"] : State.EventName)</div>
+                <div id="customer-order-pass-eyebrow" class="head-sub">@Localizer["Order_EventSubtitle"]</div>
             </div>
-            <span id="customer-order-pass-live" class="live-badge"><span class="pulse"></span>Uživo</span>
+            <span id="customer-order-pass-live" class="live-badge"><span class="pulse"></span>@Localizer["Order_LiveBadge"]</span>
         </div>
         <div id="customer-order-seat-coords" class="seat-line">
-            <span id="customer-order-coord-sector" class="seat-cell"><span class="k">Sektor</span><span class="v tnum">@Coord(State.SeatSection)</span></span>
+            <span id="customer-order-coord-sector" class="seat-cell"><span class="k">@Localizer["Order_CoordSector"]</span><span class="v tnum">@Coord(State.SeatSection)</span></span>
             <span id="customer-order-cdiv-1" class="seat-dot"></span>
-            <span id="customer-order-coord-row" class="seat-cell"><span class="k">Red</span><span class="v tnum">@Coord(State.SeatRow)</span></span>
+            <span id="customer-order-coord-row" class="seat-cell"><span class="k">@Localizer["Order_CoordRow"]</span><span class="v tnum">@Coord(State.SeatRow)</span></span>
             <span id="customer-order-cdiv-2" class="seat-dot"></span>
-            <span id="customer-order-coord-seat" class="seat-cell seat"><span class="k">Sjedalo</span><span class="v tnum">@Coord(State.SeatNumber)</span></span>
+            <span id="customer-order-coord-seat" class="seat-cell seat"><span class="k">@Localizer["Order_CoordSeat"]</span><span class="v tnum">@Coord(State.SeatNumber)</span></span>
         </div>
         @* Who's ordering + what they can spend: the ticket holder's name and their spendable balance
            (the scanned ticket's bearer balance, or a registered fan's HALFTIME wallet). *@
@@ -94,13 +95,13 @@ else
             <button id="customer-order-track-active-btn" class="track-active"
                     @onclick="@(() => Nav.NavigateTo($"/track/{activeOrderId}"))">
                 <span id="customer-order-track-active-dot" class="ta-ic"><span class="pulse"></span></span>
-                <span id="customer-order-track-active-text" class="ta-txt">Narudžba #@activeOrderId je u tijeku</span>
+                <span id="customer-order-track-active-text" class="ta-txt">@Localizer["Order_TrackActive", activeOrderId]</span>
                 <span id="customer-order-track-active-go" class="ta-go">Prati ›</span>
             </button>
         }
         @if (_loading)
         {
-            <div id="customer-order-loading" class="loading"><span class="spinner"></span> Učitavam ponudu…</div>
+            <div id="customer-order-loading" class="loading"><span class="spinner"></span> @Localizer["Order_Loading"]</div>
         }
         else
         {
@@ -132,7 +133,7 @@ else
     private WalletSummaryDto? _wallet;
 
     // Ticket holder's name for the header; anonymous tickets carry no name, so fall back to a neutral label.
-    private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? "Gost" : State.CustomerName;
+    private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? Localizer["Order_GuestName"] : State.CustomerName;
 
     // Spendable balance shown next to the name; an em dash until a wallet is confirmed (best-effort load).
     private string WalletText => _wallet is { Exists: true } ? $"€{_wallet.Balance:F2}" : "—";

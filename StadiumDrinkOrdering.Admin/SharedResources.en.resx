@@ -4087,4 +4087,8 @@
   <data name="Wallets_TicketBadge" xml:space="preserve"><value>Ticket</value></data>
   <data name="Wallets_TicketOwner" xml:space="preserve"><value>Ticket</value></data>
   <data name="Wallets_Anonymous" xml:space="preserve"><value>Anonymous — no account</value></data>
+  <data name="Events_Season" xml:space="preserve"><value>Season</value></data>
+  <data name="Events_NoSeasonOption" xml:space="preserve"><value>(no season)</value></data>
+  <data name="Events_CurrentSeasonSuffix" xml:space="preserve"><value>(current)</value></data>
+  <data name="Events_SeasonHint" xml:space="preserve"><value>Linking backfills this season's passes with a match ticket.</value></data>
 </root>

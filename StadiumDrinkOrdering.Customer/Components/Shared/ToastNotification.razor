@@ -1,4 +1,5 @@
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 
 <div id="customer-toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
     @foreach (var toast in Toasts)
@@ -40,7 +41,7 @@
         private string GetTimeAgo(DateTime time)
         {
             var span = DateTime.Now - time;
-            if (span.TotalSeconds < 10) return "Just now";
+            if (span.TotalSeconds < 10) return "just now";
             if (span.TotalSeconds < 60) return $"{(int)span.TotalSeconds}s ago";
             if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes}m ago";
             return time.ToString("HH:mm");
@@ -125,10 +126,10 @@
     {
         return type switch
         {
-            ToastType.Success => "Success",
-            ToastType.Error => "Error",
-            ToastType.Warning => "Warning",
-            ToastType.Info => "Information",
+            ToastType.Success => Localizer["Toast_Success"],
+            ToastType.Error => Localizer["Toast_Error"],
+            ToastType.Warning => Localizer["Toast_Warning"],
+            ToastType.Info => Localizer["Toast_Info"],
             _ => ""
         };
     }

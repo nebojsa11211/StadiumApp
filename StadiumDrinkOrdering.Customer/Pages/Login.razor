@@ -5,16 +5,17 @@
 @inject IApiService Api
 @inject ICustomerAuthStateService AuthState
 @inject NavigationManager Nav
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Prijava — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Login_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Prijava" Subtitle="Pretplatnici" BackHref="/welcome" />
+<ScreenHeader Title="@Localizer["Login_ScreenHeader_Title"]" Subtitle="@Localizer["Login_ScreenHeader_Subtitle"]" BackHref="/welcome" />
 
 <div id="customer-login-body" class="login-body">
     <div id="customer-login-hero" class="login-hero">
-        <div id="customer-login-badge" class="badge">⭐ Sezona</div>
-        <h1 id="customer-login-title" class="display">DOBRO<br /><span id="customer-login-title-highlight" class="grad-text">DOŠAO</span></h1>
-        <p id="customer-login-intro-text">Prijavi se da vidiš svoju sljedeću utakmicu i naručuješ na svoje mjesto.</p>
+        <div id="customer-login-badge" class="badge">@Localizer["Login_Badge"]</div>
+        <h1 id="customer-login-title" class="display">@Localizer["Login_WelcomeLine1"]<br /><span id="customer-login-title-highlight" class="grad-text">@Localizer["Login_WelcomeLine2"]</span></h1>
+        <p id="customer-login-intro-text">@Localizer["Login_IntroText"]</p>
     </div>
 
     <EditForm Model="this" OnValidSubmit="HandleLogin" class="login-form" id="customer-login-form">
@@ -24,27 +25,27 @@
         }
 
         <div id="customer-login-email-field" class="field">
-            <label for="customer-login-email-input">Email</label>
-            <input id="customer-login-email-input" type="email" @bind="_email" @bind:event="oninput" placeholder="ime@email.hr" autocomplete="email" />
+            <label for="customer-login-email-input">@Localizer["Login_EmailLabel"]</label>
+            <input id="customer-login-email-input" type="email" @bind="_email" @bind:event="oninput" placeholder='@Localizer["Login_EmailPlaceholder"]' autocomplete="email" />
         </div>
         <div id="customer-login-password-field" class="field">
-            <label for="customer-login-password-input">Lozinka</label>
+            <label for="customer-login-password-input">@Localizer["Login_PasswordLabel"]</label>
             <input id="customer-login-password-input" type="password" @bind="_password" @bind:event="oninput" placeholder="••••••••" autocomplete="current-password" />
         </div>
 
         <button type="submit" class="btn btn-primary" disabled="@_busy" id="customer-login-submit-btn">
             @if (_busy)
             {
-                <span class="spinner" id="customer-login-spinner"></span> <span id="customer-login-loading-text">Prijavljujem…</span>
+                <span class="spinner" id="customer-login-spinner"></span> <span id="customer-login-loading-text">@Localizer["Login_SigningIn"]</span>
             }
             else
             {
-                <span id="customer-login-button-text">Prijavi se</span>
+                <span id="customer-login-button-text">@Localizer["Login_SignInButton"]</span>
             }
         </button>
     </EditForm>
 
-    <p class="alt">Došao si samo na ovu utakmicu? <a id="customer-login-scan-link" @onclick="@(() => Nav.NavigateTo("/scan"))">Skeniraj ulaznicu</a>.</p>
+    <p class="alt">@Localizer["Login_AltText"] <a id="customer-login-scan-link" @onclick="@(() => Nav.NavigateTo("/scan"))">@Localizer["Login_ScanLink"]</a>.</p>
 </div>
 
 @code {
@@ -78,16 +79,16 @@
             }
             else
             {
-                _error = "Neispravan email ili lozinka.";
+                _error = Localizer["Login_InvalidCredentials"];
             }
         }
         catch (HttpRequestException)
         {
-            _error = "Nije moguće spojiti se na poslužitelj.";
+            _error = Localizer["Login_ConnectionError"];
         }
         catch (Exception)
         {
-            _error = "Došlo je do pogreške. Pokušaj ponovno.";
+            _error = Localizer["Login_UnexpectedError"];
         }
         finally
         {

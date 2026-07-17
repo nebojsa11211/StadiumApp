@@ -1,4 +1,6 @@
 @using StadiumDrinkOrdering.Shared.Models
+@inject IStringLocalizer<SharedResources> Localizer
+
 @* Live order status as a vertical timeline. Steps map 1:1 to OrderStatus (Pending..Delivered). *@
 
 <div id="customer-order-timeline-container" class="timeline">
@@ -28,12 +30,12 @@
 
     private List<Step> _steps => new()
     {
-        new(1, "Narudžba zaprimljena", null),
-        new(2, "Prihvaćeno", null),
-        new(3, "U pripremi", null),
-        new(4, "Spremno", null),
-        new(5, "Dostava u tijeku", null),
-        new(6, string.IsNullOrEmpty(SeatText) ? "Dostavljeno na tvoje mjesto" : $"Dostavljeno · {SeatText}", "Uživaj u utakmici ⚽"),
+        new(1, Localizer["OrderTimeline_Status1"], null),
+        new(2, Localizer["OrderTimeline_Status2"], null),
+        new(3, Localizer["OrderTimeline_Status3"], null),
+        new(4, Localizer["OrderTimeline_Status4"], null),
+        new(5, Localizer["OrderTimeline_Status5"], null),
+        new(6, string.IsNullOrEmpty(SeatText) ? Localizer["OrderTimeline_Status6"] : $"{Localizer["OrderTimeline_Status6Prefix"]} {SeatText}", Localizer["OrderTimeline_Status6Sub"]),
     };
 
     private string StepState(int value) =>

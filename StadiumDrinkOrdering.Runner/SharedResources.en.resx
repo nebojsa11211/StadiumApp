@@ -361,4 +361,31 @@
   <data name="ScanTicket_KindSeason" xml:space="preserve">
     <value>Season</value>
   </data>
+  <data name="Global_Loading" xml:space="preserve">
+    <value>Loading…</value>
+  </data>
+  <data name="Error_NotFoundTitle" xml:space="preserve">
+    <value>Not found</value>
+  </data>
+  <data name="Error_NotFoundMessage" xml:space="preserve">
+    <value>Sorry, there's nothing at this address.</value>
+  </data>
+  <data name="Login_Eyebrow" xml:space="preserve">
+    <value>Stadium Runner</value>
+  </data>
+  <data name="Login_ErrorInvalidOrUnreachable" xml:space="preserve">
+    <value>Invalid credentials, or the server is unreachable.</value>
+  </data>
+  <data name="Login_ErrorNotRunnerRole" xml:space="preserve">
+    <value>This app is for delivery runners. Your account doesn't have access.</value>
+  </data>
+  <data name="Home_AgeJustNow" xml:space="preserve">
+    <value>just now</value>
+  </data>
+  <data name="Home_AgeOneMinAgo" xml:space="preserve">
+    <value>1 min ago</value>
+  </data>
+  <data name="Home_AgeMinutesAgo" xml:space="preserve">
+    <value>{0} min ago</value>
+  </data>
 </root>

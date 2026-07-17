@@ -5,25 +5,26 @@
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components
 @inject IApiService ApiService
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Moje narudžbe — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Orders_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Moje narudžbe" Subtitle="Piće & zalogaji" ShowBack="false" />
+<ScreenHeader Title="@Localizer["Orders_ScreenHeader_Title"]" Subtitle="@Localizer["Orders_ScreenHeader_Subtitle"]" ShowBack="false" />
 
 <AuthenticationGuard>
     <div id="customer-orders-container" class="ord-body no-scrollbar">
 
         @if (orders == null)
         {
-            <div id="customer-orders-loading" class="ord-state"><span class="spinner"></span> Učitavam narudžbe…</div>
+            <div id="customer-orders-loading" class="ord-state"><span class="spinner"></span> @Localizer["Orders_Loading"]</div>
         }
         else if (!orders.Any())
         {
             <div id="customer-orders-empty" class="ord-state ord-empty">
                 <div class="ord-emoji">🛒</div>
-                <h2>Još nema narudžbi</h2>
-                <p>Kad naručiš piće ili zalogaj, narudžbe će se pojaviti ovdje.</p>
-                <a id="customer-browse-menu-btn" href="/menu" class="btn btn-primary">Otvori meni</a>
+                <h2>@Localizer["Orders_Empty_Title"]</h2>
+                <p>@Localizer["Orders_Empty_Message"]</p>
+                <a id="customer-browse-menu-btn" href="/menu" class="btn btn-primary">@Localizer["Orders_OpenMenu"]</a>
             </div>
         }
         else
@@ -33,15 +34,15 @@
                 {
                     <div id="customer-order-@order.Id" class="ord-card">
                         <div id="customer-order-header-@order.Id" class="ord-card-head">
-                            <span id="customer-order-number-@order.Id" class="ord-num">Narudžba #@order.Id</span>
+                            <span id="customer-order-number-@order.Id" class="ord-num">@Localizer["Orders_OrderNumber", order.Id]</span>
                             <span id="customer-order-status-@order.Id" class="ord-status @StatusClass(order.Status)">@StatusText(order.Status)</span>
                         </div>
 
                         <div id="customer-order-info-@order.Id" class="ord-meta">
-                            <span id="customer-order-date-@order.Id">📅 @order.CreatedAt.ToString("dd.MM.yyyy · HH:mm")</span>
+                            <span id="customer-order-date-@order.Id">@Localizer["Orders_OrderDate", order.CreatedAt.ToString("dd.MM.yyyy · HH:mm")]</span>
                             @if (!string.IsNullOrEmpty(order.SeatNumber))
                             {
-                                <span id="customer-order-seat-@order.Id">🎫 Sjedalo @order.SeatNumber</span>
+                                <span id="customer-order-seat-@order.Id">@Localizer["Orders_OrderSeat", order.SeatNumber]</span>
                             }
                         </div>
 
@@ -58,7 +59,7 @@
                         <div id="customer-order-total-@order.Id" class="ord-card-foot">
                             <span id="customer-order-total-amount-@order.Id" class="ord-total tnum">€@order.TotalAmount.ToString("F2")</span>
                             <div id="customer-order-actions-@order.Id" class="ord-actions">
-                                <button id="customer-order-details-btn-@order.Id" class="btn btn-ghost btn-sm" @onclick="() => ShowOrderDetails(order)">Detalji</button>
+                                <button id="customer-order-details-btn-@order.Id" class="btn btn-ghost btn-sm" @onclick="() => ShowOrderDetails(order)">@Localizer["Orders_DetailsButton"]</button>
                                 @if (order.Status == OrderStatus.Pending || order.Status == OrderStatus.Accepted)
                                 {
                                     <button id="customer-order-cancel-btn-@order.Id" class="btn btn-sm ord-cancel" @onclick="() => CancelOrder(order.Id)" disabled="@isCancelling">
@@ -68,7 +69,7 @@
                                         }
                                         else
                                         {
-                                            <span>Otkaži</span>
+                                            <span>@Localizer["Orders_CancelButton"]</span>
                                         }
                                     </button>
                                 }
@@ -87,27 +88,27 @@
             <div class="grab"></div>
             <div id="customer-order-sheet-head" class="ord-sheet-head">
                 <div>
-                    <div id="customer-order-modal-title" class="ord-sheet-title">Narudžba #@selectedOrder.Id</div>
+                    <div id="customer-order-modal-title" class="ord-sheet-title">@Localizer["Orders_ModalTitle", selectedOrder.Id]</div>
                     <div class="ord-sheet-sub">@selectedOrder.CreatedAt.ToString("dd.MM.yyyy · HH:mm")</div>
                 </div>
-                <button id="customer-order-modal-close-btn" class="iconbtn" @onclick="() => selectedOrder = null" aria-label="Zatvori">✕</button>
+                <button id="customer-order-modal-close-btn" class="iconbtn" @onclick="() => selectedOrder = null" aria-label="@Localizer["Orders_CloseButton_Aria"]">✕</button>
             </div>
 
             <div class="ord-sheet-body no-scrollbar">
                 <div class="ord-detail-meta">
-                    <div class="ord-meta-row"><span>Status</span><span class="ord-status @StatusClass(selectedOrder.Status)">@StatusText(selectedOrder.Status)</span></div>
+                    <div class="ord-meta-row"><span>@Localizer["Orders_StatusLabel"]</span><span class="ord-status @StatusClass(selectedOrder.Status)">@StatusText(selectedOrder.Status)</span></div>
                     @if (!string.IsNullOrEmpty(selectedOrder.TicketNumber))
                     {
-                        <div class="ord-meta-row"><span>Ulaznica</span><span class="v">@selectedOrder.TicketNumber</span></div>
+                        <div class="ord-meta-row"><span>@Localizer["Orders_TicketLabel"]</span><span class="v">@selectedOrder.TicketNumber</span></div>
                     }
                     @if (!string.IsNullOrEmpty(selectedOrder.SeatNumber))
                     {
-                        <div class="ord-meta-row"><span>Sjedalo</span><span class="v">@selectedOrder.SeatNumber</span></div>
+                        <div class="ord-meta-row"><span>@Localizer["Orders_SeatLabel"]</span><span class="v">@selectedOrder.SeatNumber</span></div>
                     }
-                    <div class="ord-meta-row"><span>Ukupno</span><span class="v tnum">€@selectedOrder.TotalAmount.ToString("F2")</span></div>
+                    <div class="ord-meta-row"><span>@Localizer["Orders_TotalLabel"]</span><span class="v tnum">€@selectedOrder.TotalAmount.ToString("F2")</span></div>
                 </div>
 
-                <span class="label">Stavke</span>
+                <span class="label">@Localizer["Orders_Items"]</span>
                 <div class="ord-detail-items">
                     @foreach (var item in selectedOrder.OrderItems)
                     {
@@ -129,7 +130,7 @@
                 }
                 @if (steps.Any())
                 {
-                    <span class="label">Tijek</span>
+                    <span class="label">@Localizer["Orders_Timeline"]</span>
                     <div class="ord-timeline">
                         @foreach (var s in steps)
                         {
@@ -148,7 +149,7 @@
     {
         <div id="customer-alert-container" class="ord-toast @(alertType == "success" ? "ok" : "bad")">
             <span>@alertMessage</span>
-            <button id="customer-orders-alert-close-btn" class="ord-toast-x" @onclick="ClearAlert" aria-label="Zatvori">✕</button>
+            <button id="customer-orders-alert-close-btn" class="ord-toast-x" @onclick="ClearAlert" aria-label="@Localizer["Orders_CloseButton_Aria"]">✕</button>
         </div>
     }
 </AuthenticationGuard>
@@ -175,17 +176,17 @@
             var success = await ApiService.CancelOrderAsync(orderId);
             if (success)
             {
-                ShowAlert("Narudžba je otkazana.", "success");
+                ShowAlert(Localizer["Orders_CancelledSuccess"], "success");
                 await LoadOrders();
             }
             else
             {
-                ShowAlert("Otkazivanje nije uspjelo.", "danger");
+                ShowAlert(Localizer["Orders_CancelFailed"], "danger");
             }
         }
         catch (Exception ex)
         {
-            ShowAlert($"Pogreška pri otkazivanju: {ex.Message}", "danger");
+            ShowAlert(Localizer["Orders_CancelError", ex.Message], "danger");
         }
         finally
         {
@@ -195,12 +196,12 @@
 
     private record TimelineStep(string Label, string When);
 
-    private static List<TimelineStep> Timeline(OrderDto o)
+    private List<TimelineStep> Timeline(OrderDto o)
     {
-        var steps = new List<TimelineStep> { new("Naručeno", o.CreatedAt.ToString("dd.MM · HH:mm")) };
-        if (o.AcceptedAt.HasValue) steps.Add(new("Prihvaćeno", o.AcceptedAt.Value.ToString("dd.MM · HH:mm")));
-        if (o.PreparedAt.HasValue) steps.Add(new("Pripremljeno", o.PreparedAt.Value.ToString("dd.MM · HH:mm")));
-        if (o.DeliveredAt.HasValue) steps.Add(new("Dostavljeno", o.DeliveredAt.Value.ToString("dd.MM · HH:mm")));
+        var steps = new List<TimelineStep> { new(Localizer["Orders_Status_Ordered"], o.CreatedAt.ToString("dd.MM · HH:mm")) };
+        if (o.AcceptedAt.HasValue) steps.Add(new(Localizer["Orders_Status_Accepted"], o.AcceptedAt.Value.ToString("dd.MM · HH:mm")));
+        if (o.PreparedAt.HasValue) steps.Add(new(Localizer["Orders_Status_Prepared"], o.PreparedAt.Value.ToString("dd.MM · HH:mm")));
+        if (o.DeliveredAt.HasValue) steps.Add(new(Localizer["Orders_Status_Delivered"], o.DeliveredAt.Value.ToString("dd.MM · HH:mm")));
         return steps;
     }
 
@@ -215,14 +216,14 @@
         _ => ""
     };
 
-    private static string StatusText(OrderStatus status) => status switch
+    private string StatusText(OrderStatus status) => status switch
     {
-        OrderStatus.Pending => "Na čekanju",
-        OrderStatus.Accepted => "Prihvaćeno",
-        OrderStatus.InPreparation => "U pripremi",
-        OrderStatus.Ready => "Spremno",
-        OrderStatus.Delivered => "Dostavljeno",
-        OrderStatus.Cancelled => "Otkazano",
+        OrderStatus.Pending => Localizer["Orders_Status_Pending"],
+        OrderStatus.Accepted => Localizer["Orders_Status_Accepted_Text"],
+        OrderStatus.InPreparation => Localizer["Orders_Status_InPreparation"],
+        OrderStatus.Ready => Localizer["Orders_Status_Ready"],
+        OrderStatus.Delivered => Localizer["Orders_Status_Delivered_Text"],
+        OrderStatus.Cancelled => Localizer["Orders_Status_Cancelled"],
         _ => status.ToString()
     };
 

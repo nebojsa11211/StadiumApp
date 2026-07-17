@@ -2,13 +2,15 @@
 @layout MobileShell
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Shared.DTOs
+@using Microsoft.Extensions.Localization
 @inject NavigationManager Nav
 @inject IApiService ApiService
 @inject IWebHostEnvironment Env
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Skeniraj ulaznicu — HALFTIME</PageTitle>
+<PageTitle>@Localizer["Scan_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Skeniraj ulaznicu" BackHref="/welcome" />
+<ScreenHeader Title="@Localizer["Scan_ScreenHeader"]" BackHref="/welcome" />
 
 <div id="customer-scan-body" class="scan-body">
     <div id="customer-scan-reticle" class="reticle">
@@ -18,17 +20,17 @@
         <div id="customer-scan-scanline" class="scanline"></div>
     </div>
 
-    <p class="scan-hint">Uperi kameru svog telefona u QR kôd na ulaznici — aplikacija se otvara automatski.</p>
+    <p class="scan-hint">@Localizer["Scan_HintText"]</p>
 
     @* DEV-ONLY: pick a real ticket of the live event instead of typing/scanning a code. Never rendered
        in production — the API endpoint that feeds it 404s outside Development, so _testTickets stays empty. *@
     @if (_testTickets is { Count: > 0 })
     {
         <div id="customer-scan-dev-picker" class="manual">
-            <div id="customer-scan-dev-label" class="label">🧪 Test (dev): odaberi ulaznicu</div>
+            <div id="customer-scan-dev-label" class="label">@Localizer["Scan_DevLabel"]</div>
             <div id="customer-scan-dev-row" class="manual-row">
                 <select id="customer-scan-dev-select" class="form-select form-select-sm" value="@_code" @onchange="OnDevPick">
-                    <option value="">— odaberi ulaznicu —</option>
+                    <option value="">@Localizer["Scan_DevPlaceholder"]</option>
                     @foreach (var t in _testTickets)
                     {
                         <option value="@t.TicketNumber">@t.Label</option>
@@ -39,14 +41,14 @@
     }
 
     <div id="customer-scan-manual" class="manual">
-        <div id="customer-scan-manual-label" class="label">Ne možeš skenirati?</div>
+        <div id="customer-scan-manual-label" class="label">@Localizer["Scan_ManualLabel"]</div>
         <div id="customer-scan-manual-row" class="manual-row">
-            <input id="customer-scan-code-input" @bind="_code" @bind:event="oninput" placeholder="Unesi kôd s ulaznice" @onkeydown="OnKey" />
-            <button id="customer-scan-submit-btn" class="btn btn-primary btn-sm" @onclick="Submit" disabled="@string.IsNullOrWhiteSpace(_code)">Nastavi</button>
+            <input id="customer-scan-code-input" @bind="_code" @bind:event="oninput" placeholder='@Localizer["Scan_ManualPlaceholder"]' @onkeydown="OnKey" />
+            <button id="customer-scan-submit-btn" class="btn btn-primary btn-sm" @onclick="Submit" disabled="@string.IsNullOrWhiteSpace(_code)">@Localizer["Scan_ContinueButton"]</button>
         </div>
         @if (_error)
         {
-            <div id="customer-scan-error" class="err">Unesi važeći kôd s ulaznice.</div>
+            <div id="customer-scan-error" class="err">@Localizer["Scan_InvalidCode"]</div>
         }
     </div>
 </div>

@@ -5,27 +5,29 @@
 @using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components
+@using Microsoft.Extensions.Localization
 @inject IApiService ApiService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Moje ulaznice — HALFTIME</PageTitle>
+<PageTitle>@Localizer["MyTickets_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="Moje ulaznice" Subtitle="Ulaznice & potrošnja" ShowBack="true" BackHref="/home" />
+<ScreenHeader Title="@Localizer["MyTickets_ScreenHeader_Title"]" Subtitle="@Localizer["MyTickets_ScreenHeader_Subtitle"]" ShowBack="true" BackHref="/home" />
 
 <AuthenticationGuard>
     <div id="customer-tickets-container" class="mt-body no-scrollbar">
 
         @if (tickets == null)
         {
-            <div id="customer-tickets-loading" class="mt-state"><span class="spinner"></span> Učitavam ulaznice…</div>
+            <div id="customer-tickets-loading" class="mt-state"><span class="spinner"></span> @Localizer["MyTickets_Loading"]</div>
         }
         else if (!tickets.Any())
         {
             <div id="customer-tickets-empty" class="mt-state mt-empty">
                 <div class="mt-emoji">🎟️</div>
-                <h2>Još nema ulaznica</h2>
-                <p>Kad kupiš ulaznicu, pojavit će se ovdje s računom i PDF karticom.</p>
-                <a id="customer-tickets-browse-btn" href="/events" class="btn btn-primary">Pogledaj događaje</a>
+                <h2>@Localizer["MyTickets_Empty_Title"]</h2>
+                <p>@Localizer["MyTickets_Empty_Message"]</p>
+                <a id="customer-tickets-browse-btn" href="/events" class="btn btn-primary">@Localizer["MyTickets_BrowseEvents"]</a>
             </div>
         }
         else
@@ -38,7 +40,7 @@
                             <span id="customer-ticket-event-@ticket.Id" class="mt-event">@ticket.EventName</span>
                             @if (ticket.Kind == TicketKind.Season)
                             {
-                                <span class="mt-badge">Sezonska</span>
+                                <span class="mt-badge">@Localizer["MyTickets_SeasonBadge"]</span>
                             }
                         </div>
                         <div class="mt-card-meta">
@@ -64,20 +66,20 @@
             <div class="grab"></div>
             <div class="mt-sheet-head">
                 <div>
-                    <div id="customer-ticket-sheet-title" class="mt-sheet-title">Ulaznica</div>
+                    <div id="customer-ticket-sheet-title" class="mt-sheet-title">@Localizer["MyTickets_TicketTitle"]</div>
                     <div class="mt-sheet-sub tnum">@(selectedDetail?.TicketNumber ?? "")</div>
                 </div>
-                <button id="customer-ticket-sheet-close-btn" class="iconbtn" @onclick="CloseDetail" aria-label="Zatvori">✕</button>
+                <button id="customer-ticket-sheet-close-btn" class="iconbtn" @onclick="CloseDetail" aria-label="@Localizer["MyTickets_CloseButton"]">✕</button>
             </div>
 
             <div class="mt-sheet-body no-scrollbar">
                 @if (detailLoading)
                 {
-                    <div class="mt-state"><span class="spinner"></span> Učitavam…</div>
+                    <div class="mt-state"><span class="spinner"></span> @Localizer["MyTickets_DetailsLoading"]</div>
                 }
                 else if (selectedDetail == null)
                 {
-                    <div class="mt-inline-error">Ne mogu učitati detalje ulaznice.</div>
+                    <div class="mt-inline-error">@Localizer["MyTickets_DetailsError"]</div>
                 }
                 else
                 {
@@ -85,24 +87,24 @@
                     <div id="customer-ticket-card" class="tcard">
                         <div class="tcard-head">
                             <div>
-                                <span class="tcard-eyebrow">ULAZ NA STADION</span>
+                                <span class="tcard-eyebrow">@Localizer["MyTickets_TicketEntry"]</span>
                                 <div class="tcard-event">@selectedDetail.EventName</div>
                             </div>
                             @if (selectedDetail.Kind == TicketKind.Season)
                             {
-                                <span class="tcard-season">SEZONSKA</span>
+                                <span class="tcard-season">@Localizer["MyTickets_SeasonTicket"]</span>
                             }
                         </div>
                         <div class="tcard-body">
                             <div class="tcard-info">
                                 <div class="tcard-field">
-                                    <span>DATUM</span>
+                                    <span>@Localizer["MyTickets_DateField"]</span>
                                     <strong>@(selectedDetail.EventDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "—")</strong>
                                 </div>
                                 <div class="tcard-seatrow">
-                                    <div class="tcard-field"><span>SEKTOR</span><strong>@Dash(selectedDetail.Section)</strong></div>
-                                    <div class="tcard-field"><span>RED</span><strong>@Dash(selectedDetail.Row)</strong></div>
-                                    <div class="tcard-field"><span>SJEDALO</span><strong>@Dash(selectedDetail.SeatNumber)</strong></div>
+                                    <div class="tcard-field"><span>@Localizer["MyTickets_SectorField"]</span><strong>@Dash(selectedDetail.Section)</strong></div>
+                                    <div class="tcard-field"><span>@Localizer["MyTickets_RowField"]</span><strong>@Dash(selectedDetail.Row)</strong></div>
+                                    <div class="tcard-field"><span>@Localizer["MyTickets_SeatField"]</span><strong>@Dash(selectedDetail.SeatNumber)</strong></div>
                                 </div>
                             </div>
                             <div class="tcard-qr">
@@ -114,7 +116,7 @@
                         </div>
                         <div class="tcard-foot">
                             <div>
-                                <span class="tcard-pricelabel">CIJENA ULAZNICE</span>
+                                <span class="tcard-pricelabel">@Localizer["MyTickets_PriceLabel"]</span>
                                 <div class="tcard-price tnum">@Money(selectedDetail.TicketPrice)</div>
                             </div>
                             <span class="tcard-purchased tnum">@selectedDetail.PurchaseDate.ToLocalTime().ToString("dd.MM.yyyy")</span>
@@ -125,11 +127,11 @@
                             disabled="@pdfDownloading" @onclick="DownloadCardPdf">
                         @if (pdfDownloading)
                         {
-                            <span class="spinner"></span> <span>Pripremam…</span>
+                            <span class="spinner"></span> <span>@Localizer["MyTickets_DownloadLoading"]</span>
                         }
                         else
                         {
-                            <span>⬇ Preuzmi PDF ulaznicu</span>
+                            <span>@Localizer["MyTickets_DownloadButton"]</span>
                         }
                     </button>
                     @if (!string.IsNullOrEmpty(pdfError))
@@ -138,17 +140,17 @@
                     }
 
                     <!-- Spending breakdown -->
-                    <span class="label">Potrošnja</span>
+                    <span class="label">@Localizer["MyTickets_SpendingLabel"]</span>
                     <div class="mt-spend">
                         <div class="mt-spend-row">
-                            <span>Cijena ulaznice</span>
+                            <span>@Localizer["MyTickets_TicketPrice_Row"]</span>
                             <span class="tnum">@Money(selectedDetail.TicketPrice)</span>
                         </div>
 
-                        <div class="mt-spend-sub">Pića i narudžbe</div>
+                        <div class="mt-spend-sub">@Localizer["MyTickets_DrinksOrders"]</div>
                         @if (selectedDetail.DrinkOrders.Count == 0)
                         {
-                            <p id="customer-ticket-no-orders" class="mt-spend-empty">Nema narudžbi pića za ovu ulaznicu.</p>
+                            <p id="customer-ticket-no-orders" class="mt-spend-empty">@Localizer["MyTickets_NoOrders"]</p>
                         }
                         else
                         {
@@ -173,13 +175,13 @@
                                 </div>
                             }
                             <div class="mt-spend-row">
-                                <span>Ukupno pića</span>
+                                <span>@Localizer["MyTickets_DrinksTotal_Row"]</span>
                                 <span class="tnum">@Money(selectedDetail.DrinksTotal)</span>
                             </div>
                         }
 
                         <div class="mt-spend-row mt-spend-grand">
-                            <span>Sveukupno</span>
+                            <span>@Localizer["MyTickets_GrandTotal"]</span>
                             <span class="tnum">@Money(selectedDetail.GrandTotal)</span>
                         </div>
                     </div>
@@ -232,7 +234,7 @@
             var bytes = await ApiService.GetMyTicketCardPdfAsync(detailTicketId);
             if (bytes == null || bytes.Length == 0)
             {
-                pdfError = "Nije moguće generirati PDF. Pokušaj ponovno.";
+                pdfError = Localizer["MyTickets_PDFGenerationError"];
                 return;
             }
 
@@ -243,7 +245,7 @@
         }
         catch (Exception)
         {
-            pdfError = "Nije moguće generirati PDF. Pokušaj ponovno.";
+            pdfError = Localizer["MyTickets_PDFGenerationError"];
         }
         finally
         {
@@ -255,12 +257,12 @@
 
     private static string Money(decimal amount) => $"€{amount:0.00}";
 
-    private static string SeatText(TicketDto t)
+    private string SeatText(TicketDto t)
     {
         var parts = new List<string>();
         if (!string.IsNullOrWhiteSpace(t.Section)) parts.Add(t.Section!);
-        if (!string.IsNullOrWhiteSpace(t.Row)) parts.Add($"Red {t.Row}");
-        if (!string.IsNullOrWhiteSpace(t.SeatNumber)) parts.Add($"Sj. {t.SeatNumber}");
+        if (!string.IsNullOrWhiteSpace(t.Row)) parts.Add(Localizer["MyTickets_SeatRowText", t.Row]);
+        if (!string.IsNullOrWhiteSpace(t.SeatNumber)) parts.Add(Localizer["MyTickets_SeatAbbrText", t.SeatNumber]);
         return parts.Count == 0 ? "—" : string.Join(" · ", parts);
     }
 }

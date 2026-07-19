@@ -174,9 +174,10 @@ public class CustomerOrdersController : ControllerBase
             {
                 OrderId = null, // For direct ticket sales, no order needed
                 Amount = request.TotalAmount,
-                PaymentMethod = "Credit Card",
+                PaymentMethod = PaymentMethod.CreditCard,
+                Direction = PaymentDirection.In,
                 TransactionId = $"txn_{DateTime.UtcNow.Ticks}_{Guid.NewGuid().ToString("N")[..8]}",
-                Status = "Completed",
+                Status = PaymentStatus.Completed,
                 CreatedAt = DateTime.UtcNow
             };
 

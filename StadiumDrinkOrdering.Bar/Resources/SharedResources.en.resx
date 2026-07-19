@@ -1051,4 +1051,88 @@
   <data name="TicketTopup_ProvisionAlternativeHint" xml:space="preserve">
     <value>Or load funds directly onto the ticket below.</value>
   </data>
+  <data name="OrderModal_OrderNumber" xml:space="preserve">
+    <value>Order #{0}</value>
+  </data>
+  <data name="OrderModal_DeliveryInformation" xml:space="preserve">
+    <value>Delivery Information</value>
+  </data>
+  <data name="OrderModal_Section" xml:space="preserve">
+    <value>Section {0}</value>
+  </data>
+  <data name="OrderModal_OrderTimeline" xml:space="preserve">
+    <value>Order Timeline</value>
+  </data>
+  <data name="OrderModal_TimelineOrdered" xml:space="preserve">
+    <value>Ordered</value>
+  </data>
+  <data name="OrderModal_TimelineAccepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="OrderModal_TimelinePrepared" xml:space="preserve">
+    <value>Prepared</value>
+  </data>
+  <data name="OrderModal_TimelineDelivered" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="OrderModal_Payment" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="OrderModal_Refund" xml:space="preserve">
+    <value>Refund</value>
+  </data>
+  <data name="OrderModal_NoPayment" xml:space="preserve">
+    <value>No payment recorded</value>
+  </data>
+  <data name="OrderModal_OrderItems" xml:space="preserve">
+    <value>Order Items</value>
+  </data>
+  <data name="OrderModal_Total" xml:space="preserve">
+    <value>Total: €{0}</value>
+  </data>
+  <data name="OrderModal_RowSeat" xml:space="preserve">
+    <value>Row {0}, Seat {1}</value>
+  </data>
+  <data name="PaymentMethod_CreditCard" xml:space="preserve">
+    <value>Credit Card</value>
+  </data>
+  <data name="PaymentMethod_DebitCard" xml:space="preserve">
+    <value>Debit Card</value>
+  </data>
+  <data name="PaymentMethod_DigitalWallet" xml:space="preserve">
+    <value>Fan Wallet</value>
+  </data>
+  <data name="PaymentMethod_BankTransfer" xml:space="preserve">
+    <value>Bank Transfer</value>
+  </data>
+  <data name="PaymentMethod_Cash" xml:space="preserve">
+    <value>Cash</value>
+  </data>
+  <data name="PaymentMethod_TicketWallet" xml:space="preserve">
+    <value>Ticket Wallet</value>
+  </data>
+  <data name="PaymentStatus_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="PaymentStatus_Processing" xml:space="preserve">
+    <value>Processing</value>
+  </data>
+  <data name="PaymentStatus_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="PaymentStatus_Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="PaymentStatus_Refunded" xml:space="preserve">
+    <value>Refunded</value>
+  </data>
+  <data name="PaymentStatus_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="TicketTopup_DevPickerLabel" xml:space="preserve">
+    <value>🧪 Test (dev): select ticket</value>
+  </data>
+  <data name="TicketTopup_DevPickerEmpty" xml:space="preserve">
+    <value>— select ticket —</value>
+  </data>
 </root>

@@ -568,4 +568,82 @@
   <data name="App_NotFoundMessage" xml:space="preserve">
     <value>Nažalost, na ovoj adresi nema ničega.</value>
   </data>
+  <data name="Layout_TabSimulator" xml:space="preserve">
+    <value>Simulator</value>
+  </data>
+  <data name="Layout_TabCredentials" xml:space="preserve">
+    <value>Pristupni podaci</value>
+  </data>
+  <data name="Credentials_MainTitle" xml:space="preserve">
+    <value>Podaci za prijavu</value>
+  </data>
+  <data name="Credentials_MainSubtitle" xml:space="preserve">
+    <value>Računi s kojima se možete prijaviti u Admin, Bar, Runner i Customer aplikacije.</value>
+  </data>
+  <data name="Credentials_HashNote" xml:space="preserve">
+    <value>Lozinke su pohranjene kao BCrypt sažeci i ne mogu se pročitati natrag. Otvoreni tekst prikazuje se samo za račune koje kreira razvojni seeder.</value>
+  </data>
+  <data name="Credentials_SearchPlaceholder" xml:space="preserve">
+    <value>Pretraži korisničko ime, e-poštu ili ime…</value>
+  </data>
+  <data name="Credentials_AllRoles" xml:space="preserve">
+    <value>Sve uloge</value>
+  </data>
+  <data name="Credentials_OnlyKnown" xml:space="preserve">
+    <value>Samo računi s poznatom lozinkom</value>
+  </data>
+  <data name="Credentials_ReloadButton" xml:space="preserve">
+    <value>Osvježi</value>
+  </data>
+  <data name="Credentials_AccountsHeader" xml:space="preserve">
+    <value>Računi</value>
+  </data>
+  <data name="Credentials_Loading" xml:space="preserve">
+    <value>Učitavanje računa…</value>
+  </data>
+  <data name="Credentials_Empty" xml:space="preserve">
+    <value>Nema vraćenih računa. API mora biti pokrenut u Development načinu da bi popis bio dostupan.</value>
+  </data>
+  <data name="Credentials_NoMatch" xml:space="preserve">
+    <value>Nijedan račun ne odgovara postavljenim filtrima.</value>
+  </data>
+  <data name="Credentials_RoleColumn" xml:space="preserve">
+    <value>Uloga</value>
+  </data>
+  <data name="Credentials_UsernameColumn" xml:space="preserve">
+    <value>Korisničko ime</value>
+  </data>
+  <data name="Credentials_EmailColumn" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="Credentials_PasswordColumn" xml:space="preserve">
+    <value>Lozinka</value>
+  </data>
+  <data name="Credentials_StatusColumn" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Credentials_LastLoginColumn" xml:space="preserve">
+    <value>Zadnja prijava</value>
+  </data>
+  <data name="Credentials_UnknownPassword" xml:space="preserve">
+    <value>nepoznata (sažeta)</value>
+  </data>
+  <data name="Credentials_ShellAccount" xml:space="preserve">
+    <value>ljuska računa — prijava nije moguća</value>
+  </data>
+  <data name="Credentials_CopyTitle" xml:space="preserve">
+    <value>Kopiraj lozinku</value>
+  </data>
+  <data name="Credentials_Copied" xml:space="preserve">
+    <value>Lozinka kopirana u međuspremnik.</value>
+  </data>
+  <data name="Credentials_Active" xml:space="preserve">
+    <value>Aktivan</value>
+  </data>
+  <data name="Credentials_Inactive" xml:space="preserve">
+    <value>Neaktivan</value>
+  </data>
+  <data name="Credentials_ShowShell" xml:space="preserve">
+    <value>Prikaži ljuske računa</value>
+  </data>
 </root>

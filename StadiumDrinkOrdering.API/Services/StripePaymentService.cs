@@ -78,8 +78,12 @@ public class StripePaymentService : IPaymentService
                 OrderId = request.OrderId,
                 Amount = order.TotalAmount,
                 Currency = _stripeSettings.Currency.ToUpper(),
-                PaymentMethod = "Stripe",
-                Status = "Pending",
+                // Stripe is the provider, not the rail — these intents are card charges. The provider
+                // stays identifiable via TransactionId (the payment-intent id).
+                // Fully qualified: the Stripe SDK also defines a PaymentMethod type in scope here.
+                PaymentMethod = Shared.Models.PaymentMethod.CreditCard,
+                Direction = PaymentDirection.In,
+                Status = PaymentStatus.Pending,
                 TransactionId = paymentIntent.Id,
                 PaymentDate = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow
@@ -122,7 +126,7 @@ public class StripePaymentService : IPaymentService
             switch (paymentIntent.Status)
             {
                 case "succeeded":
-                    payment.Status = "Completed";
+                    payment.Status = PaymentStatus.Completed;
                     payment.ProcessedAt = DateTime.UtcNow;
                     payment.PaymentGatewayResponse = System.Text.Json.JsonSerializer.Serialize(new
                     {
@@ -144,17 +148,17 @@ public class StripePaymentService : IPaymentService
 
                 case "requires_payment_method":
                 case "requires_confirmation":
-                    payment.Status = "Pending";
+                    payment.Status = PaymentStatus.Pending;
                     break;
 
                 case "canceled":
-                    payment.Status = "Cancelled";
+                    payment.Status = PaymentStatus.Cancelled;
                     payment.FailedAt = DateTime.UtcNow;
                     payment.FailureReason = "Payment cancelled";
                     break;
 
                 default:
-                    payment.Status = "Failed";
+                    payment.Status = PaymentStatus.Failed;
                     payment.FailedAt = DateTime.UtcNow;
                     payment.FailureReason = $"Unexpected status: {paymentIntent.Status}";
                     break;
@@ -165,7 +169,7 @@ public class StripePaymentService : IPaymentService
             return new PaymentConfirmationResponse
             {
                 PaymentId = payment.Id,
-                Status = payment.Status,
+                Status = payment.Status.ToString(),
                 Amount = payment.Amount,
                 TransactionId = paymentIntentId,
                 ProcessedAt = payment.ProcessedAt
@@ -183,7 +187,7 @@ public class StripePaymentService : IPaymentService
         try
         {
             var payment = await _context.Payments
-                .FirstOrDefaultAsync(p => p.Id == paymentId && p.Status == "Completed");
+                .FirstOrDefaultAsync(p => p.Id == paymentId && p.Status == PaymentStatus.Completed);
 
             if (payment == null)
                 throw new ArgumentException("Payment not found or not eligible for refund");
@@ -206,7 +210,7 @@ public class StripePaymentService : IPaymentService
             var refund = await refundService.CreateAsync(options);
 
             // Update payment record
-            payment.Status = refundAmount >= payment.Amount ? "Refunded" : "Completed";
+            payment.Status = refundAmount >= payment.Amount ? PaymentStatus.Refunded : PaymentStatus.Completed;
             payment.RefundAmount = (payment.RefundAmount ?? 0) + refundAmount;
             payment.RefundDate = DateTime.UtcNow;
             payment.RefundReason = reason;
@@ -290,7 +294,7 @@ public class StripePaymentService : IPaymentService
             var payment = await GetPaymentByTransactionIdAsync(paymentIntent.Id);
             if (payment != null)
             {
-                payment.Status = "Failed";
+                payment.Status = PaymentStatus.Failed;
                 payment.FailedAt = DateTime.UtcNow;
                 payment.FailureReason = paymentIntent.LastPaymentError?.Message ?? "Payment failed";
                 await _context.SaveChangesAsync();

@@ -426,11 +426,11 @@ else
                     {
                         <div id="bar-topup-dev-picker" class="mb-3">
                             <label id="bar-topup-dev-label" for="bar-topup-dev-select" class="form-label">
-                                🧪 Test (dev): odaberi ulaznicu
+                                @Localizer["TicketTopup_DevPickerLabel"]
                             </label>
                             <select id="bar-topup-dev-select" class="form-select" value="@codeInput"
                                     @onchange="OnDevPick" disabled="@isResolving">
-                                <option value="">— odaberi ulaznicu —</option>
+                                <option value="">@Localizer["TicketTopup_DevPickerEmpty"]</option>
                                 @foreach (var t in _testTickets)
                                 {
                                     <option value="@t.TicketNumber">@t.Label</option>

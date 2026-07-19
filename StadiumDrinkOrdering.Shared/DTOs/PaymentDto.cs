@@ -9,6 +9,10 @@ public class PaymentDto
     public int OrderId { get; set; }
     public decimal Amount { get; set; }
     public PaymentMethod Method { get; set; }
+
+    /// <summary>Which way the money moved — In for a customer payment, Out for a payout/refund.</summary>
+    public PaymentDirection Direction { get; set; } = PaymentDirection.In;
+
     public PaymentStatus Status { get; set; }
     public string? TransactionId { get; set; }
     public DateTime CreatedAt { get; set; }

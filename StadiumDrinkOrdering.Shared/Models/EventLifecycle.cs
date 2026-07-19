@@ -30,8 +30,7 @@ public static class EventLifecycle
             [EventStatus.Planned]    = new[] { EventStatus.OnSale, EventStatus.Cancelled },
             [EventStatus.OnSale]     = new[] { EventStatus.SoldOut, EventStatus.Active, EventStatus.Planned, EventStatus.Cancelled },
             [EventStatus.SoldOut]    = new[] { EventStatus.OnSale, EventStatus.Active, EventStatus.Cancelled },
-            [EventStatus.Active]     = new[] { EventStatus.InProgress, EventStatus.Completed, EventStatus.Cancelled },
-            [EventStatus.InProgress] = new[] { EventStatus.Completed, EventStatus.Cancelled },
+            [EventStatus.Active]     = new[] { EventStatus.Completed, EventStatus.Cancelled },
             [EventStatus.Completed]  = Array.Empty<EventStatus>(),
             [EventStatus.Cancelled]  = Array.Empty<EventStatus>(),
         };
@@ -48,7 +47,7 @@ public static class EventLifecycle
     public static EventPhase PhaseOf(EventStatus status) => status switch
     {
         EventStatus.Planned or EventStatus.OnSale or EventStatus.SoldOut => EventPhase.Future,
-        EventStatus.Active or EventStatus.InProgress => EventPhase.Active,
+        EventStatus.Active => EventPhase.Active,
         _ => EventPhase.Past // Completed, Cancelled
     };
 
@@ -92,7 +91,7 @@ public static class EventLifecycle
     /// the event is live. Future and past events are locked.
     /// </summary>
     public static bool CanOrderDrinks(EventStatus status) =>
-        status is EventStatus.Active or EventStatus.InProgress;
+        status is EventStatus.Active;
 
     /// <summary>
     /// A human-friendly reason used in API responses when an action is blocked by lifecycle state.

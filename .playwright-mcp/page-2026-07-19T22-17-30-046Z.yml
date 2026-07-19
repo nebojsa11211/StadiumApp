@@ -1,0 +1,73 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e30]:
+    - generic [ref=f3e32]:
+      - generic [ref=f3e33]: 20:45
+      - generic [ref=f3e44]:
+        - generic [ref=f3e45]:
+          - generic [ref=f3e46]:
+            - button "Natrag" [ref=f3e47] [cursor=pointer]: ‹
+            - generic [ref=f3e48]:
+              - generic [ref=f3e49]: GNK Dinamo Zagreb - Zagreb
+              - generic [ref=f3e50]: Piće stiže na tvoje mjesto
+            - generic [ref=f3e51]: Uživo
+          - generic [ref=f3e53]:
+            - generic [ref=f3e54]:
+              - generic [ref=f3e55]: Sektor
+              - generic [ref=f3e56]: SECT1
+            - generic [ref=f3e58]:
+              - generic [ref=f3e59]: Red
+              - generic [ref=f3e60]: "1"
+            - generic [ref=f3e62]:
+              - generic [ref=f3e63]: Sjedalo
+              - generic [ref=f3e64]: "2"
+          - generic [ref=f3e65]:
+            - button "🍺 Pivo" [ref=f3e66] [cursor=pointer]:
+              - generic [ref=f3e67]: 🍺
+              - text: Pivo
+              - generic [ref=f3e101]: "1"
+            - button "🥤 Gazirano" [ref=f3e68] [cursor=pointer]:
+              - generic [ref=f3e69]: 🥤
+              - text: Gazirano
+            - button "💧 Voda" [ref=f3e70] [cursor=pointer]:
+              - generic [ref=f3e71]: 💧
+              - text: Voda
+            - button "☕ Kava" [ref=f3e72] [cursor=pointer]:
+              - generic [ref=f3e73]: ☕
+              - text: Kava
+            - button "🍵 Čaj" [ref=f3e74] [cursor=pointer]:
+              - generic [ref=f3e75]: 🍵
+              - text: Čaj
+            - button "🧃 Sok" [ref=f3e76] [cursor=pointer]:
+              - generic [ref=f3e77]: 🧃
+              - text: Sok
+            - button "⚡ Energetsko" [ref=f3e78] [cursor=pointer]:
+              - generic [ref=f3e79]: ⚡
+              - text: Energetsko
+        - generic [ref=f3e82] [cursor=pointer]:
+          - img "Beer" [ref=f3e84]
+          - generic [ref=f3e85]: Beer
+          - generic [ref=f3e86]: Local Draft Beer
+          - generic [ref=f3e87]:
+            - generic [ref=f3e88]: €6,00
+            - generic [ref=f3e102]:
+              - button "Manje Beer" [ref=f3e103]: −
+              - generic [ref=f3e104]: "1"
+              - button "Više Beer" [ref=f3e105]: +
+        - generic [ref=f3e91] [cursor=pointer]:
+          - generic [ref=f3e92]:
+            - generic [ref=f3e106]: "1"
+            - generic [ref=f3e94]: Cart
+          - generic [ref=f3e95]: €6,00 ›
+    - complementary [ref=f3e97]:
+      - img "QR code for https://localhost:7020/order" [ref=f3e98]
+      - generic [ref=f3e99]: Otvori na mobitelu
+      - generic [ref=f3e100]: https://localhost:7020/order
+  - generic [ref=f3e27]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f3e28] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - status
+  - alert
+  - status
+  - status [ref=f3e107]: "Focused: Dodaj Beer"

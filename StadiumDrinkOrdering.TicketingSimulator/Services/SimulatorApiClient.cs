@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.DTOs.Integration;
 
 namespace StadiumDrinkOrdering.TicketingSimulator.Services;
@@ -35,6 +36,30 @@ public class SimulatorApiClient
     public async Task<List<ExternalEventSummaryDto>> GetEventsAsync()
         => await _http.GetFromJsonAsync<List<ExternalEventSummaryDto>>("api/integration/ticketing/events", Json)
            ?? new List<ExternalEventSummaryDto>();
+
+    /// <summary>
+    /// Login accounts for the credentials tab. Passwords are only populated for the dev-seeded
+    /// users. Returns an empty list when the API isn't running in Development (the endpoint 404s).
+    /// </summary>
+    public async Task<List<IntegrationUserDto>> GetUsersAsync()
+    {
+        var resp = await _http.GetAsync("api/integration/ticketing/users");
+        if (!resp.IsSuccessStatusCode) return new List<IntegrationUserDto>();
+        return await resp.Content.ReadFromJsonAsync<List<IntegrationUserDto>>(Json)
+               ?? new List<IntegrationUserDto>();
+    }
+
+    /// <summary>
+    /// The venue branding profile (public read) so simulated fixtures can default their home side
+    /// to the stadium's own club instead of a hardcoded name. Returns null when the API is
+    /// unreachable — the simulator then keeps whatever default is already in the form.
+    /// </summary>
+    public async Task<VenueDto?> GetVenueAsync()
+    {
+        var resp = await _http.GetAsync("api/venue");
+        if (!resp.IsSuccessStatusCode) return null;
+        return await resp.Content.ReadFromJsonAsync<VenueDto>(Json);
+    }
 
     public async Task<List<ExternalSeasonSummaryDto>> GetSeasonsAsync()
         => await _http.GetFromJsonAsync<List<ExternalSeasonSummaryDto>>("api/integration/ticketing/seasons", Json)

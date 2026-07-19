@@ -12,17 +12,16 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7030",
+      "applicationUrl": "https://192.168.178.32:7030;https://localhost:7030",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:7030"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7030",
+      "applicationUrl": "https://192.168.178.32:7030;https://localhost:7030",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

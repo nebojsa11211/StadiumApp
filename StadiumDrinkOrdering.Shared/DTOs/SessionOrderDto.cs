@@ -45,3 +45,41 @@ public class SessionOrderResultDto
     /// money moved — the fan can top up (or switch to another method) and retry.</summary>
     public bool InsufficientFunds { get; set; }
 }
+
+/// <summary>
+/// One drink order in the fan's own history, trimmed to what the account view shows. Deliberately much
+/// slimmer than <see cref="OrderDto"/>, which carries staff-only fields and nested entities that an
+/// anonymous walk-up caller has no business receiving.
+/// </summary>
+public class SessionOrderHistoryItemDto
+{
+    public int OrderId { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public OrderStatus Status { get; set; }
+    public decimal TotalAmount { get; set; }
+
+    /// <summary>Where it was delivered — the seat as it read on the order.</summary>
+    public string SeatPath { get; set; } = string.Empty;
+
+    /// <summary>What was in it, one line per drink ("2 × Pivo").</summary>
+    public List<SessionOrderHistoryLineDto> Items { get; set; } = new();
+}
+
+public class SessionOrderHistoryLineDto
+{
+    public string DrinkName { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public decimal TotalPrice { get; set; }
+}
+
+/// <summary>Page of the fan's order history for a scanned ticket, plus the lifetime totals for that ticket.</summary>
+public class SessionOrderHistoryDto
+{
+    public List<SessionOrderHistoryItemDto> Orders { get; set; } = new();
+    public int TotalCount { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+
+    /// <summary>Sum of every non-cancelled order on this ticket — not just the current page.</summary>
+    public decimal TotalSpent { get; set; }
+}

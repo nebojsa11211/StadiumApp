@@ -10,6 +10,8 @@ public partial class DashboardLayout : LayoutComponentBase, IDisposable
     [Inject] private IAuthStateService AuthStateService { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private SeasonStateService SeasonState { get; set; } = default!;
+    [Inject] private LiveEventService LiveEvents { get; set; } = default!;
 
     private DateTime _now = DateTime.Now;
     private System.Timers.Timer? _clock;
@@ -30,7 +32,27 @@ public partial class DashboardLayout : LayoutComponentBase, IDisposable
         _clock.Start();
 
         Navigation.LocationChanged += OnLocationChanged;
+        SeasonState.OnChanged += OnSeasonStateChanged;
+        LiveEvents.OnChanged += OnSeasonStateChanged;
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SeasonState.EnsureLoadedAsync();
+        await LiveEvents.EnsureLoadedAsync();
+    }
+
+    /// <summary>
+    /// True on the dashboard, which renders its own interactive event bar. The shell's read-only
+    /// bar stands down there so #admin-dashboard-event-bar stays unique on the page.
+    /// </summary>
+    private bool IsDashboardRoute =>
+        Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0].Trim('/').Length == 0;
+
+    private void OnSeasonStateChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>Banner selection changed: publish it so every page sees the same season.</summary>
+    private void OnSeasonChanged(string value) => SeasonState.SetSelected(value);
 
     // Highlight the nav item matching the current route.
     private string NavClass(string href, string? extra = null)
@@ -84,5 +106,7 @@ public partial class DashboardLayout : LayoutComponentBase, IDisposable
         _clock?.Stop();
         _clock?.Dispose();
         Navigation.LocationChanged -= OnLocationChanged;
+        SeasonState.OnChanged -= OnSeasonStateChanged;
+        LiveEvents.OnChanged -= OnSeasonStateChanged;
     }
 }

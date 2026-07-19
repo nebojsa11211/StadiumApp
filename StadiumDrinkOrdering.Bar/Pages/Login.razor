@@ -7,89 +7,29 @@
 
 <PageTitle>@Localizer["Login_PageTitle"]</PageTitle>
 
-<div id="staff-login-container">
-    <div id="staff-login-row" style="display:flex; justify-content:center;">
-        <div id="staff-login-col">
-            <div id="staff-login-card">
-                <div id="staff-login-body">
-                    <div id="staff-login-header">
-                        <span class="eyebrow">@Localizer["Login_StadiumBar"]</span>
-                        <h1 id="staff-login-title">@Localizer["SignIn"]</h1>
-                        <p>@Localizer["Login_BartenderStationAccess"]</p>
-                    </div>
-
-                    @if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        <div id="staff-login-error" role="alert">
-                            @errorMessage
-                        </div>
-                    }
-
-                    <form @onsubmit="HandleLogin" id="staff-login-form">
-                        <div class="staff-field" id="staff-login-email-group">
-                            <label class="staff-field__label" for="staff-login-email-input">@Localizer["Email"]</label>
-                            <input type="email" class="staff-field__input" @bind="loginModel.Email" required
-                                   id="staff-login-email-input" placeholder="@Localizer["Login_EnterYourEmail"]" />
-                        </div>
-
-                        <div class="staff-field" id="staff-login-password-group">
-                            <label class="staff-field__label" for="staff-login-password-input">@Localizer["Password"]</label>
-                            <div id="bar-login-password-wrap" class="staff-pw-wrap">
-                                <input type="@(showPassword ? "text" : "password")"
-                                       class="staff-field__input staff-field__input--pw"
-                                       @bind="loginModel.Password" required
-                                       id="staff-login-password-input" placeholder="@Localizer["Login_EnterYourPassword"]" />
-                                <button type="button" id="staff-login-password-toggle-btn" class="staff-pw-toggle"
-                                        @onclick="TogglePasswordVisibility"
-                                        aria-label="@(showPassword ? Localizer["Login_HidePassword"] : Localizer["Login_ShowPassword"])"
-                                        aria-pressed="@showPassword">
-                                    @if (showPassword)
-                                    {
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                                            <line x1="1" y1="1" x2="23" y2="23" />
-                                        </svg>
-                                    }
-                                    else
-                                    {
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                            <circle cx="12" cy="12" r="3" />
-                                        </svg>
-                                    }
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="staff-login-button-group">
-                            <button type="submit" id="staff-login-submit-btn" disabled="@isLoading">
-                                @if (isLoading)
-                                {
-                                    <span class="spinner-border spinner-border-sm" role="status" id="staff-login-spinner"></span>
-                                    <span id="staff-login-loading-text">@Localizer["SigningIn"]</span>
-                                }
-                                else
-                                {
-                                    <span id="staff-login-button-text">@Localizer["SignIn"]</span>
-                                }
-                            </button>
-                        </div>
-                    </form>
-
-                    <div id="staff-login-demo-info">
-                        <small>@Localizer["Login_StaffAccessOnly"]</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<ConsoleLoginCard IdPrefix="staff"
+                  Eyebrow="@Localizer["Login_StadiumBar"]"
+                  Title="@Localizer["SignIn"]"
+                  Subtitle="@Localizer["Login_BartenderStationAccess"]"
+                  EmailLabel="@Localizer["Email"]"
+                  EmailPlaceholder="@Localizer["Login_EnterYourEmail"]"
+                  PasswordLabel="@Localizer["Password"]"
+                  PasswordPlaceholder="@Localizer["Login_EnterYourPassword"]"
+                  SubmitText="@Localizer["SignIn"]"
+                  LoadingText="@Localizer["SigningIn"]"
+                  ShowPasswordLabel="@Localizer["Login_ShowPassword"]"
+                  HidePasswordLabel="@Localizer["Login_HidePassword"]"
+                  FooterText="@Localizer["Login_StaffAccessOnly"]"
+                  ErrorMessage="@errorMessage"
+                  IsLoading="isLoading"
+                  @bind-Email="loginModel.Email"
+                  @bind-Password="loginModel.Password"
+                  OnSubmit="HandleLogin" />
 
 @code {
     private LoginDto loginModel = new();
     private string errorMessage = string.Empty;
     private bool isLoading = false;
-    private bool showPassword = false;
     private string? returnUrl;
 
     protected override void OnInitialized()
@@ -104,11 +44,6 @@
         {
             NavigateToReturnUrl();
         }
-    }
-
-    private void TogglePasswordVisibility()
-    {
-        showPassword = !showPassword;
     }
 
     private async Task HandleLogin()

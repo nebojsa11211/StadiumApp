@@ -1,4 +1,7 @@
 @inherits LayoutComponentBase
+@implements IDisposable
+@using QRCoder
+@inject NavigationManager Nav
 
 @* Chrome-less mobile shell. On phones the app fills the screen exactly as before. On wide
    viewports the whole app is presented inside a realistic phone device (metal bezel, rounded
@@ -24,4 +27,48 @@
             </div>
         </div>
     </div>
+
+    @* Desktop-only companion panel beside the phone: scanning this opens the exact page you are
+       looking at on a real handset. Encodes the live request URL, so on a LAN address
+       (https://192.168.178.32:7020/welcome) the phone reaches this machine, not localhost.
+       Deliberately outside #customer-mobile-shell-screen — it is presentation chrome, not app UI,
+       and CSS hides it under 520px where the phone frame collapses and the app owns the viewport. *@
+    <aside id="customer-mobile-shell-qr" class="shell-qr">
+        <img id="customer-mobile-shell-qr-img" class="shell-qr-img"
+             src="@QrDataUri" alt="QR code for @_currentUrl" />
+        <div id="customer-mobile-shell-qr-caption" class="shell-qr-caption">Otvori na mobitelu</div>
+        <div id="customer-mobile-shell-qr-url" class="shell-qr-url">@_currentUrl</div>
+    </aside>
 </div>
+
+@code {
+    private string _currentUrl = "";
+
+    protected override void OnInitialized()
+    {
+        _currentUrl = Nav.Uri;
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        _currentUrl = e.Location;
+        InvokeAsync(StateHasChanged);
+    }
+
+    // PNG (not SVG) because QRCoder's SVG renderer pulls in System.Drawing types; PngByteQRCode is
+    // dependency-free. ECC L keeps the module count low for a long URL, which keeps the code readable
+    // at this small size.
+    private string QrDataUri
+    {
+        get
+        {
+            using var generator = new QRCodeGenerator();
+            using var data = generator.CreateQrCode(_currentUrl, QRCodeGenerator.ECCLevel.L);
+            var png = new PngByteQRCode(data).GetGraphic(8);
+            return $"data:image/png;base64,{Convert.ToBase64String(png)}";
+        }
+    }
+
+    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
+}

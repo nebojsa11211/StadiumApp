@@ -22,6 +22,8 @@ public class ApplicationDbContext : DbContext
     
     // New Event Management entities
     public DbSet<Event> Events { get; set; }
+    public DbSet<EventPoster> EventPosters { get; set; }
+    public DbSet<Team> Teams { get; set; }
     public DbSet<Season> Seasons { get; set; }
     public DbSet<SeasonTicket> SeasonTickets { get; set; }
     public DbSet<StadiumSection> StadiumSections { get; set; }
@@ -289,6 +291,46 @@ public class ApplicationDbContext : DbContext
                 .WithMany(s => s.Events)
                 .HasForeignKey(e => e.SeasonId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Optional links to the club/team identities behind HomeTeam/AwayTeam. SetNull on
+            // delete: those name columns are the fixture's own record of who played, so removing a
+            // team from the directory must drop the crest link without rewriting match history.
+            entity.HasOne(e => e.HomeClub)
+                .WithMany()
+                .HasForeignKey(e => e.HomeClubId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.AwayTeamProfile)
+                .WithMany()
+                .HasForeignKey(e => e.AwayTeamId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.HomeClubId);
+            entity.HasIndex(e => e.AwayTeamId);
+
+            // HasPoster is computed from PosterContentType; it is not a column.
+            entity.Ignore(e => e.HasPoster);
+        });
+
+        // Poster image bytes, split into their own table so listing events never loads them.
+        modelBuilder.Entity<EventPoster>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.HasIndex(p => p.EventId).IsUnique();
+
+            entity.HasOne(p => p.Event)
+                .WithOne(e => e.Poster)
+                .HasForeignKey<EventPoster>(p => p.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Visiting-team directory, looked up by normalized team name.
+        modelBuilder.Entity<Team>(entity =>
+        {
+            entity.HasKey(t => t.Id);
+            entity.HasIndex(t => t.NormalizedName).IsUnique();
+            entity.Property(t => t.Name).HasMaxLength(150).IsRequired();
+            entity.Property(t => t.NormalizedName).HasMaxLength(150).IsRequired();
         });
 
         // Per-event, per-sector ticket-price override configuration
@@ -799,6 +841,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.ClubLogoContentType).HasMaxLength(100);
             // Existing installations should keep selling once the column is added.
             entity.Property(e => e.TicketSalesEnabled).HasDefaultValue(true);
+            // Existing installations keep accepting every method once the columns are added.
+            entity.Property(e => e.WalletPaymentEnabled).HasDefaultValue(true);
+            entity.Property(e => e.CardPaymentEnabled).HasDefaultValue(true);
+            entity.Property(e => e.CashPaymentEnabled).HasDefaultValue(true);
             entity.Property(e => e.SmtpHost).HasMaxLength(200);
             entity.Property(e => e.SmtpUsername).HasMaxLength(200);
             entity.Property(e => e.SmtpPassword).HasMaxLength(500);

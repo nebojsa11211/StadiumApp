@@ -1,0 +1,62 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e30]:
+    - generic [ref=f5e32]:
+      - generic [ref=f5e33]: 20:45
+      - generic [ref=f5e44]:
+        - banner [ref=f5e106]:
+          - button "Back" [ref=f5e107] [cursor=pointer]: ‹
+          - generic [ref=f5e108]:
+            - generic [ref=f5e109]: Tvoja košarica
+            - generic [ref=f5e110]: 1 stavka
+        - generic [ref=f5e111]:
+          - generic [ref=f5e112]:
+            - generic [ref=f5e113]: 📍
+            - generic [ref=f5e114]:
+              - generic [ref=f5e115]: Dostava na tvoje mjesto
+              - generic [ref=f5e116]: SECT1 · Red 1 · Sjed. 2
+          - generic [ref=f5e117]:
+            - generic [ref=f5e119]:
+              - generic [ref=f5e120]: 🥤
+              - generic [ref=f5e121]:
+                - generic [ref=f5e122]: Beer
+                - generic [ref=f5e123]: €6,00 / kom
+              - generic [ref=f5e124]:
+                - button "Manje" [ref=f5e125] [cursor=pointer]: −
+                - generic [ref=f5e126]: "1"
+                - button "Više" [ref=f5e127] [cursor=pointer]: +
+            - generic [ref=f5e128]: Plaćanje
+            - generic [ref=f5e129] [cursor=pointer]:
+              - generic [ref=f5e130]: 👛
+              - generic [ref=f5e131]:
+                - generic [ref=f5e132]: HALFTIME novčanik
+                - generic [ref=f5e133]: Marko Horvat
+                - generic [ref=f5e134]: Novčanik
+            - generic [ref=f5e136] [cursor=pointer]:
+              - generic [ref=f5e137]: 💳
+              - generic [ref=f5e138]:
+                - generic [ref=f5e139]: Kartica
+                - generic [ref=f5e140]: Visa · Mastercard
+            - generic [ref=f5e142]:
+              - generic [ref=f5e143]:
+                - generic [ref=f5e144]: Međuzbroj
+                - generic [ref=f5e145]: €6,00
+              - generic [ref=f5e146]:
+                - generic [ref=f5e147]: Naknada za uslugu
+                - generic [ref=f5e148]: €0,50
+              - generic [ref=f5e149]:
+                - generic [ref=f5e150]: Ukupno
+                - generic [ref=f5e151]: €6,50
+        - button "Naruči · €6,50" [ref=f5e153] [cursor=pointer]
+    - complementary [ref=f5e101]:
+      - img "QR code for https://localhost:7020/cart" [ref=f5e155]
+      - generic [ref=f5e103]: Otvori na mobitelu
+      - generic [ref=f5e104]: https://localhost:7020/cart
+  - generic [ref=f5e27]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f5e28] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - status
+  - alert
+  - status
+  - status

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StadiumDrinkOrdering.Shared\StadiumDrinkOrdering.Shared.csproj" />
+    <ProjectReference Include="..\StadiumDrinkOrdering.UI\StadiumDrinkOrdering.UI.csproj" />
   </ItemGroup>
 
   <!-- Kill process before build - ONLY for command-line builds. NEVER inside Visual Studio:

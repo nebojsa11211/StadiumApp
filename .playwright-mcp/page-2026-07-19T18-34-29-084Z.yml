@@ -1,0 +1,87 @@
+- generic [ref=f1e7]:
+  - complementary [ref=f1e8]:
+    - generic [ref=f1e9]:
+      - generic [ref=f1e10]: 
+      - generic [ref=f1e12]:
+        - generic [ref=f1e13]: STADIUM
+        - generic [ref=f1e14]: BAR
+    - generic [ref=f1e15]:
+      - generic [ref=f1e16]: 20:34:28
+      - generic [ref=f1e17]: 19. 07. 26 HR
+    - navigation [ref=f1e18]:
+      - link " Nadzorna ploča" [ref=f1e19] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f1e20]: 
+        - generic [ref=f1e21]: Nadzorna ploča
+      - link " Nadzorna ploča narudžbi" [ref=f1e22] [cursor=pointer]:
+        - /url: order-queue
+        - generic [ref=f1e23]: 
+        - generic [ref=f1e24]: Nadzorna ploča narudžbi
+      - link " Moje narudžbe" [ref=f1e25] [cursor=pointer]:
+        - /url: my-orders
+        - generic [ref=f1e26]: 
+        - generic [ref=f1e27]: Moje narudžbe
+      - link " Nadoplata" [ref=f1e28] [cursor=pointer]:
+        - /url: topup
+        - generic [ref=f1e29]: 
+        - generic [ref=f1e30]: Nadoplata
+      - link " Povijest nadoplata" [ref=f1e31] [cursor=pointer]:
+        - /url: topup-history
+        - generic [ref=f1e32]: 
+        - generic [ref=f1e33]: Povijest nadoplata
+      - generic [ref=f1e34]: Sustav
+      - link " Sistemski zapisnici" [ref=f1e35] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f1e36]: 
+        - generic [ref=f1e37]: Sistemski zapisnici
+    - generic [ref=f1e38]:
+      - 'generic "Ažuriranja narudžbi u direktnom prijenosu: povezano" [ref=f1e40]': Uživo
+      - generic [ref=f1e43]:
+        - generic [ref=f1e44]: "N"
+        - generic [ref=f1e45]:
+          - button "Odjava" [ref=f1e46] [cursor=pointer]
+          - generic [ref=f1e47]: nebojsa.medancic+staff1@gmail.com
+      - generic [ref=f1e48]:
+        - generic [ref=f1e49]: HR/EN
+        - generic [ref=f1e50]:
+          - button "HR" [ref=f1e51] [cursor=pointer]
+          - button "EN" [ref=f1e52] [cursor=pointer]
+  - main [ref=f1e53]:
+    - generic [ref=f1e54]:
+      - generic [ref=f1e55]: 
+      - generic [ref=f1e57]:
+        - generic [ref=f1e58]: Trenutni događaj
+        - heading "Istra444 - Zagreb444" [level=2] [ref=f1e59]
+        - generic [ref=f1e61]:
+          - generic [ref=f1e62]: 
+          - text: ned 19 srp, 15:08
+      - generic [ref=f1e63]: LIVE
+    - generic [ref=f1e66]:
+      - generic [ref=f1e68]:
+        - generic [ref=f1e69]: Bar stanica
+        - heading "Nadoplata novčanika" [level=1] [ref=f1e70]
+        - paragraph [ref=f1e71]: Učitajte gotovinu na novčanik gosta na šanku.
+      - generic [ref=f1e72]:
+        - generic [ref=f1e83]:
+          - generic [ref=f1e84]:
+            - generic [ref=f1e85]: 👤 Podaci gosta
+            - generic [ref=f1e86]: "Pronađeno: Ticket"
+          - generic [ref=f1e88]:
+            - term [ref=f1e89]: Ime i prezime
+            - definition [ref=f1e90]: Ivan Horvat
+            - term [ref=f1e91]: E-mail
+            - definition [ref=f1e92]: nebojsa.medancic+Ivan.Horvat@gmail.com
+            - term [ref=f1e93]: OIB
+            - definition [ref=f1e94]: —
+            - term [ref=f1e95]: Trenutno stanje
+            - definition [ref=f1e96]: 0.00 EUR
+        - generic [ref=f1e98]:
+          - generic [ref=f1e99]: Iznos gotovine (EUR)
+          - spinbutton "Iznos gotovine (EUR)" [disabled] [ref=f1e100]: "10"
+          - generic [ref=f1e101]:
+            - button "10" [disabled]
+            - button "20" [disabled]
+            - button "50" [disabled]
+          - button "Obrada..." [disabled]:
+            - status
+        - button "Odustani" [ref=f1e105] [cursor=pointer]

@@ -46,6 +46,81 @@ This document defines the **permanent and fixed port assignments** for all Stadi
   - Development: https://localhost:7040
   - Docker: https://localhost:9040
 
+## LAN Access (testing from a phone / tablet)
+
+Every `commandName: Project` launch profile binds **two** endpoints:
+
+```
+https://192.168.178.32:<port>;https://localhost:<port>
+```
+
+**Order matters.** Visual Studio opens the browser at the **first** URL, so the LAN address is
+listed first — that is what makes F5 land on `https://192.168.178.32:7020/...` instead of
+`localhost`. Swap the order to go back to a localhost address bar. `localhost` keeps working
+either way; both endpoints are always bound.
+
+> ⚠️ Because the LAN address is now the F5 target and there is **no LAN certificate**, the desktop
+> browser shows a certificate warning on every launch (`ERR_CERT_COMMON_NAME_INVALID`) — the dev
+> cert is only valid for the name `localhost`. See "No LAN certificate yet" below.
+
+> Switching origin also means a **fresh `localStorage`**: JWTs saved under `https://localhost:7030`
+> are not visible to `https://192.168.178.32:7030`, so you will be asked to log in again.
+
+> **Exception — the Runner lists `localhost` first on purpose.** It is a Blazor WASM app, and its
+> `inspectUri` points the debugger at `wss://{url.hostname}:{url.port}/_framework/debug/ws-proxy`.
+> Launching it at the LAN address makes VS fail with *"Failed to launch debug adapter … Could not
+> open wss://192.168.178.32:7060/_framework/debug/ws-proxy"*, because the WASM debug proxy expects
+> a loopback origin and a `wss://` handshake cannot be manually accepted the way an untrusted page
+> can. The Runner is still **bound** to the LAN address — just browse to
+> `https://192.168.178.32:7060` on the phone manually. Do not reorder it unless a trusted LAN
+> certificate is installed.
+
+> **Gotcha:** `Customer` and `Bar` also pin a `"Urls"` key in their `appsettings.Development.json`.
+> `WebApplication` applies that key **over** the host URLs from `applicationUrl`, so it must list the
+> LAN address too — otherwise those two apps bind loopback only and silently ignore the launch
+> profile. The other four apps have no `Urls` key. `set-dev-host.ps1` keeps both places in sync.
+
+### One-time setup
+1. **Open the firewall** (run as Administrator): `.\open-lan-dev-ports.ps1`
+   Adds an inbound TCP rule for 7010–7060 on the **Private** profile only.
+   Undo with `.\open-lan-dev-ports.ps1 -Remove`.
+2. Start the apps from Visual Studio as usual.
+3. On the phone, browse to `https://192.168.178.32:<port>`.
+
+### ⚠️ No LAN certificate yet
+The ASP.NET dev certificate is only valid for the name `localhost`, so hitting the app by IP
+produces a certificate warning you must tap through on every device. Consequences:
+
+- Normal page testing works fine.
+- **Service workers will not register**, so the Runner PWA **cannot be installed** and offline
+  mode cannot be tested over the LAN. Fixing this requires minting a certificate with the IP in
+  its SAN list and trusting it on the phone.
+- Server-to-server calls are unaffected — every client app already sets
+  `ServerCertificateCustomValidationCallback => true`.
+
+### ⚠️ The LAN address is a DHCP lease
+`192.168.178.32` is baked into all six launch profiles. When the lease changes, re-stamp them:
+
+```powershell
+.\set-dev-host.ps1                          # auto-detect the current LAN IP
+.\set-dev-host.ps1 -IpAddress 192.168.1.50  # or set it explicitly
+```
+
+A **DHCP reservation** on the router avoids this entirely and is the recommended fix.
+
+### How the apps find the API over the LAN
+- **Server-rendered apps** (Admin, Customer, Bar, Simulator) call the API from the *server*, so
+  their `ApiSettings:BaseUrl` of `https://localhost:7010` stays correct regardless of how the
+  browser reached them. No change needed.
+- **Runner (WASM)** runs in the *browser*, where `localhost` means the phone. It therefore derives
+  the API host from the origin that served it (see `Runner/Program.cs`) — loaded from
+  `https://192.168.178.32:7060`, it calls `https://192.168.178.32:7010`. An explicit non-loopback
+  `ApiSettings:BaseUrl` in `wwwroot/appsettings.json` still overrides this, so pointing the Runner
+  at a staging API remains config-only.
+- **API CORS**: in **Development only**, the API accepts any loopback or RFC1918 private-range
+  origin, so the Runner's LAN origin is allowed without re-pinning the IP. Non-development
+  behaviour is unchanged and still driven by `CORS_ALLOWED_ORIGINS`.
+
 ## Port Assignment Strategy
 
 ### Development Ports (7000-7099)

@@ -40,7 +40,7 @@
             <article class="metric" id="admin-logs-total-card">
                 <div class="metric__head">
                     <span class="metric__label">@L["Logs_TotalLogsLabel"]</span>
-                    <i class="fas fa-list metric__icon"></i>
+                    <i class="bi bi-list-ul metric__icon"></i>
                 </div>
                 <div class="metric__value mono">@logSummary.TotalLogs</div>
                 <div class="metric__foot">
@@ -51,7 +51,7 @@
             <article class="metric metric--accent" id="admin-logs-errors-card">
                 <div class="metric__head">
                     <span class="metric__label">@L["Logs_ErrorsLabel"]</span>
-                    <i class="fas fa-exclamation-triangle metric__icon"></i>
+                    <i class="bi bi-exclamation-triangle metric__icon"></i>
                 </div>
                 <div class="metric__value mono">@logSummary.ErrorCount</div>
                 <div class="metric__foot">
@@ -62,7 +62,7 @@
             <article class="metric" id="admin-logs-warnings-card">
                 <div class="metric__head">
                     <span class="metric__label">@L["Logs_WarningsLabel"]</span>
-                    <i class="fas fa-exclamation metric__icon"></i>
+                    <i class="bi bi-exclamation metric__icon"></i>
                 </div>
                 <div class="metric__value mono">@logSummary.WarningCount</div>
                 <div class="metric__foot">
@@ -73,7 +73,7 @@
             <article class="metric" id="admin-logs-info-card">
                 <div class="metric__head">
                     <span class="metric__label">@L["Logs_InfoLabel"]</span>
-                    <i class="fas fa-info-circle metric__icon is-ok"></i>
+                    <i class="bi bi-info-circle metric__icon is-ok"></i>
                 </div>
                 <div class="metric__value mono">@logSummary.InfoCount</div>
                 <div class="metric__foot">
@@ -94,27 +94,27 @@
                     <div class="filters" id="admin-logs-date-buttons">
                         <button class="pill-btn @(selectedDateRange == "last24hours" ? "pill-btn--primary" : "")"
                                 @onclick="@(() => SetDateRange("last24hours"))" id="admin-logs-filter-24h-btn">
-                            <i class="fas fa-clock"></i><span>@L["Logs_Last24HoursButton"]</span>
+                            <i class="bi bi-clock"></i><span>@L["Logs_Last24HoursButton"]</span>
                         </button>
                         <button class="pill-btn @(selectedDateRange == "today" ? "pill-btn--primary" : "")"
                                 @onclick="@(() => SetDateRange("today"))" id="admin-logs-filter-today-btn">
-                            <i class="fas fa-calendar-day"></i><span>@L["Logs_TodayButton"]</span>
+                            <i class="bi bi-calendar-day"></i><span>@L["Logs_TodayButton"]</span>
                         </button>
                         <button class="pill-btn @(selectedDateRange == "last7days" ? "pill-btn--primary" : "")"
                                 @onclick="@(() => SetDateRange("last7days"))" id="admin-logs-filter-7days-btn">
-                            <i class="fas fa-calendar-week"></i><span>@L["Logs_Last7DaysButton"]</span>
+                            <i class="bi bi-calendar-week"></i><span>@L["Logs_Last7DaysButton"]</span>
                         </button>
                         <button class="pill-btn @(selectedDateRange == "last30days" ? "pill-btn--primary" : "")"
                                 @onclick="@(() => SetDateRange("last30days"))" id="admin-logs-filter-30days-btn">
-                            <i class="fas fa-calendar-alt"></i><span>@L["Logs_Last30DaysButton"]</span>
+                            <i class="bi bi-calendar-event"></i><span>@L["Logs_Last30DaysButton"]</span>
                         </button>
                         <button class="pill-btn @(selectedDateRange == "all" ? "pill-btn--primary" : "")"
                                 @onclick="@(() => SetDateRange("all"))" id="admin-logs-filter-alltime-btn">
-                            <i class="fas fa-infinity"></i><span>@L["Logs_AllTimeButton"]</span>
+                            <i class="bi bi-infinity"></i><span>@L["Logs_AllTimeButton"]</span>
                         </button>
                         <button class="pill-btn @(selectedDateRange == "custom" ? "pill-btn--primary" : "")"
                                 @onclick="@(() => ToggleCustomDateRange())" id="admin-logs-filter-custom-btn">
-                            <i class="fas fa-calendar"></i><span>@L["Logs_CustomRangeButton"]</span>
+                            <i class="bi bi-calendar"></i><span>@L["Logs_CustomRangeButton"]</span>
                         </button>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
                         <div class="field" id="admin-logs-apply-field">
                             <label class="field__label">&nbsp;</label>
                             <button class="pill-btn pill-btn--primary" @onclick="ApplyCustomDateRange" id="admin-logs-custom-date-apply-btn">
-                                <i class="fas fa-check"></i><span>@L["Logs_ApplyButton"]</span>
+                                <i class="bi bi-check"></i><span>@L["Logs_ApplyButton"]</span>
                             </button>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
                 @if (!string.IsNullOrEmpty(currentFilterDescription))
                 {
                     <div class="console-alert console-alert--info" id="admin-logs-current-filter-alert">
-                        <i class="fas fa-filter"></i> <strong>@L["Logs_CurrentFilterLabel"]</strong> @currentFilterDescription
+                        <i class="bi bi-funnel"></i> <strong>@L["Logs_CurrentFilterLabel"]</strong> @currentFilterDescription
                         @if (logs != null)
                         {
                             <span class="ms-2">(@logs.TotalCount @L["Logs_LogsFoundCount"])</span>
@@ -222,7 +222,7 @@
                                                 <div class="message-preview" @onclick="@(() => ToggleMessage(log.Id))" id="admin-logs-message-preview-@log.Id">
                                                     <small>@log.Message.Substring(0, 100)...</small>
                                                     <button class="row-btn" title="Expand message" id="admin-logs-expand-message-btn-@log.Id">
-                                                        <i class="fas fa-expand-alt"></i>
+                                                        <i class="bi bi-arrows-angle-expand"></i>
                                                     </button>
                                                 </div>
                                                 @if (expandedMessages.Contains(log.Id))
@@ -230,7 +230,7 @@
                                                     <div class="message-full mt-2 p-2 border rounded" style="background-color: rgba(0,0,0,0.05); word-break: break-word; white-space: pre-wrap;" id="admin-logs-message-full-@log.Id">
                                                         <small>@log.Message</small>
                                                         <button class="row-btn float-end" title="Collapse message" @onclick="@(() => ToggleMessage(log.Id))" id="admin-logs-collapse-message-btn-@log.Id">
-                                                            <i class="fas fa-compress-alt"></i>
+                                                            <i class="bi bi-arrows-angle-contract"></i>
                                                         </button>
                                                     </div>
                                                 }
@@ -252,7 +252,7 @@
             else
             {
                 <div class="empty" id="admin-logs-empty-state">
-                    <i class="fas fa-inbox"></i>
+                    <i class="bi bi-inbox"></i>
                     <p id="admin-logs-empty-title">@L["Logs_NoLogsFound"]</p>
                     <span id="admin-logs-empty-message">@L["Logs_NoLogsDescription"]</span>
                 </div>

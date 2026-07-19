@@ -20,7 +20,7 @@
     @if (State.Count == 0)
     {
         <div id="customer-cart-empty" class="empty">
-            <div id="customer-cart-emoji" class="e-emoji">🛒</div>
+            <div id="customer-cart-emoji" class="e-emoji" aria-hidden="true">🛒</div>
             <p>@Localizer["Cart_EmptyMessage"]</p>
             <button id="customer-cart-back-btn" class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">@Localizer["Cart_BackMenuButton"]</button>
         </div>
@@ -28,7 +28,7 @@
     else
     {
         <div id="customer-cart-deliver-banner" class="deliver-banner">
-            <span class="ic">📍</span>
+            <span class="ic" aria-hidden="true">📍</span>
             <div id="customer-cart-delivery-info">
                 <div id="customer-cart-delivery-title" class="t">@Localizer["Cart_DeliveryTitle"]</div>
                 <div id="customer-cart-delivery-seat" class="s tnum">@State.SeatText</div>
@@ -40,7 +40,7 @@
                 @foreach (var item in State.Items)
                 {
                     <div id="customer-cart-item-@item.DrinkId" class="cart-item">
-                        <div id="customer-cart-item-icon-@item.DrinkId" class="th">🥤</div>
+                        <div id="customer-cart-item-icon-@item.DrinkId" class="th" aria-hidden="true">🥤</div>
                         <div id="customer-cart-item-info-@item.DrinkId" class="ci">
                             <div id="customer-cart-item-name-@item.DrinkId" class="n">@item.DrinkName</div>
                             <div id="customer-cart-item-price-@item.DrinkId" class="p tnum">@Localizer["Cart_UnitPriceLabel", item.UnitPrice.ToString("F2")]</div>
@@ -55,30 +55,43 @@
             </div>
 
             <div id="customer-cart-payment-label" class="label" style="margin:22px 0 12px">@Localizer["Cart_PaymentLabel"]</div>
+            @* Which methods appear is an operator setting (Admin → Settings → Payments). *@
+            @if (_settings.WalletPaymentEnabled)
+            {
             <div id="customer-cart-pay-wallet" class="pay-opt @(_pay == "wallet" ? "sel" : "")" @onclick="@(() => _pay = "wallet")">
-                <div id="customer-cart-wallet-icon" class="pic">@(_wallet is { IsTicketWallet: true } ? "🎟️" : "👛")</div>
+                <div id="customer-cart-wallet-icon" class="pic" aria-hidden="true">@(_wallet is { IsTicketWallet: true } ? "🎟️" : "👛")</div>
                 <div id="customer-cart-wallet-info" class="pb">
                     <div id="customer-cart-wallet-title" class="t">@WalletTitle</div>
+                    @* Whose money this is — the one place identity is decision-relevant, and why it no
+                       longer occupies the order header. *@
+                    <div id="customer-cart-wallet-holder" class="s">@FanName</div>
                     <div id="customer-cart-wallet-balance" class="s tnum">@WalletText</div>
                 </div>
                 <div class="radio"></div>
             </div>
+            }
+            @if (_settings.CardPaymentEnabled)
+            {
             <div id="customer-cart-pay-card" class="pay-opt @(_pay == "card" ? "sel" : "")" @onclick="@(() => _pay = "card")">
-                <div id="customer-cart-card-icon" class="pic">💳</div>
+                <div id="customer-cart-card-icon" class="pic" aria-hidden="true">💳</div>
                 <div id="customer-cart-card-info" class="pb">
                     <div id="customer-cart-card-title" class="t">@Localizer["Cart_CardTitle"]</div>
                     <div id="customer-cart-card-subtitle" class="s">@Localizer["Cart_CardSubtitle"]</div>
                 </div>
                 <div class="radio"></div>
             </div>
+            }
+            @if (_settings.CashPaymentEnabled)
+            {
             <div id="customer-cart-pay-cash" class="pay-opt @(_pay == "cash" ? "sel" : "")" @onclick="@(() => _pay = "cash")">
-                <div id="customer-cart-cash-icon" class="pic">💵</div>
+                <div id="customer-cart-cash-icon" class="pic" aria-hidden="true">💵</div>
                 <div id="customer-cart-cash-info" class="pb">
                     <div id="customer-cart-cash-title" class="t">@Localizer["Cart_CashTitle"]</div>
                     <div id="customer-cart-cash-subtitle" class="s">@Localizer["Cart_CashSubtitle"]</div>
                 </div>
                 <div class="radio"></div>
             </div>
+            }
 
             <div id="customer-cart-summary" class="summary">
                 <div id="customer-cart-summary-subtotal" class="sr"><span>@Localizer["Cart_SubtotalLabel"]</span><b class="tnum">€@State.Subtotal.ToString("F2")</b></div>
@@ -124,10 +137,15 @@
     private bool _placing;
     private string? _error;
     private WalletSummaryDto? _wallet;
+    // Accepted payment methods for this installation. Defaults to all-enabled so a settings
+    // fetch failure never blocks checkout — the order API re-checks and is authoritative.
+    private AppSettingsDto _settings = new();
 
     private decimal Total => State.Subtotal + (State.Count > 0 ? ServiceFee : 0m);
     private string SubtitleText => State.Count > 0 ? Localizer["Cart_ItemCountSubtitle", State.Count, State.Count == 1 ? Localizer["Cart_Item"] : Localizer["Cart_Items"]] : Localizer["Cart_EmptySubtitle"];
     private string WalletText => _wallet is { Exists: true } ? $"Stanje €{_wallet.Balance:F2}" : Localizer["Cart_WalletPlaceholder"];
+    // Ticket holder paying from this wallet; anonymous bearer tickets carry no name.
+    private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? Localizer["Order_GuestName"] : State.CustomerName;
     // Anonymous bearer balance loaded on the scanned ticket vs a registered fan's personal wallet.
     private string WalletTitle => _wallet is { IsTicketWallet: true } ? Localizer["Cart_TicketWalletTitle"] : Localizer["Cart_PersonalWalletTitle"];
 
@@ -149,9 +167,21 @@
         if (State.HasSession)
             _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
 
-        // Preselect wallet only when there's actually a wallet to charge; otherwise default to card.
-        _pay = _wallet is { Exists: true } ? "wallet" : "card";
+        _settings = await Api.GetAppSettingsAsync();
+
+        // Preselect wallet only when it's offered AND there's actually a wallet to charge; otherwise
+        // fall back to the first method the operator still accepts.
+        _pay = SelectDefaultMethod();
         StateHasChanged();
+    }
+
+    /// <summary>Best enabled method to preselect: a funded wallet first, then card, then cash.</summary>
+    private string SelectDefaultMethod()
+    {
+        if (_settings.WalletPaymentEnabled && _wallet is { Exists: true }) return "wallet";
+        if (_settings.CardPaymentEnabled) return "card";
+        if (_settings.CashPaymentEnabled) return "cash";
+        return "wallet"; // wallet is the only one left enabled (the API forbids disabling all three)
     }
 
     private void Change(int drinkId, int qty) => State.SetQty(drinkId, qty);

@@ -1,0 +1,181 @@
+- generic [ref=f1e10]:
+  - complementary [ref=f1e11]:
+    - generic [ref=f1e12]:
+      - generic [ref=f1e13]: 
+      - generic [ref=f1e15]:
+        - generic [ref=f1e16]: STADIUM
+        - generic [ref=f1e17]: ADMIN
+    - generic [ref=f1e18]:
+      - generic [ref=f1e19]: 00:15:40
+      - generic [ref=f1e20]: 20. 07. 26 HR
+    - navigation [ref=f1e21]:
+      - link " Nadzorna ploča" [ref=f1e22] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f1e23]: 
+        - generic [ref=f1e24]: Nadzorna ploča
+      - generic [ref=f1e25]: Poslovanje
+      - link " Narudžbe" [ref=f1e26] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f1e27]: 
+        - generic [ref=f1e28]: Narudžbe
+      - link " Pića" [ref=f1e29] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f1e30]: 
+        - generic [ref=f1e31]: Pića
+      - link " Novčanici" [ref=f1e32] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=f1e33]: 
+        - generic [ref=f1e34]: Novčanici
+      - generic [ref=f1e35]: Događaji i karte
+      - link " Događaji" [ref=f1e36] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f1e37]: 
+        - generic [ref=f1e38]: Događaji
+      - link " Sezone" [ref=f1e39] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=f1e40]: 
+        - generic [ref=f1e41]: Sezone
+      - link " Momčadi" [ref=f1e42] [cursor=pointer]:
+        - /url: admin/teams
+        - generic [ref=f1e43]: 
+        - generic [ref=f1e44]: Momčadi
+      - link " Karte" [ref=f1e45] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f1e46]: 
+        - generic [ref=f1e47]: Karte
+      - generic [ref=f1e48]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=f1e49] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f1e50]: 👁
+        - generic [ref=f1e51]: Pregled
+      - link " Alat za crtanje" [ref=f1e52] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f1e53]: 
+        - generic [ref=f1e54]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=f1e55] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=f1e56]: 
+        - generic [ref=f1e57]: Informacije o stadionu
+      - link " Stadion i brend" [ref=f1e58] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=f1e59]: 
+        - generic [ref=f1e60]: Stadion i brend
+      - generic [ref=f1e61]: Analitika
+      - link " Analitika" [ref=f1e62] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f1e63]: 
+        - generic [ref=f1e64]: Analitika
+      - link " Kupci" [ref=f1e65] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=f1e66]: 
+        - generic [ref=f1e67]: Kupci
+      - link " Korisnička analitika" [ref=f1e68] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f1e69]: 
+        - generic [ref=f1e70]: Korisnička analitika
+      - generic [ref=f1e71]: Sustav
+      - link " Timski računi" [ref=f1e72] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f1e73]: 
+        - generic [ref=f1e74]: Timski računi
+      - link " Zapisi" [ref=f1e75] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f1e76]: 
+        - generic [ref=f1e77]: Zapisi
+      - link " Baza podataka" [ref=f1e78] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f1e79]: 
+        - generic [ref=f1e80]: Baza podataka
+      - link " Postavke" [ref=f1e81] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=f1e82]: 
+        - generic [ref=f1e83]: Postavke
+    - generic [ref=f1e84]:
+      - generic [ref=f1e85]:
+        - generic [ref=f1e86]: 
+        - generic [ref=f1e87]:
+          - generic [ref=f1e88]: Centralizirani Logging
+          - generic [ref=f1e89]: "Zadnja objava: 00:15"
+      - generic [ref=f1e90]:
+        - generic [ref=f1e91]: "N"
+        - generic [ref=f1e92]:
+          - button "Odjava" [ref=f1e93] [cursor=pointer]
+          - generic [ref=f1e94]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=f1e95]:
+        - generic [ref=f1e96]: HR/EN
+        - generic [ref=f1e97]:
+          - button "HR" [ref=f1e98] [cursor=pointer]
+          - button "EN" [ref=f1e99] [cursor=pointer]
+  - main [ref=f1e100]:
+    - generic [ref=f1e101]:
+      - button "" [ref=f1e102] [cursor=pointer]
+      - generic [ref=f1e104]:
+        - generic [ref=f1e105]: 
+        - generic [ref=f1e106]: "Trenutna sezona:"
+        - strong [ref=f1e107]: 2026/2027
+        - generic [ref=f1e108]:
+          - generic [ref=f1e109]: 
+          - text: Trenutni
+        - generic [ref=f1e110]: (kol 2026 – svi 2027)
+        - generic [ref=f1e111]:
+          - generic [ref=f1e112]: 
+          - text: 140 Sezonske Ulaznice
+      - generic [ref=f1e113]:
+        - combobox "Odaberi sezonu" [ref=f1e114] [cursor=pointer]:
+          - option "Sve sezone"
+          - option "2025/26"
+          - option "2026/2027" [selected]
+          - option "Bez sezone"
+        - button "" [disabled] [ref=f1e115]
+    - generic [ref=f1e117]:
+      - generic [ref=f1e118]:
+        - generic [ref=f1e119]: Active
+        - generic [ref=f1e122]:
+          - generic [ref=f1e123]: 
+          - heading "GNK Dinamo Zagreb - Zagreb" [level=2] [ref=f1e124]
+          - generic [ref=f1e125]: ned, 19. srp 2026. · 20:28
+      - link " Nadzorna ploča" [ref=f1e127] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f1e128]: 
+        - text: Nadzorna ploča
+    - generic [ref=f1e129]:
+      - generic [ref=f1e131]:
+        - generic [ref=f1e132]: Sustav
+        - heading "Postavke" [level=1] [ref=f1e133]
+        - paragraph [ref=f1e134]: Opcije na razini cijele instalacije.
+      - tablist [ref=f1e135]:
+        - button " Prodaja ulaznica" [ref=f1e136] [cursor=pointer]:
+          - generic [ref=f1e137]: 
+          - text: Prodaja ulaznica
+        - button " Plaćanje" [ref=f1e138] [cursor=pointer]:
+          - generic [ref=f1e139]: 
+          - text: Plaćanje
+        - button " E-pošta (SMTP)" [ref=f1e140] [cursor=pointer]:
+          - generic [ref=f1e141]: 
+          - text: E-pošta (SMTP)
+        - button " Sigurnosna kopija i vraćanje" [ref=f1e142] [cursor=pointer]:
+          - generic [ref=f1e143]: 
+          - text: Sigurnosna kopija i vraćanje
+        - button " Generiranje slika" [ref=f1e144] [cursor=pointer]:
+          - generic [ref=f1e145]: 
+          - text: Generiranje slika
+        - button " Opasna zona" [ref=f1e146] [cursor=pointer]:
+          - generic [ref=f1e147]: 
+          - text: Opasna zona
+      - generic [ref=f1e148]:
+        - heading "Plaćanje" [level=5] [ref=f1e150]
+        - generic [ref=f1e151]:
+          - paragraph [ref=f1e152]: Odaberite koje načine plaćanja navijači mogu izabrati pri naručivanju pića u aplikaciji za kupce. Isključeni načini skriveni su u košarici i odbija ih API za narudžbe.
+          - generic [ref=f1e153]:
+            - switch "HALFTIME novčanik" [checked] [ref=f1e154]
+            - generic [ref=f1e155]: HALFTIME novčanik
+          - generic [ref=f1e156]: Plaćanje sa stanja novčanika navijača. Narudžba se naplaćuje odmah pri naplati.
+          - generic [ref=f1e157]:
+            - switch "Kartica" [checked] [ref=f1e158]
+            - generic [ref=f1e159]: Kartica
+          - generic [ref=f1e160]: Navijač izjavljuje da će platiti karticom. Pri naplati se ne prenosi novac — narudžba se podmiruje na šanku.
+          - generic [ref=f1e161]:
+            - switch "Gotovina pri dostavi" [checked] [active] [ref=f1e162]
+            - generic [ref=f1e163]: Gotovina pri dostavi
+          - generic [ref=f1e164]: Navijač plaća dostavljaču gotovinom pri preuzimanju narudžbe.
+          - button "Spremi promjene" [ref=f1e166] [cursor=pointer]

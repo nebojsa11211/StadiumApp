@@ -79,11 +79,11 @@ class NotificationManager {
 
     getIcon(type) {
         switch (type) {
-            case 'success': return 'fas fa-check-circle';
-            case 'error': return 'fas fa-exclamation-triangle';
-            case 'warning': return 'fas fa-exclamation-circle';
-            case 'info': return 'fas fa-info-circle';
-            default: return 'fas fa-bell';
+            case 'success': return 'bi bi-check-circle';
+            case 'error': return 'bi bi-exclamation-triangle';
+            case 'warning': return 'bi bi-exclamation-circle';
+            case 'info': return 'bi bi-info-circle';
+            default: return 'bi bi-bell';
         }
     }
 

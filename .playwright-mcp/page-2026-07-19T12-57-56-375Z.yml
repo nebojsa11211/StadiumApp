@@ -1,0 +1,1949 @@
+- generic [ref=f1e155]:
+  - complementary [ref=f1e156]:
+    - generic [ref=f1e157]:
+      - generic [ref=f1e158]: 
+      - generic [ref=f1e160]:
+        - generic [ref=f1e161]: STADIUM
+        - generic [ref=f1e162]: ADMIN
+    - generic [ref=f1e163]:
+      - generic [ref=f1e164]: 14:57:55
+      - generic [ref=f1e165]: 19. 07. 26 HR
+    - navigation [ref=f1e166]:
+      - link " Nadzorna ploča" [ref=f1e167] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f1e168]: 
+        - generic [ref=f1e169]: Nadzorna ploča
+      - generic [ref=f1e170]: Poslovanje
+      - link " Narudžbe" [ref=f1e171] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f1e172]: 
+        - generic [ref=f1e173]: Narudžbe
+      - link " Pića" [ref=f1e174] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f1e175]: 
+        - generic [ref=f1e176]: Pića
+      - link " Novčanici" [ref=f1e177] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=f1e178]: 
+        - generic [ref=f1e179]: Novčanici
+      - generic [ref=f1e180]: Događaji i karte
+      - link " Događaji" [ref=f1e181] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f1e182]: 
+        - generic [ref=f1e183]: Događaji
+      - link " Sezone" [ref=f1e184] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=f1e185]: 
+        - generic [ref=f1e186]: Sezone
+      - link " Momčadi" [ref=f1e187] [cursor=pointer]:
+        - /url: admin/teams
+        - generic [ref=f1e188]: 
+        - generic [ref=f1e189]: Momčadi
+      - link " Karte" [ref=f1e190] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f1e191]: 
+        - generic [ref=f1e192]: Karte
+      - generic [ref=f1e193]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=f1e194] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f1e195]: 👁
+        - generic [ref=f1e196]: Pregled
+      - link " Alat za crtanje" [ref=f1e197] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f1e198]: 
+        - generic [ref=f1e199]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=f1e200] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=f1e201]: 
+        - generic [ref=f1e202]: Informacije o stadionu
+      - link " Stadion i brend" [ref=f1e203] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=f1e204]: 
+        - generic [ref=f1e205]: Stadion i brend
+      - generic [ref=f1e206]: Analitika
+      - link " Analitika" [ref=f1e207] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f1e208]: 
+        - generic [ref=f1e209]: Analitika
+      - link " Kupci" [ref=f1e210] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=f1e211]: 
+        - generic [ref=f1e212]: Kupci
+      - link " Korisnička analitika" [ref=f1e213] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f1e214]: 
+        - generic [ref=f1e215]: Korisnička analitika
+      - generic [ref=f1e216]: Sustav
+      - link " Timski računi" [ref=f1e217] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f1e218]: 
+        - generic [ref=f1e219]: Timski računi
+      - link " Zapisi" [ref=f1e220] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f1e221]: 
+        - generic [ref=f1e222]: Zapisi
+      - link " Baza podataka" [ref=f1e223] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f1e224]: 
+        - generic [ref=f1e225]: Baza podataka
+      - link " Postavke" [ref=f1e226] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=f1e227]: 
+        - generic [ref=f1e228]: Postavke
+    - generic [ref=f1e229]:
+      - generic [ref=f1e230]:
+        - generic [ref=f1e231]: 
+        - generic [ref=f1e232]:
+          - generic [ref=f1e233]: Centralizirani Logging
+          - generic [ref=f1e234]: "Zadnja objava: 14:57"
+      - generic [ref=f1e235]:
+        - generic [ref=f1e236]: "N"
+        - generic [ref=f1e237]:
+          - button "Odjava" [ref=f1e238] [cursor=pointer]
+          - generic [ref=f1e239]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=f1e240]:
+        - generic [ref=f1e241]: HR/EN
+        - generic [ref=f1e242]:
+          - button "HR" [ref=f1e243] [cursor=pointer]
+          - button "EN" [ref=f1e244] [cursor=pointer]
+  - main [ref=f1e9]:
+    - generic [ref=f1e10]:
+      - generic [ref=f1e11]:
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: Stadion
+          - heading "Sezone" [level=1] [ref=f1e14]
+          - paragraph [ref=f1e15]: Grupirajte utakmice u sezone (npr. 2026/2027) i prodavajte sezonske ulaznice za njih.
+        - button " Nova sezona" [ref=f1e17] [cursor=pointer]:
+          - generic [ref=f1e18]: 
+          - generic [ref=f1e19]: Nova sezona
+      - generic [ref=f1e20]:
+        - article [ref=f1e21]:
+          - generic [ref=f1e22]:
+            - generic [ref=f1e23]: Sezonske ulaznice
+            - generic [ref=f1e24]: 
+          - generic [ref=f1e25]: "316"
+          - generic [ref=f1e26]: Aktivne u svim sezonama
+        - article [ref=f1e28]:
+          - generic [ref=f1e29]:
+            - generic [ref=f1e30]: Prihod od pretplata
+            - generic [ref=f1e31]: 
+          - generic [ref=f1e32]: €26.400
+          - generic [ref=f1e33]: Od aktivnih sezonskih ulaznica
+        - article [ref=f1e35]:
+          - generic [ref=f1e36]:
+            - generic [ref=f1e37]: Prosj. cijena ulaznice
+            - generic [ref=f1e38]: 
+          - generic [ref=f1e39]: €83,54
+          - generic [ref=f1e40]: Po aktivnoj ulaznici
+        - article [ref=f1e42]:
+          - generic [ref=f1e43]:
+            - generic [ref=f1e44]: Popunjenost sezonom
+            - generic [ref=f1e45]: 
+          - generic [ref=f1e46]: 35 %
+          - generic [ref=f1e47]: 140 od 398 sjedala stadiona
+      - generic [ref=f1e49]:
+        - heading "Usporedba sezona" [level=2] [ref=f1e51]
+        - generic [ref=f1e53]:
+          - generic [ref=f1e54]:
+            - generic [ref=f1e55]: Prihod po sezoni (€)
+            - img "Prihod po sezoni (€)" [ref=f1e56]:
+              - generic "2025/26 · €26.400" [ref=f1e57]
+              - generic [ref=f1e58]: €26.400
+              - generic "2025/26 · €6.384" [ref=f1e59]
+              - generic [ref=f1e60]: €6.384
+              - generic "2026/2027 · €0"
+              - generic [ref=f1e61]: €0
+              - generic "2026/2027 · €354" [ref=f1e62]
+              - generic [ref=f1e63]: €354
+              - generic [ref=f1e64]: 2025/26
+              - generic [ref=f1e65]: 2026/2027
+            - generic [ref=f1e66]:
+              - generic [ref=f1e67]: Prihod od pretplata
+              - generic [ref=f1e69]: Prihod od pića
+          - generic [ref=f1e71]:
+            - generic [ref=f1e72]: Popunjenost sezonskim ulaznicama
+            - img "Popunjenost sezonskim ulaznicama" [ref=f1e73]:
+              - generic "2025/26 · 44%" [ref=f1e74]
+              - generic [ref=f1e75]: 44%
+              - generic "2026/2027 · 35%" [ref=f1e76]
+              - generic [ref=f1e77]: 35%
+              - generic [ref=f1e78]: 2025/26
+              - generic [ref=f1e79]: 2026/2027
+          - generic [ref=f1e80]:
+            - generic [ref=f1e81]: Prodano pića po sezoni
+            - img "Prodano pića po sezoni" [ref=f1e82]:
+              - generic "2025/26 · 1.634" [ref=f1e83]
+              - generic [ref=f1e84]: "1.634"
+              - generic "2026/2027 · 93" [ref=f1e85]
+              - generic [ref=f1e86]: "93"
+              - generic [ref=f1e87]: 2025/26
+              - generic [ref=f1e88]: 2026/2027
+      - generic [ref=f1e89]:
+        - heading "Sve sezone 2" [level=2] [ref=f1e91]:
+          - text: Sve sezone
+          - generic [ref=f1e92]: "2"
+        - generic [ref=f1e93]:
+          - table [ref=f1e94]:
+            - rowgroup [ref=f1e95]:
+              - row [ref=f1e96]:
+                - columnheader "Sezona" [ref=f1e97] [cursor=pointer]
+                - columnheader "Razdoblje" [ref=f1e98] [cursor=pointer]
+                - columnheader "Trenutna" [ref=f1e99] [cursor=pointer]
+                - columnheader "Događaji" [ref=f1e100] [cursor=pointer]
+                - columnheader "Ulaznice" [ref=f1e101] [cursor=pointer]
+                - columnheader "Prihod" [ref=f1e102] [cursor=pointer]
+                - columnheader "Radnje" [ref=f1e103]
+            - rowgroup [ref=f1e104]:
+              - row [ref=f1e105]:
+                - cell " 2026/2027· TicketingSimulator" [ref=f1e106]:
+                  - button "" [ref=f1e107] [cursor=pointer]
+                  - strong [ref=f1e109]: 2026/2027
+                  - generic [ref=f1e110]: · TicketingSimulator
+                - cell "2026-08-01 → 2027-05-31" [ref=f1e111]
+                - cell [ref=f1e112]
+                - cell "7" [ref=f1e115]
+                - cell "140" [ref=f1e116]
+                - cell "€0" [ref=f1e117]
+                - cell [ref=f1e118]:
+                  - button " Ulaznice (140)" [active] [ref=f1e119] [cursor=pointer]:
+                    - generic [ref=f1e120]: 
+                    - generic [ref=f1e121]: Ulaznice (140)
+                  - button " Uredi" [ref=f1e122] [cursor=pointer]:
+                    - generic [ref=f1e123]: 
+                    - generic [ref=f1e124]: Uredi
+                  - button " Obriši" [ref=f1e125] [cursor=pointer]:
+                    - generic [ref=f1e126]: 
+                    - generic [ref=f1e127]: Obriši
+              - row [ref=f1e128]:
+                - cell " 2025/26· SuperSport HNL 2025/26" [ref=f1e129]:
+                  - button "" [ref=f1e130] [cursor=pointer]
+                  - strong [ref=f1e132]: 2025/26
+                  - generic [ref=f1e133]: · SuperSport HNL 2025/26
+                - cell "2025-08-01 → 2026-05-31" [ref=f1e134]
+                - cell [ref=f1e135]
+                - cell "18" [ref=f1e136]
+                - cell "176" [ref=f1e137]
+                - cell "€26.400" [ref=f1e138]
+                - cell [ref=f1e139]:
+                  - button " Ulaznice (176)" [ref=f1e140] [cursor=pointer]:
+                    - generic [ref=f1e141]: 
+                    - generic [ref=f1e142]: Ulaznice (176)
+                  - button " Uredi" [ref=f1e143] [cursor=pointer]:
+                    - generic [ref=f1e144]: 
+                    - generic [ref=f1e145]: Uredi
+                  - button " Obriši" [ref=f1e146] [cursor=pointer]:
+                    - generic [ref=f1e147]: 
+                    - generic [ref=f1e148]: Obriši
+          - generic [ref=f1e150]:
+            - paragraph [ref=f1e151]: Prikaz 1 do 2 od 2
+            - generic [ref=f1e152]:
+              - generic [ref=f1e153]: Prikaži
+              - combobox "Prikaži" [ref=f1e154] [cursor=pointer]:
+                - option "10"
+                - option "20" [selected]
+                - option "50"
+                - option "100"
+    - dialog [ref=f1e245]:
+      - generic [ref=f1e246]:
+        - generic [ref=f1e247]:
+          - heading " Sezonske ulaznice — 2026/2027" [level=5] [ref=f1e248]:
+            - generic [ref=f1e249]: 
+            - text: Sezonske ulaznice — 2026/2027
+          - button [ref=f1e250] [cursor=pointer]
+        - generic [ref=f1e251]:
+          - paragraph [ref=f1e252]: 140 ulaznica u 1 sektora.
+          - table [ref=f1e253]:
+            - rowgroup [ref=f1e254]:
+              - row [ref=f1e255]:
+                - columnheader "Sektor" [ref=f1e256] [cursor=pointer]
+                - columnheader "Sjedalo" [ref=f1e257] [cursor=pointer]
+                - columnheader "Vlasnik" [ref=f1e258] [cursor=pointer]
+                - columnheader "Kupljeno" [ref=f1e259] [cursor=pointer]
+                - columnheader "Izvor" [ref=f1e260] [cursor=pointer]
+                - columnheader "QR" [ref=f1e261]
+            - rowgroup [ref=f1e262]:
+              - row [ref=f1e263]:
+                - cell "SECT1 · 140 sjedala" [ref=f1e264]:
+                  - strong [ref=f1e265]: SECT1
+                  - generic [ref=f1e266]: · 140 sjedala
+              - row [ref=f1e267]:
+                - cell "SECT1" [ref=f1e268]
+                - cell "Red 1, Sjedalo 1" [ref=f1e269]
+                - cell "Ivan Horvat· nebojsa.medancic+Ivan.Horvat@gmail.com" [ref=f1e270]:
+                  - text: Ivan Horvat
+                  - generic [ref=f1e271]: · nebojsa.medancic+Ivan.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e272]
+                - cell "TicketingSimulator" [ref=f1e273]
+                - cell [ref=f1e274]:
+                  - button " QR" [ref=f1e275] [cursor=pointer]:
+                    - generic [ref=f1e276]: 
+                    - generic [ref=f1e277]: QR
+              - row [ref=f1e278]:
+                - cell "SECT1" [ref=f1e279]
+                - cell "Red 1, Sjedalo 2" [ref=f1e280]
+                - cell "Marko Horvat· nebojsa.medancic+Marko.Horvat@gmail.com" [ref=f1e281]:
+                  - text: Marko Horvat
+                  - generic [ref=f1e282]: · nebojsa.medancic+Marko.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e283]
+                - cell "TicketingSimulator" [ref=f1e284]
+                - cell [ref=f1e285]:
+                  - button " QR" [ref=f1e286] [cursor=pointer]:
+                    - generic [ref=f1e287]: 
+                    - generic [ref=f1e288]: QR
+              - row [ref=f1e289]:
+                - cell "SECT1" [ref=f1e290]
+                - cell "Red 1, Sjedalo 3" [ref=f1e291]
+                - cell "Ana Horvat· nebojsa.medancic+Ana.Horvat@gmail.com" [ref=f1e292]:
+                  - text: Ana Horvat
+                  - generic [ref=f1e293]: · nebojsa.medancic+Ana.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e294]
+                - cell "TicketingSimulator" [ref=f1e295]
+                - cell [ref=f1e296]:
+                  - button " QR" [ref=f1e297] [cursor=pointer]:
+                    - generic [ref=f1e298]: 
+                    - generic [ref=f1e299]: QR
+              - row [ref=f1e300]:
+                - cell "SECT1" [ref=f1e301]
+                - cell "Red 1, Sjedalo 4" [ref=f1e302]
+                - cell "Josip Horvat· nebojsa.medancic+Josip.Horvat@gmail.com" [ref=f1e303]:
+                  - text: Josip Horvat
+                  - generic [ref=f1e304]: · nebojsa.medancic+Josip.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e305]
+                - cell "TicketingSimulator" [ref=f1e306]
+                - cell [ref=f1e307]:
+                  - button " QR" [ref=f1e308] [cursor=pointer]:
+                    - generic [ref=f1e309]: 
+                    - generic [ref=f1e310]: QR
+              - row [ref=f1e311]:
+                - cell "SECT1" [ref=f1e312]
+                - cell "Red 1, Sjedalo 5" [ref=f1e313]
+                - cell "Petra Horvat· nebojsa.medancic+Petra.Horvat@gmail.com" [ref=f1e314]:
+                  - text: Petra Horvat
+                  - generic [ref=f1e315]: · nebojsa.medancic+Petra.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e316]
+                - cell "TicketingSimulator" [ref=f1e317]
+                - cell [ref=f1e318]:
+                  - button " QR" [ref=f1e319] [cursor=pointer]:
+                    - generic [ref=f1e320]: 
+                    - generic [ref=f1e321]: QR
+              - row [ref=f1e322]:
+                - cell "SECT1" [ref=f1e323]
+                - cell "Red 1, Sjedalo 6" [ref=f1e324]
+                - cell "Luka Horvat· nebojsa.medancic+Luka.Horvat@gmail.com" [ref=f1e325]:
+                  - text: Luka Horvat
+                  - generic [ref=f1e326]: · nebojsa.medancic+Luka.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e327]
+                - cell "TicketingSimulator" [ref=f1e328]
+                - cell [ref=f1e329]:
+                  - button " QR" [ref=f1e330] [cursor=pointer]:
+                    - generic [ref=f1e331]: 
+                    - generic [ref=f1e332]: QR
+              - row [ref=f1e333]:
+                - cell "SECT1" [ref=f1e334]
+                - cell "Red 1, Sjedalo 7" [ref=f1e335]
+                - cell "Maja Horvat· nebojsa.medancic+Maja.Horvat@gmail.com" [ref=f1e336]:
+                  - text: Maja Horvat
+                  - generic [ref=f1e337]: · nebojsa.medancic+Maja.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e338]
+                - cell "TicketingSimulator" [ref=f1e339]
+                - cell [ref=f1e340]:
+                  - button " QR" [ref=f1e341] [cursor=pointer]:
+                    - generic [ref=f1e342]: 
+                    - generic [ref=f1e343]: QR
+              - row [ref=f1e344]:
+                - cell "SECT1" [ref=f1e345]
+                - cell "Red 1, Sjedalo 8" [ref=f1e346]
+                - cell "Ante Horvat· nebojsa.medancic+Ante.Horvat@gmail.com" [ref=f1e347]:
+                  - text: Ante Horvat
+                  - generic [ref=f1e348]: · nebojsa.medancic+Ante.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e349]
+                - cell "TicketingSimulator" [ref=f1e350]
+                - cell [ref=f1e351]:
+                  - button " QR" [ref=f1e352] [cursor=pointer]:
+                    - generic [ref=f1e353]: 
+                    - generic [ref=f1e354]: QR
+              - row [ref=f1e355]:
+                - cell "SECT1" [ref=f1e356]
+                - cell "Red 1, Sjedalo 9" [ref=f1e357]
+                - cell "Ivana Horvat· nebojsa.medancic+Ivana.Horvat@gmail.com" [ref=f1e358]:
+                  - text: Ivana Horvat
+                  - generic [ref=f1e359]: · nebojsa.medancic+Ivana.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e360]
+                - cell "TicketingSimulator" [ref=f1e361]
+                - cell [ref=f1e362]:
+                  - button " QR" [ref=f1e363] [cursor=pointer]:
+                    - generic [ref=f1e364]: 
+                    - generic [ref=f1e365]: QR
+              - row [ref=f1e366]:
+                - cell "SECT1" [ref=f1e367]
+                - cell "Red 1, Sjedalo 10" [ref=f1e368]
+                - cell "Tomislav Horvat· nebojsa.medancic+Tomislav.Horvat@gmail.com" [ref=f1e369]:
+                  - text: Tomislav Horvat
+                  - generic [ref=f1e370]: · nebojsa.medancic+Tomislav.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e371]
+                - cell "TicketingSimulator" [ref=f1e372]
+                - cell [ref=f1e373]:
+                  - button " QR" [ref=f1e374] [cursor=pointer]:
+                    - generic [ref=f1e375]: 
+                    - generic [ref=f1e376]: QR
+              - row [ref=f1e377]:
+                - cell "SECT1" [ref=f1e378]
+                - cell "Red 1, Sjedalo 11" [ref=f1e379]
+                - cell "Sara Horvat· nebojsa.medancic+Sara.Horvat@gmail.com" [ref=f1e380]:
+                  - text: Sara Horvat
+                  - generic [ref=f1e381]: · nebojsa.medancic+Sara.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e382]
+                - cell "TicketingSimulator" [ref=f1e383]
+                - cell [ref=f1e384]:
+                  - button " QR" [ref=f1e385] [cursor=pointer]:
+                    - generic [ref=f1e386]: 
+                    - generic [ref=f1e387]: QR
+              - row [ref=f1e388]:
+                - cell "SECT1" [ref=f1e389]
+                - cell "Red 1, Sjedalo 12" [ref=f1e390]
+                - cell "Nikola Horvat· nebojsa.medancic+Nikola.Horvat@gmail.com" [ref=f1e391]:
+                  - text: Nikola Horvat
+                  - generic [ref=f1e392]: · nebojsa.medancic+Nikola.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e393]
+                - cell "TicketingSimulator" [ref=f1e394]
+                - cell [ref=f1e395]:
+                  - button " QR" [ref=f1e396] [cursor=pointer]:
+                    - generic [ref=f1e397]: 
+                    - generic [ref=f1e398]: QR
+              - row [ref=f1e399]:
+                - cell "SECT1" [ref=f1e400]
+                - cell "Red 1, Sjedalo 13" [ref=f1e401]
+                - cell "Marija Horvat· nebojsa.medancic+Marija.Horvat@gmail.com" [ref=f1e402]:
+                  - text: Marija Horvat
+                  - generic [ref=f1e403]: · nebojsa.medancic+Marija.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e404]
+                - cell "TicketingSimulator" [ref=f1e405]
+                - cell [ref=f1e406]:
+                  - button " QR" [ref=f1e407] [cursor=pointer]:
+                    - generic [ref=f1e408]: 
+                    - generic [ref=f1e409]: QR
+              - row [ref=f1e410]:
+                - cell "SECT1" [ref=f1e411]
+                - cell "Red 1, Sjedalo 14" [ref=f1e412]
+                - cell "Filip Horvat· nebojsa.medancic+Filip.Horvat@gmail.com" [ref=f1e413]:
+                  - text: Filip Horvat
+                  - generic [ref=f1e414]: · nebojsa.medancic+Filip.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e415]
+                - cell "TicketingSimulator" [ref=f1e416]
+                - cell [ref=f1e417]:
+                  - button " QR" [ref=f1e418] [cursor=pointer]:
+                    - generic [ref=f1e419]: 
+                    - generic [ref=f1e420]: QR
+              - row [ref=f1e421]:
+                - cell "SECT1" [ref=f1e422]
+                - cell "Red 1, Sjedalo 15" [ref=f1e423]
+                - cell "Katarina Horvat· nebojsa.medancic+Katarina.Horvat@gmail.com" [ref=f1e424]:
+                  - text: Katarina Horvat
+                  - generic [ref=f1e425]: · nebojsa.medancic+Katarina.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e426]
+                - cell "TicketingSimulator" [ref=f1e427]
+                - cell [ref=f1e428]:
+                  - button " QR" [ref=f1e429] [cursor=pointer]:
+                    - generic [ref=f1e430]: 
+                    - generic [ref=f1e431]: QR
+              - row [ref=f1e432]:
+                - cell "SECT1" [ref=f1e433]
+                - cell "Red 1, Sjedalo 16" [ref=f1e434]
+                - cell "Domagoj Horvat· nebojsa.medancic+Domagoj.Horvat@gmail.com" [ref=f1e435]:
+                  - text: Domagoj Horvat
+                  - generic [ref=f1e436]: · nebojsa.medancic+Domagoj.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e437]
+                - cell "TicketingSimulator" [ref=f1e438]
+                - cell [ref=f1e439]:
+                  - button " QR" [ref=f1e440] [cursor=pointer]:
+                    - generic [ref=f1e441]: 
+                    - generic [ref=f1e442]: QR
+              - row [ref=f1e443]:
+                - cell "SECT1" [ref=f1e444]
+                - cell "Red 1, Sjedalo 17" [ref=f1e445]
+                - cell "Lucija Horvat· nebojsa.medancic+Lucija.Horvat@gmail.com" [ref=f1e446]:
+                  - text: Lucija Horvat
+                  - generic [ref=f1e447]: · nebojsa.medancic+Lucija.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e448]
+                - cell "TicketingSimulator" [ref=f1e449]
+                - cell [ref=f1e450]:
+                  - button " QR" [ref=f1e451] [cursor=pointer]:
+                    - generic [ref=f1e452]: 
+                    - generic [ref=f1e453]: QR
+              - row [ref=f1e454]:
+                - cell "SECT1" [ref=f1e455]
+                - cell "Red 1, Sjedalo 18" [ref=f1e456]
+                - cell "Matej Horvat· nebojsa.medancic+Matej.Horvat@gmail.com" [ref=f1e457]:
+                  - text: Matej Horvat
+                  - generic [ref=f1e458]: · nebojsa.medancic+Matej.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e459]
+                - cell "TicketingSimulator" [ref=f1e460]
+                - cell [ref=f1e461]:
+                  - button " QR" [ref=f1e462] [cursor=pointer]:
+                    - generic [ref=f1e463]: 
+                    - generic [ref=f1e464]: QR
+              - row [ref=f1e465]:
+                - cell "SECT1" [ref=f1e466]
+                - cell "Red 1, Sjedalo 19" [ref=f1e467]
+                - cell "Dora Horvat· nebojsa.medancic+Dora.Horvat@gmail.com" [ref=f1e468]:
+                  - text: Dora Horvat
+                  - generic [ref=f1e469]: · nebojsa.medancic+Dora.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e470]
+                - cell "TicketingSimulator" [ref=f1e471]
+                - cell [ref=f1e472]:
+                  - button " QR" [ref=f1e473] [cursor=pointer]:
+                    - generic [ref=f1e474]: 
+                    - generic [ref=f1e475]: QR
+              - row [ref=f1e476]:
+                - cell "SECT1" [ref=f1e477]
+                - cell "Red 1, Sjedalo 20" [ref=f1e478]
+                - cell "Stjepan Horvat· nebojsa.medancic+Stjepan.Horvat@gmail.com" [ref=f1e479]:
+                  - text: Stjepan Horvat
+                  - generic [ref=f1e480]: · nebojsa.medancic+Stjepan.Horvat@gmail.com
+                - cell "2026-07-04" [ref=f1e481]
+                - cell "TicketingSimulator" [ref=f1e482]
+                - cell [ref=f1e483]:
+                  - button " QR" [ref=f1e484] [cursor=pointer]:
+                    - generic [ref=f1e485]: 
+                    - generic [ref=f1e486]: QR
+              - row [ref=f1e487]:
+                - cell "SECT1" [ref=f1e488]
+                - cell "Red 2, Sjedalo 1" [ref=f1e489]
+                - cell "Ivan Novak· nebojsa.medancic+Ivan.Novak@gmail.com" [ref=f1e490]:
+                  - text: Ivan Novak
+                  - generic [ref=f1e491]: · nebojsa.medancic+Ivan.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e492]
+                - cell "TicketingSimulator" [ref=f1e493]
+                - cell [ref=f1e494]:
+                  - button " QR" [ref=f1e495] [cursor=pointer]:
+                    - generic [ref=f1e496]: 
+                    - generic [ref=f1e497]: QR
+              - row [ref=f1e498]:
+                - cell "SECT1" [ref=f1e499]
+                - cell "Red 2, Sjedalo 2" [ref=f1e500]
+                - cell "Marko Novak· nebojsa.medancic+Marko.Novak@gmail.com" [ref=f1e501]:
+                  - text: Marko Novak
+                  - generic [ref=f1e502]: · nebojsa.medancic+Marko.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e503]
+                - cell "TicketingSimulator" [ref=f1e504]
+                - cell [ref=f1e505]:
+                  - button " QR" [ref=f1e506] [cursor=pointer]:
+                    - generic [ref=f1e507]: 
+                    - generic [ref=f1e508]: QR
+              - row [ref=f1e509]:
+                - cell "SECT1" [ref=f1e510]
+                - cell "Red 2, Sjedalo 3" [ref=f1e511]
+                - cell "Ana Novak· nebojsa.medancic+Ana.Novak@gmail.com" [ref=f1e512]:
+                  - text: Ana Novak
+                  - generic [ref=f1e513]: · nebojsa.medancic+Ana.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e514]
+                - cell "TicketingSimulator" [ref=f1e515]
+                - cell [ref=f1e516]:
+                  - button " QR" [ref=f1e517] [cursor=pointer]:
+                    - generic [ref=f1e518]: 
+                    - generic [ref=f1e519]: QR
+              - row [ref=f1e520]:
+                - cell "SECT1" [ref=f1e521]
+                - cell "Red 2, Sjedalo 4" [ref=f1e522]
+                - cell "Josip Novak· nebojsa.medancic+Josip.Novak@gmail.com" [ref=f1e523]:
+                  - text: Josip Novak
+                  - generic [ref=f1e524]: · nebojsa.medancic+Josip.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e525]
+                - cell "TicketingSimulator" [ref=f1e526]
+                - cell [ref=f1e527]:
+                  - button " QR" [ref=f1e528] [cursor=pointer]:
+                    - generic [ref=f1e529]: 
+                    - generic [ref=f1e530]: QR
+              - row [ref=f1e531]:
+                - cell "SECT1" [ref=f1e532]
+                - cell "Red 2, Sjedalo 5" [ref=f1e533]
+                - cell "Petra Novak· nebojsa.medancic+Petra.Novak@gmail.com" [ref=f1e534]:
+                  - text: Petra Novak
+                  - generic [ref=f1e535]: · nebojsa.medancic+Petra.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e536]
+                - cell "TicketingSimulator" [ref=f1e537]
+                - cell [ref=f1e538]:
+                  - button " QR" [ref=f1e539] [cursor=pointer]:
+                    - generic [ref=f1e540]: 
+                    - generic [ref=f1e541]: QR
+              - row [ref=f1e542]:
+                - cell "SECT1" [ref=f1e543]
+                - cell "Red 2, Sjedalo 6" [ref=f1e544]
+                - cell "Luka Novak· nebojsa.medancic+Luka.Novak@gmail.com" [ref=f1e545]:
+                  - text: Luka Novak
+                  - generic [ref=f1e546]: · nebojsa.medancic+Luka.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e547]
+                - cell "TicketingSimulator" [ref=f1e548]
+                - cell [ref=f1e549]:
+                  - button " QR" [ref=f1e550] [cursor=pointer]:
+                    - generic [ref=f1e551]: 
+                    - generic [ref=f1e552]: QR
+              - row [ref=f1e553]:
+                - cell "SECT1" [ref=f1e554]
+                - cell "Red 2, Sjedalo 7" [ref=f1e555]
+                - cell "Maja Novak· nebojsa.medancic+Maja.Novak@gmail.com" [ref=f1e556]:
+                  - text: Maja Novak
+                  - generic [ref=f1e557]: · nebojsa.medancic+Maja.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e558]
+                - cell "TicketingSimulator" [ref=f1e559]
+                - cell [ref=f1e560]:
+                  - button " QR" [ref=f1e561] [cursor=pointer]:
+                    - generic [ref=f1e562]: 
+                    - generic [ref=f1e563]: QR
+              - row [ref=f1e564]:
+                - cell "SECT1" [ref=f1e565]
+                - cell "Red 2, Sjedalo 8" [ref=f1e566]
+                - cell "Ante Novak· nebojsa.medancic+Ante.Novak@gmail.com" [ref=f1e567]:
+                  - text: Ante Novak
+                  - generic [ref=f1e568]: · nebojsa.medancic+Ante.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e569]
+                - cell "TicketingSimulator" [ref=f1e570]
+                - cell [ref=f1e571]:
+                  - button " QR" [ref=f1e572] [cursor=pointer]:
+                    - generic [ref=f1e573]: 
+                    - generic [ref=f1e574]: QR
+              - row [ref=f1e575]:
+                - cell "SECT1" [ref=f1e576]
+                - cell "Red 2, Sjedalo 9" [ref=f1e577]
+                - cell "Ivana Novak· nebojsa.medancic+Ivana.Novak@gmail.com" [ref=f1e578]:
+                  - text: Ivana Novak
+                  - generic [ref=f1e579]: · nebojsa.medancic+Ivana.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e580]
+                - cell "TicketingSimulator" [ref=f1e581]
+                - cell [ref=f1e582]:
+                  - button " QR" [ref=f1e583] [cursor=pointer]:
+                    - generic [ref=f1e584]: 
+                    - generic [ref=f1e585]: QR
+              - row [ref=f1e586]:
+                - cell "SECT1" [ref=f1e587]
+                - cell "Red 2, Sjedalo 10" [ref=f1e588]
+                - cell "Tomislav Novak· nebojsa.medancic+Tomislav.Novak@gmail.com" [ref=f1e589]:
+                  - text: Tomislav Novak
+                  - generic [ref=f1e590]: · nebojsa.medancic+Tomislav.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e591]
+                - cell "TicketingSimulator" [ref=f1e592]
+                - cell [ref=f1e593]:
+                  - button " QR" [ref=f1e594] [cursor=pointer]:
+                    - generic [ref=f1e595]: 
+                    - generic [ref=f1e596]: QR
+              - row [ref=f1e597]:
+                - cell "SECT1" [ref=f1e598]
+                - cell "Red 2, Sjedalo 11" [ref=f1e599]
+                - cell "Sara Novak· nebojsa.medancic+Sara.Novak@gmail.com" [ref=f1e600]:
+                  - text: Sara Novak
+                  - generic [ref=f1e601]: · nebojsa.medancic+Sara.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e602]
+                - cell "TicketingSimulator" [ref=f1e603]
+                - cell [ref=f1e604]:
+                  - button " QR" [ref=f1e605] [cursor=pointer]:
+                    - generic [ref=f1e606]: 
+                    - generic [ref=f1e607]: QR
+              - row [ref=f1e608]:
+                - cell "SECT1" [ref=f1e609]
+                - cell "Red 2, Sjedalo 12" [ref=f1e610]
+                - cell "Nikola Novak· nebojsa.medancic+Nikola.Novak@gmail.com" [ref=f1e611]:
+                  - text: Nikola Novak
+                  - generic [ref=f1e612]: · nebojsa.medancic+Nikola.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e613]
+                - cell "TicketingSimulator" [ref=f1e614]
+                - cell [ref=f1e615]:
+                  - button " QR" [ref=f1e616] [cursor=pointer]:
+                    - generic [ref=f1e617]: 
+                    - generic [ref=f1e618]: QR
+              - row [ref=f1e619]:
+                - cell "SECT1" [ref=f1e620]
+                - cell "Red 2, Sjedalo 13" [ref=f1e621]
+                - cell "Marija Novak· nebojsa.medancic+Marija.Novak@gmail.com" [ref=f1e622]:
+                  - text: Marija Novak
+                  - generic [ref=f1e623]: · nebojsa.medancic+Marija.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e624]
+                - cell "TicketingSimulator" [ref=f1e625]
+                - cell [ref=f1e626]:
+                  - button " QR" [ref=f1e627] [cursor=pointer]:
+                    - generic [ref=f1e628]: 
+                    - generic [ref=f1e629]: QR
+              - row [ref=f1e630]:
+                - cell "SECT1" [ref=f1e631]
+                - cell "Red 2, Sjedalo 14" [ref=f1e632]
+                - cell "Filip Novak· nebojsa.medancic+Filip.Novak@gmail.com" [ref=f1e633]:
+                  - text: Filip Novak
+                  - generic [ref=f1e634]: · nebojsa.medancic+Filip.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e635]
+                - cell "TicketingSimulator" [ref=f1e636]
+                - cell [ref=f1e637]:
+                  - button " QR" [ref=f1e638] [cursor=pointer]:
+                    - generic [ref=f1e639]: 
+                    - generic [ref=f1e640]: QR
+              - row [ref=f1e641]:
+                - cell "SECT1" [ref=f1e642]
+                - cell "Red 2, Sjedalo 15" [ref=f1e643]
+                - cell "Katarina Novak· nebojsa.medancic+Katarina.Novak@gmail.com" [ref=f1e644]:
+                  - text: Katarina Novak
+                  - generic [ref=f1e645]: · nebojsa.medancic+Katarina.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e646]
+                - cell "TicketingSimulator" [ref=f1e647]
+                - cell [ref=f1e648]:
+                  - button " QR" [ref=f1e649] [cursor=pointer]:
+                    - generic [ref=f1e650]: 
+                    - generic [ref=f1e651]: QR
+              - row [ref=f1e652]:
+                - cell "SECT1" [ref=f1e653]
+                - cell "Red 2, Sjedalo 16" [ref=f1e654]
+                - cell "Domagoj Novak· nebojsa.medancic+Domagoj.Novak@gmail.com" [ref=f1e655]:
+                  - text: Domagoj Novak
+                  - generic [ref=f1e656]: · nebojsa.medancic+Domagoj.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e657]
+                - cell "TicketingSimulator" [ref=f1e658]
+                - cell [ref=f1e659]:
+                  - button " QR" [ref=f1e660] [cursor=pointer]:
+                    - generic [ref=f1e661]: 
+                    - generic [ref=f1e662]: QR
+              - row [ref=f1e663]:
+                - cell "SECT1" [ref=f1e664]
+                - cell "Red 2, Sjedalo 17" [ref=f1e665]
+                - cell "Lucija Novak· nebojsa.medancic+Lucija.Novak@gmail.com" [ref=f1e666]:
+                  - text: Lucija Novak
+                  - generic [ref=f1e667]: · nebojsa.medancic+Lucija.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e668]
+                - cell "TicketingSimulator" [ref=f1e669]
+                - cell [ref=f1e670]:
+                  - button " QR" [ref=f1e671] [cursor=pointer]:
+                    - generic [ref=f1e672]: 
+                    - generic [ref=f1e673]: QR
+              - row [ref=f1e674]:
+                - cell "SECT1" [ref=f1e675]
+                - cell "Red 2, Sjedalo 18" [ref=f1e676]
+                - cell "Matej Novak· nebojsa.medancic+Matej.Novak@gmail.com" [ref=f1e677]:
+                  - text: Matej Novak
+                  - generic [ref=f1e678]: · nebojsa.medancic+Matej.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e679]
+                - cell "TicketingSimulator" [ref=f1e680]
+                - cell [ref=f1e681]:
+                  - button " QR" [ref=f1e682] [cursor=pointer]:
+                    - generic [ref=f1e683]: 
+                    - generic [ref=f1e684]: QR
+              - row [ref=f1e685]:
+                - cell "SECT1" [ref=f1e686]
+                - cell "Red 2, Sjedalo 19" [ref=f1e687]
+                - cell "Dora Novak· nebojsa.medancic+Dora.Novak@gmail.com" [ref=f1e688]:
+                  - text: Dora Novak
+                  - generic [ref=f1e689]: · nebojsa.medancic+Dora.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e690]
+                - cell "TicketingSimulator" [ref=f1e691]
+                - cell [ref=f1e692]:
+                  - button " QR" [ref=f1e693] [cursor=pointer]:
+                    - generic [ref=f1e694]: 
+                    - generic [ref=f1e695]: QR
+              - row [ref=f1e696]:
+                - cell "SECT1" [ref=f1e697]
+                - cell "Red 2, Sjedalo 20" [ref=f1e698]
+                - cell "Stjepan Novak· nebojsa.medancic+Stjepan.Novak@gmail.com" [ref=f1e699]:
+                  - text: Stjepan Novak
+                  - generic [ref=f1e700]: · nebojsa.medancic+Stjepan.Novak@gmail.com
+                - cell "2026-07-04" [ref=f1e701]
+                - cell "TicketingSimulator" [ref=f1e702]
+                - cell [ref=f1e703]:
+                  - button " QR" [ref=f1e704] [cursor=pointer]:
+                    - generic [ref=f1e705]: 
+                    - generic [ref=f1e706]: QR
+              - row [ref=f1e707]:
+                - cell "SECT1" [ref=f1e708]
+                - cell "Red 3, Sjedalo 1" [ref=f1e709]
+                - cell "Ivan Kovačević· nebojsa.medancic+Ivan.Kovacevic@gmail.com" [ref=f1e710]:
+                  - text: Ivan Kovačević
+                  - generic [ref=f1e711]: · nebojsa.medancic+Ivan.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e712]
+                - cell "TicketingSimulator" [ref=f1e713]
+                - cell [ref=f1e714]:
+                  - button " QR" [ref=f1e715] [cursor=pointer]:
+                    - generic [ref=f1e716]: 
+                    - generic [ref=f1e717]: QR
+              - row [ref=f1e718]:
+                - cell "SECT1" [ref=f1e719]
+                - cell "Red 3, Sjedalo 2" [ref=f1e720]
+                - cell "Marko Kovačević· nebojsa.medancic+Marko.Kovacevic@gmail.com" [ref=f1e721]:
+                  - text: Marko Kovačević
+                  - generic [ref=f1e722]: · nebojsa.medancic+Marko.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e723]
+                - cell "TicketingSimulator" [ref=f1e724]
+                - cell [ref=f1e725]:
+                  - button " QR" [ref=f1e726] [cursor=pointer]:
+                    - generic [ref=f1e727]: 
+                    - generic [ref=f1e728]: QR
+              - row [ref=f1e729]:
+                - cell "SECT1" [ref=f1e730]
+                - cell "Red 3, Sjedalo 3" [ref=f1e731]
+                - cell "Ana Kovačević· nebojsa.medancic+Ana.Kovacevic@gmail.com" [ref=f1e732]:
+                  - text: Ana Kovačević
+                  - generic [ref=f1e733]: · nebojsa.medancic+Ana.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e734]
+                - cell "TicketingSimulator" [ref=f1e735]
+                - cell [ref=f1e736]:
+                  - button " QR" [ref=f1e737] [cursor=pointer]:
+                    - generic [ref=f1e738]: 
+                    - generic [ref=f1e739]: QR
+              - row [ref=f1e740]:
+                - cell "SECT1" [ref=f1e741]
+                - cell "Red 3, Sjedalo 4" [ref=f1e742]
+                - cell "Josip Kovačević· nebojsa.medancic+Josip.Kovacevic@gmail.com" [ref=f1e743]:
+                  - text: Josip Kovačević
+                  - generic [ref=f1e744]: · nebojsa.medancic+Josip.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e745]
+                - cell "TicketingSimulator" [ref=f1e746]
+                - cell [ref=f1e747]:
+                  - button " QR" [ref=f1e748] [cursor=pointer]:
+                    - generic [ref=f1e749]: 
+                    - generic [ref=f1e750]: QR
+              - row [ref=f1e751]:
+                - cell "SECT1" [ref=f1e752]
+                - cell "Red 3, Sjedalo 5" [ref=f1e753]
+                - cell "Petra Kovačević· nebojsa.medancic+Petra.Kovacevic@gmail.com" [ref=f1e754]:
+                  - text: Petra Kovačević
+                  - generic [ref=f1e755]: · nebojsa.medancic+Petra.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e756]
+                - cell "TicketingSimulator" [ref=f1e757]
+                - cell [ref=f1e758]:
+                  - button " QR" [ref=f1e759] [cursor=pointer]:
+                    - generic [ref=f1e760]: 
+                    - generic [ref=f1e761]: QR
+              - row [ref=f1e762]:
+                - cell "SECT1" [ref=f1e763]
+                - cell "Red 3, Sjedalo 6" [ref=f1e764]
+                - cell "Luka Kovačević· nebojsa.medancic+Luka.Kovacevic@gmail.com" [ref=f1e765]:
+                  - text: Luka Kovačević
+                  - generic [ref=f1e766]: · nebojsa.medancic+Luka.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e767]
+                - cell "TicketingSimulator" [ref=f1e768]
+                - cell [ref=f1e769]:
+                  - button " QR" [ref=f1e770] [cursor=pointer]:
+                    - generic [ref=f1e771]: 
+                    - generic [ref=f1e772]: QR
+              - row [ref=f1e773]:
+                - cell "SECT1" [ref=f1e774]
+                - cell "Red 3, Sjedalo 7" [ref=f1e775]
+                - cell "Maja Kovačević· nebojsa.medancic+Maja.Kovacevic@gmail.com" [ref=f1e776]:
+                  - text: Maja Kovačević
+                  - generic [ref=f1e777]: · nebojsa.medancic+Maja.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e778]
+                - cell "TicketingSimulator" [ref=f1e779]
+                - cell [ref=f1e780]:
+                  - button " QR" [ref=f1e781] [cursor=pointer]:
+                    - generic [ref=f1e782]: 
+                    - generic [ref=f1e783]: QR
+              - row [ref=f1e784]:
+                - cell "SECT1" [ref=f1e785]
+                - cell "Red 3, Sjedalo 8" [ref=f1e786]
+                - cell "Ante Kovačević· nebojsa.medancic+Ante.Kovacevic@gmail.com" [ref=f1e787]:
+                  - text: Ante Kovačević
+                  - generic [ref=f1e788]: · nebojsa.medancic+Ante.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e789]
+                - cell "TicketingSimulator" [ref=f1e790]
+                - cell [ref=f1e791]:
+                  - button " QR" [ref=f1e792] [cursor=pointer]:
+                    - generic [ref=f1e793]: 
+                    - generic [ref=f1e794]: QR
+              - row [ref=f1e795]:
+                - cell "SECT1" [ref=f1e796]
+                - cell "Red 3, Sjedalo 9" [ref=f1e797]
+                - cell "Ivana Kovačević· nebojsa.medancic+Ivana.Kovacevic@gmail.com" [ref=f1e798]:
+                  - text: Ivana Kovačević
+                  - generic [ref=f1e799]: · nebojsa.medancic+Ivana.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e800]
+                - cell "TicketingSimulator" [ref=f1e801]
+                - cell [ref=f1e802]:
+                  - button " QR" [ref=f1e803] [cursor=pointer]:
+                    - generic [ref=f1e804]: 
+                    - generic [ref=f1e805]: QR
+              - row [ref=f1e806]:
+                - cell "SECT1" [ref=f1e807]
+                - cell "Red 3, Sjedalo 10" [ref=f1e808]
+                - cell "Tomislav Kovačević· nebojsa.medancic+Tomislav.Kovacevic@gmail.com" [ref=f1e809]:
+                  - text: Tomislav Kovačević
+                  - generic [ref=f1e810]: · nebojsa.medancic+Tomislav.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e811]
+                - cell "TicketingSimulator" [ref=f1e812]
+                - cell [ref=f1e813]:
+                  - button " QR" [ref=f1e814] [cursor=pointer]:
+                    - generic [ref=f1e815]: 
+                    - generic [ref=f1e816]: QR
+              - row [ref=f1e817]:
+                - cell "SECT1" [ref=f1e818]
+                - cell "Red 3, Sjedalo 11" [ref=f1e819]
+                - cell "Sara Kovačević· nebojsa.medancic+Sara.Kovacevic@gmail.com" [ref=f1e820]:
+                  - text: Sara Kovačević
+                  - generic [ref=f1e821]: · nebojsa.medancic+Sara.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e822]
+                - cell "TicketingSimulator" [ref=f1e823]
+                - cell [ref=f1e824]:
+                  - button " QR" [ref=f1e825] [cursor=pointer]:
+                    - generic [ref=f1e826]: 
+                    - generic [ref=f1e827]: QR
+              - row [ref=f1e828]:
+                - cell "SECT1" [ref=f1e829]
+                - cell "Red 3, Sjedalo 12" [ref=f1e830]
+                - cell "Nikola Kovačević· nebojsa.medancic+Nikola.Kovacevic@gmail.com" [ref=f1e831]:
+                  - text: Nikola Kovačević
+                  - generic [ref=f1e832]: · nebojsa.medancic+Nikola.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e833]
+                - cell "TicketingSimulator" [ref=f1e834]
+                - cell [ref=f1e835]:
+                  - button " QR" [ref=f1e836] [cursor=pointer]:
+                    - generic [ref=f1e837]: 
+                    - generic [ref=f1e838]: QR
+              - row [ref=f1e839]:
+                - cell "SECT1" [ref=f1e840]
+                - cell "Red 3, Sjedalo 13" [ref=f1e841]
+                - cell "Marija Kovačević· nebojsa.medancic+Marija.Kovacevic@gmail.com" [ref=f1e842]:
+                  - text: Marija Kovačević
+                  - generic [ref=f1e843]: · nebojsa.medancic+Marija.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e844]
+                - cell "TicketingSimulator" [ref=f1e845]
+                - cell [ref=f1e846]:
+                  - button " QR" [ref=f1e847] [cursor=pointer]:
+                    - generic [ref=f1e848]: 
+                    - generic [ref=f1e849]: QR
+              - row [ref=f1e850]:
+                - cell "SECT1" [ref=f1e851]
+                - cell "Red 3, Sjedalo 14" [ref=f1e852]
+                - cell "Filip Kovačević· nebojsa.medancic+Filip.Kovacevic@gmail.com" [ref=f1e853]:
+                  - text: Filip Kovačević
+                  - generic [ref=f1e854]: · nebojsa.medancic+Filip.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e855]
+                - cell "TicketingSimulator" [ref=f1e856]
+                - cell [ref=f1e857]:
+                  - button " QR" [ref=f1e858] [cursor=pointer]:
+                    - generic [ref=f1e859]: 
+                    - generic [ref=f1e860]: QR
+              - row [ref=f1e861]:
+                - cell "SECT1" [ref=f1e862]
+                - cell "Red 3, Sjedalo 15" [ref=f1e863]
+                - cell "Katarina Kovačević· nebojsa.medancic+Katarina.Kovacevic@gmail.com" [ref=f1e864]:
+                  - text: Katarina Kovačević
+                  - generic [ref=f1e865]: · nebojsa.medancic+Katarina.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e866]
+                - cell "TicketingSimulator" [ref=f1e867]
+                - cell [ref=f1e868]:
+                  - button " QR" [ref=f1e869] [cursor=pointer]:
+                    - generic [ref=f1e870]: 
+                    - generic [ref=f1e871]: QR
+              - row [ref=f1e872]:
+                - cell "SECT1" [ref=f1e873]
+                - cell "Red 3, Sjedalo 16" [ref=f1e874]
+                - cell "Domagoj Kovačević· nebojsa.medancic+Domagoj.Kovacevic@gmail.com" [ref=f1e875]:
+                  - text: Domagoj Kovačević
+                  - generic [ref=f1e876]: · nebojsa.medancic+Domagoj.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e877]
+                - cell "TicketingSimulator" [ref=f1e878]
+                - cell [ref=f1e879]:
+                  - button " QR" [ref=f1e880] [cursor=pointer]:
+                    - generic [ref=f1e881]: 
+                    - generic [ref=f1e882]: QR
+              - row [ref=f1e883]:
+                - cell "SECT1" [ref=f1e884]
+                - cell "Red 3, Sjedalo 17" [ref=f1e885]
+                - cell "Lucija Kovačević· nebojsa.medancic+Lucija.Kovacevic@gmail.com" [ref=f1e886]:
+                  - text: Lucija Kovačević
+                  - generic [ref=f1e887]: · nebojsa.medancic+Lucija.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e888]
+                - cell "TicketingSimulator" [ref=f1e889]
+                - cell [ref=f1e890]:
+                  - button " QR" [ref=f1e891] [cursor=pointer]:
+                    - generic [ref=f1e892]: 
+                    - generic [ref=f1e893]: QR
+              - row [ref=f1e894]:
+                - cell "SECT1" [ref=f1e895]
+                - cell "Red 3, Sjedalo 18" [ref=f1e896]
+                - cell "Matej Kovačević· nebojsa.medancic+Matej.Kovacevic@gmail.com" [ref=f1e897]:
+                  - text: Matej Kovačević
+                  - generic [ref=f1e898]: · nebojsa.medancic+Matej.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e899]
+                - cell "TicketingSimulator" [ref=f1e900]
+                - cell [ref=f1e901]:
+                  - button " QR" [ref=f1e902] [cursor=pointer]:
+                    - generic [ref=f1e903]: 
+                    - generic [ref=f1e904]: QR
+              - row [ref=f1e905]:
+                - cell "SECT1" [ref=f1e906]
+                - cell "Red 3, Sjedalo 19" [ref=f1e907]
+                - cell "Dora Kovačević· nebojsa.medancic+Dora.Kovacevic@gmail.com" [ref=f1e908]:
+                  - text: Dora Kovačević
+                  - generic [ref=f1e909]: · nebojsa.medancic+Dora.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e910]
+                - cell "TicketingSimulator" [ref=f1e911]
+                - cell [ref=f1e912]:
+                  - button " QR" [ref=f1e913] [cursor=pointer]:
+                    - generic [ref=f1e914]: 
+                    - generic [ref=f1e915]: QR
+              - row [ref=f1e916]:
+                - cell "SECT1" [ref=f1e917]
+                - cell "Red 3, Sjedalo 20" [ref=f1e918]
+                - cell "Stjepan Kovačević· nebojsa.medancic+Stjepan.Kovacevic@gmail.com" [ref=f1e919]:
+                  - text: Stjepan Kovačević
+                  - generic [ref=f1e920]: · nebojsa.medancic+Stjepan.Kovacevic@gmail.com
+                - cell "2026-07-04" [ref=f1e921]
+                - cell "TicketingSimulator" [ref=f1e922]
+                - cell [ref=f1e923]:
+                  - button " QR" [ref=f1e924] [cursor=pointer]:
+                    - generic [ref=f1e925]: 
+                    - generic [ref=f1e926]: QR
+              - row [ref=f1e927]:
+                - cell "SECT1" [ref=f1e928]
+                - cell "Red 4, Sjedalo 1" [ref=f1e929]
+                - cell "Ivan Marić· nebojsa.medancic+Ivan.Maric@gmail.com" [ref=f1e930]:
+                  - text: Ivan Marić
+                  - generic [ref=f1e931]: · nebojsa.medancic+Ivan.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e932]
+                - cell "TicketingSimulator" [ref=f1e933]
+                - cell [ref=f1e934]:
+                  - button " QR" [ref=f1e935] [cursor=pointer]:
+                    - generic [ref=f1e936]: 
+                    - generic [ref=f1e937]: QR
+              - row [ref=f1e938]:
+                - cell "SECT1" [ref=f1e939]
+                - cell "Red 4, Sjedalo 2" [ref=f1e940]
+                - cell "Marko Marić· nebojsa.medancic+Marko.Maric@gmail.com" [ref=f1e941]:
+                  - text: Marko Marić
+                  - generic [ref=f1e942]: · nebojsa.medancic+Marko.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e943]
+                - cell "TicketingSimulator" [ref=f1e944]
+                - cell [ref=f1e945]:
+                  - button " QR" [ref=f1e946] [cursor=pointer]:
+                    - generic [ref=f1e947]: 
+                    - generic [ref=f1e948]: QR
+              - row [ref=f1e949]:
+                - cell "SECT1" [ref=f1e950]
+                - cell "Red 4, Sjedalo 3" [ref=f1e951]
+                - cell "Ana Marić· nebojsa.medancic+Ana.Maric@gmail.com" [ref=f1e952]:
+                  - text: Ana Marić
+                  - generic [ref=f1e953]: · nebojsa.medancic+Ana.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e954]
+                - cell "TicketingSimulator" [ref=f1e955]
+                - cell [ref=f1e956]:
+                  - button " QR" [ref=f1e957] [cursor=pointer]:
+                    - generic [ref=f1e958]: 
+                    - generic [ref=f1e959]: QR
+              - row [ref=f1e960]:
+                - cell "SECT1" [ref=f1e961]
+                - cell "Red 4, Sjedalo 4" [ref=f1e962]
+                - cell "Josip Marić· nebojsa.medancic+Josip.Maric@gmail.com" [ref=f1e963]:
+                  - text: Josip Marić
+                  - generic [ref=f1e964]: · nebojsa.medancic+Josip.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e965]
+                - cell "TicketingSimulator" [ref=f1e966]
+                - cell [ref=f1e967]:
+                  - button " QR" [ref=f1e968] [cursor=pointer]:
+                    - generic [ref=f1e969]: 
+                    - generic [ref=f1e970]: QR
+              - row [ref=f1e971]:
+                - cell "SECT1" [ref=f1e972]
+                - cell "Red 4, Sjedalo 5" [ref=f1e973]
+                - cell "Petra Marić· nebojsa.medancic+Petra.Maric@gmail.com" [ref=f1e974]:
+                  - text: Petra Marić
+                  - generic [ref=f1e975]: · nebojsa.medancic+Petra.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e976]
+                - cell "TicketingSimulator" [ref=f1e977]
+                - cell [ref=f1e978]:
+                  - button " QR" [ref=f1e979] [cursor=pointer]:
+                    - generic [ref=f1e980]: 
+                    - generic [ref=f1e981]: QR
+              - row [ref=f1e982]:
+                - cell "SECT1" [ref=f1e983]
+                - cell "Red 4, Sjedalo 6" [ref=f1e984]
+                - cell "Luka Marić· nebojsa.medancic+Luka.Maric@gmail.com" [ref=f1e985]:
+                  - text: Luka Marić
+                  - generic [ref=f1e986]: · nebojsa.medancic+Luka.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e987]
+                - cell "TicketingSimulator" [ref=f1e988]
+                - cell [ref=f1e989]:
+                  - button " QR" [ref=f1e990] [cursor=pointer]:
+                    - generic [ref=f1e991]: 
+                    - generic [ref=f1e992]: QR
+              - row [ref=f1e993]:
+                - cell "SECT1" [ref=f1e994]
+                - cell "Red 4, Sjedalo 7" [ref=f1e995]
+                - cell "Maja Marić· nebojsa.medancic+Maja.Maric@gmail.com" [ref=f1e996]:
+                  - text: Maja Marić
+                  - generic [ref=f1e997]: · nebojsa.medancic+Maja.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e998]
+                - cell "TicketingSimulator" [ref=f1e999]
+                - cell [ref=f1e1000]:
+                  - button " QR" [ref=f1e1001] [cursor=pointer]:
+                    - generic [ref=f1e1002]: 
+                    - generic [ref=f1e1003]: QR
+              - row [ref=f1e1004]:
+                - cell "SECT1" [ref=f1e1005]
+                - cell "Red 4, Sjedalo 8" [ref=f1e1006]
+                - cell "Ante Marić· nebojsa.medancic+Ante.Maric@gmail.com" [ref=f1e1007]:
+                  - text: Ante Marić
+                  - generic [ref=f1e1008]: · nebojsa.medancic+Ante.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1009]
+                - cell "TicketingSimulator" [ref=f1e1010]
+                - cell [ref=f1e1011]:
+                  - button " QR" [ref=f1e1012] [cursor=pointer]:
+                    - generic [ref=f1e1013]: 
+                    - generic [ref=f1e1014]: QR
+              - row [ref=f1e1015]:
+                - cell "SECT1" [ref=f1e1016]
+                - cell "Red 4, Sjedalo 9" [ref=f1e1017]
+                - cell "Ivana Marić· nebojsa.medancic+Ivana.Maric@gmail.com" [ref=f1e1018]:
+                  - text: Ivana Marić
+                  - generic [ref=f1e1019]: · nebojsa.medancic+Ivana.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1020]
+                - cell "TicketingSimulator" [ref=f1e1021]
+                - cell [ref=f1e1022]:
+                  - button " QR" [ref=f1e1023] [cursor=pointer]:
+                    - generic [ref=f1e1024]: 
+                    - generic [ref=f1e1025]: QR
+              - row [ref=f1e1026]:
+                - cell "SECT1" [ref=f1e1027]
+                - cell "Red 4, Sjedalo 10" [ref=f1e1028]
+                - cell "Tomislav Marić· nebojsa.medancic+Tomislav.Maric@gmail.com" [ref=f1e1029]:
+                  - text: Tomislav Marić
+                  - generic [ref=f1e1030]: · nebojsa.medancic+Tomislav.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1031]
+                - cell "TicketingSimulator" [ref=f1e1032]
+                - cell [ref=f1e1033]:
+                  - button " QR" [ref=f1e1034] [cursor=pointer]:
+                    - generic [ref=f1e1035]: 
+                    - generic [ref=f1e1036]: QR
+              - row [ref=f1e1037]:
+                - cell "SECT1" [ref=f1e1038]
+                - cell "Red 4, Sjedalo 11" [ref=f1e1039]
+                - cell "Sara Marić· nebojsa.medancic+Sara.Maric@gmail.com" [ref=f1e1040]:
+                  - text: Sara Marić
+                  - generic [ref=f1e1041]: · nebojsa.medancic+Sara.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1042]
+                - cell "TicketingSimulator" [ref=f1e1043]
+                - cell [ref=f1e1044]:
+                  - button " QR" [ref=f1e1045] [cursor=pointer]:
+                    - generic [ref=f1e1046]: 
+                    - generic [ref=f1e1047]: QR
+              - row [ref=f1e1048]:
+                - cell "SECT1" [ref=f1e1049]
+                - cell "Red 4, Sjedalo 12" [ref=f1e1050]
+                - cell "Nikola Marić· nebojsa.medancic+Nikola.Maric@gmail.com" [ref=f1e1051]:
+                  - text: Nikola Marić
+                  - generic [ref=f1e1052]: · nebojsa.medancic+Nikola.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1053]
+                - cell "TicketingSimulator" [ref=f1e1054]
+                - cell [ref=f1e1055]:
+                  - button " QR" [ref=f1e1056] [cursor=pointer]:
+                    - generic [ref=f1e1057]: 
+                    - generic [ref=f1e1058]: QR
+              - row [ref=f1e1059]:
+                - cell "SECT1" [ref=f1e1060]
+                - cell "Red 4, Sjedalo 13" [ref=f1e1061]
+                - cell "Marija Marić· nebojsa.medancic+Marija.Maric@gmail.com" [ref=f1e1062]:
+                  - text: Marija Marić
+                  - generic [ref=f1e1063]: · nebojsa.medancic+Marija.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1064]
+                - cell "TicketingSimulator" [ref=f1e1065]
+                - cell [ref=f1e1066]:
+                  - button " QR" [ref=f1e1067] [cursor=pointer]:
+                    - generic [ref=f1e1068]: 
+                    - generic [ref=f1e1069]: QR
+              - row [ref=f1e1070]:
+                - cell "SECT1" [ref=f1e1071]
+                - cell "Red 4, Sjedalo 14" [ref=f1e1072]
+                - cell "Filip Marić· nebojsa.medancic+Filip.Maric@gmail.com" [ref=f1e1073]:
+                  - text: Filip Marić
+                  - generic [ref=f1e1074]: · nebojsa.medancic+Filip.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1075]
+                - cell "TicketingSimulator" [ref=f1e1076]
+                - cell [ref=f1e1077]:
+                  - button " QR" [ref=f1e1078] [cursor=pointer]:
+                    - generic [ref=f1e1079]: 
+                    - generic [ref=f1e1080]: QR
+              - row [ref=f1e1081]:
+                - cell "SECT1" [ref=f1e1082]
+                - cell "Red 4, Sjedalo 15" [ref=f1e1083]
+                - cell "Katarina Marić· nebojsa.medancic+Katarina.Maric@gmail.com" [ref=f1e1084]:
+                  - text: Katarina Marić
+                  - generic [ref=f1e1085]: · nebojsa.medancic+Katarina.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1086]
+                - cell "TicketingSimulator" [ref=f1e1087]
+                - cell [ref=f1e1088]:
+                  - button " QR" [ref=f1e1089] [cursor=pointer]:
+                    - generic [ref=f1e1090]: 
+                    - generic [ref=f1e1091]: QR
+              - row [ref=f1e1092]:
+                - cell "SECT1" [ref=f1e1093]
+                - cell "Red 4, Sjedalo 16" [ref=f1e1094]
+                - cell "Domagoj Marić· nebojsa.medancic+Domagoj.Maric@gmail.com" [ref=f1e1095]:
+                  - text: Domagoj Marić
+                  - generic [ref=f1e1096]: · nebojsa.medancic+Domagoj.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1097]
+                - cell "TicketingSimulator" [ref=f1e1098]
+                - cell [ref=f1e1099]:
+                  - button " QR" [ref=f1e1100] [cursor=pointer]:
+                    - generic [ref=f1e1101]: 
+                    - generic [ref=f1e1102]: QR
+              - row [ref=f1e1103]:
+                - cell "SECT1" [ref=f1e1104]
+                - cell "Red 4, Sjedalo 17" [ref=f1e1105]
+                - cell "Lucija Marić· nebojsa.medancic+Lucija.Maric@gmail.com" [ref=f1e1106]:
+                  - text: Lucija Marić
+                  - generic [ref=f1e1107]: · nebojsa.medancic+Lucija.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1108]
+                - cell "TicketingSimulator" [ref=f1e1109]
+                - cell [ref=f1e1110]:
+                  - button " QR" [ref=f1e1111] [cursor=pointer]:
+                    - generic [ref=f1e1112]: 
+                    - generic [ref=f1e1113]: QR
+              - row [ref=f1e1114]:
+                - cell "SECT1" [ref=f1e1115]
+                - cell "Red 4, Sjedalo 18" [ref=f1e1116]
+                - cell "Matej Marić· nebojsa.medancic+Matej.Maric@gmail.com" [ref=f1e1117]:
+                  - text: Matej Marić
+                  - generic [ref=f1e1118]: · nebojsa.medancic+Matej.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1119]
+                - cell "TicketingSimulator" [ref=f1e1120]
+                - cell [ref=f1e1121]:
+                  - button " QR" [ref=f1e1122] [cursor=pointer]:
+                    - generic [ref=f1e1123]: 
+                    - generic [ref=f1e1124]: QR
+              - row [ref=f1e1125]:
+                - cell "SECT1" [ref=f1e1126]
+                - cell "Red 4, Sjedalo 19" [ref=f1e1127]
+                - cell "Dora Marić· nebojsa.medancic+Dora.Maric@gmail.com" [ref=f1e1128]:
+                  - text: Dora Marić
+                  - generic [ref=f1e1129]: · nebojsa.medancic+Dora.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1130]
+                - cell "TicketingSimulator" [ref=f1e1131]
+                - cell [ref=f1e1132]:
+                  - button " QR" [ref=f1e1133] [cursor=pointer]:
+                    - generic [ref=f1e1134]: 
+                    - generic [ref=f1e1135]: QR
+              - row [ref=f1e1136]:
+                - cell "SECT1" [ref=f1e1137]
+                - cell "Red 4, Sjedalo 20" [ref=f1e1138]
+                - cell "Stjepan Marić· nebojsa.medancic+Stjepan.Maric@gmail.com" [ref=f1e1139]:
+                  - text: Stjepan Marić
+                  - generic [ref=f1e1140]: · nebojsa.medancic+Stjepan.Maric@gmail.com
+                - cell "2026-07-04" [ref=f1e1141]
+                - cell "TicketingSimulator" [ref=f1e1142]
+                - cell [ref=f1e1143]:
+                  - button " QR" [ref=f1e1144] [cursor=pointer]:
+                    - generic [ref=f1e1145]: 
+                    - generic [ref=f1e1146]: QR
+              - row [ref=f1e1147]:
+                - cell "SECT1" [ref=f1e1148]
+                - cell "Red 5, Sjedalo 1" [ref=f1e1149]
+                - cell "Ivan Babić· nebojsa.medancic+Ivan.Babic@gmail.com" [ref=f1e1150]:
+                  - text: Ivan Babić
+                  - generic [ref=f1e1151]: · nebojsa.medancic+Ivan.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1152]
+                - cell "TicketingSimulator" [ref=f1e1153]
+                - cell [ref=f1e1154]:
+                  - button " QR" [ref=f1e1155] [cursor=pointer]:
+                    - generic [ref=f1e1156]: 
+                    - generic [ref=f1e1157]: QR
+              - row [ref=f1e1158]:
+                - cell "SECT1" [ref=f1e1159]
+                - cell "Red 5, Sjedalo 2" [ref=f1e1160]
+                - cell "Marko Babić· nebojsa.medancic+Marko.Babic@gmail.com" [ref=f1e1161]:
+                  - text: Marko Babić
+                  - generic [ref=f1e1162]: · nebojsa.medancic+Marko.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1163]
+                - cell "TicketingSimulator" [ref=f1e1164]
+                - cell [ref=f1e1165]:
+                  - button " QR" [ref=f1e1166] [cursor=pointer]:
+                    - generic [ref=f1e1167]: 
+                    - generic [ref=f1e1168]: QR
+              - row [ref=f1e1169]:
+                - cell "SECT1" [ref=f1e1170]
+                - cell "Red 5, Sjedalo 3" [ref=f1e1171]
+                - cell "Ana Babić· nebojsa.medancic+Ana.Babic@gmail.com" [ref=f1e1172]:
+                  - text: Ana Babić
+                  - generic [ref=f1e1173]: · nebojsa.medancic+Ana.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1174]
+                - cell "TicketingSimulator" [ref=f1e1175]
+                - cell [ref=f1e1176]:
+                  - button " QR" [ref=f1e1177] [cursor=pointer]:
+                    - generic [ref=f1e1178]: 
+                    - generic [ref=f1e1179]: QR
+              - row [ref=f1e1180]:
+                - cell "SECT1" [ref=f1e1181]
+                - cell "Red 5, Sjedalo 4" [ref=f1e1182]
+                - cell "Josip Babić· nebojsa.medancic+Josip.Babic@gmail.com" [ref=f1e1183]:
+                  - text: Josip Babić
+                  - generic [ref=f1e1184]: · nebojsa.medancic+Josip.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1185]
+                - cell "TicketingSimulator" [ref=f1e1186]
+                - cell [ref=f1e1187]:
+                  - button " QR" [ref=f1e1188] [cursor=pointer]:
+                    - generic [ref=f1e1189]: 
+                    - generic [ref=f1e1190]: QR
+              - row [ref=f1e1191]:
+                - cell "SECT1" [ref=f1e1192]
+                - cell "Red 5, Sjedalo 5" [ref=f1e1193]
+                - cell "Petra Babić· nebojsa.medancic+Petra.Babic@gmail.com" [ref=f1e1194]:
+                  - text: Petra Babić
+                  - generic [ref=f1e1195]: · nebojsa.medancic+Petra.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1196]
+                - cell "TicketingSimulator" [ref=f1e1197]
+                - cell [ref=f1e1198]:
+                  - button " QR" [ref=f1e1199] [cursor=pointer]:
+                    - generic [ref=f1e1200]: 
+                    - generic [ref=f1e1201]: QR
+              - row [ref=f1e1202]:
+                - cell "SECT1" [ref=f1e1203]
+                - cell "Red 5, Sjedalo 6" [ref=f1e1204]
+                - cell "Luka Babić· nebojsa.medancic+Luka.Babic@gmail.com" [ref=f1e1205]:
+                  - text: Luka Babić
+                  - generic [ref=f1e1206]: · nebojsa.medancic+Luka.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1207]
+                - cell "TicketingSimulator" [ref=f1e1208]
+                - cell [ref=f1e1209]:
+                  - button " QR" [ref=f1e1210] [cursor=pointer]:
+                    - generic [ref=f1e1211]: 
+                    - generic [ref=f1e1212]: QR
+              - row [ref=f1e1213]:
+                - cell "SECT1" [ref=f1e1214]
+                - cell "Red 5, Sjedalo 7" [ref=f1e1215]
+                - cell "Maja Babić· nebojsa.medancic+Maja.Babic@gmail.com" [ref=f1e1216]:
+                  - text: Maja Babić
+                  - generic [ref=f1e1217]: · nebojsa.medancic+Maja.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1218]
+                - cell "TicketingSimulator" [ref=f1e1219]
+                - cell [ref=f1e1220]:
+                  - button " QR" [ref=f1e1221] [cursor=pointer]:
+                    - generic [ref=f1e1222]: 
+                    - generic [ref=f1e1223]: QR
+              - row [ref=f1e1224]:
+                - cell "SECT1" [ref=f1e1225]
+                - cell "Red 5, Sjedalo 8" [ref=f1e1226]
+                - cell "Ante Babić· nebojsa.medancic+Ante.Babic@gmail.com" [ref=f1e1227]:
+                  - text: Ante Babić
+                  - generic [ref=f1e1228]: · nebojsa.medancic+Ante.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1229]
+                - cell "TicketingSimulator" [ref=f1e1230]
+                - cell [ref=f1e1231]:
+                  - button " QR" [ref=f1e1232] [cursor=pointer]:
+                    - generic [ref=f1e1233]: 
+                    - generic [ref=f1e1234]: QR
+              - row [ref=f1e1235]:
+                - cell "SECT1" [ref=f1e1236]
+                - cell "Red 5, Sjedalo 9" [ref=f1e1237]
+                - cell "Ivana Babić· nebojsa.medancic+Ivana.Babic@gmail.com" [ref=f1e1238]:
+                  - text: Ivana Babić
+                  - generic [ref=f1e1239]: · nebojsa.medancic+Ivana.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1240]
+                - cell "TicketingSimulator" [ref=f1e1241]
+                - cell [ref=f1e1242]:
+                  - button " QR" [ref=f1e1243] [cursor=pointer]:
+                    - generic [ref=f1e1244]: 
+                    - generic [ref=f1e1245]: QR
+              - row [ref=f1e1246]:
+                - cell "SECT1" [ref=f1e1247]
+                - cell "Red 5, Sjedalo 10" [ref=f1e1248]
+                - cell "Tomislav Babić· nebojsa.medancic+Tomislav.Babic@gmail.com" [ref=f1e1249]:
+                  - text: Tomislav Babić
+                  - generic [ref=f1e1250]: · nebojsa.medancic+Tomislav.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1251]
+                - cell "TicketingSimulator" [ref=f1e1252]
+                - cell [ref=f1e1253]:
+                  - button " QR" [ref=f1e1254] [cursor=pointer]:
+                    - generic [ref=f1e1255]: 
+                    - generic [ref=f1e1256]: QR
+              - row [ref=f1e1257]:
+                - cell "SECT1" [ref=f1e1258]
+                - cell "Red 5, Sjedalo 11" [ref=f1e1259]
+                - cell "Sara Babić· nebojsa.medancic+Sara.Babic@gmail.com" [ref=f1e1260]:
+                  - text: Sara Babić
+                  - generic [ref=f1e1261]: · nebojsa.medancic+Sara.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1262]
+                - cell "TicketingSimulator" [ref=f1e1263]
+                - cell [ref=f1e1264]:
+                  - button " QR" [ref=f1e1265] [cursor=pointer]:
+                    - generic [ref=f1e1266]: 
+                    - generic [ref=f1e1267]: QR
+              - row [ref=f1e1268]:
+                - cell "SECT1" [ref=f1e1269]
+                - cell "Red 5, Sjedalo 12" [ref=f1e1270]
+                - cell "Nikola Babić· nebojsa.medancic+Nikola.Babic@gmail.com" [ref=f1e1271]:
+                  - text: Nikola Babić
+                  - generic [ref=f1e1272]: · nebojsa.medancic+Nikola.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1273]
+                - cell "TicketingSimulator" [ref=f1e1274]
+                - cell [ref=f1e1275]:
+                  - button " QR" [ref=f1e1276] [cursor=pointer]:
+                    - generic [ref=f1e1277]: 
+                    - generic [ref=f1e1278]: QR
+              - row [ref=f1e1279]:
+                - cell "SECT1" [ref=f1e1280]
+                - cell "Red 5, Sjedalo 13" [ref=f1e1281]
+                - cell "Marija Babić· nebojsa.medancic+Marija.Babic@gmail.com" [ref=f1e1282]:
+                  - text: Marija Babić
+                  - generic [ref=f1e1283]: · nebojsa.medancic+Marija.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1284]
+                - cell "TicketingSimulator" [ref=f1e1285]
+                - cell [ref=f1e1286]:
+                  - button " QR" [ref=f1e1287] [cursor=pointer]:
+                    - generic [ref=f1e1288]: 
+                    - generic [ref=f1e1289]: QR
+              - row [ref=f1e1290]:
+                - cell "SECT1" [ref=f1e1291]
+                - cell "Red 5, Sjedalo 14" [ref=f1e1292]
+                - cell "Filip Babić· nebojsa.medancic+Filip.Babic@gmail.com" [ref=f1e1293]:
+                  - text: Filip Babić
+                  - generic [ref=f1e1294]: · nebojsa.medancic+Filip.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1295]
+                - cell "TicketingSimulator" [ref=f1e1296]
+                - cell [ref=f1e1297]:
+                  - button " QR" [ref=f1e1298] [cursor=pointer]:
+                    - generic [ref=f1e1299]: 
+                    - generic [ref=f1e1300]: QR
+              - row [ref=f1e1301]:
+                - cell "SECT1" [ref=f1e1302]
+                - cell "Red 5, Sjedalo 15" [ref=f1e1303]
+                - cell "Katarina Babić· nebojsa.medancic+Katarina.Babic@gmail.com" [ref=f1e1304]:
+                  - text: Katarina Babić
+                  - generic [ref=f1e1305]: · nebojsa.medancic+Katarina.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1306]
+                - cell "TicketingSimulator" [ref=f1e1307]
+                - cell [ref=f1e1308]:
+                  - button " QR" [ref=f1e1309] [cursor=pointer]:
+                    - generic [ref=f1e1310]: 
+                    - generic [ref=f1e1311]: QR
+              - row [ref=f1e1312]:
+                - cell "SECT1" [ref=f1e1313]
+                - cell "Red 5, Sjedalo 16" [ref=f1e1314]
+                - cell "Domagoj Babić· nebojsa.medancic+Domagoj.Babic@gmail.com" [ref=f1e1315]:
+                  - text: Domagoj Babić
+                  - generic [ref=f1e1316]: · nebojsa.medancic+Domagoj.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1317]
+                - cell "TicketingSimulator" [ref=f1e1318]
+                - cell [ref=f1e1319]:
+                  - button " QR" [ref=f1e1320] [cursor=pointer]:
+                    - generic [ref=f1e1321]: 
+                    - generic [ref=f1e1322]: QR
+              - row [ref=f1e1323]:
+                - cell "SECT1" [ref=f1e1324]
+                - cell "Red 5, Sjedalo 17" [ref=f1e1325]
+                - cell "Lucija Babić· nebojsa.medancic+Lucija.Babic@gmail.com" [ref=f1e1326]:
+                  - text: Lucija Babić
+                  - generic [ref=f1e1327]: · nebojsa.medancic+Lucija.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1328]
+                - cell "TicketingSimulator" [ref=f1e1329]
+                - cell [ref=f1e1330]:
+                  - button " QR" [ref=f1e1331] [cursor=pointer]:
+                    - generic [ref=f1e1332]: 
+                    - generic [ref=f1e1333]: QR
+              - row [ref=f1e1334]:
+                - cell "SECT1" [ref=f1e1335]
+                - cell "Red 5, Sjedalo 18" [ref=f1e1336]
+                - cell "Matej Babić· nebojsa.medancic+Matej.Babic@gmail.com" [ref=f1e1337]:
+                  - text: Matej Babić
+                  - generic [ref=f1e1338]: · nebojsa.medancic+Matej.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1339]
+                - cell "TicketingSimulator" [ref=f1e1340]
+                - cell [ref=f1e1341]:
+                  - button " QR" [ref=f1e1342] [cursor=pointer]:
+                    - generic [ref=f1e1343]: 
+                    - generic [ref=f1e1344]: QR
+              - row [ref=f1e1345]:
+                - cell "SECT1" [ref=f1e1346]
+                - cell "Red 5, Sjedalo 19" [ref=f1e1347]
+                - cell "Dora Babić· nebojsa.medancic+Dora.Babic@gmail.com" [ref=f1e1348]:
+                  - text: Dora Babić
+                  - generic [ref=f1e1349]: · nebojsa.medancic+Dora.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1350]
+                - cell "TicketingSimulator" [ref=f1e1351]
+                - cell [ref=f1e1352]:
+                  - button " QR" [ref=f1e1353] [cursor=pointer]:
+                    - generic [ref=f1e1354]: 
+                    - generic [ref=f1e1355]: QR
+              - row [ref=f1e1356]:
+                - cell "SECT1" [ref=f1e1357]
+                - cell "Red 5, Sjedalo 20" [ref=f1e1358]
+                - cell "Stjepan Babić· nebojsa.medancic+Stjepan.Babic@gmail.com" [ref=f1e1359]:
+                  - text: Stjepan Babić
+                  - generic [ref=f1e1360]: · nebojsa.medancic+Stjepan.Babic@gmail.com
+                - cell "2026-07-04" [ref=f1e1361]
+                - cell "TicketingSimulator" [ref=f1e1362]
+                - cell [ref=f1e1363]:
+                  - button " QR" [ref=f1e1364] [cursor=pointer]:
+                    - generic [ref=f1e1365]: 
+                    - generic [ref=f1e1366]: QR
+              - row [ref=f1e1367]:
+                - cell "SECT1" [ref=f1e1368]
+                - cell "Red 6, Sjedalo 11" [ref=f1e1369]
+                - cell "Ivan Jurić· nebojsa.medancic+Ivan.Juric@gmail.com" [ref=f1e1370]:
+                  - text: Ivan Jurić
+                  - generic [ref=f1e1371]: · nebojsa.medancic+Ivan.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1372]
+                - cell "TicketingSimulator" [ref=f1e1373]
+                - cell [ref=f1e1374]:
+                  - button " QR" [ref=f1e1375] [cursor=pointer]:
+                    - generic [ref=f1e1376]: 
+                    - generic [ref=f1e1377]: QR
+              - row [ref=f1e1378]:
+                - cell "SECT1" [ref=f1e1379]
+                - cell "Red 6, Sjedalo 12" [ref=f1e1380]
+                - cell "Marko Jurić· nebojsa.medancic+Marko.Juric@gmail.com" [ref=f1e1381]:
+                  - text: Marko Jurić
+                  - generic [ref=f1e1382]: · nebojsa.medancic+Marko.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1383]
+                - cell "TicketingSimulator" [ref=f1e1384]
+                - cell [ref=f1e1385]:
+                  - button " QR" [ref=f1e1386] [cursor=pointer]:
+                    - generic [ref=f1e1387]: 
+                    - generic [ref=f1e1388]: QR
+              - row [ref=f1e1389]:
+                - cell "SECT1" [ref=f1e1390]
+                - cell "Red 6, Sjedalo 13" [ref=f1e1391]
+                - cell "Ana Jurić· nebojsa.medancic+Ana.Juric@gmail.com" [ref=f1e1392]:
+                  - text: Ana Jurić
+                  - generic [ref=f1e1393]: · nebojsa.medancic+Ana.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1394]
+                - cell "TicketingSimulator" [ref=f1e1395]
+                - cell [ref=f1e1396]:
+                  - button " QR" [ref=f1e1397] [cursor=pointer]:
+                    - generic [ref=f1e1398]: 
+                    - generic [ref=f1e1399]: QR
+              - row [ref=f1e1400]:
+                - cell "SECT1" [ref=f1e1401]
+                - cell "Red 6, Sjedalo 14" [ref=f1e1402]
+                - cell "Josip Jurić· nebojsa.medancic+Josip.Juric@gmail.com" [ref=f1e1403]:
+                  - text: Josip Jurić
+                  - generic [ref=f1e1404]: · nebojsa.medancic+Josip.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1405]
+                - cell "TicketingSimulator" [ref=f1e1406]
+                - cell [ref=f1e1407]:
+                  - button " QR" [ref=f1e1408] [cursor=pointer]:
+                    - generic [ref=f1e1409]: 
+                    - generic [ref=f1e1410]: QR
+              - row [ref=f1e1411]:
+                - cell "SECT1" [ref=f1e1412]
+                - cell "Red 6, Sjedalo 15" [ref=f1e1413]
+                - cell "Petra Jurić· nebojsa.medancic+Petra.Juric@gmail.com" [ref=f1e1414]:
+                  - text: Petra Jurić
+                  - generic [ref=f1e1415]: · nebojsa.medancic+Petra.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1416]
+                - cell "TicketingSimulator" [ref=f1e1417]
+                - cell [ref=f1e1418]:
+                  - button " QR" [ref=f1e1419] [cursor=pointer]:
+                    - generic [ref=f1e1420]: 
+                    - generic [ref=f1e1421]: QR
+              - row [ref=f1e1422]:
+                - cell "SECT1" [ref=f1e1423]
+                - cell "Red 6, Sjedalo 16" [ref=f1e1424]
+                - cell "Luka Jurić· nebojsa.medancic+Luka.Juric@gmail.com" [ref=f1e1425]:
+                  - text: Luka Jurić
+                  - generic [ref=f1e1426]: · nebojsa.medancic+Luka.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1427]
+                - cell "TicketingSimulator" [ref=f1e1428]
+                - cell [ref=f1e1429]:
+                  - button " QR" [ref=f1e1430] [cursor=pointer]:
+                    - generic [ref=f1e1431]: 
+                    - generic [ref=f1e1432]: QR
+              - row [ref=f1e1433]:
+                - cell "SECT1" [ref=f1e1434]
+                - cell "Red 6, Sjedalo 17" [ref=f1e1435]
+                - cell "Maja Jurić· nebojsa.medancic+Maja.Juric@gmail.com" [ref=f1e1436]:
+                  - text: Maja Jurić
+                  - generic [ref=f1e1437]: · nebojsa.medancic+Maja.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1438]
+                - cell "TicketingSimulator" [ref=f1e1439]
+                - cell [ref=f1e1440]:
+                  - button " QR" [ref=f1e1441] [cursor=pointer]:
+                    - generic [ref=f1e1442]: 
+                    - generic [ref=f1e1443]: QR
+              - row [ref=f1e1444]:
+                - cell "SECT1" [ref=f1e1445]
+                - cell "Red 6, Sjedalo 18" [ref=f1e1446]
+                - cell "Ante Jurić· nebojsa.medancic+Ante.Juric@gmail.com" [ref=f1e1447]:
+                  - text: Ante Jurić
+                  - generic [ref=f1e1448]: · nebojsa.medancic+Ante.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1449]
+                - cell "TicketingSimulator" [ref=f1e1450]
+                - cell [ref=f1e1451]:
+                  - button " QR" [ref=f1e1452] [cursor=pointer]:
+                    - generic [ref=f1e1453]: 
+                    - generic [ref=f1e1454]: QR
+              - row [ref=f1e1455]:
+                - cell "SECT1" [ref=f1e1456]
+                - cell "Red 6, Sjedalo 19" [ref=f1e1457]
+                - cell "Ivana Jurić· nebojsa.medancic+Ivana.Juric@gmail.com" [ref=f1e1458]:
+                  - text: Ivana Jurić
+                  - generic [ref=f1e1459]: · nebojsa.medancic+Ivana.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1460]
+                - cell "TicketingSimulator" [ref=f1e1461]
+                - cell [ref=f1e1462]:
+                  - button " QR" [ref=f1e1463] [cursor=pointer]:
+                    - generic [ref=f1e1464]: 
+                    - generic [ref=f1e1465]: QR
+              - row [ref=f1e1466]:
+                - cell "SECT1" [ref=f1e1467]
+                - cell "Red 6, Sjedalo 20" [ref=f1e1468]
+                - cell "Tomislav Jurić· nebojsa.medancic+Tomislav.Juric@gmail.com" [ref=f1e1469]:
+                  - text: Tomislav Jurić
+                  - generic [ref=f1e1470]: · nebojsa.medancic+Tomislav.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1471]
+                - cell "TicketingSimulator" [ref=f1e1472]
+                - cell [ref=f1e1473]:
+                  - button " QR" [ref=f1e1474] [cursor=pointer]:
+                    - generic [ref=f1e1475]: 
+                    - generic [ref=f1e1476]: QR
+              - row [ref=f1e1477]:
+                - cell "SECT1" [ref=f1e1478]
+                - cell "Red 7, Sjedalo 1" [ref=f1e1479]
+                - cell "Sara Jurić· nebojsa.medancic+Sara.Juric@gmail.com" [ref=f1e1480]:
+                  - text: Sara Jurić
+                  - generic [ref=f1e1481]: · nebojsa.medancic+Sara.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1482]
+                - cell "TicketingSimulator" [ref=f1e1483]
+                - cell [ref=f1e1484]:
+                  - button " QR" [ref=f1e1485] [cursor=pointer]:
+                    - generic [ref=f1e1486]: 
+                    - generic [ref=f1e1487]: QR
+              - row [ref=f1e1488]:
+                - cell "SECT1" [ref=f1e1489]
+                - cell "Red 7, Sjedalo 2" [ref=f1e1490]
+                - cell "Nikola Jurić· nebojsa.medancic+Nikola.Juric@gmail.com" [ref=f1e1491]:
+                  - text: Nikola Jurić
+                  - generic [ref=f1e1492]: · nebojsa.medancic+Nikola.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1493]
+                - cell "TicketingSimulator" [ref=f1e1494]
+                - cell [ref=f1e1495]:
+                  - button " QR" [ref=f1e1496] [cursor=pointer]:
+                    - generic [ref=f1e1497]: 
+                    - generic [ref=f1e1498]: QR
+              - row [ref=f1e1499]:
+                - cell "SECT1" [ref=f1e1500]
+                - cell "Red 7, Sjedalo 3" [ref=f1e1501]
+                - cell "Marija Jurić· nebojsa.medancic+Marija.Juric@gmail.com" [ref=f1e1502]:
+                  - text: Marija Jurić
+                  - generic [ref=f1e1503]: · nebojsa.medancic+Marija.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1504]
+                - cell "TicketingSimulator" [ref=f1e1505]
+                - cell [ref=f1e1506]:
+                  - button " QR" [ref=f1e1507] [cursor=pointer]:
+                    - generic [ref=f1e1508]: 
+                    - generic [ref=f1e1509]: QR
+              - row [ref=f1e1510]:
+                - cell "SECT1" [ref=f1e1511]
+                - cell "Red 7, Sjedalo 4" [ref=f1e1512]
+                - cell "Filip Jurić· nebojsa.medancic+Filip.Juric@gmail.com" [ref=f1e1513]:
+                  - text: Filip Jurić
+                  - generic [ref=f1e1514]: · nebojsa.medancic+Filip.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1515]
+                - cell "TicketingSimulator" [ref=f1e1516]
+                - cell [ref=f1e1517]:
+                  - button " QR" [ref=f1e1518] [cursor=pointer]:
+                    - generic [ref=f1e1519]: 
+                    - generic [ref=f1e1520]: QR
+              - row [ref=f1e1521]:
+                - cell "SECT1" [ref=f1e1522]
+                - cell "Red 7, Sjedalo 5" [ref=f1e1523]
+                - cell "Katarina Jurić· nebojsa.medancic+Katarina.Juric@gmail.com" [ref=f1e1524]:
+                  - text: Katarina Jurić
+                  - generic [ref=f1e1525]: · nebojsa.medancic+Katarina.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1526]
+                - cell "TicketingSimulator" [ref=f1e1527]
+                - cell [ref=f1e1528]:
+                  - button " QR" [ref=f1e1529] [cursor=pointer]:
+                    - generic [ref=f1e1530]: 
+                    - generic [ref=f1e1531]: QR
+              - row [ref=f1e1532]:
+                - cell "SECT1" [ref=f1e1533]
+                - cell "Red 7, Sjedalo 6" [ref=f1e1534]
+                - cell "Domagoj Jurić· nebojsa.medancic+Domagoj.Juric@gmail.com" [ref=f1e1535]:
+                  - text: Domagoj Jurić
+                  - generic [ref=f1e1536]: · nebojsa.medancic+Domagoj.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1537]
+                - cell "TicketingSimulator" [ref=f1e1538]
+                - cell [ref=f1e1539]:
+                  - button " QR" [ref=f1e1540] [cursor=pointer]:
+                    - generic [ref=f1e1541]: 
+                    - generic [ref=f1e1542]: QR
+              - row [ref=f1e1543]:
+                - cell "SECT1" [ref=f1e1544]
+                - cell "Red 7, Sjedalo 7" [ref=f1e1545]
+                - cell "Lucija Jurić· nebojsa.medancic+Lucija.Juric@gmail.com" [ref=f1e1546]:
+                  - text: Lucija Jurić
+                  - generic [ref=f1e1547]: · nebojsa.medancic+Lucija.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1548]
+                - cell "TicketingSimulator" [ref=f1e1549]
+                - cell [ref=f1e1550]:
+                  - button " QR" [ref=f1e1551] [cursor=pointer]:
+                    - generic [ref=f1e1552]: 
+                    - generic [ref=f1e1553]: QR
+              - row [ref=f1e1554]:
+                - cell "SECT1" [ref=f1e1555]
+                - cell "Red 7, Sjedalo 8" [ref=f1e1556]
+                - cell "Matej Jurić· nebojsa.medancic+Matej.Juric@gmail.com" [ref=f1e1557]:
+                  - text: Matej Jurić
+                  - generic [ref=f1e1558]: · nebojsa.medancic+Matej.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1559]
+                - cell "TicketingSimulator" [ref=f1e1560]
+                - cell [ref=f1e1561]:
+                  - button " QR" [ref=f1e1562] [cursor=pointer]:
+                    - generic [ref=f1e1563]: 
+                    - generic [ref=f1e1564]: QR
+              - row [ref=f1e1565]:
+                - cell "SECT1" [ref=f1e1566]
+                - cell "Red 7, Sjedalo 9" [ref=f1e1567]
+                - cell "Dora Jurić· nebojsa.medancic+Dora.Juric@gmail.com" [ref=f1e1568]:
+                  - text: Dora Jurić
+                  - generic [ref=f1e1569]: · nebojsa.medancic+Dora.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1570]
+                - cell "TicketingSimulator" [ref=f1e1571]
+                - cell [ref=f1e1572]:
+                  - button " QR" [ref=f1e1573] [cursor=pointer]:
+                    - generic [ref=f1e1574]: 
+                    - generic [ref=f1e1575]: QR
+              - row [ref=f1e1576]:
+                - cell "SECT1" [ref=f1e1577]
+                - cell "Red 7, Sjedalo 10" [ref=f1e1578]
+                - cell "Stjepan Jurić· nebojsa.medancic+Stjepan.Juric@gmail.com" [ref=f1e1579]:
+                  - text: Stjepan Jurić
+                  - generic [ref=f1e1580]: · nebojsa.medancic+Stjepan.Juric@gmail.com
+                - cell "2026-07-05" [ref=f1e1581]
+                - cell "TicketingSimulator" [ref=f1e1582]
+                - cell [ref=f1e1583]:
+                  - button " QR" [ref=f1e1584] [cursor=pointer]:
+                    - generic [ref=f1e1585]: 
+                    - generic [ref=f1e1586]: QR
+              - row [ref=f1e1587]:
+                - cell "SECT1" [ref=f1e1588]
+                - cell "Red 7, Sjedalo 11" [ref=f1e1589]
+                - cell "Ivan Vuković· nebojsa.medancic+Ivan.Vukovic@gmail.com" [ref=f1e1590]:
+                  - text: Ivan Vuković
+                  - generic [ref=f1e1591]: · nebojsa.medancic+Ivan.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1592]
+                - cell "TicketingSimulator" [ref=f1e1593]
+                - cell [ref=f1e1594]:
+                  - button " QR" [ref=f1e1595] [cursor=pointer]:
+                    - generic [ref=f1e1596]: 
+                    - generic [ref=f1e1597]: QR
+              - row [ref=f1e1598]:
+                - cell "SECT1" [ref=f1e1599]
+                - cell "Red 7, Sjedalo 12" [ref=f1e1600]
+                - cell "Marko Vuković· nebojsa.medancic+Marko.Vukovic@gmail.com" [ref=f1e1601]:
+                  - text: Marko Vuković
+                  - generic [ref=f1e1602]: · nebojsa.medancic+Marko.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1603]
+                - cell "TicketingSimulator" [ref=f1e1604]
+                - cell [ref=f1e1605]:
+                  - button " QR" [ref=f1e1606] [cursor=pointer]:
+                    - generic [ref=f1e1607]: 
+                    - generic [ref=f1e1608]: QR
+              - row [ref=f1e1609]:
+                - cell "SECT1" [ref=f1e1610]
+                - cell "Red 7, Sjedalo 13" [ref=f1e1611]
+                - cell "Ana Vuković· nebojsa.medancic+Ana.Vukovic@gmail.com" [ref=f1e1612]:
+                  - text: Ana Vuković
+                  - generic [ref=f1e1613]: · nebojsa.medancic+Ana.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1614]
+                - cell "TicketingSimulator" [ref=f1e1615]
+                - cell [ref=f1e1616]:
+                  - button " QR" [ref=f1e1617] [cursor=pointer]:
+                    - generic [ref=f1e1618]: 
+                    - generic [ref=f1e1619]: QR
+              - row [ref=f1e1620]:
+                - cell "SECT1" [ref=f1e1621]
+                - cell "Red 7, Sjedalo 14" [ref=f1e1622]
+                - cell "Josip Vuković· nebojsa.medancic+Josip.Vukovic@gmail.com" [ref=f1e1623]:
+                  - text: Josip Vuković
+                  - generic [ref=f1e1624]: · nebojsa.medancic+Josip.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1625]
+                - cell "TicketingSimulator" [ref=f1e1626]
+                - cell [ref=f1e1627]:
+                  - button " QR" [ref=f1e1628] [cursor=pointer]:
+                    - generic [ref=f1e1629]: 
+                    - generic [ref=f1e1630]: QR
+              - row [ref=f1e1631]:
+                - cell "SECT1" [ref=f1e1632]
+                - cell "Red 7, Sjedalo 15" [ref=f1e1633]
+                - cell "Petra Vuković· nebojsa.medancic+Petra.Vukovic@gmail.com" [ref=f1e1634]:
+                  - text: Petra Vuković
+                  - generic [ref=f1e1635]: · nebojsa.medancic+Petra.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1636]
+                - cell "TicketingSimulator" [ref=f1e1637]
+                - cell [ref=f1e1638]:
+                  - button " QR" [ref=f1e1639] [cursor=pointer]:
+                    - generic [ref=f1e1640]: 
+                    - generic [ref=f1e1641]: QR
+              - row [ref=f1e1642]:
+                - cell "SECT1" [ref=f1e1643]
+                - cell "Red 7, Sjedalo 16" [ref=f1e1644]
+                - cell "Luka Vuković· nebojsa.medancic+Luka.Vukovic@gmail.com" [ref=f1e1645]:
+                  - text: Luka Vuković
+                  - generic [ref=f1e1646]: · nebojsa.medancic+Luka.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1647]
+                - cell "TicketingSimulator" [ref=f1e1648]
+                - cell [ref=f1e1649]:
+                  - button " QR" [ref=f1e1650] [cursor=pointer]:
+                    - generic [ref=f1e1651]: 
+                    - generic [ref=f1e1652]: QR
+              - row [ref=f1e1653]:
+                - cell "SECT1" [ref=f1e1654]
+                - cell "Red 7, Sjedalo 17" [ref=f1e1655]
+                - cell "Maja Vuković· nebojsa.medancic+Maja.Vukovic@gmail.com" [ref=f1e1656]:
+                  - text: Maja Vuković
+                  - generic [ref=f1e1657]: · nebojsa.medancic+Maja.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1658]
+                - cell "TicketingSimulator" [ref=f1e1659]
+                - cell [ref=f1e1660]:
+                  - button " QR" [ref=f1e1661] [cursor=pointer]:
+                    - generic [ref=f1e1662]: 
+                    - generic [ref=f1e1663]: QR
+              - row [ref=f1e1664]:
+                - cell "SECT1" [ref=f1e1665]
+                - cell "Red 7, Sjedalo 18" [ref=f1e1666]
+                - cell "Ante Vuković· nebojsa.medancic+Ante.Vukovic@gmail.com" [ref=f1e1667]:
+                  - text: Ante Vuković
+                  - generic [ref=f1e1668]: · nebojsa.medancic+Ante.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1669]
+                - cell "TicketingSimulator" [ref=f1e1670]
+                - cell [ref=f1e1671]:
+                  - button " QR" [ref=f1e1672] [cursor=pointer]:
+                    - generic [ref=f1e1673]: 
+                    - generic [ref=f1e1674]: QR
+              - row [ref=f1e1675]:
+                - cell "SECT1" [ref=f1e1676]
+                - cell "Red 7, Sjedalo 19" [ref=f1e1677]
+                - cell "Ivana Vuković· nebojsa.medancic+Ivana.Vukovic@gmail.com" [ref=f1e1678]:
+                  - text: Ivana Vuković
+                  - generic [ref=f1e1679]: · nebojsa.medancic+Ivana.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1680]
+                - cell "TicketingSimulator" [ref=f1e1681]
+                - cell [ref=f1e1682]:
+                  - button " QR" [ref=f1e1683] [cursor=pointer]:
+                    - generic [ref=f1e1684]: 
+                    - generic [ref=f1e1685]: QR
+              - row [ref=f1e1686]:
+                - cell "SECT1" [ref=f1e1687]
+                - cell "Red 7, Sjedalo 20" [ref=f1e1688]
+                - cell "Tomislav Vuković· nebojsa.medancic+Tomislav.Vukovic@gmail.com" [ref=f1e1689]:
+                  - text: Tomislav Vuković
+                  - generic [ref=f1e1690]: · nebojsa.medancic+Tomislav.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1691]
+                - cell "TicketingSimulator" [ref=f1e1692]
+                - cell [ref=f1e1693]:
+                  - button " QR" [ref=f1e1694] [cursor=pointer]:
+                    - generic [ref=f1e1695]: 
+                    - generic [ref=f1e1696]: QR
+              - row [ref=f1e1697]:
+                - cell "SECT1" [ref=f1e1698]
+                - cell "Red 8, Sjedalo 1" [ref=f1e1699]
+                - cell "Sara Vuković· nebojsa.medancic+Sara.Vukovic@gmail.com" [ref=f1e1700]:
+                  - text: Sara Vuković
+                  - generic [ref=f1e1701]: · nebojsa.medancic+Sara.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1702]
+                - cell "TicketingSimulator" [ref=f1e1703]
+                - cell [ref=f1e1704]:
+                  - button " QR" [ref=f1e1705] [cursor=pointer]:
+                    - generic [ref=f1e1706]: 
+                    - generic [ref=f1e1707]: QR
+              - row [ref=f1e1708]:
+                - cell "SECT1" [ref=f1e1709]
+                - cell "Red 8, Sjedalo 2" [ref=f1e1710]
+                - cell "Nikola Vuković· nebojsa.medancic+Nikola.Vukovic@gmail.com" [ref=f1e1711]:
+                  - text: Nikola Vuković
+                  - generic [ref=f1e1712]: · nebojsa.medancic+Nikola.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1713]
+                - cell "TicketingSimulator" [ref=f1e1714]
+                - cell [ref=f1e1715]:
+                  - button " QR" [ref=f1e1716] [cursor=pointer]:
+                    - generic [ref=f1e1717]: 
+                    - generic [ref=f1e1718]: QR
+              - row [ref=f1e1719]:
+                - cell "SECT1" [ref=f1e1720]
+                - cell "Red 8, Sjedalo 3" [ref=f1e1721]
+                - cell "Marija Vuković· nebojsa.medancic+Marija.Vukovic@gmail.com" [ref=f1e1722]:
+                  - text: Marija Vuković
+                  - generic [ref=f1e1723]: · nebojsa.medancic+Marija.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1724]
+                - cell "TicketingSimulator" [ref=f1e1725]
+                - cell [ref=f1e1726]:
+                  - button " QR" [ref=f1e1727] [cursor=pointer]:
+                    - generic [ref=f1e1728]: 
+                    - generic [ref=f1e1729]: QR
+              - row [ref=f1e1730]:
+                - cell "SECT1" [ref=f1e1731]
+                - cell "Red 8, Sjedalo 4" [ref=f1e1732]
+                - cell "Filip Vuković· nebojsa.medancic+Filip.Vukovic@gmail.com" [ref=f1e1733]:
+                  - text: Filip Vuković
+                  - generic [ref=f1e1734]: · nebojsa.medancic+Filip.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1735]
+                - cell "TicketingSimulator" [ref=f1e1736]
+                - cell [ref=f1e1737]:
+                  - button " QR" [ref=f1e1738] [cursor=pointer]:
+                    - generic [ref=f1e1739]: 
+                    - generic [ref=f1e1740]: QR
+              - row [ref=f1e1741]:
+                - cell "SECT1" [ref=f1e1742]
+                - cell "Red 8, Sjedalo 5" [ref=f1e1743]
+                - cell "Katarina Vuković· nebojsa.medancic+Katarina.Vukovic@gmail.com" [ref=f1e1744]:
+                  - text: Katarina Vuković
+                  - generic [ref=f1e1745]: · nebojsa.medancic+Katarina.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1746]
+                - cell "TicketingSimulator" [ref=f1e1747]
+                - cell [ref=f1e1748]:
+                  - button " QR" [ref=f1e1749] [cursor=pointer]:
+                    - generic [ref=f1e1750]: 
+                    - generic [ref=f1e1751]: QR
+              - row [ref=f1e1752]:
+                - cell "SECT1" [ref=f1e1753]
+                - cell "Red 8, Sjedalo 6" [ref=f1e1754]
+                - cell "Domagoj Vuković· nebojsa.medancic+Domagoj.Vukovic@gmail.com" [ref=f1e1755]:
+                  - text: Domagoj Vuković
+                  - generic [ref=f1e1756]: · nebojsa.medancic+Domagoj.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1757]
+                - cell "TicketingSimulator" [ref=f1e1758]
+                - cell [ref=f1e1759]:
+                  - button " QR" [ref=f1e1760] [cursor=pointer]:
+                    - generic [ref=f1e1761]: 
+                    - generic [ref=f1e1762]: QR
+              - row [ref=f1e1763]:
+                - cell "SECT1" [ref=f1e1764]
+                - cell "Red 8, Sjedalo 7" [ref=f1e1765]
+                - cell "Lucija Vuković· nebojsa.medancic+Lucija.Vukovic@gmail.com" [ref=f1e1766]:
+                  - text: Lucija Vuković
+                  - generic [ref=f1e1767]: · nebojsa.medancic+Lucija.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1768]
+                - cell "TicketingSimulator" [ref=f1e1769]
+                - cell [ref=f1e1770]:
+                  - button " QR" [ref=f1e1771] [cursor=pointer]:
+                    - generic [ref=f1e1772]: 
+                    - generic [ref=f1e1773]: QR
+              - row [ref=f1e1774]:
+                - cell "SECT1" [ref=f1e1775]
+                - cell "Red 8, Sjedalo 8" [ref=f1e1776]
+                - cell "Matej Vuković· nebojsa.medancic+Matej.Vukovic@gmail.com" [ref=f1e1777]:
+                  - text: Matej Vuković
+                  - generic [ref=f1e1778]: · nebojsa.medancic+Matej.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1779]
+                - cell "TicketingSimulator" [ref=f1e1780]
+                - cell [ref=f1e1781]:
+                  - button " QR" [ref=f1e1782] [cursor=pointer]:
+                    - generic [ref=f1e1783]: 
+                    - generic [ref=f1e1784]: QR
+              - row [ref=f1e1785]:
+                - cell "SECT1" [ref=f1e1786]
+                - cell "Red 8, Sjedalo 9" [ref=f1e1787]
+                - cell "Dora Vuković· nebojsa.medancic+Dora.Vukovic@gmail.com" [ref=f1e1788]:
+                  - text: Dora Vuković
+                  - generic [ref=f1e1789]: · nebojsa.medancic+Dora.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1790]
+                - cell "TicketingSimulator" [ref=f1e1791]
+                - cell [ref=f1e1792]:
+                  - button " QR" [ref=f1e1793] [cursor=pointer]:
+                    - generic [ref=f1e1794]: 
+                    - generic [ref=f1e1795]: QR
+              - row [ref=f1e1796]:
+                - cell "SECT1" [ref=f1e1797]
+                - cell "Red 8, Sjedalo 10" [ref=f1e1798]
+                - cell "Stjepan Vuković· nebojsa.medancic+Stjepan.Vukovic@gmail.com" [ref=f1e1799]:
+                  - text: Stjepan Vuković
+                  - generic [ref=f1e1800]: · nebojsa.medancic+Stjepan.Vukovic@gmail.com
+                - cell "2026-07-05" [ref=f1e1801]
+                - cell "TicketingSimulator" [ref=f1e1802]
+                - cell [ref=f1e1803]:
+                  - button " QR" [ref=f1e1804] [cursor=pointer]:
+                    - generic [ref=f1e1805]: 
+                    - generic [ref=f1e1806]: QR
+        - button "Zatvori" [ref=f1e1808] [cursor=pointer]

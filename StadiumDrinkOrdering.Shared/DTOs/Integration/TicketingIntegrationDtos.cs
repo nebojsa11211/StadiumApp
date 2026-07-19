@@ -446,3 +446,34 @@ public class TicketSoldNotification
     /// <summary>Sold | Refunded</summary>
     public string Action { get; set; } = "Sold";
 }
+
+/// <summary>
+/// A login account exposed to the simulator's credentials tab so a tester can pick an
+/// identity to sign into the Bar/Runner/Customer apps with. Development-only.
+/// </summary>
+public class IntegrationUserDto
+{
+    public int Id { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? FullName { get; set; }
+
+    /// <summary>Customer | Admin | Bartender | Waiter.</summary>
+    public string Role { get; set; } = string.Empty;
+
+    public bool IsActive { get; set; }
+
+    /// <summary>Auto-provisioned shell account — has an unusable password hash, so it can never
+    /// be logged into until the fan claims it.</summary>
+    public bool IsShellAccount { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime? LastLoginAt { get; set; }
+
+    /// <summary>
+    /// Plaintext password, but only for the accounts the dev seeder creates with a known
+    /// password. Null for every other user — stored passwords are BCrypt hashes and cannot
+    /// be recovered.
+    /// </summary>
+    public string? KnownPassword { get; set; }
+}

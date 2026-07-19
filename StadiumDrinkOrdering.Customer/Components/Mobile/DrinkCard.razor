@@ -5,7 +5,16 @@
    one-tap add; once in the cart a −/qty/+ stepper lets the fan adjust without opening the sheet. *@
 
 <div id="customer-drink-card-item-@Drink.Id" class="drink @(Qty > 0 ? "has" : "") @(Available ? "" : "soldout")" @onclick="OnOpen">
-    <div id="customer-drink-card-thumb-@Drink.Id" class="thumb @DrinkVisuals.Thumb(Drink.CategoryName)">@DrinkVisuals.Emoji(Drink.CategoryIcon)</div>
+    <div id="customer-drink-card-thumb-@Drink.Id" class="thumb @DrinkVisuals.Thumb(Drink.CategoryName)">
+        @if (!string.IsNullOrWhiteSpace(Drink.ImageUrl))
+        {
+            <img id="customer-drink-card-thumb-img-@Drink.Id" src="@Drink.ImageUrl" alt="@Drink.Name" loading="lazy" />
+        }
+        else
+        {
+            @DrinkVisuals.Emoji(Drink.CategoryIcon)
+        }
+    </div>
     <div id="customer-drink-card-name-@Drink.Id" class="dn">@Drink.Name</div>
     @if (!string.IsNullOrWhiteSpace(Drink.Description))
     {

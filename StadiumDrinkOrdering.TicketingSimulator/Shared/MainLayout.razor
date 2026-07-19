@@ -7,6 +7,14 @@
         <span id="simulator-layout-tag" class="sim-tag">@Localizer["Layout_Tag"]</span>
         <div id="simulator-layout-language-container" class="ms-auto"><LanguageSwitcher /></div>
     </header>
+    <nav id="simulator-layout-tabs" class="sim-tabs">
+        <NavLink id="simulator-layout-tab-simulator" class="sim-tab" href="/" Match="NavLinkMatch.All">
+            <i class="bi bi-cpu"></i> @Localizer["Layout_TabSimulator"]
+        </NavLink>
+        <NavLink id="simulator-layout-tab-credentials" class="sim-tab" href="credentials">
+            <i class="bi bi-key"></i> @Localizer["Layout_TabCredentials"]
+        </NavLink>
+    </nav>
     <main id="simulator-layout-main" class="sim-main">
         @Body
     </main>

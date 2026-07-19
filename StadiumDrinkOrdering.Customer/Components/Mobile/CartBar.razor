@@ -3,6 +3,24 @@
 @* Sticky cart summary that rises from the bottom when the cart is non-empty. *@
 
 <div id="customer-cart-bar-container" class="cartbar @(Count > 0 ? "show" : "")">
+    @* Affordability sits next to the number it constrains: the fan learns the cart outgrew their
+       balance while still choosing drinks, not at checkout. A null Balance means "no wallet, or we
+       couldn't load one" — we render nothing rather than an ambiguous placeholder. *@
+    @if (Count > 0 && Balance is { } balance)
+    {
+        var short_ = Total - balance;
+        <div id="customer-cart-bar-funds" class="funds @(short_ > 0 ? "short" : "")" role="status" aria-live="polite">
+            <span id="customer-cart-bar-funds-text" class="funds-t">
+                @(short_ > 0
+                    ? Localizer["CartBar_Short", short_.ToString("F2")]
+                    : Localizer["CartBar_BalanceAfter", (balance - Total).ToString("F2")])
+            </span>
+            @if (short_ > 0)
+            {
+                <button id="customer-cart-bar-topup-btn" class="funds-cta" @onclick="OnTopUp">@Localizer["CartBar_TopUp"] ›</button>
+            }
+        </div>
+    }
     <div id="customer-cart-bar-inner" class="inner" @onclick="OnView">
         <div id="customer-cart-bar-left" class="l">
             @* @key re-mounts the badge when the count changes, replaying the bump keyframe. *@
@@ -18,4 +36,9 @@
     [Parameter] public decimal Total { get; set; }
     [Parameter] public string Label { get; set; } = "Cart";  // Will be set by parent or use default from Localizer
     [Parameter] public EventCallback OnView { get; set; }
+
+    // Spendable balance for the current session; null when there's no wallet or it couldn't be loaded,
+    // in which case the affordability line is omitted entirely rather than shown as unknown.
+    [Parameter] public decimal? Balance { get; set; }
+    [Parameter] public EventCallback OnTopUp { get; set; }
 }

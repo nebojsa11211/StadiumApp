@@ -329,6 +329,120 @@
   <data name="Nav_Seasons" xml:space="preserve">
     <value>Seasons</value>
   </data>
+  <data name="Nav_Teams" xml:space="preserve">
+    <value>Teams</value>
+  </data>
+  <data name="Teams_PageTitle" xml:space="preserve">
+    <value>Teams - Stadium Admin</value>
+  </data>
+  <data name="Teams_Eyebrow" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="Teams_Heading" xml:space="preserve">
+    <value>Teams</value>
+  </data>
+  <data name="Teams_Subtitle" xml:space="preserve">
+    <value>Visiting teams and their crests. Add a team once and its crest is reused on every fixture.</value>
+  </data>
+  <data name="Teams_ListSection" xml:space="preserve">
+    <value>Teams</value>
+  </data>
+  <data name="Teams_Loading" xml:space="preserve">
+    <value>Loading teams...</value>
+  </data>
+  <data name="Teams_LoadFailed" xml:space="preserve">
+    <value>Could not load teams.</value>
+  </data>
+  <data name="Teams_Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Teams_AddTeam" xml:space="preserve">
+    <value>Add team</value>
+  </data>
+  <data name="Teams_NewTeam" xml:space="preserve">
+    <value>New team</value>
+  </data>
+  <data name="Teams_EditTeam" xml:space="preserve">
+    <value>Edit team</value>
+  </data>
+  <data name="Teams_NoTeams" xml:space="preserve">
+    <value>No teams yet. Add one to reuse its crest across fixtures.</value>
+  </data>
+  <data name="Teams_NoMatches" xml:space="preserve">
+    <value>No teams match your search.</value>
+  </data>
+  <data name="Teams_SearchPlaceholder" xml:space="preserve">
+    <value>Search teams...</value>
+  </data>
+  <data name="Teams_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Teams_ShortName" xml:space="preserve">
+    <value>Short name</value>
+  </data>
+  <data name="Teams_Founded" xml:space="preserve">
+    <value>Founded</value>
+  </data>
+  <data name="Teams_City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Teams_PrimaryColor" xml:space="preserve">
+    <value>Primary colour</value>
+  </data>
+  <data name="Teams_SecondaryColor" xml:space="preserve">
+    <value>Secondary colour</value>
+  </data>
+  <data name="Teams_Website" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="Teams_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Teams_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Teams_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Teams_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Teams_Saved" xml:space="preserve">
+    <value>Team saved.</value>
+  </data>
+  <data name="Teams_Deleted" xml:space="preserve">
+    <value>Team deleted.</value>
+  </data>
+  <data name="Teams_SaveFailed" xml:space="preserve">
+    <value>Could not save the team.</value>
+  </data>
+  <data name="Teams_DuplicateName" xml:space="preserve">
+    <value>A team with that name already exists.</value>
+  </data>
+  <data name="Teams_UploadCrest" xml:space="preserve">
+    <value>Upload crest</value>
+  </data>
+  <data name="Teams_ReplaceCrest" xml:space="preserve">
+    <value>Replace crest</value>
+  </data>
+  <data name="Teams_RemoveCrest" xml:space="preserve">
+    <value>Remove crest</value>
+  </data>
+  <data name="Teams_CrestSaved" xml:space="preserve">
+    <value>Crest saved.</value>
+  </data>
+  <data name="Teams_CrestRemoved" xml:space="preserve">
+    <value>Crest removed.</value>
+  </data>
+  <data name="Teams_CrestFailed" xml:space="preserve">
+    <value>Could not save the crest.</value>
+  </data>
+  <data name="Teams_CrestTooLarge" xml:space="preserve">
+    <value>That image is too large. Crests are limited to 2 MB.</value>
+  </data>
+  <data name="Teams_CrestAfterSaveHint" xml:space="preserve">
+    <value>Save the team first, then upload its crest from the list.</value>
+  </data>
   <data name="Nav_Tickets" xml:space="preserve">
     <value>Tickets</value>
   </data>
@@ -1840,6 +1954,9 @@
   <data name="Drinks_AddNewDrinkButton" xml:space="preserve">
     <value>Add New Drink</value>
   </data>
+  <data name="Drinks_ManageCategoriesButton" xml:space="preserve">
+    <value>Manage Categories</value>
+  </data>
   <data name="Drinks_LoadingMessage" xml:space="preserve">
     <value>Loading drinks...</value>
   </data>
@@ -2443,6 +2560,84 @@
   <data name="Events_PhaseLabel" xml:space="preserve">
     <value>Phase</value>
   </data>
+  <data name="Events_Phase_Future" xml:space="preserve">
+    <value>Upcoming</value>
+  </data>
+  <data name="Events_Phase_Active" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="Events_Phase_Past" xml:space="preserve">
+    <value>Past</value>
+  </data>
+  <data name="Events_Status_Planned" xml:space="preserve">
+    <value>Planned</value>
+  </data>
+  <data name="Events_Status_OnSale" xml:space="preserve">
+    <value>On Sale</value>
+  </data>
+  <data name="Events_Status_SoldOut" xml:space="preserve">
+    <value>Sold Out</value>
+  </data>
+  <data name="Events_Status_Active" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="Events_Status_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Events_Status_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Events_StatusChangedAlert" xml:space="preserve">
+    <value>'{0}' is now {1}</value>
+  </data>
+  <data name="Events_ValidationRequiredFields" xml:space="preserve">
+    <value>Please fill in all required fields.</value>
+  </data>
+  <data name="Events_ValidationNoSeats" xml:space="preserve">
+    <value>The stadium has no seats yet. Draw the stadium layout before creating events.</value>
+  </data>
+  <data name="Events_ValidationNeedResidentClub" xml:space="preserve">
+    <value>Add a resident club in Venue Settings before creating a Match event.</value>
+  </data>
+  <data name="Events_ValidationMatchNeedsTeams" xml:space="preserve">
+    <value>A Match event requires both a home team and an away team.</value>
+  </data>
+  <data name="Events_CreatedAlert" xml:space="preserve">
+    <value>Event '{0}' created successfully.</value>
+  </data>
+  <data name="Events_CreateFailedAlert" xml:space="preserve">
+    <value>Failed to create event ({0}).</value>
+  </data>
+  <data name="Events_UpdatedAlert" xml:space="preserve">
+    <value>Event '{0}' updated successfully.</value>
+  </data>
+  <data name="Events_UpdateFailedAlert" xml:space="preserve">
+    <value>Failed to update event ({0}).</value>
+  </data>
+  <data name="Events_StatusChangeFailedAlert" xml:space="preserve">
+    <value>Could not change status ({0}).</value>
+  </data>
+  <data name="Events_StatusChangeErrorAlert" xml:space="preserve">
+    <value>Could not change status: {0}</value>
+  </data>
+  <data name="Events_ConfirmCancelTransition" xml:space="preserve">
+    <value>Are you sure you want to cancel '{0}'? This invalidates any active ticket sessions and cannot be undone.</value>
+  </data>
+  <data name="Events_ConfirmCompleteTransition" xml:space="preserve">
+    <value>Are you sure you want to complete '{0}'? This invalidates any active ticket sessions and cannot be undone.</value>
+  </data>
+  <data name="Events_ConfirmDelete" xml:space="preserve">
+    <value>Are you sure you want to delete this event? This action cannot be undone.</value>
+  </data>
+  <data name="Events_DeletedAlert" xml:space="preserve">
+    <value>Event deleted successfully.</value>
+  </data>
+  <data name="Events_DeleteFailedAlert" xml:space="preserve">
+    <value>Failed to delete event: {0}</value>
+  </data>
+  <data name="Events_EditLockedCancelled" xml:space="preserve">
+    <value>This event has been cancelled and can no longer be edited.</value>
+  </data>
   <data name="Events_SellingStatus" xml:space="preserve">
     <value>Selling</value>
   </data>
@@ -2454,6 +2649,12 @@
   </data>
   <data name="Events_EditLockedTooltip" xml:space="preserve">
     <value>This event has already taken place and can no longer be edited.</value>
+  </data>
+  <data name="Events_SeasonClosedLocked" xml:space="preserve">
+    <value>Season "{0}" ended on {1} and is closed. Events in a closed season can no longer be added, changed or removed. To make changes, extend the season's end date first.</value>
+  </data>
+  <data name="Events_SeasonClosedOptionSuffix" xml:space="preserve">
+    <value> (closed)</value>
   </data>
   <data name="Events_LiveOccupancyButton" xml:space="preserve">
     <value>Live occupancy</value>
@@ -2569,6 +2770,12 @@
   <data name="Events_AwayTeamPlaceholder" xml:space="preserve">
     <value>Visiting team</value>
   </data>
+  <data name="Events_AwayTeamHint" xml:space="preserve">
+    <value>Pick a known team to reuse its crest, or type a new one.</value>
+  </data>
+  <data name="Events_AwayTeamManageLink" xml:space="preserve">
+    <value>Manage teams</value>
+  </data>
   <data name="Events_SelectHomeTeam" xml:space="preserve">
     <value>Select home team…</value>
   </data>
@@ -2601,6 +2808,39 @@
   </data>
   <data name="Events_DescriptionFieldLabel" xml:space="preserve">
     <value>Description</value>
+  </data>
+  <data name="Events_PosterLabel" xml:space="preserve">
+    <value>Event poster</value>
+  </data>
+  <data name="Events_PosterHint" xml:space="preserve">
+    <value>Generated from the crests below. The teams, venue and kick-off are rendered into the image, so check the text before approving.</value>
+  </data>
+  <data name="Events_PosterPromptPlaceholder" xml:space="preserve">
+    <value>Describe the poster you want…</value>
+  </data>
+  <data name="Events_PosterGenerate" xml:space="preserve">
+    <value>Generate image</value>
+  </data>
+  <data name="Events_PosterRegenerate" xml:space="preserve">
+    <value>Regenerate</value>
+  </data>
+  <data name="Events_PosterGenerating" xml:space="preserve">
+    <value>Generating…</value>
+  </data>
+  <data name="Events_PosterSuggestPrompt" xml:space="preserve">
+    <value>Suggest prompt</value>
+  </data>
+  <data name="Events_PosterRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Events_PosterNone" xml:space="preserve">
+    <value>No poster yet</value>
+  </data>
+  <data name="Events_PosterErrorUnreachable" xml:space="preserve">
+    <value>Could not reach the image generation service. Check that it is running and try again.</value>
+  </data>
+  <data name="Events_PosterErrorPlaceholder" xml:space="preserve">
+    <value>Image generation failed upstream and returned a placeholder. Try rewording the prompt.</value>
   </data>
   <data name="Events_DateTimeLabel" xml:space="preserve">
     <value>Event Date &amp; Time *</value>
@@ -3740,6 +3980,7 @@
 <data name="Seasons_EndAfterStart" xml:space="preserve"><value>End date must be after the start date.</value></data>
 <data name="Seasons_FormCurrent" xml:space="preserve"><value>Current season (default for new events &amp; season tickets)</value></data>
   <data name="Seasons_FinishedNotCurrent" xml:space="preserve"><value>This season has already finished, so it can't be set as the current season.</value></data>
+<data name="Seasons_EndDateFreezesEvents" xml:space="preserve"><value>Once this date has passed the season closes: its events can no longer be added, changed or removed.</value></data>
 <data name="Seasons_Cancel" xml:space="preserve"><value>Cancel</value></data>
 <data name="Seasons_CreateSeason" xml:space="preserve"><value>Create season</value></data>
 <data name="Seasons_SaveChanges" xml:space="preserve"><value>Save changes</value></data>
@@ -3918,7 +4159,6 @@
   <data name="Venue_NewClub" xml:space="preserve"><value>New club</value></data>
   <data name="Venue_EditClub" xml:space="preserve"><value>Edit club</value></data>
   <data name="Venue_NoClubs" xml:space="preserve"><value>No clubs added yet.</value></data>
-  <data name="Venue_ClubName" xml:space="preserve"><value>Club name</value></data>
   <data name="Venue_ClubShortName" xml:space="preserve"><value>Short name</value></data>
   <data name="Venue_ClubPrimaryColor" xml:space="preserve"><value>Primary colour</value></data>
   <data name="Venue_ClubSecondaryColor" xml:space="preserve"><value>Secondary colour</value></data>
@@ -3926,7 +4166,6 @@
   <data name="Venue_ClubWebsite" xml:space="preserve"><value>Website</value></data>
   <data name="Venue_ClubIsPrimary" xml:space="preserve"><value>Primary (home) club</value></data>
   <data name="Venue_ClubDisplayOrder" xml:space="preserve"><value>Display order</value></data>
-  <data name="Venue_ClubLogo" xml:space="preserve"><value>Logo</value></data>
   <data name="Venue_UploadLogo" xml:space="preserve"><value>Upload logo</value></data>
   <data name="Venue_RemoveLogo" xml:space="preserve"><value>Remove logo</value></data>
   <data name="Venue_NoLogo" xml:space="preserve"><value>No logo</value></data>
@@ -3952,6 +4191,15 @@
   <data name="Settings_TicketSalesEnabledHint" xml:space="preserve"><value>When off, the customer app hides its buy flow and the API rejects new purchases. Tickets then enter the system only through the external ticketing integration.</value></data>
   <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Ticket sales are ON — customers can buy tickets in the app.</value></data>
   <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Ticket sales are OFF — tickets only come from the external system.</value></data>
+  <data name="Settings_PaymentsSection" xml:space="preserve"><value>Payments</value></data>
+  <data name="Settings_PaymentsIntro" xml:space="preserve"><value>Choose which payment methods fans can pick when ordering drinks in the customer app. Disabled methods are hidden from the cart and rejected by the order API.</value></data>
+  <data name="Settings_PayWallet" xml:space="preserve"><value>HALFTIME Wallet</value></data>
+  <data name="Settings_PayWalletHint" xml:space="preserve"><value>Pay from the fan's wallet balance. The order is charged immediately at checkout.</value></data>
+  <data name="Settings_PayCard" xml:space="preserve"><value>Card</value></data>
+  <data name="Settings_PayCardHint" xml:space="preserve"><value>Fan declares they will pay by card. No money moves at checkout — the order is settled at the bar.</value></data>
+  <data name="Settings_PayCash" xml:space="preserve"><value>Cash on delivery</value></data>
+  <data name="Settings_PayCashHint" xml:space="preserve"><value>Fan pays the runner in cash when the order is delivered.</value></data>
+  <data name="Settings_PaymentsNoneWarning" xml:space="preserve"><value>At least one payment method must stay enabled — otherwise fans cannot check out.</value></data>
   <data name="Settings_EmailSection" xml:space="preserve"><value>Email (SMTP)</value></data>
   <data name="Settings_EmailSubtitle" xml:space="preserve"><value>Configure the outgoing mail server used for account activation links and notification emails.</value></data>
   <data name="Settings_EmailEnabled" xml:space="preserve"><value>Send emails over SMTP</value></data>
@@ -4044,6 +4292,16 @@
   <data name="Settings_RestoreConfirmButton" xml:space="preserve"><value>Yes, restore data</value></data>
   <data name="Settings_RestoreSuccess" xml:space="preserve"><value>Restore complete — {0} rows inserted across {1} table(s).</value></data>
   <data name="Settings_RestoreFailed" xml:space="preserve"><value>Restore failed and was rolled back: {0}</value></data>
+  <data name="Settings_ImageGenSection" xml:space="preserve"><value>Image generation</value></data>
+  <data name="Settings_ImageGenSubtitle" xml:space="preserve"><value>Test the external image-generation API. Enter a prompt and generate a single image.</value></data>
+  <data name="Settings_ImageGenPrompt" xml:space="preserve"><value>Prompt</value></data>
+  <data name="Settings_ImageGenPromptPlaceholder" xml:space="preserve"><value>e.g. a red fox in snow, cinematic lighting</value></data>
+  <data name="Settings_ImageGenWidth" xml:space="preserve"><value>Width (px)</value></data>
+  <data name="Settings_ImageGenHeight" xml:space="preserve"><value>Height (px)</value></data>
+  <data name="Settings_ImageGenGenerate" xml:space="preserve"><value>Generate image</value></data>
+  <data name="Settings_ImageGenDownload" xml:space="preserve"><value>Download PNG</value></data>
+  <data name="Settings_ImageGenPlaceholder" xml:space="preserve"><value>The API returned a placeholder image — generation failed upstream. Try a different prompt or check that the image service is running.</value></data>
+  <data name="Settings_ImageGenFailed" xml:space="preserve"><value>Could not reach the image-generation API. Check that it is running and that ImageGeneration:BaseUrl is correct.</value></data>
   <data name="Tickets_DetailViewTitle" xml:space="preserve"><value>View details</value></data>
   <data name="Tickets_DetailTitle" xml:space="preserve"><value>Ticket Details</value></data>
   <data name="Tickets_DetailClose" xml:space="preserve"><value>Close</value></data>
@@ -4091,4 +4349,220 @@
   <data name="Events_NoSeasonOption" xml:space="preserve"><value>(no season)</value></data>
   <data name="Events_CurrentSeasonSuffix" xml:space="preserve"><value>(current)</value></data>
   <data name="Events_SeasonHint" xml:space="preserve"><value>Linking backfills this season's passes with a match ticket.</value></data>
+  <data name="Events_CrestHomeLabel" xml:space="preserve">
+    <value>Home crest</value>
+  </data>
+  <data name="Events_CrestAwayLabel" xml:space="preserve">
+    <value>Away crest</value>
+  </data>
+  <data name="Events_CrestHomeMissing" xml:space="preserve">
+    <value>No crest for the home club — add a logo in Venue Settings.</value>
+  </data>
+  <data name="Events_CrestAwayMissing" xml:space="preserve">
+    <value>Upload the opponent's crest.</value>
+  </data>
+  <data name="Events_CrestRemembered" xml:space="preserve">
+    <value>Remembered from a previous fixture</value>
+  </data>
+  <data name="Events_CrestTooLarge" xml:space="preserve">
+    <value>That crest image is too large (max 2 MB).</value>
+  </data>
+  <data name="Events_CrestUnreadable" xml:space="preserve">
+    <value>That crest image could not be read.</value>
+  </data>
+  <data name="Events_PosterErrorNoCrests" xml:space="preserve">
+    <value>Add the crests first — the poster is built from them.</value>
+  </data>
+  <data name="Events_PosterReviewTitle" xml:space="preserve">
+    <value>Check the text before publishing</value>
+  </data>
+  <data name="Events_PosterReviewBody" xml:space="preserve">
+    <value>The image generator writes the team names, venue and kick-off into the artwork and can misspell them. Fans keep seeing the plain fixture card until you approve this.</value>
+  </data>
+  <data name="Events_PosterApproveLabel" xml:space="preserve">
+    <value>The text on this poster is correct — show it to fans</value>
+  </data>
+  <data name="Events_PosterApproved" xml:space="preserve">
+    <value>Approved — shown to fans.</value>
+  </data>
+  <data name="Events_PosterStale" xml:space="preserve">
+    <value>This poster was made for different match details. Save to regenerate it.</value>
+  </data>
+  <data name="Login_ShowPassword" xml:space="preserve">
+    <value>Show password</value>
+  </data>
+  <data name="Login_HidePassword" xml:space="preserve">
+    <value>Hide password</value>
+  </data>
+  <data name="CustAnalytics_DetailLoadFailed" xml:space="preserve">
+    <value>Failed to load customer details.</value>
+  </data>
+  <data name="CustAnalytics_DetailClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="CustAnalytics_DetailTotalSpent" xml:space="preserve">
+    <value>Total spent</value>
+  </data>
+  <data name="CustAnalytics_DetailTickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="CustAnalytics_DetailDrinks" xml:space="preserve">
+    <value>Drinks</value>
+  </data>
+  <data name="CustAnalytics_DetailAvgTicket" xml:space="preserve">
+    <value>Avg ticket</value>
+  </data>
+  <data name="CustAnalytics_DetailDrinkOrders" xml:space="preserve">
+    <value>Drink orders</value>
+  </data>
+  <data name="CustAnalytics_DetailAvgOrder" xml:space="preserve">
+    <value>Avg order</value>
+  </data>
+  <data name="CustAnalytics_DetailEvents" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="CustAnalytics_DetailTicketPurchases" xml:space="preserve">
+    <value>Ticket purchases</value>
+  </data>
+  <data name="CustAnalytics_DetailDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="CustAnalytics_DetailEvent" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="CustAnalytics_DetailSeat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="CustAnalytics_DetailPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="CustAnalytics_DetailStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CustAnalytics_DetailItems" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="CustAnalytics_DetailTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="CustAnalytics_DetailNoTickets" xml:space="preserve">
+    <value>No ticket purchases recorded.</value>
+  </data>
+  <data name="CustAnalytics_DetailNoOrders" xml:space="preserve">
+    <value>No drink orders recorded.</value>
+  </data>
+  <data name="Categories_Eyebrow" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="Categories_AddTitle" xml:space="preserve">
+    <value>Add Category</value>
+  </data>
+  <data name="Categories_EditTitle" xml:space="preserve">
+    <value>Edit Category</value>
+  </data>
+  <data name="Categories_ListTitle" xml:space="preserve">
+    <value>Drink Categories</value>
+  </data>
+  <data name="Categories_NameLabel" xml:space="preserve">
+    <value>Name *</value>
+  </data>
+  <data name="Categories_NamePlaceholder" xml:space="preserve">
+    <value>e.g. Wine</value>
+  </data>
+  <data name="Categories_DisplayNameLabel" xml:space="preserve">
+    <value>Display Name</value>
+  </data>
+  <data name="Categories_DisplayNamePlaceholder" xml:space="preserve">
+    <value>Shown to customers (optional)</value>
+  </data>
+  <data name="Categories_IconLabel" xml:space="preserve">
+    <value>Icon (emoji)</value>
+  </data>
+  <data name="Categories_SortOrderLabel" xml:space="preserve">
+    <value>Sort Order</value>
+  </data>
+  <data name="Categories_ActiveHint" xml:space="preserve">
+    <value>Active (available when creating drinks)</value>
+  </data>
+  <data name="Categories_Loading" xml:space="preserve">
+    <value>Loading categories…</value>
+  </data>
+  <data name="Categories_LoadErrorTitle" xml:space="preserve">
+    <value>Could not load categories</value>
+  </data>
+  <data name="Categories_Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Categories_EmptyTitle" xml:space="preserve">
+    <value>No categories yet</value>
+  </data>
+  <data name="Categories_EmptyMessage" xml:space="preserve">
+    <value>Add a category to start grouping drinks.</value>
+  </data>
+  <data name="Categories_AddFirst" xml:space="preserve">
+    <value>Add First Category</value>
+  </data>
+  <data name="Categories_ColIcon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="Categories_ColName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Categories_ColDisplayName" xml:space="preserve">
+    <value>Display Name</value>
+  </data>
+  <data name="Categories_ColOrder" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="Categories_ColDrinks" xml:space="preserve">
+    <value>Drinks</value>
+  </data>
+  <data name="Categories_ColStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Categories_ColActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Categories_StatusActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Categories_StatusInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Categories_Saving" xml:space="preserve">
+    <value>Saving…</value>
+  </data>
+  <data name="Categories_NewCategory" xml:space="preserve">
+    <value>New Category</value>
+  </data>
+  <data name="Categories_NameRequired" xml:space="preserve">
+    <value>Category name is required</value>
+  </data>
+  <data name="Categories_Created" xml:space="preserve">
+    <value>Category '{0}' created</value>
+  </data>
+  <data name="Categories_Updated" xml:space="preserve">
+    <value>Category '{0}' updated</value>
+  </data>
+  <data name="Categories_Deleted" xml:space="preserve">
+    <value>Category '{0}' deleted</value>
+  </data>
+  <data name="Categories_CreateFailed" xml:space="preserve">
+    <value>Failed to create category. The name may already be in use.</value>
+  </data>
+  <data name="Categories_UpdateFailed" xml:space="preserve">
+    <value>Failed to update category. The name may already be in use.</value>
+  </data>
+  <data name="Categories_DeleteConfirm" xml:space="preserve">
+    <value>Delete category '{0}'?</value>
+  </data>
+  <data name="Categories_DeleteFailed" xml:space="preserve">
+    <value>Cannot delete '{0}'. It may still be in use.</value>
+  </data>
+  <data name="Categories_LoadServerError" xml:space="preserve">
+    <value>Failed to load categories. The server returned an error.</value>
+  </data>
+  <data name="Categories_LoadException" xml:space="preserve">
+    <value>An error occurred while loading categories: {0}</value>
+  </data>
 </root>

@@ -1,0 +1,215 @@
+- generic [ref=f1e7]:
+  - complementary [ref=f1e8]:
+    - generic [ref=f1e9]:
+      - generic [ref=f1e10]: 
+      - generic [ref=f1e12]:
+        - generic [ref=f1e13]: STADIUM
+        - generic [ref=f1e14]: BAR
+    - generic [ref=f1e15]:
+      - generic [ref=f1e16]: 20:34:10
+      - generic [ref=f1e17]: 19. 07. 26 HR
+    - navigation [ref=f1e18]:
+      - link " Nadzorna ploča" [ref=f1e19] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f1e20]: 
+        - generic [ref=f1e21]: Nadzorna ploča
+      - link " Nadzorna ploča narudžbi" [ref=f1e22] [cursor=pointer]:
+        - /url: order-queue
+        - generic [ref=f1e23]: 
+        - generic [ref=f1e24]: Nadzorna ploča narudžbi
+      - link " Moje narudžbe" [ref=f1e25] [cursor=pointer]:
+        - /url: my-orders
+        - generic [ref=f1e26]: 
+        - generic [ref=f1e27]: Moje narudžbe
+      - link " Nadoplata" [ref=f1e28] [cursor=pointer]:
+        - /url: topup
+        - generic [ref=f1e29]: 
+        - generic [ref=f1e30]: Nadoplata
+      - link " Povijest nadoplata" [ref=f1e31] [cursor=pointer]:
+        - /url: topup-history
+        - generic [ref=f1e32]: 
+        - generic [ref=f1e33]: Povijest nadoplata
+      - generic [ref=f1e34]: Sustav
+      - link " Sistemski zapisnici" [ref=f1e35] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f1e36]: 
+        - generic [ref=f1e37]: Sistemski zapisnici
+    - generic [ref=f1e38]:
+      - 'generic "Ažuriranja narudžbi u direktnom prijenosu: povezano" [ref=f1e40]': Uživo
+      - generic [ref=f1e43]:
+        - generic [ref=f1e44]: "N"
+        - generic [ref=f1e45]:
+          - button "Odjava" [ref=f1e46] [cursor=pointer]
+          - generic [ref=f1e47]: nebojsa.medancic+staff1@gmail.com
+      - generic [ref=f1e48]:
+        - generic [ref=f1e49]: HR/EN
+        - generic [ref=f1e50]:
+          - button "HR" [ref=f1e51] [cursor=pointer]
+          - button "EN" [ref=f1e52] [cursor=pointer]
+  - main [ref=f1e53]:
+    - generic [ref=f1e54]:
+      - generic [ref=f1e55]: 
+      - generic [ref=f1e57]:
+        - generic [ref=f1e58]: Trenutni događaj
+        - heading "Istra444 - Zagreb444" [level=2] [ref=f1e59]
+        - generic [ref=f1e61]:
+          - generic [ref=f1e62]: 
+          - text: ned 19 srp, 15:08
+      - generic [ref=f1e63]: LIVE
+    - generic [ref=f1e66]:
+      - generic [ref=f1e68]:
+        - generic [ref=f1e69]: Bar stanica
+        - heading "Nadoplata novčanika" [level=1] [ref=f1e70]
+        - paragraph [ref=f1e71]: Učitajte gotovinu na novčanik gosta na šanku.
+      - generic [ref=f1e74]:
+        - generic [ref=f1e75]:
+          - generic [ref=f1e76]: "🧪 Test (dev): odaberi ulaznicu"
+          - 'combobox "🧪 Test (dev): odaberi ulaznicu" [ref=f1e77]':
+            - option "— odaberi ulaznicu —"
+            - option "SEA-1-E37 — SECT1 1" [selected]
+            - option "SEA-10-E37 — SECT1 10"
+            - option "SEA-100-E37 — SECT1 20"
+            - option "SEA-101-E37 — SECT1 11"
+            - option "SEA-102-E37 — SECT1 12"
+            - option "SEA-103-E37 — SECT1 13"
+            - option "SEA-104-E37 — SECT1 14"
+            - option "SEA-105-E37 — SECT1 15"
+            - option "SEA-106-E37 — SECT1 16"
+            - option "SEA-107-E37 — SECT1 17"
+            - option "SEA-108-E37 — SECT1 18"
+            - option "SEA-109-E37 — SECT1 19"
+            - option "SEA-11-E37 — SECT1 11"
+            - option "SEA-110-E37 — SECT1 20"
+            - option "SEA-111-E37 — SECT1 1"
+            - option "SEA-112-E37 — SECT1 2"
+            - option "SEA-113-E37 — SECT1 3"
+            - option "SEA-114-E37 — SECT1 4"
+            - option "SEA-115-E37 — SECT1 5"
+            - option "SEA-116-E37 — SECT1 6"
+            - option "SEA-117-E37 — SECT1 7"
+            - option "SEA-118-E37 — SECT1 8"
+            - option "SEA-119-E37 — SECT1 9"
+            - option "SEA-12-E37 — SECT1 12"
+            - option "SEA-120-E37 — SECT1 10"
+            - option "SEA-121-E37 — SECT1 11"
+            - option "SEA-122-E37 — SECT1 12"
+            - option "SEA-123-E37 — SECT1 13"
+            - option "SEA-124-E37 — SECT1 14"
+            - option "SEA-125-E37 — SECT1 15"
+            - option "SEA-126-E37 — SECT1 16"
+            - option "SEA-127-E37 — SECT1 17"
+            - option "SEA-128-E37 — SECT1 18"
+            - option "SEA-129-E37 — SECT1 19"
+            - option "SEA-13-E37 — SECT1 13"
+            - option "SEA-130-E37 — SECT1 20"
+            - option "SEA-131-E37 — SECT1 1"
+            - option "SEA-132-E37 — SECT1 2"
+            - option "SEA-133-E37 — SECT1 3"
+            - option "SEA-134-E37 — SECT1 4"
+            - option "SEA-135-E37 — SECT1 5"
+            - option "SEA-136-E37 — SECT1 6"
+            - option "SEA-137-E37 — SECT1 7"
+            - option "SEA-138-E37 — SECT1 8"
+            - option "SEA-139-E37 — SECT1 9"
+            - option "SEA-14-E37 — SECT1 14"
+            - option "SEA-140-E37 — SECT1 10"
+            - option "SEA-15-E37 — SECT1 15"
+            - option "SEA-16-E37 — SECT1 16"
+            - option "SEA-17-E37 — SECT1 17"
+            - option "SEA-18-E37 — SECT1 18"
+            - option "SEA-19-E37 — SECT1 19"
+            - option "SEA-2-E37 — SECT1 2"
+            - option "SEA-20-E37 — SECT1 20"
+            - option "SEA-21-E37 — SECT1 1"
+            - option "SEA-22-E37 — SECT1 2"
+            - option "SEA-23-E37 — SECT1 3"
+            - option "SEA-24-E37 — SECT1 4"
+            - option "SEA-25-E37 — SECT1 5"
+            - option "SEA-26-E37 — SECT1 6"
+            - option "SEA-27-E37 — SECT1 7"
+            - option "SEA-28-E37 — SECT1 8"
+            - option "SEA-29-E37 — SECT1 9"
+            - option "SEA-3-E37 — SECT1 3"
+            - option "SEA-30-E37 — SECT1 10"
+            - option "SEA-31-E37 — SECT1 11"
+            - option "SEA-32-E37 — SECT1 12"
+            - option "SEA-33-E37 — SECT1 13"
+            - option "SEA-34-E37 — SECT1 14"
+            - option "SEA-35-E37 — SECT1 15"
+            - option "SEA-36-E37 — SECT1 16"
+            - option "SEA-37-E37 — SECT1 17"
+            - option "SEA-38-E37 — SECT1 18"
+            - option "SEA-39-E37 — SECT1 19"
+            - option "SEA-4-E37 — SECT1 4"
+            - option "SEA-40-E37 — SECT1 20"
+            - option "SEA-41-E37 — SECT1 1"
+            - option "SEA-42-E37 — SECT1 2"
+            - option "SEA-43-E37 — SECT1 3"
+            - option "SEA-44-E37 — SECT1 4"
+            - option "SEA-45-E37 — SECT1 5"
+            - option "SEA-46-E37 — SECT1 6"
+            - option "SEA-47-E37 — SECT1 7"
+            - option "SEA-48-E37 — SECT1 8"
+            - option "SEA-49-E37 — SECT1 9"
+            - option "SEA-5-E37 — SECT1 5"
+            - option "SEA-50-E37 — SECT1 10"
+            - option "SEA-51-E37 — SECT1 11"
+            - option "SEA-52-E37 — SECT1 12"
+            - option "SEA-53-E37 — SECT1 13"
+            - option "SEA-54-E37 — SECT1 14"
+            - option "SEA-55-E37 — SECT1 15"
+            - option "SEA-56-E37 — SECT1 16"
+            - option "SEA-57-E37 — SECT1 17"
+            - option "SEA-58-E37 — SECT1 18"
+            - option "SEA-59-E37 — SECT1 19"
+            - option "SEA-6-E37 — SECT1 6"
+            - option "SEA-60-E37 — SECT1 20"
+            - option "SEA-61-E37 — SECT1 1"
+            - option "SEA-62-E37 — SECT1 2"
+            - option "SEA-63-E37 — SECT1 3"
+            - option "SEA-64-E37 — SECT1 4"
+            - option "SEA-65-E37 — SECT1 5"
+            - option "SEA-66-E37 — SECT1 6"
+            - option "SEA-67-E37 — SECT1 7"
+            - option "SEA-68-E37 — SECT1 8"
+            - option "SEA-69-E37 — SECT1 9"
+            - option "SEA-7-E37 — SECT1 7"
+            - option "SEA-70-E37 — SECT1 10"
+            - option "SEA-71-E37 — SECT1 11"
+            - option "SEA-72-E37 — SECT1 12"
+            - option "SEA-73-E37 — SECT1 13"
+            - option "SEA-74-E37 — SECT1 14"
+            - option "SEA-75-E37 — SECT1 15"
+            - option "SEA-76-E37 — SECT1 16"
+            - option "SEA-77-E37 — SECT1 17"
+            - option "SEA-78-E37 — SECT1 18"
+            - option "SEA-79-E37 — SECT1 19"
+            - option "SEA-8-E37 — SECT1 8"
+            - option "SEA-80-E37 — SECT1 20"
+            - option "SEA-81-E37 — SECT1 1"
+            - option "SEA-82-E37 — SECT1 2"
+            - option "SEA-83-E37 — SECT1 3"
+            - option "SEA-84-E37 — SECT1 4"
+            - option "SEA-85-E37 — SECT1 5"
+            - option "SEA-86-E37 — SECT1 6"
+            - option "SEA-87-E37 — SECT1 7"
+            - option "SEA-88-E37 — SECT1 8"
+            - option "SEA-89-E37 — SECT1 9"
+            - option "SEA-9-E37 — SECT1 9"
+            - option "SEA-90-E37 — SECT1 10"
+            - option "SEA-91-E37 — SECT1 11"
+            - option "SEA-92-E37 — SECT1 12"
+            - option "SEA-93-E37 — SECT1 13"
+            - option "SEA-94-E37 — SECT1 14"
+            - option "SEA-95-E37 — SECT1 15"
+            - option "SEA-96-E37 — SECT1 16"
+            - option "SEA-97-E37 — SECT1 17"
+            - option "SEA-98-E37 — SECT1 18"
+            - option "SEA-99-E37 — SECT1 19"
+        - generic [ref=f1e78]:
+          - generic [ref=f1e79]: Skeniraj ili unesi kôd ulaznice, e-mail ili OIB
+          - generic [ref=f1e80]:
+            - textbox "Skeniraj ili unesi kôd ulaznice, e-mail ili OIB" [ref=f1e81]:
+              - /placeholder: Kôd ulaznice, e-mail ili OIB
+            - button "Pronađi" [disabled]
+        - button "📷 Skeniraj kamerom" [ref=f1e82] [cursor=pointer]

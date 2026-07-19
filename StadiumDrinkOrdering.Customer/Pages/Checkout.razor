@@ -284,7 +284,7 @@ else
                     SeatNumber = i.SeatNumber,
                     Price = i.Price,
                     SeatCode = i.SeatCode,
-                    SectionName = string.IsNullOrWhiteSpace(i.SectionName) ? ("Sektor " + i.SectorId) : i.SectionName
+                    SectionName = string.IsNullOrWhiteSpace(i.SectionName) ? Localizer["Checkout_SectorFallback", i.SectorId].Value : i.SectionName
                 }).ToList(),
                 TotalAmount = total
             };

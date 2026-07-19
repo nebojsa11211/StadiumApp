@@ -388,4 +388,7 @@
   <data name="Home_AgeMinutesAgo" xml:space="preserve">
     <value>prije {0} min</value>
   </data>
+  <data name="Shell_QrCaption" xml:space="preserve">
+    <value>Otvori na mobitelu</value>
+  </data>
 </root>

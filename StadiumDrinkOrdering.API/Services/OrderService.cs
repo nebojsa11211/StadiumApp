@@ -136,7 +136,7 @@ public class OrderService : IOrderService
         }
 
         // Enforce the live-event rule centrally: a drink order may be placed only while its event is in a
-        // drink-ordering phase (Active/InProgress). This backstops every caller — including the legacy
+        // drink-ordering phase (Active). This backstops every caller — including the legacy
         // OrdersController path — so an order can't be created for a not-yet-live, already-finished, or
         // unlinked event, which is what previously left orders stranded (e.g. OutForDelivery) after close.
         // Ordering must also respect the event's optional drink-ordering window (bars can close before
@@ -267,11 +267,12 @@ public class OrderService : IOrderService
             {
                 OrderId = order.Id,
                 WalletTransactionId = debit.Transaction!.Id,
-                PaymentMethod = PaymentMethod.DigitalWallet.ToString(),
+                PaymentMethod = PaymentMethod.DigitalWallet,
+                Direction = PaymentDirection.In,
                 TransactionId = debit.Transaction.Id.ToString(),
                 Amount = totalAmount,
                 Currency = debit.Transaction.Currency,
-                Status = "Completed",
+                Status = PaymentStatus.Completed,
                 PaymentDate = DateTime.UtcNow,
                 ProcessedAt = DateTime.UtcNow
             });
@@ -302,11 +303,12 @@ public class OrderService : IOrderService
             {
                 OrderId = order.Id,
                 WalletTransactionId = debit.Transaction!.Id,
-                PaymentMethod = PaymentMethod.TicketWallet.ToString(),
+                PaymentMethod = PaymentMethod.TicketWallet,
+                Direction = PaymentDirection.In,
                 TransactionId = debit.Transaction.Id.ToString(),
                 Amount = totalAmount,
                 Currency = debit.Transaction.Currency,
-                Status = "Completed",
+                Status = PaymentStatus.Completed,
                 PaymentDate = DateTime.UtcNow,
                 ProcessedAt = DateTime.UtcNow
             });
@@ -321,10 +323,11 @@ public class OrderService : IOrderService
             _context.Payments.Add(new Payment
             {
                 OrderId = order.Id,
-                PaymentMethod = createOrderDto.PaymentMethod.Value.ToString(),
+                PaymentMethod = createOrderDto.PaymentMethod.Value,
+                Direction = PaymentDirection.In,
                 Amount = totalAmount,
                 Currency = "EUR",
-                Status = "Pending",
+                Status = PaymentStatus.Pending,
                 PaymentDate = DateTime.UtcNow
             });
             await _context.SaveChangesAsync();
@@ -622,15 +625,15 @@ public class OrderService : IOrderService
         // Detect wallet funding before mutating (WalletService clears the change tracker on refund).
         var walletPayment = await _context.Payments.AsNoTracking()
             .FirstOrDefaultAsync(p => p.OrderId == orderId
-                && (p.PaymentMethod == "DigitalWallet" || p.PaymentMethod == "TicketWallet")
-                && p.Status == "Completed");
+                && (p.PaymentMethod == PaymentMethod.DigitalWallet || p.PaymentMethod == PaymentMethod.TicketWallet)
+                && p.Status == PaymentStatus.Completed);
 
         // Void any Pending offline (cash / card) payment intent — the order was never handed over, so
         // nothing is collected. Completed wallet payments are refunded below instead.
         var pendingOffline = await _context.Payments
-            .FirstOrDefaultAsync(p => p.OrderId == orderId && p.Status == "Pending");
+            .FirstOrDefaultAsync(p => p.OrderId == orderId && p.Status == PaymentStatus.Pending);
         if (pendingOffline != null)
-            pendingOffline.Status = "Cancelled";
+            pendingOffline.Status = PaymentStatus.Cancelled;
 
         // Deliberately NO stock restore: the drink was already poured and is discarded, so putting it
         // back would overstate inventory (unlike a Pending cancel, where nothing was ever made).
@@ -708,12 +711,12 @@ public class OrderService : IOrderService
                 // payments are already Completed (charged at creation) and are left untouched; the replayed-
                 // Delivered no-op above means this can't double-settle.
                 var offlinePayment = await _context.Payments.FirstOrDefaultAsync(p =>
-                    p.OrderId == order.Id && p.Status == "Pending"
-                    && (p.PaymentMethod == "Cash" || p.PaymentMethod == "CreditCard"
-                        || p.PaymentMethod == "DebitCard" || p.PaymentMethod == "BankTransfer"));
+                    p.OrderId == order.Id && p.Status == PaymentStatus.Pending
+                    && (p.PaymentMethod == PaymentMethod.Cash || p.PaymentMethod == PaymentMethod.CreditCard
+                        || p.PaymentMethod == PaymentMethod.DebitCard || p.PaymentMethod == PaymentMethod.BankTransfer));
                 if (offlinePayment != null)
                 {
-                    offlinePayment.Status = "Completed";
+                    offlinePayment.Status = PaymentStatus.Completed;
                     offlinePayment.ProcessedAt = DateTime.UtcNow;
                 }
                 break;
@@ -741,8 +744,8 @@ public class OrderService : IOrderService
         // exact wallet to refund, so the same code serves both owner types.
         var walletPayment = await _context.Payments.AsNoTracking()
             .FirstOrDefaultAsync(p => p.OrderId == orderId
-                && (p.PaymentMethod == "DigitalWallet" || p.PaymentMethod == "TicketWallet")
-                && p.Status == "Completed");
+                && (p.PaymentMethod == PaymentMethod.DigitalWallet || p.PaymentMethod == PaymentMethod.TicketWallet)
+                && p.Status == PaymentStatus.Completed);
 
         // Restore stock and record the return to inventory in the ledger.
         foreach (var orderItem in order.OrderItems)
@@ -763,9 +766,9 @@ public class OrderService : IOrderService
         // Void any Pending offline (cash / card) payment intent — the order is cancelled before hand-off,
         // so nothing is collected. Completed wallet payments are refunded below instead.
         var pendingOffline = await _context.Payments
-            .FirstOrDefaultAsync(p => p.OrderId == orderId && p.Status == "Pending");
+            .FirstOrDefaultAsync(p => p.OrderId == orderId && p.Status == PaymentStatus.Pending);
         if (pendingOffline != null)
-            pendingOffline.Status = "Cancelled";
+            pendingOffline.Status = PaymentStatus.Cancelled;
 
         order.Status = OrderStatus.Cancelled;
         await _context.SaveChangesAsync();
@@ -817,8 +820,8 @@ public class OrderService : IOrderService
         // (DigitalWallet) and ticket (TicketWallet) wallets; the funding transaction pins the wallet.
         var walletPayments = await _context.Payments.AsNoTracking()
             .Where(p => p.OrderId != null && orderIds.Contains(p.OrderId.Value)
-                && (p.PaymentMethod == "DigitalWallet" || p.PaymentMethod == "TicketWallet")
-                && p.Status == "Completed")
+                && (p.PaymentMethod == PaymentMethod.DigitalWallet || p.PaymentMethod == PaymentMethod.TicketWallet)
+                && p.Status == PaymentStatus.Completed)
             .ToListAsync();
         var paymentByOrderId = walletPayments
             .GroupBy(p => p.OrderId!.Value)
@@ -858,10 +861,10 @@ public class OrderService : IOrderService
         // Void any Pending offline (cash / card) payment intents for the swept orders — none were handed
         // over, so nothing is collected. Completed wallet payments are refunded below instead.
         var pendingOffline = await _context.Payments
-            .Where(p => p.OrderId != null && orderIds.Contains(p.OrderId.Value) && p.Status == "Pending")
+            .Where(p => p.OrderId != null && orderIds.Contains(p.OrderId.Value) && p.Status == PaymentStatus.Pending)
             .ToListAsync();
         foreach (var p in pendingOffline)
-            p.Status = "Cancelled";
+            p.Status = PaymentStatus.Cancelled;
 
         await _context.SaveChangesAsync();
 
@@ -970,8 +973,9 @@ public class OrderService : IOrderService
                 Id = order.Payment.Id,
                 OrderId = order.Payment.OrderId ?? 0,
                 Amount = order.Payment.Amount,
-                Method = Enum.TryParse<PaymentMethod>(order.Payment.PaymentMethod, out var method) ? method : PaymentMethod.CreditCard,
-                Status = Enum.TryParse<PaymentStatus>(order.Payment.Status, out var status) ? status : PaymentStatus.Pending,
+                Method = order.Payment.PaymentMethod,
+                Direction = order.Payment.Direction,
+                Status = order.Payment.Status,
                 TransactionId = order.Payment.TransactionId,
                 CreatedAt = order.Payment.CreatedAt,
                 ProcessedAt = order.Payment.ProcessedAt,

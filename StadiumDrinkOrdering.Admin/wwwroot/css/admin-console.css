@@ -718,6 +718,11 @@ select.field__input { cursor: pointer; }
     display: flex;
 }
 
+/* Wider variant for overlays that host a table (e.g. category management). */
+.drink-modal--wide {
+    max-width: 900px;
+}
+
 .drink-modal__content {
     display: flex;
     flex-direction: column;
@@ -816,6 +821,12 @@ select.field__input { cursor: pointer; }
     flex-direction: column;
     gap: 1rem;
     padding: 1.35rem;
+    /* min-height:0 is required: as a column-flex child the body defaults to
+       min-height:auto, refuses to shrink below its content, and so never
+       scrolls — the parent's max-height:90vh + overflow:hidden then clips the
+       last fields (image URL, availability) with no way to reach them. */
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
 }
 

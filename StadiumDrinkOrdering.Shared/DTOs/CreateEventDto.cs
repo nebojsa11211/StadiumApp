@@ -79,4 +79,34 @@ public class CreateEventDto
     /// sectors they cover. Non-staff ids are ignored. Null means "no staff assigned".
     /// </summary>
     public List<EventStaffInputDto>? Staff { get; set; }
+
+    /// <summary>
+    /// Optional poster generated in the admin form, as raw base64 (no <c>data:</c> prefix). Null means
+    /// the event is created without a poster.
+    /// </summary>
+    public string? PosterImageBase64 { get; set; }
+
+    /// <summary>MIME type of <see cref="PosterImageBase64"/>; defaults to image/png when omitted.</summary>
+    [StringLength(100)]
+    public string? PosterContentType { get; set; }
+
+    /// <summary>The prompt the poster was generated from, kept for later reference/regeneration.</summary>
+    [StringLength(2000)]
+    public string? PosterPrompt { get; set; }
+
+    /// <summary>
+    /// Optional downscaled JPEG of the poster as raw base64, produced in the admin browser. Used by
+    /// the customer fixture strip so it never serves the multi-MB original.
+    /// </summary>
+    public string? PosterThumbnailBase64 { get; set; }
+
+    /// <summary>
+    /// Whether the admin confirmed the generated text is correct. False stores the poster as
+    /// pending review, and fans keep seeing the plain fixture card until it is approved.
+    /// </summary>
+    public bool PosterApproved { get; set; }
+
+    /// <summary>Event facts baked into the artwork, used later to detect a stale poster.</summary>
+    [StringLength(500)]
+    public string? PosterSourceSignature { get; set; }
 }

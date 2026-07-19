@@ -168,7 +168,7 @@ public class StaffApiService : IStaffApiService
         {
             await EnsureAuthHeaderAsync();
             // The API's /events/live endpoint is the single source of truth for "currently live"
-            // (Active/InProgress within its time window); 204 No Content means nothing is live.
+            // (Active within its time window); 204 No Content means nothing is live.
             var response = await _httpClient.GetAsync("events/live");
             if (response.StatusCode == HttpStatusCode.NoContent)
                 return null;

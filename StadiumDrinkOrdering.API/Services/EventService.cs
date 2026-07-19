@@ -39,7 +39,7 @@ public interface IEventService
     Task<IEnumerable<Event>> GetActiveEventsAsync();
     /// <summary>
     /// Transitions any non-terminal event whose time window has already elapsed to
-    /// <see cref="EventStatus.Completed"/> — both stale-live events (Active/InProgress) and ones that
+    /// <see cref="EventStatus.Completed"/> — both stale-live events (Active) and ones that
     /// never went live (Planned/OnSale/SoldOut) but whose date has passed. Returns the number of
     /// events closed. Called opportunistically on read so past-dated events don't linger.
     /// </summary>
@@ -50,7 +50,7 @@ public interface IEventService
     /// brings a sellable/published event (OnSale/SoldOut) live — transitioning it to
     /// <see cref="EventStatus.Active"/> — once its scheduled window has opened (started, not yet ended),
     /// so drink ordering unlocks at kickoff without a manual "make live" click. Respects the single-live
-    /// invariant (at most one Active/InProgress event), so it promotes at most one event per pass and
+    /// invariant (at most one Active event), so it promotes at most one event per pass and
     /// does nothing while another event is already live. Returns the number of events activated.
     /// </summary>
     Task<int> AutoActivateStartedEventsAsync();
@@ -243,8 +243,34 @@ public class EventService : IEventService
                 && (excludeEventId == null || e.Id != excludeEventId));
     }
 
+    /// <summary>
+    /// Throws when <paramref name="seasonId"/> refers to a season whose end date has passed. A closed
+    /// season's schedule is frozen: no event may be added to it, edited within it, or removed from it.
+    /// Events with no season (<c>null</c>) are unaffected. Enforced here rather than in the controller
+    /// so external ingestion and every other caller are covered by the same rule.
+    /// </summary>
+    private async Task GuardSeasonOpenAsync(int? seasonId)
+    {
+        if (seasonId == null)
+            return;
+
+        var season = await _context.Seasons
+            .AsNoTracking()
+            .Where(s => s.Id == seasonId.Value)
+            .Select(s => new { s.Name, s.EndDate })
+            .FirstOrDefaultAsync();
+
+        // A missing season is not this guard's problem — the FK will surface it.
+        if (season == null || !SeasonLifecycle.IsClosed(season.EndDate))
+            return;
+
+        throw new SeasonClosedException(SeasonLifecycle.ChangeBlockedReason(season.Name, season.EndDate));
+    }
+
     public async Task<Event> CreateEventAsync(Event eventItem)
     {
+        await GuardSeasonOpenAsync(eventItem.SeasonId);
+
         eventItem.CreatedAt = DateTime.UtcNow;
         eventItem.UpdatedAt = DateTime.UtcNow;
 
@@ -278,6 +304,13 @@ public class EventService : IEventService
         var existingEvent = await _context.Events.FindAsync(id);
         if (existingEvent == null)
             return null;
+
+        // Both ends of a season move are gated: an event cannot be edited while it sits in a closed
+        // season, nor be moved into one. Checking the current season first gives the more useful error
+        // when both are closed.
+        await GuardSeasonOpenAsync(existingEvent.SeasonId);
+        if (eventItem.SeasonId != existingEvent.SeasonId)
+            await GuardSeasonOpenAsync(eventItem.SeasonId);
 
         existingEvent.EventName = eventItem.EventName;
         existingEvent.EventType = eventItem.EventType;
@@ -563,6 +596,8 @@ public class EventService : IEventService
         if (eventItem == null)
             return false;
 
+        await GuardSeasonOpenAsync(eventItem.SeasonId);
+
         // Force delete: remove the event together with all its tickets and their dependent
         // sessions. Tickets/TicketSessions/OrderSessions hold Restrict FKs into Event/Ticket,
         // and Orders reference them through optional (client-set-null) shadow FKs, so we clear
@@ -628,6 +663,8 @@ public class EventService : IEventService
         if (eventItem == null)
             return false;
 
+        await GuardSeasonOpenAsync(eventItem.SeasonId);
+
         eventItem.IsActive = true;
         // Publishing an event in planning puts it on sale (Phase 1).
         if (eventItem.Status == EventStatus.Planned)
@@ -644,6 +681,8 @@ public class EventService : IEventService
         var eventItem = await _context.Events.FindAsync(id);
         if (eventItem == null)
             return false;
+
+        await GuardSeasonOpenAsync(eventItem.SeasonId);
 
         eventItem.IsActive = false;
         // Unpublishing a not-yet-started, on-sale event returns it to planning (pulls it from sale).
@@ -677,15 +716,14 @@ public class EventService : IEventService
             return EventStatusTransitionResult.Invalid(message, current);
         }
 
-        // Single-live-event invariant: only one event may occupy the Active phase (Active/InProgress)
+        // Single-live-event invariant: only one event may occupy the Active phase (Active)
         // at a time. Block promoting this event into that phase while a different event is already live.
         var enteringActivePhase = EventLifecycle.PhaseOf(newStatus) == EventPhase.Active &&
             EventLifecycle.PhaseOf(current) != EventPhase.Active;
         if (enteringActivePhase)
         {
             var live = await _context.Events
-                .FirstOrDefaultAsync(e => e.Id != id &&
-                    (e.Status == EventStatus.Active || e.Status == EventStatus.InProgress));
+                .FirstOrDefaultAsync(e => e.Id != id && e.Status == EventStatus.Active);
             if (live != null)
             {
                 var message = $"Cannot make event '{eventItem.EventName}' live: event '{live.EventName}' " +
@@ -718,7 +756,7 @@ public class EventService : IEventService
         // are visible; terminal states drop out of "active"/"upcoming" listings.
         if (EventLifecycle.IsTerminal(newStatus))
             eventItem.IsActive = false;
-        else if (newStatus is EventStatus.OnSale or EventStatus.Active or EventStatus.InProgress)
+        else if (newStatus is EventStatus.OnSale or EventStatus.Active)
             eventItem.IsActive = true;
 
         // Phase 3 closure: invalidate all active ticket sessions so no new drink orders are possible.
@@ -920,10 +958,10 @@ public class EventService : IEventService
     {
         var now = DateTime.UtcNow;
 
-        // Single-live invariant: only one event may be Active/InProgress at a time. If one is already
+        // Single-live invariant: only one event may be Active at a time. If one is already
         // live, we cannot promote another — nothing to do this pass.
         var alreadyLive = await _context.Events
-            .AnyAsync(e => e.Status == EventStatus.Active || e.Status == EventStatus.InProgress);
+            .AnyAsync(e => e.Status == EventStatus.Active);
         if (alreadyLive)
             return 0;
 

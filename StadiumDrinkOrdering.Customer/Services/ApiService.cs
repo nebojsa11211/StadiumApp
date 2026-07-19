@@ -73,8 +73,10 @@ public interface IApiService
     // Logging methods (limited access for customers)
     Task<bool> LogUserActionAsync(string action, string category, string? details = null);
     
-    // Installation settings (public read) — whether this app sells tickets directly to customers.
+    // Installation settings (public read) — whether this app sells tickets directly to customers,
+    // and which payment methods the operator accepts.
     Task<bool> GetTicketSalesEnabledAsync();
+    Task<AppSettingsDto> GetAppSettingsAsync();
 
     // Customer Ticketing methods
     Task<List<CustomerEventDto>?> GetAvailableEventsAsync(CustomerEventFilterDto? filter = null);
@@ -99,6 +101,11 @@ public interface IApiService
     // Anonymous, ticket-session-gated drink ordering (walk-up flow)
     Task<SessionOrderResultDto?> CreateSessionOrderAsync(SessionOrderRequest request);
     Task<OrderDto?> GetSessionOrderAsync(int orderId, string sessionToken);
+
+    // Account history for a scanned ticket, with no JWT login: the drink orders placed on that ticket and
+    // the ledger of the wallet behind it. Both are resolved server-side from the session token.
+    Task<SessionOrderHistoryDto?> GetSessionOrdersAsync(string sessionToken, int page = 1, int pageSize = 20);
+    Task<WalletTransactionListDto?> GetSessionWalletTransactionsAsync(string sessionToken, int page = 1, int pageSize = 25);
 
     // Season member landing (authenticated)
     Task<SeasonHomeDto?> GetSeasonHomeAsync();
@@ -802,22 +809,23 @@ public class ApiService : IApiService
     }
 
     // Customer Ticketing Implementation
-    public async Task<bool> GetTicketSalesEnabledAsync()
+    public async Task<bool> GetTicketSalesEnabledAsync() => (await GetAppSettingsAsync()).TicketSalesEnabled;
+
+    public async Task<AppSettingsDto> GetAppSettingsAsync()
     {
         try
         {
             var response = await _httpClient.GetAsync("api/venue/settings");
             if (!response.IsSuccessStatusCode)
-                return true; // Fail open: the API still enforces the switch on every write.
+                return new AppSettingsDto(); // Fail open: the API still enforces every switch on write.
 
             var body = await response.Content.ReadAsStringAsync();
-            var settings = JsonSerializer.Deserialize<AppSettingsDto>(body, _jsonOptions);
-            return settings?.TicketSalesEnabled ?? true;
+            return JsonSerializer.Deserialize<AppSettingsDto>(body, _jsonOptions) ?? new AppSettingsDto();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading app settings: {ex.Message}");
-            return true; // Fail open — server-side enforcement remains authoritative.
+            return new AppSettingsDto(); // Fail open — server-side enforcement remains authoritative.
         }
     }
 
@@ -1204,6 +1212,16 @@ public class ApiService : IApiService
         }
         return null;
     }
+
+    // Account history for the scanned ticket. Anonymous like the rest of the session surface: the API
+    // authorises on the session token in the query string, not on a login.
+    public async Task<SessionOrderHistoryDto?> GetSessionOrdersAsync(string sessionToken, int page = 1, int pageSize = 20)
+        => await GetAsync<SessionOrderHistoryDto>(
+            $"customer/session/orders?sessionToken={Uri.EscapeDataString(sessionToken)}&page={page}&pageSize={pageSize}");
+
+    public async Task<WalletTransactionListDto?> GetSessionWalletTransactionsAsync(string sessionToken, int page = 1, int pageSize = 25)
+        => await GetAsync<WalletTransactionListDto>(
+            $"customer/session/wallet/transactions?sessionToken={Uri.EscapeDataString(sessionToken)}&page={page}&pageSize={pageSize}");
 
     // Season member landing (authenticated) — GetAsync injects the bearer token.
     public async Task<SeasonHomeDto?> GetSeasonHomeAsync()

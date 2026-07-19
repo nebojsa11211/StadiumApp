@@ -13,7 +13,12 @@ public partial class CustomerAnalytics : ComponentBase
     [Inject] private IAdminApiService ApiService { get; set; } = default!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
-    // private CustomerDetailModal detailModal = default!; - Component removed
+    // Customer detail modal state
+    private string? detailEmail;
+    private CustomerSpendingDetailDto? detail;
+    private bool isDetailLoading;
+    private string? detailError;
+
     private List<CustomerAnalyticsDto>? customers;
     private CustomerAnalyticsSummaryDto? summary;
     private PagedCustomerAnalyticsDto? pagedResult;
@@ -151,9 +156,35 @@ public partial class CustomerAnalytics : ComponentBase
         }
     }
 
-    private void ViewCustomerDetails(string customerEmail)
+    private async Task ViewCustomerDetails(string customerEmail)
     {
-        // await detailModal.ShowCustomerDetails(customerEmail); - Component removed
+        detail = null;
+        detailError = null;
+        detailEmail = customerEmail;
+        isDetailLoading = true;
+
+        try
+        {
+            detail = await ApiService.GetCustomerSpendingDetailsAsync(customerEmail);
+            if (detail == null)
+                detailError = L["CustAnalytics_DetailLoadFailed"];
+        }
+        catch (Exception)
+        {
+            detailError = L["CustAnalytics_DetailLoadFailed"];
+        }
+        finally
+        {
+            isDetailLoading = false;
+        }
+    }
+
+    private void CloseCustomerDetails()
+    {
+        detailEmail = null;
+        detail = null;
+        detailError = null;
+        isDetailLoading = false;
     }
 
     private async Task ExportData()

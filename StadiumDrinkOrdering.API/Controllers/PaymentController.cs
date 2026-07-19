@@ -75,8 +75,11 @@ public class PaymentController : ControllerBase
                 orderId = payment.OrderId,
                 amount = payment.Amount,
                 currency = payment.Currency,
-                status = payment.Status,
-                paymentMethod = payment.PaymentMethod,
+                // Serialised as names, not enum ordinals, so this response keeps the exact shape
+                // clients already parse (these were string columns before the enum conversion).
+                status = payment.Status.ToString(),
+                paymentMethod = payment.PaymentMethod.ToString(),
+                direction = payment.Direction.ToString(),
                 transactionId = payment.TransactionId,
                 createdAt = payment.CreatedAt,
                 processedAt = payment.ProcessedAt,

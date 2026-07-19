@@ -388,4 +388,7 @@
   <data name="Home_AgeMinutesAgo" xml:space="preserve">
     <value>{0} min ago</value>
   </data>
+  <data name="Shell_QrCaption" xml:space="preserve">
+    <value>Open on your phone</value>
+  </data>
 </root>

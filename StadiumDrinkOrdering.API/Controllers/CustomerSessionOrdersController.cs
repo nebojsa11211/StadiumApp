@@ -64,7 +64,7 @@ public class CustomerSessionOrdersController : ControllerBase
         if (session is null || !session.IsActive || session.ExpiresAt <= DateTime.UtcNow)
             return Unauthorized(new SessionOrderResultDto { Error = "Your session has expired. Please scan your ticket again." });
 
-        // Ordering is only open while the event is live (Active/InProgress) AND within the event's
+        // Ordering is only open while the event is live (Active) AND within the event's
         // optional drink-ordering window — enforces the countdown-only rule and any early bar close.
         var orderEvent = session.Ticket?.Event;
         if (orderEvent is null || !orderEvent.AreDrinkSalesOpenAt(DateTime.UtcNow))
@@ -76,6 +76,25 @@ public class CustomerSessionOrdersController : ControllerBase
         // Who the order is attributed to and how it is funded. Unpaid walk-up orders go to the shared guest;
         // a wallet-paid order is charged to — and attributed to — the fan account the ticket resolves to, so
         // the existing wallet-debit path (which debits the order's customer) charges the right wallet.
+        // Operators can switch payment methods off per installation. The cart hides a disabled option,
+        // but a stale client (or a direct call) must not be able to use one, so re-check server-side.
+        var accepted = await _db.Venues
+            .Select(v => new { v.WalletPaymentEnabled, v.CardPaymentEnabled, v.CashPaymentEnabled })
+            .FirstOrDefaultAsync();
+        var walletAllowed = accepted?.WalletPaymentEnabled ?? true;
+        var cardAllowed = accepted?.CardPaymentEnabled ?? true;
+        var cashAllowed = accepted?.CashPaymentEnabled ?? true;
+
+        if (request.PayWithWallet && !walletAllowed)
+            return BadRequest(new SessionOrderResultDto { Error = "Wallet payment is not available right now." });
+
+        if (!request.PayWithWallet && request.PaymentMethod is { } chosen &&
+            ((chosen == PaymentMethod.Cash && !cashAllowed) ||
+             (chosen is PaymentMethod.CreditCard or PaymentMethod.DebitCard && !cardAllowed)))
+        {
+            return BadRequest(new SessionOrderResultDto { Error = "That payment method is not available right now." });
+        }
+
         int customerId;
         PaymentMethod? paymentMethod;
         if (request.PayWithWallet)
@@ -174,6 +193,95 @@ public class CustomerSessionOrdersController : ControllerBase
 
         var dto = await _orderService.GetOrderByIdAsync(orderId);
         return dto is null ? NotFound() : Ok(dto);
+    }
+
+    /// <summary>
+    /// The fan's own drink-order history for the scanned ticket — what they bought, when, and for how much.
+    /// Scoped to the TICKET rather than the current session, so re-scanning (which mints a new session) does
+    /// not erase the history the fan can see. Possession of a valid session token for that ticket is the
+    /// authorisation, exactly as for every other action here.
+    /// </summary>
+    [HttpGet("orders")]
+    public async Task<ActionResult<SessionOrderHistoryDto>> GetSessionOrders(
+        [FromQuery] string sessionToken, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    {
+        if (string.IsNullOrWhiteSpace(sessionToken))
+            return BadRequest("Missing session token.");
+
+        var session = await _ticketAuth.GetTicketSessionAsync(sessionToken);
+        if (session is null || !session.IsActive || session.ExpiresAt <= DateTime.UtcNow)
+            return Unauthorized("Your session has expired. Please scan your ticket again.");
+
+        if (page < 1) page = 1;
+        if (pageSize < 1 || pageSize > 100) pageSize = 20;
+
+        var ticketId = session.TicketId;
+
+        // Every order placed from any session on this same ticket.
+        var query = _db.Orders.AsNoTracking()
+            .Where(o => o.TicketSession != null && o.TicketSession.TicketId == ticketId);
+
+        var total = await query.CountAsync();
+        var totalSpent = await query
+            .Where(o => o.Status != OrderStatus.Cancelled)
+            .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
+
+        var orders = await query
+            .OrderByDescending(o => o.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(o => new SessionOrderHistoryItemDto
+            {
+                OrderId = o.Id,
+                CreatedAt = o.CreatedAt,
+                Status = o.Status,
+                TotalAmount = o.TotalAmount,
+                SeatPath = o.SeatNumber,
+                Items = o.OrderItems.Select(i => new SessionOrderHistoryLineDto
+                {
+                    DrinkName = i.Drink != null ? i.Drink.Name : "",
+                    Quantity = i.Quantity,
+                    TotalPrice = i.TotalPrice
+                }).ToList()
+            })
+            .ToListAsync();
+
+        return Ok(new SessionOrderHistoryDto
+        {
+            Orders = orders,
+            TotalCount = total,
+            Page = page,
+            PageSize = pageSize,
+            TotalSpent = totalSpent
+        });
+    }
+
+    /// <summary>
+    /// Wallet ledger (top-ups, spends, withdrawals) behind the scanned ticket, mirroring
+    /// <see cref="GetSessionWallet"/>'s owner resolution: the registered fan's account wallet when the ticket
+    /// maps to one, otherwise the ticket's own bearer wallet. An empty page — not an error — when there is
+    /// no wallet yet.
+    /// </summary>
+    [HttpGet("wallet/transactions")]
+    public async Task<ActionResult<WalletTransactionListDto>> GetSessionWalletTransactions(
+        [FromQuery] string sessionToken, [FromQuery] int page = 1, [FromQuery] int pageSize = 25)
+    {
+        if (string.IsNullOrWhiteSpace(sessionToken))
+            return BadRequest("Missing session token.");
+
+        var session = await _ticketAuth.GetTicketSessionAsync(sessionToken);
+        if (session is null || !session.IsActive || session.ExpiresAt <= DateTime.UtcNow)
+            return Unauthorized("Your session has expired. Please scan your ticket again.");
+
+        var userId = await ResolveWalletOwnerAsync(session);
+        if (userId is not null)
+            return Ok(await _walletService.GetTransactionsAsync(userId.Value, page, pageSize));
+
+        var ticketId = session.Ticket?.Id;
+        if (ticketId is not null)
+            return Ok(await _walletService.GetTicketWalletTransactionsAsync(ticketId.Value, page, pageSize));
+
+        return Ok(new WalletTransactionListDto { Page = page, PageSize = pageSize });
     }
 
     /// <summary>

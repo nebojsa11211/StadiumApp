@@ -30,10 +30,10 @@
     else if (errorMessage != null)
     {
         <div class="console-alert console-alert--danger" role="alert" id="admin-analytics-error-alert">
-            <i class="fas fa-exclamation-triangle"></i>
+            <i class="bi bi-exclamation-triangle"></i>
             <span>@errorMessage</span>
             <button type="button" class="pill-btn pill-btn--danger" @onclick="LoadAnalyticsData" id="admin-analytics-retry-btn">
-                <i class="fas fa-redo"></i><span>@L["Analytics_RetryButton"]</span>
+                <i class="bi bi-arrow-clockwise"></i><span>@L["Analytics_RetryButton"]</span>
             </button>
         </div>
     }
@@ -41,7 +41,7 @@
     {
         <!-- Placeholder for Future Analytics -->
         <div class="console-alert console-alert--info" role="alert" id="admin-analytics-info-alert">
-            <i class="fas fa-info-circle"></i>
+            <i class="bi bi-info-circle"></i>
             <span>
                 <strong>@L["Analytics_DashboardTitle"]</strong> &mdash; @L["Analytics_InfoMessage"]
             </span>
@@ -53,7 +53,7 @@
             {
                 <div class="panel" id="admin-analytics-events-panel">
                     <div class="panel__head">
-                        <h2 class="panel__title"><i class="fas fa-calendar"></i> @L["Analytics_AvailableEventsTitle"]</h2>
+                        <h2 class="panel__title"><i class="bi bi-calendar"></i> @L["Analytics_AvailableEventsTitle"]</h2>
                         @if (seasonOptions.Any())
                         {
                             <select class="field__input" @onchange="OnSeasonChanged" id="admin-analytics-season-select" style="max-width:220px;">
@@ -100,20 +100,20 @@
             <div class="rail" id="admin-analytics-quick-actions-rail">
                 <div class="panel" id="admin-analytics-quick-actions-panel">
                     <div class="panel__head">
-                        <h2 class="panel__title"><i class="fas fa-tools"></i> @L["Analytics_ReportsTitle"]</h2>
+                        <h2 class="panel__title"><i class="bi bi-tools"></i> @L["Analytics_ReportsTitle"]</h2>
                     </div>
                     <div class="actions">
                         <button class="action" @onclick="NavigateToCustomerAnalytics" id="admin-analytics-customer-analytics-btn">
-                            <i class="fas fa-users"></i><span>@L["Analytics_CustomerAnalyticsButton"]</span><i class="fas fa-chevron-right action__go"></i>
+                            <i class="bi bi-people"></i><span>@L["Analytics_CustomerAnalyticsButton"]</span><i class="bi bi-chevron-right action__go"></i>
                         </button>
                         <button class="action" @onclick="NavigateToEvents" id="admin-analytics-events-btn">
-                            <i class="fas fa-calendar"></i><span>@L["Analytics_EventManagementButton"]</span><i class="fas fa-chevron-right action__go"></i>
+                            <i class="bi bi-calendar"></i><span>@L["Analytics_EventManagementButton"]</span><i class="bi bi-chevron-right action__go"></i>
                         </button>
                         <button class="action" @onclick="NavigateToOrders" id="admin-analytics-orders-btn">
-                            <i class="fas fa-list"></i><span>@L["Analytics_OrderReportsButton"]</span><i class="fas fa-chevron-right action__go"></i>
+                            <i class="bi bi-list-ul"></i><span>@L["Analytics_OrderReportsButton"]</span><i class="bi bi-chevron-right action__go"></i>
                         </button>
                         <button class="action" @onclick="NavigateToLogs" id="admin-analytics-logs-btn">
-                            <i class="fas fa-chart-line"></i><span>@L["Analytics_SystemLogsButton"]</span><i class="fas fa-chevron-right action__go"></i>
+                            <i class="bi bi-graph-up"></i><span>@L["Analytics_SystemLogsButton"]</span><i class="bi bi-chevron-right action__go"></i>
                         </button>
                     </div>
                 </div>

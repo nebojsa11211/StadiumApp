@@ -96,7 +96,8 @@ A guest never has to register to buy a drink — scanning the ticket is the iden
 - **No-login guest path.** A single-match fan completes an entire order with only their ticket QR.
 - **Session survives reload.** The order-session token is stored in `sessionStorage`; `/order` and
   `/track` recover it after a hard refresh.
-- **Live-match gating.** Drink ordering is only open while the match is on (`CanOrderDrinks`).
+- **Live-match gating.** Drink ordering is only open while the event is live — status `Active`
+  (`CanOrderDrinks`) — and within the event's optional drink-sales window.
 - **Real-time-ish tracking.** `/track` polls order status until Delivered/Cancelled (SignalR is the
   planned upgrade from polling).
 - **Wallet payment.** Season members can pay from a stored-value balance in one tap, with inline

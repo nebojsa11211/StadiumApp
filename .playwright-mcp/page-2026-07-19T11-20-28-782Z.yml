@@ -1,0 +1,413 @@
+- generic [ref=f2e2]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - generic [ref=f2e5]: 
+      - generic [ref=f2e7]:
+        - generic [ref=f2e8]: STADIUM
+        - generic [ref=f2e9]: ADMIN
+    - generic [ref=f2e10]:
+      - generic [ref=f2e11]: 13:20:28
+      - generic [ref=f2e12]: 19. 07. 26 HR
+    - navigation [ref=f2e13]:
+      - link " Nadzorna ploča" [ref=f2e14] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f2e15]: 
+        - generic [ref=f2e16]: Nadzorna ploča
+      - generic [ref=f2e17]: Poslovanje
+      - link " Narudžbe" [ref=f2e18] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f2e19]: 
+        - generic [ref=f2e20]: Narudžbe
+      - link " Pića" [ref=f2e21] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f2e22]: 
+        - generic [ref=f2e23]: Pića
+      - link " Novčanici" [ref=f2e24] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=f2e25]: 
+        - generic [ref=f2e26]: Novčanici
+      - generic [ref=f2e27]: Događaji i karte
+      - link " Događaji" [ref=f2e28] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f2e29]: 
+        - generic [ref=f2e30]: Događaji
+      - link " Sezone" [ref=f2e31] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=f2e32]: 
+        - generic [ref=f2e33]: Sezone
+      - link " Momčadi" [ref=f2e34] [cursor=pointer]:
+        - /url: admin/teams
+        - generic [ref=f2e35]: 
+        - generic [ref=f2e36]: Momčadi
+      - link " Karte" [ref=f2e37] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f2e38]: 
+        - generic [ref=f2e39]: Karte
+      - generic [ref=f2e40]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=f2e41] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f2e42]: 👁
+        - generic [ref=f2e43]: Pregled
+      - link " Alat za crtanje" [ref=f2e44] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f2e45]: 
+        - generic [ref=f2e46]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=f2e47] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=f2e48]: 
+        - generic [ref=f2e49]: Informacije o stadionu
+      - link " Stadion i brend" [ref=f2e50] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=f2e51]: 
+        - generic [ref=f2e52]: Stadion i brend
+      - generic [ref=f2e53]: Analitika
+      - link " Analitika" [ref=f2e54] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f2e55]: 
+        - generic [ref=f2e56]: Analitika
+      - link " Kupci" [ref=f2e57] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=f2e58]: 
+        - generic [ref=f2e59]: Kupci
+      - link " Korisnička analitika" [ref=f2e60] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f2e61]: 
+        - generic [ref=f2e62]: Korisnička analitika
+      - generic [ref=f2e63]: Sustav
+      - link " Timski računi" [ref=f2e64] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f2e65]: 
+        - generic [ref=f2e66]: Timski računi
+      - link " Zapisi" [ref=f2e67] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f2e68]: 
+        - generic [ref=f2e69]: Zapisi
+      - link " Baza podataka" [ref=f2e70] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f2e71]: 
+        - generic [ref=f2e72]: Baza podataka
+      - link " Postavke" [ref=f2e73] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=f2e74]: 
+        - generic [ref=f2e75]: Postavke
+    - generic [ref=f2e76]:
+      - generic [ref=f2e77]:
+        - generic [ref=f2e78]: 
+        - generic [ref=f2e79]:
+          - generic [ref=f2e80]: Centralizirani Logging
+          - generic [ref=f2e81]: "Zadnja objava: 13:20"
+      - generic [ref=f2e82]:
+        - generic [ref=f2e83]: "N"
+        - generic [ref=f2e84]:
+          - button "Odjava" [ref=f2e85] [cursor=pointer]
+          - generic [ref=f2e86]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=f2e87]:
+        - generic [ref=f2e88]: HR/EN
+        - generic [ref=f2e89]:
+          - button "HR" [ref=f2e90] [cursor=pointer]
+          - button "EN" [ref=f2e91] [cursor=pointer]
+  - main [ref=f2e92]:
+    - generic [ref=f2e93]:
+      - generic [ref=f2e94]:
+        - generic [ref=f2e95]:
+          - generic [ref=f2e96]: Pića
+          - heading "Upravljanje pićima" [level=1] [ref=f2e97]
+          - paragraph [ref=f2e98]: Upravljajte vašim katalogom pića, razinama zaliha i dostupnošću
+        - generic [ref=f2e99]:
+          - button " Upravljaj kategorijama" [ref=f2e100] [cursor=pointer]:
+            - generic [ref=f2e101]: 
+            - generic [ref=f2e102]: Upravljaj kategorijama
+          - button " Dodaj novo piće" [ref=f2e103] [cursor=pointer]:
+            - generic [ref=f2e104]: 
+            - generic [ref=f2e105]: Dodaj novo piće
+      - generic [ref=f2e106]:
+        - article [ref=f2e107]:
+          - generic [ref=f2e108]:
+            - generic [ref=f2e109]: Ukupna pića
+            - generic [ref=f2e110]: 
+          - generic [ref=f2e111]: "8"
+          - generic [ref=f2e112]: U katalogu
+        - article [ref=f2e114]:
+          - generic [ref=f2e115]:
+            - generic [ref=f2e116]: Dostupna
+            - generic [ref=f2e117]: 
+          - generic [ref=f2e118]: "8"
+          - generic [ref=f2e119]: Moguće naručiti sada
+        - article [ref=f2e121]:
+          - generic [ref=f2e122]:
+            - generic [ref=f2e123]: Niska zaliha
+            - generic [ref=f2e124]: 
+          - generic [ref=f2e125]: "0"
+          - generic [ref=f2e126]: Ispod 10 jedinica
+        - article [ref=f2e128]:
+          - generic [ref=f2e129]:
+            - generic [ref=f2e130]: Kategorije
+            - generic [ref=f2e131]: 
+          - generic [ref=f2e132]: "7"
+          - generic [ref=f2e133]: Različite vrste
+      - generic [ref=f2e135]:
+        - heading "Filtriraj pića" [level=2] [ref=f2e137]
+        - generic [ref=f2e138]:
+          - generic [ref=f2e139]:
+            - generic [ref=f2e140]: Kategorija
+            - combobox "Kategorija" [ref=f2e141] [cursor=pointer]:
+              - option "Sve kategorije" [selected]
+              - option "🍺 Beer"
+              - option "🥤 SoftDrink"
+              - option "💧 Water"
+              - option "☕ Coffee"
+              - option "🍵 Tea"
+              - option "🧃 Juice"
+              - option "⚡ EnergyDrink"
+              - option "🍸 Cocktail"
+          - generic [ref=f2e142]:
+            - generic [ref=f2e143]: Dostupnost
+            - combobox "Dostupnost" [ref=f2e144] [cursor=pointer]:
+              - option "Sva pića" [selected]
+              - option "Samo dostupna"
+              - option "Samo nedostupna"
+              - option "Niska zaliha (< 10)"
+          - generic [ref=f2e145]:
+            - generic [ref=f2e146]: Pretraži
+            - textbox "Pretraži" [ref=f2e147]:
+              - /placeholder: Pretraži pića...
+      - generic [ref=f2e148]:
+        - heading "Pića 8" [level=2] [ref=f2e150]:
+          - text: Pića
+          - generic [ref=f2e151]: "8"
+        - table [ref=f2e152]:
+          - rowgroup [ref=f2e153]:
+            - row [ref=f2e154]:
+              - columnheader "Piće" [ref=f2e155] [cursor=pointer]
+              - columnheader "Kategorija" [ref=f2e156] [cursor=pointer]
+              - columnheader "Opis" [ref=f2e157] [cursor=pointer]
+              - columnheader "Cijena" [ref=f2e158] [cursor=pointer]
+              - columnheader "Zaliha" [ref=f2e159] [cursor=pointer]
+              - columnheader "Stanje" [ref=f2e160] [cursor=pointer]
+              - columnheader "Akcije" [ref=f2e161]
+          - rowgroup [ref=f2e162]:
+            - row [ref=f2e163]:
+              - cell "🥤 Beer" [ref=f2e164]:
+                - generic [ref=f2e165]:
+                  - generic [ref=f2e166]: 🥤
+                  - generic [ref=f2e167]: Beer
+              - cell "🍺 Beer" [ref=f2e168]
+              - cell "Local Draft Beer" [ref=f2e169]
+              - cell "€6,00" [ref=f2e170]
+              - cell "178" [ref=f2e171]
+              - cell [ref=f2e172]
+              - cell [ref=f2e175]:
+                - generic [ref=f2e176]:
+                  - button " Dodaj zalihu" [ref=f2e177] [cursor=pointer]:
+                    - generic [ref=f2e178]: 
+                    - text: Dodaj zalihu
+                  - button " Povijest" [ref=f2e179] [cursor=pointer]:
+                    - generic [ref=f2e180]: 
+                    - text: Povijest
+                  - button " Uredi" [ref=f2e181] [cursor=pointer]:
+                    - generic [ref=f2e182]: 
+                    - text: Uredi
+                  - button " Onemogući" [ref=f2e183] [cursor=pointer]:
+                    - generic [ref=f2e184]: 
+                    - generic [ref=f2e185]: Onemogući
+                  - button " Izbriši" [ref=f2e186] [cursor=pointer]:
+                    - generic [ref=f2e187]: 
+                    - text: Izbriši
+            - row [ref=f2e188]:
+              - cell "🥤 Coffee" [ref=f2e189]:
+                - generic [ref=f2e190]:
+                  - generic [ref=f2e191]: 🥤
+                  - generic [ref=f2e192]: Coffee
+              - cell "☕ Coffee" [ref=f2e193]
+              - cell "Hot Coffee" [ref=f2e194]
+              - cell "€4,00" [ref=f2e195]
+              - cell "80" [ref=f2e196]
+              - cell [ref=f2e197]
+              - cell [ref=f2e200]:
+                - generic [ref=f2e201]:
+                  - button " Dodaj zalihu" [ref=f2e202] [cursor=pointer]:
+                    - generic [ref=f2e203]: 
+                    - text: Dodaj zalihu
+                  - button " Povijest" [ref=f2e204] [cursor=pointer]:
+                    - generic [ref=f2e205]: 
+                    - text: Povijest
+                  - button " Uredi" [ref=f2e206] [cursor=pointer]:
+                    - generic [ref=f2e207]: 
+                    - text: Uredi
+                  - button " Onemogući" [ref=f2e208] [cursor=pointer]:
+                    - generic [ref=f2e209]: 
+                    - generic [ref=f2e210]: Onemogući
+                  - button " Izbriši" [ref=f2e211] [cursor=pointer]:
+                    - generic [ref=f2e212]: 
+                    - text: Izbriši
+            - row [ref=f2e213]:
+              - cell "🥤 Red Bull" [ref=f2e214]:
+                - generic [ref=f2e215]:
+                  - generic [ref=f2e216]: 🥤
+                  - generic [ref=f2e217]: Red Bull
+              - cell "⚡ EnergyDrink" [ref=f2e218]
+              - cell "Energy Drink" [ref=f2e219]
+              - cell "€5,00" [ref=f2e220]
+              - cell "90" [ref=f2e221]
+              - cell [ref=f2e222]
+              - cell [ref=f2e225]:
+                - generic [ref=f2e226]:
+                  - button " Dodaj zalihu" [ref=f2e227] [cursor=pointer]:
+                    - generic [ref=f2e228]: 
+                    - text: Dodaj zalihu
+                  - button " Povijest" [ref=f2e229] [cursor=pointer]:
+                    - generic [ref=f2e230]: 
+                    - text: Povijest
+                  - button " Uredi" [ref=f2e231] [cursor=pointer]:
+                    - generic [ref=f2e232]: 
+                    - text: Uredi
+                  - button " Onemogući" [ref=f2e233] [cursor=pointer]:
+                    - generic [ref=f2e234]: 
+                    - generic [ref=f2e235]: Onemogući
+                  - button " Izbriši" [ref=f2e236] [cursor=pointer]:
+                    - generic [ref=f2e237]: 
+                    - text: Izbriši
+            - row [ref=f2e238]:
+              - cell "🥤 Orange Juice" [ref=f2e239]:
+                - generic [ref=f2e240]:
+                  - generic [ref=f2e241]: 🥤
+                  - generic [ref=f2e242]: Orange Juice
+              - cell "🧃 Juice" [ref=f2e243]
+              - cell "Fresh Orange Juice" [ref=f2e244]
+              - cell "€4,50" [ref=f2e245]
+              - cell "60" [ref=f2e246]
+              - cell [ref=f2e247]
+              - cell [ref=f2e250]:
+                - generic [ref=f2e251]:
+                  - button " Dodaj zalihu" [ref=f2e252] [cursor=pointer]:
+                    - generic [ref=f2e253]: 
+                    - text: Dodaj zalihu
+                  - button " Povijest" [ref=f2e254] [cursor=pointer]:
+                    - generic [ref=f2e255]: 
+                    - text: Povijest
+                  - button " Uredi" [ref=f2e256] [cursor=pointer]:
+                    - generic [ref=f2e257]: 
+                    - text: Uredi
+                  - button " Onemogući" [ref=f2e258] [cursor=pointer]:
+                    - generic [ref=f2e259]: 
+                    - generic [ref=f2e260]: Onemogući
+                  - button " Izbriši" [ref=f2e261] [cursor=pointer]:
+                    - generic [ref=f2e262]: 
+                    - text: Izbriši
+            - row [ref=f2e263]:
+              - cell "🥤 Coca Cola" [ref=f2e264]:
+                - generic [ref=f2e265]:
+                  - generic [ref=f2e266]: 🥤
+                  - generic [ref=f2e267]: Coca Cola
+              - cell "🥤 SoftDrink" [ref=f2e268]
+              - cell "Classic Coca Cola" [ref=f2e269]
+              - cell "€3,50" [ref=f2e270]
+              - cell "98" [ref=f2e271]
+              - cell [ref=f2e272]
+              - cell [ref=f2e275]:
+                - generic [ref=f2e276]:
+                  - button " Dodaj zalihu" [ref=f2e277] [cursor=pointer]:
+                    - generic [ref=f2e278]: 
+                    - text: Dodaj zalihu
+                  - button " Povijest" [ref=f2e279] [cursor=pointer]:
+                    - generic [ref=f2e280]: 
+                    - text: Povijest
+                  - button " Uredi" [ref=f2e281] [cursor=pointer]:
+                    - generic [ref=f2e282]: 
+                    - text: Uredi
+                  - button " Onemogući" [ref=f2e283] [cursor=pointer]:
+                    - generic [ref=f2e284]: 
+                    - generic [ref=f2e285]: Onemogući
+                  - button " Izbriši" [ref=f2e286] [cursor=pointer]:
+                    - generic [ref=f2e287]: 
+                    - text: Izbriši
+            - row [ref=f2e288]:
+              - cell "🥤 Pepsi" [ref=f2e289]:
+                - generic [ref=f2e290]:
+                  - generic [ref=f2e291]: 🥤
+                  - generic [ref=f2e292]: Pepsi
+              - cell "🥤 SoftDrink" [ref=f2e293]
+              - cell "Pepsi Cola" [ref=f2e294]
+              - cell "€3,50" [ref=f2e295]
+              - cell "99" [ref=f2e296]
+              - cell [ref=f2e297]
+              - cell [ref=f2e300]:
+                - generic [ref=f2e301]:
+                  - button " Dodaj zalihu" [ref=f2e302] [cursor=pointer]:
+                    - generic [ref=f2e303]: 
+                    - text: Dodaj zalihu
+                  - button " Povijest" [ref=f2e304] [cursor=pointer]:
+                    - generic [ref=f2e305]: 
+                    - text: Povijest
+                  - button " Uredi" [ref=f2e306] [cursor=pointer]:
+                    - generic [ref=f2e307]: 
+                    - text: Uredi
+                  - button " Onemogući" [ref=f2e308] [cursor=pointer]:
+                    - generic [ref=f2e309]: 
+                    - generic [ref=f2e310]: Onemogući
+                  - button " Izbriši" [ref=f2e311] [cursor=pointer]:
+                    - generic [ref=f2e312]: 
+                    - text: Izbriši
+            - row [ref=f2e313]:
+              - cell "🥤 Green Tea" [ref=f2e314]:
+                - generic [ref=f2e315]:
+                  - generic [ref=f2e316]: 🥤
+                  - generic [ref=f2e317]: Green Tea
+              - cell "🍵 Tea" [ref=f2e318]
+              - cell "Hot Green Tea" [ref=f2e319]
+              - cell "€3,00" [ref=f2e320]
+              - cell "68" [ref=f2e321]
+              - cell [ref=f2e322]
+              - cell [ref=f2e325]:
+                - generic [ref=f2e326]:
+                  - button " Dodaj zalihu" [ref=f2e327] [cursor=pointer]:
+                    - generic [ref=f2e328]: 
+                    - text: Dodaj zalihu
+                  - button " Povijest" [ref=f2e329] [cursor=pointer]:
+                    - generic [ref=f2e330]: 
+                    - text: Povijest
+                  - button " Uredi" [ref=f2e331] [cursor=pointer]:
+                    - generic [ref=f2e332]: 
+                    - text: Uredi
+                  - button " Onemogući" [ref=f2e333] [cursor=pointer]:
+                    - generic [ref=f2e334]: 
+                    - generic [ref=f2e335]: Onemogući
+                  - button " Izbriši" [ref=f2e336] [cursor=pointer]:
+                    - generic [ref=f2e337]: 
+                    - text: Izbriši
+            - row [ref=f2e338]:
+              - cell "🥤 Water" [ref=f2e339]:
+                - generic [ref=f2e340]:
+                  - generic [ref=f2e341]: 🥤
+                  - generic [ref=f2e342]: Water
+              - cell "💧 Water" [ref=f2e343]
+              - cell "Bottled Water" [ref=f2e344]
+              - cell "€2,00" [ref=f2e345]
+              - cell "200" [ref=f2e346]
+              - cell [ref=f2e347]
+              - cell [ref=f2e350]:
+                - generic [ref=f2e351]:
+                  - button " Dodaj zalihu" [ref=f2e352] [cursor=pointer]:
+                    - generic [ref=f2e353]: 
+                    - text: Dodaj zalihu
+                  - button " Povijest" [ref=f2e354] [cursor=pointer]:
+                    - generic [ref=f2e355]: 
+                    - text: Povijest
+                  - button " Uredi" [ref=f2e356] [cursor=pointer]:
+                    - generic [ref=f2e357]: 
+                    - text: Uredi
+                  - button " Onemogući" [ref=f2e358] [cursor=pointer]:
+                    - generic [ref=f2e359]: 
+                    - generic [ref=f2e360]: Onemogući
+                  - button " Izbriši" [ref=f2e361] [cursor=pointer]:
+                    - generic [ref=f2e362]: 
+                    - text: Izbriši
+        - generic [ref=f2e364]:
+          - paragraph [ref=f2e365]: Prikaz 1 do 8 od 8
+          - generic [ref=f2e366]:
+            - generic [ref=f2e367]: Prikaži
+            - combobox "Prikaži" [ref=f2e368] [cursor=pointer]:
+              - option "10"
+              - option "20" [selected]
+              - option "50"
+              - option "100"

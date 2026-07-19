@@ -97,8 +97,10 @@ public class NotificationService : INotificationService
                 PaymentId = payment.Id,
                 OrderId = payment.OrderId,
                 Amount = payment.Amount,
-                Status = payment.Status,
-                PaymentMethod = payment.PaymentMethod,
+                // Names, not ordinals — SignalR clients already read these as strings.
+                Status = payment.Status.ToString(),
+                PaymentMethod = payment.PaymentMethod.ToString(),
+                Direction = payment.Direction.ToString(),
                 TransactionId = payment.TransactionId,
                 Timestamp = DateTime.UtcNow
             };

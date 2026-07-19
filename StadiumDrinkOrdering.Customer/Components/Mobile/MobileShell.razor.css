@@ -22,6 +22,9 @@
 .device,.device-screen,.device-scroll{display:contents;}
 .device-statusbar{display:none;}
 
+/* The QR companion is desktop-only chrome — on a phone you are already on the device. */
+.shell-qr{display:none;}
+
 .app-frame{
     position:relative;
     width:100%;
@@ -124,6 +127,46 @@
         display:block;flex:1 1 auto;min-height:0;
         overflow-y:auto;overflow-x:hidden;
         -webkit-overflow-scrolling:touch;
+    }
+
+    /* Companion QR card, pinned to the backdrop's bottom-right so it never competes with the
+       phone for the centre. Fixed to the viewport: the backdrop has no transform, and the card
+       is a sibling of .device, so it stays put while the phone screen scrolls internally. */
+    .shell-qr{
+        display:block;
+        position:fixed;
+        right:24px;
+        bottom:24px;
+        z-index:5;
+        width:172px;
+        padding:14px 14px 12px;
+        border-radius:18px;
+        text-align:center;
+        background:rgba(18,19,25,.82);
+        backdrop-filter:blur(10px);
+        box-shadow:
+            inset 0 0 0 1px rgba(255,255,255,.08),
+            0 18px 44px -18px rgba(0,0,0,.9);
+    }
+    .shell-qr-img{
+        display:block;
+        width:144px;height:144px;
+        border-radius:8px;
+        background:#fff;
+        padding:6px;
+        /* Nearest-neighbour keeps the modules crisp instead of blurring them at this size. */
+        image-rendering:pixelated;
+    }
+    .shell-qr-caption{
+        margin-top:9px;
+        font-size:12px;font-weight:700;letter-spacing:.02em;
+        color:rgba(255,255,255,.9);
+    }
+    .shell-qr-url{
+        margin-top:3px;
+        font-size:10px;line-height:1.35;
+        color:rgba(255,255,255,.5);
+        word-break:break-all;
     }
 
     /* App column now fills the phone screen; it no longer owns the desktop edge. */

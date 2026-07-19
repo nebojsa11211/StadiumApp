@@ -120,7 +120,7 @@
                                 </div>
                                 <div class="menu-ci-r">
                                     <span id="customer-cart-item-total-@item.Drink.Id" class="tnum">€@item.TotalPrice.ToString("F2")</span>
-                                    <button id="customer-cart-remove-btn-@item.Drink.Id" class="menu-ci-del" @onclick="() => CartService.RemoveItem(item.Drink.Id)" aria-label="Ukloni">🗑</button>
+                                    <button id="customer-cart-remove-btn-@item.Drink.Id" class="menu-ci-del" @onclick="() => CartService.RemoveItem(item.Drink.Id)" aria-label="@Localizer["Menu_RemoveItemAria"]">🗑</button>
                                 </div>
                             </div>
                         }
@@ -138,7 +138,7 @@
                         <textarea id="customer-notes-input" @bind="orderNotes" placeholder='@Localizer["Menu_NotesPlaceholder"]' rows="2"></textarea>
                     </div>
 
-                    @if (walletSummary is { Exists: true })
+                    @if (walletPaymentEnabled && walletSummary is { Exists: true })
                     {
                         <label id="customer-menu-pay-wallet-group" class="menu-wallet">
                             <input id="customer-menu-pay-wallet-check" type="checkbox" @bind="payWithWallet" />
@@ -193,10 +193,13 @@
     private WalletSummaryDto? walletSummary;
     private bool payWithWallet = false;
     private bool showTopUpPrompt = false;
+    // Wallet is only offered when the operator accepts it (Admin → Settings → Payments).
+    private bool walletPaymentEnabled = true;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadDrinks();
+        walletPaymentEnabled = (await ApiService.GetAppSettingsAsync()).WalletPaymentEnabled;
         walletSummary = await ApiService.GetWalletSummaryAsync();
         CartService.OnCartChanged += StateHasChanged;
     }

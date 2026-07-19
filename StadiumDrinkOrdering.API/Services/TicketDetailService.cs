@@ -69,8 +69,8 @@ public class TicketDetailService : ITicketDetailService
                     }).ToList(),
                     Payment = payment == null ? null : new TicketDetailPaymentDto
                     {
-                        Method = payment.PaymentMethod,
-                        Status = payment.Status,
+                        Method = payment.PaymentMethod.ToString(),
+                        Status = payment.Status.ToString(),
                         Amount = payment.Amount,
                         Currency = payment.Currency,
                         Date = payment.PaymentDate

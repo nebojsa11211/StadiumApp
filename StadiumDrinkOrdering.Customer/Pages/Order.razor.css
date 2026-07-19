@@ -50,39 +50,20 @@
 .seat-line{display:flex;align-items:baseline;gap:14px;padding:14px 2px 2px}
 .seat-line--center{justify-content:center;padding:4px 0 2px}
 .seat-cell{display:inline-flex;align-items:baseline;gap:7px;min-width:0}
-.seat-cell .k{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+/* 11px, not 10 — tracked-out uppercase at 10px is unreadable at arm's length in a dark stand. */
+.seat-cell .k{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .seat-cell .v{font-size:15px;font-weight:800;color:var(--ink);line-height:1}
 .seat-cell.seat .v{color:var(--magenta)}
 .seat-dot{align-self:center;width:3px;height:3px;border-radius:50%;background:var(--muted-2);flex:none}
-
-/* ===== fan strip — who's ordering + spendable balance =====
-   A quiet row under the seat coordinates: monogram avatar + holder name on the left,
-   a wallet chip on the right. Restrained to match the calm header. */
-.fan-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px 2px}
-.fan-id{display:flex;align-items:center;gap:9px;min-width:0}
-.fan-avatar{
-    flex:none;width:26px;height:26px;border-radius:50%;
-    display:inline-flex;align-items:center;justify-content:center;
-    font-size:11px;font-weight:800;color:var(--ground);background:var(--ink);
-}
-.fan-name{
-    font-size:13px;font-weight:700;color:var(--ink);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.fan-wallet{
-    flex:none;display:inline-flex;align-items:center;gap:7px;
-    padding:5px 11px;border-radius:999px;
-    background:var(--surface-3);border:1px solid var(--line);
-}
-.fan-wallet-ic{font-size:13px;line-height:1}
-.fan-wallet-amt{font-size:13px;font-weight:800;color:var(--live)}
 
 /* ===== category tabs — quiet pills, one active accent ===== */
 .tabs{display:flex;gap:8px;overflow-x:auto;padding:16px 0 12px}
 .tab{
     flex:none;border:1px solid var(--line);background:transparent;color:var(--muted);
-    font-family:inherit;font-weight:700;font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;
+    font-family:inherit;font-weight:700;font-size:13px;padding:0 14px;border-radius:999px;cursor:pointer;
     transition:.15s var(--ease);display:flex;align-items:center;gap:7px;white-space:nowrap;
+    /* 44px target: mis-taps are likely in a horizontally-scrolling strip */
+    min-height:44px;
 }
 .tab .tab-emoji{font-size:14px}
 .tab .cnt{

@@ -79,21 +79,37 @@ public class VenueController : ControllerBase
     public async Task<ActionResult<AppSettingsDto>> GetSettings()
     {
         var venue = await GetOrCreateVenueAsync();
-        return Ok(new AppSettingsDto { TicketSalesEnabled = venue.TicketSalesEnabled });
+        return Ok(ToSettingsDto(venue));
     }
 
     [HttpPut("settings")]
     [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
     public async Task<ActionResult<AppSettingsDto>> UpdateSettings([FromBody] AppSettingsDto dto)
     {
+        // Turning every method off would leave fans unable to check out at all, so refuse the save
+        // rather than persist a configuration that breaks ordering.
+        if (!dto.HasAnyPaymentMethod)
+            return BadRequest("At least one payment method must stay enabled.");
+
         var venue = await GetOrCreateVenueAsync();
         venue.TicketSalesEnabled = dto.TicketSalesEnabled;
+        venue.WalletPaymentEnabled = dto.WalletPaymentEnabled;
+        venue.CardPaymentEnabled = dto.CardPaymentEnabled;
+        venue.CashPaymentEnabled = dto.CashPaymentEnabled;
         venue.UpdatedAt = DateTime.UtcNow;
         venue.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
 
         await _context.SaveChangesAsync();
-        return Ok(new AppSettingsDto { TicketSalesEnabled = venue.TicketSalesEnabled });
+        return Ok(ToSettingsDto(venue));
     }
+
+    private static AppSettingsDto ToSettingsDto(Venue venue) => new()
+    {
+        TicketSalesEnabled = venue.TicketSalesEnabled,
+        WalletPaymentEnabled = venue.WalletPaymentEnabled,
+        CardPaymentEnabled = venue.CardPaymentEnabled,
+        CashPaymentEnabled = venue.CashPaymentEnabled
+    };
 
     // ---- Email (SMTP) settings -----------------------------------------------------------
 

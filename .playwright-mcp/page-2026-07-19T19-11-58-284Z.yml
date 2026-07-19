@@ -1,0 +1,35 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e62]:
+    - generic [ref=f4e63]: 20:45
+    - generic [ref=f4e75]:
+      - banner [ref=f4e76]:
+        - generic [ref=f4e77]: HALFTIME
+        - button "Tvoj račun" [active] [ref=f4e78] [cursor=pointer]:
+          - generic [ref=f4e79]: NJ
+      - generic [ref=f4e81]:
+        - generic [ref=f4e82]: Stadion Maksimir · Zagreb
+        - heading "NEMA REDOVA. SAMO PIĆE." [level=1] [ref=f4e86]:
+          - generic [ref=f4e87]: NEMA
+          - generic [ref=f4e88]: REDOVA.
+          - generic [ref=f4e89]: SAMO PIĆE.
+        - paragraph [ref=f4e90]: Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.
+      - generic [ref=f4e91]:
+        - generic [ref=f4e92]: 2026/2027
+        - 'button "NEXT FIXTURE: GNK Dinamo Zagreb – HNK Hajduk Split, 17. kol 2026 11:16 – 13:16" [ref=f4e94] [cursor=pointer]'
+      - generic [ref=f4e97]: HALFTIME
+      - button "Nastavi naručivanje" [ref=f4e99] [cursor=pointer]
+      - contentinfo [ref=f4e102]:
+        - group "Jezik" [ref=f4e103]:
+          - button "HR" [ref=f4e104] [cursor=pointer]
+          - generic [ref=f4e105]: /
+          - button "EN" [ref=f4e106] [cursor=pointer]
+      - status [ref=f4e158]: Novčanik nadoplaćen · €20,00
+  - generic [ref=f4e57]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f4e58] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - status
+  - alert
+  - status
+  - status

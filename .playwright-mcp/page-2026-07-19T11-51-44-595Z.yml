@@ -1,0 +1,602 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - generic [ref=f1e5]: 
+      - text: Simulator prodaje ulaznica
+    - generic [ref=f1e6]: zamjena za vanjski sustav
+    - combobox [ref=f1e9]:
+      - option "Hrvatski" [selected]
+      - option "English"
+  - navigation [ref=f1e10]:
+    - link " Simulator" [ref=f1e11] [cursor=pointer]:
+      - /url: /
+      - generic [ref=f1e12]: 
+      - text: Simulator
+    - link " Pristupni podaci" [ref=f1e13] [cursor=pointer]:
+      - /url: credentials
+      - generic [ref=f1e14]: 
+      - text: Pristupni podaci
+  - main [ref=f1e15]:
+    - heading "Simulator za vanjske ulaznice" [level=1] [ref=f1e16]
+    - paragraph [ref=f1e17]: Zamjena za stvarni sustav prodaje ulaznica. Kreirajte događaj i simulirajte prodaju — sve se sinkronizira sa Stadium aplikacijom kroz potpisane webhookove.
+    - generic [ref=f1e18]:
+      - generic [ref=f1e19]: 
+      - text: "API:"
+      - code [ref=f1e20]: https://localhost:7010/
+      - text: · 2 sekcije pronađene
+      - button "Ponovno učitaj" [ref=f1e21] [cursor=pointer]
+    - generic [ref=f1e22]:
+      - generic [ref=f1e23]:
+        - generic [ref=f1e24]:
+          - generic [ref=f1e25]: 
+          - text: Stadion
+        - generic [ref=f1e26]: 2 sektora
+        - button " Detalji" [ref=f1e27] [cursor=pointer]:
+          - generic [ref=f1e28]: 
+          - text: Detalji
+      - generic [ref=f1e30]:
+        - generic [ref=f1e32]:
+          - generic [ref=f1e33]: "2"
+          - generic [ref=f1e34]: Sektori
+        - generic [ref=f1e36]:
+          - generic [ref=f1e37]: "400"
+          - generic [ref=f1e38]: Sjedala
+        - generic [ref=f1e40]:
+          - generic [ref=f1e41]: "20"
+          - generic [ref=f1e42]: Redovi
+        - generic [ref=f1e44]:
+          - generic [ref=f1e45]: "1"
+          - generic [ref=f1e46]: Vrste sektora
+    - generic [ref=f1e47]:
+      - generic [ref=f1e48]:
+        - generic [ref=f1e49]:
+          - generic [ref=f1e50]: 
+          - text: 0. Sezone
+        - generic [ref=f1e51]: "2"
+        - button "Osvježi" [ref=f1e52] [cursor=pointer]
+      - generic [ref=f1e53]:
+        - generic [ref=f1e54]:
+          - generic [ref=f1e55]:
+            - generic [ref=f1e56]: Naziv sezone
+            - textbox "2026/2027" [ref=f1e57]
+          - generic [ref=f1e58]:
+            - generic [ref=f1e59]: Počinje
+            - textbox [ref=f1e60]: 2026-08-01
+          - generic [ref=f1e61]:
+            - generic [ref=f1e62]: Završava
+            - textbox [ref=f1e63]: 2027-05-31
+          - generic [ref=f1e65]:
+            - checkbox [checked] [ref=f1e66]
+            - generic [ref=f1e67]: Postavi kao trenutnu
+          - button " Kreiraj" [ref=f1e69] [cursor=pointer]:
+            - generic [ref=f1e70]: 
+            - text: Kreiraj
+        - table [ref=f1e71]:
+          - rowgroup [ref=f1e72]:
+            - row [ref=f1e73]:
+              - columnheader "Sezona" [ref=f1e74]
+              - columnheader "Vremenski prozor" [ref=f1e75]
+              - columnheader "Trenutna" [ref=f1e76]
+              - columnheader "Događaji" [ref=f1e77]
+              - columnheader "Karte" [ref=f1e78]
+              - columnheader "Akcija" [ref=f1e79]
+          - rowgroup [ref=f1e80]:
+            - row [ref=f1e81]:
+              - cell [ref=f1e82]:
+                - strong [ref=f1e83]: 2026/2027
+                - generic [ref=f1e84]:
+                  - text: "#1 ·"
+                  - code [ref=f1e85]: SEASON-A474A2B1
+              - cell "2026-08-01 → 2027-05-31" [ref=f1e86]
+              - cell "trenutna" [ref=f1e87]
+              - cell "7" [ref=f1e89]
+              - cell "140" [ref=f1e90]
+              - cell [ref=f1e91]:
+                - button "Odaberi" [ref=f1e92] [cursor=pointer]
+            - row [ref=f1e93]:
+              - cell [ref=f1e94]:
+                - strong [ref=f1e95]: 2025/26
+                - generic [ref=f1e96]:
+                  - text: "#2 ·"
+                  - code
+              - cell "2025-08-01 → 2026-05-31" [ref=f1e97]
+              - cell [ref=f1e98]
+              - cell "18" [ref=f1e99]
+              - cell "176" [ref=f1e100]
+              - cell "odabrana" [ref=f1e101]
+    - generic [ref=f1e103]:
+      - generic [ref=f1e104]:
+        - generic [ref=f1e105]: 
+        - text: 1. Događaj
+      - generic [ref=f1e107]:
+        - generic [ref=f1e108]:
+          - generic [ref=f1e109]: Vrsta
+          - combobox [ref=f1e110]:
+            - option "Utakmica" [selected]
+            - option "Koncert"
+            - option "Ostalo"
+        - generic [ref=f1e111]:
+          - generic [ref=f1e112]: Domaćin
+          - textbox [ref=f1e113]: Istra
+        - generic [ref=f1e114]:
+          - generic [ref=f1e115]: Gost
+          - textbox [ref=f1e116]: Zagreb
+        - generic [ref=f1e117]:
+          - generic [ref=f1e118]: Početak
+          - textbox [ref=f1e119]: 2026-07-26T18:00
+        - generic [ref=f1e120]:
+          - generic [ref=f1e121]: Kraj
+          - textbox [ref=f1e122]: 2026-07-26T20:00
+        - generic [ref=f1e123]:
+          - generic [ref=f1e124]: Sezona
+          - combobox [ref=f1e125]:
+            - option "(bez sezone)" [selected]
+            - option "2026/2027"
+            - option "2025/26"
+        - button " Kreiraj i sinkronizacija" [ref=f1e127] [cursor=pointer]:
+          - generic [ref=f1e128]: 
+          - text: Kreiraj i sinkronizacija
+    - generic [ref=f1e129]:
+      - generic [ref=f1e130]:
+        - generic [ref=f1e131]:
+          - generic [ref=f1e132]: 
+          - text: Postojeći događaji
+        - generic [ref=f1e133]: "26"
+        - button "Osvježi" [ref=f1e134] [cursor=pointer]
+      - table [ref=f1e136]:
+        - rowgroup [ref=f1e137]:
+          - row [ref=f1e138]:
+            - columnheader "Događaj" [ref=f1e139]
+            - columnheader "Početak" [ref=f1e140]
+            - columnheader "Kraj" [ref=f1e141]
+            - columnheader "Izvor" [ref=f1e142]
+            - columnheader "Prodano / Kapacitet" [ref=f1e143]
+            - columnheader "Akcija" [ref=f1e144]
+        - rowgroup [ref=f1e145]:
+          - row [ref=f1e146]:
+            - cell "Poster Test Match#36 · iz admin panela" [ref=f1e147]:
+              - strong [ref=f1e148]: Poster Test Match
+              - generic [ref=f1e149]:
+                - text: "#36 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e150]: iz admin panela
+            - cell "2026-08-17 11:16" [ref=f1e151]
+            - cell "2026-08-17 13:16" [ref=f1e152]
+            - cell [ref=f1e153]
+            - cell "140 / 400" [ref=f1e154]
+            - cell [ref=f1e155]:
+              - button " Odaberi" [ref=f1e156] [cursor=pointer]:
+                - generic [ref=f1e157]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e158] [cursor=pointer]:
+                - generic [ref=f1e159]: 
+                - text: Obriši
+          - row [ref=f1e160]:
+            - cell [ref=f1e161]:
+              - strong [ref=f1e162]: Istra233 - Zagreb2223
+              - generic [ref=f1e163]:
+                - text: "#35 ·"
+                - code [ref=f1e164]: SIM-8A41FAC6
+            - cell "2026-07-14 22:31" [ref=f1e165]
+            - cell "2026-07-15 00:15" [ref=f1e166]
+            - cell "TicketingSimulator" [ref=f1e167]
+            - cell "220 / 400" [ref=f1e168]
+            - cell [ref=f1e169]:
+              - button " Odaberi" [ref=f1e170] [cursor=pointer]:
+                - generic [ref=f1e171]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e172] [cursor=pointer]:
+                - generic [ref=f1e173]: 
+                - text: Obriši
+          - row [ref=f1e174]:
+            - cell [ref=f1e175]:
+              - strong [ref=f1e176]: Istra222 - Zagreb222
+              - generic [ref=f1e177]:
+                - text: "#34 ·"
+                - code [ref=f1e178]: SIM-362F1FDE
+            - cell "2026-07-14 22:10" [ref=f1e179]
+            - cell "2026-07-14 22:10" [ref=f1e180]
+            - cell "TicketingSimulator" [ref=f1e181]
+            - cell "140 / 400" [ref=f1e182]
+            - cell [ref=f1e183]:
+              - button " Odaberi" [ref=f1e184] [cursor=pointer]:
+                - generic [ref=f1e185]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e186] [cursor=pointer]:
+                - generic [ref=f1e187]: 
+                - text: Obriši
+          - row [ref=f1e188]:
+            - cell "GNK Dinamo – HNK Rijeka (13.07.2026.)#33 · iz admin panela" [ref=f1e189]:
+              - strong [ref=f1e190]: GNK Dinamo – HNK Rijeka (13.07.2026.)
+              - generic [ref=f1e191]:
+                - text: "#33 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e192]: iz admin panela
+            - cell "2026-07-13 20:32" [ref=f1e193]
+            - cell "2026-07-14 00:32" [ref=f1e194]
+            - cell [ref=f1e195]
+            - cell "393 / 369" [ref=f1e196]
+            - cell [ref=f1e197]:
+              - button " Odaberi" [ref=f1e198] [cursor=pointer]:
+                - generic [ref=f1e199]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e200] [cursor=pointer]:
+                - generic [ref=f1e201]: 
+                - text: Obriši
+          - row [ref=f1e202]:
+            - cell "GNK Dinamo – NK Lokomotiva Zagreb (23.05.2026.)#32 · iz admin panela" [ref=f1e203]:
+              - strong [ref=f1e204]: GNK Dinamo – NK Lokomotiva Zagreb (23.05.2026.)
+              - generic [ref=f1e205]:
+                - text: "#32 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e206]: iz admin panela
+            - cell "2026-05-23 18:45" [ref=f1e207]
+            - cell "2026-05-23 20:45" [ref=f1e208]
+            - cell "SuperSport HNL 2025/26" [ref=f1e209]
+            - cell "257 / 369" [ref=f1e210]
+            - cell [ref=f1e211]:
+              - button " Odaberi" [ref=f1e212] [cursor=pointer]:
+                - generic [ref=f1e213]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e214] [cursor=pointer]:
+                - generic [ref=f1e215]: 
+                - text: Obriši
+          - row [ref=f1e216]:
+            - cell "GNK Dinamo – HNK Hajduk Split (09.05.2026.)#31 · iz admin panela" [ref=f1e217]:
+              - strong [ref=f1e218]: GNK Dinamo – HNK Hajduk Split (09.05.2026.)
+              - generic [ref=f1e219]:
+                - text: "#31 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e220]: iz admin panela
+            - cell "2026-05-09 16:00" [ref=f1e221]
+            - cell "2026-05-09 18:00" [ref=f1e222]
+            - cell "SuperSport HNL 2025/26" [ref=f1e223]
+            - cell "324 / 369" [ref=f1e224]
+            - cell [ref=f1e225]:
+              - button " Odaberi" [ref=f1e226] [cursor=pointer]:
+                - generic [ref=f1e227]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e228] [cursor=pointer]:
+                - generic [ref=f1e229]: 
+                - text: Obriši
+          - row [ref=f1e230]:
+            - cell "GNK Dinamo – NK Varaždin (26.04.2026.)#30 · iz admin panela" [ref=f1e231]:
+              - strong [ref=f1e232]: GNK Dinamo – NK Varaždin (26.04.2026.)
+              - generic [ref=f1e233]:
+                - text: "#30 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e234]: iz admin panela
+            - cell "2026-04-26 18:45" [ref=f1e235]
+            - cell "2026-04-26 20:45" [ref=f1e236]
+            - cell "SuperSport HNL 2025/26" [ref=f1e237]
+            - cell "198 / 369" [ref=f1e238]
+            - cell [ref=f1e239]:
+              - button " Odaberi" [ref=f1e240] [cursor=pointer]:
+                - generic [ref=f1e241]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e242] [cursor=pointer]:
+                - generic [ref=f1e243]: 
+                - text: Obriši
+          - row [ref=f1e244]:
+            - cell "GNK Dinamo – HNK Rijeka (18.04.2026.)#29 · iz admin panela" [ref=f1e245]:
+              - strong [ref=f1e246]: GNK Dinamo – HNK Rijeka (18.04.2026.)
+              - generic [ref=f1e247]:
+                - text: "#29 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e248]: iz admin panela
+            - cell "2026-04-18 16:00" [ref=f1e249]
+            - cell "2026-04-18 18:00" [ref=f1e250]
+            - cell "SuperSport HNL 2025/26" [ref=f1e251]
+            - cell "234 / 369" [ref=f1e252]
+            - cell [ref=f1e253]:
+              - button " Odaberi" [ref=f1e254] [cursor=pointer]:
+                - generic [ref=f1e255]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e256] [cursor=pointer]:
+                - generic [ref=f1e257]: 
+                - text: Obriši
+          - row [ref=f1e258]:
+            - cell "GNK Dinamo – NK Osijek (04.04.2026.)#28 · iz admin panela" [ref=f1e259]:
+              - strong [ref=f1e260]: GNK Dinamo – NK Osijek (04.04.2026.)
+              - generic [ref=f1e261]:
+                - text: "#28 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e262]: iz admin panela
+            - cell "2026-04-04 15:00" [ref=f1e263]
+            - cell "2026-04-04 17:00" [ref=f1e264]
+            - cell "SuperSport HNL 2025/26" [ref=f1e265]
+            - cell "221 / 369" [ref=f1e266]
+            - cell [ref=f1e267]:
+              - button " Odaberi" [ref=f1e268] [cursor=pointer]:
+                - generic [ref=f1e269]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e270] [cursor=pointer]:
+                - generic [ref=f1e271]: 
+                - text: Obriši
+          - row [ref=f1e272]:
+            - cell "GNK Dinamo – NK Slaven Belupo (14.03.2026.)#27 · iz admin panela" [ref=f1e273]:
+              - strong [ref=f1e274]: GNK Dinamo – NK Slaven Belupo (14.03.2026.)
+              - generic [ref=f1e275]:
+                - text: "#27 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e276]: iz admin panela
+            - cell "2026-03-14 17:15" [ref=f1e277]
+            - cell "2026-03-14 19:15" [ref=f1e278]
+            - cell "SuperSport HNL 2025/26" [ref=f1e279]
+            - cell "364 / 369" [ref=f1e280]
+            - cell [ref=f1e281]:
+              - button " Odaberi" [ref=f1e282] [cursor=pointer]:
+                - generic [ref=f1e283]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e284] [cursor=pointer]:
+                - generic [ref=f1e285]: 
+                - text: Obriši
+          - row [ref=f1e286]:
+            - cell "GNK Dinamo – HNK Gorica (01.03.2026.)#26 · iz admin panela" [ref=f1e287]:
+              - strong [ref=f1e288]: GNK Dinamo – HNK Gorica (01.03.2026.)
+              - generic [ref=f1e289]:
+                - text: "#26 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e290]: iz admin panela
+            - cell "2026-03-01 17:15" [ref=f1e291]
+            - cell "2026-03-01 19:15" [ref=f1e292]
+            - cell "SuperSport HNL 2025/26" [ref=f1e293]
+            - cell "293 / 369" [ref=f1e294]
+            - cell [ref=f1e295]:
+              - button " Odaberi" [ref=f1e296] [cursor=pointer]:
+                - generic [ref=f1e297]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e298] [cursor=pointer]:
+                - generic [ref=f1e299]: 
+                - text: Obriši
+          - row [ref=f1e300]:
+            - cell "GNK Dinamo – NK Istra 1961 (14.02.2026.)#25 · iz admin panela" [ref=f1e301]:
+              - strong [ref=f1e302]: GNK Dinamo – NK Istra 1961 (14.02.2026.)
+              - generic [ref=f1e303]:
+                - text: "#25 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e304]: iz admin panela
+            - cell "2026-02-14 15:00" [ref=f1e305]
+            - cell "2026-02-14 17:00" [ref=f1e306]
+            - cell "SuperSport HNL 2025/26" [ref=f1e307]
+            - cell "207 / 369" [ref=f1e308]
+            - cell [ref=f1e309]:
+              - button " Odaberi" [ref=f1e310] [cursor=pointer]:
+                - generic [ref=f1e311]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e312] [cursor=pointer]:
+                - generic [ref=f1e313]: 
+                - text: Obriši
+          - row [ref=f1e314]:
+            - cell "GNK Dinamo – HNK Vukovar 1991 (02.02.2026.)#24 · iz admin panela" [ref=f1e315]:
+              - strong [ref=f1e316]: GNK Dinamo – HNK Vukovar 1991 (02.02.2026.)
+              - generic [ref=f1e317]:
+                - text: "#24 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e318]: iz admin panela
+            - cell "2026-02-02 18:00" [ref=f1e319]
+            - cell "2026-02-02 20:00" [ref=f1e320]
+            - cell "SuperSport HNL 2025/26" [ref=f1e321]
+            - cell "368 / 369" [ref=f1e322]
+            - cell [ref=f1e323]:
+              - button " Odaberi" [ref=f1e324] [cursor=pointer]:
+                - generic [ref=f1e325]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e326] [cursor=pointer]:
+                - generic [ref=f1e327]: 
+                - text: Obriši
+          - row [ref=f1e328]:
+            - cell "GNK Dinamo – NK Lokomotiva Zagreb (20.12.2025.)#23 · iz admin panela" [ref=f1e329]:
+              - strong [ref=f1e330]: GNK Dinamo – NK Lokomotiva Zagreb (20.12.2025.)
+              - generic [ref=f1e331]:
+                - text: "#23 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e332]: iz admin panela
+            - cell "2025-12-20 17:45" [ref=f1e333]
+            - cell "2025-12-20 19:45" [ref=f1e334]
+            - cell "SuperSport HNL 2025/26" [ref=f1e335]
+            - cell "314 / 369" [ref=f1e336]
+            - cell [ref=f1e337]:
+              - button " Odaberi" [ref=f1e338] [cursor=pointer]:
+                - generic [ref=f1e339]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e340] [cursor=pointer]:
+                - generic [ref=f1e341]: 
+                - text: Obriši
+          - row [ref=f1e342]:
+            - cell "GNK Dinamo – HNK Hajduk Split (06.12.2025.)#22 · iz admin panela" [ref=f1e343]:
+              - strong [ref=f1e344]: GNK Dinamo – HNK Hajduk Split (06.12.2025.)
+              - generic [ref=f1e345]:
+                - text: "#22 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e346]: iz admin panela
+            - cell "2025-12-06 15:00" [ref=f1e347]
+            - cell "2025-12-06 17:00" [ref=f1e348]
+            - cell "SuperSport HNL 2025/26" [ref=f1e349]
+            - cell "319 / 369" [ref=f1e350]
+            - cell [ref=f1e351]:
+              - button " Odaberi" [ref=f1e352] [cursor=pointer]:
+                - generic [ref=f1e353]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e354] [cursor=pointer]:
+                - generic [ref=f1e355]: 
+                - text: Obriši
+          - row [ref=f1e356]:
+            - cell "GNK Dinamo – NK Varaždin (22.11.2025.)#21 · iz admin panela" [ref=f1e357]:
+              - strong [ref=f1e358]: GNK Dinamo – NK Varaždin (22.11.2025.)
+              - generic [ref=f1e359]:
+                - text: "#21 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e360]: iz admin panela
+            - cell "2025-11-22 15:00" [ref=f1e361]
+            - cell "2025-11-22 17:00" [ref=f1e362]
+            - cell "SuperSport HNL 2025/26" [ref=f1e363]
+            - cell "218 / 369" [ref=f1e364]
+            - cell [ref=f1e365]:
+              - button " Odaberi" [ref=f1e366] [cursor=pointer]:
+                - generic [ref=f1e367]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e368] [cursor=pointer]:
+                - generic [ref=f1e369]: 
+                - text: Obriši
+          - row [ref=f1e370]:
+            - cell "GNK Dinamo – HNK Rijeka (01.11.2025.)#20 · iz admin panela" [ref=f1e371]:
+              - strong [ref=f1e372]: GNK Dinamo – HNK Rijeka (01.11.2025.)
+              - generic [ref=f1e373]:
+                - text: "#20 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e374]: iz admin panela
+            - cell "2025-11-01 16:00" [ref=f1e375]
+            - cell "2025-11-01 18:00" [ref=f1e376]
+            - cell "SuperSport HNL 2025/26" [ref=f1e377]
+            - cell "307 / 369" [ref=f1e378]
+            - cell [ref=f1e379]:
+              - button " Odaberi" [ref=f1e380] [cursor=pointer]:
+                - generic [ref=f1e381]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e382] [cursor=pointer]:
+                - generic [ref=f1e383]: 
+                - text: Obriši
+          - row [ref=f1e384]:
+            - cell "GNK Dinamo – NK Osijek (18.10.2025.)#19 · iz admin panela" [ref=f1e385]:
+              - strong [ref=f1e386]: GNK Dinamo – NK Osijek (18.10.2025.)
+              - generic [ref=f1e387]:
+                - text: "#19 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e388]: iz admin panela
+            - cell "2025-10-18 18:00" [ref=f1e389]
+            - cell "2025-10-18 20:00" [ref=f1e390]
+            - cell "SuperSport HNL 2025/26" [ref=f1e391]
+            - cell "233 / 369" [ref=f1e392]
+            - cell [ref=f1e393]:
+              - button " Odaberi" [ref=f1e394] [cursor=pointer]:
+                - generic [ref=f1e395]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e396] [cursor=pointer]:
+                - generic [ref=f1e397]: 
+                - text: Obriši
+          - row [ref=f1e398]:
+            - cell "GNK Dinamo – NK Slaven Belupo (28.09.2025.)#18 · iz admin panela" [ref=f1e399]:
+              - strong [ref=f1e400]: GNK Dinamo – NK Slaven Belupo (28.09.2025.)
+              - generic [ref=f1e401]:
+                - text: "#18 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e402]: iz admin panela
+            - cell "2025-09-28 18:15" [ref=f1e403]
+            - cell "2025-09-28 20:15" [ref=f1e404]
+            - cell "SuperSport HNL 2025/26" [ref=f1e405]
+            - cell "273 / 369" [ref=f1e406]
+            - cell [ref=f1e407]:
+              - button " Odaberi" [ref=f1e408] [cursor=pointer]:
+                - generic [ref=f1e409]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e410] [cursor=pointer]:
+                - generic [ref=f1e411]: 
+                - text: Obriši
+          - row [ref=f1e412]:
+            - cell "GNK Dinamo – HNK Gorica (14.09.2025.)#17 · iz admin panela" [ref=f1e413]:
+              - strong [ref=f1e414]: GNK Dinamo – HNK Gorica (14.09.2025.)
+              - generic [ref=f1e415]:
+                - text: "#17 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e416]: iz admin panela
+            - cell "2025-09-14 19:15" [ref=f1e417]
+            - cell "2025-09-14 21:15" [ref=f1e418]
+            - cell "SuperSport HNL 2025/26" [ref=f1e419]
+            - cell "325 / 369" [ref=f1e420]
+            - cell [ref=f1e421]:
+              - button " Odaberi" [ref=f1e422] [cursor=pointer]:
+                - generic [ref=f1e423]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e424] [cursor=pointer]:
+                - generic [ref=f1e425]: 
+                - text: Obriši
+          - row [ref=f1e426]:
+            - cell "GNK Dinamo – NK Istra 1961 (23.08.2025.)#16 · iz admin panela" [ref=f1e427]:
+              - strong [ref=f1e428]: GNK Dinamo – NK Istra 1961 (23.08.2025.)
+              - generic [ref=f1e429]:
+                - text: "#16 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e430]: iz admin panela
+            - cell "2025-08-23 21:00" [ref=f1e431]
+            - cell "2025-08-23 23:00" [ref=f1e432]
+            - cell "SuperSport HNL 2025/26" [ref=f1e433]
+            - cell "331 / 369" [ref=f1e434]
+            - cell [ref=f1e435]:
+              - button " Odaberi" [ref=f1e436] [cursor=pointer]:
+                - generic [ref=f1e437]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e438] [cursor=pointer]:
+                - generic [ref=f1e439]: 
+                - text: Obriši
+          - row [ref=f1e440]:
+            - cell "GNK Dinamo – HNK Vukovar 1991 (08.08.2025.)#15 · iz admin panela" [ref=f1e441]:
+              - strong [ref=f1e442]: GNK Dinamo – HNK Vukovar 1991 (08.08.2025.)
+              - generic [ref=f1e443]:
+                - text: "#15 ·"
+                - generic "Kreirano u admin panelu — simulator će mu dodijeliti vanjski id kada ga odaberete ili obrišete." [ref=f1e444]: iz admin panela
+            - cell "2025-08-08 21:00" [ref=f1e445]
+            - cell "2025-08-08 23:00" [ref=f1e446]
+            - cell "SuperSport HNL 2025/26" [ref=f1e447]
+            - cell "285 / 369" [ref=f1e448]
+            - cell [ref=f1e449]:
+              - button " Odaberi" [ref=f1e450] [cursor=pointer]:
+                - generic [ref=f1e451]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e452] [cursor=pointer]:
+                - generic [ref=f1e453]: 
+                - text: Obriši
+          - row [ref=f1e454]:
+            - cell [ref=f1e455]:
+              - strong [ref=f1e456]: Istra - Zagreb
+              - generic [ref=f1e457]:
+                - text: "#14 ·"
+                - code [ref=f1e458]: SIM-4FAC7FD4
+            - cell "2026-07-14 20:00" [ref=f1e459]
+            - cell "2026-07-14 22:00" [ref=f1e460]
+            - cell "TicketingSimulator" [ref=f1e461]
+            - cell "220 / 400" [ref=f1e462]
+            - cell [ref=f1e463]:
+              - button " Odaberi" [ref=f1e464] [cursor=pointer]:
+                - generic [ref=f1e465]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e466] [cursor=pointer]:
+                - generic [ref=f1e467]: 
+                - text: Obriši
+          - row [ref=f1e468]:
+            - cell [ref=f1e469]:
+              - strong [ref=f1e470]: rijeka dinaamo
+              - generic [ref=f1e471]:
+                - text: "#13 ·"
+                - code [ref=f1e472]: SIM-416608FA
+            - cell "2026-07-06 23:08" [ref=f1e473]
+            - cell "2026-07-07 01:08" [ref=f1e474]
+            - cell "TicketingSimulator" [ref=f1e475]
+            - cell "180 / 400" [ref=f1e476]
+            - cell [ref=f1e477]:
+              - button " Odaberi" [ref=f1e478] [cursor=pointer]:
+                - generic [ref=f1e479]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e480] [cursor=pointer]:
+                - generic [ref=f1e481]: 
+                - text: Obriši
+          - row [ref=f1e482]:
+            - cell [ref=f1e483]:
+              - strong [ref=f1e484]: pula zagreb
+              - generic [ref=f1e485]:
+                - text: "#12 ·"
+                - code [ref=f1e486]: SIM-7F2FFF30
+            - cell "2026-07-05 12:27" [ref=f1e487]
+            - cell "2026-07-05 14:27" [ref=f1e488]
+            - cell "TicketingSimulator" [ref=f1e489]
+            - cell "160 / 200" [ref=f1e490]
+            - cell [ref=f1e491]:
+              - button " Odaberi" [ref=f1e492] [cursor=pointer]:
+                - generic [ref=f1e493]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e494] [cursor=pointer]:
+                - generic [ref=f1e495]: 
+                - text: Obriši
+          - row [ref=f1e496]:
+            - cell [ref=f1e497]:
+              - strong [ref=f1e498]: Plua - osijek
+              - generic [ref=f1e499]:
+                - text: "#10 ·"
+                - code [ref=f1e500]: SIM-746D1391
+            - cell "2026-07-04 15:45" [ref=f1e501]
+            - cell "2026-07-04 17:45" [ref=f1e502]
+            - cell "TicketingSimulator" [ref=f1e503]
+            - cell "150 / 200" [ref=f1e504]
+            - cell [ref=f1e505]:
+              - button " Odaberi" [ref=f1e506] [cursor=pointer]:
+                - generic [ref=f1e507]: 
+                - text: Odaberi
+              - button " Obriši" [ref=f1e508] [cursor=pointer]:
+                - generic [ref=f1e509]: 
+                - text: Obriši
+    - generic [ref=f1e510]:
+      - generic [ref=f1e511]:
+        - generic [ref=f1e512]: 
+        - text: Zapisnik aktivnosti
+      - generic [ref=f1e513]: Nema aktivnosti.

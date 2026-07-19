@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StadiumDrinkOrdering.Bar", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StadiumDrinkOrdering.Runner", "StadiumDrinkOrdering.Runner\StadiumDrinkOrdering.Runner.csproj", "{32381920-D21E-4903-AF96-FF8DA1490135}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StadiumDrinkOrdering.UI", "StadiumDrinkOrdering.UI\StadiumDrinkOrdering.UI.csproj", "{DF57C446-6052-4131-AA37-52F1780B2B9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|x64.Build.0 = Release|Any CPU
 		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|x86.ActiveCfg = Release|Any CPU
 		{32381920-D21E-4903-AF96-FF8DA1490135}.Release|x86.Build.0 = Release|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Debug|x64.Build.0 = Debug|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Debug|x86.Build.0 = Debug|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Release|x64.ActiveCfg = Release|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Release|x64.Build.0 = Release|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Release|x86.ActiveCfg = Release|Any CPU
+		{DF57C446-6052-4131-AA37-52F1780B2B9E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,7 +9,7 @@
 
 <PageTitle>@Localizer["OrderConfirmation_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="@Localizer["OrderConfirmation_ScreenHeader"]" Subtitle="Ulaznice" OnBack="GoBack" />
+<ScreenHeader Title="@Localizer["OrderConfirmation_ScreenHeader"]" Subtitle="@Localizer["OrderConfirmation_Subtitle"]" OnBack="GoBack" />
 
 @if (isLoading)
 {
@@ -66,7 +66,7 @@ else
                             <span id="customer-order-confirmation-ticket-sector-@_k" class="oc-ticket-sub">@Localizer["OrderConfirmation_TicketSector", ticket.SectionName]</span>
                             <span id="customer-order-confirmation-ticket-number-@_k" class="oc-ticket-sub tnum">@ticket.TicketNumber</span>
                         </div>
-                        <div id="customer-order-confirmation-ticket-qr-@_k" class="oc-qr" title="QR kod ulaznice" aria-label="QR kod ulaznice"></div>
+                        <div id="customer-order-confirmation-ticket-qr-@_k" class="oc-qr" title="@Localizer["OrderConfirmation_TicketQr"]" aria-label="@Localizer["OrderConfirmation_TicketQr"]"></div>
                     </div>
                 }
             </div>

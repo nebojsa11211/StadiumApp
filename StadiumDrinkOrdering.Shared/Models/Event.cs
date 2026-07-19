@@ -32,6 +32,23 @@ public class Event
     [StringLength(100)]
     public string? AwayTeam { get; set; }
 
+    /// <summary>
+    /// The resident <see cref="Club"/> playing at home, when <see cref="HomeTeam"/> resolves to one.
+    ///
+    /// The name above remains the authority for what this fixture is called — it is a snapshot taken
+    /// at save time, so renaming a club never rewrites history on played fixtures. This link exists
+    /// so the crest survives a rename: matching by name alone silently lost the badge the moment an
+    /// admin corrected a spelling. Null for events whose home side is not a resident club (external
+    /// imports, legacy rows, concerts).
+    /// </summary>
+    public int? HomeClubId { get; set; }
+
+    /// <summary>
+    /// The visiting <see cref="Team"/> directory entry, when <see cref="AwayTeam"/> resolves to one.
+    /// Same snapshot-plus-link arrangement as <see cref="HomeClubId"/>.
+    /// </summary>
+    public int? AwayTeamId { get; set; }
+
     /// <summary>Start of the event (kept as the historical <c>EventDate</c> column).</summary>
     [Required]
     public DateTime EventDate { get; set; }
@@ -93,7 +110,68 @@ public class Event
     
     [StringLength(500)]
     public string? ImageUrl { get; set; }
-    
+
+    /// <summary>
+    /// MIME type of the event poster (e.g. "image/png"), or null when the event has no poster.
+    /// This doubles as the "has a poster" flag: the bytes themselves live in the separate
+    /// <see cref="EventPoster"/> row so listing events never drags multi-MB blobs into the query.
+    /// </summary>
+    [StringLength(100)]
+    public string? PosterContentType { get; set; }
+
+    /// <summary>Pixel width of the stored poster, if any.</summary>
+    public int? PosterWidth { get; set; }
+
+    /// <summary>Pixel height of the stored poster, if any.</summary>
+    public int? PosterHeight { get; set; }
+
+    /// <summary>
+    /// The text prompt the poster was generated from. Kept so an admin can see why a poster came
+    /// out the way it did, and can tweak rather than retype it when regenerating.
+    /// </summary>
+    [StringLength(2000)]
+    public string? PosterPrompt { get; set; }
+
+    /// <summary>
+    /// The poster image bytes, in their own table so they are loaded only when explicitly requested
+    /// (the <c>GET events/{id}/image</c> endpoint). Null when the event has no poster.
+    /// </summary>
+    public EventPoster? Poster { get; set; }
+
+    /// <summary>
+    /// When an admin confirmed the poster's generated text is correct; null while it is pending
+    /// review. The image model composes team names, venue and kick-off directly into the artwork
+    /// and does occasionally misspell them (a test run produced "NK OSIZEK" for "NK OSIJEK"), so
+    /// nothing reaches fans unreviewed — the customer fixture card only renders approved posters.
+    ///
+    /// Lives here rather than on <see cref="EventPoster"/> so approval can be queried and filtered
+    /// without pulling the image bytes into the query.
+    /// </summary>
+    public DateTime? PosterApprovedAt { get; set; }
+
+    /// <summary>
+    /// The event facts baked into the current artwork (see <see cref="PosterSignature"/>). Compared
+    /// against the event's live values to detect a poster left stale by a later edit.
+    /// </summary>
+    [StringLength(500)]
+    public string? PosterSourceSignature { get; set; }
+
+    /// <summary>True when this event has a stored poster image.</summary>
+    public bool HasPoster => !string.IsNullOrEmpty(PosterContentType);
+
+    /// <summary>True when the stored poster has been reviewed and may be shown to fans.</summary>
+    public bool IsPosterApproved => HasPoster && PosterApprovedAt.HasValue;
+
+    /// <summary>
+    /// True when the poster's baked-in details no longer match the event. Only meaningful when a
+    /// poster exists and carries a signature.
+    /// </summary>
+    public bool IsPosterStale =>
+        HasPoster
+        && !string.IsNullOrEmpty(PosterSourceSignature)
+        && PosterSourceSignature != PosterSignature.For(HomeTeam, AwayTeam, EventDate);
+
+
     public decimal? BaseTicketPrice { get; set; }
 
     /// <summary>
@@ -115,8 +193,8 @@ public class Event
     public int? SeasonId { get; set; }
 
     /// <summary>
-    /// True when the event is in a live lifecycle phase (<see cref="EventStatus.Active"/> or
-    /// <see cref="EventStatus.InProgress"/> — the authoritative game-day state) and has not yet
+    /// True when the event is in a live lifecycle phase (<see cref="EventStatus.Active"/> — the
+    /// authoritative game-day state) and has not yet
     /// ended at <paramref name="nowUtc"/>. When an explicit <see cref="EventEndDate"/> is set the
     /// window closes at that instant; otherwise the event is treated as live only through the end
     /// of its start day, so a past event with no end date does not stay "live" forever.
@@ -209,6 +287,16 @@ public class Event
 
     // Navigation properties
     public virtual Season? Season { get; set; }
+
+    /// <summary>Resident club playing at home (see <see cref="HomeClubId"/>).</summary>
+    public virtual Club? HomeClub { get; set; }
+
+    /// <summary>
+    /// Visiting team's directory entry (see <see cref="AwayTeamId"/>). Named "…Profile" because
+    /// <see cref="AwayTeam"/> is already taken by the name snapshot this links out from.
+    /// </summary>
+    public virtual Team? AwayTeamProfile { get; set; }
+
     /// <summary>Per-sector ticket-price overrides for this event (see <see cref="EventSectorPrice"/>).</summary>
     public virtual ICollection<EventSectorPrice> SectorPrices { get; set; } = new List<EventSectorPrice>();
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
@@ -235,7 +323,8 @@ public enum EventStatus
     OnSale = 2,
     SoldOut = 3,
     Active = 4,
-    InProgress = 5,
+    // 5 was InProgress — removed because nothing ever branched on it separately from Active.
+    // The value stays retired rather than reused so old rows/logs can't be silently misread.
     Completed = 6,
     Cancelled = 7
 }

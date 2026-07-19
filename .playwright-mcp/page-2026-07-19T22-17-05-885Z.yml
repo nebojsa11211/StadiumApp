@@ -1,0 +1,18 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - generic [ref=f2e4]:
+      - generic [ref=f2e5]: 20:45
+      - paragraph [ref=f2e20]: Provjeravam tvoju ulaznicu…
+    - complementary [ref=f2e21]:
+      - img "QR code for https://localhost:7020/t/1beedf5b-a1e0-4f7d-bc05-bd80fa50585c" [ref=f2e22]
+      - generic [ref=f2e23]: Otvori na mobitelu
+      - generic [ref=f2e24]: https://localhost:7020/t/1beedf5b-a1e0-4f7d-bc05-bd80fa50585c
+  - generic [ref=f2e25]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f2e26] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=f2e27]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

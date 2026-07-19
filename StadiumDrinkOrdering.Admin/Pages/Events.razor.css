@@ -12,6 +12,45 @@
     flex-direction: column;
 }
 
+/* ---- Lifecycle phase colour ----------------------------------------------------------------
+   Each card carries one hue for its EventStatus: a top stripe plus a wash behind the header.
+   The tint is mixed against --surface so it stays subtle and follows the light/dark surface.
+   Colour is a redundant cue — the status pill in the header still names the phase. */
+.event-card {
+    --phase: var(--stadium-gray-400);
+    border-top: 3px solid var(--phase);
+}
+
+.event-card .panel__head {
+    background: color-mix(in srgb, var(--phase) 9%, var(--surface));
+}
+
+.event-card--planned    { --phase: #64748b; } /* slate  — not yet on sale */
+.event-card--onsale     { --phase: #2563eb; } /* blue   — tickets selling */
+.event-card--soldout    { --phase: #7c3aed; } /* violet — sold out        */
+.event-card--active     { --phase: #16a34a; } /* green  — live now        */
+.event-card--completed  { --phase: #94a3b8; } /* muted  — finished        */
+.event-card--cancelled  { --phase: #dc2626; } /* red    — cancelled       */
+
+/* Finished and cancelled events recede so the live pipeline stands out. */
+.event-card--completed,
+.event-card--cancelled {
+    opacity: 0.82;
+}
+
+/* ---- Generated poster banner ---------------------------------------------------------------
+   Shown at full strength between the card header and its metadata. The panel already sets
+   overflow:hidden, so the image sits flush to the card's edges. */
+.event-card__banner {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    /* Separates the artwork from the metadata below without a hard line against dark posters. */
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
 .event-card .panel__body {
     flex: 1;
 }

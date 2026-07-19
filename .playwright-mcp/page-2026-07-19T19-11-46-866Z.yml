@@ -1,0 +1,36 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e4]:
+    - generic [ref=f4e5]: 20:45
+    - generic [ref=f4e17]:
+      - banner [ref=f4e18]:
+        - generic [ref=f4e19]: HALFTIME
+        - button "Prijava" [ref=f4e20] [cursor=pointer]
+      - generic [ref=f4e24]:
+        - generic [ref=f4e25]: Stadion Maksimir · Zagreb
+        - heading "NEMA REDOVA. SAMO PIĆE." [level=1] [ref=f4e29]:
+          - generic [ref=f4e30]: NEMA
+          - generic [ref=f4e31]: REDOVA.
+          - generic [ref=f4e32]: SAMO PIĆE.
+        - paragraph [ref=f4e33]: Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.
+      - generic [ref=f4e34]:
+        - generic [ref=f4e35]: 2026/2027
+        - 'button "NEXT FIXTURE: GNK Dinamo Zagreb – HNK Hajduk Split, 17. kol 2026 11:16 – 13:16" [ref=f4e37] [cursor=pointer]'
+      - generic [ref=f4e40]: HALFTIME
+      - generic [ref=f4e41]:
+        - button "Skeniraj ulaznicu" [ref=f4e42] [cursor=pointer]
+        - button "Imaš pretplatu? Prijavi se" [ref=f4e47] [cursor=pointer]
+      - contentinfo [ref=f4e48]:
+        - button "Pojedinačna ulaznica? Skeniraj QR kod." [ref=f4e49] [cursor=pointer]
+        - group "Jezik" [ref=f4e53]:
+          - button "HR" [ref=f4e54] [cursor=pointer]
+          - generic [ref=f4e55]: /
+          - button "EN" [ref=f4e56] [cursor=pointer]
+  - generic [ref=f4e57]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f4e58] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=f4e59]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

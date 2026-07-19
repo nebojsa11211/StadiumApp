@@ -9,7 +9,7 @@
         <h3 class="mb-0" id="admin-structure-help-title">@L["StructHelp_MainTitle"]</h3>
         <div class="ms-auto" id="admin-structure-help-actions">
             <a href="/admin/stadium-structure" class="btn btn-outline-primary" id="admin-structure-help-back-btn">
-                <i class="fas fa-arrow-left me-2"></i>@L["StructHelp_BackButton"]
+                <i class="bi bi-arrow-left me-2"></i>@L["StructHelp_BackButton"]
             </a>
         </div>
     </div>
@@ -102,7 +102,7 @@
             <div class="card-header d-flex justify-content-between align-items-center" id="admin-structure-help-structure-header">
                 <h4 id="admin-structure-help-structure-title">@L["StructHelp_JsonStructureTitle"]</h4>
                 <button class="btn btn-sm btn-outline-secondary" @onclick="CopyJsonStructure" id="admin-structure-help-copy-json-btn">
-                    <i class="fas fa-copy me-1"></i>@L["StructHelp_CopyButton"]
+                    <i class="bi bi-clipboard me-1"></i>@L["StructHelp_CopyButton"]
                 </button>
             </div>
             <div class="card-body" id="admin-structure-help-structure-body">
@@ -253,7 +253,7 @@
   }]
 }</code></pre>
                                 <button class="btn btn-sm btn-outline-success w-100" @onclick="@(() => DownloadSample("minimal"))" id="admin-structure-help-download-minimal-btn">
-                                    <i class="fas fa-download me-1"></i>@L["StructHelp_DownloadSample"]
+                                    <i class="bi bi-download me-1"></i>@L["StructHelp_DownloadSample"]
                                 </button>
                             </div>
                         </div>
@@ -297,7 +297,7 @@
   ]
 }</code></pre>
                                 <button class="btn btn-sm btn-outline-primary w-100" @onclick="@(() => DownloadSample("standard"))" id="admin-structure-help-download-standard-btn">
-                                    <i class="fas fa-download me-1"></i>@L["StructHelp_DownloadSample"]
+                                    <i class="bi bi-download me-1"></i>@L["StructHelp_DownloadSample"]
                                 </button>
                             </div>
                         </div>
@@ -339,7 +339,7 @@
   }]
 }</code></pre>
                                 <button class="btn btn-sm btn-outline-warning w-100" @onclick="@(() => DownloadSample("complex"))" id="admin-structure-help-download-complex-btn">
-                                    <i class="fas fa-download me-1"></i>@L["StructHelp_DownloadSample"]
+                                    <i class="bi bi-download me-1"></i>@L["StructHelp_DownloadSample"]
                                 </button>
                             </div>
                         </div>
@@ -467,10 +467,10 @@
                         <textarea class="form-control" rows="12" @bind="jsonInput" placeholder="@L["StructHelp_JsonPlaceholder"]" id="admin-structure-help-json-input"></textarea>
                         <div class="mt-2" id="admin-structure-help-validator-buttons">
                             <button class="btn btn-primary me-2" @onclick="ValidateJson" id="admin-structure-help-validate-btn">
-                                <i class="fas fa-check me-1"></i>@L["StructHelp_ValidateButton"]
+                                <i class="bi bi-check me-1"></i>@L["StructHelp_ValidateButton"]
                             </button>
                             <button class="btn btn-outline-secondary" @onclick="ClearValidator" id="admin-structure-help-clear-validator-btn">
-                                <i class="fas fa-trash me-1"></i>@L["StructHelp_ClearButton"]
+                                <i class="bi bi-trash me-1"></i>@L["StructHelp_ClearButton"]
                             </button>
                         </div>
                     </div>
@@ -506,7 +506,7 @@
                             else
                             {
                                 <div class="text-muted text-center" style="padding-top: 100px;" id="admin-structure-help-validator-empty">
-                                    <i class="fas fa-clipboard-check fa-3x mb-3"></i>
+                                    <i class="bi bi-clipboard-check fa-3x mb-3"></i>
                                     <p id="admin-structure-help-validator-empty-message">@L["StructHelp_EmptyValidatorState"]</p>
                                 </div>
                             }

@@ -166,11 +166,11 @@ public class SeasonService : ISeasonService
         // not yet ended); everything else non-cancelled is treated as upcoming.
         CompletedEventCount = s.Events.Count(e => e.Status == EventStatus.Completed),
         LiveEventCount = s.Events.Count(e =>
-            (e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
+            e.Status == EventStatus.Active
             && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date)),
         UpcomingEventCount = s.Events.Count(e =>
             e.Status != EventStatus.Completed && e.Status != EventStatus.Cancelled
-            && !((e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
+            && !(e.Status == EventStatus.Active
                  && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date)))
     };
 
@@ -317,8 +317,10 @@ public class SeasonService : ISeasonService
             EventType = e.EventType,
             HomeTeam = e.HomeTeam,
             AwayTeam = e.AwayTeam,
+            HomeClubId = e.HomeClubId,
             EventDate = e.EventDate,
             EventEndDate = e.EventEndDate,
+            HasPoster = e.HasPoster,
             TotalSeats = e.TotalSeats,
             AvailableSeats = Math.Max(0, e.TotalSeats - sold),
             // "Live" only when the match is in a game-day state, has actually kicked off, AND has
@@ -333,7 +335,9 @@ public class SeasonService : ISeasonService
 
     private sealed record NextEventRow(
         int Id, string EventName, string EventType, string? HomeTeam, string? AwayTeam,
-        DateTime EventDate, DateTime? EventEndDate, int TotalSeats, EventStatus Status);
+        int? HomeClubId,
+        DateTime EventDate, DateTime? EventEndDate, int TotalSeats, EventStatus Status,
+        bool HasPoster);
 
     /// <summary>Cap on how many upcoming fixtures the landing strip will surface.</summary>
     private const int MaxUpcomingFixtures = 20;
@@ -353,13 +357,19 @@ public class SeasonService : ISeasonService
                         && e.Status != EventStatus.Cancelled
                         && e.Status != EventStatus.Completed
                         && (e.EventDate >= now
-                            || ((e.Status == EventStatus.Active || e.Status == EventStatus.InProgress)
+                            || (e.Status == EventStatus.Active
                                 && (e.EventEndDate.HasValue ? now <= e.EventEndDate.Value : now.Date <= e.EventDate.Date))))
             .OrderBy(e => e.EventDate)
             .Take(MaxUpcomingFixtures)
             .Select(e => new NextEventRow(
                 e.Id, e.EventName, e.EventType, e.HomeTeam, e.AwayTeam,
-                e.EventDate, e.EventEndDate, e.TotalSeats, e.Status))
+                e.HomeClubId,
+                e.EventDate, e.EventEndDate, e.TotalSeats, e.Status,
+                // Projected from metadata columns, so the poster blob is never loaded here.
+                // Approved only: the artwork has the teams and kick-off rendered into it by the
+                // image model, which occasionally misspells them, so unreviewed posters must not
+                // reach fans — those fixtures fall back to the plain card.
+                e.PosterContentType != null && e.PosterApprovedAt != null))
             .ToListAsync(ct);
 
     public async Task<Dictionary<int, string>> GetSeasonNamesAsync(IEnumerable<int> seasonIds, CancellationToken ct = default)

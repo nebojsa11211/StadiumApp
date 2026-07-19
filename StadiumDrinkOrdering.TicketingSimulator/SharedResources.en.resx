@@ -568,4 +568,82 @@
   <data name="App_NotFoundMessage" xml:space="preserve">
     <value>Sorry, there's nothing at this address.</value>
   </data>
+  <data name="Layout_TabSimulator" xml:space="preserve">
+    <value>Simulator</value>
+  </data>
+  <data name="Layout_TabCredentials" xml:space="preserve">
+    <value>Credentials</value>
+  </data>
+  <data name="Credentials_MainTitle" xml:space="preserve">
+    <value>Login credentials</value>
+  </data>
+  <data name="Credentials_MainSubtitle" xml:space="preserve">
+    <value>Accounts you can sign into the Admin, Bar, Runner and Customer apps with.</value>
+  </data>
+  <data name="Credentials_HashNote" xml:space="preserve">
+    <value>Passwords are stored as BCrypt hashes and cannot be read back. Plaintext is shown only for the accounts created by the development seeder.</value>
+  </data>
+  <data name="Credentials_SearchPlaceholder" xml:space="preserve">
+    <value>Search username, email or name…</value>
+  </data>
+  <data name="Credentials_AllRoles" xml:space="preserve">
+    <value>All roles</value>
+  </data>
+  <data name="Credentials_OnlyKnown" xml:space="preserve">
+    <value>Only accounts with a known password</value>
+  </data>
+  <data name="Credentials_ReloadButton" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="Credentials_AccountsHeader" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="Credentials_Loading" xml:space="preserve">
+    <value>Loading accounts…</value>
+  </data>
+  <data name="Credentials_Empty" xml:space="preserve">
+    <value>No accounts returned. The API must be running in Development for this list to be available.</value>
+  </data>
+  <data name="Credentials_NoMatch" xml:space="preserve">
+    <value>No accounts match the current filters.</value>
+  </data>
+  <data name="Credentials_RoleColumn" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Credentials_UsernameColumn" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Credentials_EmailColumn" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Credentials_PasswordColumn" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Credentials_StatusColumn" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Credentials_LastLoginColumn" xml:space="preserve">
+    <value>Last login</value>
+  </data>
+  <data name="Credentials_UnknownPassword" xml:space="preserve">
+    <value>unknown (hashed)</value>
+  </data>
+  <data name="Credentials_ShellAccount" xml:space="preserve">
+    <value>shell account — cannot log in</value>
+  </data>
+  <data name="Credentials_CopyTitle" xml:space="preserve">
+    <value>Copy password</value>
+  </data>
+  <data name="Credentials_Copied" xml:space="preserve">
+    <value>Password copied to clipboard.</value>
+  </data>
+  <data name="Credentials_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Credentials_Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Credentials_ShowShell" xml:space="preserve">
+    <value>Show shell accounts</value>
+  </data>
 </root>

@@ -417,9 +417,17 @@ builder.Services.AddCors(options =>
                                       .ToArray();
             corsBuilder.WithOrigins(origins);
         }
+        else if (builder.Environment.IsDevelopment())
+        {
+            // DEVELOPMENT ONLY: allow the standard localhost/Docker origins *plus* any private-LAN
+            // address, so the apps can be opened from a phone or tablet on the same network
+            // (https://192.168.x.x:7060 etc.) without re-pinning a DHCP address here every time it
+            // changes. Private ranges only — never public hosts. See docs/ports.md.
+            corsBuilder.SetIsOriginAllowed(IsDevelopmentOriginAllowed);
+        }
         else
         {
-            // Default origins for development (should be overridden in production).
+            // Default origins for non-development (should be overridden via CORS_ALLOWED_ORIGINS).
             // 7060/9060 + host "runner" are the Runner WASM PWA (browser-origin, so it needs CORS
             // unlike the server-rendered apps). NOTE: 7050 is the TicketingSimulator (server-rendered,
             // no CORS needed) — the Runner moved off the shared 7050 to 7060. See docs/staff-app-split-plan.md.
@@ -435,6 +443,33 @@ builder.Services.AddCors(options =>
                    .AllowCredentials();
     });
 });
+
+// Development-only CORS predicate: loopback, or an address in a private (RFC1918) range.
+// Deliberately strict about *where* rather than *which port*, since dev ports move around; a
+// public origin is never accepted, and this path is unreachable outside Development.
+static bool IsDevelopmentOriginAllowed(string origin)
+{
+    if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+        return false;
+
+    if (uri.IsLoopback)
+        return true;
+
+    if (!System.Net.IPAddress.TryParse(uri.Host, out var ip) ||
+        ip.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
+    {
+        return false;
+    }
+
+    var octets = ip.GetAddressBytes();
+    return octets[0] switch
+    {
+        10 => true,                                  // 10.0.0.0/8
+        172 => octets[1] >= 16 && octets[1] <= 31,   // 172.16.0.0/12
+        192 => octets[1] == 168,                     // 192.168.0.0/16
+        _ => false
+    };
+}
 
 // SignalR with JWT authentication support
 builder.Services.AddSignalR();
@@ -1122,5 +1157,6 @@ static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger 
 // The server was already started with app.StartAsync() above so the port opens before the DB
 // warm-up. Block here until shutdown instead of app.Run() (which would try to start it a second time).
 Console.WriteLine("✓ API startup complete (database warmed).");
+
 await app.WaitForShutdownAsync();
  

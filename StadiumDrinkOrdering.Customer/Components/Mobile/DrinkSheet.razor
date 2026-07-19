@@ -8,7 +8,16 @@
     @if (Drink != null)
     {
         <div id="customer-drink-sheet-grab" class="grab"></div>
-        <div id="customer-drink-sheet-thumb" class="big-thumb @DrinkVisuals.Thumb(Drink.CategoryName)">@DrinkVisuals.Emoji(Drink.CategoryIcon)</div>
+        <div id="customer-drink-sheet-thumb" class="big-thumb @DrinkVisuals.Thumb(Drink.CategoryName)">
+            @if (!string.IsNullOrWhiteSpace(Drink.ImageUrl))
+            {
+                <img id="customer-drink-sheet-thumb-img" src="@Drink.ImageUrl" alt="@Drink.Name" />
+            }
+            else
+            {
+                @DrinkVisuals.Emoji(Drink.CategoryIcon)
+            }
+        </div>
         <h3>@Drink.Name</h3>
         <div id="customer-drink-sheet-description" class="desc">@(string.IsNullOrWhiteSpace(Drink.Description) ? Localizer["DrinkSheet_DefaultDescription"] : Drink.Description)</div>
 
@@ -23,6 +32,26 @@
 
         <textarea id="customer-drink-sheet-note-input" class="note-in" rows="2" @bind="_note" placeholder="@Localizer["DrinkSheet_SpecialInstructions"]"></textarea>
 
+        @* What's left to spend after the cart already in play, so the fan sizes this drink against
+           real money rather than discovering the shortfall on the CartBar afterwards. Null Available
+           means no wallet (or it failed to load) — render nothing rather than a misleading €0.00. *@
+        @if (Available is { } available)
+        {
+            var lineTotal = Drink.Price * _qty;
+            var short_ = lineTotal - available;
+            <div id="customer-drink-sheet-funds" class="funds @(short_ > 0 ? "short" : "")" role="status" aria-live="polite">
+                <span id="customer-drink-sheet-funds-text" class="funds-t">
+                    @(short_ > 0
+                        ? Localizer["DrinkSheet_Short", short_.ToString("F2")]
+                        : Localizer["DrinkSheet_Available", available.ToString("F2")])
+                </span>
+                @if (short_ > 0)
+                {
+                    <button id="customer-drink-sheet-topup-btn" class="funds-cta" @onclick="OnTopUp">@Localizer["CartBar_TopUp"] ›</button>
+                }
+            </div>
+        }
+
         <button id="customer-drink-sheet-submit-btn" class="btn btn-primary" @onclick="Submit">@Localizer["DrinkSheet_AddToCart"] €@((Drink.Price * _qty).ToString("F2"))</button>
     }
 </div>
@@ -31,6 +60,11 @@
     [Parameter] public DrinkDto? Drink { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback<DrinkOrderRequest> OnAdd { get; set; }
+
+    // Spendable balance minus whatever is already in the cart; null when there's no wallet or it
+    // couldn't be loaded, in which case the affordability line is omitted entirely.
+    [Parameter] public decimal? Available { get; set; }
+    [Parameter] public EventCallback OnTopUp { get; set; }
 
     private int _qty = 1;
     private string? _note;

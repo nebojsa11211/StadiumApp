@@ -2,6 +2,7 @@
 @layout MobileShell
 @using System.Globalization
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Shared.Configuration
 @using StadiumDrinkOrdering.Customer.Services
 @inject IApiService Api
@@ -18,6 +19,26 @@
 
     <header class="wl-top">
         <div id="customer-welcome-logo" class="wl-logo">@Localizer["Welcome_Wordmark_Part1"]<span>@Localizer["Welcome_Wordmark_Part2"]</span></div>
+
+        @* Account chip, top-right. With a scanned ticket it opens the account sheet (who you are, seat,
+           fixture, wallet); with no session there is no account to show, so it routes to sign-in. *@
+        @if (_hasSession)
+        {
+            <button id="customer-welcome-account-btn" class="wl-account" type="button"
+                    aria-label="@Localizer["Welcome_AccountAriaLabel"]"
+                    aria-haspopup="dialog" aria-expanded="@_accountOpen"
+                    @onclick="@(() => _accountOpen = true)">
+                <span id="customer-welcome-account-avatar" class="wl-account-avatar">@Initials(FanName)</span>
+            </button>
+        }
+        else
+        {
+            <button id="customer-welcome-account-signin-btn" class="wl-account" type="button"
+                    aria-label="@Localizer["Welcome_AccountSignIn"]"
+                    @onclick="@(() => Nav.NavigateTo("/login"))">
+                <svg class="wl-account-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.4-8 5.3V21h16v-1.7c0-2.9-3.6-5.3-8-5.3Z"/></svg>
+            </button>
+        }
     </header>
 
     <div id="customer-welcome-hero" class="hero">
@@ -52,14 +73,44 @@
                     var isFirst = i == 0;
                     var teams = ResolveTeams(evt);
                     var isVersus = !string.IsNullOrWhiteSpace(teams.away);
-                    var home = CrestColors(teams.home);
-                    var away = CrestColors(teams.away);
+                    // The home side of a home match is one of the venue's own clubs, so its crest
+                    // and colours come from admin Venue Settings rather than the name-guess table.
+                    var homeClub = ResolveHomeClub(evt);
+                    var homeLogo = HomeCrestUrl(evt, homeClub, teams.home);
+                    var home = CrestColors(teams.home, homeClub);
+                    var away = CrestColors(teams.away, null);
                     var start = evt.EventDate.ToLocalTime();
                     var end = evt.EventEndDate?.ToLocalTime();
                     var label = evt.IsLive ? Localizer["Welcome_LiveNow"].Value : (isFirst ? Localizer["Welcome_NextFixture"].Value : Localizer["Welcome_Fixture"].Value);
                     <div id="customer-welcome-vs-card-@evt.Id" class="vs-card" role="button" tabindex="0"
                          @onclick="@(() => Nav.NavigateTo($"/events/{evt.Id}"))"
                          @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{evt.Id}"); })">
+                        @if (evt.HasPoster)
+                        {
+                            @* An approved poster IS the card: the crests, team names, venue and
+                               kick-off are composed into the artwork itself, so rendering the DOM
+                               layout on top would duplicate them. The same facts stay in the markup
+                               as visually-hidden text, because text baked into pixels is invisible
+                               to screen readers and untranslatable. Only unapproved posters are
+                               withheld — those fixtures fall through to the layout below. *@
+                            <img id="customer-welcome-vs-poster-@evt.Id" class="vs-poster"
+                                 src="@PosterUrl(evt.Id)" alt="" aria-hidden="true" loading="lazy" />
+                            <span class="vs-sr" id="customer-welcome-vs-sr-@evt.Id">
+                                @label:
+                                @(isVersus ? $"{teams.home} – {teams.away}" : evt.EventName),
+                                @DayLabel(start) @TimeRange(start, end)
+                            </span>
+                            @if (evt.IsLive)
+                            {
+                                @* Live state is the one fact that cannot be baked in — it changes
+                                   after the artwork is made — so it stays an overlay. *@
+                                <span class="vs-live vs-live--onposter" id="customer-welcome-vs-live-@evt.Id">
+                                    <span class="pulse"></span>@Localizer["Welcome_Live"]
+                                </span>
+                            }
+                        }
+                        else
+                        {
                         <div id="customer-welcome-vs-label-@evt.Id" class="vs-label">@label</div>
                         @if (isVersus)
                         {
@@ -70,9 +121,9 @@
                                             <path d="M36 2.5 L69 13.5 V43 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 43 V13.5 Z" style="fill:var(--c1);stroke:rgba(255,255,255,.92);stroke-width:3"></path>
                                             <path d="M3 44 C16.5 44 55.5 44 69 44 C69 63 55.5 75.5 36 81.5 C16.5 75.5 3 63 3 44 Z" style="fill:rgba(0,0,0,.20)"></path>
                                         </svg>
-                                        @if (_venue?.HasClubLogo == true)
+                                        @if (homeLogo is not null)
                                         {
-                                            <img id="customer-welcome-crest-home-logo-@evt.Id" class="crest-logo" src="@ClubLogoUrl" alt="@teams.home" />
+                                            <img id="customer-welcome-crest-home-logo-@evt.Id" class="crest-logo" src="@homeLogo" alt="@teams.home" />
                                         }
                                         else
                                         {
@@ -123,6 +174,7 @@
                                 </div>
                             </div>
                         }
+                        } @* end of the no-approved-poster fallback *@
                     </div>
                 }
             </div>
@@ -144,92 +196,34 @@
     <div id="customer-welcome-cta" class="welcome-cta">
         @if (_hasSession)
         {
-            @* Scanned-ticket banner: greet the holder by name and show the balance they can spend on drinks
-               (their HALFTIME wallet, or the bearer balance loaded on the ticket at the bar). *@
-            <div id="customer-welcome-fancard" class="wl-fancard @(_detailsOpen ? "open" : "")">
-                @* Tap the banner to expand full account details (seat, fixture, wallet kind). Uses the same
-                   role=button pattern as the fixture cards so it works without login on a ticket session. *@
-                <div id="customer-welcome-fancard-toggle" class="wl-fancard-head" role="button" tabindex="0"
-                     aria-expanded="@_detailsOpen" aria-controls="customer-welcome-fancard-details"
-                     @onclick="@(() => _detailsOpen = !_detailsOpen)"
-                     @onkeydown="@(e => { if (e.Key is "Enter" or " ") _detailsOpen = !_detailsOpen; })">
-                    <div id="customer-welcome-fan-id" class="wl-fan-id">
-                        <div id="customer-welcome-fan-avatar" class="wl-fan-avatar">@Initials(FanName)</div>
-                        <div id="customer-welcome-fan-meta" class="wl-fan-meta">
-                            <div id="customer-welcome-fan-hi" class="wl-fan-hi">@Localizer["Welcome_WelcomeBack"]</div>
-                            <div id="customer-welcome-fan-name" class="wl-fan-name">@FanName</div>
-                            @if (!string.IsNullOrWhiteSpace(State.TicketNumber))
-                            {
-                                <div id="customer-welcome-fan-ticket" class="wl-fan-ticket">@string.Format(Localizer["Welcome_TicketNumber"].Value, State.TicketNumber)</div>
-                            }
-                        </div>
-                    </div>
-                    @* Tap the balance to open the online top-up sheet. Stops propagation so it doesn't also
-                       toggle the account-details panel that the rest of this header row controls. *@
-                    <div id="customer-welcome-fan-wallet" class="wl-fan-wallet" role="button" tabindex="0"
-                         aria-label="@Localizer["Welcome_TopUpAriaLabel"]"
-                         @onclick="OpenTopup" @onclick:stopPropagation="true"
-                         @onkeydown="@(e => { if (e.Key is "Enter" or " ") OpenTopup(); })" @onkeydown:stopPropagation="true">
-                        <div id="customer-welcome-fan-wallet-label" class="wl-fan-wallet-label">@WalletLabel</div>
-                        @if (_wallet is { Exists: true })
-                        {
-                            <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt">€@_wallet.Balance.ToString("F2")</div>
-                        }
-                        else
-                        {
-                            <div id="customer-welcome-fan-wallet-amt" class="wl-fan-wallet-amt empty">@Localizer["Welcome_NoBalance"]</div>
-                        }
-                        <div id="customer-welcome-fan-wallet-topup" class="wl-fan-wallet-topup">@Localizer["Welcome_TopUpButton"]</div>
-                    </div>
-                    <svg id="customer-welcome-fan-chev" class="wl-fan-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-                </div>
-
-                @if (_detailsOpen)
-                {
-                    <div id="customer-welcome-fancard-details" class="wl-fan-details">
-                        <div class="wl-fan-row">
-                            <span class="k">@Localizer["Welcome_SeatLabel"]</span>
-                            <span id="customer-welcome-fan-detail-seat" class="v tnum">@State.SeatText</span>
-                        </div>
-                        <div class="wl-fan-row">
-                            <span class="k">@Localizer["Welcome_EventLabel"]</span>
-                            <span id="customer-welcome-fan-detail-event" class="v">@EventTitle</span>
-                        </div>
-                        @if (State.EventDate is { } dt)
-                        {
-                            <div class="wl-fan-row">
-                                <span class="k">@Localizer["Welcome_DateLabel"]</span>
-                                <span id="customer-welcome-fan-detail-date" class="v tnum">@dt.ToLocalTime().ToString("dd.MM.yyyy · HH:mm")</span>
-                            </div>
-                        }
-                        <div class="wl-fan-row">
-                            <span class="k">@Localizer["Welcome_WalletLabel"]</span>
-                            <span id="customer-welcome-fan-detail-wallet" class="v">@WalletKind</span>
-                        </div>
-                    </div>
-                }
-            </div>
-
-            @* Ticket already scanned this session — jump back into ordering instead of scanning again. *@
+            @* Ticket already scanned this session — jump back into ordering instead of scanning again.
+               Who you are, your seat and your balance live in the header account button. *@
             <button id="customer-welcome-continue-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/order"))">
                 <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
                 @Localizer["Welcome_ContinueOrdering"]
             </button>
         }
-        else
+        else if (_matchLive)
         {
+            @* Scanning is only useful while a match is actually running — off game day the ticket
+               opens nothing to order from, so the CTA is sign-in only. *@
             <button id="customer-welcome-scan-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
                 <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M6 9.5v5M18 9.5v5"/></svg>
                 @Localizer["Welcome_ScanTicket"]
             </button>
             <button id="customer-welcome-login-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">@Localizer["Welcome_SignIn"]</button>
         }
+        else
+        {
+            <button id="customer-welcome-login-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/login"))">@Localizer["Welcome_SignIn"]</button>
+        }
     </div>
 
     <footer class="wl-foot">
-        @if (!_hasSession)
+        @if (!_hasSession && _matchLive)
         {
-            @* Redundant once a ticket is scanned — the CTA above already offers "continue ordering". *@
+            @* Redundant once a ticket is scanned — the CTA above already offers "continue ordering",
+               and pointless with no live match, same as the scan CTA. *@
             <button id="customer-welcome-foot-scan" class="wl-foot-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
                 <span>@Localizer["Welcome_SingleTicketScan"]</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm0 3h2v-2h3v2h-2v-1h-1v3h-2v-2Zm3-3h2v2h-2v-2Z"/></svg>
@@ -241,6 +235,150 @@
             <button id="customer-welcome-lang-en-btn" class="@(IsHr ? "" : "on")" @onclick='() => SetCulture("en")'>EN</button>
         </div>
     </footer>
+
+    @* Account bottom sheet — opened from the header button. The single place the fan's identity, seat,
+       fixture and spendable balance are shown. *@
+    @if (_accountOpen)
+    {
+        <div id="customer-welcome-account-scrim" class="wl-sheet-scrim" @onclick="@(() => _accountOpen = false)"></div>
+        <div id="customer-welcome-account-sheet" class="wl-sheet" role="dialog" aria-modal="true"
+             aria-label="@Localizer["Welcome_AccountTitle"]">
+            <div class="wl-sheet-grip" aria-hidden="true"></div>
+            <div class="wl-sheet-head">
+                <div class="wl-fan-id">
+                    <div id="customer-welcome-account-sheet-avatar" class="wl-fan-avatar">@Initials(FanName)</div>
+                    <div class="wl-fan-meta">
+                        <div class="wl-fan-hi">@Localizer["Welcome_AccountTitle"]</div>
+                        <div id="customer-welcome-account-sheet-name" class="wl-fan-name">@FanName</div>
+                    </div>
+                </div>
+                <button id="customer-welcome-account-close" class="wl-sheet-x" @onclick="@(() => _accountOpen = false)"
+                        aria-label="@Localizer["Welcome_CloseLabel"]">✕</button>
+            </div>
+
+            @* Three views of the same account: who/where (ticket), what they bought, and where the money
+               went. History is fetched on first switch to its tab, not on open. *@
+            <div id="customer-welcome-account-tabs" class="wl-seg" role="tablist" aria-label="@Localizer["Welcome_AccountTitle"]">
+                <button id="customer-welcome-account-tab-details" class="wl-seg-btn @(_accountTab == AccountTab.Details ? "on" : "")"
+                        role="tab" aria-selected="@(_accountTab == AccountTab.Details)"
+                        @onclick="@(() => SwitchAccountTab(AccountTab.Details))">@Localizer["Welcome_AccountTab_Ticket"]</button>
+                <button id="customer-welcome-account-tab-orders" class="wl-seg-btn @(_accountTab == AccountTab.Orders ? "on" : "")"
+                        role="tab" aria-selected="@(_accountTab == AccountTab.Orders)"
+                        @onclick="@(() => SwitchAccountTab(AccountTab.Orders))">@Localizer["Welcome_AccountTab_Orders"]</button>
+                <button id="customer-welcome-account-tab-wallet" class="wl-seg-btn @(_accountTab == AccountTab.Wallet ? "on" : "")"
+                        role="tab" aria-selected="@(_accountTab == AccountTab.Wallet)"
+                        @onclick="@(() => SwitchAccountTab(AccountTab.Wallet))">@Localizer["Welcome_AccountTab_Wallet"]</button>
+            </div>
+
+            <div id="customer-welcome-account-body" class="wl-account-body">
+                @if (_accountTab == AccountTab.Details)
+                {
+                    <div id="customer-welcome-account-details" class="wl-fan-details">
+                        @if (!string.IsNullOrWhiteSpace(State.TicketNumber))
+                        {
+                            <div class="wl-fan-row">
+                                <span class="k">@Localizer["Welcome_TicketLabel"]</span>
+                                <span id="customer-welcome-account-ticket" class="v tnum">@State.TicketNumber</span>
+                            </div>
+                        }
+                        <div class="wl-fan-row">
+                            <span class="k">@Localizer["Welcome_SeatLabel"]</span>
+                            <span id="customer-welcome-account-seat" class="v tnum">@State.SeatText</span>
+                        </div>
+                        <div class="wl-fan-row">
+                            <span class="k">@Localizer["Welcome_EventLabel"]</span>
+                            <span id="customer-welcome-account-event" class="v">@EventTitle</span>
+                        </div>
+                        @if (State.EventDate is { } adt)
+                        {
+                            <div class="wl-fan-row">
+                                <span class="k">@Localizer["Welcome_DateLabel"]</span>
+                                <span id="customer-welcome-account-date" class="v tnum">@adt.ToLocalTime().ToString("dd.MM.yyyy · HH:mm")</span>
+                            </div>
+                        }
+                        <div class="wl-fan-row">
+                            <span class="k">@WalletLabel</span>
+                            <span id="customer-welcome-account-balance" class="v tnum">
+                                @(_wallet is { Exists: true } ? $"€{_wallet.Balance.ToString("F2")}" : Localizer["Welcome_NoBalance"].Value)
+                            </span>
+                        </div>
+                    </div>
+                }
+                else if (_accountTab == AccountTab.Orders)
+                {
+                    @if (_historyBusy && _orders is null)
+                    {
+                        <div class="wl-hist-empty"><span class="spinner"></span></div>
+                    }
+                    else if (_orders is null or { Orders.Count: 0 })
+                    {
+                        <div id="customer-welcome-account-orders-empty" class="wl-hist-empty">@Localizer["Welcome_NoOrdersYet"]</div>
+                    }
+                    else
+                    {
+                        <div id="customer-welcome-account-orders" class="wl-hist">
+                            @foreach (var o in _orders!.Orders)
+                            {
+                                <div id="customer-welcome-account-order-@o.OrderId" class="wl-hist-row" role="button" tabindex="0"
+                                     @onclick="@(() => Nav.NavigateTo($"/track/{o.OrderId}"))"
+                                     @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/track/{o.OrderId}"); })">
+                                    <div class="wl-hist-main">
+                                        <div class="wl-hist-title">@string.Join(" · ", o.Items.Select(i => $"{i.Quantity}× {i.DrinkName}"))</div>
+                                        <div class="wl-hist-sub tnum">
+                                            @o.CreatedAt.ToLocalTime().ToString("dd.MM. HH:mm")
+                                            <span class="wl-hist-status">· @OrderStatusText(o.Status)</span>
+                                        </div>
+                                    </div>
+                                    <div class="wl-hist-amt tnum">€@o.TotalAmount.ToString("F2")</div>
+                                </div>
+                            }
+                        </div>
+                        <div id="customer-welcome-account-orders-total" class="wl-hist-foot">
+                            <span class="k">@Localizer["Welcome_TotalSpent"]</span>
+                            <span class="v tnum">€@_orders!.TotalSpent.ToString("F2")</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    @if (_historyBusy && _txns is null)
+                    {
+                        <div class="wl-hist-empty"><span class="spinner"></span></div>
+                    }
+                    else if (_txns is null or { Transactions.Count: 0 })
+                    {
+                        <div id="customer-welcome-account-txns-empty" class="wl-hist-empty">@Localizer["Welcome_NoWalletActivity"]</div>
+                    }
+                    else
+                    {
+                        <div id="customer-welcome-account-txns" class="wl-hist">
+                            @foreach (var t in _txns!.Transactions)
+                            {
+                                @* Debits are stored as negative amounts; the sign drives both the label colour
+                                   and the explicit +/- so a spend never reads as a top-up. *@
+                                var credit = t.Amount >= 0;
+                                <div id="customer-welcome-account-txn-@t.Id" class="wl-hist-row">
+                                    <div class="wl-hist-main">
+                                        <div class="wl-hist-title">@TransactionText(t)</div>
+                                        <div class="wl-hist-sub tnum">@t.CreatedAt.ToLocalTime().ToString("dd.MM. HH:mm")</div>
+                                    </div>
+                                    <div class="wl-hist-amt tnum @(credit ? "in" : "out")">
+                                        @(credit ? "+" : "−")€@Math.Abs(t.Amount).ToString("F2")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+            @* Hand off to the wallet sheet rather than duplicating its top-up/withdraw form here. *@
+            <button id="customer-welcome-account-topup-btn" class="btn wl-scan wl-sheet-pay"
+                    @onclick="@(() => { _accountOpen = false; OpenTopup(); })">
+                @Localizer["Welcome_TopUpButton"]
+            </button>
+        </div>
+    }
 
     @* Online wallet bottom sheet — opened by tapping the wallet balance. Top up (card charge) or withdraw
        (refund to card) the session's wallet — the registered HALFTIME account wallet, or the ticket's bearer
@@ -353,8 +491,16 @@
     private bool _hasSession;
     private WalletSummaryDto? _wallet;
 
-    // Whether the tapped fancard is expanded to show full account details.
-    private bool _detailsOpen;
+    // Account sheet opened from the header button, and which of its three tabs is showing.
+    private bool _accountOpen;
+    private AccountTab _accountTab = AccountTab.Details;
+    private enum AccountTab { Details, Orders, Wallet }
+
+    // History is loaded lazily per tab and then kept for the rest of the visit — null means "never
+    // fetched", an empty list means "fetched, nothing there".
+    private SessionOrderHistoryDto? _orders;
+    private WalletTransactionListDto? _txns;
+    private bool _historyBusy;
 
     // Wallet bottom sheet (opened by tapping the balance). Top-up and withdraw share the open/busy/error
     // state and toggle via _withdrawMode.
@@ -377,15 +523,17 @@
     // Fixture name for the expanded details; em dash when the session carries no event name.
     private string EventTitle => string.IsNullOrWhiteSpace(State.EventName) ? "—" : State.EventName;
 
-    // Which wallet the balance is drawn from, spelled out for the details panel.
-    private string WalletKind => _wallet is { Exists: true }
-        ? (_wallet.IsTicketWallet ? Localizer["Welcome_TicketBalance"].Value : Localizer["Welcome_HalftimeWallet"].Value)
-        : Localizer["Welcome_NoWallet"].Value;
-
     private static readonly string[] MonthsHr =
         { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
 
     private bool IsHr => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "hr";
+
+    // A ticket can only be scanned into an ordering session while a match is actually running, so the
+    // scan CTAs hang off the same flag the fixture cards use for their "LIVE" badge. IsLive already
+    // means "game-day status, kicked off, not yet ended" (i.e. drink ordering open) — see
+    // SeasonService. False while _season is still loading or the API is unreachable, which is the
+    // safe default: no scan button rather than one that leads to a dead end.
+    private bool _matchLive => _season?.UpcomingEvents.Any(e => e.IsLive) == true;
 
     // Location line under the hero — driven by the admin Venue Settings (name + city). Falls back
     // to the stadium's own name if no city is set, and to a sensible default if the venue is
@@ -404,6 +552,63 @@
     // when _venue.HasClubLogo is true, so the image endpoint always has content.
     private string ClubLogoUrl =>
         $"{AppConfiguration.ResolveApiBaseUrl(Configuration)}/api/venue/club-logo";
+
+    // Absolute URL to a specific resident club's crest (public endpoint, same as the venue read).
+    private string ClubCrestUrl(int clubId) =>
+        $"{AppConfiguration.ResolveApiBaseUrl(Configuration)}/api/venue/clubs/{clubId}/logo";
+
+    /// <summary>
+    /// The venue's resident club playing at home in this fixture, or null when the home side isn't
+    /// one of ours (a fixture staged here between two visiting sides, or a non-versus event).
+    /// Prefers the FK the API links at event creation; falls back to a name match so fixtures
+    /// created before the link existed — or typed with a slightly different spelling — still get
+    /// their real crest.
+    /// </summary>
+    private ClubDto? ResolveHomeClub(UpcomingEventDto e)
+    {
+        var clubs = _venue?.Clubs;
+        if (clubs is not { Count: > 0 }) return null;
+
+        if (e.HomeClubId is int id)
+        {
+            var linked = clubs.FirstOrDefault(c => c.Id == id);
+            if (linked is not null) return linked;
+        }
+
+        var home = ResolveTeams(e).home;
+        return string.IsNullOrWhiteSpace(home) ? null : clubs.FirstOrDefault(c => NameMatches(c, home));
+    }
+
+    // A club matches a free-text team name on either its full or short name, case-insensitively.
+    private static bool NameMatches(ClubDto club, string team) =>
+        string.Equals(club.Name, team, StringComparison.OrdinalIgnoreCase)
+        || (!string.IsNullOrWhiteSpace(club.ShortName)
+            && string.Equals(club.ShortName, team, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Crest image for the home side, or null to fall back to the monogram shield. Prefers the
+    /// resolved club's own uploaded logo. The single venue-level logo is used only when the home
+    /// side really is the venue's headline club — stamping it on any visiting side that happens to
+    /// be nominal home would show fans the wrong badge.
+    /// </summary>
+    private string? HomeCrestUrl(UpcomingEventDto e, ClubDto? club, string homeTeam)
+    {
+        if (club is { HasLogo: true }) return ClubCrestUrl(club.Id);
+        if (_venue?.HasClubLogo != true) return null;
+
+        var isHeadline = club?.IsPrimary == true
+            || (!string.IsNullOrWhiteSpace(_venue.ClubName)
+                && string.Equals(_venue.ClubName, homeTeam, StringComparison.OrdinalIgnoreCase));
+        return isHeadline ? ClubLogoUrl : null;
+    }
+
+    /// <summary>
+    /// Public URL of a fixture's generated artwork. Requests the "thumb" variant: the strip renders
+    /// up to 20 cards, and serving the multi-MB originals here would cost tens of megabytes on
+    /// mobile. The endpoint falls back to the full image for posters saved without a thumbnail.
+    /// </summary>
+    private string PosterUrl(int eventId) =>
+        $"{AppConfiguration.ResolveApiBaseUrl(Configuration)}/events/{eventId}/image?variant=thumb";
 
     protected override async Task OnInitializedAsync()
     {
@@ -469,6 +674,58 @@
         Nav.NavigateTo(Nav.Uri, forceLoad: true);
     }
 
+    // ---- Account sheet history ----
+
+    // Fetch on first view of a tab only; the sheet reopens instantly afterwards. Failures leave the DTO
+    // null, which renders as the empty state — history is informational and must not break the landing.
+    private async Task SwitchAccountTab(AccountTab tab)
+    {
+        _accountTab = tab;
+        if (string.IsNullOrEmpty(State.SessionToken)) return;
+
+        if (tab == AccountTab.Orders && _orders is null)
+        {
+            _historyBusy = true;
+            try { _orders = await Api.GetSessionOrdersAsync(State.SessionToken!); }
+            catch (Exception ex) { Console.WriteLine($"Order history failed: {ex.Message}"); }
+            finally { _historyBusy = false; }
+        }
+        else if (tab == AccountTab.Wallet && _txns is null)
+        {
+            _historyBusy = true;
+            try { _txns = await Api.GetSessionWalletTransactionsAsync(State.SessionToken!); }
+            catch (Exception ex) { Console.WriteLine($"Wallet history failed: {ex.Message}"); }
+            finally { _historyBusy = false; }
+        }
+    }
+
+    private string OrderStatusText(OrderStatus status) => status switch
+    {
+        OrderStatus.Pending => Localizer["OrderStatus_Pending"].Value,
+        OrderStatus.Accepted => Localizer["OrderStatus_Accepted"].Value,
+        OrderStatus.InPreparation => Localizer["OrderStatus_InPreparation"].Value,
+        OrderStatus.Ready => Localizer["OrderStatus_Ready"].Value,
+        OrderStatus.OutForDelivery => Localizer["OrderStatus_OutForDelivery"].Value,
+        OrderStatus.Delivered => Localizer["OrderStatus_Delivered"].Value,
+        OrderStatus.Cancelled => Localizer["OrderStatus_Cancelled"].Value,
+        OrderStatus.DeliveryFailed => Localizer["OrderStatus_DeliveryFailed"].Value,
+        _ => status.ToString()
+    };
+
+    // Ledger rows carry a free-text description written server-side; prefer it, and fall back to the
+    // reference tag (CashTopup, TicketTopup, …) so a row is never blank.
+    private string TransactionText(WalletTransactionDto t)
+    {
+        if (!string.IsNullOrWhiteSpace(t.Description)) return t.Description!;
+        return t.ReferenceType switch
+        {
+            "CashTopup" or "TicketTopup" => Localizer["Welcome_Txn_TopUp"].Value,
+            "TicketCashOut" or "Withdrawal" => Localizer["Welcome_Txn_Withdrawal"].Value,
+            "Order" => Localizer["Welcome_Txn_Order"].Value,
+            _ => t.Type.ToString()
+        };
+    }
+
     // ---- Online wallet top-up / withdrawal ----
 
     private void OpenTopup()
@@ -527,6 +784,8 @@
             if (result is { Success: true })
             {
                 _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
+                // The money just moved, so the cached ledger is stale — drop it and let the wallet tab refetch.
+                _txns = null;
                 _sheetOpen = false;
                 ShowToast($"Novčanik nadoplaćen · €{result.NewBalance.ToString("F2")}");
             }
@@ -571,6 +830,8 @@
             if (result is { Success: true })
             {
                 _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
+                // The money just moved, so the cached ledger is stale — drop it and let the wallet tab refetch.
+                _txns = null;
                 _sheetOpen = false;
                 ShowToast($"Isplaćeno €{result.Amount.ToString("F2")} · stanje €{result.NewBalance.ToString("F2")}");
             }
@@ -661,10 +922,21 @@
         return s.Length > 0 ? s : "?";
     }
 
-    // Club-coloured shield fallback (we hold no logo assets): known Croatian clubs get their
-    // real colours, everything else a neutral navy badge.
-    private static (string a, string b, string fg) CrestColors(string team)
+    /// <summary>
+    /// Shield colours. A resident club's own palette from admin Venue Settings wins; otherwise we
+    /// fall back to the built-in table of known Croatian clubs, then a neutral navy badge.
+    /// </summary>
+    private static (string a, string b, string fg) CrestColors(string team, ClubDto? club)
     {
+        if (club is not null && !string.IsNullOrWhiteSpace(club.PrimaryColor))
+        {
+            var primary = club.PrimaryColor!;
+            // Secondary is optional in venue settings; reuse the primary as the shadow tone so a
+            // half-configured club still renders a coherent shield rather than a clashing default.
+            var secondary = string.IsNullOrWhiteSpace(club.SecondaryColor) ? primary : club.SecondaryColor!;
+            return (primary, secondary, ReadableOn(primary));
+        }
+
         var t = team.ToLowerInvariant();
         if (t.Contains("rijeka")) return ("#1F6FE0", "#0B2B63", "#FFFFFF");
         if (t.Contains("istra")) return ("#2FA83A", "#123A0C", "#F6D50B");
@@ -673,6 +945,25 @@
         if (t.Contains("osijek")) return ("#1B5FA6", "#0B2E52", "#FFFFFF");
         if (t.Contains("gorica")) return ("#2FA83A", "#123A0C", "#FFFFFF");
         return ("#3A5B87", "#1A2942", "#FFFFFF");
+    }
+
+    // Monogram colour for an admin-chosen shield fill: white on dark, near-black on light, so a
+    // club that picks a pale primary (e.g. Hajduk white) still has legible initials.
+    private static string ReadableOn(string hex)
+    {
+        var h = hex.TrimStart('#');
+        // Expand the #abc shorthand so both CSS forms parse.
+        if (h.Length == 3)
+            h = string.Concat(h[0], h[0], h[1], h[1], h[2], h[2]);
+        if (h.Length < 6
+            || !int.TryParse(h[..2], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var r)
+            || !int.TryParse(h.Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var g)
+            || !int.TryParse(h.Substring(4, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var b))
+            return "#FFFFFF";
+
+        // Perceived brightness (ITU-R BT.601) — good enough for a two-way text colour choice.
+        var luma = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0;
+        return luma > 0.6 ? "#12203A" : "#FFFFFF";
     }
 
     // The day portion of the fixture label. Previous day / Today / Tomorrow for adjacent days;

@@ -1,0 +1,13 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e4]:
+    - generic [ref=f3e5]: 20:45
+    - paragraph [ref=f3e20]: Provjeravam tvoju ulaznicu…
+  - generic [ref=f3e21]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f3e22] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=f3e23]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

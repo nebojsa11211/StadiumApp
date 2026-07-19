@@ -79,6 +79,21 @@ public class Venue
     /// </summary>
     public bool TicketSalesEnabled { get; set; } = true;
 
+    // ---- Accepted payment methods -----------------------------------------------------------
+    // Which ways a fan may pay for drinks in the Customer app. Operators turn these off per
+    // installation (e.g. a cashless stadium disables Cash, a venue without a card terminal at the
+    // bar disables Card). The Customer cart hides a disabled option and the order API rejects it,
+    // so a stale client cannot slip one through. At least one must stay enabled.
+
+    /// <summary>Allow paying from the fan's HALFTIME wallet (personal or anonymous ticket wallet).</summary>
+    public bool WalletPaymentEnabled { get; set; } = true;
+
+    /// <summary>Allow card as the declared settle-at-the-bar method.</summary>
+    public bool CardPaymentEnabled { get; set; } = true;
+
+    /// <summary>Allow cash on delivery as the declared settle-on-delivery method.</summary>
+    public bool CashPaymentEnabled { get; set; } = true;
+
     // ---- Outgoing email (SMTP) --------------------------------------------------------------
     // Configured at runtime from the Admin settings page rather than appsettings, so an operator
     // can point the installation at their own mail server without a redeploy. When

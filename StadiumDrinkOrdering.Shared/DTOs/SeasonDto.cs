@@ -104,9 +104,23 @@ public class UpcomingEventDto
     public string? HomeTeam { get; set; }
     /// <summary>Away side of a versus-style fixture, or null for non-versus events.</summary>
     public string? AwayTeam { get; set; }
+    /// <summary>
+    /// The resident club playing at home, when the fixture's home side is one of the venue's own
+    /// clubs (linked by name in <c>EventController.LinkTeamsAsync</c>). Null for a neutral or
+    /// non-versus event. Lets the landing pull that club's real crest and colours from venue
+    /// settings instead of guessing from the team name.
+    /// </summary>
+    public int? HomeClubId { get; set; }
     public DateTime EventDate { get; set; }
     /// <summary>End of the fixture window, or null when no explicit end time is set.</summary>
     public DateTime? EventEndDate { get; set; }
+    /// <summary>
+    /// True when this fixture has <em>approved</em> generated artwork, served from
+    /// <c>events/{id}/image?variant=thumb</c>. Only the flag travels here — the image bytes live in
+    /// their own table and are never inlined. Posters pending review are deliberately excluded, so
+    /// the card falls back to its plain layout until an admin has checked the rendered text.
+    /// </summary>
+    public bool HasPoster { get; set; }
     public int TotalSeats { get; set; }
     public int AvailableSeats { get; set; }
     /// <summary>True when the event is live right now (drink ordering open).</summary>

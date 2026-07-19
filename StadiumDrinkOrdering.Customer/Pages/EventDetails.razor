@@ -166,7 +166,7 @@ else
                 <span class="pitch-label">@Localizer["EventDetails_Pitch"]</span>
             </div>
 
-            <div id="customer-event-details-seats-scroll" class="seats-scroll no-scrollbar" role="group" aria-label="Raspored mjesta u tribini">
+            <div id="customer-event-details-seats-scroll" class="seats-scroll no-scrollbar" role="group" aria-label="@Localizer["EventDetails_SeatsScrollAria"]">
                 @foreach (var rowGroup in selectedSection.Seats.GroupBy(s => s.RowNumber).OrderBy(g => g.Key))
                 {
                     <div id="customer-event-details-seat-row-@rowGroup.Key" class="seat-row">
@@ -216,7 +216,7 @@ else
 
         @if (selectedSeats.Any())
         {
-            <div id="customer-event-details-seat-summary" class="seat-summary no-scrollbar" role="group" aria-label="Odabrana mjesta">
+            <div id="customer-event-details-seat-summary" class="seat-summary no-scrollbar" role="group" aria-label="@Localizer["EventDetails_SelectedSeatsAria"]">
                 @foreach (var seat in selectedSeats.OrderBy(s => s.RowNumber).ThenBy(s => s.SeatNumber))
                 {
                     <button id="customer-event-details-seat-chip-@seat.SectorId-r@(seat.RowNumber)-s@(seat.SeatNumber)" class="seat-chip" @onclick="@(() => ToggleSeatSelection(seat))"
@@ -250,7 +250,7 @@ else
 
 @* ---- Seat locator map ---- *@
 <div id="customer-event-details-scrim-locator" class="scrim scrim-top @(locatorSeat != null ? "show" : "")" @onclick="CloseSeatLocator"></div>
-<div id="customer-event-details-locator" class="locator @(locatorSeat != null ? "show" : "")" role="dialog" aria-modal="true" aria-label="Karta sjedala">
+<div id="customer-event-details-locator" class="locator @(locatorSeat != null ? "show" : "")" role="dialog" aria-modal="true" aria-label="@Localizer["EventDetails_SeatMapAria"]">
     @if (locatorSeat != null)
     {
         <div class="locator-head">
@@ -395,7 +395,7 @@ else
                 var highlight = points.Distinct().Select(p => new { row = p.Row, seat = p.Seat }).ToArray();
 
                 await JSRuntime.InvokeVoidAsync("renderSectorPreview",
-                    "customer-seat-locator-canvas", json, 0.08, "Red {0}, mjesto {1}", null, highlight);
+                    "customer-seat-locator-canvas", json, 0.08, Localizer["EventDetails_SeatLabelFormat"].Value, null, highlight);
             }
             catch
             {
@@ -417,11 +417,11 @@ else
             overlaysCache ??= await ApiService.GetStadiumSectorOverlaysAsync();
             locatorOverlay = overlaysCache?.FirstOrDefault(o => o.Id == seat.SectorId);
             if (locatorOverlay == null)
-                locatorError = "Karta ovog sektora nije dostupna.";
+                locatorError = Localizer["EventDetails_SectorMapUnavailable"];
         }
         catch
         {
-            locatorError = "Greška pri učitavanju karte sektora.";
+            locatorError = Localizer["EventDetails_SectorMapLoadError"];
         }
         finally
         {
@@ -538,7 +538,7 @@ else
         if (lastFailure != null)
         {
             // Keep the sheet open with the failed seats still selected and show why.
-            seatSheetError = lastFailure.Message ?? "Neka mjesta nije moguće dodati u košaricu.";
+            seatSheetError = lastFailure.Message ?? Localizer["EventDetails_SeatsAddFailed"].Value;
             return;
         }
 
@@ -584,8 +584,8 @@ else
 
     private static string MonthShort(DateTime date) => MonthsHr[date.Month - 1];
 
-    private static string SeatTitle(CustomerSeatDto seat) =>
-        "Red " + seat.RowNumber + ", mjesto " + seat.SeatNumber + " — €" + seat.Price.ToString("F2");
+    private string SeatTitle(CustomerSeatDto seat) =>
+        Localizer["EventDetails_SeatTitleFormat", seat.RowNumber, seat.SeatNumber, seat.Price.ToString("F2")].Value;
 
     private static string SeatLabel(CartItemDto item) =>
         string.IsNullOrWhiteSpace(item.SeatCode) ? ("R" + item.RowNumber + " · " + item.SeatNumber) : item.SeatCode;
@@ -596,12 +596,12 @@ else
     // Croatian plural for "mjesto" (seat): 1 uses "mjesto", otherwise "mjesta".
     private static string Seats(int n) => n == 1 ? "mjesto" : "mjesta";
 
-    private static string CroatianDay(DateTime date)
+    private string CroatianDay(DateTime date)
     {
         var days = (date.Date - DateTime.Today).Days;
-        if (days == 0) return "Danas";
-        if (days == 1) return "Sutra";
-        if (days > 1) return "za " + days + " dana";
+        if (days == 0) return Localizer["EventDetails_Today"].Value;
+        if (days == 1) return Localizer["EventDetails_Tomorrow"].Value;
+        if (days > 1) return Localizer["EventDetails_InDays", days].Value;
         return date.ToString("dd.MM.");
     }
 }

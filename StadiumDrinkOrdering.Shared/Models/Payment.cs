@@ -15,10 +15,23 @@ public class Payment
     /// </summary>
     public long? WalletTransactionId { get; set; }
 
+    /// <summary>
+    /// How the money moved. This is the rail only — it says nothing about which way the money went;
+    /// see <see cref="Direction"/> for that. The gateway/provider that processed it (Stripe, etc.) is
+    /// recoverable from <see cref="TransactionId"/> / <see cref="PaymentGatewayResponse"/>.
+    /// </summary>
     [Required]
-    [StringLength(50)]
-    public string PaymentMethod { get; set; } = string.Empty; // CreditCard, PayPal, Stripe, etc.
-    
+    public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.CreditCard;
+
+    /// <summary>
+    /// Which way the money moved. <see cref="PaymentDirection.In"/> is the default — a customer paying
+    /// the venue. <see cref="PaymentDirection.Out"/> marks a payout back to the fan (wallet cash-out to
+    /// card, or cash handed over at the counter); those rows also carry <see cref="RefundAmount"/> and
+    /// <see cref="RefundDate"/>.
+    /// </summary>
+    [Required]
+    public PaymentDirection Direction { get; set; } = PaymentDirection.In;
+
     [StringLength(100)]
     public string? TransactionId { get; set; }
     
@@ -30,8 +43,7 @@ public class Payment
     public string Currency { get; set; } = "EUR";
     
     [Required]
-    [StringLength(20)]
-    public string Status { get; set; } = "Pending"; // Pending, Completed, Failed, Refunded
+    public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
     
     public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
     
@@ -65,6 +77,17 @@ public enum PaymentMethod
     BankTransfer = 4,
     Cash = 5,
     TicketWallet = 6     // anonymous bearer balance loaded on the order's ticket
+}
+
+/// <summary>
+/// Which way money moved on a <see cref="Payment"/>. Kept separate from <see cref="PaymentMethod"/>
+/// so the rail (card, cash, wallet) stays orthogonal to the direction: a card charge and a card
+/// refund are the same rail travelled in opposite directions.
+/// </summary>
+public enum PaymentDirection
+{
+    In = 1,   // customer pays the venue
+    Out = 2   // venue pays the fan back (wallet cash-out, refund)
 }
 
 public enum PaymentStatus

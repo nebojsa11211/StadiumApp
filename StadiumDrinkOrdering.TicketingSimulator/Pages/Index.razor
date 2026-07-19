@@ -977,6 +977,35 @@
         await LoadSectionsAsync();
         await LoadEventsAsync();
         await LoadSeasonsAsync();
+        await ApplyVenueHomeSideAsync();
+    }
+
+    /// <summary>
+    /// Defaults the home side to the stadium's own club, as configured in admin Venue Settings —
+    /// a simulated fixture here is a home match, so it should carry the real club name (and pick up
+    /// its crest on the customer landing) rather than a hardcoded placeholder. Stays an editable
+    /// field so an away fixture can still be simulated. Silent on failure: the simulator is a dev
+    /// tool and must not fail to load just because branding is unset.
+    /// </summary>
+    private async Task ApplyVenueHomeSideAsync()
+    {
+        try
+        {
+            var venue = await Api.GetVenueAsync();
+            if (venue is null) return;
+
+            // Prefer the club flagged primary; fall back to the venue's free-text club label.
+            var primary = venue.Clubs.FirstOrDefault(c => c.IsPrimary) ?? venue.Clubs.FirstOrDefault();
+            var name = primary?.Name;
+            if (string.IsNullOrWhiteSpace(name)) name = venue.ClubName;
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            homeTeam = name!.Trim();
+        }
+        catch (Exception ex)
+        {
+            Log($"Could not read venue settings for the home side: {ex.Message}");
+        }
     }
 
     private async Task LoadSeasonsAsync()

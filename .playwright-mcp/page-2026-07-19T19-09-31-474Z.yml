@@ -1,0 +1,24 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: 20:45
+    - generic [ref=e16]:
+      - banner [ref=e17]:
+        - button "Back" [ref=e18] [cursor=pointer]: ‹
+        - generic [ref=e19]: Skeniraj ulaznicu
+      - generic [ref=e21]:
+        - generic [ref=e22]: 🎟️
+        - paragraph [ref=e29]: Uperi kameru svog telefona u QR kôd na ulaznici — aplikacija se otvara automatski.
+        - generic [ref=e30]:
+          - generic [ref=e31]: Ne možeš skenirati?
+          - generic [ref=e32]:
+            - textbox "Unesi kôd s ulaznice" [ref=e33]
+            - button "Nastavi" [disabled] [ref=e34]
+  - generic [ref=e35]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=e36] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=e37]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

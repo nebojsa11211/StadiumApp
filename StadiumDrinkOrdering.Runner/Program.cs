@@ -12,9 +12,38 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 // Localization: English + Croatian. Resources live in SharedResources.*.resx at the project root.
 builder.Services.AddLocalization();
 
-// API endpoint comes from wwwroot/appsettings.json (fetched at runtime by the WASM host).
-var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7010";
+// API endpoint. This code runs in the BROWSER, so a hardcoded "localhost" would point at the
+// *device* — fine on the dev machine, broken on a phone hitting the LAN address. So we derive the
+// API host from whatever origin actually served the app and just swap in the API port. Loading the
+// Runner from https://localhost:7060 talks to https://localhost:7010; loading it from
+// https://192.168.178.32:7060 talks to https://192.168.178.32:7010, with no config change.
+//
+// wwwroot/appsettings.json still wins when it names an explicit non-loopback host, so pointing the
+// Runner at a deployed/staging API stays a config-only change.
+var configuredApiUrl = builder.Configuration["ApiSettings:BaseUrl"];
+var apiBaseUrl = ResolveApiBaseUrl(configuredApiUrl, builder.HostEnvironment.BaseAddress);
 if (!apiBaseUrl.EndsWith('/')) apiBaseUrl += "/";
+
+static string ResolveApiBaseUrl(string? configured, string hostBaseAddress)
+{
+    const int ApiPort = 7010;
+
+    // An explicit, non-loopback configured value is authoritative (staging, Docker, a real host).
+    if (!string.IsNullOrWhiteSpace(configured) &&
+        Uri.TryCreate(configured, UriKind.Absolute, out var configuredUri) &&
+        !configuredUri.IsLoopback)
+    {
+        return configured;
+    }
+
+    // Otherwise follow the origin that served this app, so LAN access works from any device.
+    if (Uri.TryCreate(hostBaseAddress, UriKind.Absolute, out var origin))
+    {
+        return new UriBuilder(origin.Scheme, origin.Host, ApiPort).Uri.ToString();
+    }
+
+    return configured ?? $"https://localhost:{ApiPort}";
+}
 
 // Singleton (not scoped): IHttpClientFactory resolves BearerTokenHandler in its own handler
 // scope, so a scoped RunnerAuthService would give the handler a DIFFERENT instance than the

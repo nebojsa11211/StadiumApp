@@ -114,6 +114,9 @@ public class TicketAuthController : ControllerBase
                     SessionId = session.SessionId,
                     QRCodeToken = session.QRCodeToken,
                     TicketId = session.TicketId,
+                    // Without this the rehydrated session has no ticket number, so a full page load loses
+                    // the one identifier the fan recognises (the account view shows it).
+                    TicketNumber = session.Ticket?.TicketNumber ?? "",
                     EventId = session.EventId,
                     EventName = session.Event?.EventName ?? session.Ticket?.Event?.EventName ?? "",
                     EventDate = session.Event?.EventDate ?? session.Ticket?.Event?.EventDate ?? DateTime.MinValue,

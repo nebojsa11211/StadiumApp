@@ -52,6 +52,27 @@ namespace StadiumDrinkOrdering.Admin.Services.Analytics
             return null;
         }
 
+        public async Task<CustomerSpendingDetailDto?> GetCustomerSpendingDetailsAsync(string customerEmail)
+        {
+            try
+            {
+                SetAuthorizationHeader();
+                var response = await HttpClient.GetAsync(
+                    $"CustomerAnalytics/customer/{Uri.EscapeDataString(customerEmail)}/details");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return DeserializeResponse<CustomerSpendingDetailDto>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                await LogErrorAsync(ex, "GetCustomerSpendingDetails",
+                    $"Failed to retrieve spending details for {customerEmail}");
+            }
+            return null;
+        }
+
         public async Task<HttpResponseMessage?> ExportCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter)
         {
             try

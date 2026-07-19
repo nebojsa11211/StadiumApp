@@ -1,0 +1,148 @@
+- generic [ref=e7]:
+  - complementary [ref=e8]:
+    - generic [ref=e9]:
+      - generic [ref=e10]: 
+      - generic [ref=e12]:
+        - generic [ref=e13]: STADIUM
+        - generic [ref=e14]: BAR
+    - generic [ref=e15]:
+      - generic [ref=e16]: 20:33:58
+      - generic [ref=e17]: 19. 07. 26 HR
+    - navigation [ref=e18]:
+      - link " Nadzorna ploča" [ref=e19] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e20]: 
+        - generic [ref=e21]: Nadzorna ploča
+      - link " Nadzorna ploča narudžbi" [ref=e22] [cursor=pointer]:
+        - /url: order-queue
+        - generic [ref=e23]: 
+        - generic [ref=e24]: Nadzorna ploča narudžbi
+      - link " Moje narudžbe" [ref=e25] [cursor=pointer]:
+        - /url: my-orders
+        - generic [ref=e26]: 
+        - generic [ref=e27]: Moje narudžbe
+      - link " Nadoplata" [ref=e28] [cursor=pointer]:
+        - /url: topup
+        - generic [ref=e29]: 
+        - generic [ref=e30]: Nadoplata
+      - link " Povijest nadoplata" [ref=e31] [cursor=pointer]:
+        - /url: topup-history
+        - generic [ref=e32]: 
+        - generic [ref=e33]: Povijest nadoplata
+      - generic [ref=e34]: Sustav
+      - link " Sistemski zapisnici" [ref=e35] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e36]: 
+        - generic [ref=e37]: Sistemski zapisnici
+    - generic [ref=e38]:
+      - 'generic "Ažuriranja narudžbi u direktnom prijenosu: povezano" [ref=e40]': Uživo
+      - generic [ref=e43]:
+        - generic [ref=e44]: "N"
+        - generic [ref=e45]:
+          - button "Odjava" [ref=e46] [cursor=pointer]
+          - generic [ref=e47]: nebojsa.medancic+staff1@gmail.com
+      - generic [ref=e48]:
+        - generic [ref=e49]: HR/EN
+        - generic [ref=e50]:
+          - button "HR" [ref=e51] [cursor=pointer]
+          - button "EN" [ref=e52] [cursor=pointer]
+  - main [ref=e53]:
+    - generic [ref=e54]:
+      - generic [ref=e55]: 
+      - generic [ref=e57]:
+        - generic [ref=e58]: Trenutni događaj
+        - heading "Istra444 - Zagreb444" [level=2] [ref=e59]
+        - generic [ref=e61]:
+          - generic [ref=e62]: 
+          - text: ned 19 srp, 15:08
+      - generic [ref=e63]: LIVE
+    - generic [ref=e66]:
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]: Bar stanica
+          - heading "Nadzorna ploča barmena" [level=1] [ref=e70]
+          - paragraph [ref=e71]: Upravljanje narudžbama u stvarnom vremenu i ispunjavanje
+        - generic [ref=e72]:
+          - generic [ref=e73]: Ažurirano 20:33:28
+          - button " Osvježi" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: 
+            - text: Osvježi
+      - generic [ref=e76]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - heading "0" [level=4] [ref=e82]
+              - generic [ref=e83]: Narudžbe na čekanju
+            - generic [ref=e84]: 
+          - generic [ref=e86]: čekaju prihvaćanje
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - generic [ref=e91]:
+              - heading "0" [level=4] [ref=e92]
+              - generic [ref=e93]: U pripremi
+            - generic [ref=e94]: 
+          - generic [ref=e96]: u pripremi
+        - generic [ref=e99]:
+          - generic [ref=e100]:
+            - generic [ref=e101]:
+              - heading "0" [level=4] [ref=e102]
+              - generic [ref=e103]: Spremno za dostavu
+            - generic [ref=e104]: 
+          - generic [ref=e106]: spremno za preuzimanje
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - heading "1" [level=4] [ref=e112]
+              - generic [ref=e113]: Preuzeto
+            - generic [ref=e114]: 
+          - generic [ref=e116]: preuzeo dostavljač
+        - generic [ref=e119]:
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - heading "0" [level=4] [ref=e122]
+              - generic [ref=e123]: Dostavljeno
+            - generic [ref=e124]: 
+          - generic [ref=e126]: dostavljeno gostu
+      - generic [ref=e127]:
+        - generic [ref=e129]:
+          - heading "Nedavne narudžbe" [level=5] [ref=e131]
+          - table [ref=e134]:
+            - rowgroup [ref=e135]:
+              - row [ref=e136]:
+                - 'columnheader "Narudžba #" [ref=e137]'
+                - columnheader "Kupac" [ref=e138]
+                - columnheader "Sjedalo" [ref=e139]
+                - columnheader "Stavke" [ref=e140]
+                - columnheader "Stanje" [ref=e141]
+                - columnheader "Vrijeme" [ref=e142]
+                - columnheader "Radnje" [ref=e143]
+            - rowgroup [ref=e144]:
+              - row [ref=e145]:
+                - cell "#462" [ref=e146]
+                - cell "Nikola Jurić" [ref=e147]
+                - cell "2" [ref=e148]
+                - cell "1 Stavke" [ref=e149]
+                - cell "OutForDelivery" [ref=e150]
+                - cell "00:00" [ref=e152]
+                - cell [ref=e153]:
+                  - button "Prikazi" [ref=e154] [cursor=pointer]
+        - generic [ref=e155]:
+          - generic [ref=e157]:
+            - heading "Brze radnje" [level=5] [ref=e159]
+            - generic [ref=e161]:
+              - link " View Order Queue" [ref=e162] [cursor=pointer]:
+                - /url: /order-queue
+                - generic [ref=e163]: 
+                - text: View Order Queue
+              - link " My Assigned Orders" [ref=e164] [cursor=pointer]:
+                - /url: /my-orders
+                - generic [ref=e165]: 
+                - text: My Assigned Orders
+          - generic [ref=e167]:
+            - heading "Status veze" [level=6] [ref=e168]
+            - generic [ref=e169]:
+              - generic [ref=e170]:
+                - generic [ref=e171]: 
+                - text: Povezan
+              - generic [ref=e172]: "Zadnje: 20:33:24"
+            - generic [ref=e173]: Konekcija SignalR je uspostavljena

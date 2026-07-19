@@ -1,0 +1,179 @@
+@* Category management surfaced as an overlay on top of the Drinks catalog.
+   Holds both the list and the create/edit form in a single overlay (the form
+   swaps in over the list) so we never stack two drink-modal overlays. *@
+
+@if (Visible)
+{
+    <div class="drink-modal-overlay" id="admin-category-manager-overlay" @onclick="CloseAsync">
+        <div class="drink-modal drink-modal--wide" @onclick:stopPropagation="true">
+            <div class="drink-modal__content" id="admin-category-manager-content">
+                <header class="drink-modal__head" id="admin-category-manager-header">
+                    <div class="drink-modal__head-left">
+                        <span class="drink-modal__icon"><i class="bi bi-tags"></i></span>
+                        <div class="drink-modal__head-text">
+                            <span class="eyebrow">@L["Categories_Eyebrow"]</span>
+                            <h5 class="drink-modal__title" id="admin-category-manager-title">
+                                @(showForm
+                                    ? (editingId == null ? L["Categories_AddTitle"] : L["Categories_EditTitle"])
+                                    : L["Categories_ListTitle"])
+                            </h5>
+                        </div>
+                    </div>
+                    <button type="button" class="drink-modal__close" @onclick="CloseAsync" id="admin-category-manager-close-btn" aria-label="@L["Close"]">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </header>
+
+                <div class="drink-modal__body" id="admin-category-manager-body">
+                    @if (!string.IsNullOrEmpty(alertMessage))
+                    {
+                        <div class="console-alert @(alertType == "success" ? "console-alert--success" : "console-alert--danger")" role="alert" id="admin-category-manager-alert">
+                            <i class="bi @(alertType == "success" ? "bi-check-circle" : "bi-exclamation-triangle")"></i>
+                            <div>@alertMessage</div>
+                            <button class="pill-btn" style="margin-left:auto;" @onclick="ClearAlert" id="admin-category-manager-alert-close">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    }
+
+                    @if (showForm)
+                    {
+                        <div class="field">
+                            <label class="field__label" for="admin-category-form-name">@L["Categories_NameLabel"]</label>
+                            <input type="text" class="field__input" @bind="form.Name" required id="admin-category-form-name" placeholder="@L["Categories_NamePlaceholder"]">
+                        </div>
+                        <div class="field">
+                            <label class="field__label" for="admin-category-form-display">@L["Categories_DisplayNameLabel"]</label>
+                            <input type="text" class="field__input" @bind="form.DisplayName" id="admin-category-form-display" placeholder="@L["Categories_DisplayNamePlaceholder"]">
+                        </div>
+                        <div class="drink-modal__row">
+                            <div class="field field--grow">
+                                <label class="field__label" for="admin-category-form-icon">@L["Categories_IconLabel"]</label>
+                                <input type="text" class="field__input" @bind="form.Icon" maxlength="16" id="admin-category-form-icon" placeholder="🍷">
+                            </div>
+                            <div class="field field--grow">
+                                <label class="field__label" for="admin-category-form-sort">@L["Categories_SortOrderLabel"]</label>
+                                <input type="number" class="field__input" @bind="form.SortOrder" min="0" id="admin-category-form-sort">
+                            </div>
+                        </div>
+                        <label class="drink-check" id="admin-category-form-active-label">
+                            <input type="checkbox" class="check-box" @bind="form.IsActive" id="admin-category-form-active">
+                            <span>@L["Categories_ActiveHint"]</span>
+                        </label>
+                    }
+                    else if (categories == null)
+                    {
+                        <div class="loading-state" id="admin-categories-loading">
+                            <span class="loading-spinner"></span>
+                            <p>@L["Categories_Loading"]</p>
+                        </div>
+                    }
+                    else if (loadingFailed)
+                    {
+                        <div class="console-alert console-alert--danger" role="alert" id="admin-categories-error">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <div>
+                                <strong>@L["Categories_LoadErrorTitle"]</strong>
+                                <div>@loadingError</div>
+                            </div>
+                            <button class="pill-btn" style="margin-left:auto;" @onclick="LoadCategories" id="admin-categories-retry-btn">
+                                <i class="bi bi-arrow-clockwise"></i><span>@L["Categories_Retry"]</span>
+                            </button>
+                        </div>
+                    }
+                    else if (!categories.Any())
+                    {
+                        <div class="empty" id="admin-categories-empty">
+                            <i class="bi bi-tags"></i>
+                            <p id="admin-categories-empty-title">@L["Categories_EmptyTitle"]</p>
+                            <span id="admin-categories-empty-message">@L["Categories_EmptyMessage"]</span>
+                            <div style="margin-top:1rem;">
+                                <button class="pill-btn pill-btn--primary" @onclick="ShowCreateForm" id="admin-add-first-category-btn">
+                                    <i class="bi bi-plus"></i><span>@L["Categories_AddFirst"]</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <table class="console-table" id="admin-categories-grid">
+                            <thead>
+                                <tr>
+                                    <th style="width:64px;">@L["Categories_ColIcon"]</th>
+                                    <th>@L["Categories_ColName"]</th>
+                                    <th>@L["Categories_ColDisplayName"]</th>
+                                    <th class="num">@L["Categories_ColOrder"]</th>
+                                    <th class="num">@L["Categories_ColDrinks"]</th>
+                                    <th>@L["Categories_ColStatus"]</th>
+                                    <th class="actions-col">@L["Categories_ColActions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-categories-table-body">
+                                @foreach (var category in categories)
+                                {
+                                    <tr id="admin-category-row-@category.Id">
+                                        <td style="font-size:1.4rem;" id="admin-category-icon-@category.Id">@category.Icon</td>
+                                        <td id="admin-category-name-@category.Id"><span class="drink-name">@category.Name</span></td>
+                                        <td class="console-table__muted" id="admin-category-display-@category.Id">@category.DisplayName</td>
+                                        <td class="num mono" id="admin-category-order-@category.Id">@category.SortOrder</td>
+                                        <td class="num mono" id="admin-category-drinkcount-@category.Id">@category.DrinkCount</td>
+                                        <td id="admin-category-status-cell-@category.Id">
+                                            @if (category.IsActive)
+                                            {
+                                                <span class="status is-active" id="admin-category-status-active-@category.Id">
+                                                    <span class="status__dot"></span>@L["Categories_StatusActive"]
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status is-cancelled" id="admin-category-status-inactive-@category.Id">
+                                                    <span class="status__dot"></span>@L["Categories_StatusInactive"]
+                                                </span>
+                                            }
+                                        </td>
+                                        <td class="actions-col" id="admin-category-actions-cell-@category.Id">
+                                            <div class="row-actions">
+                                                <button class="row-btn row-btn--label" @onclick="() => ShowEditForm(category)" id="admin-edit-category-@category.Id">
+                                                    <i class="bi bi-pencil"></i> @L["Edit"]
+                                                </button>
+                                                <button class="row-btn row-btn--label row-btn--danger" @onclick="() => DeleteCategory(category)" id="admin-delete-category-@category.Id">
+                                                    <i class="bi bi-trash"></i> @L["Delete"]
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+
+                <footer class="drink-modal__foot" id="admin-category-manager-footer">
+                    @if (showForm)
+                    {
+                        <button type="button" class="pill-btn" @onclick="BackToList" id="admin-category-form-cancel-btn">@L["Cancel"]</button>
+                        <button type="button" class="pill-btn pill-btn--primary" @onclick="SaveCategory" disabled="@isSaving" id="admin-category-form-save-btn">
+                            @if (isSaving)
+                            {
+                                <span class="spinner-border spinner-border-sm"></span>
+                                <span>@L["Categories_Saving"]</span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-check-lg"></i>
+                                <span>@L["Save"]</span>
+                            }
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="pill-btn" @onclick="CloseAsync" id="admin-category-manager-done-btn">@L["Close"]</button>
+                        <button type="button" class="pill-btn pill-btn--primary" @onclick="ShowCreateForm" id="admin-add-category-btn">
+                            <i class="bi bi-plus-lg"></i><span>@L["Categories_NewCategory"]</span>
+                        </button>
+                    }
+                </footer>
+            </div>
+        </div>
+    </div>
+}

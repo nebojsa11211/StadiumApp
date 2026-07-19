@@ -34,7 +34,7 @@
                         <li>@L["Structure_QsSectorNeeds"]</li>
                     </ul>
                     <a href="/admin/structure-help" class="link-btn mt-2" id="admin-structure-guide-link">
-                        <i class="fas fa-external-link-alt"></i> @L["Structure_ViewGuide"]
+                        <i class="bi bi-box-arrow-up-right"></i> @L["Structure_ViewGuide"]
                     </a>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                 }
                 else
                 {
-                    <i class="fas fa-upload"></i>
+                    <i class="bi bi-upload"></i>
                     <text>@L["Structure_ImportButton"]</text>
                 }
             </button>
@@ -93,42 +93,42 @@
                     <article class="metric" id="admin-stadium-metric-tribunes">
                         <div class="metric__head" id="admin-stadium-metric-tribunes-head">
                             <span class="metric__label">@L["Structure_MetricTribunes"]</span>
-                            <i class="fas fa-layer-group metric__icon"></i>
+                            <i class="bi bi-layers metric__icon"></i>
                         </div>
                         <div class="metric__value mono" id="admin-stadium-metric-tribunes-value">@summary.TotalTribunes</div>
                     </article>
                     <article class="metric" id="admin-stadium-metric-rings">
                         <div class="metric__head" id="admin-stadium-metric-rings-head">
                             <span class="metric__label">@L["Structure_MetricRings"]</span>
-                            <i class="fas fa-circle-notch metric__icon"></i>
+                            <i class="bi bi-arrow-repeat metric__icon"></i>
                         </div>
                         <div class="metric__value mono" id="admin-stadium-metric-rings-value">@summary.TotalRings</div>
                     </article>
                     <article class="metric" id="admin-stadium-metric-sectors">
                         <div class="metric__head" id="admin-stadium-metric-sectors-head">
                             <span class="metric__label">@L["Structure_MetricSectors"]</span>
-                            <i class="fas fa-th metric__icon"></i>
+                            <i class="bi bi-grid-3x3-gap metric__icon"></i>
                         </div>
                         <div class="metric__value mono" id="admin-stadium-metric-sectors-value">@summary.TotalSectors</div>
                     </article>
                     <article class="metric" id="admin-stadium-metric-total-seats">
                         <div class="metric__head" id="admin-stadium-metric-total-seats-head">
                             <span class="metric__label">@L["Structure_MetricTotalSeats"]</span>
-                            <i class="fas fa-chair metric__icon"></i>
+                            <i class="bi bi-grid-3x3-gap metric__icon"></i>
                         </div>
                         <div class="metric__value mono" id="admin-stadium-metric-total-seats-value">@summary.TotalSeats</div>
                     </article>
                     <article class="metric metric--accent" id="admin-stadium-metric-available">
                         <div class="metric__head" id="admin-stadium-metric-available-head">
                             <span class="metric__label">@L["Structure_MetricAvailable"]</span>
-                            <i class="fas fa-check metric__icon is-ok"></i>
+                            <i class="bi bi-check metric__icon is-ok"></i>
                         </div>
                         <div class="metric__value mono" id="admin-stadium-metric-available-value">@summary.AvailableSeats</div>
                     </article>
                     <article class="metric" id="admin-stadium-metric-occupied">
                         <div class="metric__head" id="admin-stadium-metric-occupied-head">
                             <span class="metric__label">@L["Structure_MetricOccupied"]</span>
-                            <i class="fas fa-user metric__icon"></i>
+                            <i class="bi bi-person metric__icon"></i>
                         </div>
                         <div class="metric__value mono" id="admin-stadium-metric-occupied-value">@summary.OccupiedSeats</div>
                     </article>
@@ -144,7 +144,7 @@
             else
             {
                 <div class="empty" id="admin-stadium-empty-state">
-                    <i class="fas fa-stadium"></i>
+                    <i class="bi bi-building"></i>
                     <p id="admin-stadium-empty-title">@L["Structure_NoData"]</p>
                     <span id="admin-stadium-empty-message">@L["Structure_EmptyStateText"]</span>
                 </div>
@@ -155,7 +155,7 @@
                         @onclick="ShowClearConfirmation"
                         disabled="@(summary == null || summary.TotalSeats == 0)"
                         id="admin-stadium-clear-btn">
-                    <i class="fas fa-trash"></i><span>@L["Structure_ClearButton"]</span>
+                    <i class="bi bi-trash"></i><span>@L["Structure_ClearButton"]</span>
                 </button>
 
                 <button class="pill-btn"
@@ -169,7 +169,7 @@
                     }
                     else
                     {
-                        <i class="fas fa-download"></i><text>@L["Structure_ExportButton"]</text>
+                        <i class="bi bi-download"></i><text>@L["Structure_ExportButton"]</text>
                     }
                 </button>
 
@@ -185,7 +185,7 @@
                     }
                     else
                     {
-                        <i class="fas fa-sync-alt"></i><text>@L["Structure_RefreshButton"]</text>
+                        <i class="bi bi-arrow-repeat"></i><text>@L["Structure_RefreshButton"]</text>
                     }
                 </button>
             </div>
@@ -195,13 +195,13 @@
     @if (importSuccess)
     {
         <div class="console-alert console-alert--success" id="admin-stadium-success-alert">
-            <i class="fas fa-check-circle"></i>
+            <i class="bi bi-check-circle"></i>
             <div id="admin-stadium-success-content">
                 <strong id="admin-stadium-success-heading">@L["Structure_ImportSuccessHeading"]</strong>
                 <span id="admin-stadium-success-text"> @L["Structure_ImportSuccessText"] @importMessage</span>
             </div>
             <button type="button" class="icon-btn" style="margin-left:auto;" @onclick="() => importSuccess = false" id="admin-stadium-success-close-btn">
-                <i class="fas fa-times"></i>
+                <i class="bi bi-x-lg"></i>
             </button>
         </div>
     }
@@ -243,7 +243,7 @@
                         }
                         else
                         {
-                            <i class="fas fa-trash"></i><text>@L["Structure_DeleteButton"]</text>
+                            <i class="bi bi-trash"></i><text>@L["Structure_DeleteButton"]</text>
                         }
                     </button>
                 </div>

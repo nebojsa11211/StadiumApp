@@ -1,0 +1,171 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - link [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "SuperSport HNL" [ref=e7]
+    - link [ref=e8] [cursor=pointer]:
+      - /url: "#sidr"
+      - img "Prikaži izbornik" [ref=e9]
+  - generic [ref=e12]:
+    - img "Žilini pripao uzvrat, Hajduk osigurao prolaz u drugo pretkolo Europske lige" [ref=e13]
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Preokret u Slovačkoj" [level=3] [ref=e16]
+        - heading [level=2] [ref=e17]:
+          - link "Žilini pripao uzvrat, Hajduk osigurao prolaz u drugo pretkolo Europske lige" [ref=e18] [cursor=pointer]:
+            - /url: /news/31529/zilini-pripao-uzvrat-hajduk-osigurao-prolaz-u-drugo-pretkolo-europske-lige/
+      - generic [ref=e19]: U uzvratnom susretu prvog pretkola Europske lige Žilina je svladala Hajduk 2:1, no Splićani su ukupnom pobjedom osigurali ogled s ciparskim Pafosom u drugom...
+  - generic [ref=e21]:
+    - generic [ref=e23]:
+      - list [ref=e24]:
+        - listitem [ref=e25]:
+          - link [ref=e27] [cursor=pointer]:
+            - /url: /news/31509/hajduk-otvorio-europsku-sezonu-pobjedom-nad-zilinom/
+            - img "Hajduk otvorio europsku sezonu pobjedom nad Žilinom" [ref=e28]
+          - heading "09.07.2026." [level=3] [ref=e29]
+          - heading [level=2] [ref=e30]:
+            - link "Hajduk otvorio europsku sezonu pobjedom nad Žilinom" [ref=e31] [cursor=pointer]:
+              - /url: /news/31509/hajduk-otvorio-europsku-sezonu-pobjedom-nad-zilinom/
+          - paragraph [ref=e32]: U prvoj utakmici prvog pretkola Europske lige nogometaši Hajduka...
+        - listitem [ref=e33]:
+          - link [ref=e35] [cursor=pointer]:
+            - /url: /news/31428/van-hoorenbeeck-i-acapandie-pojacali-redove-hajduka/
+            - img "Van Hoorenbeeck i Acapandie pojačali redove Hajduka" [ref=e36]
+          - heading "27.06.2026." [level=3] [ref=e37]
+          - heading [level=2] [ref=e38]:
+            - link "Van Hoorenbeeck i Acapandie pojačali redove Hajduka" [ref=e39] [cursor=pointer]:
+              - /url: /news/31428/van-hoorenbeeck-i-acapandie-pojacali-redove-hajduka/
+          - paragraph [ref=e40]: Splitski Hajduk u protekla je dva dana predstavio i dva nova igrača za...
+        - listitem [ref=e41]:
+          - link [ref=e43] [cursor=pointer]:
+            - /url: /news/31427/pobjeda-protiv-radomlja-na-pocetku-dinamovih-priprema/
+            - img "Pobjeda protiv Radomlja na početku Dinamovih priprema" [ref=e44]
+          - heading "26.06.2026." [level=3] [ref=e45]
+          - heading [level=2] [ref=e46]:
+            - link "Pobjeda protiv Radomlja na početku Dinamovih priprema" [ref=e47] [cursor=pointer]:
+              - /url: /news/31427/pobjeda-protiv-radomlja-na-pocetku-dinamovih-priprema/
+          - paragraph [ref=e48]: Hrvatski prvak Dinamo odigrao je prvu pripremnu utakmicu uoči početka...
+        - listitem [ref=e49]:
+          - link [ref=e51] [cursor=pointer]:
+            - /url: /news/31420/mladi-reprezentativci-bih-i-madjarske-potpisali-za-osijek/
+            - img "Mladi reprezentativci BiH i Mađarske potpisali za Osijek" [ref=e52]
+          - heading "25.06.2026." [level=3] [ref=e53]
+          - heading [level=2] [ref=e54]:
+            - link "Mladi reprezentativci BiH i Mađarske potpisali za Osijek" [ref=e55] [cursor=pointer]:
+              - /url: /news/31420/mladi-reprezentativci-bih-i-madjarske-potpisali-za-osijek/
+          - paragraph [ref=e56]: Nedugo nakon što je stigao novi trener, na Opus Arenu stigla su i dva...
+      - link "Još vijesti" [ref=e57] [cursor=pointer]:
+        - /url: /info/vijesti/
+    - generic [ref=e59]:
+      - heading "Brzi izbornik" [level=2] [ref=e60]
+      - list:
+        - listitem [ref=e61]:
+          - heading [level=3] [ref=e62]:
+            - link "Raspored" [ref=e63] [cursor=pointer]:
+              - /url: "/supersport-hnl/raspored-i-rezultati/\n"
+          - heading "Parovi, rezultati" [level=4] [ref=e64]
+        - listitem [ref=e65]:
+          - heading [level=3] [ref=e66]:
+            - link "HNS Semafor" [ref=e67] [cursor=pointer]:
+              - /url: "https://semafor.hns.family/\n"
+          - heading "Svi rezultati" [level=4] [ref=e68]
+        - listitem [ref=e69]:
+          - heading [level=3] [ref=e70]:
+            - link "Delegiranje" [ref=e71] [cursor=pointer]:
+              - /url: "/supersport-hnl/delegiranje/\n"
+          - heading "Suci, delegati" [level=4] [ref=e72]
+        - listitem [ref=e73]:
+          - heading [level=3] [ref=e74]:
+            - link "Klubovi" [ref=e75] [cursor=pointer]:
+              - /url: "/klubovi/\n"
+          - heading "Igrači, kontakti" [level=4] [ref=e76]
+        - listitem [ref=e77]:
+          - heading [level=3] [ref=e78]:
+            - link "Statistika" [ref=e79] [cursor=pointer]:
+              - /url: "/statistika/strijelci/\n"
+          - heading "Strijelci, kartoni..." [level=4] [ref=e80]
+        - listitem [ref=e81]:
+          - heading [level=3] [ref=e82]:
+            - link "Najbolji" [ref=e83] [cursor=pointer]:
+              - /url: "https://shnlnagrade.hr/\n"
+          - heading "SHNL nagrade" [level=4] [ref=e84]
+    - generic [ref=e85]:
+      - heading "Izdvojena galerija /" [level=2] [ref=e86]
+      - heading "Dinamo proslavio dvostruku krunu" [level=3] [ref=e87]
+  - generic [ref=e90]:
+    - list:
+      - listitem [ref=e91]:
+        - link [ref=e92] [cursor=pointer]:
+          - /url: /news/31159/dinamo-proslavio-dvostruku-krunu/
+          - img "galleryimg1" [ref=e93]
+      - listitem [ref=e94]:
+        - link [ref=e95] [cursor=pointer]:
+          - /url: /news/31159/dinamo-proslavio-dvostruku-krunu/
+          - img "galleryimg2" [ref=e96]
+      - listitem [ref=e97]:
+        - link [ref=e98] [cursor=pointer]:
+          - /url: /news/31159/dinamo-proslavio-dvostruku-krunu/
+          - img "galleryimg3" [ref=e99]
+      - listitem [ref=e100]:
+        - link [ref=e101] [cursor=pointer]:
+          - /url: /news/31159/dinamo-proslavio-dvostruku-krunu/
+          - img "galleryimg4" [ref=e102]
+  - list [ref=e107]:
+    - listitem [ref=e108]:
+      - list [ref=e109]:
+        - listitem [ref=e110]:
+          - list [ref=e111]:
+            - listitem [ref=e112]:
+              - img "SuperSport" [ref=e114]
+            - listitem [ref=e115]:
+              - link [ref=e116] [cursor=pointer]:
+                - /url: https://www.uhlsport.com/en/
+                - img "Uhlsport" [ref=e117]
+            - listitem
+            - listitem [ref=e118]:
+              - link [ref=e119] [cursor=pointer]:
+                - /url: https://sorare.com/football/leagues/1-hnl
+                - img "Sorare" [ref=e120]
+            - listitem [ref=e121]:
+              - link [ref=e122] [cursor=pointer]:
+                - /url: https://paninistore.com/shp_int_en/
+                - img "Panini" [ref=e123]
+        - listitem [ref=e124]:
+          - list [ref=e125]:
+            - listitem [ref=e126]: Hrvatski nogometni savez Ulica grada Vukovara 269 A 10000 Zagreb Hrvatska / Croatia
+            - listitem [ref=e127]:
+              - text: "T: +385 1 2361555, F: +385 1 2441500 E:"
+              - link "info@hns.family" [ref=e128] [cursor=pointer]:
+                - /url: mailto:info@hns.family
+              - text: ", W:"
+              - link "hns.family" [ref=e129] [cursor=pointer]:
+                - /url: https://hns.family/
+              - text: "IBAN: HR2523400091100187844 OIB: 08516152078"
+        - listitem [ref=e130]:
+          - list:
+            - listitem [ref=e131]:
+              - link [ref=e132] [cursor=pointer]:
+                - /url: https://www.fifa.com/
+                - img "FIFA" [ref=e133]
+              - link [ref=e134] [cursor=pointer]:
+                - /url: https://www.uefa.com/
+                - img "UEFA" [ref=e135]
+            - listitem [ref=e136]:
+              - link [ref=e137] [cursor=pointer]:
+                - /url: https://hns.family/
+                - img "Hrvatski nogometni savez" [ref=e138]
+            - listitem [ref=e139]:
+              - heading "Pratite nas:" [level=2] [ref=e140]
+              - list [ref=e141]:
+                - listitem [ref=e142]:
+                  - link [ref=e143] [cursor=pointer]:
+                    - /url: https://www.facebook.com/SuperSport-HNL-489496637884546
+                    - img "Facebook" [ref=e144]
+                - listitem [ref=e145]:
+                  - link [ref=e146] [cursor=pointer]:
+                    - /url: https://twitter.com/SuperSportHNL
+                    - img "Twitter" [ref=e147]
+                - listitem [ref=e148]:
+                  - link [ref=e149] [cursor=pointer]:
+                    - /url: https://www.instagram.com/supersporthnl/
+                    - img "Instagram" [ref=e150]

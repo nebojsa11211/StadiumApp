@@ -5,79 +5,19 @@
 
 <PageTitle>@L["Login_PageTitle"]</PageTitle>
 
-<div class="console" id="admin-login-container">
-    <div id="admin-login-row" style="display:flex; justify-content:center;">
-        <div id="admin-login-col" style="width:100%; max-width:420px; margin:3rem 0;">
-            <div class="panel" id="admin-login-card">
-                <div class="panel__body" id="admin-login-body">
-                    <div class="console-head__title" id="admin-login-header" style="text-align:center; margin-bottom:1.5rem;">
-                        <span class="eyebrow">@L["Login_StadiumAdmin"]</span>
-                        <h1 id="admin-login-title" style="font-size:1.5rem; margin-bottom:0.35rem;">@L["SignIn"]</h1>
-                        <p>@L["Login_OperationsConsoleAccess"]</p>
-                    </div>
-
-                    @if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        <div class="console-alert console-alert--danger" id="admin-login-error">
-                            @errorMessage
-                        </div>
-                    }
-
-                    <form @onsubmit="HandleLogin" id="admin-login-form">
-                        <div class="field" id="admin-login-email-group" style="margin-bottom:1rem;">
-                            <label class="field__label" for="admin-login-email-input">@L["Email"]</label>
-                            <input type="email" class="field__input" @bind="email" required id="admin-login-email-input" />
-                        </div>
-
-                        <div class="field" id="admin-login-password-group" style="margin-bottom:1.25rem;">
-                            <label class="field__label" for="admin-login-password-input">@L["Password"]</label>
-                            <div style="position:relative;" id="admin-login-password-wrapper">
-                                <input type="@(showPassword ? "text" : "password")" class="field__input" style="padding-right:2.75rem;" @bind="password" required id="admin-login-password-input" />
-                                <button type="button" id="admin-login-password-toggle-btn"
-                                        @onclick="TogglePasswordVisibility"
-                                        aria-label="@(showPassword ? "Hide password" : "Show password")"
-                                        aria-pressed="@showPassword"
-                                        style="position:absolute; top:50%; right:0.5rem; transform:translateY(-50%); background:none; border:none; padding:0.25rem; cursor:pointer; color:inherit; display:flex; align-items:center;">
-                                    @if (showPassword)
-                                    {
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                                            <line x1="1" y1="1" x2="23" y2="23" />
-                                        </svg>
-                                    }
-                                    else
-                                    {
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                            <circle cx="12" cy="12" r="3" />
-                                        </svg>
-                                    }
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="admin-login-button-group">
-                            <button type="submit" class="pill-btn pill-btn--primary" style="width:100%; justify-content:center;" disabled="@isLoading" id="admin-login-submit-btn">
-                                @if (isLoading)
-                                {
-                                    <span class="spinner-border spinner-border-sm me-2" role="status" id="admin-login-spinner"></span>
-                                    <span id="admin-login-loading-text">@L["Login_LoggingIn"]</span>
-                                }
-                                else
-                                {
-                                    <span id="admin-login-button-text">@L["Login"]</span>
-                                }
-                            </button>
-                        </div>
-                    </form>
-
-                    <div id="admin-login-demo-info" style="margin-top:1.25rem; text-align:center;">
-                        <small class="text-muted" id="admin-login-demo-text">
-                            @L["Login_DemoCredentialsHint"]
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<ConsoleLoginCard IdPrefix="admin"
+                  Eyebrow="@L["Login_StadiumAdmin"]"
+                  Title="@L["SignIn"]"
+                  Subtitle="@L["Login_OperationsConsoleAccess"]"
+                  EmailLabel="@L["Email"]"
+                  PasswordLabel="@L["Password"]"
+                  SubmitText="@L["Login"]"
+                  LoadingText="@L["Login_LoggingIn"]"
+                  ShowPasswordLabel="@L["Login_ShowPassword"]"
+                  HidePasswordLabel="@L["Login_HidePassword"]"
+                  FooterText="@L["Login_DemoCredentialsHint"]"
+                  ErrorMessage="@errorMessage"
+                  IsLoading="isLoading"
+                  @bind-Email="email"
+                  @bind-Password="password"
+                  OnSubmit="HandleLogin" />

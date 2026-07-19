@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <!-- Shared Razor UI components for the console-style apps (Admin, Bar, Runner).
+
+       This lives outside StadiumDrinkOrdering.Shared on purpose: Shared is coupled to the
+       ASP.NET Core server framework (auth handlers, hosted services) and therefore cannot be
+       referenced by the Runner, which is Blazor WebAssembly. Keep this project's dependencies
+       limited to Microsoft.AspNetCore.Components.Web so it stays browser-wasm safe. -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

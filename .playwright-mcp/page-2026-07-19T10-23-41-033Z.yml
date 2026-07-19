@@ -1,0 +1,23 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - combobox [ref=f1e5]:
+      - option "Hrvatski" [selected]
+      - option "English"
+    - main [ref=f1e6]:
+      - generic [ref=f1e11]:
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: Stadion admin
+          - heading "Prijavite se" [active] [level=1] [ref=f1e14]
+          - paragraph [ref=f1e15]: Pristup konzoli operacija
+        - generic [ref=f1e16]:
+          - generic [ref=f1e17]:
+            - generic [ref=f1e18]: E-pošta
+            - textbox "E-pošta" [ref=f1e19]
+          - generic [ref=f1e20]:
+            - generic [ref=f1e21]: Lozinka
+            - generic [ref=f1e22]:
+              - textbox "Lozinka" [ref=f1e23]
+              - button "Prikaži lozinku" [ref=f1e24] [cursor=pointer]
+          - button "Prijava" [ref=f1e29] [cursor=pointer]
+        - generic [ref=f1e31]: Koristite admin@stadium.com/admin123 u demonstracijske svrhe
+  - generic [ref=f1e32]: Stadium viewer initialized with keyboard navigation support

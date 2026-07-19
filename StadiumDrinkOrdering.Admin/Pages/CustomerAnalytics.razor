@@ -30,10 +30,10 @@
     else if (errorMessage != null)
     {
         <div class="console-alert console-alert--danger" role="alert" id="admin-customer-analytics-error-alert">
-            <i class="fas fa-exclamation-triangle"></i>
+            <i class="bi bi-exclamation-triangle"></i>
             <span>@errorMessage</span>
             <button type="button" class="pill-btn pill-btn--danger" @onclick="LoadCustomerAnalytics" id="admin-customer-analytics-retry-btn">
-                <i class="fas fa-redo"></i><span>@L["CustAnalytics_Retry"]</span>
+                <i class="bi bi-arrow-clockwise"></i><span>@L["CustAnalytics_Retry"]</span>
             </button>
         </div>
     }
@@ -46,7 +46,7 @@
                 <article class="metric" id="admin-customer-analytics-metric-total">
                     <div class="metric__head">
                         <span class="metric__label">@L["CustAnalytics_TotalCustomers"]</span>
-                        <i class="fas fa-users metric__icon"></i>
+                        <i class="bi bi-people metric__icon"></i>
                     </div>
                     <div class="metric__value mono">@summary.TotalCustomers</div>
                     <div class="metric__foot">
@@ -57,7 +57,7 @@
                 <article class="metric metric--accent" id="admin-customer-analytics-metric-revenue">
                     <div class="metric__head">
                         <span class="metric__label">@L["CustAnalytics_TotalRevenue"]</span>
-                        <i class="fas fa-euro-sign metric__icon"></i>
+                        <i class="bi bi-currency-euro metric__icon"></i>
                     </div>
                     <div class="metric__value mono"><span class="metric__unit">€</span>@summary.TotalRevenue.ToString("N0")</div>
                     <div class="metric__foot">
@@ -68,7 +68,7 @@
                 <article class="metric" id="admin-customer-analytics-metric-avg">
                     <div class="metric__head">
                         <span class="metric__label">@L["CustAnalytics_AvgCustomerValue"]</span>
-                        <i class="fas fa-chart-line metric__icon"></i>
+                        <i class="bi bi-graph-up metric__icon"></i>
                     </div>
                     <div class="metric__value mono"><span class="metric__unit">€</span>@summary.AverageCustomerValue.ToString("N0")</div>
                     <div class="metric__foot">
@@ -79,7 +79,7 @@
                 <article class="metric" id="admin-customer-analytics-metric-active">
                     <div class="metric__head">
                         <span class="metric__label">@L["CustAnalytics_ActiveLast30"]</span>
-                        <i class="fas fa-fire metric__icon"></i>
+                        <i class="bi bi-fire metric__icon"></i>
                     </div>
                     <div class="metric__value mono">@summary.ActiveCustomersLast30Days</div>
                     <div class="metric__foot">
@@ -92,9 +92,9 @@
         <!-- Filters and Search -->
         <div class="panel filters-panel" id="admin-customer-analytics-filters-panel">
             <div class="panel__head" id="admin-customer-analytics-filters-panel-head">
-                <h2 class="panel__title" id="admin-customer-analytics-filters-title"><i class="fas fa-filter"></i> @L["CustAnalytics_FiltersSearch"]</h2>
+                <h2 class="panel__title" id="admin-customer-analytics-filters-title"><i class="bi bi-funnel"></i> @L["CustAnalytics_FiltersSearch"]</h2>
                 <button class="icon-btn" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" id="admin-customer-analytics-filters-toggle-btn" title="@L["CustAnalytics_ToggleFilters"]">
-                    <i class="fas fa-chevron-down"></i>
+                    <i class="bi bi-chevron-down"></i>
                 </button>
             </div>
             <div class="collapse show" id="filtersCollapse">
@@ -133,10 +133,10 @@
                     <span class="metric__hint">@L["CustAnalytics_RefineList"]</span>
                     <div class="bulk-actions" id="admin-customer-analytics-filters-actions">
                         <button class="pill-btn pill-btn--primary" @onclick="ApplyFilters" disabled="@isLoading" id="admin-customer-analytics-apply-filters-btn">
-                            <i class="fas fa-search"></i><span>@L["CustAnalytics_ApplyFilters"]</span>
+                            <i class="bi bi-search"></i><span>@L["CustAnalytics_ApplyFilters"]</span>
                         </button>
                         <button class="pill-btn" @onclick="ClearFilters" disabled="@isLoading" id="admin-customer-analytics-clear-filters-btn">
-                            <i class="fas fa-times"></i><span>@L["CustAnalytics_Clear"]</span>
+                            <i class="bi bi-x-lg"></i><span>@L["CustAnalytics_Clear"]</span>
                         </button>
                     </div>
                 </div>
@@ -204,7 +204,7 @@
                                 <td class="actions-col">
                                     <div class="row-actions">
                                         <button class="row-btn" title="@L["CustAnalytics_ViewDetails"]" @onclick="() => ViewCustomerDetails(customer.CustomerEmail)" id="admin-customer-analytics-view-details-btn-@customer.CustomerEmail.Replace("@", "_").Replace(".", "_")">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="bi bi-eye"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -222,7 +222,7 @@
                         </p>
                         <div class="bulk-actions" id="admin-customer-analytics-pagination-buttons">
                             <button class="icon-btn" @onclick="() => GoToPage(pagedResult.Page - 1)" disabled="@(pagedResult.Page == 1 || isLoading)" id="admin-customer-analytics-prev-page-btn" title="@L["CustAnalytics_PreviousPage"]">
-                                <i class="fas fa-chevron-left"></i>
+                                <i class="bi bi-chevron-left"></i>
                             </button>
 
                             @for (int i = Math.Max(1, pagedResult.Page - 2); i <= Math.Min(pagedResult.TotalPages, pagedResult.Page + 2); i++)
@@ -231,7 +231,7 @@
                             }
 
                             <button class="icon-btn" @onclick="() => GoToPage(pagedResult.Page + 1)" disabled="@(pagedResult.Page == pagedResult.TotalPages || isLoading)" id="admin-customer-analytics-next-page-btn" title="@L["CustAnalytics_NextPage"]">
-                                <i class="fas fa-chevron-right"></i>
+                                <i class="bi bi-chevron-right"></i>
                             </button>
                         </div>
                     </div>
@@ -240,12 +240,12 @@
             else
             {
                 <div class="empty" id="admin-customer-analytics-empty-state">
-                    <i class="fas fa-users"></i>
+                    <i class="bi bi-people"></i>
                     <p id="admin-customer-analytics-empty-title">@L["CustAnalytics_NoCustomersFound"]</p>
                     <span id="admin-customer-analytics-empty-subtitle">@L["CustAnalytics_AdjustFilters"]</span>
                     <div style="margin-top: 1rem;" id="admin-customer-analytics-empty-actions">
                         <button class="pill-btn" @onclick="ClearFilters" id="admin-customer-analytics-clear-filters-empty-btn">
-                            <i class="fas fa-times"></i><span>@L["CustAnalytics_ClearFilters"]</span>
+                            <i class="bi bi-x-lg"></i><span>@L["CustAnalytics_ClearFilters"]</span>
                         </button>
                     </div>
                 </div>
@@ -255,4 +255,165 @@
 </div>
 
 <!-- Customer Detail Modal -->
-@* CustomerDetailModal removed - component not available *@
+@if (detailEmail != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);" id="admin-customer-analytics-detail-modal">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" id="admin-customer-analytics-detail-dialog">
+            <div class="modal-content" id="admin-customer-analytics-detail-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="admin-customer-analytics-detail-title">
+                        @(detail?.CustomerName is { Length: > 0 } n ? n : detailEmail)
+                        <span class="text-muted small ms-2">@detailEmail</span>
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CloseCustomerDetails" id="admin-customer-analytics-detail-close-btn"></button>
+                </div>
+
+                <div class="modal-body" id="admin-customer-analytics-detail-body">
+                    @if (isDetailLoading)
+                    {
+                        <div class="loading-state" id="admin-customer-analytics-detail-loading">
+                            <span class="loading-spinner"></span>
+                            <p>@L["CustAnalytics_Loading"]</p>
+                        </div>
+                    }
+                    else if (detailError != null)
+                    {
+                        <div class="console-alert console-alert--danger" role="alert" id="admin-customer-analytics-detail-error">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span>@detailError</span>
+                        </div>
+                    }
+                    else if (detail != null)
+                    {
+                        <!-- Spending Summary -->
+                        <section class="metrics" id="admin-customer-analytics-detail-metrics">
+                            <article class="metric" id="admin-customer-analytics-detail-metric-total">
+                                <div class="metric__head"><span class="metric__label">@L["CustAnalytics_DetailTotalSpent"]</span></div>
+                                <div class="metric__value mono">€@detail.Summary.TotalSpent.ToString("N2")</div>
+                                <div class="metric__foot">
+                                    <span class="metric__hint">
+                                        @L["CustAnalytics_DetailTickets"]: €@detail.Summary.TicketSpending.ToString("N2") |
+                                        @L["CustAnalytics_DetailDrinks"]: €@detail.Summary.DrinkSpending.ToString("N2")
+                                    </span>
+                                </div>
+                            </article>
+
+                            <article class="metric" id="admin-customer-analytics-detail-metric-tickets">
+                                <div class="metric__head"><span class="metric__label">@L["CustAnalytics_DetailTickets"]</span></div>
+                                <div class="metric__value mono">@detail.Summary.TotalTickets</div>
+                                <div class="metric__foot">
+                                    <span class="metric__hint">@L["CustAnalytics_DetailAvgTicket"]: €@detail.Summary.AverageTicketPrice.ToString("N2")</span>
+                                </div>
+                            </article>
+
+                            <article class="metric" id="admin-customer-analytics-detail-metric-orders">
+                                <div class="metric__head"><span class="metric__label">@L["CustAnalytics_DetailDrinkOrders"]</span></div>
+                                <div class="metric__value mono">@detail.Summary.TotalDrinkOrders</div>
+                                <div class="metric__foot">
+                                    <span class="metric__hint">@L["CustAnalytics_DetailAvgOrder"]: €@detail.Summary.AverageDrinkOrderValue.ToString("N2")</span>
+                                </div>
+                            </article>
+
+                            <article class="metric" id="admin-customer-analytics-detail-metric-events">
+                                <div class="metric__head"><span class="metric__label">@L["CustAnalytics_DetailEvents"]</span></div>
+                                <div class="metric__value mono">@detail.Summary.TotalEvents</div>
+                                <div class="metric__foot">
+                                    <span class="metric__hint">
+                                        @detail.Summary.FirstPurchase.ToLocalTime().ToString("MMM dd, yyyy") &ndash;
+                                        @detail.Summary.LastPurchase.ToLocalTime().ToString("MMM dd, yyyy")
+                                    </span>
+                                </div>
+                            </article>
+                        </section>
+
+                        <!-- Ticket Purchases -->
+                        <h6 class="mt-4" id="admin-customer-analytics-detail-tickets-heading">@L["CustAnalytics_DetailTicketPurchases"]</h6>
+                        @if (detail.TicketPurchases.Any())
+                        {
+                            <div class="table-wrap">
+                                <table class="console-table" id="admin-customer-analytics-detail-tickets-table">
+                                    <thead>
+                                        <tr>
+                                            <th>@L["CustAnalytics_DetailDate"]</th>
+                                            <th>@L["CustAnalytics_DetailEvent"]</th>
+                                            <th>@L["CustAnalytics_DetailSeat"]</th>
+                                            <th class="num">@L["CustAnalytics_DetailPrice"]</th>
+                                            <th>@L["CustAnalytics_DetailStatus"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-customer-analytics-detail-tickets-tbody">
+                                        @foreach (var p in detail.TicketPurchases.OrderByDescending(x => x.PurchaseDate))
+                                        {
+                                            <tr id="admin-customer-analytics-detail-ticket-row-@p.TicketNumber">
+                                                <td class="console-table__time">@p.PurchaseDate.ToLocalTime().ToString("MMM dd, yyyy HH:mm")</td>
+                                                <td>
+                                                    <div>@p.EventName</div>
+                                                    <div class="text-muted small">@p.EventDate.ToLocalTime().ToString("MMM dd, yyyy")</div>
+                                                </td>
+                                                <td class="mono">@p.SectionName @p.SeatCode</td>
+                                                <td class="num mono">€@p.Price.ToString("N2")</td>
+                                                <td>@p.Status</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted" id="admin-customer-analytics-detail-no-tickets">@L["CustAnalytics_DetailNoTickets"]</p>
+                        }
+
+                        <!-- Drink Orders -->
+                        <h6 class="mt-4" id="admin-customer-analytics-detail-orders-heading">@L["CustAnalytics_DetailDrinkOrders"]</h6>
+                        @if (detail.DrinkOrders.Any())
+                        {
+                            <div class="table-wrap">
+                                <table class="console-table" id="admin-customer-analytics-detail-orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th>@L["CustAnalytics_DetailDate"]</th>
+                                            <th>@L["CustAnalytics_DetailSeat"]</th>
+                                            <th>@L["CustAnalytics_DetailItems"]</th>
+                                            <th class="num">@L["CustAnalytics_DetailTotal"]</th>
+                                            <th>@L["CustAnalytics_DetailStatus"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-customer-analytics-detail-orders-tbody">
+                                        @foreach (var o in detail.DrinkOrders.OrderByDescending(x => x.OrderDate))
+                                        {
+                                            <tr>
+                                                <td class="console-table__time">@o.OrderDate.ToLocalTime().ToString("MMM dd, yyyy HH:mm")</td>
+                                                <td class="mono">@o.SeatNumber</td>
+                                                <td>
+                                                    @foreach (var item in o.Items)
+                                                    {
+                                                        <div class="text-muted small">
+                                                            @item.Quantity &times; @item.DrinkName &mdash; €@item.TotalPrice.ToString("N2")
+                                                        </div>
+                                                    }
+                                                </td>
+                                                <td class="num mono">€@o.TotalAmount.ToString("N2")</td>
+                                                <td>@o.Status</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted" id="admin-customer-analytics-detail-no-orders">@L["CustAnalytics_DetailNoOrders"]</p>
+                        }
+                    }
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="pill-btn" @onclick="CloseCustomerDetails" id="admin-customer-analytics-detail-footer-close-btn">
+                        <i class="bi bi-x-lg"></i><span>@L["CustAnalytics_DetailClose"]</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

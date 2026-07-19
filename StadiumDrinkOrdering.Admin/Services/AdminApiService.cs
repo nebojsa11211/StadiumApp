@@ -115,6 +115,7 @@ namespace StadiumDrinkOrdering.Admin.Services
         // Legacy methods - Analytics operations (delegated to AnalyticsService)
         public Task<PagedCustomerAnalyticsDto?> GetCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter) => Analytics.GetCustomerAnalyticsAsync(filter);
         public Task<CustomerAnalyticsSummaryDto?> GetCustomerAnalyticsSummaryAsync() => Analytics.GetCustomerAnalyticsSummaryAsync();
+        public Task<CustomerSpendingDetailDto?> GetCustomerSpendingDetailsAsync(string customerEmail) => Analytics.GetCustomerSpendingDetailsAsync(customerEmail);
         public Task<HttpResponseMessage?> ExportCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter) => Analytics.ExportCustomerAnalyticsAsync(filter);
 
         // Legacy methods - Stadium operations (delegated to StadiumService)

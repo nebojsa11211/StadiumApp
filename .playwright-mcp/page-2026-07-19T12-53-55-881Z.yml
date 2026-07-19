@@ -1,0 +1,568 @@
+- generic [ref=f1e10]:
+  - complementary [ref=f1e11]:
+    - generic [ref=f1e12]:
+      - generic [ref=f1e13]: 
+      - generic [ref=f1e15]:
+        - generic [ref=f1e16]: STADIUM
+        - generic [ref=f1e17]: ADMIN
+    - generic [ref=f1e18]:
+      - generic [ref=f1e19]: 14:53:55
+      - generic [ref=f1e20]: 19. 07. 26 HR
+    - navigation [ref=f1e21]:
+      - link " Nadzorna ploča" [ref=f1e22] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f1e23]: 
+        - generic [ref=f1e24]: Nadzorna ploča
+      - generic [ref=f1e25]: Poslovanje
+      - link " Narudžbe" [ref=f1e26] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f1e27]: 
+        - generic [ref=f1e28]: Narudžbe
+      - link " Pića" [ref=f1e29] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f1e30]: 
+        - generic [ref=f1e31]: Pića
+      - link " Novčanici" [ref=f1e32] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=f1e33]: 
+        - generic [ref=f1e34]: Novčanici
+      - generic [ref=f1e35]: Događaji i karte
+      - link " Događaji" [ref=f1e36] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f1e37]: 
+        - generic [ref=f1e38]: Događaji
+      - link " Sezone" [ref=f1e39] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=f1e40]: 
+        - generic [ref=f1e41]: Sezone
+      - link " Momčadi" [ref=f1e42] [cursor=pointer]:
+        - /url: admin/teams
+        - generic [ref=f1e43]: 
+        - generic [ref=f1e44]: Momčadi
+      - link " Karte" [ref=f1e45] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f1e46]: 
+        - generic [ref=f1e47]: Karte
+      - generic [ref=f1e48]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=f1e49] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f1e50]: 👁
+        - generic [ref=f1e51]: Pregled
+      - link " Alat za crtanje" [ref=f1e52] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f1e53]: 
+        - generic [ref=f1e54]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=f1e55] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=f1e56]: 
+        - generic [ref=f1e57]: Informacije o stadionu
+      - link " Stadion i brend" [ref=f1e58] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=f1e59]: 
+        - generic [ref=f1e60]: Stadion i brend
+      - generic [ref=f1e61]: Analitika
+      - link " Analitika" [ref=f1e62] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f1e63]: 
+        - generic [ref=f1e64]: Analitika
+      - link " Kupci" [ref=f1e65] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=f1e66]: 
+        - generic [ref=f1e67]: Kupci
+      - link " Korisnička analitika" [ref=f1e68] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f1e69]: 
+        - generic [ref=f1e70]: Korisnička analitika
+      - generic [ref=f1e71]: Sustav
+      - link " Timski računi" [ref=f1e72] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f1e73]: 
+        - generic [ref=f1e74]: Timski računi
+      - link " Zapisi" [ref=f1e75] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f1e76]: 
+        - generic [ref=f1e77]: Zapisi
+      - link " Baza podataka" [ref=f1e78] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f1e79]: 
+        - generic [ref=f1e80]: Baza podataka
+      - link " Postavke" [ref=f1e81] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=f1e82]: 
+        - generic [ref=f1e83]: Postavke
+    - generic [ref=f1e84]:
+      - generic [ref=f1e85]:
+        - generic [ref=f1e86]: 
+        - generic [ref=f1e87]:
+          - generic [ref=f1e88]: Centralizirani Logging
+          - generic [ref=f1e89]: "Zadnja objava: 14:53"
+      - generic [ref=f1e90]:
+        - generic [ref=f1e91]: "N"
+        - generic [ref=f1e92]:
+          - button "Odjava" [ref=f1e93] [cursor=pointer]
+          - generic [ref=f1e94]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=f1e95]:
+        - generic [ref=f1e96]: HR/EN
+        - generic [ref=f1e97]:
+          - button "HR" [ref=f1e98] [cursor=pointer]
+          - button "EN" [ref=f1e99] [cursor=pointer]
+  - main [ref=f1e100]:
+    - generic [ref=f1e101]:
+      - generic [ref=f1e102]:
+        - generic [ref=f1e103]:
+          - generic [ref=f1e104]: Analitika
+          - heading "Analitika Kupaca" [level=1] [ref=f1e105]
+          - paragraph [ref=f1e106]: Pregledajte i analizirajte ponašanje kupaca pri kupnji i obrasce trošenja
+        - button " Izvezi CSV" [ref=f1e108] [cursor=pointer]:
+          - generic [ref=f1e109]: 
+          - generic [ref=f1e110]: Izvezi CSV
+      - generic [ref=f1e111]:
+        - article [ref=f1e112]:
+          - generic [ref=f1e113]:
+            - generic [ref=f1e114]: Ukupno Kupaca
+            - generic [ref=f1e115]: 
+          - generic [ref=f1e116]: "2614"
+          - generic [ref=f1e117]: Svi registrirani kupci do sada
+        - article [ref=f1e119]:
+          - generic [ref=f1e120]:
+            - generic [ref=f1e121]: Ukupni Prihod
+            - generic [ref=f1e122]: 
+          - generic [ref=f1e123]: €58.454
+          - generic [ref=f1e124]: Karte i pića zajedno
+        - article [ref=f1e126]:
+          - generic [ref=f1e127]:
+            - generic [ref=f1e128]: Prosječna Vrijednost Kupca
+            - generic [ref=f1e129]: 
+          - generic [ref=f1e130]: €22
+          - generic [ref=f1e131]: Prihod po kupcu
+        - article [ref=f1e133]:
+          - generic [ref=f1e134]:
+            - generic [ref=f1e135]: Aktivni Zadnjih 30 Dana
+            - generic [ref=f1e136]: 
+          - generic [ref=f1e137]: "535"
+          - generic [ref=f1e138]: Nedavno uključeni kupci
+      - generic [ref=f1e140]:
+        - generic [ref=f1e141]:
+          - heading " Filtri & Pretraga" [level=2] [ref=f1e142]:
+            - generic [ref=f1e143]: 
+            - text: Filtri & Pretraga
+          - button "" [ref=f1e144] [cursor=pointer]
+        - generic [ref=f1e146]:
+          - generic [ref=f1e147]:
+            - generic [ref=f1e148]:
+              - generic [ref=f1e149]: Pretraži Kupca
+              - textbox "Pretraži po imenu ili e-mailu…" [ref=f1e150]
+            - generic [ref=f1e151]:
+              - generic [ref=f1e152]: Min Potrošeno (€)
+              - spinbutton "0" [ref=f1e153]
+            - generic [ref=f1e154]:
+              - generic [ref=f1e155]: Maks Potrošeno (€)
+              - spinbutton "10000" [ref=f1e156]
+            - generic [ref=f1e157]:
+              - generic [ref=f1e158]: Sortiraj po
+              - combobox [ref=f1e159] [cursor=pointer]:
+                - option "Ukupno Potrošeno" [selected]
+                - option "Ime Kupca"
+                - option "Kupljene Karte"
+                - option "Zadnja Kupnja"
+            - generic [ref=f1e160]:
+              - generic [ref=f1e161]: Redoslijed
+              - combobox [ref=f1e162] [cursor=pointer]:
+                - option "Silazno"
+                - option "Uzlazno"
+          - generic [ref=f1e163]:
+            - generic [ref=f1e164]: Pročistite listu kupaca koristeći filtre gore.
+            - generic [ref=f1e165]:
+              - button " Primijeni Filtre" [ref=f1e166] [cursor=pointer]:
+                - generic [ref=f1e167]: 
+                - generic [ref=f1e168]: Primijeni Filtre
+              - button " Očisti" [ref=f1e169] [cursor=pointer]:
+                - generic [ref=f1e170]: 
+                - generic [ref=f1e171]: Očisti
+      - generic [ref=f1e172]:
+        - generic [ref=f1e173]:
+          - heading "Lista Kupaca 2614 ukupno" [level=2] [ref=f1e174]:
+            - text: Lista Kupaca
+            - generic [ref=f1e175]: 2614 ukupno
+          - generic [ref=f1e176]:
+            - generic [ref=f1e177]: Prikaži
+            - combobox [ref=f1e178] [cursor=pointer]:
+              - option "10" [selected]
+              - option "20"
+              - option "50"
+              - option "100"
+        - table [ref=f1e179]:
+          - rowgroup [ref=f1e180]:
+            - row [ref=f1e181]:
+              - columnheader "Kupac" [ref=f1e182] [cursor=pointer]
+              - columnheader "Ukupno Potrošeno" [ref=f1e183] [cursor=pointer]
+              - columnheader "Karte" [ref=f1e184] [cursor=pointer]
+              - columnheader "Događaji" [ref=f1e185] [cursor=pointer]
+              - columnheader "Prosj./Transakcija" [ref=f1e186] [cursor=pointer]
+              - columnheader "Zadnja Kupnja" [ref=f1e187] [cursor=pointer]
+              - columnheader "Akcije" [ref=f1e188]
+          - rowgroup [ref=f1e189]:
+            - row [ref=f1e190]:
+              - cell "Ivan Horvat ivan.horvat@email.hr +385 91 234 5678" [ref=f1e191]:
+                - generic [ref=f1e192]: Ivan Horvat
+                - generic [ref=f1e193]: ivan.horvat@email.hr
+                - generic [ref=f1e194]: +385 91 234 5678
+              - 'cell "€315,00 Tickets: €315 | Drinks: €0" [ref=f1e195]':
+                - generic [ref=f1e196]: €315,00
+                - generic [ref=f1e197]: "Tickets: €315 | Drinks: €0"
+              - cell "7" [ref=f1e198]
+              - cell "1" [ref=f1e199]
+              - cell "€45,00" [ref=f1e200]
+              - cell "srp 07, 2026" [ref=f1e201]
+              - cell [ref=f1e202]:
+                - button "👁" [active] [ref=f1e204] [cursor=pointer]
+            - row [ref=f1e206]:
+              - cell "Ivan3 Horvat3 nebojsa.medancic+sa@email.hr +385 91 234 5678" [ref=f1e207]:
+                - generic [ref=f1e208]: Ivan3 Horvat3
+                - generic [ref=f1e209]: nebojsa.medancic+sa@email.hr
+                - generic [ref=f1e210]: +385 91 234 5678
+              - 'cell "€135,00 Tickets: €135 | Drinks: €0" [ref=f1e211]':
+                - generic [ref=f1e212]: €135,00
+                - generic [ref=f1e213]: "Tickets: €135 | Drinks: €0"
+              - cell "3" [ref=f1e214]
+              - cell "1" [ref=f1e215]
+              - cell "€45,00" [ref=f1e216]
+              - cell "srp 12, 2026" [ref=f1e217]
+              - cell [ref=f1e218]:
+                - button "👁" [ref=f1e220] [cursor=pointer]
+            - row [ref=f1e222]:
+              - cell "Test Fan 396 test.fan.396@test.local" [ref=f1e223]:
+                - generic [ref=f1e224]: Test Fan 396
+                - generic [ref=f1e225]: test.fan.396@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e226]':
+                - generic [ref=f1e227]: €25,00
+                - generic [ref=f1e228]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e229]
+              - cell "1" [ref=f1e230]
+              - cell "€25,00" [ref=f1e231]
+              - cell "srp 13, 2026" [ref=f1e232]
+              - cell [ref=f1e233]:
+                - button "👁" [ref=f1e235] [cursor=pointer]
+            - row [ref=f1e237]:
+              - cell "Test Fan 397 test.fan.397@test.local" [ref=f1e238]:
+                - generic [ref=f1e239]: Test Fan 397
+                - generic [ref=f1e240]: test.fan.397@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e241]':
+                - generic [ref=f1e242]: €25,00
+                - generic [ref=f1e243]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e244]
+              - cell "1" [ref=f1e245]
+              - cell "€25,00" [ref=f1e246]
+              - cell "srp 13, 2026" [ref=f1e247]
+              - cell [ref=f1e248]:
+                - button "👁" [ref=f1e250] [cursor=pointer]
+            - row [ref=f1e252]:
+              - cell "Test Fan 398 test.fan.398@test.local" [ref=f1e253]:
+                - generic [ref=f1e254]: Test Fan 398
+                - generic [ref=f1e255]: test.fan.398@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e256]':
+                - generic [ref=f1e257]: €25,00
+                - generic [ref=f1e258]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e259]
+              - cell "1" [ref=f1e260]
+              - cell "€25,00" [ref=f1e261]
+              - cell "srp 13, 2026" [ref=f1e262]
+              - cell [ref=f1e263]:
+                - button "👁" [ref=f1e265] [cursor=pointer]
+            - row [ref=f1e267]:
+              - cell "Test Fan 100 test.fan.100@test.local" [ref=f1e268]:
+                - generic [ref=f1e269]: Test Fan 100
+                - generic [ref=f1e270]: test.fan.100@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e271]':
+                - generic [ref=f1e272]: €25,00
+                - generic [ref=f1e273]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e274]
+              - cell "1" [ref=f1e275]
+              - cell "€25,00" [ref=f1e276]
+              - cell "srp 13, 2026" [ref=f1e277]
+              - cell [ref=f1e278]:
+                - button "👁" [ref=f1e280] [cursor=pointer]
+            - row [ref=f1e282]:
+              - cell "Test Fan 101 test.fan.101@test.local" [ref=f1e283]:
+                - generic [ref=f1e284]: Test Fan 101
+                - generic [ref=f1e285]: test.fan.101@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e286]':
+                - generic [ref=f1e287]: €25,00
+                - generic [ref=f1e288]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e289]
+              - cell "1" [ref=f1e290]
+              - cell "€25,00" [ref=f1e291]
+              - cell "srp 13, 2026" [ref=f1e292]
+              - cell [ref=f1e293]:
+                - button "👁" [ref=f1e295] [cursor=pointer]
+            - row [ref=f1e297]:
+              - cell "Test Fan 102 test.fan.102@test.local" [ref=f1e298]:
+                - generic [ref=f1e299]: Test Fan 102
+                - generic [ref=f1e300]: test.fan.102@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e301]':
+                - generic [ref=f1e302]: €25,00
+                - generic [ref=f1e303]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e304]
+              - cell "1" [ref=f1e305]
+              - cell "€25,00" [ref=f1e306]
+              - cell "srp 13, 2026" [ref=f1e307]
+              - cell [ref=f1e308]:
+                - button "👁" [ref=f1e310] [cursor=pointer]
+            - row [ref=f1e312]:
+              - cell "Test Fan 103 test.fan.103@test.local" [ref=f1e313]:
+                - generic [ref=f1e314]: Test Fan 103
+                - generic [ref=f1e315]: test.fan.103@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e316]':
+                - generic [ref=f1e317]: €25,00
+                - generic [ref=f1e318]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e319]
+              - cell "1" [ref=f1e320]
+              - cell "€25,00" [ref=f1e321]
+              - cell "srp 13, 2026" [ref=f1e322]
+              - cell [ref=f1e323]:
+                - button "👁" [ref=f1e325] [cursor=pointer]
+            - row [ref=f1e327]:
+              - cell "Test Fan 104 test.fan.104@test.local" [ref=f1e328]:
+                - generic [ref=f1e329]: Test Fan 104
+                - generic [ref=f1e330]: test.fan.104@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e331]':
+                - generic [ref=f1e332]: €25,00
+                - generic [ref=f1e333]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e334]
+              - cell "1" [ref=f1e335]
+              - cell "€25,00" [ref=f1e336]
+              - cell "srp 13, 2026" [ref=f1e337]
+              - cell [ref=f1e338]:
+                - button "👁" [ref=f1e340] [cursor=pointer]
+            - row [ref=f1e342]:
+              - cell "Test Fan 105 test.fan.105@test.local" [ref=f1e343]:
+                - generic [ref=f1e344]: Test Fan 105
+                - generic [ref=f1e345]: test.fan.105@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e346]':
+                - generic [ref=f1e347]: €25,00
+                - generic [ref=f1e348]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e349]
+              - cell "1" [ref=f1e350]
+              - cell "€25,00" [ref=f1e351]
+              - cell "srp 13, 2026" [ref=f1e352]
+              - cell [ref=f1e353]:
+                - button "👁" [ref=f1e355] [cursor=pointer]
+            - row [ref=f1e357]:
+              - cell "Test Fan 106 test.fan.106@test.local" [ref=f1e358]:
+                - generic [ref=f1e359]: Test Fan 106
+                - generic [ref=f1e360]: test.fan.106@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e361]':
+                - generic [ref=f1e362]: €25,00
+                - generic [ref=f1e363]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e364]
+              - cell "1" [ref=f1e365]
+              - cell "€25,00" [ref=f1e366]
+              - cell "srp 13, 2026" [ref=f1e367]
+              - cell [ref=f1e368]:
+                - button "👁" [ref=f1e370] [cursor=pointer]
+            - row [ref=f1e372]:
+              - cell "Test Fan 107 test.fan.107@test.local" [ref=f1e373]:
+                - generic [ref=f1e374]: Test Fan 107
+                - generic [ref=f1e375]: test.fan.107@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e376]':
+                - generic [ref=f1e377]: €25,00
+                - generic [ref=f1e378]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e379]
+              - cell "1" [ref=f1e380]
+              - cell "€25,00" [ref=f1e381]
+              - cell "srp 13, 2026" [ref=f1e382]
+              - cell [ref=f1e383]:
+                - button "👁" [ref=f1e385] [cursor=pointer]
+            - row [ref=f1e387]:
+              - cell "Test Fan 108 test.fan.108@test.local" [ref=f1e388]:
+                - generic [ref=f1e389]: Test Fan 108
+                - generic [ref=f1e390]: test.fan.108@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e391]':
+                - generic [ref=f1e392]: €25,00
+                - generic [ref=f1e393]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e394]
+              - cell "1" [ref=f1e395]
+              - cell "€25,00" [ref=f1e396]
+              - cell "srp 13, 2026" [ref=f1e397]
+              - cell [ref=f1e398]:
+                - button "👁" [ref=f1e400] [cursor=pointer]
+            - row [ref=f1e402]:
+              - cell "Test Fan 109 test.fan.109@test.local" [ref=f1e403]:
+                - generic [ref=f1e404]: Test Fan 109
+                - generic [ref=f1e405]: test.fan.109@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e406]':
+                - generic [ref=f1e407]: €25,00
+                - generic [ref=f1e408]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e409]
+              - cell "1" [ref=f1e410]
+              - cell "€25,00" [ref=f1e411]
+              - cell "srp 13, 2026" [ref=f1e412]
+              - cell [ref=f1e413]:
+                - button "👁" [ref=f1e415] [cursor=pointer]
+            - row [ref=f1e417]:
+              - cell "Test Fan 10 test.fan.10@test.local" [ref=f1e418]:
+                - generic [ref=f1e419]: Test Fan 10
+                - generic [ref=f1e420]: test.fan.10@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e421]':
+                - generic [ref=f1e422]: €25,00
+                - generic [ref=f1e423]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e424]
+              - cell "1" [ref=f1e425]
+              - cell "€25,00" [ref=f1e426]
+              - cell "srp 13, 2026" [ref=f1e427]
+              - cell [ref=f1e428]:
+                - button "👁" [ref=f1e430] [cursor=pointer]
+            - row [ref=f1e432]:
+              - cell "Test Fan 110 test.fan.110@test.local" [ref=f1e433]:
+                - generic [ref=f1e434]: Test Fan 110
+                - generic [ref=f1e435]: test.fan.110@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e436]':
+                - generic [ref=f1e437]: €25,00
+                - generic [ref=f1e438]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e439]
+              - cell "1" [ref=f1e440]
+              - cell "€25,00" [ref=f1e441]
+              - cell "srp 13, 2026" [ref=f1e442]
+              - cell [ref=f1e443]:
+                - button "👁" [ref=f1e445] [cursor=pointer]
+            - row [ref=f1e447]:
+              - cell "Test Fan 111 test.fan.111@test.local" [ref=f1e448]:
+                - generic [ref=f1e449]: Test Fan 111
+                - generic [ref=f1e450]: test.fan.111@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e451]':
+                - generic [ref=f1e452]: €25,00
+                - generic [ref=f1e453]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e454]
+              - cell "1" [ref=f1e455]
+              - cell "€25,00" [ref=f1e456]
+              - cell "srp 13, 2026" [ref=f1e457]
+              - cell [ref=f1e458]:
+                - button "👁" [ref=f1e460] [cursor=pointer]
+            - row [ref=f1e462]:
+              - cell "Test Fan 112 test.fan.112@test.local" [ref=f1e463]:
+                - generic [ref=f1e464]: Test Fan 112
+                - generic [ref=f1e465]: test.fan.112@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e466]':
+                - generic [ref=f1e467]: €25,00
+                - generic [ref=f1e468]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e469]
+              - cell "1" [ref=f1e470]
+              - cell "€25,00" [ref=f1e471]
+              - cell "srp 13, 2026" [ref=f1e472]
+              - cell [ref=f1e473]:
+                - button "👁" [ref=f1e475] [cursor=pointer]
+            - row [ref=f1e477]:
+              - cell "Test Fan 113 test.fan.113@test.local" [ref=f1e478]:
+                - generic [ref=f1e479]: Test Fan 113
+                - generic [ref=f1e480]: test.fan.113@test.local
+              - 'cell "€25,00 Tickets: €25 | Drinks: €0" [ref=f1e481]':
+                - generic [ref=f1e482]: €25,00
+                - generic [ref=f1e483]: "Tickets: €25 | Drinks: €0"
+              - cell "1" [ref=f1e484]
+              - cell "1" [ref=f1e485]
+              - cell "€25,00" [ref=f1e486]
+              - cell "srp 13, 2026" [ref=f1e487]
+              - cell [ref=f1e488]:
+                - button "👁" [ref=f1e490] [cursor=pointer]
+        - generic [ref=f1e492]:
+          - paragraph [ref=f1e493]: Prikazivanje 1 do 20 od 2614 kupaca
+          - generic [ref=f1e494]:
+            - button "" [disabled] [ref=f1e495]
+            - button "1" [ref=f1e497] [cursor=pointer]
+            - button "2" [ref=f1e498] [cursor=pointer]
+            - button "3" [ref=f1e499] [cursor=pointer]
+            - button "" [ref=f1e500] [cursor=pointer]
+    - dialog [ref=f1e502]:
+      - generic [ref=f1e503]:
+        - generic [ref=f1e504]:
+          - heading "Ivan Horvat ivan.horvat@email.hr" [level=5] [ref=f1e505]
+          - button [ref=f1e506] [cursor=pointer]
+        - generic [ref=f1e507]:
+          - generic [ref=f1e508]:
+            - article [ref=f1e509]:
+              - generic [ref=f1e510]: Ukupno potrošeno
+              - generic [ref=f1e512]: €315,00
+              - generic [ref=f1e513]: "Ulaznice: €315,00 | Pića: €0,00"
+            - article [ref=f1e515]:
+              - generic [ref=f1e516]: Ulaznice
+              - generic [ref=f1e518]: "7"
+              - generic [ref=f1e519]: "Prosj. ulaznica: €45,00"
+            - article [ref=f1e521]:
+              - generic [ref=f1e522]: Narudžbe pića
+              - generic [ref=f1e524]: "0"
+              - generic [ref=f1e525]: "Prosj. narudžba: €0,00"
+            - article [ref=f1e527]:
+              - generic [ref=f1e528]: Događaji
+              - generic [ref=f1e530]: "1"
+              - generic [ref=f1e531]: srp 07, 2026 – srp 07, 2026
+          - heading "Kupnje ulaznica" [level=6] [ref=f1e533]
+          - table [ref=f1e535]:
+            - rowgroup [ref=f1e536]:
+              - row [ref=f1e537]:
+                - columnheader "Datum" [ref=f1e538]
+                - columnheader "Događaj" [ref=f1e539]
+                - columnheader "Sjedalo" [ref=f1e540]
+                - columnheader "Cijena" [ref=f1e541]
+                - columnheader "Status" [ref=f1e542]
+            - rowgroup [ref=f1e543]:
+              - row [ref=f1e544]:
+                - cell "srp 07, 2026 23:22" [ref=f1e545]
+                - cell "Istra - Zagreb srp 14, 2026" [ref=f1e546]:
+                  - generic [ref=f1e547]: Istra - Zagreb
+                  - generic [ref=f1e548]: srp 14, 2026
+                - cell "SECT2 SECT2-R4-S3" [ref=f1e549]
+                - cell "€45,00" [ref=f1e550]
+                - cell "Active" [ref=f1e551]
+              - row [ref=f1e552]:
+                - cell "srp 07, 2026 23:02" [ref=f1e553]
+                - cell "Istra - Zagreb srp 14, 2026" [ref=f1e554]:
+                  - generic [ref=f1e555]: Istra - Zagreb
+                  - generic [ref=f1e556]: srp 14, 2026
+                - cell "SECT2 SECT2-R6-S5" [ref=f1e557]
+                - cell "€45,00" [ref=f1e558]
+                - cell "Active" [ref=f1e559]
+              - row [ref=f1e560]:
+                - cell "srp 07, 2026 23:02" [ref=f1e561]
+                - cell "Istra - Zagreb srp 14, 2026" [ref=f1e562]:
+                  - generic [ref=f1e563]: Istra - Zagreb
+                  - generic [ref=f1e564]: srp 14, 2026
+                - cell "SECT2 SECT2-R6-S4" [ref=f1e565]
+                - cell "€45,00" [ref=f1e566]
+                - cell "Active" [ref=f1e567]
+              - row [ref=f1e568]:
+                - cell "srp 07, 2026 22:56" [ref=f1e569]
+                - cell "Istra - Zagreb srp 14, 2026" [ref=f1e570]:
+                  - generic [ref=f1e571]: Istra - Zagreb
+                  - generic [ref=f1e572]: srp 14, 2026
+                - cell "SECT2 SECT2-R3-S10" [ref=f1e573]
+                - cell "€45,00" [ref=f1e574]
+                - cell "Active" [ref=f1e575]
+              - row [ref=f1e576]:
+                - cell "srp 07, 2026 22:56" [ref=f1e577]
+                - cell "Istra - Zagreb srp 14, 2026" [ref=f1e578]:
+                  - generic [ref=f1e579]: Istra - Zagreb
+                  - generic [ref=f1e580]: srp 14, 2026
+                - cell "SECT2 SECT2-R3-S11" [ref=f1e581]
+                - cell "€45,00" [ref=f1e582]
+                - cell "Active" [ref=f1e583]
+              - row [ref=f1e584]:
+                - cell "srp 07, 2026 22:34" [ref=f1e585]
+                - cell "Istra - Zagreb srp 14, 2026" [ref=f1e586]:
+                  - generic [ref=f1e587]: Istra - Zagreb
+                  - generic [ref=f1e588]: srp 14, 2026
+                - cell "SECT2 SECT2-R3-S13" [ref=f1e589]
+                - cell "€45,00" [ref=f1e590]
+                - cell "Active" [ref=f1e591]
+              - row [ref=f1e592]:
+                - cell "srp 07, 2026 22:34" [ref=f1e593]
+                - cell "Istra - Zagreb srp 14, 2026" [ref=f1e594]:
+                  - generic [ref=f1e595]: Istra - Zagreb
+                  - generic [ref=f1e596]: srp 14, 2026
+                - cell "SECT2 SECT2-R3-S12" [ref=f1e597]
+                - cell "€45,00" [ref=f1e598]
+                - cell "Active" [ref=f1e599]
+          - heading "Narudžbe pića" [level=6] [ref=f1e600]
+          - paragraph [ref=f1e601]: Nema zabilježenih narudžbi pića.
+        - button " Zatvori" [ref=f1e603] [cursor=pointer]:
+          - generic [ref=f1e604]: 
+          - generic [ref=f1e605]: Zatvori

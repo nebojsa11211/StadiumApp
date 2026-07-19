@@ -1,0 +1,860 @@
+/* =============================================================================
+   Stadium Admin — Operations Console design system (GLOBAL)
+   Quiet, instrument-grade surfaces with one pitch-green accent and
+   IBM Plex Mono telemetry readouts. Use these classes on ANY admin page so
+   the whole app shares the Matchday Dashboard / Order Management look.
+
+   Tokens (--stadium-*, --pitch*) are defined globally in site.css.
+   ============================================================================= */
+
+.console {
+    --line: var(--stadium-gray-200);
+    --ink: var(--stadium-gray-900);
+    --muted: var(--stadium-gray-500);
+    --surface: #ffffff;
+    --pitch: #1f7a4d;
+    --pitch-dark: #176239;
+    --pitch-soft: #eaf3ec;
+    width: 100%;
+    color: var(--ink);
+}
+
+.console .mono,
+.mono {
+    font-family: var(--stadium-font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+}
+
+/* ----- Header ------------------------------------------------------------- */
+.console-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line, var(--stadium-gray-200));
+}
+
+.eyebrow {
+    display: inline-block;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pitch);
+    margin-bottom: 0.4rem;
+}
+
+.console-head__title h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink, var(--stadium-gray-900));
+    margin: 0 0 0.35rem;
+    line-height: 1.1;
+}
+
+.console-head__title p {
+    margin: 0;
+    color: var(--muted, var(--stadium-gray-500));
+    font-size: 0.9rem;
+}
+
+.console-head__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+}
+
+/* ----- Buttons ------------------------------------------------------------- */
+.pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 36px;
+    padding: 0 0.95rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--stadium-gray-700);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.pill-btn:hover:not(:disabled) {
+    background: var(--stadium-gray-50);
+    border-color: var(--stadium-gray-300);
+    color: var(--ink);
+    text-decoration: none;
+}
+
+.pill-btn:disabled { opacity: 0.55; cursor: default; }
+
+.pill-btn .oi,
+.pill-btn .bi { font-size: 0.72rem; }
+
+.pill-btn--primary {
+    background: var(--pitch);
+    border-color: var(--pitch);
+    color: #fff;
+}
+
+.pill-btn--primary:hover:not(:disabled) {
+    background: var(--pitch-dark);
+    border-color: var(--pitch-dark);
+    color: #fff;
+}
+
+.pill-btn--success {
+    background: var(--pitch-soft);
+    border-color: #cfe6d7;
+    color: var(--pitch-dark);
+}
+
+.pill-btn--success:hover:not(:disabled) {
+    background: #ddeee2;
+    color: var(--pitch-dark);
+}
+
+.pill-btn--danger {
+    background: #fbe9e9;
+    border-color: #f3d2d2;
+    color: #991b1b;
+}
+
+.pill-btn--danger:hover:not(:disabled) {
+    background: #f7dcdc;
+    color: #991b1b;
+}
+
+/* Icon button */
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--stadium-gray-600);
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.icon-btn:hover:not(:disabled) {
+    background: var(--stadium-gray-100);
+    color: var(--ink);
+    border-color: var(--stadium-gray-300);
+}
+
+.icon-btn:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.icon-btn .oi,
+.icon-btn .bi { font-size: 0.85rem; }
+
+.link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--pitch);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+
+.link-btn:hover { color: var(--pitch-dark); text-decoration: none; }
+.link-btn .oi, .link-btn .bi { font-size: 0.65rem; }
+
+.spin { animation: console-spin 1s linear infinite; }
+@keyframes console-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ----- Metrics ------------------------------------------------------------- */
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metrics--3 { grid-template-columns: repeat(3, 1fr); }
+.metrics--2 { grid-template-columns: repeat(2, 1fr); }
+
+.metric {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.15rem 1.25rem 1.1rem;
+    overflow: hidden;
+}
+
+.metric::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--stadium-gray-200);
+}
+
+.metric--accent::before { background: var(--pitch); }
+
+/* Clickable metric card (drill-down, e.g. tickets sold -> ticket list) */
+.metric--clickable {
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.metric--clickable:hover,
+.metric--clickable:focus-visible {
+    border-color: var(--pitch);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    outline: none;
+}
+
+.metric--clickable:hover::before,
+.metric--clickable:focus-visible::before { background: var(--pitch); }
+
+.metric__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+}
+
+.metric__label {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.metric__icon {
+    font-size: 0.85rem;
+    color: var(--stadium-gray-400);
+}
+
+.metric__icon.is-ok { color: var(--pitch); }
+
+.metric__value {
+    font-size: 2.1rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+}
+
+.metric__unit {
+    font-size: 1.2rem;
+    color: var(--muted);
+    margin-right: 0.05rem;
+}
+
+.metric__foot {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.7rem;
+    font-size: 0.76rem;
+    color: var(--muted);
+}
+
+.metric__hint { color: var(--muted); }
+
+/* ----- Panel --------------------------------------------------------------- */
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.panel__title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.panel__count {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--stadium-gray-500);
+    background: var(--stadium-gray-100);
+    border-radius: 99px;
+    padding: 0.1rem 0.55rem;
+}
+
+.panel__body { padding: 1.25rem; }
+
+/* ----- Filters ------------------------------------------------------------- */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 160px;
+}
+
+.field--grow { flex: 1; min-width: 220px; }
+
+.field__label {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-500);
+}
+
+.field__input {
+    height: 38px;
+    padding: 0 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.875rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea.field__input { height: auto; padding: 0.55rem 0.7rem; resize: vertical; }
+
+.field__input:focus {
+    outline: none;
+    border-color: var(--pitch);
+    box-shadow: 0 0 0 3px var(--pitch-soft);
+}
+
+select.field__input { cursor: pointer; }
+
+/* ----- Console table ------------------------------------------------------- */
+.console-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.console-table thead th {
+    text-align: left;
+    padding: 0.7rem 1.25rem;
+    font-family: var(--stadium-font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-400);
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+.console-table th.num,
+.console-table td.num { text-align: right; }
+
+.console-table th.check,
+.console-table td.check { width: 42px; text-align: center; }
+
+.console-table th.actions-col,
+.console-table td.actions-col { text-align: right; width: 1%; white-space: nowrap; }
+
+.console-table tbody tr { transition: background-color 0.12s ease; }
+.console-table tbody tr:hover { background: var(--stadium-gray-50); }
+.console-table tbody tr.is-selected { background: var(--pitch-soft); }
+
+.console-table tbody td {
+    padding: 0.8rem 1.25rem;
+    font-size: 0.875rem;
+    color: var(--stadium-gray-700);
+    border-bottom: 1px solid var(--stadium-gray-100);
+    vertical-align: middle;
+}
+
+.console-table tbody tr:last-child td { border-bottom: none; }
+
+.console-table__id { color: var(--ink); font-weight: 500; }
+.console-table__time { color: var(--muted); }
+.console-table__muted { color: var(--muted); }
+
+/* Sortable column headers (works for both console-table and bootstrap .table) */
+.console-table th.sortable,
+.table th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.console-table th.sortable:hover { color: var(--stadium-gray-600); }
+.table th.sortable:hover { background: var(--stadium-gray-50, rgba(0, 0, 0, 0.03)); }
+
+.console-table th.sortable.is-sorted,
+.table th.sortable.is-sorted { color: var(--pitch); }
+
+.console-table th .sort-ind,
+.table th .sort-ind {
+    display: inline-block;
+    margin-left: 0.35em;
+    font-size: 0.75em;
+    opacity: 0.85;
+}
+
+.check-box {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--pitch);
+    cursor: pointer;
+}
+
+/* status pill — dot + label, quiet */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--stadium-gray-600);
+    white-space: nowrap;
+}
+
+.status__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--stadium-gray-400);
+}
+
+.status.is-pending { color: #946200; }
+.status.is-pending .status__dot { background: var(--stadium-accent); }
+.status.is-accepted { color: #2f6f8f; }
+.status.is-accepted .status__dot { background: var(--stadium-info); }
+.status.is-preparing { color: #2f6f8f; }
+.status.is-preparing .status__dot { background: var(--stadium-info); }
+.status.is-ready { color: var(--pitch-dark); }
+.status.is-ready .status__dot { background: var(--pitch); }
+.status.is-delivered { color: var(--stadium-gray-500); }
+.status.is-delivered .status__dot { background: var(--stadium-gray-400); }
+.status.is-cancelled { color: #991b1b; }
+.status.is-cancelled .status__dot { background: var(--stadium-danger); }
+.status.is-active { color: var(--pitch-dark); }
+.status.is-active .status__dot { background: var(--pitch); }
+.status.is-inactive { color: var(--stadium-gray-500); }
+.status.is-inactive .status__dot { background: var(--stadium-gray-400); }
+.status.is-used { color: #2f6f8f; }
+.status.is-used .status__dot { background: var(--stadium-info); }
+.status.is-expired { color: #92600a; }
+.status.is-expired .status__dot { background: var(--stadium-warning); }
+
+/* ----- Ticket kind badge & included price ---------------------------------- */
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.4rem;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    border-radius: 99px;
+    padding: 0.1rem 0.5rem;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.badge-pill--season {
+    color: #2f6f8f;
+    background: #eef5f8;
+    border: 1px solid #cfe1ea;
+}
+
+.price-included {
+    font-style: italic;
+    font-weight: 600;
+    color: var(--stadium-gray-500);
+}
+
+/* ----- Row action buttons -------------------------------------------------- */
+.row-actions {
+    display: inline-flex;
+    gap: 0.35rem;
+    justify-content: flex-end;
+}
+
+.row-btn {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--stadium-gray-500);
+    border-radius: 7px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.row-btn:hover {
+    background: var(--stadium-gray-100);
+    color: var(--ink);
+    border-color: var(--stadium-gray-300);
+}
+
+.row-btn .oi, .row-btn .bi { font-size: 0.72rem; }
+
+.row-btn--ok:hover {
+    background: var(--pitch-soft);
+    color: var(--pitch-dark);
+    border-color: #cfe6d7;
+}
+
+.row-btn--danger:hover {
+    background: #fbe9e9;
+    color: #991b1b;
+    border-color: #f3d2d2;
+}
+
+/* Row action button that carries a text label (Edit / Delete / Disable).
+   Extends the icon-only .row-btn to allow an inline label. */
+.row-btn--label {
+    width: auto;
+    gap: 0.35rem;
+    padding: 0 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Emphasised entity name inside a table's first cell. */
+.drink-name {
+    color: var(--stadium-gray-900, #111);
+    font-weight: 500;
+}
+
+/* ----- Bulk actions -------------------------------------------------------- */
+.bulk-actions {
+    display: inline-flex;
+    gap: 0.5rem;
+}
+
+/* ----- Table footer -------------------------------------------------------- */
+.table-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--line);
+}
+
+.table-foot p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* Shared TablePager layout */
+.table-foot .pager-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.table-foot .pager-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.table-foot .pager-size select {
+    width: auto;
+    height: 32px;
+}
+
+/* ----- Empty state --------------------------------------------------------- */
+.empty {
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+
+.empty .oi, .empty .bi {
+    font-size: 1.6rem;
+    color: var(--stadium-gray-300);
+}
+
+.empty p {
+    margin: 0.75rem 0 0.25rem;
+    font-weight: 600;
+    color: var(--stadium-gray-700);
+}
+
+.empty span {
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+
+/* ----- Loading state ------------------------------------------------------- */
+.loading-state {
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--stadium-gray-200);
+    border-top-color: var(--pitch);
+    border-radius: 50%;
+    animation: console-spin 0.8s linear infinite;
+}
+
+.loading-state p {
+    margin: 1rem 0 0;
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+/* ----- Console banner / inline alert --------------------------------------- */
+.console-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.1rem;
+    border: 1px solid var(--line);
+    border-left-width: 3px;
+    border-radius: 8px;
+    background: var(--surface);
+    font-size: 0.85rem;
+    color: var(--stadium-gray-700);
+    margin-bottom: 1.25rem;
+}
+
+.console-alert--danger { border-left-color: var(--stadium-danger); background: #fbe9e9; color: #991b1b; }
+.console-alert--success { border-left-color: var(--pitch); background: var(--pitch-soft); color: var(--pitch-dark); }
+.console-alert--info { border-left-color: var(--stadium-info); background: #eef5f8; color: #2f6f8f; }
+
+/* ----- Responsive ---------------------------------------------------------- */
+@media (max-width: 1100px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .metrics--3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .console-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
+@media (max-width: 560px) {
+    .console-head { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .metrics,
+    .metrics--3,
+    .metrics--2 { grid-template-columns: 1fr; }
+    .metric__value { font-size: 1.85rem; }
+    .field { min-width: 100%; }
+}
+
+/* =============================================================================
+   Shared modal system (drink-modal*) — reusable across console pages
+   (Drinks, Categories, …). Named "drink-modal" for historical reasons; these
+   rules are page-agnostic and live here so any console page can reuse them.
+   ============================================================================= */
+.drink-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(3px);
+    animation: drink-modal-fade 0.15s ease;
+}
+
+.drink-modal {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+}
+
+/* Wider variant for overlays that host a table (e.g. category management). */
+.drink-modal--wide {
+    max-width: 900px;
+}
+
+.drink-modal__content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: 90vh;
+    background: var(--surface, #fff);
+    border: 1px solid var(--line, #e9ecef);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 24px 55px -12px rgba(15, 23, 42, 0.38);
+    animation: drink-modal-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes drink-modal-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes drink-modal-pop {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.drink-modal__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.35rem;
+    border-bottom: 1px solid var(--line, #e9ecef);
+    background: var(--pitch-soft, #eaf3ec);
+}
+
+.drink-modal__head-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.drink-modal__head-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.drink-modal__icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--pitch, #1f7a4d);
+    color: #fff;
+    font-size: 1.05rem;
+}
+
+.drink-modal__head .eyebrow {
+    color: var(--pitch-dark, #176239);
+}
+
+.drink-modal__title {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink, #111);
+}
+
+.drink-modal__close {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted, #868e96);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.drink-modal__close:hover {
+    background: rgba(15, 23, 42, 0.08);
+    color: var(--ink, #111);
+}
+
+.drink-modal__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.35rem;
+    overflow-y: auto;
+}
+
+.drink-modal__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.drink-modal__foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    padding: 1rem 1.35rem;
+    border-top: 1px solid var(--line, #e9ecef);
+    background: var(--stadium-gray-50, #f8f9fa);
+}
+
+/* Inline checkbox + label row inside a modal. */
+.drink-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--stadium-gray-700, #495057);
+    cursor: pointer;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--line, #e9ecef);
+    border-radius: 8px;
+    background: var(--stadium-gray-50, #f8f9fa);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.drink-check:hover {
+    border-color: var(--stadium-gray-300, #ced4da);
+}

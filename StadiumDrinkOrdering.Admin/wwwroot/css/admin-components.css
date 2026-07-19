@@ -879,32 +879,12 @@
    BOOTSTRAP MODAL FIXES
    ============================================================================= */
 
-/* Fix for Bootstrap modals that appear at bottom of page */
-#admin-event-modal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 1050 !important;
-  overflow-y: auto !important;
-}
-
-#admin-event-modal .modal-dialog {
-  position: relative !important;
-  margin: auto !important;
-  transform: none !important;
-  max-width: 90vw !important;
-  max-height: 90vh !important;
-}
-
-#admin-event-modal .modal-content {
-  max-height: 90vh !important;
-  overflow-y: auto !important;
-}
+/* NOTE: #admin-event-modal used to need a fixed-position/flex override because
+   Events.razor rendered a bare wrapper div (class "modal-backdrop-wrapper", which
+   was never defined) instead of a real Bootstrap modal. It now uses the standard
+   `modal fade show d-block` + `modal-dialog-centered` markup like every other
+   admin modal, so the override is gone — it was forcing 90vw width and a flex
+   display that fought `modal-dialog-centered`. */
 
 /* =============================================================================
    RESPONSIVE BEHAVIOR

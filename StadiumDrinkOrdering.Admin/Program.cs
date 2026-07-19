@@ -76,6 +76,15 @@ builder.Services.AddServerSideBlazor(options =>
         options.DisconnectedCircuitMaxRetained = 100;
         options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
     }
+})
+.AddHubOptions(options =>
+{
+    // The event-poster flow downscales a generated image in the browser (canvas) and returns the
+    // base64 thumbnail through JS interop. That return trip is client→server, so it is bounded by
+    // MaximumReceiveMessageSize — whose 32 KB default is far below a ~150 KB thumbnail and silently
+    // tears down the circuit mid-call. 1 MB leaves generous headroom without inviting large uploads
+    // over the hub. (The poster itself never crosses this boundary: it is fetched server-side.)
+    options.MaximumReceiveMessageSize = 1024 * 1024;
 });
 builder.Services.AddSingleton<WeatherForecastService>();
 
@@ -174,6 +183,13 @@ builder.Services.AddScoped<IHttpService>(provider =>
 // Register composite AdminApiService
 builder.Services.AddScoped<IAdminApiService, AdminApiService>();
 
+// Shell-wide season scope shown by the banner in DashboardLayout. Scoped = one per circuit,
+// so the selected season is shared by every admin page and survives navigation.
+builder.Services.AddScoped<SeasonStateService>();
+
+// Tracks the live (game-day) event so the shell can show a read-only event bar on every page.
+builder.Services.AddScoped<LiveEventService>();
+
 Console.WriteLine("✅ Registered specialized Admin API services:");
 Console.WriteLine("   - OrderService: Order management operations");
 Console.WriteLine("   - UserService: User management operations");
@@ -258,6 +274,15 @@ builder.Services.AddScoped<ISignalRService, SignalRService>();
 
 // Add centralized logging client
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Admin");
+
+// Register the external image-generation API client. Base URL is configurable via
+// ImageGeneration:BaseUrl (appsettings / env var / .env), defaulting to https://localhost:7285.
+// Dev-cert validation is bypassed only for local/container development (the API uses a self-signed
+// dev cert); trust it once with `dotnet dev-certs https --trust` to avoid the bypass.
+var imageGenBaseUrl = builder.Configuration["ImageGeneration:BaseUrl"]?.TrimEnd('/') ?? "https://localhost:7285";
+Console.WriteLine($"🎨 Image generation API base URL: {imageGenBaseUrl}");
+builder.Services.AddImageGeneration(imageGenBaseUrl,
+    bypassDevCertValidation: builder.Environment.IsDevelopment() || containerEnv == "true");
 
 // Add console logging services
 builder.Services.AddScoped<IConsoleLoggingService, ConsoleLoggingService>();

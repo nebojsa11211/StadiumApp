@@ -1,0 +1,22 @@
+- main [ref=e8]:
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]: Stadium Bar
+      - heading "Prijavite se" [level=1] [ref=e16]
+      - paragraph [ref=e17]: Pristup barmenu
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: E-pošta
+        - textbox "E-pošta" [ref=e21]:
+          - /placeholder: Unesite svoju e-poštu
+          - text: nebojsa.medancic+staff1@gmail.com
+      - generic [ref=e22]:
+        - generic [ref=e23]: Lozinka
+        - generic [ref=e24]:
+          - textbox "Lozinka" [ref=e25]:
+            - /placeholder: Unesite svoju lozinku
+            - text: Admin123!
+          - button "Prikaži lozinku" [ref=e26] [cursor=pointer]
+      - button "Prijavljivanje..." [disabled] [ref=e34]:
+        - status [ref=e35]
+    - generic [ref=e33]: Samo za pristup osoblja. Koristite dodjeljene vjerodajnice.

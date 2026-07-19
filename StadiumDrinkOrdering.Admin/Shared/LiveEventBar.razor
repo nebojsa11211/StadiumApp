@@ -1,0 +1,49 @@
+@*
+    Read-only counterpart to the dashboard's event selector, shown by DashboardLayout on every
+    page *except* the dashboard while an event is in its game-day phase. It reuses the dashboard's
+    `.dash-event-bar` styling so the shell looks the same everywhere, but carries no navigation:
+    the dashboard remains the only place that changes which event is selected.
+*@
+@using StadiumDrinkOrdering.Shared.Models
+@inject IStringLocalizer<SharedResources> L
+
+@if (Event != null)
+{
+    <div class="dash-event-bar" id="admin-dashboard-event-bar">
+        <div class="dash-event-info">
+            <div class="dash-event-meta">
+                <span class="dash-event-phase phase-@GetPhaseModifier(Event.Phase)">
+                    <i class="dot"></i>@Event.StatusName
+                </span>
+            </div>
+            <div class="dash-event-name-row">
+                <i class="bi bi-calendar-event"></i>
+                <h2 class="dash-event-name" id="admin-dashboard-event-name">@Event.Name</h2>
+                @if (Event.Date.HasValue)
+                {
+                    <span class="dash-event-date">@Event.Date.Value.ToString("ddd, dd. MMM yyyy. · HH:mm")</span>
+                }
+            </div>
+        </div>
+
+        <div class="dash-event-controls">
+            @* The bar is read-only; this sends the admin to the dashboard, where the event can
+               actually be changed and acted on. *@
+            <a href="" class="dash-event-current" id="admin-dashboard-event-dashboard-link" title="@L["Nav_Dashboard"]">
+                <i class="bi bi-grid-1x2"></i> @L["Nav_Dashboard"]
+            </a>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>The live event to display. Nothing renders when null.</summary>
+    [Parameter, EditorRequired] public EventDto? Event { get; set; }
+
+    private static string GetPhaseModifier(EventPhase phase) => phase switch
+    {
+        EventPhase.Active => "live",
+        EventPhase.Future => "future",
+        _ => "past"
+    };
+}

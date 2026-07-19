@@ -1,0 +1,169 @@
+/*
+ * Shared login card styling for the console apps (Admin, Bar, Runner).
+ * Pairs with StadiumDrinkOrdering.UI/Components/Auth/ConsoleLoginCard.razor.
+ *
+ * Structural/layout rules only - colours, borders and typography come from the
+ * .panel / .field / .pill-btn primitives in admin-design-system.css, so each app keeps its
+ * own theme tokens while the layout stays identical everywhere.
+ *
+ * Served from _content/StadiumDrinkOrdering.UI/css/console-auth.css
+ */
+
+.console-auth__row {
+    display: flex;
+    justify-content: center;
+}
+
+.console-auth__col {
+    width: 100%;
+    max-width: 420px;
+    margin: 3rem 0;
+}
+
+.console-auth__card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.console-auth__body {
+    padding: 2rem;
+}
+
+/* Dark header block, inset inside the card padding (the Admin console look).
+   Themeable per app via --console-auth-header-*. */
+.console-auth__header {
+    background: var(--console-auth-header-bg,
+        linear-gradient(135deg, #1e293b 0%, #0f172a 100%));
+    color: var(--console-auth-header-fg, #ffffff);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.console-auth__eyebrow {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: var(--console-auth-eyebrow-fg, #34d399);
+}
+
+.console-auth__title {
+    color: inherit;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.console-auth__subtitle {
+    color: inherit;
+    opacity: 0.7;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.console-auth__error {
+    margin-bottom: 1.25rem;
+}
+
+.console-auth__field {
+    margin-bottom: 1rem;
+}
+
+.console-auth__field + .console-auth__field {
+    margin-bottom: 1.25rem;
+}
+
+/* Password field + show/hide toggle */
+.console-auth__pw {
+    position: relative;
+}
+
+/* .field__input only stretches as a direct flex child of .field; nested inside the
+   toggle wrapper it falls back to its intrinsic size, so restate the width here. */
+.console-auth__pw-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 2.75rem;
+}
+
+.console-auth__pw-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 44px keeps the tap target usable on the Bar/Runner touch devices */
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: inherit;
+    opacity: 0.65;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.console-auth__pw-toggle:hover,
+.console-auth__pw-toggle:focus-visible {
+    opacity: 1;
+}
+
+.console-auth__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--console-auth-header-fg, #ffffff);
+    background: var(--console-auth-header-bg,
+        linear-gradient(135deg, #1e293b 0%, #0f172a 100%));
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.console-auth__submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(30, 41, 59, 0.3);
+}
+
+.console-auth__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.console-auth__footer {
+    margin-top: 1.25rem;
+    text-align: center;
+}
+
+/* Explicit colour rather than opacity on the inherited one - the apps inherit different
+   base colours here, which left the Bar footer near-invisible. */
+.console-auth__footer small {
+    color: var(--console-auth-muted-fg, #64748b);
+    font-size: 0.8rem;
+}
+
+@media (max-width: 576px) {
+    .console-auth__col {
+        margin: 1.5rem 0;
+    }
+
+    .console-auth__body {
+        padding: 1.5rem 1rem;
+    }
+
+    .console-auth__title {
+        font-size: 1.35rem;
+    }
+}

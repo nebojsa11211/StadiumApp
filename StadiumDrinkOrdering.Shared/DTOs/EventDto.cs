@@ -59,6 +59,34 @@ public class EventDto
     /// [<see cref="Date"/>, <see cref="EndDate"/>] window (open-ended if no end is set).
     /// </summary>
     public bool IsCurrentlyLive { get; set; }
+
+    /// <summary>
+    /// True when the event has a poster image, fetchable from <c>GET events/{id}/image</c>.
+    /// The bytes are never inlined here — this is only the flag the UI needs to decide whether to
+    /// render an <c>&lt;img&gt;</c>.
+    /// </summary>
+    public bool HasPoster { get; set; }
+
+    /// <summary>
+    /// True once an admin has confirmed the poster's generated text is correct. Only approved
+    /// posters are shown to fans.
+    /// </summary>
+    public bool PosterApproved { get; set; }
+
+    /// <summary>
+    /// True when the event's teams, kick-off or venue no longer match what is baked into the
+    /// poster, so the artwork is showing details that have since changed.
+    /// </summary>
+    public bool PosterIsStale { get; set; }
+
+    /// <summary>Pixel width of the stored poster, if any.</summary>
+    public int? PosterWidth { get; set; }
+
+    /// <summary>Pixel height of the stored poster, if any.</summary>
+    public int? PosterHeight { get; set; }
+
+    /// <summary>The prompt the poster was generated from, if any.</summary>
+    public string? PosterPrompt { get; set; }
 }
 
 /// <summary>Request body for an event status transition.</summary>

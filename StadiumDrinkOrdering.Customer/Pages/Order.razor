@@ -16,7 +16,7 @@
 @if (!State.HasSession && !_loading)
 {
     <div id="customer-order-no-session-1" class="gate">
-        <div id="customer-order-no-session-emoji-1" class="gate-icon">🎟️</div>
+        <div id="customer-order-no-session-emoji-1" class="gate-icon" aria-hidden="true">🎟️</div>
         <h2 id="customer-order-no-session-heading-1">@Localizer["Order_NoSession_Title"]</h2>
         <p id="customer-order-no-session-message-1">@Localizer["Order_NoSession_Message"]</p>
         <div class="gate-actions">
@@ -27,7 +27,7 @@
 else if (State.HasSession && !State.CanOrderDrinks && !_loading)
 {
     <div id="customer-order-no-session-2" class="gate">
-        <div id="customer-order-no-session-emoji-2" class="gate-icon paused">⏸️</div>
+        <div id="customer-order-no-session-emoji-2" class="gate-icon paused" aria-hidden="true">⏸️</div>
         <h2 id="customer-order-no-session-heading-2">@Localizer["Order_Paused_Title"]</h2>
         <p id="customer-order-no-session-message-2">@Localizer["Order_Paused_Message"]</p>
         <div id="customer-order-no-session-slots-2" class="seat-line seat-line--center">
@@ -47,7 +47,7 @@ else
     <div id="customer-order-atmos" class="crowd-atmos" aria-hidden="true"></div>
     <div id="customer-order-head" class="order-head">
         <div id="customer-order-top" class="head-bar">
-            <button id="customer-order-back-btn" class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="Natrag">‹</button>
+            <button id="customer-order-back-btn" class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="@Localizer["Common_BackAria"]">‹</button>
             <div id="customer-order-match-info" class="head-titles">
                 <div id="customer-order-pass-match" class="head-title">@(string.IsNullOrWhiteSpace(State.EventName) ? Localizer["Order_Event_Label"] : State.EventName)</div>
                 <div id="customer-order-pass-eyebrow" class="head-sub">@Localizer["Order_EventSubtitle"]</div>
@@ -61,24 +61,15 @@ else
             <span id="customer-order-cdiv-2" class="seat-dot"></span>
             <span id="customer-order-coord-seat" class="seat-cell seat"><span class="k">@Localizer["Order_CoordSeat"]</span><span class="v tnum">@Coord(State.SeatNumber)</span></span>
         </div>
-        @* Who's ordering + what they can spend: the ticket holder's name and their spendable balance
-           (the scanned ticket's bearer balance, or a registered fan's HALFTIME wallet). *@
-        <div id="customer-order-fan-strip" class="fan-strip">
-            <div id="customer-order-fan-id" class="fan-id">
-                <span id="customer-order-fan-avatar" class="fan-avatar">@Initials(FanName)</span>
-                <span id="customer-order-fan-name" class="fan-name">@FanName</span>
-            </div>
-            <div id="customer-order-fan-wallet" class="fan-wallet">
-                <span id="customer-order-fan-wallet-ic" class="fan-wallet-ic">@(_wallet is { IsTicketWallet: true } ? "🎟️" : "👛")</span>
-                <span id="customer-order-fan-wallet-amt" class="fan-wallet-amt tnum">@WalletText</span>
-            </div>
-        </div>
+        @* Identity and balance deliberately do not live here: the holder is confirmed at scan time and
+           shown again at checkout, and the balance only constrains a decision once there's a cart —
+           so it rides the CartBar instead of permanently occupying the sticky header. *@
         <div id="customer-order-tabs" class="tabs no-scrollbar">
             @foreach (var cat in _categories)
             {
                 var n = CatCount(cat.Id);
                 <button id="customer-order-tab-@cat.Id" class="tab @(cat.Id == _selected ? "on" : "")" @onclick="() => _selected = cat.Id">
-                    <span class="tab-emoji">@cat.Icon</span> @cat.Label
+                    <span class="tab-emoji" aria-hidden="true">@cat.Icon</span> @cat.Label
                     @if (n > 0)
                     {
                         <span id="customer-order-tab-count-@cat.Id" class="cnt tnum">@n</span>
@@ -119,9 +110,14 @@ else
         }
     </div>
 
-    <CartBar Count="State.Count" Total="State.Subtotal" OnView="@(() => Nav.NavigateTo("/cart"))" />
+    <CartBar Count="State.Count" Total="State.Subtotal"
+             Balance="@SpendableBalance"
+             OnView="@(() => Nav.NavigateTo("/cart"))"
+             OnTopUp="@(() => Nav.NavigateTo("/wallet"))" />
 
-    <DrinkSheet Drink="_sheetDrink" OnClose="() => _sheetDrink = null" OnAdd="SheetAdd" />
+    <DrinkSheet Drink="_sheetDrink" OnClose="() => _sheetDrink = null" OnAdd="SheetAdd"
+                Available="@SpendableAfterCart"
+                OnTopUp="@(() => Nav.NavigateTo("/wallet"))" />
 }
 
 @code {
@@ -131,12 +127,16 @@ else
     private int _selected;
     private DrinkDto? _sheetDrink;
     private WalletSummaryDto? _wallet;
+    private int? _lastSeenOrderId;
 
-    // Ticket holder's name for the header; anonymous tickets carry no name, so fall back to a neutral label.
-    private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? Localizer["Order_GuestName"] : State.CustomerName;
+    // Drives the CartBar's affordability line. Null — no wallet, or the best-effort load failed — means
+    // the line is omitted rather than shown as an unreadable placeholder, so it never claims "€0.00"
+    // when the truth is "we don't know".
+    private decimal? SpendableBalance => _wallet is { Exists: true } ? _wallet.Balance : null;
 
-    // Spendable balance shown next to the name; an em dash until a wallet is confirmed (best-effort load).
-    private string WalletText => _wallet is { Exists: true } ? $"€{_wallet.Balance:F2}" : "—";
+    // What the drink sheet measures its line total against: the balance less the cart already committed,
+    // so adding a fourth beer is judged against what's actually left, not the untouched balance.
+    private decimal? SpendableAfterCart => SpendableBalance - State.Subtotal;
 
     // Lightweight category descriptor for the tab strip, built from the loaded drinks.
     private record CatTab(int Id, string Icon, string Label);
@@ -207,24 +207,23 @@ else
             _selected = _categories.First().Id;
     }
 
-    // Best-effort spendable balance for the scanned ticket; a failure just leaves the header showing "—".
+    // Best-effort spendable balance for the scanned ticket; a failure leaves SpendableBalance null,
+    // which simply hides the CartBar's affordability line.
     private async Task LoadWallet()
     {
         if (!State.HasSession) return;
         _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
     }
 
-    // Monogram avatar — first letter of each word, up to two, digits ignored.
-    private static string Initials(string name)
+    // A wallet-paid checkout spends money that this page is still quoting. Today /order re-initializes
+    // on the way back from /track, but that's incidental — refetch whenever a new order appears so the
+    // balance can't go stale if this page is ever kept alive across checkout.
+    private async Task RefreshWalletIfOrderPlaced()
     {
-        if (string.IsNullOrWhiteSpace(name)) return "?";
-        var letters = name
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Where(w => char.IsLetter(w[0]))
-            .Select(w => char.ToUpperInvariant(w[0]))
-            .Take(2);
-        var s = string.Concat(letters);
-        return s.Length > 0 ? s : "?";
+        if (State.ActiveOrderId is not { } id || id == _lastSeenOrderId) return;
+        _lastSeenOrderId = id;
+        await LoadWallet();
+        StateHasChanged();
     }
 
     private IEnumerable<DrinkDto> Filtered() =>
@@ -245,7 +244,11 @@ else
         _sheetDrink = null;
     }
 
-    private void StateChanged() => InvokeAsync(StateHasChanged);
+    private void StateChanged() => InvokeAsync(async () =>
+    {
+        StateHasChanged();
+        await RefreshWalletIfOrderPlaced();
+    });
 
     public void Dispose() => State.OnChange -= StateChanged;
 }

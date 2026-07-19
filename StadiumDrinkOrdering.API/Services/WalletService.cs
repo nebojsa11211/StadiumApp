@@ -73,6 +73,10 @@ public interface IWalletService
     /// the first top-up mints it.</summary>
     Task<TicketWalletSummary> GetTicketWalletSummaryAsync(int ticketId);
 
+    /// <summary>Ledger for a ticket's bearer wallet, newest first. Returns an empty page (never null) when
+    /// the ticket has no wallet yet — the caller shows "no activity", not an error.</summary>
+    Task<WalletTransactionListDto> GetTicketWalletTransactionsAsync(int ticketId, int page, int pageSize);
+
     /// <summary>Load cash onto a ticket wallet, creating it on first use. Idempotent on
     /// <paramref name="idempotencyKey"/>. Rejects amounts that would exceed <see cref="TicketWalletMaxBalance"/>
     /// (<see cref="WalletDebitOutcome.LimitExceeded"/>) and a Closed/Frozen wallet
@@ -170,16 +174,19 @@ public class WalletService : IWalletService
     private readonly ApplicationDbContext _context;
     private readonly IWalletPaymentGateway _gateway;
     private readonly IAccountProvisioningService _provisioning;
+    private readonly ILogger<WalletService> _logger;
 
     public WalletService(
         ApplicationDbContext context,
         IWalletPaymentGateway gateway,
         IAccountProvisioningService provisioning,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ILogger<WalletService> logger)
     {
         _context = context;
         _gateway = gateway;
         _provisioning = provisioning;
+        _logger = logger;
         TicketWalletMaxBalance = configuration.GetValue<decimal?>("TicketWallet:MaxBalance") ?? 100m;
     }
 
@@ -329,6 +336,11 @@ public class WalletService : IWalletService
             };
         }
 
+        // Resolve the client-supplied funding method up front: reject an unrecognised rail before we
+        // charge anything, rather than booking the money against a guessed method after the fact.
+        if (!PaymentMethodParser.TryParse(dto.Method, out var depositMethod, out _))
+            return new DepositResultDto { Success = false, FailureReason = "UnsupportedPaymentMethod" };
+
         var wallet = await GetOrCreateForUserAsync(userId);
         if (wallet == null)
             return new DepositResultDto { Success = false, FailureReason = "NotEligible" };
@@ -375,11 +387,12 @@ public class WalletService : IWalletService
                     // Link via the navigation, not txn.Id — the identity is only generated on SaveChanges,
                     // so EF must fix up the FK after inserting the transaction.
                     WalletTransaction = txn,
-                    PaymentMethod = dto.Method,
+                    PaymentMethod = depositMethod,
+                    Direction = PaymentDirection.In,
                     TransactionId = gatewayResult.GatewayTransactionId,
                     Amount = dto.Amount,
                     Currency = wallet.Currency,
-                    Status = "Completed",
+                    Status = PaymentStatus.Completed,
                     PaymentDate = DateTime.UtcNow,
                     ProcessedAt = DateTime.UtcNow,
                     PaymentGatewayResponse = gatewayResult.RawResponse
@@ -416,6 +429,17 @@ public class WalletService : IWalletService
         if (wallet == null)
             return; // fan has no wallet / lost eligibility — nothing to credit (shouldn't happen for a real deposit)
 
+        // The provider has already captured the money by the time this webhook lands, so an unfamiliar
+        // method string must not block the credit — that would strand the fan's funds. Record it as a
+        // card payment (every current async gateway is card-based) and log so the gap gets noticed.
+        if (!PaymentMethodParser.TryParse(s.Method, out var settledMethod, out _))
+        {
+            settledMethod = PaymentMethod.CreditCard;
+            _logger.LogWarning(
+                "Unrecognised settled deposit method '{Method}' on intent {IntentId}; recording as CreditCard",
+                s.Method, s.ProviderIntentId);
+        }
+
         await ApplyLedgerEntryAsync(
             s.UserId, WalletTransactionType.Deposit, +s.Amount,
             idempotencyKey: $"deposit-{s.ProviderIntentId}",
@@ -426,11 +450,12 @@ public class WalletService : IWalletService
                 ctx.Payments.Add(new Payment
                 {
                     WalletTransaction = txn,
-                    PaymentMethod = s.Method,
+                    PaymentMethod = settledMethod,
+                    Direction = PaymentDirection.In,
                     TransactionId = s.ProviderIntentId,
                     Amount = s.Amount,
                     Currency = s.Currency,
-                    Status = "Completed",
+                    Status = PaymentStatus.Completed,
                     PaymentDate = DateTime.UtcNow,
                     ProcessedAt = DateTime.UtcNow,
                     PaymentGatewayResponse = s.RawResponse
@@ -595,11 +620,13 @@ public class WalletService : IWalletService
             afterInsert: (ctx, txn) => ctx.Payments.Add(new Payment
             {
                 WalletTransaction = txn,
-                PaymentMethod = "CardRefund",
+                // Money out over the card rail — the rail is the same as a charge, only the direction differs.
+                PaymentMethod = PaymentMethod.CreditCard,
+                Direction = PaymentDirection.Out,
                 TransactionId = payout.GatewayTransactionId,
                 Amount = amount,
                 Currency = wallet.Currency,
-                Status = "Completed",
+                Status = PaymentStatus.Completed,
                 PaymentDate = DateTime.UtcNow,
                 ProcessedAt = DateTime.UtcNow,
                 RefundAmount = amount,
@@ -635,6 +662,24 @@ public class WalletService : IWalletService
         return w == null
             ? new TicketWalletSummary(false, 0m, "EUR", WalletStatus.Active)
             : new TicketWalletSummary(true, w.Balance, w.Currency, w.Status);
+    }
+
+    public async Task<WalletTransactionListDto> GetTicketWalletTransactionsAsync(int ticketId, int page, int pageSize)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1 || pageSize > 100) pageSize = 25;
+
+        // No wallet minted yet is a normal state for a ticket that was never topped up — an empty page,
+        // not a 404. Read-only, so never create one here.
+        var walletId = await _context.Wallets.AsNoTracking()
+            .Where(w => w.TicketId == ticketId)
+            .Select(w => (int?)w.Id)
+            .FirstOrDefaultAsync();
+        if (walletId is null)
+            return new WalletTransactionListDto { Page = page, PageSize = pageSize };
+
+        return await GetTransactionsByWalletIdAsync(walletId.Value, page, pageSize)
+            ?? new WalletTransactionListDto { Page = page, PageSize = pageSize };
     }
 
     /// <summary>Returns the ticket's wallet, creating an Active zero-balance one on first use. Returns
@@ -705,10 +750,11 @@ public class WalletService : IWalletService
             afterInsert: (ctx, txn) => ctx.Payments.Add(new Payment
             {
                 WalletTransaction = txn,
-                PaymentMethod = "Cash",
+                PaymentMethod = PaymentMethod.Cash,
+                Direction = PaymentDirection.In,
                 Amount = amount,
                 Currency = wallet.Currency,
-                Status = "Completed",
+                Status = PaymentStatus.Completed,
                 PaymentDate = DateTime.UtcNow,
                 ProcessedAt = DateTime.UtcNow
             }));
@@ -730,6 +776,10 @@ public class WalletService : IWalletService
                 Status = existing.Status,
                 NewBalance = existing.BalanceAfter
             };
+
+        // Resolve the funding rail before charging (see InitiateDepositAsync).
+        if (!PaymentMethodParser.TryParse(dto.Method, out var topupMethod, out _))
+            return new DepositResultDto { Success = false, FailureReason = "UnsupportedPaymentMethod" };
 
         var wallet = await GetOrCreateTicketWalletAsync(ticketId);
         if (wallet == null)
@@ -762,11 +812,12 @@ public class WalletService : IWalletService
             afterInsert: (ctx, txn) => ctx.Payments.Add(new Payment
             {
                 WalletTransaction = txn,
-                PaymentMethod = dto.Method,
+                PaymentMethod = topupMethod,
+                Direction = PaymentDirection.In,
                 TransactionId = gatewayResult.GatewayTransactionId,
                 Amount = dto.Amount,
                 Currency = wallet.Currency,
-                Status = "Completed",
+                Status = PaymentStatus.Completed,
                 PaymentDate = DateTime.UtcNow,
                 ProcessedAt = DateTime.UtcNow,
                 PaymentGatewayResponse = gatewayResult.RawResponse
@@ -1023,10 +1074,12 @@ public class WalletService : IWalletService
                 _context.Payments.Add(new Payment
                 {
                     WalletTransaction = txn,
-                    PaymentMethod = "CashPayout",
+                    // Cash handed back over the counter — same rail as a cash top-up, opposite direction.
+                    PaymentMethod = PaymentMethod.Cash,
+                    Direction = PaymentDirection.Out,
                     Amount = refund,
                     Currency = currency,
-                    Status = "Completed",
+                    Status = PaymentStatus.Completed,
                     PaymentDate = now,
                     ProcessedAt = now,
                     RefundAmount = refund,

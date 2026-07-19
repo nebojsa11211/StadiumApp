@@ -2266,6 +2266,21 @@
   <data name="Order_GuestName" xml:space="preserve">
     <value>Gost</value>
   </data>
+  <data name="CartBar_BalanceAfter" xml:space="preserve">
+    <value>Preostalo nakon narudžbe: €{0}</value>
+  </data>
+  <data name="CartBar_Short" xml:space="preserve">
+    <value>Nedostaje €{0}</value>
+  </data>
+  <data name="CartBar_TopUp" xml:space="preserve">
+    <value>Nadoplati</value>
+  </data>
+  <data name="DrinkSheet_Available" xml:space="preserve">
+    <value>Stanje novčanika: €{0}</value>
+  </data>
+  <data name="DrinkSheet_Short" xml:space="preserve">
+    <value>Nedostaje €{0}</value>
+  </data>
   <data name="Order_TrackActive" xml:space="preserve">
     <value>Narudžba #{0} je u tijeku</value>
   </data>
@@ -2857,15 +2872,6 @@
   <data name="Welcome_NoFixtures" xml:space="preserve">
     <value>Još nema objavljenih utakmica.</value>
   </data>
-  <data name="Welcome_WelcomeBack" xml:space="preserve">
-    <value>Dobrodošao natrag</value>
-  </data>
-  <data name="Welcome_TicketNumber" xml:space="preserve">
-    <value>🎟️ {0}</value>
-  </data>
-  <data name="Welcome_TopUpAriaLabel" xml:space="preserve">
-    <value>Nadoplati novčanik</value>
-  </data>
   <data name="Welcome_NoBalance" xml:space="preserve">
     <value>Nema stanja</value>
   </data>
@@ -2875,14 +2881,53 @@
   <data name="Welcome_SeatLabel" xml:space="preserve">
     <value>Mjesto</value>
   </data>
+  <data name="Welcome_TicketLabel" xml:space="preserve">
+    <value>Ulaznica</value>
+  </data>
+  <data name="Welcome_AccountTab_Ticket" xml:space="preserve">
+    <value>Ulaznica</value>
+  </data>
+  <data name="Welcome_AccountTab_Orders" xml:space="preserve">
+    <value>Narudžbe</value>
+  </data>
+  <data name="Welcome_AccountTab_Wallet" xml:space="preserve">
+    <value>Novčanik</value>
+  </data>
+  <data name="Welcome_NoOrdersYet" xml:space="preserve">
+    <value>Još nema narudžbi na ovoj ulaznici.</value>
+  </data>
+  <data name="Welcome_NoWalletActivity" xml:space="preserve">
+    <value>Još nema prometa po novčaniku.</value>
+  </data>
+  <data name="Welcome_TotalSpent" xml:space="preserve">
+    <value>Ukupno potrošeno</value>
+  </data>
+  <data name="Welcome_Txn_TopUp" xml:space="preserve">
+    <value>Nadoplata</value>
+  </data>
+  <data name="Welcome_Txn_Withdrawal" xml:space="preserve">
+    <value>Isplata</value>
+  </data>
+  <data name="Welcome_Txn_Order" xml:space="preserve">
+    <value>Narudžba pića</value>
+  </data>
+  <data name="OrderStatus_DeliveryFailed" xml:space="preserve">
+    <value>Dostava neuspješna</value>
+  </data>
+  <data name="Welcome_AccountAriaLabel" xml:space="preserve">
+    <value>Tvoj račun</value>
+  </data>
+  <data name="Welcome_AccountTitle" xml:space="preserve">
+    <value>Tvoj račun</value>
+  </data>
+  <data name="Welcome_AccountSignIn" xml:space="preserve">
+    <value>Prijava</value>
+  </data>
   <data name="Welcome_EventLabel" xml:space="preserve">
     <value>Utakmica</value>
   </data>
   <data name="Welcome_DateLabel" xml:space="preserve">
     <value>Datum</value>
-  </data>
-  <data name="Welcome_WalletLabel" xml:space="preserve">
-    <value>Novčanik</value>
   </data>
   <data name="Welcome_ContinueOrdering" xml:space="preserve">
     <value>Nastavi naručivanje</value>
@@ -2953,9 +2998,6 @@
   <data name="Welcome_HalftimeWallet" xml:space="preserve">
     <value>HALFTIME novčanik</value>
   </data>
-  <data name="Welcome_NoWallet" xml:space="preserve">
-    <value>Nema novčanika</value>
-  </data>
   <data name="Welcome_GeneralError" xml:space="preserve">
     <value>Nešto je pošlo po zlu. Pokušaj ponovno.</value>
   </data>
@@ -3021,5 +3063,86 @@
   </data>
   <data name="Welcome_Day_Tomorrow" xml:space="preserve">
     <value>Sutra</value>
+  </data>
+  <data name="EventDetails_SeatsScrollAria" xml:space="preserve">
+    <value>Raspored mjesta u tribini</value>
+  </data>
+  <data name="EventDetails_SelectedSeatsAria" xml:space="preserve">
+    <value>Odabrana mjesta</value>
+  </data>
+  <data name="EventDetails_SeatMapAria" xml:space="preserve">
+    <value>Karta sjedala</value>
+  </data>
+  <data name="EventDetails_SeatLabelFormat" xml:space="preserve">
+    <value>Red {0}, mjesto {1}</value>
+  </data>
+  <data name="EventDetails_SeatTitleFormat" xml:space="preserve">
+    <value>Red {0}, mjesto {1} — {2} €</value>
+  </data>
+  <data name="EventDetails_SectorMapUnavailable" xml:space="preserve">
+    <value>Karta ovog sektora nije dostupna.</value>
+  </data>
+  <data name="EventDetails_SectorMapLoadError" xml:space="preserve">
+    <value>Greška pri učitavanju karte sektora.</value>
+  </data>
+  <data name="EventDetails_SeatsAddFailed" xml:space="preserve">
+    <value>Neka mjesta nije moguće dodati u košaricu.</value>
+  </data>
+  <data name="EventDetails_Today" xml:space="preserve">
+    <value>Danas</value>
+  </data>
+  <data name="EventDetails_Tomorrow" xml:space="preserve">
+    <value>Sutra</value>
+  </data>
+  <data name="EventDetails_InDays" xml:space="preserve">
+    <value>za {0} dana</value>
+  </data>
+  <data name="NavMenu_MainNavAria" xml:space="preserve">
+    <value>Glavna navigacija</value>
+  </data>
+  <data name="NavMenu_HomeAria" xml:space="preserve">
+    <value>Idi na početnu stranicu</value>
+  </data>
+  <data name="NavMenu_EventsAria" xml:space="preserve">
+    <value>Pogledaj dostupne događaje</value>
+  </data>
+  <data name="NavMenu_MenuAria" xml:space="preserve">
+    <value>Pregledaj ponudu pića</value>
+  </data>
+  <data name="NavMenu_OrdersAria" xml:space="preserve">
+    <value>Pogledaj svoje narudžbe</value>
+  </data>
+  <data name="NavMenu_WalletAria" xml:space="preserve">
+    <value>Pogledaj svoj novčanik</value>
+  </data>
+  <data name="Toast_CloseAria" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="Common_BackAria" xml:space="preserve">
+    <value>Natrag</value>
+  </data>
+  <data name="Menu_RemoveItemAria" xml:space="preserve">
+    <value>Ukloni</value>
+  </data>
+  <data name="Home_DefaultFanName" xml:space="preserve">
+    <value>Navijaču</value>
+  </data>
+  <data name="OrderConfirmation_Subtitle" xml:space="preserve">
+    <value>Ulaznice</value>
+  </data>
+  <data name="OrderConfirmation_TicketQr" xml:space="preserve">
+    <value>QR kod ulaznice</value>
+  </data>
+  <data name="Checkout_SectorFallback" xml:space="preserve">
+    <value>Sektor {0}</value>
+  </data>
+  <data name="Register_UsernamePlaceholder" xml:space="preserve">
+    <value>npr. ivan.horvat</value>
+  </data>
+  <data name="Register_FirstNamePlaceholder" xml:space="preserve">
+    <value>npr. Ivan</value>
+  </data>
+  <data name="Register_LastNamePlaceholder" xml:space="preserve">
+    <value>npr. Horvat</value>
   </data>
 </root>

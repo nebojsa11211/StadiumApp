@@ -7,6 +7,27 @@
 }
 .cartbar.show{transform:translate(-50%,0)}
 
+/* affordability line — quiet while the fan can afford the cart, amber + actionable once they can't.
+   Sits above the pink pill so the running total and the constraint on it read as one unit. */
+.funds{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin:0 4px 8px;padding:8px 6px 8px 14px;border-radius:12px;
+    background:var(--surface-2);border:1px solid var(--line);
+    font-size:12px;font-weight:700;color:var(--muted);
+}
+.funds-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.funds.short{
+    background:color-mix(in srgb,var(--amber) 14%,var(--surface-2));
+    border-color:color-mix(in srgb,var(--amber) 40%,transparent);
+    color:var(--ink);
+}
+/* negative margin keeps the 44px target without growing the row */
+.funds-cta{
+    flex:none;min-height:44px;display:inline-flex;align-items:center;padding:0 12px;margin:-8px 0;
+    background:none;border:0;cursor:pointer;font:inherit;font-weight:900;color:var(--amber);
+}
+.funds-cta:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
 .inner{
     background:var(--brand);border-radius:18px;padding:14px 18px;
     display:flex;align-items:center;justify-content:space-between;cursor:pointer;

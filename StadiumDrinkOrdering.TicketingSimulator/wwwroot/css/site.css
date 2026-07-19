@@ -25,6 +25,31 @@ html, body {
     letter-spacing: 0.03em;
 }
 
+/* Tab strip under the topbar — switches between the simulator and the credentials reference. */
+.sim-tabs {
+    background: #1e293b;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid #334155;
+}
+
+.sim-tab {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 2px solid transparent;
+}
+
+.sim-tab:hover { color: #fff; background: rgba(148, 163, 184, 0.12); }
+
+.sim-tab.active {
+    color: #fff;
+    font-weight: 600;
+    border-bottom-color: #38bdf8;
+}
+
 .sim-main { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
 
 #blazor-error-ui {

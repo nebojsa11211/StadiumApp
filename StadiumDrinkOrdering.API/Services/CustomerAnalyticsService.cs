@@ -273,13 +273,18 @@ public class CustomerAnalyticsService : ICustomerAnalyticsService
             var drinkSpending = drinkOrders.Sum(o => o.TotalAmount);
             var totalSpent = ticketSpending + drinkSpending;
 
-            var customerName = ticketPurchases.FirstOrDefault()?.EventName ?? "";
-            if (string.IsNullOrEmpty(customerName) && ticketPurchases.Any())
+            // Prefer the name on the customer's tickets, then fall back to the linked user account.
+            var customerName = await _context.Tickets
+                .Where(t => t.CustomerEmail == customerEmail && t.CustomerName != null && t.CustomerName != "")
+                .Select(t => t.CustomerName!)
+                .FirstOrDefaultAsync() ?? "";
+
+            if (string.IsNullOrEmpty(customerName))
             {
-                var firstTicket = await _context.Tickets
-                    .Where(t => t.CustomerEmail == customerEmail)
-                    .FirstOrDefaultAsync();
-                customerName = firstTicket?.CustomerName ?? "";
+                customerName = await _context.Users
+                    .Where(u => u.Email == customerEmail)
+                    .Select(u => u.Username)
+                    .FirstOrDefaultAsync() ?? "";
             }
 
             var summary = new CustomerSpendingSummaryDto

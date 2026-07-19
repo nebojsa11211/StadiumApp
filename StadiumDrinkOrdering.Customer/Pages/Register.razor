@@ -34,7 +34,7 @@
 
         <div id="customer-register-username-group" class="field">
             <label for="customer-register-username-input">@Localizer["Register_UsernameLabel"]</label>
-            <InputText id="customer-register-username-input" @bind-Value="registerModel.Username" placeholder="npr. ivan.horvat" autocomplete="username" />
+            <InputText id="customer-register-username-input" @bind-Value="registerModel.Username" placeholder="@Localizer["Register_UsernamePlaceholder"]" autocomplete="username" />
             <ValidationMessage For="@(() => registerModel.Username)" class="verr" />
         </div>
 
@@ -46,13 +46,13 @@
 
         <div id="customer-register-firstname-group" class="field">
             <label for="customer-register-firstname-input">@Localizer["Register_FirstNameLabel"]</label>
-            <InputText id="customer-register-firstname-input" @bind-Value="registerModel.FirstName" placeholder="npr. Ivan" autocomplete="given-name" />
+            <InputText id="customer-register-firstname-input" @bind-Value="registerModel.FirstName" placeholder="@Localizer["Register_FirstNamePlaceholder"]" autocomplete="given-name" />
             <ValidationMessage For="@(() => registerModel.FirstName)" class="verr" />
         </div>
 
         <div id="customer-register-lastname-group" class="field">
             <label for="customer-register-lastname-input">@Localizer["Register_LastNameLabel"]</label>
-            <InputText id="customer-register-lastname-input" @bind-Value="registerModel.LastName" placeholder="npr. Horvat" autocomplete="family-name" />
+            <InputText id="customer-register-lastname-input" @bind-Value="registerModel.LastName" placeholder="@Localizer["Register_LastNamePlaceholder"]" autocomplete="family-name" />
             <ValidationMessage For="@(() => registerModel.LastName)" class="verr" />
         </div>
 

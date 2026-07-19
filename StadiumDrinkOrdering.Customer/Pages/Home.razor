@@ -124,7 +124,7 @@ else
     private bool _starting;
     private string? _orderError;
 
-    private string FirstName => (_home?.HolderName ?? "").Split(' ').FirstOrDefault() ?? "Navijaču";
+    private string FirstName => (_home?.HolderName ?? "").Split(' ').FirstOrDefault() ?? Localizer["Home_DefaultFanName"].Value;
     private string Initials
     {
         get

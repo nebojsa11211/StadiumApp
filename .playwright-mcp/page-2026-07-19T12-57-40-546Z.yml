@@ -1,0 +1,204 @@
+- generic [ref=e5]:
+  - complementary [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: 
+      - generic [ref=e10]:
+        - generic [ref=e11]: STADIUM
+        - generic [ref=e12]: ADMIN
+    - generic [ref=e13]:
+      - generic [ref=e14]: 14:57:40
+      - generic [ref=e15]: 19. 07. 26 HR
+    - navigation [ref=e16]:
+      - link " Nadzorna ploča" [ref=e17] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e18]: 
+        - generic [ref=e19]: Nadzorna ploča
+      - generic [ref=e20]: Poslovanje
+      - link " Narudžbe" [ref=e21] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e22]: 
+        - generic [ref=e23]: Narudžbe
+      - link " Pića" [ref=e24] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e25]: 
+        - generic [ref=e26]: Pića
+      - link " Novčanici" [ref=e27] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=e28]: 
+        - generic [ref=e29]: Novčanici
+      - generic [ref=e30]: Događaji i karte
+      - link " Događaji" [ref=e31] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e32]: 
+        - generic [ref=e33]: Događaji
+      - link " Sezone" [ref=e34] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=e35]: 
+        - generic [ref=e36]: Sezone
+      - link " Momčadi" [ref=e37] [cursor=pointer]:
+        - /url: admin/teams
+        - generic [ref=e38]: 
+        - generic [ref=e39]: Momčadi
+      - link " Karte" [ref=e40] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e41]: 
+        - generic [ref=e42]: Karte
+      - generic [ref=e43]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=e44] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e45]: 👁
+        - generic [ref=e46]: Pregled
+      - link " Alat za crtanje" [ref=e47] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e48]: 
+        - generic [ref=e49]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=e50] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=e51]: 
+        - generic [ref=e52]: Informacije o stadionu
+      - link " Stadion i brend" [ref=e53] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=e54]: 
+        - generic [ref=e55]: Stadion i brend
+      - generic [ref=e56]: Analitika
+      - link " Analitika" [ref=e57] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e58]: 
+        - generic [ref=e59]: Analitika
+      - link " Kupci" [ref=e60] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=e61]: 
+        - generic [ref=e62]: Kupci
+      - link " Korisnička analitika" [ref=e63] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e64]: 
+        - generic [ref=e65]: Korisnička analitika
+      - generic [ref=e66]: Sustav
+      - link " Timski računi" [ref=e67] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e68]: 
+        - generic [ref=e69]: Timski računi
+      - link " Zapisi" [ref=e70] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e71]: 
+        - generic [ref=e72]: Zapisi
+      - link " Baza podataka" [ref=e73] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e74]: 
+        - generic [ref=e75]: Baza podataka
+      - link " Postavke" [ref=e76] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=e77]: 
+        - generic [ref=e78]: Postavke
+    - generic [ref=e79]:
+      - generic [ref=e80]:
+        - generic [ref=e81]: 
+        - generic [ref=e82]:
+          - generic [ref=e83]: Centralizirani Logging
+          - generic [ref=e84]: "Zadnja objava: 14:57"
+      - generic [ref=e85]:
+        - generic [ref=e86]: "N"
+        - generic [ref=e87]:
+          - button "Odjava" [ref=e88] [cursor=pointer]
+          - generic [ref=e89]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=e90]:
+        - generic [ref=e91]: HR/EN
+        - generic [ref=e92]:
+          - button "HR" [ref=e93] [cursor=pointer]
+          - button "EN" [ref=e94] [cursor=pointer]
+  - main [ref=e95]:
+    - generic [ref=e96]:
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - generic [ref=e99]: Financije
+          - heading "Novčanici navijača" [level=1] [ref=e100]
+          - paragraph [ref=e101]: Pregledajte, zamrznite, uskladite i vratite sredstva navijačkih novčanika.
+        - generic [ref=e102]:
+          - textbox "Traži po imenu ili e-pošti…" [ref=e103]
+          - button " Traži" [ref=e104] [cursor=pointer]:
+            - generic [ref=e105]: 
+            - generic [ref=e106]: Traži
+      - table [ref=e108]:
+        - rowgroup [ref=e109]:
+          - row [ref=e110]:
+            - columnheader "Navijač" [ref=e111] [cursor=pointer]
+            - columnheader "Stanje" [ref=e112] [cursor=pointer]
+            - columnheader "Status" [ref=e113] [cursor=pointer]
+            - columnheader "Radnje" [ref=e114]
+        - rowgroup [ref=e115]:
+          - row [ref=e116]:
+            - cell "🎟️ Ulaznica Ulaznica EXT-TCK-2CB4BBFF8980 Anonimno — bez računa" [ref=e117]:
+              - generic [ref=e118]:
+                - generic [ref=e119]: 🎟️ Ulaznica
+                - text: Ulaznica EXT-TCK-2CB4BBFF8980
+              - generic [ref=e120]: Anonimno — bez računa
+            - cell "€50,00" [ref=e121]
+            - cell "Active" [ref=e122]
+            - cell [ref=e124]:
+              - button " Upravljaj" [active] [ref=e125] [cursor=pointer]:
+                - generic [ref=e126]: 
+                - generic [ref=e127]: Upravljaj
+          - row [ref=e128]:
+            - cell "🎟️ Ulaznica Ulaznica EXT-TCK-254863B53343 Anonimno — bez računa" [ref=e129]:
+              - generic [ref=e130]:
+                - generic [ref=e131]: 🎟️ Ulaznica
+                - text: Ulaznica EXT-TCK-254863B53343
+              - generic [ref=e132]: Anonimno — bez računa
+            - cell "€0,00" [ref=e133]
+            - cell "Active" [ref=e134]
+            - cell [ref=e136]:
+              - button " Upravljaj" [ref=e137] [cursor=pointer]:
+                - generic [ref=e138]: 
+                - generic [ref=e139]: Upravljaj
+      - generic [ref=e141]:
+        - paragraph [ref=e142]: Prikaz 1 do 2 od 2
+        - generic [ref=e143]:
+          - generic [ref=e144]: Prikaži
+          - combobox "Prikaži" [ref=e145] [cursor=pointer]:
+            - option "10"
+            - option "20" [selected]
+            - option "50"
+            - option "100"
+    - dialog [ref=e146]:
+      - generic [ref=e147]:
+        - generic [ref=e148]:
+          - 'heading "Upravljanje novčanikom: Ulaznica EXT-TCK-2CB4BBFF8980 Active" [level=5] [ref=e149]':
+            - text: "Upravljanje novčanikom: Ulaznica EXT-TCK-2CB4BBFF8980"
+            - generic [ref=e150]: Active
+          - button [ref=e151] [cursor=pointer]
+        - generic [ref=e152]:
+          - generic [ref=e153]:
+            - generic [ref=e154]:
+              - generic [ref=e155]: Stanje
+              - generic [ref=e156]: €50,00
+            - button " Zamrzni" [ref=e157] [cursor=pointer]:
+              - generic [ref=e158]: 
+              - text: Zamrzni
+          - generic [ref=e159]:
+            - generic [ref=e162]:
+              - heading "Ručno usklađenje" [level=6] [ref=e163]
+              - spinbutton "Iznos (+/−)" [ref=e164]: "0"
+              - textbox "Razlog" [ref=e165]
+              - button "Primijeni usklađenje" [disabled]
+            - generic [ref=e168]:
+              - heading "Povrat" [level=6] [ref=e169]
+              - spinbutton "Iznos" [ref=e170]: "0"
+              - textbox "Razlog" [ref=e171]
+              - button "Izvrši povrat" [disabled]
+          - heading "Knjiga" [level=6] [ref=e172]
+          - table [ref=e174]:
+            - rowgroup [ref=e175]:
+              - row [ref=e176]:
+                - columnheader "Datum" [ref=e177]
+                - columnheader "Vrsta" [ref=e178]
+                - columnheader "Razlog" [ref=e179]
+                - columnheader "Iznos" [ref=e180]
+                - columnheader "Stanje nakon" [ref=e181]
+            - rowgroup [ref=e182]:
+              - row [ref=e183]:
+                - cell "2026-07-14 21:14" [ref=e184]
+                - cell "Deposit" [ref=e185]
+                - 'cell "Online top-up on ticket #739 via CreditCard" [ref=e186]'
+                - cell "+€50,00" [ref=e187]
+                - cell "€50,00" [ref=e188]
+        - button "Zatvori" [ref=e190] [cursor=pointer]

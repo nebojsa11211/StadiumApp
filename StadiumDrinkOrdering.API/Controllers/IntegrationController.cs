@@ -107,6 +107,93 @@ public class IntegrationController : ControllerBase
     }
 
     /// <summary>
+    /// The plaintext passwords the development seeder hands out. Stored passwords are BCrypt
+    /// hashes and cannot be reversed, so the users endpoint instead *probes* each candidate
+    /// against the hash and reports the one that verifies — never a guess.
+    /// Mirrors the seeding block in <c>Program.InitializeDatabaseAsync</c>.
+    /// </summary>
+    private static readonly string[] DevPasswordCandidates = { "Admin123!", "customer123" };
+
+    /// <summary>
+    /// Lists login accounts so the simulator can show testers which identity to sign into the
+    /// Admin / Bar / Runner / Customer apps with. A password is reported only when one of the
+    /// known dev passwords actually verifies against that user's BCrypt hash — otherwise null,
+    /// since hashes cannot be reversed. Development-only: returns 404 in any other environment.
+    /// </summary>
+    [HttpGet("users")]
+    public async Task<ActionResult<List<IntegrationUserDto>>> GetUsers(
+        [FromServices] IWebHostEnvironment environment, CancellationToken ct)
+    {
+        if (!environment.IsDevelopment())
+            return NotFound();
+
+        var rows = await _context.Users
+            .AsNoTracking()
+            .OrderBy(u => u.Role)
+            .ThenBy(u => u.Username)
+            .Select(u => new
+            {
+                u.Id,
+                u.Username,
+                u.Email,
+                u.FirstName,
+                u.LastName,
+                u.Role,
+                u.IsActive,
+                u.IsShellAccount,
+                u.PasswordHash,
+                u.CreatedAt,
+                u.LastLoginAt
+            })
+            .ToListAsync(ct);
+
+        var users = rows.Select(u => new IntegrationUserDto
+        {
+            Id = u.Id,
+            Username = u.Username,
+            Email = u.Email,
+            FullName = string.Join(' ', new[] { u.FirstName, u.LastName }
+                .Where(p => !string.IsNullOrWhiteSpace(p))) is { Length: > 0 } name ? name : null,
+            Role = u.Role.ToString(),
+            IsActive = u.IsActive,
+            IsShellAccount = u.IsShellAccount,
+            CreatedAt = u.CreatedAt,
+            LastLoginAt = u.LastLoginAt,
+            // Shell accounts have a deliberately unusable hash — skip the (~100ms each) probe.
+            KnownPassword = u.IsShellAccount ? null : ProbePassword(u.PasswordHash)
+        }).ToList();
+
+        return Ok(users);
+    }
+
+    /// <summary>
+    /// Returns whichever dev password verifies against <paramref name="passwordHash"/>, or null
+    /// if none does. This confirms a password rather than assuming one, so a renamed or manually
+    /// changed account never shows a password that wouldn't actually work.
+    /// </summary>
+    private static string? ProbePassword(string passwordHash)
+    {
+        if (string.IsNullOrWhiteSpace(passwordHash))
+            return null;
+
+        foreach (var candidate in DevPasswordCandidates)
+        {
+            try
+            {
+                if (BCrypt.Net.BCrypt.Verify(candidate, passwordHash))
+                    return candidate;
+            }
+            catch
+            {
+                // Malformed/non-BCrypt hash — nothing to report for this user.
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Lists sellable stadium sectors + capacities (from the drawing-tool overlays — the real
     /// stadium) so the external system/simulator can discover valid sector codes to sell into.
     /// </summary>

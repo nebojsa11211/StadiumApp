@@ -1,0 +1,1915 @@
+- generic [ref=f6e10]:
+  - complementary [ref=f6e11]:
+    - generic [ref=f6e12]:
+      - generic [ref=f6e13]: 
+      - generic [ref=f6e15]:
+        - generic [ref=f6e16]: STADIUM
+        - generic [ref=f6e17]: ADMIN
+    - generic [ref=f6e18]:
+      - generic [ref=f6e19]: 15:02:15
+      - generic [ref=f6e20]: 19. 07. 26 HR
+    - navigation [ref=f6e21]:
+      - link " Nadzorna ploča" [ref=f6e22] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f6e23]: 
+        - generic [ref=f6e24]: Nadzorna ploča
+      - generic [ref=f6e25]: Poslovanje
+      - link " Narudžbe" [ref=f6e26] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f6e27]: 
+        - generic [ref=f6e28]: Narudžbe
+      - link " Pića" [ref=f6e29] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f6e30]: 
+        - generic [ref=f6e31]: Pića
+      - link " Novčanici" [ref=f6e32] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=f6e33]: 
+        - generic [ref=f6e34]: Novčanici
+      - generic [ref=f6e35]: Događaji i karte
+      - link " Događaji" [ref=f6e36] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f6e37]: 
+        - generic [ref=f6e38]: Događaji
+      - link " Sezone" [ref=f6e39] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=f6e40]: 
+        - generic [ref=f6e41]: Sezone
+      - link " Momčadi" [ref=f6e42] [cursor=pointer]:
+        - /url: admin/teams
+        - generic [ref=f6e43]: 
+        - generic [ref=f6e44]: Momčadi
+      - link " Karte" [ref=f6e45] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f6e46]: 
+        - generic [ref=f6e47]: Karte
+      - generic [ref=f6e48]: Upravljanje stadionom
+      - link "👁 Pregled" [ref=f6e49] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f6e50]: 👁
+        - generic [ref=f6e51]: Pregled
+      - link " Alat za crtanje" [ref=f6e52] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f6e53]: 
+        - generic [ref=f6e54]: Alat za crtanje
+      - link " Informacije o stadionu" [ref=f6e55] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=f6e56]: 
+        - generic [ref=f6e57]: Informacije o stadionu
+      - link " Stadion i brend" [ref=f6e58] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=f6e59]: 
+        - generic [ref=f6e60]: Stadion i brend
+      - generic [ref=f6e61]: Analitika
+      - link " Analitika" [ref=f6e62] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f6e63]: 
+        - generic [ref=f6e64]: Analitika
+      - link " Kupci" [ref=f6e65] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=f6e66]: 
+        - generic [ref=f6e67]: Kupci
+      - link " Korisnička analitika" [ref=f6e68] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f6e69]: 
+        - generic [ref=f6e70]: Korisnička analitika
+      - generic [ref=f6e71]: Sustav
+      - link " Timski računi" [ref=f6e72] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f6e73]: 
+        - generic [ref=f6e74]: Timski računi
+      - link " Zapisi" [ref=f6e75] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f6e76]: 
+        - generic [ref=f6e77]: Zapisi
+      - link " Baza podataka" [ref=f6e78] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f6e79]: 
+        - generic [ref=f6e80]: Baza podataka
+      - link " Postavke" [ref=f6e81] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=f6e82]: 
+        - generic [ref=f6e83]: Postavke
+    - generic [ref=f6e84]:
+      - generic [ref=f6e85]:
+        - generic [ref=f6e86]: 
+        - generic [ref=f6e87]:
+          - generic [ref=f6e88]: Centralizirani Logging
+          - generic [ref=f6e89]: "Zadnja objava: 15:02"
+      - generic [ref=f6e90]:
+        - generic [ref=f6e91]: "N"
+        - generic [ref=f6e92]:
+          - button "Odjava" [ref=f6e93] [cursor=pointer]
+          - generic [ref=f6e94]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=f6e95]:
+        - generic [ref=f6e96]: HR/EN
+        - generic [ref=f6e97]:
+          - button "HR" [ref=f6e98] [cursor=pointer]
+          - button "EN" [ref=f6e99] [cursor=pointer]
+  - main [ref=f6e100]:
+    - generic [ref=f6e101]:
+      - generic [ref=f6e102]:
+        - generic [ref=f6e103]:
+          - generic [ref=f6e104]: Događaji
+          - heading "Upravljanje događajima" [level=1] [ref=f6e105]
+          - paragraph [ref=f6e106]: Kreirajte, aktivirajte i upravljajte stadijonskim događajima
+        - button " Kreiraj novi događaj" [active] [ref=f6e108] [cursor=pointer]:
+          - generic [ref=f6e109]: 
+          - generic [ref=f6e110]: Kreiraj novi događaj
+      - generic [ref=f6e111]:
+        - button "" [disabled] [ref=f6e112]
+        - generic [ref=f6e114]:
+          - generic [ref=f6e115]: 
+          - generic [ref=f6e116]: "Trenutna sezona:"
+          - strong [ref=f6e117]: Sve sezone
+          - generic [ref=f6e118]:
+            - generic [ref=f6e119]: 
+            - text: 316 Sezonske Ulaznice
+        - generic [ref=f6e120]:
+          - button " Trenutni" [ref=f6e121] [cursor=pointer]:
+            - generic [ref=f6e122]: 
+            - text: Trenutni
+          - combobox "Odaberi sezonu" [ref=f6e123] [cursor=pointer]:
+            - option "Sve sezone" [selected]
+            - option "2025/26"
+            - option "2026/2027"
+            - option "Bez sezone"
+          - button "" [ref=f6e124] [cursor=pointer]
+      - generic [ref=f6e126]:
+        - article [ref=f6e127]:
+          - generic [ref=f6e128]:
+            - generic [ref=f6e129]: Ukupno događaja
+            - generic [ref=f6e130]: 
+          - generic [ref=f6e131]: "26"
+          - generic [ref=f6e132]: Svi događaji u evidenciji
+        - article [ref=f6e134]:
+          - generic [ref=f6e135]:
+            - generic [ref=f6e136]: Na prodaji
+            - generic [ref=f6e137]: 
+          - generic [ref=f6e138]: "1"
+          - generic [ref=f6e139]: Trenutno dostupni za prodaju karata
+        - article [ref=f6e141]:
+          - generic [ref=f6e142]:
+            - generic [ref=f6e143]: Kapacitet stadiona
+            - generic [ref=f6e144]: 
+          - generic [ref=f6e145]: "400"
+          - generic [ref=f6e146]: Najviše mjesta po događaju
+      - generic [ref=f6e148]:
+        - heading "Događaji 26" [level=2] [ref=f6e150]:
+          - text: Događaji
+          - generic [ref=f6e151]: "26"
+        - generic [ref=f6e153]:
+          - generic [ref=f6e155]:
+            - generic [ref=f6e156]:
+              - heading "#15 GNK Dinamo – HNK Vukovar 1991 (08.08.2025.)" [level=3] [ref=f6e157]:
+                - generic [ref=f6e158]: "#15"
+                - generic [ref=f6e159]: GNK Dinamo – HNK Vukovar 1991 (08.08.2025.)
+              - 'generic "Phase: Past" [ref=f6e160]': Završeno
+            - generic [ref=f6e162]:
+              - generic [ref=f6e163]:
+                - term [ref=f6e164]:
+                  - generic [ref=f6e165]: 
+                  - text: Vrsta
+                - definition [ref=f6e166]: Match
+                - term [ref=f6e167]:
+                  - generic [ref=f6e168]: 
+                  - text: Timovi
+                - definition [ref=f6e169]: GNK Dinamo – HNK Vukovar 1991
+                - term [ref=f6e170]:
+                  - generic [ref=f6e171]: 
+                  - text: Datum
+                - definition [ref=f6e172]: kol 08, 2025 21:00
+                - term [ref=f6e173]:
+                  - generic [ref=f6e174]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e175]: —
+                - term [ref=f6e176]:
+                  - generic [ref=f6e177]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e178]: —
+                - term [ref=f6e179]:
+                  - generic [ref=f6e180]: 
+                  - text: Kapacitet
+                - definition [ref=f6e181]: 400 mjesta
+                - term [ref=f6e182]:
+                  - generic [ref=f6e183]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e184]: €15,00
+                - term [ref=f6e185]:
+                  - generic [ref=f6e186]: 
+                  - text: Sezona
+                - definition [ref=f6e187]:
+                  - generic [ref=f6e188]: 2025/26
+                - term [ref=f6e190]:
+                  - generic [ref=f6e191]: 
+                  - text: Faza
+                - definition [ref=f6e192]: Prošli
+              - paragraph [ref=f6e193]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 3:0 HNK Vukovar 1991."
+            - generic [ref=f6e195]:
+              - button " Uredi" [disabled] [ref=f6e196]:
+                - generic [ref=f6e197]: 
+                - generic [ref=f6e198]: Uredi
+              - link " Popunjenost uživo" [ref=f6e199] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=15
+                - generic [ref=f6e200]: 
+                - generic [ref=f6e201]: Popunjenost uživo
+              - link " Statistika" [ref=f6e202] [cursor=pointer]:
+                - /url: admin/event-statistics/15
+                - generic [ref=f6e203]: 
+                - generic [ref=f6e204]: Statistika
+              - button " Obriši" [ref=f6e205] [cursor=pointer]:
+                - generic [ref=f6e206]: 
+                - generic [ref=f6e207]: Obriši
+          - generic [ref=f6e209]:
+            - generic [ref=f6e210]:
+              - heading "#16 GNK Dinamo – NK Istra 1961 (23.08.2025.)" [level=3] [ref=f6e211]:
+                - generic [ref=f6e212]: "#16"
+                - generic [ref=f6e213]: GNK Dinamo – NK Istra 1961 (23.08.2025.)
+              - 'generic "Phase: Past" [ref=f6e214]': Završeno
+            - generic [ref=f6e216]:
+              - generic [ref=f6e217]:
+                - term [ref=f6e218]:
+                  - generic [ref=f6e219]: 
+                  - text: Vrsta
+                - definition [ref=f6e220]: Match
+                - term [ref=f6e221]:
+                  - generic [ref=f6e222]: 
+                  - text: Timovi
+                - definition [ref=f6e223]: GNK Dinamo – NK Istra 1961
+                - term [ref=f6e224]:
+                  - generic [ref=f6e225]: 
+                  - text: Datum
+                - definition [ref=f6e226]: kol 23, 2025 21:00
+                - term [ref=f6e227]:
+                  - generic [ref=f6e228]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e229]: —
+                - term [ref=f6e230]:
+                  - generic [ref=f6e231]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e232]: —
+                - term [ref=f6e233]:
+                  - generic [ref=f6e234]: 
+                  - text: Kapacitet
+                - definition [ref=f6e235]: 400 mjesta
+                - term [ref=f6e236]:
+                  - generic [ref=f6e237]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e238]: €15,00
+                - term [ref=f6e239]:
+                  - generic [ref=f6e240]: 
+                  - text: Sezona
+                - definition [ref=f6e241]:
+                  - generic [ref=f6e242]: 2025/26
+                - term [ref=f6e244]:
+                  - generic [ref=f6e245]: 
+                  - text: Faza
+                - definition [ref=f6e246]: Prošli
+              - paragraph [ref=f6e247]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 3:0 NK Istra 1961."
+            - generic [ref=f6e249]:
+              - button " Uredi" [disabled] [ref=f6e250]:
+                - generic [ref=f6e251]: 
+                - generic [ref=f6e252]: Uredi
+              - link " Popunjenost uživo" [ref=f6e253] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=16
+                - generic [ref=f6e254]: 
+                - generic [ref=f6e255]: Popunjenost uživo
+              - link " Statistika" [ref=f6e256] [cursor=pointer]:
+                - /url: admin/event-statistics/16
+                - generic [ref=f6e257]: 
+                - generic [ref=f6e258]: Statistika
+              - button " Obriši" [ref=f6e259] [cursor=pointer]:
+                - generic [ref=f6e260]: 
+                - generic [ref=f6e261]: Obriši
+          - generic [ref=f6e263]:
+            - generic [ref=f6e264]:
+              - heading "#17 GNK Dinamo – HNK Gorica (14.09.2025.)" [level=3] [ref=f6e265]:
+                - generic [ref=f6e266]: "#17"
+                - generic [ref=f6e267]: GNK Dinamo – HNK Gorica (14.09.2025.)
+              - 'generic "Phase: Past" [ref=f6e268]': Završeno
+            - generic [ref=f6e270]:
+              - generic [ref=f6e271]:
+                - term [ref=f6e272]:
+                  - generic [ref=f6e273]: 
+                  - text: Vrsta
+                - definition [ref=f6e274]: Match
+                - term [ref=f6e275]:
+                  - generic [ref=f6e276]: 
+                  - text: Timovi
+                - definition [ref=f6e277]: GNK Dinamo – HNK Gorica
+                - term [ref=f6e278]:
+                  - generic [ref=f6e279]: 
+                  - text: Datum
+                - definition [ref=f6e280]: ruj 14, 2025 19:15
+                - term [ref=f6e281]:
+                  - generic [ref=f6e282]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e283]: —
+                - term [ref=f6e284]:
+                  - generic [ref=f6e285]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e286]: —
+                - term [ref=f6e287]:
+                  - generic [ref=f6e288]: 
+                  - text: Kapacitet
+                - definition [ref=f6e289]: 400 mjesta
+                - term [ref=f6e290]:
+                  - generic [ref=f6e291]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e292]: €15,00
+                - term [ref=f6e293]:
+                  - generic [ref=f6e294]: 
+                  - text: Sezona
+                - definition [ref=f6e295]:
+                  - generic [ref=f6e296]: 2025/26
+                - term [ref=f6e298]:
+                  - generic [ref=f6e299]: 
+                  - text: Faza
+                - definition [ref=f6e300]: Prošli
+              - paragraph [ref=f6e301]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 1:2 HNK Gorica."
+            - generic [ref=f6e303]:
+              - button " Uredi" [disabled] [ref=f6e304]:
+                - generic [ref=f6e305]: 
+                - generic [ref=f6e306]: Uredi
+              - link " Popunjenost uživo" [ref=f6e307] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=17
+                - generic [ref=f6e308]: 
+                - generic [ref=f6e309]: Popunjenost uživo
+              - link " Statistika" [ref=f6e310] [cursor=pointer]:
+                - /url: admin/event-statistics/17
+                - generic [ref=f6e311]: 
+                - generic [ref=f6e312]: Statistika
+              - button " Obriši" [ref=f6e313] [cursor=pointer]:
+                - generic [ref=f6e314]: 
+                - generic [ref=f6e315]: Obriši
+          - generic [ref=f6e317]:
+            - generic [ref=f6e318]:
+              - heading "#18 GNK Dinamo – NK Slaven Belupo (28.09.2025.)" [level=3] [ref=f6e319]:
+                - generic [ref=f6e320]: "#18"
+                - generic [ref=f6e321]: GNK Dinamo – NK Slaven Belupo (28.09.2025.)
+              - 'generic "Phase: Past" [ref=f6e322]': Završeno
+            - generic [ref=f6e324]:
+              - generic [ref=f6e325]:
+                - term [ref=f6e326]:
+                  - generic [ref=f6e327]: 
+                  - text: Vrsta
+                - definition [ref=f6e328]: Match
+                - term [ref=f6e329]:
+                  - generic [ref=f6e330]: 
+                  - text: Timovi
+                - definition [ref=f6e331]: GNK Dinamo – NK Slaven Belupo
+                - term [ref=f6e332]:
+                  - generic [ref=f6e333]: 
+                  - text: Datum
+                - definition [ref=f6e334]: ruj 28, 2025 18:15
+                - term [ref=f6e335]:
+                  - generic [ref=f6e336]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e337]: —
+                - term [ref=f6e338]:
+                  - generic [ref=f6e339]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e340]: —
+                - term [ref=f6e341]:
+                  - generic [ref=f6e342]: 
+                  - text: Kapacitet
+                - definition [ref=f6e343]: 400 mjesta
+                - term [ref=f6e344]:
+                  - generic [ref=f6e345]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e346]: €15,00
+                - term [ref=f6e347]:
+                  - generic [ref=f6e348]: 
+                  - text: Sezona
+                - definition [ref=f6e349]:
+                  - generic [ref=f6e350]: 2025/26
+                - term [ref=f6e352]:
+                  - generic [ref=f6e353]: 
+                  - text: Faza
+                - definition [ref=f6e354]: Prošli
+              - paragraph [ref=f6e355]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 4:1 NK Slaven Belupo."
+            - generic [ref=f6e357]:
+              - button " Uredi" [disabled] [ref=f6e358]:
+                - generic [ref=f6e359]: 
+                - generic [ref=f6e360]: Uredi
+              - link " Popunjenost uživo" [ref=f6e361] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=18
+                - generic [ref=f6e362]: 
+                - generic [ref=f6e363]: Popunjenost uživo
+              - link " Statistika" [ref=f6e364] [cursor=pointer]:
+                - /url: admin/event-statistics/18
+                - generic [ref=f6e365]: 
+                - generic [ref=f6e366]: Statistika
+              - button " Obriši" [ref=f6e367] [cursor=pointer]:
+                - generic [ref=f6e368]: 
+                - generic [ref=f6e369]: Obriši
+          - generic [ref=f6e371]:
+            - generic [ref=f6e372]:
+              - heading "#19 GNK Dinamo – NK Osijek (18.10.2025.)" [level=3] [ref=f6e373]:
+                - generic [ref=f6e374]: "#19"
+                - generic [ref=f6e375]: GNK Dinamo – NK Osijek (18.10.2025.)
+              - 'generic "Phase: Past" [ref=f6e376]': Završeno
+            - generic [ref=f6e378]:
+              - generic [ref=f6e379]:
+                - term [ref=f6e380]:
+                  - generic [ref=f6e381]: 
+                  - text: Vrsta
+                - definition [ref=f6e382]: Match
+                - term [ref=f6e383]:
+                  - generic [ref=f6e384]: 
+                  - text: Timovi
+                - definition [ref=f6e385]: GNK Dinamo – NK Osijek
+                - term [ref=f6e386]:
+                  - generic [ref=f6e387]: 
+                  - text: Datum
+                - definition [ref=f6e388]: lis 18, 2025 18:00
+                - term [ref=f6e389]:
+                  - generic [ref=f6e390]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e391]: —
+                - term [ref=f6e392]:
+                  - generic [ref=f6e393]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e394]: —
+                - term [ref=f6e395]:
+                  - generic [ref=f6e396]: 
+                  - text: Kapacitet
+                - definition [ref=f6e397]: 400 mjesta
+                - term [ref=f6e398]:
+                  - generic [ref=f6e399]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e400]: €15,00
+                - term [ref=f6e401]:
+                  - generic [ref=f6e402]: 
+                  - text: Sezona
+                - definition [ref=f6e403]:
+                  - generic [ref=f6e404]: 2025/26
+                - term [ref=f6e406]:
+                  - generic [ref=f6e407]: 
+                  - text: Faza
+                - definition [ref=f6e408]: Prošli
+              - paragraph [ref=f6e409]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 2:1 NK Osijek."
+            - generic [ref=f6e411]:
+              - button " Uredi" [disabled] [ref=f6e412]:
+                - generic [ref=f6e413]: 
+                - generic [ref=f6e414]: Uredi
+              - link " Popunjenost uživo" [ref=f6e415] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=19
+                - generic [ref=f6e416]: 
+                - generic [ref=f6e417]: Popunjenost uživo
+              - link " Statistika" [ref=f6e418] [cursor=pointer]:
+                - /url: admin/event-statistics/19
+                - generic [ref=f6e419]: 
+                - generic [ref=f6e420]: Statistika
+              - button " Obriši" [ref=f6e421] [cursor=pointer]:
+                - generic [ref=f6e422]: 
+                - generic [ref=f6e423]: Obriši
+          - generic [ref=f6e425]:
+            - generic [ref=f6e426]:
+              - heading "#20 GNK Dinamo – HNK Rijeka (01.11.2025.)" [level=3] [ref=f6e427]:
+                - generic [ref=f6e428]: "#20"
+                - generic [ref=f6e429]: GNK Dinamo – HNK Rijeka (01.11.2025.)
+              - 'generic "Phase: Past" [ref=f6e430]': Završeno
+            - generic [ref=f6e432]:
+              - generic [ref=f6e433]:
+                - term [ref=f6e434]:
+                  - generic [ref=f6e435]: 
+                  - text: Vrsta
+                - definition [ref=f6e436]: Match
+                - term [ref=f6e437]:
+                  - generic [ref=f6e438]: 
+                  - text: Timovi
+                - definition [ref=f6e439]: GNK Dinamo – HNK Rijeka
+                - term [ref=f6e440]:
+                  - generic [ref=f6e441]: 
+                  - text: Datum
+                - definition [ref=f6e442]: stu 01, 2025 16:00
+                - term [ref=f6e443]:
+                  - generic [ref=f6e444]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e445]: —
+                - term [ref=f6e446]:
+                  - generic [ref=f6e447]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e448]: —
+                - term [ref=f6e449]:
+                  - generic [ref=f6e450]: 
+                  - text: Kapacitet
+                - definition [ref=f6e451]: 400 mjesta
+                - term [ref=f6e452]:
+                  - generic [ref=f6e453]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e454]: €15,00
+                - term [ref=f6e455]:
+                  - generic [ref=f6e456]: 
+                  - text: Sezona
+                - definition [ref=f6e457]:
+                  - generic [ref=f6e458]: 2025/26
+                - term [ref=f6e460]:
+                  - generic [ref=f6e461]: 
+                  - text: Faza
+                - definition [ref=f6e462]: Prošli
+              - paragraph [ref=f6e463]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 2:1 HNK Rijeka."
+            - generic [ref=f6e465]:
+              - button " Uredi" [disabled] [ref=f6e466]:
+                - generic [ref=f6e467]: 
+                - generic [ref=f6e468]: Uredi
+              - link " Popunjenost uživo" [ref=f6e469] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=20
+                - generic [ref=f6e470]: 
+                - generic [ref=f6e471]: Popunjenost uživo
+              - link " Statistika" [ref=f6e472] [cursor=pointer]:
+                - /url: admin/event-statistics/20
+                - generic [ref=f6e473]: 
+                - generic [ref=f6e474]: Statistika
+              - button " Obriši" [ref=f6e475] [cursor=pointer]:
+                - generic [ref=f6e476]: 
+                - generic [ref=f6e477]: Obriši
+          - generic [ref=f6e479]:
+            - generic [ref=f6e480]:
+              - heading "#21 GNK Dinamo – NK Varaždin (22.11.2025.)" [level=3] [ref=f6e481]:
+                - generic [ref=f6e482]: "#21"
+                - generic [ref=f6e483]: GNK Dinamo – NK Varaždin (22.11.2025.)
+              - 'generic "Phase: Past" [ref=f6e484]': Završeno
+            - generic [ref=f6e486]:
+              - generic [ref=f6e487]:
+                - term [ref=f6e488]:
+                  - generic [ref=f6e489]: 
+                  - text: Vrsta
+                - definition [ref=f6e490]: Match
+                - term [ref=f6e491]:
+                  - generic [ref=f6e492]: 
+                  - text: Timovi
+                - definition [ref=f6e493]: GNK Dinamo – NK Varaždin
+                - term [ref=f6e494]:
+                  - generic [ref=f6e495]: 
+                  - text: Datum
+                - definition [ref=f6e496]: stu 22, 2025 15:00
+                - term [ref=f6e497]:
+                  - generic [ref=f6e498]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e499]: —
+                - term [ref=f6e500]:
+                  - generic [ref=f6e501]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e502]: —
+                - term [ref=f6e503]:
+                  - generic [ref=f6e504]: 
+                  - text: Kapacitet
+                - definition [ref=f6e505]: 400 mjesta
+                - term [ref=f6e506]:
+                  - generic [ref=f6e507]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e508]: €15,00
+                - term [ref=f6e509]:
+                  - generic [ref=f6e510]: 
+                  - text: Sezona
+                - definition [ref=f6e511]:
+                  - generic [ref=f6e512]: 2025/26
+                - term [ref=f6e514]:
+                  - generic [ref=f6e515]: 
+                  - text: Faza
+                - definition [ref=f6e516]: Prošli
+              - paragraph [ref=f6e517]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 3:1 NK Varaždin."
+            - generic [ref=f6e519]:
+              - button " Uredi" [disabled] [ref=f6e520]:
+                - generic [ref=f6e521]: 
+                - generic [ref=f6e522]: Uredi
+              - link " Popunjenost uživo" [ref=f6e523] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=21
+                - generic [ref=f6e524]: 
+                - generic [ref=f6e525]: Popunjenost uživo
+              - link " Statistika" [ref=f6e526] [cursor=pointer]:
+                - /url: admin/event-statistics/21
+                - generic [ref=f6e527]: 
+                - generic [ref=f6e528]: Statistika
+              - button " Obriši" [ref=f6e529] [cursor=pointer]:
+                - generic [ref=f6e530]: 
+                - generic [ref=f6e531]: Obriši
+          - generic [ref=f6e533]:
+            - generic [ref=f6e534]:
+              - heading "#22 GNK Dinamo – HNK Hajduk Split (06.12.2025.)" [level=3] [ref=f6e535]:
+                - generic [ref=f6e536]: "#22"
+                - generic [ref=f6e537]: GNK Dinamo – HNK Hajduk Split (06.12.2025.)
+              - 'generic "Phase: Past" [ref=f6e538]': Završeno
+            - generic [ref=f6e540]:
+              - generic [ref=f6e541]:
+                - term [ref=f6e542]:
+                  - generic [ref=f6e543]: 
+                  - text: Vrsta
+                - definition [ref=f6e544]: Match
+                - term [ref=f6e545]:
+                  - generic [ref=f6e546]: 
+                  - text: Timovi
+                - definition [ref=f6e547]: GNK Dinamo – HNK Hajduk Split
+                - term [ref=f6e548]:
+                  - generic [ref=f6e549]: 
+                  - text: Datum
+                - definition [ref=f6e550]: pro 06, 2025 15:00
+                - term [ref=f6e551]:
+                  - generic [ref=f6e552]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e553]: —
+                - term [ref=f6e554]:
+                  - generic [ref=f6e555]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e556]: —
+                - term [ref=f6e557]:
+                  - generic [ref=f6e558]: 
+                  - text: Kapacitet
+                - definition [ref=f6e559]: 400 mjesta
+                - term [ref=f6e560]:
+                  - generic [ref=f6e561]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e562]: €25,00
+                - term [ref=f6e563]:
+                  - generic [ref=f6e564]: 
+                  - text: Sezona
+                - definition [ref=f6e565]:
+                  - generic [ref=f6e566]: 2025/26
+                - term [ref=f6e568]:
+                  - generic [ref=f6e569]: 
+                  - text: Faza
+                - definition [ref=f6e570]: Prošli
+              - paragraph [ref=f6e571]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 1:1 HNK Hajduk Split."
+            - generic [ref=f6e573]:
+              - button " Uredi" [disabled] [ref=f6e574]:
+                - generic [ref=f6e575]: 
+                - generic [ref=f6e576]: Uredi
+              - link " Popunjenost uživo" [ref=f6e577] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=22
+                - generic [ref=f6e578]: 
+                - generic [ref=f6e579]: Popunjenost uživo
+              - link " Statistika" [ref=f6e580] [cursor=pointer]:
+                - /url: admin/event-statistics/22
+                - generic [ref=f6e581]: 
+                - generic [ref=f6e582]: Statistika
+              - button " Obriši" [ref=f6e583] [cursor=pointer]:
+                - generic [ref=f6e584]: 
+                - generic [ref=f6e585]: Obriši
+          - generic [ref=f6e587]:
+            - generic [ref=f6e588]:
+              - heading "#23 GNK Dinamo – NK Lokomotiva Zagreb (20.12.2025.)" [level=3] [ref=f6e589]:
+                - generic [ref=f6e590]: "#23"
+                - generic [ref=f6e591]: GNK Dinamo – NK Lokomotiva Zagreb (20.12.2025.)
+              - 'generic "Phase: Past" [ref=f6e592]': Završeno
+            - generic [ref=f6e594]:
+              - generic [ref=f6e595]:
+                - term [ref=f6e596]:
+                  - generic [ref=f6e597]: 
+                  - text: Vrsta
+                - definition [ref=f6e598]: Match
+                - term [ref=f6e599]:
+                  - generic [ref=f6e600]: 
+                  - text: Timovi
+                - definition [ref=f6e601]: GNK Dinamo – NK Lokomotiva Zagreb
+                - term [ref=f6e602]:
+                  - generic [ref=f6e603]: 
+                  - text: Datum
+                - definition [ref=f6e604]: pro 20, 2025 17:45
+                - term [ref=f6e605]:
+                  - generic [ref=f6e606]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e607]: —
+                - term [ref=f6e608]:
+                  - generic [ref=f6e609]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e610]: —
+                - term [ref=f6e611]:
+                  - generic [ref=f6e612]: 
+                  - text: Kapacitet
+                - definition [ref=f6e613]: 400 mjesta
+                - term [ref=f6e614]:
+                  - generic [ref=f6e615]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e616]: €15,00
+                - term [ref=f6e617]:
+                  - generic [ref=f6e618]: 
+                  - text: Sezona
+                - definition [ref=f6e619]:
+                  - generic [ref=f6e620]: 2025/26
+                - term [ref=f6e622]:
+                  - generic [ref=f6e623]: 
+                  - text: Faza
+                - definition [ref=f6e624]: Prošli
+              - paragraph [ref=f6e625]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 2:0 NK Lokomotiva Zagreb."
+            - generic [ref=f6e627]:
+              - button " Uredi" [disabled] [ref=f6e628]:
+                - generic [ref=f6e629]: 
+                - generic [ref=f6e630]: Uredi
+              - link " Popunjenost uživo" [ref=f6e631] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=23
+                - generic [ref=f6e632]: 
+                - generic [ref=f6e633]: Popunjenost uživo
+              - link " Statistika" [ref=f6e634] [cursor=pointer]:
+                - /url: admin/event-statistics/23
+                - generic [ref=f6e635]: 
+                - generic [ref=f6e636]: Statistika
+              - button " Obriši" [ref=f6e637] [cursor=pointer]:
+                - generic [ref=f6e638]: 
+                - generic [ref=f6e639]: Obriši
+          - generic [ref=f6e641]:
+            - generic [ref=f6e642]:
+              - heading "#24 GNK Dinamo – HNK Vukovar 1991 (02.02.2026.)" [level=3] [ref=f6e643]:
+                - generic [ref=f6e644]: "#24"
+                - generic [ref=f6e645]: GNK Dinamo – HNK Vukovar 1991 (02.02.2026.)
+              - 'generic "Phase: Past" [ref=f6e646]': Završeno
+            - generic [ref=f6e648]:
+              - generic [ref=f6e649]:
+                - term [ref=f6e650]:
+                  - generic [ref=f6e651]: 
+                  - text: Vrsta
+                - definition [ref=f6e652]: Match
+                - term [ref=f6e653]:
+                  - generic [ref=f6e654]: 
+                  - text: Timovi
+                - definition [ref=f6e655]: GNK Dinamo – HNK Vukovar 1991
+                - term [ref=f6e656]:
+                  - generic [ref=f6e657]: 
+                  - text: Datum
+                - definition [ref=f6e658]: velj 02, 2026 18:00
+                - term [ref=f6e659]:
+                  - generic [ref=f6e660]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e661]: —
+                - term [ref=f6e662]:
+                  - generic [ref=f6e663]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e664]: —
+                - term [ref=f6e665]:
+                  - generic [ref=f6e666]: 
+                  - text: Kapacitet
+                - definition [ref=f6e667]: 400 mjesta
+                - term [ref=f6e668]:
+                  - generic [ref=f6e669]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e670]: €15,00
+                - term [ref=f6e671]:
+                  - generic [ref=f6e672]: 
+                  - text: Sezona
+                - definition [ref=f6e673]:
+                  - generic [ref=f6e674]: 2025/26
+                - term [ref=f6e676]:
+                  - generic [ref=f6e677]: 
+                  - text: Faza
+                - definition [ref=f6e678]: Prošli
+              - paragraph [ref=f6e679]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 3:1 HNK Vukovar 1991."
+            - generic [ref=f6e681]:
+              - button " Uredi" [disabled] [ref=f6e682]:
+                - generic [ref=f6e683]: 
+                - generic [ref=f6e684]: Uredi
+              - link " Popunjenost uživo" [ref=f6e685] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=24
+                - generic [ref=f6e686]: 
+                - generic [ref=f6e687]: Popunjenost uživo
+              - link " Statistika" [ref=f6e688] [cursor=pointer]:
+                - /url: admin/event-statistics/24
+                - generic [ref=f6e689]: 
+                - generic [ref=f6e690]: Statistika
+              - button " Obriši" [ref=f6e691] [cursor=pointer]:
+                - generic [ref=f6e692]: 
+                - generic [ref=f6e693]: Obriši
+          - generic [ref=f6e695]:
+            - generic [ref=f6e696]:
+              - heading "#25 GNK Dinamo – NK Istra 1961 (14.02.2026.)" [level=3] [ref=f6e697]:
+                - generic [ref=f6e698]: "#25"
+                - generic [ref=f6e699]: GNK Dinamo – NK Istra 1961 (14.02.2026.)
+              - 'generic "Phase: Past" [ref=f6e700]': Završeno
+            - generic [ref=f6e702]:
+              - generic [ref=f6e703]:
+                - term [ref=f6e704]:
+                  - generic [ref=f6e705]: 
+                  - text: Vrsta
+                - definition [ref=f6e706]: Match
+                - term [ref=f6e707]:
+                  - generic [ref=f6e708]: 
+                  - text: Timovi
+                - definition [ref=f6e709]: GNK Dinamo – NK Istra 1961
+                - term [ref=f6e710]:
+                  - generic [ref=f6e711]: 
+                  - text: Datum
+                - definition [ref=f6e712]: velj 14, 2026 15:00
+                - term [ref=f6e713]:
+                  - generic [ref=f6e714]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e715]: —
+                - term [ref=f6e716]:
+                  - generic [ref=f6e717]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e718]: —
+                - term [ref=f6e719]:
+                  - generic [ref=f6e720]: 
+                  - text: Kapacitet
+                - definition [ref=f6e721]: 400 mjesta
+                - term [ref=f6e722]:
+                  - generic [ref=f6e723]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e724]: €15,00
+                - term [ref=f6e725]:
+                  - generic [ref=f6e726]: 
+                  - text: Sezona
+                - definition [ref=f6e727]:
+                  - generic [ref=f6e728]: 2025/26
+                - term [ref=f6e730]:
+                  - generic [ref=f6e731]: 
+                  - text: Faza
+                - definition [ref=f6e732]: Prošli
+              - paragraph [ref=f6e733]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 4:0 NK Istra 1961."
+            - generic [ref=f6e735]:
+              - button " Uredi" [disabled] [ref=f6e736]:
+                - generic [ref=f6e737]: 
+                - generic [ref=f6e738]: Uredi
+              - link " Popunjenost uživo" [ref=f6e739] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=25
+                - generic [ref=f6e740]: 
+                - generic [ref=f6e741]: Popunjenost uživo
+              - link " Statistika" [ref=f6e742] [cursor=pointer]:
+                - /url: admin/event-statistics/25
+                - generic [ref=f6e743]: 
+                - generic [ref=f6e744]: Statistika
+              - button " Obriši" [ref=f6e745] [cursor=pointer]:
+                - generic [ref=f6e746]: 
+                - generic [ref=f6e747]: Obriši
+          - generic [ref=f6e749]:
+            - generic [ref=f6e750]:
+              - heading "#26 GNK Dinamo – HNK Gorica (01.03.2026.)" [level=3] [ref=f6e751]:
+                - generic [ref=f6e752]: "#26"
+                - generic [ref=f6e753]: GNK Dinamo – HNK Gorica (01.03.2026.)
+              - 'generic "Phase: Past" [ref=f6e754]': Završeno
+            - generic [ref=f6e756]:
+              - generic [ref=f6e757]:
+                - term [ref=f6e758]:
+                  - generic [ref=f6e759]: 
+                  - text: Vrsta
+                - definition [ref=f6e760]: Match
+                - term [ref=f6e761]:
+                  - generic [ref=f6e762]: 
+                  - text: Timovi
+                - definition [ref=f6e763]: GNK Dinamo – HNK Gorica
+                - term [ref=f6e764]:
+                  - generic [ref=f6e765]: 
+                  - text: Datum
+                - definition [ref=f6e766]: ožu 01, 2026 17:15
+                - term [ref=f6e767]:
+                  - generic [ref=f6e768]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e769]: —
+                - term [ref=f6e770]:
+                  - generic [ref=f6e771]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e772]: —
+                - term [ref=f6e773]:
+                  - generic [ref=f6e774]: 
+                  - text: Kapacitet
+                - definition [ref=f6e775]: 400 mjesta
+                - term [ref=f6e776]:
+                  - generic [ref=f6e777]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e778]: €15,00
+                - term [ref=f6e779]:
+                  - generic [ref=f6e780]: 
+                  - text: Sezona
+                - definition [ref=f6e781]:
+                  - generic [ref=f6e782]: 2025/26
+                - term [ref=f6e784]:
+                  - generic [ref=f6e785]: 
+                  - text: Faza
+                - definition [ref=f6e786]: Prošli
+              - paragraph [ref=f6e787]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 4:2 HNK Gorica."
+            - generic [ref=f6e789]:
+              - button " Uredi" [disabled] [ref=f6e790]:
+                - generic [ref=f6e791]: 
+                - generic [ref=f6e792]: Uredi
+              - link " Popunjenost uživo" [ref=f6e793] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=26
+                - generic [ref=f6e794]: 
+                - generic [ref=f6e795]: Popunjenost uživo
+              - link " Statistika" [ref=f6e796] [cursor=pointer]:
+                - /url: admin/event-statistics/26
+                - generic [ref=f6e797]: 
+                - generic [ref=f6e798]: Statistika
+              - button " Obriši" [ref=f6e799] [cursor=pointer]:
+                - generic [ref=f6e800]: 
+                - generic [ref=f6e801]: Obriši
+          - generic [ref=f6e803]:
+            - generic [ref=f6e804]:
+              - heading "#27 GNK Dinamo – NK Slaven Belupo (14.03.2026.)" [level=3] [ref=f6e805]:
+                - generic [ref=f6e806]: "#27"
+                - generic [ref=f6e807]: GNK Dinamo – NK Slaven Belupo (14.03.2026.)
+              - 'generic "Phase: Past" [ref=f6e808]': Završeno
+            - generic [ref=f6e810]:
+              - generic [ref=f6e811]:
+                - term [ref=f6e812]:
+                  - generic [ref=f6e813]: 
+                  - text: Vrsta
+                - definition [ref=f6e814]: Match
+                - term [ref=f6e815]:
+                  - generic [ref=f6e816]: 
+                  - text: Timovi
+                - definition [ref=f6e817]: GNK Dinamo – NK Slaven Belupo
+                - term [ref=f6e818]:
+                  - generic [ref=f6e819]: 
+                  - text: Datum
+                - definition [ref=f6e820]: ožu 14, 2026 17:15
+                - term [ref=f6e821]:
+                  - generic [ref=f6e822]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e823]: —
+                - term [ref=f6e824]:
+                  - generic [ref=f6e825]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e826]: —
+                - term [ref=f6e827]:
+                  - generic [ref=f6e828]: 
+                  - text: Kapacitet
+                - definition [ref=f6e829]: 400 mjesta
+                - term [ref=f6e830]:
+                  - generic [ref=f6e831]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e832]: €15,00
+                - term [ref=f6e833]:
+                  - generic [ref=f6e834]: 
+                  - text: Sezona
+                - definition [ref=f6e835]:
+                  - generic [ref=f6e836]: 2025/26
+                - term [ref=f6e838]:
+                  - generic [ref=f6e839]: 
+                  - text: Faza
+                - definition [ref=f6e840]: Prošli
+              - paragraph [ref=f6e841]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 4:2 NK Slaven Belupo."
+            - generic [ref=f6e843]:
+              - button " Uredi" [disabled] [ref=f6e844]:
+                - generic [ref=f6e845]: 
+                - generic [ref=f6e846]: Uredi
+              - link " Popunjenost uživo" [ref=f6e847] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=27
+                - generic [ref=f6e848]: 
+                - generic [ref=f6e849]: Popunjenost uživo
+              - link " Statistika" [ref=f6e850] [cursor=pointer]:
+                - /url: admin/event-statistics/27
+                - generic [ref=f6e851]: 
+                - generic [ref=f6e852]: Statistika
+              - button " Obriši" [ref=f6e853] [cursor=pointer]:
+                - generic [ref=f6e854]: 
+                - generic [ref=f6e855]: Obriši
+          - generic [ref=f6e857]:
+            - generic [ref=f6e858]:
+              - heading "#28 GNK Dinamo – NK Osijek (04.04.2026.)" [level=3] [ref=f6e859]:
+                - generic [ref=f6e860]: "#28"
+                - generic [ref=f6e861]: GNK Dinamo – NK Osijek (04.04.2026.)
+              - 'generic "Phase: Past" [ref=f6e862]': Završeno
+            - generic [ref=f6e864]:
+              - generic [ref=f6e865]:
+                - term [ref=f6e866]:
+                  - generic [ref=f6e867]: 
+                  - text: Vrsta
+                - definition [ref=f6e868]: Match
+                - term [ref=f6e869]:
+                  - generic [ref=f6e870]: 
+                  - text: Timovi
+                - definition [ref=f6e871]: GNK Dinamo – NK Osijek
+                - term [ref=f6e872]:
+                  - generic [ref=f6e873]: 
+                  - text: Datum
+                - definition [ref=f6e874]: tra 04, 2026 15:00
+                - term [ref=f6e875]:
+                  - generic [ref=f6e876]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e877]: —
+                - term [ref=f6e878]:
+                  - generic [ref=f6e879]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e880]: —
+                - term [ref=f6e881]:
+                  - generic [ref=f6e882]: 
+                  - text: Kapacitet
+                - definition [ref=f6e883]: 400 mjesta
+                - term [ref=f6e884]:
+                  - generic [ref=f6e885]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e886]: €15,00
+                - term [ref=f6e887]:
+                  - generic [ref=f6e888]: 
+                  - text: Sezona
+                - definition [ref=f6e889]:
+                  - generic [ref=f6e890]: 2025/26
+                - term [ref=f6e892]:
+                  - generic [ref=f6e893]: 
+                  - text: Faza
+                - definition [ref=f6e894]: Prošli
+              - paragraph [ref=f6e895]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 7:0 NK Osijek."
+            - generic [ref=f6e897]:
+              - button " Uredi" [disabled] [ref=f6e898]:
+                - generic [ref=f6e899]: 
+                - generic [ref=f6e900]: Uredi
+              - link " Popunjenost uživo" [ref=f6e901] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=28
+                - generic [ref=f6e902]: 
+                - generic [ref=f6e903]: Popunjenost uživo
+              - link " Statistika" [ref=f6e904] [cursor=pointer]:
+                - /url: admin/event-statistics/28
+                - generic [ref=f6e905]: 
+                - generic [ref=f6e906]: Statistika
+              - button " Obriši" [ref=f6e907] [cursor=pointer]:
+                - generic [ref=f6e908]: 
+                - generic [ref=f6e909]: Obriši
+          - generic [ref=f6e911]:
+            - generic [ref=f6e912]:
+              - heading "#29 GNK Dinamo – HNK Rijeka (18.04.2026.)" [level=3] [ref=f6e913]:
+                - generic [ref=f6e914]: "#29"
+                - generic [ref=f6e915]: GNK Dinamo – HNK Rijeka (18.04.2026.)
+              - 'generic "Phase: Past" [ref=f6e916]': Završeno
+            - generic [ref=f6e918]:
+              - generic [ref=f6e919]:
+                - term [ref=f6e920]:
+                  - generic [ref=f6e921]: 
+                  - text: Vrsta
+                - definition [ref=f6e922]: Match
+                - term [ref=f6e923]:
+                  - generic [ref=f6e924]: 
+                  - text: Timovi
+                - definition [ref=f6e925]: GNK Dinamo – HNK Rijeka
+                - term [ref=f6e926]:
+                  - generic [ref=f6e927]: 
+                  - text: Datum
+                - definition [ref=f6e928]: tra 18, 2026 16:00
+                - term [ref=f6e929]:
+                  - generic [ref=f6e930]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e931]: —
+                - term [ref=f6e932]:
+                  - generic [ref=f6e933]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e934]: —
+                - term [ref=f6e935]:
+                  - generic [ref=f6e936]: 
+                  - text: Kapacitet
+                - definition [ref=f6e937]: 400 mjesta
+                - term [ref=f6e938]:
+                  - generic [ref=f6e939]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e940]: €15,00
+                - term [ref=f6e941]:
+                  - generic [ref=f6e942]: 
+                  - text: Sezona
+                - definition [ref=f6e943]:
+                  - generic [ref=f6e944]: 2025/26
+                - term [ref=f6e946]:
+                  - generic [ref=f6e947]: 
+                  - text: Faza
+                - definition [ref=f6e948]: Prošli
+              - paragraph [ref=f6e949]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 2:2 HNK Rijeka."
+            - generic [ref=f6e951]:
+              - button " Uredi" [disabled] [ref=f6e952]:
+                - generic [ref=f6e953]: 
+                - generic [ref=f6e954]: Uredi
+              - link " Popunjenost uživo" [ref=f6e955] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=29
+                - generic [ref=f6e956]: 
+                - generic [ref=f6e957]: Popunjenost uživo
+              - link " Statistika" [ref=f6e958] [cursor=pointer]:
+                - /url: admin/event-statistics/29
+                - generic [ref=f6e959]: 
+                - generic [ref=f6e960]: Statistika
+              - button " Obriši" [ref=f6e961] [cursor=pointer]:
+                - generic [ref=f6e962]: 
+                - generic [ref=f6e963]: Obriši
+          - generic [ref=f6e965]:
+            - generic [ref=f6e966]:
+              - heading "#30 GNK Dinamo – NK Varaždin (26.04.2026.)" [level=3] [ref=f6e967]:
+                - generic [ref=f6e968]: "#30"
+                - generic [ref=f6e969]: GNK Dinamo – NK Varaždin (26.04.2026.)
+              - 'generic "Phase: Past" [ref=f6e970]': Završeno
+            - generic [ref=f6e972]:
+              - generic [ref=f6e973]:
+                - term [ref=f6e974]:
+                  - generic [ref=f6e975]: 
+                  - text: Vrsta
+                - definition [ref=f6e976]: Match
+                - term [ref=f6e977]:
+                  - generic [ref=f6e978]: 
+                  - text: Timovi
+                - definition [ref=f6e979]: GNK Dinamo – NK Varaždin
+                - term [ref=f6e980]:
+                  - generic [ref=f6e981]: 
+                  - text: Datum
+                - definition [ref=f6e982]: tra 26, 2026 18:45
+                - term [ref=f6e983]:
+                  - generic [ref=f6e984]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e985]: —
+                - term [ref=f6e986]:
+                  - generic [ref=f6e987]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e988]: —
+                - term [ref=f6e989]:
+                  - generic [ref=f6e990]: 
+                  - text: Kapacitet
+                - definition [ref=f6e991]: 400 mjesta
+                - term [ref=f6e992]:
+                  - generic [ref=f6e993]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e994]: €15,00
+                - term [ref=f6e995]:
+                  - generic [ref=f6e996]: 
+                  - text: Sezona
+                - definition [ref=f6e997]:
+                  - generic [ref=f6e998]: 2025/26
+                - term [ref=f6e1000]:
+                  - generic [ref=f6e1001]: 
+                  - text: Faza
+                - definition [ref=f6e1002]: Prošli
+              - paragraph [ref=f6e1003]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 2:1 NK Varaždin."
+            - generic [ref=f6e1005]:
+              - button " Uredi" [disabled] [ref=f6e1006]:
+                - generic [ref=f6e1007]: 
+                - generic [ref=f6e1008]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1009] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=30
+                - generic [ref=f6e1010]: 
+                - generic [ref=f6e1011]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1012] [cursor=pointer]:
+                - /url: admin/event-statistics/30
+                - generic [ref=f6e1013]: 
+                - generic [ref=f6e1014]: Statistika
+              - button " Obriši" [ref=f6e1015] [cursor=pointer]:
+                - generic [ref=f6e1016]: 
+                - generic [ref=f6e1017]: Obriši
+          - generic [ref=f6e1019]:
+            - generic [ref=f6e1020]:
+              - heading "#31 GNK Dinamo – HNK Hajduk Split (09.05.2026.)" [level=3] [ref=f6e1021]:
+                - generic [ref=f6e1022]: "#31"
+                - generic [ref=f6e1023]: GNK Dinamo – HNK Hajduk Split (09.05.2026.)
+              - 'generic "Phase: Past" [ref=f6e1024]': Završeno
+            - generic [ref=f6e1026]:
+              - generic [ref=f6e1027]:
+                - term [ref=f6e1028]:
+                  - generic [ref=f6e1029]: 
+                  - text: Vrsta
+                - definition [ref=f6e1030]: Match
+                - term [ref=f6e1031]:
+                  - generic [ref=f6e1032]: 
+                  - text: Timovi
+                - definition [ref=f6e1033]: GNK Dinamo – HNK Hajduk Split
+                - term [ref=f6e1034]:
+                  - generic [ref=f6e1035]: 
+                  - text: Datum
+                - definition [ref=f6e1036]: svi 09, 2026 16:00
+                - term [ref=f6e1037]:
+                  - generic [ref=f6e1038]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1039]: —
+                - term [ref=f6e1040]:
+                  - generic [ref=f6e1041]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1042]: —
+                - term [ref=f6e1043]:
+                  - generic [ref=f6e1044]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1045]: 400 mjesta
+                - term [ref=f6e1046]:
+                  - generic [ref=f6e1047]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1048]: €25,00
+                - term [ref=f6e1049]:
+                  - generic [ref=f6e1050]: 
+                  - text: Sezona
+                - definition [ref=f6e1051]:
+                  - generic [ref=f6e1052]: 2025/26
+                - term [ref=f6e1054]:
+                  - generic [ref=f6e1055]: 
+                  - text: Faza
+                - definition [ref=f6e1056]: Prošli
+              - paragraph [ref=f6e1057]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 2:0 HNK Hajduk Split."
+            - generic [ref=f6e1059]:
+              - button " Uredi" [disabled] [ref=f6e1060]:
+                - generic [ref=f6e1061]: 
+                - generic [ref=f6e1062]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1063] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=31
+                - generic [ref=f6e1064]: 
+                - generic [ref=f6e1065]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1066] [cursor=pointer]:
+                - /url: admin/event-statistics/31
+                - generic [ref=f6e1067]: 
+                - generic [ref=f6e1068]: Statistika
+              - button " Obriši" [ref=f6e1069] [cursor=pointer]:
+                - generic [ref=f6e1070]: 
+                - generic [ref=f6e1071]: Obriši
+          - generic [ref=f6e1073]:
+            - generic [ref=f6e1074]:
+              - heading "#32 GNK Dinamo – NK Lokomotiva Zagreb (23.05.2026.)" [level=3] [ref=f6e1075]:
+                - generic [ref=f6e1076]: "#32"
+                - generic [ref=f6e1077]: GNK Dinamo – NK Lokomotiva Zagreb (23.05.2026.)
+              - 'generic "Phase: Past" [ref=f6e1078]': Završeno
+            - generic [ref=f6e1080]:
+              - generic [ref=f6e1081]:
+                - term [ref=f6e1082]:
+                  - generic [ref=f6e1083]: 
+                  - text: Vrsta
+                - definition [ref=f6e1084]: Match
+                - term [ref=f6e1085]:
+                  - generic [ref=f6e1086]: 
+                  - text: Timovi
+                - definition [ref=f6e1087]: GNK Dinamo – NK Lokomotiva Zagreb
+                - term [ref=f6e1088]:
+                  - generic [ref=f6e1089]: 
+                  - text: Datum
+                - definition [ref=f6e1090]: svi 23, 2026 18:45
+                - term [ref=f6e1091]:
+                  - generic [ref=f6e1092]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1093]: —
+                - term [ref=f6e1094]:
+                  - generic [ref=f6e1095]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1096]: —
+                - term [ref=f6e1097]:
+                  - generic [ref=f6e1098]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1099]: 400 mjesta
+                - term [ref=f6e1100]:
+                  - generic [ref=f6e1101]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1102]: €15,00
+                - term [ref=f6e1103]:
+                  - generic [ref=f6e1104]: 
+                  - text: Sezona
+                - definition [ref=f6e1105]:
+                  - generic [ref=f6e1106]: 2025/26
+                - term [ref=f6e1108]:
+                  - generic [ref=f6e1109]: 
+                  - text: Faza
+                - definition [ref=f6e1110]: Prošli
+              - paragraph [ref=f6e1111]: "SuperSport HNL 2025/26 · domaća utakmica na Maksimiru · konačni rezultat: GNK Dinamo 0:0 NK Lokomotiva Zagreb."
+            - generic [ref=f6e1113]:
+              - button " Uredi" [disabled] [ref=f6e1114]:
+                - generic [ref=f6e1115]: 
+                - generic [ref=f6e1116]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1117] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=32
+                - generic [ref=f6e1118]: 
+                - generic [ref=f6e1119]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1120] [cursor=pointer]:
+                - /url: admin/event-statistics/32
+                - generic [ref=f6e1121]: 
+                - generic [ref=f6e1122]: Statistika
+              - button " Obriši" [ref=f6e1123] [cursor=pointer]:
+                - generic [ref=f6e1124]: 
+                - generic [ref=f6e1125]: Obriši
+          - generic [ref=f6e1127]:
+            - generic [ref=f6e1128]:
+              - heading "#10 Plua - osijek" [level=3] [ref=f6e1129]:
+                - generic [ref=f6e1130]: "#10"
+                - generic [ref=f6e1131]: Plua - osijek
+              - 'generic "Phase: Past" [ref=f6e1132]': Završeno
+            - generic [ref=f6e1134]:
+              - generic [ref=f6e1135]:
+                - term [ref=f6e1136]:
+                  - generic [ref=f6e1137]: 
+                  - text: Vrsta
+                - definition [ref=f6e1138]: Football
+                - term [ref=f6e1139]:
+                  - generic [ref=f6e1140]: 
+                  - text: Datum
+                - definition [ref=f6e1141]: srp 04, 2026 15:45
+                - term [ref=f6e1142]:
+                  - generic [ref=f6e1143]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1144]: —
+                - term [ref=f6e1145]:
+                  - generic [ref=f6e1146]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1147]: —
+                - term [ref=f6e1148]:
+                  - generic [ref=f6e1149]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1150]: 400 mjesta
+                - term [ref=f6e1151]:
+                  - generic [ref=f6e1152]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1153]: €45,00
+                - term [ref=f6e1154]:
+                  - generic [ref=f6e1155]: 
+                  - text: Sezona
+                - definition [ref=f6e1156]:
+                  - generic [ref=f6e1157]: 2026/2027
+                - term [ref=f6e1159]:
+                  - generic [ref=f6e1160]: 
+                  - text: Faza
+                - definition [ref=f6e1161]: Prošli
+              - paragraph [ref=f6e1162]: Simulated event
+            - generic [ref=f6e1164]:
+              - button " Uredi" [disabled] [ref=f6e1165]:
+                - generic [ref=f6e1166]: 
+                - generic [ref=f6e1167]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1168] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=10
+                - generic [ref=f6e1169]: 
+                - generic [ref=f6e1170]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1171] [cursor=pointer]:
+                - /url: admin/event-statistics/10
+                - generic [ref=f6e1172]: 
+                - generic [ref=f6e1173]: Statistika
+              - button " Obriši" [ref=f6e1174] [cursor=pointer]:
+                - generic [ref=f6e1175]: 
+                - generic [ref=f6e1176]: Obriši
+          - generic [ref=f6e1178]:
+            - generic [ref=f6e1179]:
+              - heading "#12 pula zagreb" [level=3] [ref=f6e1180]:
+                - generic [ref=f6e1181]: "#12"
+                - generic [ref=f6e1182]: pula zagreb
+              - 'generic "Phase: Past" [ref=f6e1183]': Završeno
+            - generic [ref=f6e1185]:
+              - generic [ref=f6e1186]:
+                - term [ref=f6e1187]:
+                  - generic [ref=f6e1188]: 
+                  - text: Vrsta
+                - definition [ref=f6e1189]: Football
+                - term [ref=f6e1190]:
+                  - generic [ref=f6e1191]: 
+                  - text: Datum
+                - definition [ref=f6e1192]: srp 05, 2026 12:27
+                - term [ref=f6e1193]:
+                  - generic [ref=f6e1194]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1195]: —
+                - term [ref=f6e1196]:
+                  - generic [ref=f6e1197]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1198]: —
+                - term [ref=f6e1199]:
+                  - generic [ref=f6e1200]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1201]: 400 mjesta
+                - term [ref=f6e1202]:
+                  - generic [ref=f6e1203]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1204]: €45,00
+                - term [ref=f6e1205]:
+                  - generic [ref=f6e1206]: 
+                  - text: Sezona
+                - definition [ref=f6e1207]:
+                  - generic [ref=f6e1208]: 2026/2027
+                - term [ref=f6e1210]:
+                  - generic [ref=f6e1211]: 
+                  - text: Faza
+                - definition [ref=f6e1212]: Prošli
+              - paragraph [ref=f6e1213]: Simulated event
+            - generic [ref=f6e1215]:
+              - button " Uredi" [disabled] [ref=f6e1216]:
+                - generic [ref=f6e1217]: 
+                - generic [ref=f6e1218]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1219] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=12
+                - generic [ref=f6e1220]: 
+                - generic [ref=f6e1221]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1222] [cursor=pointer]:
+                - /url: admin/event-statistics/12
+                - generic [ref=f6e1223]: 
+                - generic [ref=f6e1224]: Statistika
+              - button " Obriši" [ref=f6e1225] [cursor=pointer]:
+                - generic [ref=f6e1226]: 
+                - generic [ref=f6e1227]: Obriši
+          - generic [ref=f6e1229]:
+            - generic [ref=f6e1230]:
+              - heading "#13 rijeka dinaamo" [level=3] [ref=f6e1231]:
+                - generic [ref=f6e1232]: "#13"
+                - generic [ref=f6e1233]: rijeka dinaamo
+              - 'generic "Phase: Past" [ref=f6e1234]': Završeno
+            - generic [ref=f6e1236]:
+              - generic [ref=f6e1237]:
+                - term [ref=f6e1238]:
+                  - generic [ref=f6e1239]: 
+                  - text: Vrsta
+                - definition [ref=f6e1240]: Football
+                - term [ref=f6e1241]:
+                  - generic [ref=f6e1242]: 
+                  - text: Datum
+                - definition [ref=f6e1243]: srp 06, 2026 23:08
+                - term [ref=f6e1244]:
+                  - generic [ref=f6e1245]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1246]: —
+                - term [ref=f6e1247]:
+                  - generic [ref=f6e1248]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1249]: —
+                - term [ref=f6e1250]:
+                  - generic [ref=f6e1251]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1252]: 400 mjesta
+                - term [ref=f6e1253]:
+                  - generic [ref=f6e1254]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1255]: €45,00
+                - term [ref=f6e1256]:
+                  - generic [ref=f6e1257]: 
+                  - text: Sezona
+                - definition [ref=f6e1258]:
+                  - generic [ref=f6e1259]: 2026/2027
+                - term [ref=f6e1261]:
+                  - generic [ref=f6e1262]: 
+                  - text: Faza
+                - definition [ref=f6e1263]: Prošli
+              - paragraph [ref=f6e1264]: Simulated event
+            - generic [ref=f6e1266]:
+              - button " Uredi" [disabled] [ref=f6e1267]:
+                - generic [ref=f6e1268]: 
+                - generic [ref=f6e1269]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1270] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=13
+                - generic [ref=f6e1271]: 
+                - generic [ref=f6e1272]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1273] [cursor=pointer]:
+                - /url: admin/event-statistics/13
+                - generic [ref=f6e1274]: 
+                - generic [ref=f6e1275]: Statistika
+              - button " Obriši" [ref=f6e1276] [cursor=pointer]:
+                - generic [ref=f6e1277]: 
+                - generic [ref=f6e1278]: Obriši
+          - generic [ref=f6e1280]:
+            - generic [ref=f6e1281]:
+              - heading "#33 GNK Dinamo – HNK Rijeka (13.07.2026.)" [level=3] [ref=f6e1282]:
+                - generic [ref=f6e1283]: "#33"
+                - generic [ref=f6e1284]: GNK Dinamo – HNK Rijeka (13.07.2026.)
+              - 'generic "Phase: Past" [ref=f6e1285]': Završeno
+            - generic [ref=f6e1287]:
+              - generic [ref=f6e1288]:
+                - term [ref=f6e1289]:
+                  - generic [ref=f6e1290]: 
+                  - text: Vrsta
+                - definition [ref=f6e1291]: Match
+                - term [ref=f6e1292]:
+                  - generic [ref=f6e1293]: 
+                  - text: Timovi
+                - definition [ref=f6e1294]: GNK Dinamo – HNK Rijeka
+                - term [ref=f6e1295]:
+                  - generic [ref=f6e1296]: 
+                  - text: Datum
+                - definition [ref=f6e1297]: srp 13, 2026 20:32
+                - term [ref=f6e1298]:
+                  - generic [ref=f6e1299]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1300]: —
+                - term [ref=f6e1301]:
+                  - generic [ref=f6e1302]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1303]: —
+                - term [ref=f6e1304]:
+                  - generic [ref=f6e1305]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1306]: 400 mjesta
+                - term [ref=f6e1307]:
+                  - generic [ref=f6e1308]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1309]: €25,00
+                - term [ref=f6e1310]:
+                  - generic [ref=f6e1311]: 
+                  - text: Sezona
+                - definition [ref=f6e1312]: —
+                - term [ref=f6e1313]:
+                  - generic [ref=f6e1314]: 
+                  - text: Faza
+                - definition [ref=f6e1315]: Prošli
+              - paragraph [ref=f6e1316]: Live test match created for current game-day operations.
+            - generic [ref=f6e1318]:
+              - button " Uredi" [disabled] [ref=f6e1319]:
+                - generic [ref=f6e1320]: 
+                - generic [ref=f6e1321]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1322] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=33
+                - generic [ref=f6e1323]: 
+                - generic [ref=f6e1324]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1325] [cursor=pointer]:
+                - /url: admin/event-statistics/33
+                - generic [ref=f6e1326]: 
+                - generic [ref=f6e1327]: Statistika
+              - button " Obriši" [ref=f6e1328] [cursor=pointer]:
+                - generic [ref=f6e1329]: 
+                - generic [ref=f6e1330]: Obriši
+          - generic [ref=f6e1332]:
+            - generic [ref=f6e1333]:
+              - heading "#14 Istra - Zagreb" [level=3] [ref=f6e1334]:
+                - generic [ref=f6e1335]: "#14"
+                - generic [ref=f6e1336]: Istra - Zagreb
+              - 'generic "Phase: Past" [ref=f6e1337]': Završeno
+            - generic [ref=f6e1339]:
+              - generic [ref=f6e1340]:
+                - term [ref=f6e1341]:
+                  - generic [ref=f6e1342]: 
+                  - text: Vrsta
+                - definition [ref=f6e1343]: Football
+                - term [ref=f6e1344]:
+                  - generic [ref=f6e1345]: 
+                  - text: Datum
+                - definition [ref=f6e1346]: srp 14, 2026 20:00
+                - term [ref=f6e1347]:
+                  - generic [ref=f6e1348]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1349]: —
+                - term [ref=f6e1350]:
+                  - generic [ref=f6e1351]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1352]: srp 14, 20:30 → srp 14, 22:45
+                - term [ref=f6e1353]:
+                  - generic [ref=f6e1354]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1355]: 400 mjesta
+                - term [ref=f6e1356]:
+                  - generic [ref=f6e1357]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1358]: €45,00
+                - term [ref=f6e1359]:
+                  - generic [ref=f6e1360]: 
+                  - text: Sezona
+                - definition [ref=f6e1361]:
+                  - generic [ref=f6e1362]: 2026/2027
+                - term [ref=f6e1364]:
+                  - generic [ref=f6e1365]: 
+                  - text: Faza
+                - definition [ref=f6e1366]: Prošli
+              - paragraph [ref=f6e1367]: Simulated event
+            - generic [ref=f6e1369]:
+              - button " Uredi" [disabled] [ref=f6e1370]:
+                - generic [ref=f6e1371]: 
+                - generic [ref=f6e1372]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1373] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=14
+                - generic [ref=f6e1374]: 
+                - generic [ref=f6e1375]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1376] [cursor=pointer]:
+                - /url: admin/event-statistics/14
+                - generic [ref=f6e1377]: 
+                - generic [ref=f6e1378]: Statistika
+              - button " Obriši" [ref=f6e1379] [cursor=pointer]:
+                - generic [ref=f6e1380]: 
+                - generic [ref=f6e1381]: Obriši
+          - generic [ref=f6e1383]:
+            - generic [ref=f6e1384]:
+              - heading "#34 Istra222 - Zagreb222" [level=3] [ref=f6e1385]:
+                - generic [ref=f6e1386]: "#34"
+                - generic [ref=f6e1387]: Istra222 - Zagreb222
+              - 'generic "Phase: Past" [ref=f6e1388]': Završeno
+            - generic [ref=f6e1390]:
+              - generic [ref=f6e1391]:
+                - term [ref=f6e1392]:
+                  - generic [ref=f6e1393]: 
+                  - text: Vrsta
+                - definition [ref=f6e1394]: Match
+                - term [ref=f6e1395]:
+                  - generic [ref=f6e1396]: 
+                  - text: Timovi
+                - definition [ref=f6e1397]: Istra222 – Zagreb222
+                - term [ref=f6e1398]:
+                  - generic [ref=f6e1399]: 
+                  - text: Datum
+                - definition [ref=f6e1400]: srp 14, 2026 22:10
+                - term [ref=f6e1401]:
+                  - generic [ref=f6e1402]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1403]: —
+                - term [ref=f6e1404]:
+                  - generic [ref=f6e1405]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1406]: —
+                - term [ref=f6e1407]:
+                  - generic [ref=f6e1408]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1409]: 400 mjesta
+                - term [ref=f6e1410]:
+                  - generic [ref=f6e1411]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1412]: €45,00
+                - term [ref=f6e1413]:
+                  - generic [ref=f6e1414]: 
+                  - text: Sezona
+                - definition [ref=f6e1415]:
+                  - generic [ref=f6e1416]: 2026/2027
+                - term [ref=f6e1418]:
+                  - generic [ref=f6e1419]: 
+                  - text: Faza
+                - definition [ref=f6e1420]: Prošli
+              - paragraph [ref=f6e1421]: Simulated event
+            - generic [ref=f6e1423]:
+              - button " Uredi" [disabled] [ref=f6e1424]:
+                - generic [ref=f6e1425]: 
+                - generic [ref=f6e1426]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1427] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=34
+                - generic [ref=f6e1428]: 
+                - generic [ref=f6e1429]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1430] [cursor=pointer]:
+                - /url: admin/event-statistics/34
+                - generic [ref=f6e1431]: 
+                - generic [ref=f6e1432]: Statistika
+              - button " Obriši" [ref=f6e1433] [cursor=pointer]:
+                - generic [ref=f6e1434]: 
+                - generic [ref=f6e1435]: Obriši
+          - generic [ref=f6e1437]:
+            - generic [ref=f6e1438]:
+              - heading "#35 Istra233 - Zagreb2223" [level=3] [ref=f6e1439]:
+                - generic [ref=f6e1440]: "#35"
+                - generic [ref=f6e1441]: Istra233 - Zagreb2223
+              - 'generic "Phase: Past" [ref=f6e1442]': Završeno
+            - generic [ref=f6e1444]:
+              - generic [ref=f6e1445]:
+                - term [ref=f6e1446]:
+                  - generic [ref=f6e1447]: 
+                  - text: Vrsta
+                - definition [ref=f6e1448]: Match
+                - term [ref=f6e1449]:
+                  - generic [ref=f6e1450]: 
+                  - text: Timovi
+                - definition [ref=f6e1451]: Istra233 – Zagreb2223
+                - term [ref=f6e1452]:
+                  - generic [ref=f6e1453]: 
+                  - text: Datum
+                - definition [ref=f6e1454]: srp 14, 2026 22:31
+                - term [ref=f6e1455]:
+                  - generic [ref=f6e1456]: 
+                  - text: Prodaja ulaznica
+                - definition [ref=f6e1457]: —
+                - term [ref=f6e1458]:
+                  - generic [ref=f6e1459]: 
+                  - text: Naručivanje pića
+                - definition [ref=f6e1460]: —
+                - term [ref=f6e1461]:
+                  - generic [ref=f6e1462]: 
+                  - text: Kapacitet
+                - definition [ref=f6e1463]: 400 mjesta
+                - term [ref=f6e1464]:
+                  - generic [ref=f6e1465]: 
+                  - text: Bazna cijena
+                - definition [ref=f6e1466]: €45,00
+                - term [ref=f6e1467]:
+                  - generic [ref=f6e1468]: 
+                  - text: Sezona
+                - definition [ref=f6e1469]:
+                  - generic [ref=f6e1470]: 2026/2027
+                - term [ref=f6e1472]:
+                  - generic [ref=f6e1473]: 
+                  - text: Faza
+                - definition [ref=f6e1474]: Prošli
+              - paragraph [ref=f6e1475]: Simulated event
+            - generic [ref=f6e1477]:
+              - button " Uredi" [disabled] [ref=f6e1478]:
+                - generic [ref=f6e1479]: 
+                - generic [ref=f6e1480]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1481] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=35
+                - generic [ref=f6e1482]: 
+                - generic [ref=f6e1483]: Popunjenost uživo
+              - link " Statistika" [ref=f6e1484] [cursor=pointer]:
+                - /url: admin/event-statistics/35
+                - generic [ref=f6e1485]: 
+                - generic [ref=f6e1486]: Statistika
+              - button " Obriši" [ref=f6e1487] [cursor=pointer]:
+                - generic [ref=f6e1488]: 
+                - generic [ref=f6e1489]: Obriši
+          - generic [ref=f6e1491]:
+            - generic [ref=f6e1492]:
+              - heading "#36 Poster Test Match" [level=3] [ref=f6e1493]:
+                - generic [ref=f6e1494]: "#36"
+                - generic [ref=f6e1495]: Poster Test Match
+              - 'generic "Phase: Future" [ref=f6e1496]': U prodaji
+            - generic [ref=f6e1500]:
+              - term [ref=f6e1501]:
+                - generic [ref=f6e1502]: 
+                - text: Vrsta
+              - definition [ref=f6e1503]: Match
+              - term [ref=f6e1504]:
+                - generic [ref=f6e1505]: 
+                - text: Timovi
+              - definition [ref=f6e1506]: GNK Dinamo Zagreb – HNK Hajduk Split
+              - term [ref=f6e1507]:
+                - generic [ref=f6e1508]: 
+                - text: Datum
+              - definition [ref=f6e1509]: kol 17, 2026 11:16
+              - term [ref=f6e1510]:
+                - generic [ref=f6e1511]: 
+                - text: Prodaja ulaznica
+              - definition [ref=f6e1512]: — → kol 17, 11:16
+              - term [ref=f6e1513]:
+                - generic [ref=f6e1514]: 
+                - text: Naručivanje pića
+              - definition [ref=f6e1515]: —
+              - term [ref=f6e1516]:
+                - generic [ref=f6e1517]: 
+                - text: Kapacitet
+              - definition [ref=f6e1518]: 400 mjesta
+              - term [ref=f6e1519]:
+                - generic [ref=f6e1520]: 
+                - text: Prodana mjesta
+              - definition [ref=f6e1521]:
+                - text: 140 prodano · 260 slobodno
+                - generic [ref=f6e1522]: 140 preko sezonskih ulaznica
+              - term [ref=f6e1523]:
+                - generic [ref=f6e1524]: 
+              - definition [ref=f6e1525]:
+                - generic "35% sold" [ref=f6e1526]
+              - term [ref=f6e1528]:
+                - generic [ref=f6e1529]: 
+                - text: Bazna cijena
+              - definition [ref=f6e1530]: €50,00
+              - term [ref=f6e1531]:
+                - generic [ref=f6e1532]: 
+                - text: Sezona
+              - definition [ref=f6e1533]:
+                - generic [ref=f6e1534]: 2026/2027
+              - term [ref=f6e1536]:
+                - generic [ref=f6e1537]: 
+                - text: Faza
+              - definition [ref=f6e1538]:
+                - text: Nadolazeći
+                - generic [ref=f6e1539]: Prodaja
+            - generic [ref=f6e1542]:
+              - button " Uredi" [ref=f6e1543] [cursor=pointer]:
+                - generic [ref=f6e1544]: 
+                - generic [ref=f6e1545]: Uredi
+              - link " Popunjenost uživo" [ref=f6e1546] [cursor=pointer]:
+                - /url: admin/stadium-overview?eventId=36
+                - generic [ref=f6e1547]: 
+                - generic [ref=f6e1548]: Popunjenost uživo
+              - button " Mark Sold Out" [ref=f6e1549] [cursor=pointer]:
+                - generic [ref=f6e1550]: 
+                - generic [ref=f6e1551]: Mark Sold Out
+              - button " Go Live" [ref=f6e1552] [cursor=pointer]:
+                - generic [ref=f6e1553]: 
+                - generic [ref=f6e1554]: Go Live
+              - button " Unpublish" [ref=f6e1555] [cursor=pointer]:
+                - generic [ref=f6e1556]: 
+                - generic [ref=f6e1557]: Unpublish
+              - button " Cancel Event" [ref=f6e1558] [cursor=pointer]:
+                - generic [ref=f6e1559]: 
+                - generic [ref=f6e1560]: Cancel Event
+              - button " Obriši" [ref=f6e1561] [cursor=pointer]:
+                - generic [ref=f6e1562]: 
+                - generic [ref=f6e1563]: Obriši
+    - dialog [ref=f6e1564]:
+      - generic [ref=f6e1565]:
+        - heading [ref=f6e1566]:
+          - heading "Kreiraj novi događaj" [level=5] [ref=f6e1567]
+          - button [ref=f6e1568] [cursor=pointer]
+        - generic [ref=f6e1569]:
+          - generic [ref=f6e1572]:
+            - generic [ref=f6e1573]: Naziv događaja *
+            - textbox "Naziv događaja *" [ref=f6e1574]
+          - generic [ref=f6e1577]:
+            - generic [ref=f6e1578]: Vrsta događaja
+            - combobox "Vrsta događaja" [ref=f6e1579]:
+              - option "Utakmica" [selected]
+              - option "Koncert"
+              - option "Ostalo…"
+          - generic [ref=f6e1580]:
+            - generic [ref=f6e1582]:
+              - generic [ref=f6e1583]: Domaći tim
+              - combobox "Domaći tim" [ref=f6e1584]:
+                - option "Odaberite domaći tim…"
+                - option "GNK Dinamo Zagreb ★" [selected]
+            - generic [ref=f6e1586]:
+              - generic [ref=f6e1587]: Gostujući tim
+              - combobox "Gostujući tim" [ref=f6e1588]
+              - generic [ref=f6e1589]:
+                - text: Odaberite poznatu momčad za ponovnu upotrebu grba ili upišite novu.
+                - link "Upravljaj momčadima" [ref=f6e1590] [cursor=pointer]:
+                  - /url: /admin/teams
+          - generic [ref=f6e1591]:
+            - generic [ref=f6e1592]: Opis
+            - textbox "Opis" [ref=f6e1593]
+          - generic [ref=f6e1594]:
+            - generic [ref=f6e1595]:
+              - generic [ref=f6e1596]: 
+              - text: Plakat događaja
+            - generic [ref=f6e1597]: Generira se iz grbova ispod. Nazivi timova, stadion i početak utakmice ispisuju se u sliku, pa provjerite tekst prije odobrenja.
+            - generic [ref=f6e1598]:
+              - generic [ref=f6e1599]:
+                - generic [ref=f6e1600]:
+                  - generic [ref=f6e1601]: Grb domaćina
+                  - generic [ref=f6e1603]:
+                    - generic [ref=f6e1604]: 
+                    - text: GNK Dinamo Zagreb
+                - generic [ref=f6e1605]:
+                  - generic [ref=f6e1606]: Grb gosta
+                  - generic [ref=f6e1608]:
+                    - generic [ref=f6e1609]: 
+                    - text: Učitajte grb protivnika.
+                  - button "Choose File" [ref=f6e1610] [cursor=pointer]
+                - generic [ref=f6e1611]:
+                  - button " Generiraj sliku" [disabled]:
+                    - generic: 
+                    - generic: Generiraj sliku
+              - generic [ref=f6e1614]:
+                - generic [ref=f6e1615]: 
+                - text: Još nema plakata
+          - generic [ref=f6e1616]:
+            - generic [ref=f6e1618]:
+              - generic [ref=f6e1619]: Početak (datum i vrijeme) *
+              - textbox "Početak (datum i vrijeme) *" [ref=f6e1620]: 2026-08-18T15:02
+            - generic [ref=f6e1622]:
+              - generic [ref=f6e1623]: Kraj (datum i vrijeme) *
+              - textbox "Kraj (datum i vrijeme) *" [ref=f6e1624]: 2026-08-18T17:02
+          - generic [ref=f6e1625]:
+            - generic [ref=f6e1627]:
+              - generic [ref=f6e1628]: Početak prodaje ulaznica
+              - textbox "Početak prodaje ulaznica" [ref=f6e1629]
+            - generic [ref=f6e1631]:
+              - generic [ref=f6e1632]: Kraj prodaje ulaznica
+              - textbox "Kraj prodaje ulaznica" [ref=f6e1633]: 2026-08-18T15:02
+            - generic [ref=f6e1634]: Neobavezno. Ostavite početak praznim za trenutno otvaranje prodaje, a kraj praznim da ostane otvorena dok je događaj u prodaji. Ulaznice se mogu prodavati samo kada je događaj „U prodaji” i unutar ovog razdoblja.
+          - generic [ref=f6e1636]:
+            - generic [ref=f6e1638]:
+              - generic [ref=f6e1639]: Početak naručivanja pića
+              - textbox "Početak naručivanja pića" [ref=f6e1640]
+            - generic [ref=f6e1642]:
+              - generic [ref=f6e1643]: Kraj naručivanja pića
+              - textbox "Kraj naručivanja pića" [ref=f6e1644]
+            - generic [ref=f6e1645]: Neobavezno. Ostavite početak praznim za otvaranje naručivanja pića čim događaj počne uživo, a kraj praznim da ostane otvoreno do kraja događaja. Piće se može naručivati samo dok je događaj uživo i unutar ovog razdoblja.
+          - generic [ref=f6e1647]:
+            - generic [ref=f6e1649]:
+              - generic [ref=f6e1650]: Kapacitet
+              - generic [ref=f6e1651]:
+                - textbox "Kapacitet" [ref=f6e1652]: "400"
+                - generic [ref=f6e1653]: mjesta
+              - generic [ref=f6e1654]: Automatski se postavlja prema rasporedu stadiona (ukupan broj nacrtanih mjesta).
+            - generic [ref=f6e1656]:
+              - generic [ref=f6e1657]: Bazna cijena *
+              - generic [ref=f6e1658]:
+                - generic [ref=f6e1659]: €
+                - spinbutton "Bazna cijena *" [ref=f6e1660]: "50"
+          - generic [ref=f6e1661]:
+            - generic [ref=f6e1663]:
+              - generic [ref=f6e1664]: Status
+              - generic [ref=f6e1665]:
+                - checkbox "Aktivno (dostupno za prodaju karata)" [checked] [ref=f6e1666]
+                - generic [ref=f6e1667]: Aktivno (dostupno za prodaju karata)
+            - generic [ref=f6e1669]:
+              - generic [ref=f6e1670]:
+                - generic [ref=f6e1671]: 
+                - text: Sezona
+              - combobox " Sezona" [ref=f6e1672]:
+                - option "(bez sezone)"
+                - option "2026/2027 (trenutna)" [selected]
+                - option "2025/26"
+              - generic [ref=f6e1673]: Povezivanje popunjava propusnice ove sezone kartom za utakmicu.
+          - generic [ref=f6e1674]:
+            - generic [ref=f6e1675]:
+              - generic [ref=f6e1676]: 
+              - text: Cijene po sektoru
+            - generic [ref=f6e1677]: Postavite cijenu ulaznice po sektoru za ovaj događaj. Ostavite sektor praznim za njegovu zadanu cijenu ili označite "Onemogućeno" da ga zatvorite samo za ovaj događaj.
+            - table [ref=f6e1679]:
+              - rowgroup [ref=f6e1680]:
+                - row [ref=f6e1681]:
+                  - columnheader "Sektor" [ref=f6e1682]
+                  - columnheader "Tip" [ref=f6e1683]
+                  - columnheader "Zadano" [ref=f6e1684]
+                  - columnheader "Cijena događaja" [ref=f6e1685]
+                  - columnheader "Onemogućeno" [ref=f6e1686]
+              - rowgroup [ref=f6e1687]:
+                - row [ref=f6e1688]:
+                  - cell "Sjever1 SECT1" [ref=f6e1689]
+                  - cell "standard" [ref=f6e1690]
+                  - cell "€50,00" [ref=f6e1691]
+                  - cell "€" [ref=f6e1692]:
+                    - generic [ref=f6e1693]:
+                      - generic [ref=f6e1694]: €
+                      - spinbutton "50,00" [ref=f6e1695]
+                  - cell [ref=f6e1696]:
+                    - checkbox "Zatvorite ovaj sektor samo za ovaj događaj (nije moguća prodaja mjesta)" [ref=f6e1698]
+                - row [ref=f6e1699]:
+                  - cell "Jug1 SECT2" [ref=f6e1700]
+                  - cell "standard" [ref=f6e1701]
+                  - cell "€50,00" [ref=f6e1702]
+                  - cell "€" [ref=f6e1703]:
+                    - generic [ref=f6e1704]:
+                      - generic [ref=f6e1705]: €
+                      - spinbutton "50,00" [ref=f6e1706]
+                  - cell [ref=f6e1707]:
+                    - checkbox "Zatvorite ovaj sektor samo za ovaj događaj (nije moguća prodaja mjesta)" [ref=f6e1709]
+          - generic [ref=f6e1710]:
+            - generic [ref=f6e1711]:
+              - generic [ref=f6e1712]: 
+              - text: Osoblje
+            - generic [ref=f6e1713]: Odaberite članove osoblja (konobare i šankere) koji će raditi na ovom događaju.
+            - generic [ref=f6e1714]:
+              - generic [ref=f6e1717]:
+                - checkbox "nebojsa.medancic+runner@gmail.com Waiter nebojsa.medancic+runner@gmail.com" [ref=f6e1718]
+                - generic [ref=f6e1719]:
+                  - text: nebojsa.medancic+runner@gmail.com
+                  - generic [ref=f6e1720]: Waiter
+                  - generic [ref=f6e1721]: nebojsa.medancic+runner@gmail.com
+              - generic [ref=f6e1724]:
+                - checkbox "nebojsa.medancic+staff1@gmail.com Bartender nebojsa.medancic+staff1@gmail.com" [ref=f6e1725]
+                - generic [ref=f6e1726]:
+                  - text: nebojsa.medancic+staff1@gmail.com
+                  - generic [ref=f6e1727]: Bartender
+                  - generic [ref=f6e1728]: nebojsa.medancic+staff1@gmail.com
+              - generic [ref=f6e1731]:
+                - checkbox "nebojsa.medancic+waiter1@gmail.com Waiter nebojsa.medancic+waiter1@gmail.com" [ref=f6e1732]
+                - generic [ref=f6e1733]:
+                  - text: nebojsa.medancic+waiter1@gmail.com
+                  - generic [ref=f6e1734]: Waiter
+                  - generic [ref=f6e1735]: nebojsa.medancic+waiter1@gmail.com
+        - generic [ref=f6e1736]:
+          - button "Otkaži" [ref=f6e1737] [cursor=pointer]
+          - button "Kreiraj događaj" [ref=f6e1738] [cursor=pointer]

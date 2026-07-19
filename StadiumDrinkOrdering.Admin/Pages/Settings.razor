@@ -7,7 +7,9 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Services
 @using StadiumDrinkOrdering.Shared.Authentication.Interfaces
+@inject IImageGenerationClient ImageGen
 @inject IHttpClientFactory HttpClientFactory
 @inject IConfiguration Configuration
 @inject ITokenStorageService TokenStorage
@@ -47,6 +49,53 @@
     }
     else
     {
+        <ul class="nav nav-tabs mb-4" id="admin-settings-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button type="button" id="admin-settings-tab-ticketing"
+                        class="nav-link @(activeTab == "ticketing" ? "active" : "")"
+                        @onclick='() => activeTab = "ticketing"'>
+                    <i class="bi bi-ticket-perforated me-1"></i>@L["Settings_TicketingSection"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button type="button" id="admin-settings-tab-payments"
+                        class="nav-link @(activeTab == "payments" ? "active" : "")"
+                        @onclick='() => activeTab = "payments"'>
+                    <i class="bi bi-credit-card me-1"></i>@L["Settings_PaymentsSection"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button type="button" id="admin-settings-tab-email"
+                        class="nav-link @(activeTab == "email" ? "active" : "")"
+                        @onclick='() => activeTab = "email"'>
+                    <i class="bi bi-envelope me-1"></i>@L["Settings_EmailSection"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button type="button" id="admin-settings-tab-backup"
+                        class="nav-link @(activeTab == "backup" ? "active" : "")"
+                        @onclick='() => activeTab = "backup"'>
+                    <i class="bi bi-hdd me-1"></i>@L["Settings_BackupSection"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button type="button" id="admin-settings-tab-imagegen"
+                        class="nav-link @(activeTab == "imagegen" ? "active" : "")"
+                        @onclick='() => activeTab = "imagegen"'>
+                    <i class="bi bi-image me-1"></i>@L["Settings_ImageGenSection"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button type="button" id="admin-settings-tab-danger"
+                        class="nav-link text-danger @(activeTab == "danger" ? "active" : "")"
+                        @onclick='() => activeTab = "danger"'>
+                    <i class="bi bi-exclamation-octagon me-1"></i>@L["Settings_DangerSection"]
+                </button>
+            </li>
+        </ul>
+
+        @if (activeTab == "ticketing")
+        {
         <div class="card mb-4" id="admin-settings-ticketing-card">
             <div class="card-header">
                 <h5 class="mb-0" id="admin-settings-ticketing-title">@L["Settings_TicketingSection"]</h5>
@@ -79,7 +128,73 @@
                 </div>
             </div>
         </div>
+        }
 
+        @if (activeTab == "payments")
+        {
+        <div class="card mb-4" id="admin-settings-payments-card">
+            <div class="card-header">
+                <h5 class="mb-0" id="admin-settings-payments-title">@L["Settings_PaymentsSection"]</h5>
+            </div>
+            <div class="card-body" id="admin-settings-payments-body">
+                <p class="text-muted" id="admin-settings-payments-intro">@L["Settings_PaymentsIntro"]</p>
+
+                <div class="form-check form-switch" id="admin-settings-pay-wallet-group">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           id="admin-settings-pay-wallet-input"
+                           checked="@settings.WalletPaymentEnabled"
+                           @onchange="@(e => OnPaymentToggled("wallet", e))" />
+                    <label class="form-check-label fw-semibold" for="admin-settings-pay-wallet-input">
+                        @L["Settings_PayWallet"]
+                    </label>
+                </div>
+                <div class="form-text mb-3" id="admin-settings-pay-wallet-hint">@L["Settings_PayWalletHint"]</div>
+
+                <div class="form-check form-switch" id="admin-settings-pay-card-group">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           id="admin-settings-pay-card-input"
+                           checked="@settings.CardPaymentEnabled"
+                           @onchange="@(e => OnPaymentToggled("card", e))" />
+                    <label class="form-check-label fw-semibold" for="admin-settings-pay-card-input">
+                        @L["Settings_PayCard"]
+                    </label>
+                </div>
+                <div class="form-text mb-3" id="admin-settings-pay-card-hint">@L["Settings_PayCardHint"]</div>
+
+                <div class="form-check form-switch" id="admin-settings-pay-cash-group">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           id="admin-settings-pay-cash-input"
+                           checked="@settings.CashPaymentEnabled"
+                           @onchange="@(e => OnPaymentToggled("cash", e))" />
+                    <label class="form-check-label fw-semibold" for="admin-settings-pay-cash-input">
+                        @L["Settings_PayCash"]
+                    </label>
+                </div>
+                <div class="form-text" id="admin-settings-pay-cash-hint">@L["Settings_PayCashHint"]</div>
+
+                @if (!settings.HasAnyPaymentMethod)
+                {
+                    <div id="admin-settings-payments-none" class="alert alert-danger mt-3 mb-0 py-2">
+                        <i class="bi bi-exclamation-triangle me-1"></i>@L["Settings_PaymentsNoneWarning"]
+                    </div>
+                }
+
+                <div class="d-flex align-items-center gap-3 mt-4">
+                    <button type="button" id="admin-settings-payments-save-btn" class="btn btn-primary"
+                            @onclick="SaveAsync" disabled="@(isSaving || !settings.HasAnyPaymentMethod)">
+                        @if (isSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        @L["Settings_Save"]
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+
+        @if (activeTab == "email")
+        {
         <div class="card mb-4" id="admin-settings-email-card">
             <div class="card-header">
                 <h5 class="mb-0" id="admin-settings-email-title">@L["Settings_EmailSection"]</h5>
@@ -199,7 +314,10 @@
                 </a>
             </div>
         </div>
+        }
 
+        @if (activeTab == "backup")
+        {
         <div class="card mb-4" id="admin-settings-backup-card">
             <div class="card-header">
                 <h5 class="mb-0" id="admin-settings-backup-title">@L["Settings_BackupSection"]</h5>
@@ -327,7 +445,91 @@
                 }
             </div>
         </div>
+        }
 
+        @if (activeTab == "imagegen")
+        {
+        <div class="card mb-4" id="admin-settings-imagegen-card">
+            <div class="card-header">
+                <h5 class="mb-0" id="admin-settings-imagegen-title">@L["Settings_ImageGenSection"]</h5>
+            </div>
+            <div class="card-body" id="admin-settings-imagegen-body">
+                <p class="text-muted" id="admin-settings-imagegen-subtitle">@L["Settings_ImageGenSubtitle"]</p>
+
+                <div class="mb-3" id="admin-settings-imagegen-prompt-group">
+                    <label class="form-label" for="admin-settings-imagegen-prompt-input">@L["Settings_ImageGenPrompt"]</label>
+                    <textarea class="form-control" id="admin-settings-imagegen-prompt-input" rows="3"
+                              @bind="imageGenPrompt" @bind:event="oninput"
+                              placeholder="@L["Settings_ImageGenPromptPlaceholder"]"></textarea>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-3" id="admin-settings-imagegen-width-group">
+                        <label class="form-label" for="admin-settings-imagegen-width-input">@L["Settings_ImageGenWidth"]</label>
+                        <input type="number" min="64" max="4096" class="form-control"
+                               id="admin-settings-imagegen-width-input" @bind="imageGenWidth" />
+                    </div>
+                    <div class="col-md-3" id="admin-settings-imagegen-height-group">
+                        <label class="form-label" for="admin-settings-imagegen-height-input">@L["Settings_ImageGenHeight"]</label>
+                        <input type="number" min="64" max="4096" class="form-control"
+                               id="admin-settings-imagegen-height-input" @bind="imageGenHeight" />
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex align-items-center gap-2">
+                    <button type="button" id="admin-settings-imagegen-generate-btn" class="btn btn-primary"
+                            @onclick="GenerateImageAsync"
+                            disabled="@(isGenerating || string.IsNullOrWhiteSpace(imageGenPrompt))">
+                        @if (isGenerating)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        <i class="bi bi-magic me-1"></i>@L["Settings_ImageGenGenerate"]
+                    </button>
+                    @if (imageResult is not null && !imageIsPlaceholder)
+                    {
+                        <button type="button" id="admin-settings-imagegen-download-btn" class="btn btn-outline-secondary"
+                                @onclick="DownloadImageAsync">
+                            <i class="bi bi-download me-1"></i>@L["Settings_ImageGenDownload"]
+                        </button>
+                    }
+                </div>
+
+                @if (imageGenError is not null)
+                {
+                    <div class="alert alert-danger mt-3 mb-0" id="admin-settings-imagegen-error">
+                        <i class="bi bi-exclamation-triangle me-1"></i>@imageGenError
+                    </div>
+                }
+
+                @if (imageResult is not null)
+                {
+                    @if (imageIsPlaceholder)
+                    {
+                        <div class="alert alert-warning mt-3 mb-0" id="admin-settings-imagegen-placeholder">
+                            <i class="bi bi-exclamation-triangle me-1"></i>@L["Settings_ImageGenPlaceholder"]
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mt-3" id="admin-settings-imagegen-result">
+                            <div class="border rounded p-2 d-inline-block">
+                                <img id="admin-settings-imagegen-image" src="@imageResult.DataUri"
+                                     alt="@imageResult.Prompt" class="img-fluid"
+                                     style="max-height: 512px;" />
+                            </div>
+                            <div class="form-text" id="admin-settings-imagegen-meta">
+                                @imageResult.FileName — @imageResult.Width×@imageResult.Height
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        }
+
+        @if (activeTab == "danger")
+        {
         <div class="card mb-4 border-danger" id="admin-settings-danger-card">
             <div class="card-header bg-danger text-white">
                 <h5 class="mb-0" id="admin-settings-danger-title">@L["Settings_DangerSection"]</h5>
@@ -344,6 +546,7 @@
                 </button>
             </div>
         </div>
+        }
     }
 </div>
 
@@ -432,6 +635,8 @@
 }
 
 @code {
+    private string activeTab = "ticketing";
+
     private bool isLoading = true;
     private bool loadError;
     private bool isSaving;
@@ -444,6 +649,15 @@
 
     private string? alertMessage;
     private string alertClass = "alert-success";
+
+    // Image generation (external API test tab)
+    private string imageGenPrompt = string.Empty;
+    private int imageGenWidth = 1024;
+    private int imageGenHeight = 1024;
+    private bool isGenerating;
+    private ImageGenerationResult? imageResult;
+    private bool imageIsPlaceholder;
+    private string? imageGenError;
 
     private bool showPurgeModal;
     private bool isPurging;
@@ -765,6 +979,20 @@
             settings.TicketSalesEnabled = e.Value is bool b && b;
     }
 
+    /// <summary>Toggles one accepted payment method. Saving with none enabled is blocked in the UI
+    /// (and refused by the API) — fans would have no way to check out.</summary>
+    private void OnPaymentToggled(string method, ChangeEventArgs e)
+    {
+        if (settings is null) return;
+        var on = e.Value is bool b && b;
+        switch (method)
+        {
+            case "wallet": settings.WalletPaymentEnabled = on; break;
+            case "card": settings.CardPaymentEnabled = on; break;
+            case "cash": settings.CashPaymentEnabled = on; break;
+        }
+    }
+
     private async Task SaveAsync()
     {
         if (settings is null) return;
@@ -838,5 +1066,55 @@
     {
         alertMessage = message;
         alertClass = success ? "alert-success" : "alert-danger";
+    }
+
+    private async Task GenerateImageAsync()
+    {
+        if (string.IsNullOrWhiteSpace(imageGenPrompt)) return;
+        isGenerating = true;
+        imageGenError = null;
+        imageResult = null;
+        imageIsPlaceholder = false;
+        try
+        {
+            var result = await ImageGen.GenerateAsync(imageGenPrompt.Trim(), imageGenWidth, imageGenHeight);
+            if (result is null)
+            {
+                imageGenError = L["Settings_ImageGenFailed"];
+                return;
+            }
+
+            imageResult = result;
+            // The API never throws on generation failure - it returns a 1x1 placeholder PNG. Detect
+            // it so we can warn the admin instead of showing a blank speck.
+            imageIsPlaceholder = ImageGen.IsPlaceholder(result);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Image generation failed for prompt '{Prompt}'", imageGenPrompt);
+            imageGenError = L["Settings_ImageGenFailed"];
+        }
+        finally
+        {
+            isGenerating = false;
+        }
+    }
+
+    private async Task DownloadImageAsync()
+    {
+        if (imageResult is null || imageIsPlaceholder) return;
+        try
+        {
+            var bytes = ImageGen.GetPngBytes(imageResult);
+            var fileName = string.IsNullOrWhiteSpace(imageResult.FileName) ? "generated-image.png" : imageResult.FileName;
+            using var ms = new MemoryStream(bytes);
+            using var streamRef = new DotNetStreamReference(ms);
+            await JSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to download generated image");
+            imageGenError = L["Settings_ImageGenFailed"];
+        }
     }
 }

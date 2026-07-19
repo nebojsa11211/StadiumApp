@@ -19,8 +19,8 @@
         </Actions>
     </PageHeader>
 
-    @* Season scope banner — navigate seasons; scopes the events grid below. *@
-    <SeasonFilterBanner Seasons="seasons" @bind-Value="seasonFilterValue" IdPrefix="admin-events-season-banner" />
+    @* The season scope banner lives in DashboardLayout (#admin-dashboard-current-season);
+       it scopes the events grid below via SeasonState. *@
 
     @if (events == null)
     {
@@ -104,7 +104,7 @@
                     @foreach (var evt in FilteredEvents.OrderBy(e => e.Date ?? DateTime.MaxValue))
                     {
                         <div class="col-md-6 col-lg-4 mb-4" id="admin-event-col-@evt.Id">
-                            <div class="panel event-card" id="admin-event-card-@evt.Id">
+                            <div class="panel event-card event-card--@PhaseModifier(evt.Status) @(evt.HasPoster ? "event-card--poster" : null)" id="admin-event-card-@evt.Id">
                                 <div class="panel__head" id="admin-event-header-@evt.Id">
                                     <h3 class="panel__title" id="admin-event-header-content-@evt.Id">
                                         <span class="event-card__id mono" id="admin-event-id-@evt.Id">#@evt.Id</span>
@@ -114,6 +114,19 @@
                                         <span class="status__dot"></span>@StatusDisplay(evt.Status)
                                     </span>
                                 </div>
+                                @if (evt.HasPoster)
+                                {
+                                    @* The generated artwork, shown full-strength as a banner rather
+                                       than behind the text. As a background it had to be blurred so
+                                       heavily (its own "VS" and team names competed with the card's
+                                       metadata) that the poster stopped being recognisable — this
+                                       card has dense text at every height, so there is no room to
+                                       put a picture behind it. Pending posters appear here too:
+                                       this is where an admin reviews them. *@
+                                    <img class="event-card__banner" src="@PosterThumbUrl(evt.Id)"
+                                         alt="" aria-hidden="true" loading="lazy"
+                                         id="admin-event-art-@evt.Id" />
+                                }
                                 <div class="panel__body" id="admin-event-body-@evt.Id">
                                     <dl class="event-meta" id="admin-event-details-@evt.Id">
                                         <dt><i class="bi bi-tag"></i> @L["Events_TypeLabel"]</dt>
@@ -124,7 +137,9 @@
                                             <dd id="admin-event-teams-@evt.Id">@evt.HomeTeam <span class="text-muted">@L["Events_VersusSeparator"]</span> @evt.AwayTeam</dd>
                                         }
                                         <dt><i class="bi bi-calendar3"></i> @L["Events_DateLabel"]</dt>
-                                        <dd class="mono" id="admin-event-date-@evt.Id">@evt.Date?.ToString("MMM dd, yyyy HH:mm")</dd>
+                                        @* API timestamps are UTC; show local wall-clock so this matches
+                                           the edit form, the poster and what fans see. *@
+                                        <dd class="mono" id="admin-event-date-@evt.Id">@ToLocal(evt.Date)?.ToString("MMM dd, yyyy HH:mm")</dd>
                                         <dt><i class="bi bi-ticket-perforated"></i> @L["Events_TicketWindowLabel"]</dt>
                                         <dd class="mono" id="admin-event-ticket-window-@evt.Id">@FormatWindow(evt.TicketSalesStartDate, evt.TicketSalesEndDate)</dd>
                                         <dt><i class="bi bi-cup-straw"></i> @L["Events_DrinkWindowLabel"]</dt>
@@ -167,7 +182,7 @@
                                         </dd>
                                         <dt><i class="bi bi-diagram-3"></i> @L["Events_PhaseLabel"]</dt>
                                         <dd id="admin-event-phase-@evt.Id">
-                                            @evt.Phase
+                                            @PhaseDisplay(evt.Phase)
                                             @if (evt.CanSellTickets)
                                             {
                                                 <span class="status is-accepted ms-2" id="admin-event-selling-@evt.Id"><span class="status__dot"></span>@L["Events_SellingStatus"]</span>
@@ -186,8 +201,8 @@
                                 <div class="event-card__foot" id="admin-event-footer-@evt.Id">
                                     <div class="event-card__actions" id="admin-event-buttons-@evt.Id">
                                         <button class="pill-btn" @onclick="() => ShowEditEventModal(evt)"
-                                                disabled="@(!EventLifecycle.CanEdit(evt.Status))"
-                                                title="@(EventLifecycle.CanEdit(evt.Status) ? null : L["Events_EditLockedTooltip"].Value)"
+                                                disabled="@(!EventLifecycle.CanEdit(evt.Status) || IsSeasonClosed(evt.SeasonId))"
+                                                title="@(IsSeasonClosed(evt.SeasonId) ? SeasonClosedMessage(evt.SeasonId) : EventLifecycle.CanEdit(evt.Status) ? null : L["Events_EditLockedTooltip"].Value)"
                                                 id="admin-event-edit-btn-@evt.Id">
                                             <i class="bi bi-pencil"></i><span>@L["Events_EditButton"]</span>
                                         </button>
@@ -207,7 +222,10 @@
                                                 <i class="bi @meta.Icon"></i><span>@meta.Label</span>
                                             </button>
                                         }
-                                        <button class="pill-btn pill-btn--danger" @onclick="() => DeleteEvent(evt.Id)" id="admin-event-delete-btn-@evt.Id">
+                                        <button class="pill-btn pill-btn--danger" @onclick="() => DeleteEvent(evt.Id)"
+                                                disabled="@IsSeasonClosed(evt.SeasonId)"
+                                                title="@(IsSeasonClosed(evt.SeasonId) ? SeasonClosedMessage(evt.SeasonId) : null)"
+                                                id="admin-event-delete-btn-@evt.Id">
                                             <i class="bi bi-trash"></i><span>@L["Events_DeleteButton"]</span>
                                         </button>
                                     </div>
@@ -224,8 +242,8 @@
 <!-- Create/Edit Event Modal -->
 @if (showEventModal)
 {
-    <div id="admin-event-modal" class="modal-backdrop-wrapper">
-        <div class="modal-dialog" id="admin-event-modal-dialog">
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);" id="admin-event-modal">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" id="admin-event-modal-dialog">
             <div class="modal-content" id="admin-event-modal-content">
                 <div class="modal-header" id="admin-event-modal-header" role="heading">
                     <h5 class="modal-title" id="admin-event-modal-title">@(editingEvent == null ? @L["Events_CreateModalTitle"] : @L["Events_EditModalTitle"])</h5>
@@ -303,8 +321,23 @@
                             <div class="col-md-6" id="admin-event-form-away-col">
                                 <div class="mb-3" id="admin-event-form-away-group">
                                     <label class="form-label" for="admin-event-form-away">@L["Events_AwayTeamLabel"]</label>
-                                    <input type="text" class="form-control" @bind="eventForm.AwayTeam"
+                                    @* A datalist rather than a select: known opponents are one click
+                                       away (and bring their stored crest with them), but a first-time
+                                       visitor can still be typed in freely. *@
+                                    <input type="text" class="form-control" value="@eventForm.AwayTeam"
+                                           @onchange="OnAwayTeamChangedAsync"
+                                           list="admin-event-form-away-options"
                                            placeholder="@L["Events_AwayTeamPlaceholder"]" id="admin-event-form-away">
+                                    <datalist id="admin-event-form-away-options">
+                                        @foreach (var team in knownTeams)
+                                        {
+                                            <option value="@team.Name"></option>
+                                        }
+                                    </datalist>
+                                    <div class="form-text" id="admin-event-form-away-hint">
+                                        @L["Events_AwayTeamHint"]
+                                        <a href="/admin/teams" id="admin-event-form-away-teams-link">@L["Events_AwayTeamManageLink"]</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -313,6 +346,169 @@
                     <div class="mb-3" id="admin-event-form-description-group">
                         <label class="form-label" for="admin-event-form-description">@L["Events_DescriptionFieldLabel"]</label>
                         <textarea class="form-control" rows="3" @bind="eventForm.Description" id="admin-event-form-description"></textarea>
+                    </div>
+
+                    @* Event poster — generated by the external image API from an editable prompt. *@
+                    @* Event poster. The admin supplies crests; the wording is fixed in code, so
+                       there is nothing to type. The image model renders the teams, venue and
+                       kick-off into the artwork itself, so it must be reviewed before fans see it. *@
+                    <div class="mb-3" id="admin-event-form-poster-group">
+                        <label class="form-label">
+                            <i class="bi bi-image"></i> @L["Events_PosterLabel"]
+                        </label>
+                        <div class="form-text mb-2" id="admin-event-form-poster-hint">@L["Events_PosterHint"]</div>
+
+                        <div class="row g-3">
+                            <div class="col-md-5" id="admin-event-form-poster-crests-col">
+                                @* Home crest comes from the resident club's stored logo. *@
+                                <div class="mb-3" id="admin-event-form-poster-home-crest-group">
+                                    <label class="form-label small text-muted">@L["Events_CrestHomeLabel"]</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if (homeCrestBase64 != null)
+                                        {
+                                            <img src="data:image/png;base64,@homeCrestBase64" alt=""
+                                                 class="border rounded bg-light p-1"
+                                                 style="width:56px;height:56px;object-fit:contain"
+                                                 id="admin-event-form-poster-home-crest-img" />
+                                            <span class="small text-success" id="admin-event-form-poster-home-crest-ok">
+                                                <i class="bi bi-check-circle"></i> @eventForm.HomeTeam
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="small text-warning" id="admin-event-form-poster-home-crest-missing">
+                                                <i class="bi bi-exclamation-triangle"></i> @L["Events_CrestHomeMissing"]
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+
+                                @* Away side is free text, so its crest is supplied here and then
+                                   remembered under that team name for future fixtures. *@
+                                @if (eventForm.EventType == "Match")
+                                {
+                                    <div class="mb-2" id="admin-event-form-poster-away-crest-group">
+                                        <label class="form-label small text-muted">@L["Events_CrestAwayLabel"]</label>
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            @if (awayCrestBase64 != null)
+                                            {
+                                                <img src="data:image/png;base64,@awayCrestBase64" alt=""
+                                                     class="border rounded bg-light p-1"
+                                                     style="width:56px;height:56px;object-fit:contain"
+                                                     id="admin-event-form-poster-away-crest-img" />
+                                                @if (awayCrestIsRemembered)
+                                                {
+                                                    <span class="small text-muted" id="admin-event-form-poster-away-crest-remembered">
+                                                        <i class="bi bi-clock-history"></i> @L["Events_CrestRemembered"]
+                                                    </span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="small text-warning" id="admin-event-form-poster-away-crest-missing">
+                                                    <i class="bi bi-exclamation-triangle"></i> @L["Events_CrestAwayMissing"]
+                                                </span>
+                                            }
+                                        </div>
+                                        <InputFile OnChange="OnAwayCrestSelected" class="form-control form-control-sm"
+                                                   accept="image/*" id="admin-event-form-poster-away-crest-input" />
+                                    </div>
+                                }
+
+                                <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                            @onclick="GeneratePosterAsync"
+                                            disabled="@(isGeneratingPoster || !CanGeneratePoster)"
+                                            id="admin-event-form-poster-generate-btn">
+                                        @if (isGeneratingPoster)
+                                        {
+                                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                            <span>@L["Events_PosterGenerating"]</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-magic me-1"></i>
+                                            <span>@(HasPosterPreview ? L["Events_PosterRegenerate"] : L["Events_PosterGenerate"])</span>
+                                        }
+                                    </button>
+
+                                    @if (HasPosterPreview)
+                                    {
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                @onclick="RemovePoster"
+                                                disabled="@isGeneratingPoster"
+                                                id="admin-event-form-poster-remove-btn">
+                                            <i class="bi bi-trash me-1"></i>@L["Events_PosterRemove"]
+                                        </button>
+                                    }
+                                </div>
+
+                                @if (posterError != null)
+                                {
+                                    <div class="alert alert-danger py-2 mt-2 mb-0" id="admin-event-form-poster-error">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>@posterError
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-md-7" id="admin-event-form-poster-preview-col">
+                                @if (HasPosterPreview)
+                                {
+                                    <div class="border rounded p-2" id="admin-event-form-poster-preview">
+                                        <img src="@PosterPreviewSrc" alt="@L["Events_PosterLabel"]"
+                                             class="img-fluid rounded d-block w-100"
+                                             id="admin-event-form-poster-preview-img" />
+                                        @if (posterWidth is int pw && posterHeight is int ph)
+                                        {
+                                            <div class="form-text mb-0" id="admin-event-form-poster-preview-meta">@pw×@ph</div>
+                                        }
+                                    </div>
+
+                                    @* Approval gate. The model writes the team names and kick-off
+                                       into the image and can misspell them, so an admin confirms the
+                                       rendered text before this ever reaches a fan. *@
+                                    @if (NeedsPosterApproval)
+                                    {
+                                        <div class="alert alert-warning mt-2 mb-0" id="admin-event-form-poster-review">
+                                            <div class="fw-semibold mb-1">
+                                                <i class="bi bi-eye me-1"></i>@L["Events_PosterReviewTitle"]
+                                            </div>
+                                            <div class="small mb-2">@L["Events_PosterReviewBody"]</div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" @bind="posterApproved"
+                                                       id="admin-event-form-poster-approve-check">
+                                                <label class="form-check-label small" for="admin-event-form-poster-approve-check">
+                                                    @L["Events_PosterApproveLabel"]
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (posterApproved || (hasExistingPoster && !existingPosterPending && posterBase64 == null))
+                                    {
+                                        <div class="alert alert-success py-2 mt-2 mb-0" id="admin-event-form-poster-approved">
+                                            <i class="bi bi-check-circle me-1"></i>@L["Events_PosterApproved"]
+                                        </div>
+                                    }
+
+                                    @if (existingPosterStale && posterBase64 == null)
+                                    {
+                                        <div class="alert alert-warning py-2 mt-2 mb-0" id="admin-event-form-poster-stale">
+                                            <i class="bi bi-clock-history me-1"></i>@L["Events_PosterStale"]
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="border rounded d-flex align-items-center justify-content-center text-muted"
+                                         style="min-height: 160px;" id="admin-event-form-poster-empty">
+                                        <div class="text-center">
+                                            <i class="bi bi-image fs-3 d-block mb-1"></i>
+                                            <small>@L["Events_PosterNone"]</small>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row" id="admin-event-form-datetime-row">
@@ -425,7 +621,12 @@
                                     {
                                         @foreach (var s in seasons.OrderByDescending(x => x.StartDate))
                                         {
-                                            <option value="@s.Id">@s.Name @(s.IsCurrent ? L["Events_CurrentSeasonSuffix"].Value : "")</option>
+                                            @* An ended season is frozen: it stays listed (so an existing
+                                               link still renders) but can't be picked for an event. *@
+                                            var closed = SeasonLifecycle.IsClosed(s.EndDate);
+                                            var suffix = (s.IsCurrent ? " " + L["Events_CurrentSeasonSuffix"].Value : "")
+                                                       + (closed ? " " + L["Events_SeasonClosedOptionSuffix"].Value.Trim() : "");
+                                            <option value="@s.Id" disabled="@closed">@s.Name@suffix</option>
                                         }
                                     }
                                 </select>

@@ -18,7 +18,9 @@
 .big-thumb{
     width:100%;height:130px;border-radius:16px;display:grid;place-items:center;font-size:60px;margin-bottom:16px;
     background:linear-gradient(150deg,#3a2a08,#241a06);
+    overflow:hidden;
 }
+.big-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .big-thumb.soft{background:linear-gradient(150deg,#3a0c14,#22070c)}
 .big-thumb.water{background:linear-gradient(150deg,#0a2634,#06161f)}
 .big-thumb.coffee{background:linear-gradient(150deg,#2b1a10,#180d07)}
@@ -44,3 +46,24 @@
     padding:13px 15px;color:var(--ink);font-family:inherit;font-size:14px;margin-bottom:16px;resize:none;outline:none;
 }
 .note-in:focus{border-color:var(--magenta)}
+
+/* affordability line — mirrors the CartBar treatment so the same constraint reads the same way
+   wherever the fan meets it: quiet while affordable, amber + actionable once it isn't. */
+.funds{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin:0 0 12px;padding:8px 6px 8px 14px;border-radius:12px;
+    background:var(--surface);border:1px solid var(--line);
+    font-size:12px;font-weight:700;color:var(--muted);
+}
+.funds-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.funds.short{
+    background:color-mix(in srgb,var(--amber) 14%,var(--surface));
+    border-color:color-mix(in srgb,var(--amber) 40%,transparent);
+    color:var(--ink);
+}
+/* negative margin keeps the 44px target without growing the row */
+.funds-cta{
+    flex:none;min-height:44px;display:inline-flex;align-items:center;padding:0 12px;margin:-8px 0;
+    background:none;border:0;cursor:pointer;font:inherit;font-weight:900;color:var(--amber);
+}
+.funds-cta:focus-visible{outline:2px solid var(--amber);outline-offset:2px}

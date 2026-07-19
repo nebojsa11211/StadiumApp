@@ -356,6 +356,120 @@
   <data name="Nav_Seasons" xml:space="preserve">
     <value>Sezone</value>
   </data>
+  <data name="Nav_Teams" xml:space="preserve">
+    <value>Momčadi</value>
+  </data>
+  <data name="Teams_PageTitle" xml:space="preserve">
+    <value>Momčadi - Administracija stadiona</value>
+  </data>
+  <data name="Teams_Eyebrow" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="Teams_Heading" xml:space="preserve">
+    <value>Momčadi</value>
+  </data>
+  <data name="Teams_Subtitle" xml:space="preserve">
+    <value>Gostujuće momčadi i njihovi grbovi. Dodajte momčad jednom i grb se koristi na svakoj utakmici.</value>
+  </data>
+  <data name="Teams_ListSection" xml:space="preserve">
+    <value>Momčadi</value>
+  </data>
+  <data name="Teams_Loading" xml:space="preserve">
+    <value>Učitavanje momčadi...</value>
+  </data>
+  <data name="Teams_LoadFailed" xml:space="preserve">
+    <value>Nije moguće učitati momčadi.</value>
+  </data>
+  <data name="Teams_Retry" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="Teams_AddTeam" xml:space="preserve">
+    <value>Dodaj momčad</value>
+  </data>
+  <data name="Teams_NewTeam" xml:space="preserve">
+    <value>Nova momčad</value>
+  </data>
+  <data name="Teams_EditTeam" xml:space="preserve">
+    <value>Uredi momčad</value>
+  </data>
+  <data name="Teams_NoTeams" xml:space="preserve">
+    <value>Još nema momčadi. Dodajte jednu kako biste grb koristili na svim utakmicama.</value>
+  </data>
+  <data name="Teams_NoMatches" xml:space="preserve">
+    <value>Nijedna momčad ne odgovara pretrazi.</value>
+  </data>
+  <data name="Teams_SearchPlaceholder" xml:space="preserve">
+    <value>Pretraži momčadi...</value>
+  </data>
+  <data name="Teams_Name" xml:space="preserve">
+    <value>Naziv</value>
+  </data>
+  <data name="Teams_ShortName" xml:space="preserve">
+    <value>Skraćeni naziv</value>
+  </data>
+  <data name="Teams_Founded" xml:space="preserve">
+    <value>Osnovana</value>
+  </data>
+  <data name="Teams_City" xml:space="preserve">
+    <value>Grad</value>
+  </data>
+  <data name="Teams_PrimaryColor" xml:space="preserve">
+    <value>Primarna boja</value>
+  </data>
+  <data name="Teams_SecondaryColor" xml:space="preserve">
+    <value>Sekundarna boja</value>
+  </data>
+  <data name="Teams_Website" xml:space="preserve">
+    <value>Web stranica</value>
+  </data>
+  <data name="Teams_Save" xml:space="preserve">
+    <value>Spremi</value>
+  </data>
+  <data name="Teams_Cancel" xml:space="preserve">
+    <value>Odustani</value>
+  </data>
+  <data name="Teams_Edit" xml:space="preserve">
+    <value>Uredi</value>
+  </data>
+  <data name="Teams_Delete" xml:space="preserve">
+    <value>Obriši</value>
+  </data>
+  <data name="Teams_Saved" xml:space="preserve">
+    <value>Momčad spremljena.</value>
+  </data>
+  <data name="Teams_Deleted" xml:space="preserve">
+    <value>Momčad obrisana.</value>
+  </data>
+  <data name="Teams_SaveFailed" xml:space="preserve">
+    <value>Nije moguće spremiti momčad.</value>
+  </data>
+  <data name="Teams_DuplicateName" xml:space="preserve">
+    <value>Momčad s tim nazivom već postoji.</value>
+  </data>
+  <data name="Teams_UploadCrest" xml:space="preserve">
+    <value>Učitaj grb</value>
+  </data>
+  <data name="Teams_ReplaceCrest" xml:space="preserve">
+    <value>Zamijeni grb</value>
+  </data>
+  <data name="Teams_RemoveCrest" xml:space="preserve">
+    <value>Ukloni grb</value>
+  </data>
+  <data name="Teams_CrestSaved" xml:space="preserve">
+    <value>Grb spremljen.</value>
+  </data>
+  <data name="Teams_CrestRemoved" xml:space="preserve">
+    <value>Grb uklonjen.</value>
+  </data>
+  <data name="Teams_CrestFailed" xml:space="preserve">
+    <value>Nije moguće spremiti grb.</value>
+  </data>
+  <data name="Teams_CrestTooLarge" xml:space="preserve">
+    <value>Slika je prevelika. Grbovi su ograničeni na 2 MB.</value>
+  </data>
+  <data name="Teams_CrestAfterSaveHint" xml:space="preserve">
+    <value>Najprije spremite momčad, zatim učitajte grb s popisa.</value>
+  </data>
   <data name="Nav_Events" xml:space="preserve">
     <value>Događaji</value>
   </data>
@@ -1870,6 +1984,9 @@
   <data name="Drinks_AddNewDrinkButton" xml:space="preserve">
     <value>Dodaj novo piće</value>
   </data>
+  <data name="Drinks_ManageCategoriesButton" xml:space="preserve">
+    <value>Upravljaj kategorijama</value>
+  </data>
   <data name="Drinks_LoadingMessage" xml:space="preserve">
     <value>Učitavanje pića...</value>
   </data>
@@ -2473,6 +2590,84 @@
   <data name="Events_PhaseLabel" xml:space="preserve">
     <value>Faza</value>
   </data>
+  <data name="Events_Phase_Future" xml:space="preserve">
+    <value>Nadolazeći</value>
+  </data>
+  <data name="Events_Phase_Active" xml:space="preserve">
+    <value>Uživo</value>
+  </data>
+  <data name="Events_Phase_Past" xml:space="preserve">
+    <value>Prošli</value>
+  </data>
+  <data name="Events_Status_Planned" xml:space="preserve">
+    <value>Planirano</value>
+  </data>
+  <data name="Events_Status_OnSale" xml:space="preserve">
+    <value>U prodaji</value>
+  </data>
+  <data name="Events_Status_SoldOut" xml:space="preserve">
+    <value>Rasprodano</value>
+  </data>
+  <data name="Events_Status_Active" xml:space="preserve">
+    <value>Uživo</value>
+  </data>
+  <data name="Events_Status_Completed" xml:space="preserve">
+    <value>Završeno</value>
+  </data>
+  <data name="Events_Status_Cancelled" xml:space="preserve">
+    <value>Otkazano</value>
+  </data>
+  <data name="Events_StatusChangedAlert" xml:space="preserve">
+    <value>'{0}' je sada {1}</value>
+  </data>
+  <data name="Events_ValidationRequiredFields" xml:space="preserve">
+    <value>Molimo popunite sva obavezna polja.</value>
+  </data>
+  <data name="Events_ValidationNoSeats" xml:space="preserve">
+    <value>Stadion još nema sjedala. Nacrtajte raspored stadiona prije stvaranja događaja.</value>
+  </data>
+  <data name="Events_ValidationNeedResidentClub" xml:space="preserve">
+    <value>Dodajte domaći klub u postavkama objekta prije stvaranja utakmice.</value>
+  </data>
+  <data name="Events_ValidationMatchNeedsTeams" xml:space="preserve">
+    <value>Utakmica zahtijeva i domaću i gostujuću momčad.</value>
+  </data>
+  <data name="Events_CreatedAlert" xml:space="preserve">
+    <value>Događaj '{0}' uspješno je stvoren.</value>
+  </data>
+  <data name="Events_CreateFailedAlert" xml:space="preserve">
+    <value>Stvaranje događaja nije uspjelo ({0}).</value>
+  </data>
+  <data name="Events_UpdatedAlert" xml:space="preserve">
+    <value>Događaj '{0}' uspješno je ažuriran.</value>
+  </data>
+  <data name="Events_UpdateFailedAlert" xml:space="preserve">
+    <value>Ažuriranje događaja nije uspjelo ({0}).</value>
+  </data>
+  <data name="Events_StatusChangeFailedAlert" xml:space="preserve">
+    <value>Promjena statusa nije uspjela ({0}).</value>
+  </data>
+  <data name="Events_StatusChangeErrorAlert" xml:space="preserve">
+    <value>Promjena statusa nije uspjela: {0}</value>
+  </data>
+  <data name="Events_ConfirmCancelTransition" xml:space="preserve">
+    <value>Jeste li sigurni da želite otkazati '{0}'? Ovo poništava sve aktivne sesije ulaznica i ne može se poništiti.</value>
+  </data>
+  <data name="Events_ConfirmCompleteTransition" xml:space="preserve">
+    <value>Jeste li sigurni da želite završiti '{0}'? Ovo poništava sve aktivne sesije ulaznica i ne može se poništiti.</value>
+  </data>
+  <data name="Events_ConfirmDelete" xml:space="preserve">
+    <value>Jeste li sigurni da želite izbrisati ovaj događaj? Ova radnja se ne može poništiti.</value>
+  </data>
+  <data name="Events_DeletedAlert" xml:space="preserve">
+    <value>Događaj je uspješno izbrisan.</value>
+  </data>
+  <data name="Events_DeleteFailedAlert" xml:space="preserve">
+    <value>Brisanje događaja nije uspjelo: {0}</value>
+  </data>
+  <data name="Events_EditLockedCancelled" xml:space="preserve">
+    <value>Ovaj događaj je otkazan i više se ne može uređivati.</value>
+  </data>
   <data name="Events_SellingStatus" xml:space="preserve">
     <value>Prodaja</value>
   </data>
@@ -2484,6 +2679,12 @@
   </data>
   <data name="Events_EditLockedTooltip" xml:space="preserve">
     <value>Ovaj događaj je već održan i više se ne može uređivati.</value>
+  </data>
+  <data name="Events_SeasonClosedLocked" xml:space="preserve">
+    <value>Sezona „{0}” završila je {1} i zatvorena je. Događaji u zatvorenoj sezoni više se ne mogu dodavati, mijenjati ni brisati. Za izmjene najprije produžite datum završetka sezone.</value>
+  </data>
+  <data name="Events_SeasonClosedOptionSuffix" xml:space="preserve">
+    <value> (zatvorena)</value>
   </data>
   <data name="Events_LiveOccupancyButton" xml:space="preserve">
     <value>Popunjenost uživo</value>
@@ -2599,6 +2800,12 @@
   <data name="Events_AwayTeamPlaceholder" xml:space="preserve">
     <value>Gostujući tim</value>
   </data>
+  <data name="Events_AwayTeamHint" xml:space="preserve">
+    <value>Odaberite poznatu momčad za ponovnu upotrebu grba ili upišite novu.</value>
+  </data>
+  <data name="Events_AwayTeamManageLink" xml:space="preserve">
+    <value>Upravljaj momčadima</value>
+  </data>
   <data name="Events_SelectHomeTeam" xml:space="preserve">
     <value>Odaberite domaći tim…</value>
   </data>
@@ -2631,6 +2838,39 @@
   </data>
   <data name="Events_DescriptionFieldLabel" xml:space="preserve">
     <value>Opis</value>
+  </data>
+  <data name="Events_PosterLabel" xml:space="preserve">
+    <value>Plakat događaja</value>
+  </data>
+  <data name="Events_PosterHint" xml:space="preserve">
+    <value>Generira se iz grbova ispod. Nazivi timova, stadion i početak utakmice ispisuju se u sliku, pa provjerite tekst prije odobrenja.</value>
+  </data>
+  <data name="Events_PosterPromptPlaceholder" xml:space="preserve">
+    <value>Opišite plakat koji želite…</value>
+  </data>
+  <data name="Events_PosterGenerate" xml:space="preserve">
+    <value>Generiraj sliku</value>
+  </data>
+  <data name="Events_PosterRegenerate" xml:space="preserve">
+    <value>Generiraj ponovno</value>
+  </data>
+  <data name="Events_PosterGenerating" xml:space="preserve">
+    <value>Generiranje…</value>
+  </data>
+  <data name="Events_PosterSuggestPrompt" xml:space="preserve">
+    <value>Predloži upit</value>
+  </data>
+  <data name="Events_PosterRemove" xml:space="preserve">
+    <value>Ukloni</value>
+  </data>
+  <data name="Events_PosterNone" xml:space="preserve">
+    <value>Još nema plakata</value>
+  </data>
+  <data name="Events_PosterErrorUnreachable" xml:space="preserve">
+    <value>Nije moguće doći do servisa za generiranje slika. Provjerite radi li i pokušajte ponovno.</value>
+  </data>
+  <data name="Events_PosterErrorPlaceholder" xml:space="preserve">
+    <value>Generiranje slike nije uspjelo i vraćen je rezervni placeholder. Pokušajte drugačije formulirati upit.</value>
   </data>
   <data name="Events_DateTimeLabel" xml:space="preserve">
     <value>Datum i vrijeme događaja *</value>
@@ -3770,6 +4010,7 @@
 <data name="Seasons_EndAfterStart" xml:space="preserve"><value>Datum završetka mora biti nakon datuma početka.</value></data>
 <data name="Seasons_FormCurrent" xml:space="preserve"><value>Trenutna sezona (zadano za nove događaje i sezonske ulaznice)</value></data>
   <data name="Seasons_FinishedNotCurrent" xml:space="preserve"><value>Ova sezona je već završila pa se ne može postaviti kao trenutna sezona.</value></data>
+<data name="Seasons_EndDateFreezesEvents" xml:space="preserve"><value>Nakon ovog datuma sezona se zatvara: njezini se događaji više ne mogu dodavati, mijenjati ni brisati.</value></data>
 <data name="Seasons_Cancel" xml:space="preserve"><value>Odustani</value></data>
 <data name="Seasons_CreateSeason" xml:space="preserve"><value>Kreiraj sezonu</value></data>
 <data name="Seasons_SaveChanges" xml:space="preserve"><value>Spremi promjene</value></data>
@@ -3948,7 +4189,6 @@
   <data name="Venue_NewClub" xml:space="preserve"><value>Novi klub</value></data>
   <data name="Venue_EditClub" xml:space="preserve"><value>Uredi klub</value></data>
   <data name="Venue_NoClubs" xml:space="preserve"><value>Još nema dodanih klubova.</value></data>
-  <data name="Venue_ClubName" xml:space="preserve"><value>Naziv kluba</value></data>
   <data name="Venue_ClubShortName" xml:space="preserve"><value>Skraćeni naziv</value></data>
   <data name="Venue_ClubPrimaryColor" xml:space="preserve"><value>Primarna boja</value></data>
   <data name="Venue_ClubSecondaryColor" xml:space="preserve"><value>Sekundarna boja</value></data>
@@ -3956,7 +4196,6 @@
   <data name="Venue_ClubWebsite" xml:space="preserve"><value>Web stranica</value></data>
   <data name="Venue_ClubIsPrimary" xml:space="preserve"><value>Glavni (domaći) klub</value></data>
   <data name="Venue_ClubDisplayOrder" xml:space="preserve"><value>Redoslijed prikaza</value></data>
-  <data name="Venue_ClubLogo" xml:space="preserve"><value>Logo</value></data>
   <data name="Venue_UploadLogo" xml:space="preserve"><value>Učitaj logo</value></data>
   <data name="Venue_RemoveLogo" xml:space="preserve"><value>Ukloni logo</value></data>
   <data name="Venue_NoLogo" xml:space="preserve"><value>Nema logotipa</value></data>
@@ -3982,6 +4221,15 @@
   <data name="Settings_TicketSalesEnabledHint" xml:space="preserve"><value>Kada je isključeno, aplikacija za kupce skriva kupnju, a API odbija nove kupnje. Ulaznice tada u sustav ulaze samo putem vanjske integracije.</value></data>
   <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Prodaja ulaznica je UKLJUČENA — kupci mogu kupovati ulaznice u aplikaciji.</value></data>
   <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Prodaja ulaznica je ISKLJUČENA — ulaznice dolaze samo iz vanjskog sustava.</value></data>
+  <data name="Settings_PaymentsSection" xml:space="preserve"><value>Plaćanje</value></data>
+  <data name="Settings_PaymentsIntro" xml:space="preserve"><value>Odaberite koje načine plaćanja navijači mogu izabrati pri naručivanju pića u aplikaciji za kupce. Isključeni načini skriveni su u košarici i odbija ih API za narudžbe.</value></data>
+  <data name="Settings_PayWallet" xml:space="preserve"><value>HALFTIME novčanik</value></data>
+  <data name="Settings_PayWalletHint" xml:space="preserve"><value>Plaćanje sa stanja novčanika navijača. Narudžba se naplaćuje odmah pri naplati.</value></data>
+  <data name="Settings_PayCard" xml:space="preserve"><value>Kartica</value></data>
+  <data name="Settings_PayCardHint" xml:space="preserve"><value>Navijač izjavljuje da će platiti karticom. Pri naplati se ne prenosi novac — narudžba se podmiruje na šanku.</value></data>
+  <data name="Settings_PayCash" xml:space="preserve"><value>Gotovina pri dostavi</value></data>
+  <data name="Settings_PayCashHint" xml:space="preserve"><value>Navijač plaća dostavljaču gotovinom pri preuzimanju narudžbe.</value></data>
+  <data name="Settings_PaymentsNoneWarning" xml:space="preserve"><value>Barem jedan način plaćanja mora ostati uključen — inače navijači ne mogu dovršiti narudžbu.</value></data>
   <data name="Settings_EmailSection" xml:space="preserve"><value>E-pošta (SMTP)</value></data>
   <data name="Settings_EmailSubtitle" xml:space="preserve"><value>Konfigurirajte poslužitelj odlazne pošte za poveznice aktivacije računa i obavijesti e-poštom.</value></data>
   <data name="Settings_EmailEnabled" xml:space="preserve"><value>Šalji e-poštu putem SMTP-a</value></data>
@@ -4074,6 +4322,16 @@
   <data name="Settings_RestoreConfirmButton" xml:space="preserve"><value>Da, vrati podatke</value></data>
   <data name="Settings_RestoreSuccess" xml:space="preserve"><value>Vraćanje dovršeno — umetnuto {0} redaka u {1} tablica.</value></data>
   <data name="Settings_RestoreFailed" xml:space="preserve"><value>Vraćanje nije uspjelo i poništeno je: {0}</value></data>
+  <data name="Settings_ImageGenSection" xml:space="preserve"><value>Generiranje slika</value></data>
+  <data name="Settings_ImageGenSubtitle" xml:space="preserve"><value>Testirajte vanjski API za generiranje slika. Unesite upit i generirajte jednu sliku.</value></data>
+  <data name="Settings_ImageGenPrompt" xml:space="preserve"><value>Upit</value></data>
+  <data name="Settings_ImageGenPromptPlaceholder" xml:space="preserve"><value>npr. crvena lisica u snijegu, filmsko osvjetljenje</value></data>
+  <data name="Settings_ImageGenWidth" xml:space="preserve"><value>Širina (px)</value></data>
+  <data name="Settings_ImageGenHeight" xml:space="preserve"><value>Visina (px)</value></data>
+  <data name="Settings_ImageGenGenerate" xml:space="preserve"><value>Generiraj sliku</value></data>
+  <data name="Settings_ImageGenDownload" xml:space="preserve"><value>Preuzmi PNG</value></data>
+  <data name="Settings_ImageGenPlaceholder" xml:space="preserve"><value>API je vratio rezervnu sliku — generiranje nije uspjelo. Pokušajte s drugim upitom ili provjerite radi li servis za slike.</value></data>
+  <data name="Settings_ImageGenFailed" xml:space="preserve"><value>Nije moguće doći do API-ja za generiranje slika. Provjerite radi li i je li ImageGeneration:BaseUrl ispravan.</value></data>
   <data name="Tickets_DetailViewTitle" xml:space="preserve"><value>Prikaži detalje</value></data>
   <data name="Tickets_DetailTitle" xml:space="preserve"><value>Detalji ulaznice</value></data>
   <data name="Tickets_DetailClose" xml:space="preserve"><value>Zatvori</value></data>
@@ -4121,4 +4379,220 @@
   <data name="Events_NoSeasonOption" xml:space="preserve"><value>(bez sezone)</value></data>
   <data name="Events_CurrentSeasonSuffix" xml:space="preserve"><value>(trenutna)</value></data>
   <data name="Events_SeasonHint" xml:space="preserve"><value>Povezivanje popunjava propusnice ove sezone kartom za utakmicu.</value></data>
+  <data name="Events_CrestHomeLabel" xml:space="preserve">
+    <value>Grb domaćina</value>
+  </data>
+  <data name="Events_CrestAwayLabel" xml:space="preserve">
+    <value>Grb gosta</value>
+  </data>
+  <data name="Events_CrestHomeMissing" xml:space="preserve">
+    <value>Domaći klub nema grb — dodajte logo u postavkama stadiona.</value>
+  </data>
+  <data name="Events_CrestAwayMissing" xml:space="preserve">
+    <value>Učitajte grb protivnika.</value>
+  </data>
+  <data name="Events_CrestRemembered" xml:space="preserve">
+    <value>Zapamćeno s prijašnje utakmice</value>
+  </data>
+  <data name="Events_CrestTooLarge" xml:space="preserve">
+    <value>Slika grba je prevelika (najviše 2 MB).</value>
+  </data>
+  <data name="Events_CrestUnreadable" xml:space="preserve">
+    <value>Slika grba se ne može pročitati.</value>
+  </data>
+  <data name="Events_PosterErrorNoCrests" xml:space="preserve">
+    <value>Prvo dodajte grbove — plakat se gradi iz njih.</value>
+  </data>
+  <data name="Events_PosterReviewTitle" xml:space="preserve">
+    <value>Provjerite tekst prije objave</value>
+  </data>
+  <data name="Events_PosterReviewBody" xml:space="preserve">
+    <value>Generator slika ispisuje nazive timova, stadion i početak utakmice u sliku i može ih pogrešno napisati. Navijači vide običnu karticu dok ovo ne odobrite.</value>
+  </data>
+  <data name="Events_PosterApproveLabel" xml:space="preserve">
+    <value>Tekst na ovom plakatu je točan — prikaži ga navijačima</value>
+  </data>
+  <data name="Events_PosterApproved" xml:space="preserve">
+    <value>Odobreno — prikazuje se navijačima.</value>
+  </data>
+  <data name="Events_PosterStale" xml:space="preserve">
+    <value>Ovaj plakat je izrađen za druge podatke utakmice. Spremite za ponovno generiranje.</value>
+  </data>
+  <data name="Login_ShowPassword" xml:space="preserve">
+    <value>Prikaži lozinku</value>
+  </data>
+  <data name="Login_HidePassword" xml:space="preserve">
+    <value>Sakrij lozinku</value>
+  </data>
+  <data name="CustAnalytics_DetailLoadFailed" xml:space="preserve">
+    <value>Učitavanje detalja kupca nije uspjelo.</value>
+  </data>
+  <data name="CustAnalytics_DetailClose" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="CustAnalytics_DetailTotalSpent" xml:space="preserve">
+    <value>Ukupno potrošeno</value>
+  </data>
+  <data name="CustAnalytics_DetailTickets" xml:space="preserve">
+    <value>Ulaznice</value>
+  </data>
+  <data name="CustAnalytics_DetailDrinks" xml:space="preserve">
+    <value>Pića</value>
+  </data>
+  <data name="CustAnalytics_DetailAvgTicket" xml:space="preserve">
+    <value>Prosj. ulaznica</value>
+  </data>
+  <data name="CustAnalytics_DetailDrinkOrders" xml:space="preserve">
+    <value>Narudžbe pića</value>
+  </data>
+  <data name="CustAnalytics_DetailAvgOrder" xml:space="preserve">
+    <value>Prosj. narudžba</value>
+  </data>
+  <data name="CustAnalytics_DetailEvents" xml:space="preserve">
+    <value>Događaji</value>
+  </data>
+  <data name="CustAnalytics_DetailTicketPurchases" xml:space="preserve">
+    <value>Kupnje ulaznica</value>
+  </data>
+  <data name="CustAnalytics_DetailDate" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="CustAnalytics_DetailEvent" xml:space="preserve">
+    <value>Događaj</value>
+  </data>
+  <data name="CustAnalytics_DetailSeat" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="CustAnalytics_DetailPrice" xml:space="preserve">
+    <value>Cijena</value>
+  </data>
+  <data name="CustAnalytics_DetailStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CustAnalytics_DetailItems" xml:space="preserve">
+    <value>Stavke</value>
+  </data>
+  <data name="CustAnalytics_DetailTotal" xml:space="preserve">
+    <value>Ukupno</value>
+  </data>
+  <data name="CustAnalytics_DetailNoTickets" xml:space="preserve">
+    <value>Nema zabilježenih kupnji ulaznica.</value>
+  </data>
+  <data name="CustAnalytics_DetailNoOrders" xml:space="preserve">
+    <value>Nema zabilježenih narudžbi pića.</value>
+  </data>
+  <data name="Categories_Eyebrow" xml:space="preserve">
+    <value>Meni</value>
+  </data>
+  <data name="Categories_AddTitle" xml:space="preserve">
+    <value>Dodaj kategoriju</value>
+  </data>
+  <data name="Categories_EditTitle" xml:space="preserve">
+    <value>Uredi kategoriju</value>
+  </data>
+  <data name="Categories_ListTitle" xml:space="preserve">
+    <value>Kategorije pića</value>
+  </data>
+  <data name="Categories_NameLabel" xml:space="preserve">
+    <value>Naziv *</value>
+  </data>
+  <data name="Categories_NamePlaceholder" xml:space="preserve">
+    <value>npr. Vino</value>
+  </data>
+  <data name="Categories_DisplayNameLabel" xml:space="preserve">
+    <value>Prikazani naziv</value>
+  </data>
+  <data name="Categories_DisplayNamePlaceholder" xml:space="preserve">
+    <value>Prikazuje se kupcima (nije obavezno)</value>
+  </data>
+  <data name="Categories_IconLabel" xml:space="preserve">
+    <value>Ikona (emoji)</value>
+  </data>
+  <data name="Categories_SortOrderLabel" xml:space="preserve">
+    <value>Redoslijed</value>
+  </data>
+  <data name="Categories_ActiveHint" xml:space="preserve">
+    <value>Aktivna (dostupna pri kreiranju pića)</value>
+  </data>
+  <data name="Categories_Loading" xml:space="preserve">
+    <value>Učitavanje kategorija…</value>
+  </data>
+  <data name="Categories_LoadErrorTitle" xml:space="preserve">
+    <value>Nije moguće učitati kategorije</value>
+  </data>
+  <data name="Categories_Retry" xml:space="preserve">
+    <value>Pokušaj ponovno</value>
+  </data>
+  <data name="Categories_EmptyTitle" xml:space="preserve">
+    <value>Još nema kategorija</value>
+  </data>
+  <data name="Categories_EmptyMessage" xml:space="preserve">
+    <value>Dodajte kategoriju za grupiranje pića.</value>
+  </data>
+  <data name="Categories_AddFirst" xml:space="preserve">
+    <value>Dodaj prvu kategoriju</value>
+  </data>
+  <data name="Categories_ColIcon" xml:space="preserve">
+    <value>Ikona</value>
+  </data>
+  <data name="Categories_ColName" xml:space="preserve">
+    <value>Naziv</value>
+  </data>
+  <data name="Categories_ColDisplayName" xml:space="preserve">
+    <value>Prikazani naziv</value>
+  </data>
+  <data name="Categories_ColOrder" xml:space="preserve">
+    <value>Redoslijed</value>
+  </data>
+  <data name="Categories_ColDrinks" xml:space="preserve">
+    <value>Pića</value>
+  </data>
+  <data name="Categories_ColStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Categories_ColActions" xml:space="preserve">
+    <value>Radnje</value>
+  </data>
+  <data name="Categories_StatusActive" xml:space="preserve">
+    <value>Aktivna</value>
+  </data>
+  <data name="Categories_StatusInactive" xml:space="preserve">
+    <value>Neaktivna</value>
+  </data>
+  <data name="Categories_Saving" xml:space="preserve">
+    <value>Spremanje…</value>
+  </data>
+  <data name="Categories_NewCategory" xml:space="preserve">
+    <value>Nova kategorija</value>
+  </data>
+  <data name="Categories_NameRequired" xml:space="preserve">
+    <value>Naziv kategorije je obavezan</value>
+  </data>
+  <data name="Categories_Created" xml:space="preserve">
+    <value>Kategorija '{0}' je stvorena</value>
+  </data>
+  <data name="Categories_Updated" xml:space="preserve">
+    <value>Kategorija '{0}' je ažurirana</value>
+  </data>
+  <data name="Categories_Deleted" xml:space="preserve">
+    <value>Kategorija '{0}' je obrisana</value>
+  </data>
+  <data name="Categories_CreateFailed" xml:space="preserve">
+    <value>Stvaranje kategorije nije uspjelo. Naziv je možda već u upotrebi.</value>
+  </data>
+  <data name="Categories_UpdateFailed" xml:space="preserve">
+    <value>Ažuriranje kategorije nije uspjelo. Naziv je možda već u upotrebi.</value>
+  </data>
+  <data name="Categories_DeleteConfirm" xml:space="preserve">
+    <value>Obrisati kategoriju '{0}'?</value>
+  </data>
+  <data name="Categories_DeleteFailed" xml:space="preserve">
+    <value>Nije moguće obrisati '{0}'. Možda je još u upotrebi.</value>
+  </data>
+  <data name="Categories_LoadServerError" xml:space="preserve">
+    <value>Učitavanje kategorija nije uspjelo. Poslužitelj je vratio pogrešku.</value>
+  </data>
+  <data name="Categories_LoadException" xml:space="preserve">
+    <value>Došlo je do pogreške pri učitavanju kategorija: {0}</value>
+  </data>
 </root>

@@ -1,0 +1,39 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: 20:45
+      - generic [ref=e17]:
+        - banner [ref=e18]:
+          - generic [ref=e19]: HALFTIME
+          - button "Prijava" [ref=e20] [cursor=pointer]
+        - generic [ref=e24]:
+          - generic [ref=e25]: Stadion Rujevica
+          - heading "NEMA REDOVA. SAMO PIĆE." [level=1] [ref=e29]:
+            - generic [ref=e30]: NEMA
+            - generic [ref=e31]: REDOVA.
+            - generic [ref=e32]: SAMO PIĆE.
+          - paragraph [ref=e33]: Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.
+        - generic [ref=e34]: Još nema objavljenih utakmica.
+        - generic [ref=e36]: HALFTIME
+        - generic [ref=e37]:
+          - button "Skeniraj ulaznicu" [ref=e38] [cursor=pointer]
+          - button "Imaš pretplatu? Prijavi se" [ref=e43] [cursor=pointer]
+        - contentinfo [ref=e44]:
+          - button "Pojedinačna ulaznica? Skeniraj QR kod." [ref=e45] [cursor=pointer]
+          - group "Jezik" [ref=e49]:
+            - button "HR" [ref=e50] [cursor=pointer]
+            - generic [ref=e51]: /
+            - button "EN" [ref=e52] [cursor=pointer]
+    - complementary [ref=e53]:
+      - img "QR code for https://localhost:7020/welcome" [ref=e54]
+      - generic [ref=e55]: Otvori na mobitelu
+      - generic [ref=e56]: https://localhost:7020/welcome
+  - generic [ref=e57]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=e58] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=e59]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

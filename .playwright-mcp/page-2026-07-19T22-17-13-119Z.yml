@@ -1,0 +1,22 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e2]:
+    - generic [ref=f3e4]:
+      - generic [ref=f3e5]: 20:45
+      - generic [ref=f3e17]:
+        - generic [ref=f3e18]: 🎟️
+        - heading "Nema aktivne narudžbe" [level=2] [ref=f3e19]
+        - paragraph [ref=f3e20]: Skeniraj QR kod s ulaznice pa ti piće stigne točno na tvoje mjesto — bez čekanja u redu.
+        - button "Skeniraj ulaznicu" [ref=f3e22] [cursor=pointer]
+    - complementary [ref=f3e23]:
+      - img "QR code for https://localhost:7020/order" [ref=f3e24]
+      - generic [ref=f3e25]: Otvori na mobitelu
+      - generic [ref=f3e26]: https://localhost:7020/order
+  - generic [ref=f3e27]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f3e28] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=f3e29]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

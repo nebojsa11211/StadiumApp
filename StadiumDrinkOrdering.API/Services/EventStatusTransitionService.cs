@@ -4,7 +4,7 @@ namespace StadiumDrinkOrdering.API.Services;
 /// Periodically advances events across the clock-driven ends of their lifecycle:
 /// <list type="bullet">
 /// <item>Closes out events whose window has elapsed to <see cref="Shared.Models.EventStatus.Completed"/> —
-/// both stale-live events (Active/InProgress) and ones that never went live (Planned/OnSale/SoldOut) but
+/// both stale-live events (Active) and ones that never went live (Planned/OnSale/SoldOut) but
 /// whose date has passed (<see cref="IEventService.AutoCompleteEndedEventsAsync"/>).</item>
 /// <item>Brings a sellable event (OnSale/SoldOut) live to <see cref="Shared.Models.EventStatus.Active"/>
 /// once its window opens, so drink ordering unlocks at kickoff without a manual "make live" click

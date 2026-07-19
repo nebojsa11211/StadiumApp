@@ -1,0 +1,179 @@
+@namespace StadiumDrinkOrdering.UI.Components.Auth
+
+@*
+    Shared login card for the console-style apps (Admin, Bar, Runner).
+
+    All three apps previously carried their own copy of this markup, which is how the Bar
+    login drifted away from the Admin one. Keep the presentation here; each app supplies only
+    its own localized strings, id prefix and submit handler.
+
+    Ids follow the project convention {app}-login-{element}, driven by IdPrefix, so the
+    existing per-app ids ("admin-login-body", "staff-login-row", ...) are preserved.
+
+    Requires: css/console-auth.css from _content/StadiumDrinkOrdering.UI.
+*@
+
+<div class="console console-auth" id="@Id("container")">
+    <div class="console-auth__row" id="@Id("row")">
+        <div class="console-auth__col" id="@Id("col")">
+            <div class="panel console-auth__card" id="@Id("card")">
+                <div class="panel__body console-auth__body" id="@Id("body")">
+
+                    <div class="console-auth__header" id="@Id("header")">
+                        @if (!string.IsNullOrEmpty(Eyebrow))
+                        {
+                            <span class="eyebrow console-auth__eyebrow" id="@Id("eyebrow")">@Eyebrow</span>
+                        }
+                        <h1 class="console-auth__title" id="@Id("title")">@Title</h1>
+                        @if (!string.IsNullOrEmpty(Subtitle))
+                        {
+                            <p class="console-auth__subtitle" id="@Id("subtitle")">@Subtitle</p>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                    {
+                        <div class="console-alert console-alert--danger console-auth__error"
+                             role="alert" id="@Id("error")">
+                            @ErrorMessage
+                        </div>
+                    }
+
+                    <form @onsubmit="OnSubmit" id="@Id("form")">
+                        <div class="field console-auth__field" id="@Id("email-group")">
+                            <label class="field__label" for="@Id("email-input")">@EmailLabel</label>
+                            <input type="email" class="field__input"
+                                   id="@Id("email-input")"
+                                   value="@Email"
+                                   @oninput="OnEmailInput"
+                                   placeholder="@EmailPlaceholder"
+                                   autocomplete="username"
+                                   inputmode="email"
+                                   required />
+                        </div>
+
+                        <div class="field console-auth__field" id="@Id("password-group")">
+                            <label class="field__label" for="@Id("password-input")">@PasswordLabel</label>
+                            <div class="console-auth__pw" id="@Id("password-wrapper")">
+                                <input type="@(showPassword ? "text" : "password")"
+                                       class="field__input console-auth__pw-input"
+                                       id="@Id("password-input")"
+                                       value="@Password"
+                                       @oninput="OnPasswordInput"
+                                       placeholder="@PasswordPlaceholder"
+                                       autocomplete="current-password"
+                                       required />
+                                <button type="button" class="console-auth__pw-toggle"
+                                        id="@Id("password-toggle-btn")"
+                                        @onclick="TogglePasswordVisibility"
+                                        aria-label="@(showPassword ? HidePasswordLabel : ShowPasswordLabel)"
+                                        aria-pressed="@showPassword">
+                                    @if (showPassword)
+                                    {
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                            <line x1="1" y1="1" x2="23" y2="23" />
+                                        </svg>
+                                    }
+                                    else
+                                    {
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="@Id("button-group")">
+                            <button type="submit"
+                                    class="pill-btn pill-btn--primary console-auth__submit"
+                                    id="@Id("submit-btn")"
+                                    disabled="@IsLoading"
+                                    aria-busy="@IsLoading">
+                                @if (IsLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" id="@Id("spinner")"></span>
+                                    <span id="@Id("loading-text")">@LoadingText</span>
+                                }
+                                else
+                                {
+                                    <span id="@Id("button-text")">@SubmitText</span>
+                                }
+                            </button>
+                        </div>
+                    </form>
+
+                    @if (!string.IsNullOrEmpty(FooterText) || FooterContent is not null)
+                    {
+                        <div class="console-auth__footer" id="@Id("demo-info")">
+                            @if (FooterContent is not null)
+                            {
+                                @FooterContent
+                            }
+                            else
+                            {
+                                <small id="@Id("demo-text")">@FooterText</small>
+                            }
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>Id prefix for generated element ids, e.g. "admin", "staff", "runner".</summary>
+    [Parameter, EditorRequired] public string IdPrefix { get; set; } = "console";
+
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Subtitle { get; set; }
+
+    [Parameter] public string EmailLabel { get; set; } = "Email";
+    [Parameter] public string? EmailPlaceholder { get; set; }
+    [Parameter] public string PasswordLabel { get; set; } = "Password";
+    [Parameter] public string? PasswordPlaceholder { get; set; }
+
+    [Parameter] public string SubmitText { get; set; } = "Sign in";
+    [Parameter] public string LoadingText { get; set; } = "Signing in...";
+    [Parameter] public string ShowPasswordLabel { get; set; } = "Show password";
+    [Parameter] public string HidePasswordLabel { get; set; } = "Hide password";
+
+    [Parameter] public string? FooterText { get; set; }
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+
+    [Parameter] public string? ErrorMessage { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+
+    [Parameter] public string Email { get; set; } = "";
+    [Parameter] public EventCallback<string> EmailChanged { get; set; }
+
+    [Parameter] public string Password { get; set; } = "";
+    [Parameter] public EventCallback<string> PasswordChanged { get; set; }
+
+    [Parameter] public EventCallback OnSubmit { get; set; }
+
+    private bool showPassword;
+
+    private string Id(string element) => $"{IdPrefix}-login-{element}";
+
+    private void TogglePasswordVisibility() => showPassword = !showPassword;
+
+    // Bound with @oninput rather than @bind so the parent sees each keystroke; @bind would only
+    // push on change/blur, and the submit handler could then read a stale value.
+    private Task OnEmailInput(ChangeEventArgs e)
+    {
+        Email = e.Value?.ToString() ?? "";
+        return EmailChanged.InvokeAsync(Email);
+    }
+
+    private Task OnPasswordInput(ChangeEventArgs e)
+    {
+        Password = e.Value?.ToString() ?? "";
+        return PasswordChanged.InvokeAsync(Password);
+    }
+}

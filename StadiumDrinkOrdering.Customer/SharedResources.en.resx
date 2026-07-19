@@ -2266,6 +2266,21 @@
   <data name="Order_GuestName" xml:space="preserve">
     <value>Guest</value>
   </data>
+  <data name="CartBar_BalanceAfter" xml:space="preserve">
+    <value>Left after this order: €{0}</value>
+  </data>
+  <data name="CartBar_Short" xml:space="preserve">
+    <value>€{0} short</value>
+  </data>
+  <data name="CartBar_TopUp" xml:space="preserve">
+    <value>Top up</value>
+  </data>
+  <data name="DrinkSheet_Available" xml:space="preserve">
+    <value>Wallet balance: €{0}</value>
+  </data>
+  <data name="DrinkSheet_Short" xml:space="preserve">
+    <value>€{0} short</value>
+  </data>
   <data name="Order_TrackActive" xml:space="preserve">
     <value>Order #{0} is in progress</value>
   </data>
@@ -2857,15 +2872,6 @@
   <data name="Welcome_NoFixtures" xml:space="preserve">
     <value>No fixtures published yet.</value>
   </data>
-  <data name="Welcome_WelcomeBack" xml:space="preserve">
-    <value>Welcome back</value>
-  </data>
-  <data name="Welcome_TicketNumber" xml:space="preserve">
-    <value>🎟️ {0}</value>
-  </data>
-  <data name="Welcome_TopUpAriaLabel" xml:space="preserve">
-    <value>Top up wallet</value>
-  </data>
   <data name="Welcome_NoBalance" xml:space="preserve">
     <value>No balance</value>
   </data>
@@ -2875,14 +2881,53 @@
   <data name="Welcome_SeatLabel" xml:space="preserve">
     <value>Seat</value>
   </data>
+  <data name="Welcome_TicketLabel" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="Welcome_AccountTab_Ticket" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="Welcome_AccountTab_Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="Welcome_AccountTab_Wallet" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="Welcome_NoOrdersYet" xml:space="preserve">
+    <value>No orders on this ticket yet.</value>
+  </data>
+  <data name="Welcome_NoWalletActivity" xml:space="preserve">
+    <value>No wallet activity yet.</value>
+  </data>
+  <data name="Welcome_TotalSpent" xml:space="preserve">
+    <value>Total spent</value>
+  </data>
+  <data name="Welcome_Txn_TopUp" xml:space="preserve">
+    <value>Top-up</value>
+  </data>
+  <data name="Welcome_Txn_Withdrawal" xml:space="preserve">
+    <value>Withdrawal</value>
+  </data>
+  <data name="Welcome_Txn_Order" xml:space="preserve">
+    <value>Drink order</value>
+  </data>
+  <data name="OrderStatus_DeliveryFailed" xml:space="preserve">
+    <value>Delivery failed</value>
+  </data>
+  <data name="Welcome_AccountAriaLabel" xml:space="preserve">
+    <value>Your account</value>
+  </data>
+  <data name="Welcome_AccountTitle" xml:space="preserve">
+    <value>Your account</value>
+  </data>
+  <data name="Welcome_AccountSignIn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
   <data name="Welcome_EventLabel" xml:space="preserve">
     <value>Match</value>
   </data>
   <data name="Welcome_DateLabel" xml:space="preserve">
     <value>Date</value>
-  </data>
-  <data name="Welcome_WalletLabel" xml:space="preserve">
-    <value>Wallet</value>
   </data>
   <data name="Welcome_ContinueOrdering" xml:space="preserve">
     <value>Continue ordering</value>
@@ -2953,9 +2998,6 @@
   <data name="Welcome_HalftimeWallet" xml:space="preserve">
     <value>HALFTIME wallet</value>
   </data>
-  <data name="Welcome_NoWallet" xml:space="preserve">
-    <value>No wallet</value>
-  </data>
   <data name="Welcome_GeneralError" xml:space="preserve">
     <value>Something went wrong. Try again.</value>
   </data>
@@ -3021,5 +3063,86 @@
   </data>
   <data name="Welcome_Day_Tomorrow" xml:space="preserve">
     <value>Tomorrow</value>
+  </data>
+  <data name="EventDetails_SeatsScrollAria" xml:space="preserve">
+    <value>Seat layout in the stand</value>
+  </data>
+  <data name="EventDetails_SelectedSeatsAria" xml:space="preserve">
+    <value>Selected seats</value>
+  </data>
+  <data name="EventDetails_SeatMapAria" xml:space="preserve">
+    <value>Seat map</value>
+  </data>
+  <data name="EventDetails_SeatLabelFormat" xml:space="preserve">
+    <value>Row {0}, seat {1}</value>
+  </data>
+  <data name="EventDetails_SeatTitleFormat" xml:space="preserve">
+    <value>Row {0}, seat {1} — €{2}</value>
+  </data>
+  <data name="EventDetails_SectorMapUnavailable" xml:space="preserve">
+    <value>The map for this sector is unavailable.</value>
+  </data>
+  <data name="EventDetails_SectorMapLoadError" xml:space="preserve">
+    <value>Error loading the sector map.</value>
+  </data>
+  <data name="EventDetails_SeatsAddFailed" xml:space="preserve">
+    <value>Some seats could not be added to the cart.</value>
+  </data>
+  <data name="EventDetails_Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="EventDetails_Tomorrow" xml:space="preserve">
+    <value>Tomorrow</value>
+  </data>
+  <data name="EventDetails_InDays" xml:space="preserve">
+    <value>in {0} days</value>
+  </data>
+  <data name="NavMenu_MainNavAria" xml:space="preserve">
+    <value>Main navigation</value>
+  </data>
+  <data name="NavMenu_HomeAria" xml:space="preserve">
+    <value>Navigate to home page</value>
+  </data>
+  <data name="NavMenu_EventsAria" xml:space="preserve">
+    <value>View available events</value>
+  </data>
+  <data name="NavMenu_MenuAria" xml:space="preserve">
+    <value>Browse drinks menu</value>
+  </data>
+  <data name="NavMenu_OrdersAria" xml:space="preserve">
+    <value>View your orders</value>
+  </data>
+  <data name="NavMenu_WalletAria" xml:space="preserve">
+    <value>View your wallet</value>
+  </data>
+  <data name="Toast_CloseAria" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Common_BackAria" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Menu_RemoveItemAria" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Home_DefaultFanName" xml:space="preserve">
+    <value>Fan</value>
+  </data>
+  <data name="OrderConfirmation_Subtitle" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="OrderConfirmation_TicketQr" xml:space="preserve">
+    <value>Ticket QR code</value>
+  </data>
+  <data name="Checkout_SectorFallback" xml:space="preserve">
+    <value>Sector {0}</value>
+  </data>
+  <data name="Register_UsernamePlaceholder" xml:space="preserve">
+    <value>e.g. ivan.horvat</value>
+  </data>
+  <data name="Register_FirstNamePlaceholder" xml:space="preserve">
+    <value>e.g. Ivan</value>
+  </data>
+  <data name="Register_LastNamePlaceholder" xml:space="preserve">
+    <value>e.g. Horvat</value>
   </data>
 </root>

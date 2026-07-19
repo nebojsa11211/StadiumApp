@@ -1,0 +1,22 @@
+- generic [ref=e10]:
+  - combobox [ref=e13]:
+    - option "Hrvatski" [selected]
+    - option "English"
+  - main [ref=e14]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e21]: Stadion admin
+        - heading "Prijavite se" [level=1] [ref=e22]
+        - paragraph [ref=e23]: Pristup konzoli operacija
+      - generic [ref=e50]: "Login failed: Invalid email or password"
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: E-pošta
+          - textbox "E-pošta" [ref=e27]: admin@stadium.com
+        - generic [ref=e28]:
+          - generic [ref=e29]: Lozinka
+          - generic [ref=e30]:
+            - textbox "Lozinka" [ref=e31]: admin123
+            - button "Show password" [ref=e32] [cursor=pointer]
+        - button "Prijava" [ref=e51] [cursor=pointer]
+      - generic [ref=e39]: Koristite admin@stadium.com/admin123 u demonstracijske svrhe

@@ -8,8 +8,8 @@
             <div id="customer-toast-header-@toast.Id" class="toast-header">
                 <span class="toast-icon me-2">@GetToastIcon(toast.Type)</span>
                 <strong class="me-auto">@GetToastTitle(toast.Type)</strong>
-                <small class="text-muted">@toast.TimeAgo</small>
-                <button type="button" class="btn-close" id="customer-toast-close-@toast.Id" @onclick="() => RemoveToast(toast.Id)" aria-label="Close"></button>
+                <small class="text-muted">@GetTimeAgo(toast.CreatedAt)</small>
+                <button type="button" class="btn-close" id="customer-toast-close-@toast.Id" @onclick="() => RemoveToast(toast.Id)" aria-label="@Localizer["Toast_CloseAria"]"></button>
             </div>
             <div id="customer-toast-body-@toast.Id" class="toast-body">
                 @toast.Message
@@ -36,16 +36,16 @@
         public string Message { get; set; } = string.Empty;
         public ToastType Type { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string TimeAgo => GetTimeAgo(CreatedAt);
+    }
 
-        private string GetTimeAgo(DateTime time)
-        {
-            var span = DateTime.Now - time;
-            if (span.TotalSeconds < 10) return "just now";
-            if (span.TotalSeconds < 60) return $"{(int)span.TotalSeconds}s ago";
-            if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes}m ago";
-            return time.ToString("HH:mm");
-        }
+    // Lives on the component, not on ToastItem, so it can reach the injected Localizer.
+    private string GetTimeAgo(DateTime time)
+    {
+        var span = DateTime.Now - time;
+        if (span.TotalSeconds < 10) return Localizer["Toast_JustNow"].Value;
+        if (span.TotalSeconds < 60) return Localizer["Toast_SecondsAgo", (int)span.TotalSeconds].Value;
+        if (span.TotalMinutes < 60) return Localizer["Toast_MinutesAgo", (int)span.TotalMinutes].Value;
+        return time.ToString("HH:mm");
     }
 
     public void ShowSuccess(string message, int durationMs = 5000)

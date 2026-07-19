@@ -49,6 +49,9 @@ public partial class Drinks : ComponentBase
     private List<StockMovementDto>? stockMovements;
     private bool loadingHistory = false;
 
+    // Category management overlay (replaces the former standalone /categories page)
+    private bool showCategoryManager = false;
+
     // Below this level a drink is flagged as low stock (badge, filter, metric).
     private const int LowStockThreshold = 10;
 
@@ -81,6 +84,25 @@ public partial class Drinks : ComponentBase
     {
         var result = await ApiService.GetCategoriesAsync();
         categories = result?.OrderBy(c => c.SortOrder).ThenBy(c => c.Name).ToList() ?? new List<CategoryDto>();
+    }
+
+    private void ShowCategoryManager() => showCategoryManager = true;
+
+    private void HideCategoryManager() => showCategoryManager = false;
+
+    // A category rename/delete changes the CategoryName shown on drink rows and the
+    // category filter, so refresh both lists after any change made in the overlay.
+    private async Task OnCategoriesChanged()
+    {
+        await LoadCategories();
+        await LoadDrinks();
+
+        // Drop a filter that points at a category that no longer exists.
+        if (!string.IsNullOrEmpty(selectedCategory) &&
+            !categories.Any(c => c.Id.ToString() == selectedCategory))
+        {
+            selectedCategory = "";
+        }
     }
 
     // Only active categories are offered when creating/editing a drink, but an existing drink

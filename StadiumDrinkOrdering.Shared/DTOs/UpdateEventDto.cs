@@ -72,4 +72,46 @@ public class UpdateEventDto
     /// are unassigned). Non-staff ids are ignored. Null leaves existing assignments unchanged.
     /// </summary>
     public List<EventStaffInputDto>? Staff { get; set; }
+
+    /// <summary>
+    /// A newly generated poster as raw base64 (no <c>data:</c> prefix), replacing any existing one.
+    /// Null leaves the current poster untouched — to remove it, set <see cref="RemovePoster"/>.
+    /// </summary>
+    public string? PosterImageBase64 { get; set; }
+
+    /// <summary>MIME type of <see cref="PosterImageBase64"/>; defaults to image/png when omitted.</summary>
+    [StringLength(100)]
+    public string? PosterContentType { get; set; }
+
+    /// <summary>The prompt the poster was generated from, kept for later reference/regeneration.</summary>
+    [StringLength(2000)]
+    public string? PosterPrompt { get; set; }
+
+    /// <summary>
+    /// Optional downscaled JPEG of the poster as raw base64, accompanying
+    /// <see cref="PosterImageBase64"/>. Used by the customer fixture strip.
+    /// </summary>
+    public string? PosterThumbnailBase64 { get; set; }
+
+    /// <summary>
+    /// Whether the admin confirmed the generated text is correct. A newly generated poster saved
+    /// with false stays pending review, and the fixture card keeps falling back to the plain layout.
+    /// </summary>
+    public bool PosterApproved { get; set; }
+
+    /// <summary>Event facts baked into the artwork, used later to detect a stale poster.</summary>
+    [StringLength(500)]
+    public string? PosterSourceSignature { get; set; }
+
+    /// <summary>
+    /// Approves the event's existing poster without supplying a new image — the "looks correct"
+    /// action in the admin modal.
+    /// </summary>
+    public bool ApproveExistingPoster { get; set; }
+
+    /// <summary>
+    /// When true, deletes the event's existing poster. Ignored if <see cref="PosterImageBase64"/> is
+    /// also supplied (a replacement wins over a removal).
+    /// </summary>
+    public bool RemovePoster { get; set; }
 }

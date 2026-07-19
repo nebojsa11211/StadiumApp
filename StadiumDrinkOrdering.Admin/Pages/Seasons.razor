@@ -277,8 +277,8 @@
 
 @if (showPassesModal)
 {
-    <div id="admin-season-passes-modal">
-        <div class="modal-dialog modal-lg" id="admin-season-passes-dialog">
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);" id="admin-season-passes-modal">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" id="admin-season-passes-dialog">
             <div class="modal-content" id="admin-season-passes-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="admin-season-passes-title">
@@ -342,8 +342,8 @@
 
 @if (showQrModal)
 {
-    <div id="admin-season-qr-modal">
-        <div class="modal-dialog" id="admin-season-qr-dialog">
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);" id="admin-season-qr-modal">
+        <div class="modal-dialog modal-dialog-centered" id="admin-season-qr-dialog">
             <div class="modal-content" id="admin-season-qr-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="admin-season-qr-title"><i class="bi bi-qr-code"></i> Sezonska propusnica – QR</h5>
@@ -377,8 +377,8 @@
 
 @if (showModal)
 {
-    <div id="admin-season-modal">
-        <div class="modal-dialog" id="admin-season-modal-dialog">
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);" id="admin-season-modal">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" id="admin-season-modal-dialog">
             <div class="modal-content" id="admin-season-modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="admin-season-modal-title">@(editing == null ? L["Seasons_ModalNewTitle"] : L["Seasons_ModalEditTitle"])</h5>
@@ -403,6 +403,13 @@
                                 @if (form.EndDate <= form.StartDate)
                                 {
                                     <div class="text-danger small mt-1">@L["Seasons_EndAfterStart"]</div>
+                                }
+                                else
+                                {
+                                    @* The end date is not just a label: past it, the season's schedule freezes. *@
+                                    <div class="form-text" id="admin-season-form-end-hint">
+                                        <i class="bi bi-lock"></i> @L["Seasons_EndDateFreezesEvents"]
+                                    </div>
                                 }
                             </div>
                         </div>

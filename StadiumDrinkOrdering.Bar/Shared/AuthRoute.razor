@@ -5,30 +5,16 @@
 @inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-@if (isChecking)
+@if (isChecking || !AuthState.IsAuthenticated)
 {
+    @* Unauthenticated users are redirected to /login (see RedirectToLogin); this spinner is
+       what they see for the instant between the auth check failing and the navigation. *@
     <div id="bar-authroute-checking-container" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div id="bar-authroute-checking-center" class="text-center">
             <div id="bar-authroute-spinner" class="spinner-border text-primary mb-3" role="status">
                 <span class="visually-hidden">@Localizer["AuthRoute_CheckingAuthentication"]</span>
             </div>
             <p class="text-muted">@Localizer["AuthRoute_VerifyingAuthentication"]</p>
-        </div>
-    </div>
-}
-else if (!AuthState.IsAuthenticated)
-{
-    <div id="bar-authroute-unauth-container" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div id="bar-authroute-unauth-center" class="text-center">
-            <div id="bar-authroute-unauth-card" class="card">
-                <div id="bar-authroute-unauth-body" class="card-body">
-                    <h5 class="card-title">🔐 @Localizer["AuthRoute_AuthenticationRequired"]</h5>
-                    <p class="card-text">@Localizer["AuthRoute_MustBeLoggedInToAccessPage"]</p>
-                    <button class="btn btn-primary" @onclick="RedirectToLogin" id="bar-authroute-login-btn">
-                        @Localizer["AuthRoute_GoToLogin"]
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 }
@@ -63,6 +49,7 @@ else
     private static readonly string[] AllowedRoles = { "Bartender", "Admin" };
 
     private bool isChecking = true;
+    private bool hasRedirected;
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,10 +59,26 @@ else
         StateHasChanged();
 
         AuthState.OnAuthenticationStateChanged += OnAuthChanged;
+
+        RedirectToLoginIfUnauthenticated();
     }
 
     private void OnAuthChanged(StadiumDrinkOrdering.Shared.Authentication.Models.AuthenticationState _)
-        => InvokeAsync(StateHasChanged);
+        => InvokeAsync(() =>
+        {
+            StateHasChanged();
+            // Covers losing auth mid-session (token expiry, logout in another tab).
+            RedirectToLoginIfUnauthenticated();
+        });
+
+    private void RedirectToLoginIfUnauthenticated()
+    {
+        if (isChecking || AuthState.IsAuthenticated || hasRedirected)
+            return;
+
+        hasRedirected = true;
+        RedirectToLogin();
+    }
 
     private void RedirectToLogin()
     {

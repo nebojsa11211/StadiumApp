@@ -1,0 +1,60 @@
+- generic [ref=f2e1]:
+  - generic [ref=f2e62]:
+    - generic [ref=f2e63]: 20:45
+    - generic [ref=f2e75]:
+      - banner [ref=f2e76]:
+        - generic [ref=f2e77]: HALFTIME
+        - button "Tvoj račun" [ref=f2e78] [cursor=pointer]:
+          - generic [ref=f2e79]: NJ
+      - generic [ref=f2e81]:
+        - generic [ref=f2e82]: Stadion Maksimir · Zagreb
+        - heading "NEMA REDOVA. SAMO PIĆE." [level=1] [ref=f2e86]:
+          - generic [ref=f2e87]: NEMA
+          - generic [ref=f2e88]: REDOVA.
+          - generic [ref=f2e89]: SAMO PIĆE.
+        - paragraph [ref=f2e90]: Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.
+      - generic [ref=f2e91]:
+        - generic [ref=f2e92]: 2026/2027
+        - 'button "NEXT FIXTURE: GNK Dinamo Zagreb – HNK Hajduk Split, 17. kol 2026 11:16 – 13:16" [ref=f2e94] [cursor=pointer]'
+      - generic [ref=f2e97]: HALFTIME
+      - button "Nastavi naručivanje" [ref=f2e99] [cursor=pointer]
+      - contentinfo [ref=f2e102]:
+        - group "Jezik" [ref=f2e103]:
+          - button "HR" [ref=f2e104] [cursor=pointer]
+          - generic [ref=f2e105]: /
+          - button "EN" [ref=f2e106] [cursor=pointer]
+      - dialog "Tvoj račun" [ref=f2e108]:
+        - generic [ref=f2e110]:
+          - generic [ref=f2e111]:
+            - generic [ref=f2e112]: NJ
+            - generic [ref=f2e113]:
+              - generic [ref=f2e114]: Tvoj račun
+              - generic [ref=f2e115]: Nikola Jurić
+          - button "Zatvori" [active] [ref=f2e116] [cursor=pointer]: ✕
+        - tablist "Tvoj račun" [ref=f2e117]:
+          - tab "Ulaznica" [ref=f2e118] [cursor=pointer]
+          - tab "Narudžbe" [ref=f2e119] [cursor=pointer]
+          - tab "Novčanik" [ref=f2e120] [cursor=pointer]
+        - generic [ref=f2e122]:
+          - generic [ref=f2e123]:
+            - generic [ref=f2e124]: Mjesto
+            - generic [ref=f2e125]: SECT1 · Red 7 · Sjed. 2
+          - generic [ref=f2e126]:
+            - generic [ref=f2e127]: Utakmica
+            - generic [ref=f2e128]: Istra444 - Zagreb444
+          - generic [ref=f2e129]:
+            - generic [ref=f2e130]: Datum
+            - generic [ref=f2e131]: 19.07.2026 · 15:08
+          - generic [ref=f2e132]:
+            - generic [ref=f2e133]: HALFTIME novčanik
+            - generic [ref=f2e134]: Nema stanja
+        - button "＋ Nadoplati" [ref=f2e135] [cursor=pointer]
+  - generic [ref=f2e57]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f2e58] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - status
+  - alert
+  - status
+  - status [ref=f2e136]: "Focused: Zatvori"

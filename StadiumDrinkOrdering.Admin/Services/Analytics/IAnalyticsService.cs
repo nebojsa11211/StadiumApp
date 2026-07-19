@@ -6,6 +6,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Analytics
     {
         Task<PagedCustomerAnalyticsDto?> GetCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter);
         Task<CustomerAnalyticsSummaryDto?> GetCustomerAnalyticsSummaryAsync();
+        Task<CustomerSpendingDetailDto?> GetCustomerSpendingDetailsAsync(string customerEmail);
         Task<HttpResponseMessage?> ExportCustomerAnalyticsAsync(CustomerAnalyticsFilterDto filter);
     }
 }

@@ -13,6 +13,7 @@ public partial class Index : ComponentBase, IDisposable
     [Inject] private IAdminApiService AdminApiService { get; set; } = default!;
     [Inject] private ISignalRService SignalRService { get; set; } = default!;
     [Inject] private ILogger<Index> Logger { get; set; } = default!;
+    [Inject] private SeasonStateService SeasonState { get; set; } = default!;
 
     private bool _loading = true;
 
@@ -20,11 +21,10 @@ public partial class Index : ComponentBase, IDisposable
     private List<EventDto> _events = new();
     private EventDto? _selectedEvent;
     private List<OrderDto> _allOrders = new();
-    private List<SeasonDto> _seasons = new();
 
-    // The season the banner (and the season-pass tile) is currently showing. Navigable by the admin;
-    // also synced to the selected event's season whenever the event changes.
-    private SeasonDto? _selectedSeason;
+    // Seasons and the selected season come from the shell banner in DashboardLayout, so the
+    // dashboard stays scoped to whatever season the admin picked on any other page.
+    private List<SeasonDto> _seasons => SeasonState.Seasons;
 
     // All seasons in chronological order — the order the banner navigates through.
     private List<SeasonDto> SeasonsOrdered =>
@@ -33,20 +33,15 @@ public partial class Index : ComponentBase, IDisposable
     // The season currently in progress (flagged IsCurrent) — the "live" season to jump back to.
     private SeasonDto? LiveSeason => _seasons.FirstOrDefault(s => s.IsCurrent);
 
-    // The season shown in the banner: the navigated selection, else the live season, else the first.
+    // The season the dashboard is scoped to: the shell selection, else the live season, else the
+    // first. The banner's "all seasons"/"no season" states have no meaning for the event-scoped
+    // dashboard tiles, so they fall back to the live season rather than showing nothing.
     private SeasonDto? DisplaySeason =>
-        _selectedSeason ?? LiveSeason ?? SeasonsOrdered.FirstOrDefault();
+        SeasonState.SelectedSeason ?? LiveSeason ?? SeasonsOrdered.FirstOrDefault();
 
     // Season tile follows the banner so the two stay consistent.
     private SeasonDto? DashboardSeason => DisplaySeason;
     private int SeasonPassCount => DashboardSeason?.SeasonTicketCount ?? 0;
-
-    // ----- Season navigation -----
-    private int SelectedSeasonIndex =>
-        DisplaySeason == null ? -1 : SeasonsOrdered.FindIndex(s => s.Id == DisplaySeason.Id);
-    private bool CanGoPrevSeason => SelectedSeasonIndex > 0;
-    private bool CanGoNextSeason => SelectedSeasonIndex >= 0 && SelectedSeasonIndex < _seasons.Count - 1;
-    private bool IsOnLiveSeason => DisplaySeason != null && LiveSeason?.Id == DisplaySeason.Id;
 
     /// <summary>Name of the selected event's season, or null when it has none.</summary>
     private string? SelectedEventSeasonName =>
@@ -96,9 +91,14 @@ public partial class Index : ComponentBase, IDisposable
     // SignalR event group we've currently joined (0 = none).
     private int _joinedEventId;
 
+    // True while this page is pushing the selected event's season into the shell banner.
+    private bool _syncingSeasonToEvent;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadAsync();
+        // Subscribe after the initial load so LoadAsync's own season sync isn't echoed back.
+        SeasonState.OnChanged += OnSeasonStateChanged;
         await InitializeSignalRAsync();
     }
 
@@ -122,15 +122,12 @@ public partial class Index : ComponentBase, IDisposable
             var orders = await AdminApiService.GetOrdersAsync();
             _allOrders = orders?.ToList() ?? new List<OrderDto>();
 
-            try { _seasons = await AdminApiService.GetAsync<List<SeasonDto>>("seasons") ?? new List<SeasonDto>(); }
-            catch (Exception ex) { Logger.LogWarning(ex, "Failed to load seasons for dashboard tile"); }
+            // Seasons are owned by the shell banner; this joins its load rather than re-fetching.
+            await SeasonState.EnsureLoadedAsync();
 
-            // Keep an in-range selection across reloads; default to the event's season, else the live season.
-            if (_selectedSeason != null)
-                _selectedSeason = _seasons.FirstOrDefault(s => s.Id == _selectedSeason.Id);
-            SyncSeasonToEvent();
-
-            // The season scopes the dashboard: make sure the selected event lives in the displayed season.
+            // The shell's season wins on load — arriving at the dashboard must not silently
+            // re-point the banner at whatever event happened to be picked. Instead, scope the
+            // event to the season the admin already chose elsewhere.
             EnsureEventInSeason();
 
             ApplyEventScope();
@@ -256,7 +253,7 @@ public partial class Index : ComponentBase, IDisposable
 
     /// <summary>
     /// Default event on first load: a live event, else the next upcoming, else the most recent past.
-    /// "Live" is driven by the lifecycle phase (Active/InProgress), not timestamps.
+    /// "Live" is driven by the lifecycle phase (Active), not timestamps.
     /// </summary>
     private static EventDto? PickDefaultEvent(List<EventDto> ordered)
     {
@@ -312,59 +309,29 @@ public partial class Index : ComponentBase, IDisposable
         await RejoinEventAsync();
     }
 
-    /// <summary>Point the season banner at the selected event's season (when it has one).</summary>
+    /// <summary>Point the shell season banner at the selected event's season (when it has one).</summary>
     private void SyncSeasonToEvent()
     {
-        if (_selectedEvent?.SeasonId is int sid)
-        {
-            var season = _seasons.FirstOrDefault(s => s.Id == sid);
-            if (season != null)
-                _selectedSeason = season;
-        }
+        if (_selectedEvent?.SeasonId is not int sid || !_seasons.Any(s => s.Id == sid))
+            return;
+
+        // Publishing the season re-enters OnSeasonStateChanged; the flag stops that from
+        // resetting the event we just synced *from*.
+        _syncingSeasonToEvent = true;
+        try { SeasonState.SetSelected(sid.ToString()); }
+        finally { _syncingSeasonToEvent = false; }
     }
 
-    // ----- Season navigation (banner) -----
-    private async Task SelectPrevSeason()
+    /// <summary>The shell banner changed season: re-scope the dashboard, unless we caused it.</summary>
+    private void OnSeasonStateChanged()
     {
-        if (CanGoPrevSeason)
-        {
-            _selectedSeason = SeasonsOrdered[SelectedSeasonIndex - 1];
-            await OnSeasonScopeChangedAsync();
-        }
+        if (_syncingSeasonToEvent)
+            return;
+
+        _ = InvokeAsync(OnSeasonScopeChangedAsync);
     }
 
-    private async Task SelectNextSeason()
-    {
-        if (CanGoNextSeason)
-        {
-            _selectedSeason = SeasonsOrdered[SelectedSeasonIndex + 1];
-            await OnSeasonScopeChangedAsync();
-        }
-    }
-
-    private async Task OnSelectSeason(ChangeEventArgs e)
-    {
-        if (int.TryParse(e.Value?.ToString(), out var id))
-        {
-            var match = _seasons.FirstOrDefault(s => s.Id == id);
-            if (match != null)
-            {
-                _selectedSeason = match;
-                await OnSeasonScopeChangedAsync();
-            }
-        }
-    }
-
-    private async Task GoToCurrentSeason()
-    {
-        if (LiveSeason != null)
-        {
-            _selectedSeason = LiveSeason;
-            await OnSeasonScopeChangedAsync();
-        }
-    }
-
-    /// <summary>A new season was chosen in the banner: re-scope the whole dashboard to it.</summary>
+    /// <summary>A new season was chosen in the shell banner: re-scope the whole dashboard to it.</summary>
     private async Task OnSeasonScopeChangedAsync()
     {
         // Selecting a season resets the event scope to a sensible default within that season.
@@ -458,6 +425,8 @@ public partial class Index : ComponentBase, IDisposable
 
     public void Dispose()
     {
+        SeasonState.OnChanged -= OnSeasonStateChanged;
+
         try
         {
             SignalRService.TicketSold -= OnTicketSold;

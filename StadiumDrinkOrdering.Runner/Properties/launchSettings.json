@@ -13,10 +13,11 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "applicationUrl": "https://localhost:7060",
+      "applicationUrl": "https://192.168.178.32:7060",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Kestrel__Certificates__Default__Path": "../certificates/stadium-lan.pfx",
+        "Kestrel__Certificates__Default__Password": "StadiumDev123!"
       }
     },
     "http": {

@@ -125,6 +125,23 @@ Get-NetTCPConnection -LocalPort 7010,7030 -State Listen -ErrorAction SilentlyCon
 - ✅ **When experiencing ANY errors or issues**
 - ✅ **BEFORE committing code changes**
 
+#### Browser handling on F5 — stock Visual Studio behaviour
+**There is no custom browser automation in this repo.** Multi-project F5 uses plain Visual Studio
+defaults: each startup project's launch profile decides whether a browser opens (`launchBrowser`),
+and Stop Debugging (Shift+F5) does **not** close any browser tabs — you close them yourself.
+
+A previous `scripts\vs-debug-browsers.ps1` watchdog (plus `Directory.Build.targets` and
+`DevBrowserWatchdog.cs`) used to own a dedicated browser window and close it on Stop. It was
+**removed** because it misbehaved with the 6-project multi-startup configuration. Do not reintroduce
+build-spawned or app-spawned browser automation without a clear need.
+
+Startup projects for multi-project debugging are configured in `StadiumDrinkOrdering.slnLaunch.user`
+(a local, non-committed VS user file) — edit it via **Solution → Configure Startup Projects** in VS.
+
+⚠️ With 6 startup projects and `launchBrowser: true`, VS opens a browser tab per project. If that is
+too noisy, set `"launchBrowser": false` on the `commandName: Project` profiles you do not want opened
+in that project's `Properties/launchSettings.json`.
+
 **Why This is CRITICAL:**
 - Prevents port conflicts (7010, 7030, 7020, 7040)
 - Avoids SSL connection issues between services

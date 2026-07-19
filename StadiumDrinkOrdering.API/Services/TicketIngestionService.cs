@@ -178,6 +178,20 @@ public class TicketIngestionService : ITicketIngestionService
             season = await ResolveOrCreateSeasonAsync(dto.ExternalSeasonId, null, null, null, false, envelope.SourceSystem, ct);
         var wasLinkedToSeason = evt?.SeasonId != null;
 
+        // A season that has ended is closed to schedule changes, whoever is asking — the external
+        // system included. Reject the upsert rather than throwing, so the sender gets a clear reason.
+        // This covers both "add an event to a closed season" and "change an event already in one".
+        // Note this only gates schedule upserts: ticket sales resolve their event through
+        // ResolveOrCreateEventAsync and are deliberately left to flow.
+        var blockedSeason = await FindClosedSeasonAsync(evt?.SeasonId, ct)
+                            ?? (season != null && SeasonLifecycle.IsClosed(season.EndDate) ? season : null);
+        if (blockedSeason != null)
+        {
+            _logger.LogWarning("Rejected {Type} for external event {ExternalId}: season {SeasonName} is closed",
+                envelope.EventType, dto.ExternalEventId, blockedSeason.Name);
+            return Rejected(SeasonLifecycle.ChangeBlockedReason(blockedSeason.Name, blockedSeason.EndDate));
+        }
+
         if (evt == null)
         {
             var startUtc = EnsureUtc(dto.EventDate);
@@ -285,7 +299,7 @@ public class TicketIngestionService : ITicketIngestionService
         // Advance the lifecycle to Active via legal transitions (e.g. Planned → OnSale → Active).
         if (evt.Status == EventStatus.Planned && EventLifecycle.CanTransition(evt.Status, EventStatus.OnSale))
             evt.Status = EventStatus.OnSale;
-        if (evt.Status is not (EventStatus.Active or EventStatus.InProgress)
+        if (evt.Status != EventStatus.Active
             && EventLifecycle.CanTransition(evt.Status, EventStatus.Active))
             evt.Status = EventStatus.Active;
 
@@ -337,7 +351,7 @@ public class TicketIngestionService : ITicketIngestionService
         }
 
         if (!EventLifecycle.CanTransition(evt.Status, EventStatus.Completed))
-            return Rejected($"Event is {evt.Status} and cannot be ended — it must be live (Active/InProgress) first.");
+            return Rejected($"Event is {evt.Status} and cannot be ended — it must be live (Active) first.");
 
         var now = DateTime.UtcNow;
         evt.Status = EventStatus.Completed;
@@ -388,7 +402,7 @@ public class TicketIngestionService : ITicketIngestionService
         var evt = await ResolveOrCreateEventAsync(dto.ExternalEventId, envelope.SourceSystem, ct);
 
         // Lifecycle + window gate: tickets may only be sold while the event is on sale AND inside its
-        // configured ticket-sales window. Once it goes live (Active/InProgress), is sold out, has
+        // configured ticket-sales window. Once it goes live (Active), is sold out, has
         // ended, or the sales window has closed/not opened, reject the webhook so the external system
         // stops selling into it.
         if (!evt.AreTicketSalesOpenAt(DateTime.UtcNow))
@@ -1537,6 +1551,19 @@ public class TicketIngestionService : ITicketIngestionService
         overlay.StadiumSectionId = section.Id;
         await _context.SaveChangesAsync(ct);
         return section;
+    }
+
+    /// <summary>
+    /// Returns the season <paramref name="seasonId"/> refers to when it has ended (and is therefore
+    /// closed to schedule changes), otherwise null. Null id / unknown season yield null.
+    /// </summary>
+    private async Task<Season?> FindClosedSeasonAsync(int? seasonId, CancellationToken ct)
+    {
+        if (seasonId == null)
+            return null;
+
+        var season = await _context.Seasons.AsNoTracking().FirstOrDefaultAsync(s => s.Id == seasonId.Value, ct);
+        return season != null && SeasonLifecycle.IsClosed(season.EndDate) ? season : null;
     }
 
     private async Task<Event> ResolveOrCreateEventAsync(string externalEventId, string sourceSystem, CancellationToken ct)

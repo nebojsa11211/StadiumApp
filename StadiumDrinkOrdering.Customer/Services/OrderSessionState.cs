@@ -34,7 +34,7 @@ public class OrderSessionState
     public string TicketNumber { get; private set; } = "";
 
     /// <summary>
-    /// True only while the event is live (Active/InProgress). A session survives after the match ends, but
+    /// True only while the event is live (Active). A session survives after the match ends, but
     /// ordering must be blocked — the /order and /cart pages use this to gate the menu and checkout. The API
     /// re-checks on order placement, so this is UX only; it is never the sole guard.
     /// </summary>

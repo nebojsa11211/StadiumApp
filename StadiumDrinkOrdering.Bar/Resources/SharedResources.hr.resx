@@ -1051,4 +1051,88 @@
   <data name="TicketTopup_ProvisionAlternativeHint" xml:space="preserve">
     <value>Ili učitajte izravno na ulaznicu ispod.</value>
   </data>
+  <data name="OrderModal_OrderNumber" xml:space="preserve">
+    <value>Narudžba #{0}</value>
+  </data>
+  <data name="OrderModal_DeliveryInformation" xml:space="preserve">
+    <value>Podaci o dostavi</value>
+  </data>
+  <data name="OrderModal_Section" xml:space="preserve">
+    <value>Sektor {0}</value>
+  </data>
+  <data name="OrderModal_OrderTimeline" xml:space="preserve">
+    <value>Tijek narudžbe</value>
+  </data>
+  <data name="OrderModal_TimelineOrdered" xml:space="preserve">
+    <value>Naručeno</value>
+  </data>
+  <data name="OrderModal_TimelineAccepted" xml:space="preserve">
+    <value>Prihvaćeno</value>
+  </data>
+  <data name="OrderModal_TimelinePrepared" xml:space="preserve">
+    <value>Pripremljeno</value>
+  </data>
+  <data name="OrderModal_TimelineDelivered" xml:space="preserve">
+    <value>Dostavljeno</value>
+  </data>
+  <data name="OrderModal_Payment" xml:space="preserve">
+    <value>Plaćanje</value>
+  </data>
+  <data name="OrderModal_Refund" xml:space="preserve">
+    <value>Povrat</value>
+  </data>
+  <data name="OrderModal_NoPayment" xml:space="preserve">
+    <value>Nema zabilježenog plaćanja</value>
+  </data>
+  <data name="OrderModal_OrderItems" xml:space="preserve">
+    <value>Stavke narudžbe</value>
+  </data>
+  <data name="OrderModal_Total" xml:space="preserve">
+    <value>Ukupno: {0} €</value>
+  </data>
+  <data name="OrderModal_RowSeat" xml:space="preserve">
+    <value>Red {0}, sjedalo {1}</value>
+  </data>
+  <data name="PaymentMethod_CreditCard" xml:space="preserve">
+    <value>Kreditna kartica</value>
+  </data>
+  <data name="PaymentMethod_DebitCard" xml:space="preserve">
+    <value>Debitna kartica</value>
+  </data>
+  <data name="PaymentMethod_DigitalWallet" xml:space="preserve">
+    <value>Navijački novčanik</value>
+  </data>
+  <data name="PaymentMethod_BankTransfer" xml:space="preserve">
+    <value>Bankovni prijenos</value>
+  </data>
+  <data name="PaymentMethod_Cash" xml:space="preserve">
+    <value>Gotovina</value>
+  </data>
+  <data name="PaymentMethod_TicketWallet" xml:space="preserve">
+    <value>Novčanik ulaznice</value>
+  </data>
+  <data name="PaymentStatus_Pending" xml:space="preserve">
+    <value>Na čekanju</value>
+  </data>
+  <data name="PaymentStatus_Processing" xml:space="preserve">
+    <value>U obradi</value>
+  </data>
+  <data name="PaymentStatus_Completed" xml:space="preserve">
+    <value>Dovršeno</value>
+  </data>
+  <data name="PaymentStatus_Failed" xml:space="preserve">
+    <value>Neuspjelo</value>
+  </data>
+  <data name="PaymentStatus_Refunded" xml:space="preserve">
+    <value>Vraćeno</value>
+  </data>
+  <data name="PaymentStatus_Cancelled" xml:space="preserve">
+    <value>Otkazano</value>
+  </data>
+  <data name="TicketTopup_DevPickerLabel" xml:space="preserve">
+    <value>🧪 Test (dev): odaberi ulaznicu</value>
+  </data>
+  <data name="TicketTopup_DevPickerEmpty" xml:space="preserve">
+    <value>— odaberi ulaznicu —</value>
+  </data>
 </root>

@@ -35,9 +35,6 @@
             <a href="drinks" class="@NavClass("drinks", "dash-nav-sub")" id="admin-dashboard-nav-drinks">
                 <i class="bi bi-cup-straw"></i><span>@L["Nav_Drinks"]</span>
             </a>
-            <a href="categories" class="@NavClass("categories", "dash-nav-sub")" id="admin-dashboard-nav-categories">
-                <i class="bi bi-tags"></i><span>@L["Nav_Categories"]</span>
-            </a>
             <a href="admin/wallets" class="@NavClass("admin/wallets", "dash-nav-sub")" id="admin-dashboard-nav-wallets">
                 <i class="bi bi-wallet2"></i><span>@L["Nav_Wallets"]</span>
             </a>
@@ -48,6 +45,9 @@
             </a>
             <a href="admin/seasons" class="@NavClass("admin/seasons", "dash-nav-sub")" id="admin-dashboard-nav-seasons">
                 <i class="bi bi-calendar-range"></i><span>@L["Nav_Seasons"]</span>
+            </a>
+            <a href="admin/teams" class="@NavClass("admin/teams", "dash-nav-sub")" id="admin-dashboard-nav-teams">
+                <i class="bi bi-shield"></i><span>@L["Nav_Teams"]</span>
             </a>
             <a href="tickets" class="@NavClass("tickets", "dash-nav-sub")" id="admin-dashboard-nav-tickets">
                 <i class="bi bi-ticket-perforated"></i><span>@L["Nav_Tickets"]</span>
@@ -122,6 +122,19 @@
 
     @* ============================ MAIN ============================ *@
     <main class="dash-main" id="admin-dashboard-main">
+        @* Shell-wide season scope. Rendered here so every admin page carries
+           #admin-dashboard-current-season. Pages read the selection from SeasonState. *@
+        <SeasonFilterBanner Seasons="SeasonState.Seasons"
+                            Value="@SeasonState.SelectedValue"
+                            ValueChanged="OnSeasonChanged"
+                            IdPrefix="admin-dashboard-current-season" />
+
+        @* Read-only live-event bar. Skipped on the dashboard, which renders its own interactive
+           #admin-dashboard-event-bar — two would collide on the same id. *@
+        @if (!IsDashboardRoute)
+        {
+            <LiveEventBar Event="LiveEvents.LiveEvent" />
+        }
         @Body
     </main>
 </div>

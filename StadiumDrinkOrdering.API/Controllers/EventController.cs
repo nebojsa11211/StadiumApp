@@ -76,7 +76,7 @@ public class EventController : ControllerBase
     }
 
     /// <summary>
-    /// The single event that is currently live — Active/InProgress and still within its time window
+    /// The single event that is currently live — Active and still within its time window
     /// (<see cref="Event.IsLiveAt"/> / <see cref="EventDto.IsCurrentlyLive"/>). Returns 204 No Content
     /// when nothing is live right now. This is the "is the venue open for game-day operations?" signal
     /// the Bar and Runner staff apps gate on: when no event is live those tools have nothing to do and
@@ -357,6 +357,13 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = drinkWindowError });
             }
 
+            // An event cannot be scheduled into a season that has already ended.
+            var closedSeasonError = await GetClosedSeasonErrorAsync(request.SeasonId);
+            if (closedSeasonError != null)
+            {
+                return BadRequest(new { message = closedSeasonError });
+            }
+
             var name = request.Name.Trim();
             if (await _eventService.IsEventNameTakenAsync(name))
             {
@@ -380,12 +387,13 @@ public class EventController : ControllerBase
                 EventType = eventType,
                 HomeTeam = homeTeam,
                 AwayTeam = awayTeam,
-                EventDate = request.Date!.Value,
-                EventEndDate = request.EndDate,
-                TicketSalesStartDate = request.TicketSalesStartDate,
-                TicketSalesEndDate = request.TicketSalesEndDate,
-                DrinkSalesStartDate = request.DrinkSalesStartDate,
-                DrinkSalesEndDate = request.DrinkSalesEndDate,
+                // The form posts local wall-clock times; PostgreSQL timestamptz only accepts UTC.
+                EventDate = ToUtc(request.Date!.Value),
+                EventEndDate = ToUtc(request.EndDate),
+                TicketSalesStartDate = ToUtc(request.TicketSalesStartDate),
+                TicketSalesEndDate = ToUtc(request.TicketSalesEndDate),
+                DrinkSalesStartDate = ToUtc(request.DrinkSalesStartDate),
+                DrinkSalesEndDate = ToUtc(request.DrinkSalesEndDate),
                 TotalSeats = stadiumCapacity > 0 ? stadiumCapacity : request.Capacity,
                 Description = request.Description,
                 BaseTicketPrice = request.BasePrice,
@@ -394,6 +402,20 @@ public class EventController : ControllerBase
             };
 
             var createdEvent = await _eventService.CreateEventAsync(eventItem);
+
+            // Resolve the team names to directory entries so crests survive a later rename.
+            await LinkTeamsAsync(createdEvent.Id);
+
+            // Attach the poster generated in the admin form, if any. A bad image is not worth
+            // failing the whole creation over — the event is saved either way.
+            if (!string.IsNullOrWhiteSpace(request.PosterImageBase64))
+            {
+                var posterError = await SavePosterAsync(createdEvent.Id, request.PosterImageBase64,
+                    request.PosterContentType, request.PosterPrompt, request.PosterThumbnailBase64,
+                    request.PosterApproved, request.PosterSourceSignature);
+                if (posterError != null)
+                    _logger.LogWarning("Event {EventId} created but its poster was rejected: {Error}", createdEvent.Id, posterError);
+            }
 
             // Persist any per-sector price overrides supplied with the new event.
             await _eventService.SaveSectorPricesAsync(createdEvent.Id, request.SectorPrices);
@@ -406,6 +428,10 @@ public class EventController : ControllerBase
                 await _ingestion.BackfillSeasonTicketsForEventAsync(createdEvent.Id);
 
             return CreatedAtAction(nameof(GetEvent), new { id = createdEvent.Id }, await MapEventWithSeasonAsync(createdEvent));
+        }
+        catch (SeasonClosedException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex)
         {
@@ -443,6 +469,16 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = EventLifecycle.EditBlockedReason(existing.Status) });
             }
 
+            // Events in a season that has ended are frozen too. The service enforces this as well
+            // (so ingestion is covered); checking here first means the season message wins over
+            // incidental validation errors further down.
+            var closedSeasonError = await GetClosedSeasonErrorAsync(existing.SeasonId)
+                ?? await GetClosedSeasonErrorAsync(request.SeasonId);
+            if (closedSeasonError != null)
+            {
+                return BadRequest(new { message = closedSeasonError });
+            }
+
             // A sector with tickets already sold for this event can't be disabled (would orphan buyers).
             // Validate before persisting anything so a rejected disable leaves the event untouched.
             var disableBlock = await _eventService.ValidateSectorDisablesAsync(id, request.SectorPrices);
@@ -451,8 +487,9 @@ public class EventController : ControllerBase
                 return BadRequest(new { message = disableBlock });
             }
 
-            var newStart = request.Date ?? existing.EventDate;
-            var newEnd = request.EndDate ?? existing.EventEndDate;
+            // Request values are local wall-clock from the form; stored values are already UTC.
+            var newStart = ToUtc(request.Date ?? existing.EventDate);
+            var newEnd = ToUtc(request.EndDate ?? existing.EventEndDate);
             if (!IsValidWindow(newStart, newEnd, out var windowError))
             {
                 return BadRequest(new { message = windowError });
@@ -460,16 +497,16 @@ public class EventController : ControllerBase
 
             // Null in the request means "unchanged" (matches the event-window merge above), so validate
             // the effective (merged) sales window.
-            var newSalesStart = request.TicketSalesStartDate ?? existing.TicketSalesStartDate;
-            var newSalesEnd = request.TicketSalesEndDate ?? existing.TicketSalesEndDate;
+            var newSalesStart = ToUtc(request.TicketSalesStartDate ?? existing.TicketSalesStartDate);
+            var newSalesEnd = ToUtc(request.TicketSalesEndDate ?? existing.TicketSalesEndDate);
             if (!IsValidSalesWindow(newSalesStart, newSalesEnd, out var salesWindowError))
             {
                 return BadRequest(new { message = salesWindowError });
             }
 
             // Null in the request means "unchanged", so validate the effective (merged) drink window.
-            var newDrinkStart = request.DrinkSalesStartDate ?? existing.DrinkSalesStartDate;
-            var newDrinkEnd = request.DrinkSalesEndDate ?? existing.DrinkSalesEndDate;
+            var newDrinkStart = ToUtc(request.DrinkSalesStartDate ?? existing.DrinkSalesStartDate);
+            var newDrinkEnd = ToUtc(request.DrinkSalesEndDate ?? existing.DrinkSalesEndDate);
             if (!IsValidDrinkSalesWindow(newDrinkStart, newDrinkEnd, out var drinkWindowError))
             {
                 return BadRequest(new { message = drinkWindowError });
@@ -523,6 +560,35 @@ public class EventController : ControllerBase
                 return NotFound($"Event with ID {id} not found");
             }
 
+            // The teams may have changed with this edit; re-resolve the directory links.
+            await LinkTeamsAsync(id);
+
+            // Poster: a supplied image replaces any existing one; RemovePoster clears it. Neither
+            // means "leave the current poster alone", matching how the other fields merge.
+            if (!string.IsNullOrWhiteSpace(request.PosterImageBase64))
+            {
+                var posterError = await SavePosterAsync(id, request.PosterImageBase64,
+                    request.PosterContentType, request.PosterPrompt, request.PosterThumbnailBase64,
+                    request.PosterApproved, request.PosterSourceSignature);
+                if (posterError != null)
+                    return BadRequest(new { message = posterError });
+            }
+            else if (request.RemovePoster)
+            {
+                await DeletePosterAsync(id);
+            }
+            else if (request.ApproveExistingPoster)
+            {
+                // "Text looks correct" on a poster that was already stored (typically one produced
+                // by an auto-regeneration, which always lands pending review).
+                var posterOwner = await _db.Events.FirstOrDefaultAsync(e => e.Id == id);
+                if (posterOwner is { HasPoster: true, PosterApprovedAt: null })
+                {
+                    posterOwner.PosterApprovedAt = DateTime.UtcNow;
+                    await _db.SaveChangesAsync();
+                }
+            }
+
             // Apply per-sector price overrides (null = leave existing overrides unchanged).
             await _eventService.SaveSectorPricesAsync(id, request.SectorPrices);
 
@@ -535,11 +601,37 @@ public class EventController : ControllerBase
 
             return Ok(await MapEventWithSeasonAsync(updatedEvent));
         }
+        catch (SeasonClosedException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating event {EventId}", id);
             return StatusCode(500, "Internal server error");
         }
+    }
+
+    /// <summary>
+    /// Returns the user-facing reason when <paramref name="seasonId"/> names a season that has ended
+    /// (and is therefore closed to schedule changes), or null when the season is open, unknown, or not
+    /// set. Mirrors the authoritative guard in <see cref="IEventService"/> so the API can fail early
+    /// with the most relevant message.
+    /// </summary>
+    private async Task<string?> GetClosedSeasonErrorAsync(int? seasonId)
+    {
+        if (seasonId == null)
+            return null;
+
+        var season = await _db.Seasons
+            .AsNoTracking()
+            .Where(s => s.Id == seasonId.Value)
+            .Select(s => new { s.Name, s.EndDate })
+            .FirstOrDefaultAsync();
+
+        return season != null && SeasonLifecycle.IsClosed(season.EndDate)
+            ? SeasonLifecycle.ChangeBlockedReason(season.Name, season.EndDate)
+            : null;
     }
 
     /// <summary>
@@ -587,6 +679,296 @@ public class EventController : ControllerBase
         return true;
     }
 
+    // ---- Event poster ---------------------------------------------------------------------
+
+    /// <summary>
+    /// Serves an event's poster image. Anonymous so it can be used directly as an <c>&lt;img src&gt;</c>
+    /// (browsers do not attach the bearer token to image requests) — a poster is public promotional
+    /// artwork, not privileged data.
+    /// </summary>
+    /// <param name="variant">
+    /// "thumb" serves the small JPEG variant used by the customer fixture strip; anything else
+    /// serves the full-size original. A poster saved before thumbnails existed has none, so the
+    /// thumb request transparently falls back to the full image rather than 404ing.
+    /// </param>
+    [HttpGet("{id}/image")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetEventPoster(int id, [FromQuery] string? variant = null)
+    {
+        var poster = await _db.EventPosters
+            .AsNoTracking()
+            .Include(p => p.Event)
+            .FirstOrDefaultAsync(p => p.EventId == id);
+
+        if (poster == null || poster.ImageData.Length == 0)
+            return NotFound();
+
+        // Posters only change when an admin regenerates one, so let clients cache briefly.
+        Response.Headers.CacheControl = "public, max-age=300";
+
+        if (string.Equals(variant, "thumb", StringComparison.OrdinalIgnoreCase)
+            && poster.ThumbnailData is { Length: > 0 } thumb)
+        {
+            return File(thumb, poster.ThumbnailContentType ?? "image/jpeg");
+        }
+
+        return File(poster.ImageData, poster.Event?.PosterContentType ?? "image/png");
+    }
+
+    // ---- Reusable team crests -------------------------------------------------------------
+
+    /// <summary>
+    /// Looks up the stored crest for a team name, so an opponent's crest only ever has to be
+    /// uploaded once. Backed by the <see cref="Team"/> directory (managed at /admin/teams); returns
+    /// 404 when the team is unknown or has no crest yet.
+    ///
+    /// Kept on this controller, and returning base64 rather than raw bytes, because the event form
+    /// feeds the crest straight into poster generation, which takes images as base64.
+    /// </summary>
+    [HttpGet("team-crest")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
+    public async Task<ActionResult<TeamCrestDto>> GetTeamCrest([FromQuery] string teamName)
+    {
+        var key = Team.Normalize(teamName);
+        if (key == null)
+            return BadRequest(new { message = "A team name is required." });
+
+        var team = await _db.Teams.AsNoTracking().FirstOrDefaultAsync(t => t.NormalizedName == key);
+        if (team?.Logo == null || team.Logo.Length == 0)
+            return NotFound();
+
+        return Ok(new TeamCrestDto
+        {
+            DisplayName = team.Name,
+            ImageBase64 = Convert.ToBase64String(team.Logo)
+        });
+    }
+
+    /// <summary>
+    /// Stores or replaces the crest for a team name, creating the directory entry if this opponent
+    /// has not been seen before. Called when the admin uploads an away crest on the event form, so
+    /// building a fixture still populates the directory without a detour through the Teams page.
+    /// </summary>
+    [HttpPost("team-crest")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> SaveTeamCrest([FromBody] SaveTeamCrestDto request)
+    {
+        var key = Team.Normalize(request.TeamName);
+        if (key == null)
+            return BadRequest(new { message = "A team name is required." });
+
+        byte[] bytes;
+        try
+        {
+            bytes = Convert.FromBase64String(request.ImageBase64?.Trim() ?? string.Empty);
+        }
+        catch (FormatException)
+        {
+            return BadRequest(new { message = "The crest image was not valid base64." });
+        }
+
+        if (bytes.Length == 0)
+            return BadRequest(new { message = "The crest image was empty." });
+        if (bytes.Length > MaxCrestBytes)
+            return BadRequest(new { message = $"The crest image is too large; the limit is {MaxCrestBytes / 1024} KB." });
+
+        var team = await _db.Teams.FirstOrDefaultAsync(t => t.NormalizedName == key);
+        if (team == null)
+        {
+            team = new Team
+            {
+                NormalizedName = key,
+                Name = request.TeamName.Trim(),
+                CreatedAt = DateTime.UtcNow
+            };
+            _db.Teams.Add(team);
+        }
+        else
+        {
+            // Only the crest is being set here; leave the curated name/colours from the Teams page
+            // intact rather than letting a fixture's casing overwrite them.
+            team.UpdatedAt = DateTime.UtcNow;
+        }
+
+        // The admin rasterises crests to PNG before upload (the image API only accepts PNG).
+        team.Logo = bytes;
+        team.LogoContentType = "image/png";
+
+        await _db.SaveChangesAsync();
+        return Ok(new { message = "Crest saved." });
+    }
+
+    /// <summary>
+    /// Resolves an event's free-text team names to their <see cref="Club"/>/<see cref="Team"/>
+    /// directory entries and stores the ids. The names remain authoritative for display; these
+    /// links exist so a later rename in the directory does not orphan the crest.
+    ///
+    /// Runs after the event has been saved (rather than as part of building the entity) so it also
+    /// covers events created through paths that bypass the form, and so a failure to match is never
+    /// able to fail the save itself.
+    /// </summary>
+    private async Task LinkTeamsAsync(int eventId)
+    {
+        var evt = await _db.Events.FirstOrDefaultAsync(e => e.Id == eventId);
+        if (evt == null) return;
+
+        var homeKey = Team.Normalize(evt.HomeTeam);
+        var awayKey = Team.Normalize(evt.AwayTeam);
+
+        evt.HomeClubId = homeKey == null
+            ? null
+            : (await _db.Clubs.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Name.ToLower() == homeKey))?.Id;
+
+        evt.AwayTeamId = awayKey == null
+            ? null
+            : (await _db.Teams.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.NormalizedName == awayKey))?.Id;
+
+        await _db.SaveChangesAsync();
+    }
+
+    /// <summary>Crests are small logos, not photographs — cap them well below the poster limit.</summary>
+    private const int MaxCrestBytes = 2 * 1024 * 1024;
+
+    /// <summary>
+    /// Stores (or replaces) an event's poster: bytes into <see cref="EventPoster"/>, display metadata
+    /// onto the event itself. Returns null on success, or a user-facing error message when the
+    /// supplied image is unusable.
+    /// </summary>
+    private async Task<string?> SavePosterAsync(int eventId, string base64, string? contentType, string? prompt,
+        string? thumbnailBase64 = null, bool approved = false, string? sourceSignature = null)
+    {
+        byte[] bytes;
+        try
+        {
+            // Tolerate a full data URI as well as raw base64, so callers can pass either.
+            var payload = base64.Contains("base64,", StringComparison.OrdinalIgnoreCase)
+                ? base64[(base64.IndexOf("base64,", StringComparison.OrdinalIgnoreCase) + 7)..]
+                : base64;
+            bytes = Convert.FromBase64String(payload.Trim());
+        }
+        catch (FormatException)
+        {
+            return "The poster image was not valid base64.";
+        }
+
+        if (bytes.Length == 0)
+            return "The poster image was empty.";
+
+        if (bytes.Length > MaxPosterBytes)
+            return $"The poster image is too large ({bytes.Length / 1024 / 1024} MB); the limit is {MaxPosterBytes / 1024 / 1024} MB.";
+
+        var evt = await _db.Events.FirstOrDefaultAsync(e => e.Id == eventId);
+        if (evt == null)
+            return $"Event with ID {eventId} not found.";
+
+        var (width, height) = ReadPngDimensions(bytes);
+        evt.PosterContentType = string.IsNullOrWhiteSpace(contentType) ? "image/png" : contentType.Trim();
+        evt.PosterWidth = width;
+        evt.PosterHeight = height;
+        evt.PosterPrompt = string.IsNullOrWhiteSpace(prompt) ? null : prompt.Trim();
+        // New artwork means new text to check: approval never carries over from the previous image.
+        evt.PosterApprovedAt = approved ? DateTime.UtcNow : null;
+        evt.PosterSourceSignature = sourceSignature;
+
+        // A missing/undecodable thumbnail is not fatal — the image endpoint falls back to the full
+        // poster, so we store what we can rather than rejecting the whole save.
+        byte[]? thumbBytes = null;
+        if (!string.IsNullOrWhiteSpace(thumbnailBase64))
+        {
+            try
+            {
+                thumbBytes = Convert.FromBase64String(thumbnailBase64.Trim());
+                if (thumbBytes.Length == 0 || thumbBytes.Length > MaxPosterBytes)
+                    thumbBytes = null;
+            }
+            catch (FormatException)
+            {
+                _logger.LogWarning("Poster thumbnail for event {EventId} was not valid base64; storing without it.", eventId);
+            }
+        }
+
+        var poster = await _db.EventPosters.FirstOrDefaultAsync(p => p.EventId == eventId);
+        if (poster == null)
+        {
+            _db.EventPosters.Add(new EventPoster
+            {
+                EventId = eventId,
+                ImageData = bytes,
+                ThumbnailData = thumbBytes,
+                ThumbnailContentType = thumbBytes != null ? "image/jpeg" : null
+            });
+        }
+        else
+        {
+            poster.ImageData = bytes;
+            // Replace the thumbnail alongside the image; never leave the old one pointing at new art.
+            poster.ThumbnailData = thumbBytes;
+            poster.ThumbnailContentType = thumbBytes != null ? "image/jpeg" : null;
+            poster.CreatedAt = DateTime.UtcNow;
+        }
+
+        await _db.SaveChangesAsync();
+        return null;
+    }
+
+    /// <summary>Removes an event's poster (bytes and metadata). No-op when it has none.</summary>
+    private async Task DeletePosterAsync(int eventId)
+    {
+        var evt = await _db.Events.FirstOrDefaultAsync(e => e.Id == eventId);
+        if (evt != null)
+        {
+            evt.PosterContentType = null;
+            evt.PosterWidth = null;
+            evt.PosterHeight = null;
+            evt.PosterPrompt = null;
+            evt.PosterApprovedAt = null;
+            evt.PosterSourceSignature = null;
+        }
+
+        var poster = await _db.EventPosters.FirstOrDefaultAsync(p => p.EventId == eventId);
+        if (poster != null)
+            _db.EventPosters.Remove(poster);
+
+        await _db.SaveChangesAsync();
+    }
+
+    /// <summary>Upper bound on a stored poster, guarding against an oversized or malicious payload.</summary>
+    private const int MaxPosterBytes = 8 * 1024 * 1024;
+
+    /// <summary>
+    /// Normalises an incoming date to UTC before it reaches PostgreSQL. The admin form binds
+    /// <c>datetime-local</c> inputs, which arrive as Kind=Local (or Unspecified after JSON
+    /// round-tripping), and Npgsql rejects both for a <c>timestamp with time zone</c> column with
+    /// "Cannot write DateTime with Kind=Local". Local values are converted; Unspecified ones are
+    /// assumed to already be local wall-clock time and treated the same way.
+    /// </summary>
+    private static DateTime? ToUtc(DateTime? value) => value.HasValue ? ToUtc(value.Value) : null;
+
+    private static DateTime ToUtc(DateTime value) => value.Kind switch
+    {
+        DateTimeKind.Utc => value,
+        DateTimeKind.Local => value.ToUniversalTime(),
+        _ => DateTime.SpecifyKind(value, DateTimeKind.Local).ToUniversalTime()
+    };
+
+    /// <summary>
+    /// Reads pixel dimensions from a PNG's IHDR chunk: an 8-byte signature, a 4-byte chunk length,
+    /// the "IHDR" tag, then big-endian width and height. Returns (null, null) for anything that
+    /// isn't a PNG we can parse — the dimensions are display metadata, not a correctness concern.
+    /// </summary>
+    private static (int? Width, int? Height) ReadPngDimensions(byte[] image)
+    {
+        if (image.Length < 24 || image[0] != 0x89 || image[1] != 0x50 || image[2] != 0x4E || image[3] != 0x47)
+            return (null, null);
+
+        int width = (image[16] << 24) | (image[17] << 16) | (image[18] << 8) | image[19];
+        int height = (image[20] << 24) | (image[21] << 16) | (image[22] << 8) | image[23];
+        return (width > 0 ? width : null, height > 0 ? height : null);
+    }
+
     /// <summary>
     /// Delete event
     /// </summary>
@@ -604,6 +986,10 @@ public class EventController : ControllerBase
             }
 
             return NoContent();
+        }
+        catch (SeasonClosedException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex)
         {
@@ -630,6 +1016,10 @@ public class EventController : ControllerBase
 
             return Ok(new { message = "Event activated successfully" });
         }
+        catch (SeasonClosedException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error activating event {EventId}", id);
@@ -655,6 +1045,10 @@ public class EventController : ControllerBase
 
             return Ok(new { message = "Event deactivated successfully" });
         }
+        catch (SeasonClosedException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deactivating event {EventId}", id);
@@ -663,7 +1057,7 @@ public class EventController : ControllerBase
     }
 
     /// <summary>
-    /// Transition an event to a new lifecycle status (e.g. OnSale → Active → InProgress → Completed).
+    /// Transition an event to a new lifecycle status (e.g. OnSale → Active → Completed).
     /// Validated against the allowed state machine; closing an event invalidates its ticket sessions.
     /// </summary>
     [HttpPost("{id}/status")]
@@ -850,7 +1244,15 @@ public class EventController : ControllerBase
             CanOrderDrinks = evt.AreDrinkSalesOpenAt(DateTime.UtcNow),
             IsCurrentlyLive = evt.IsLiveAt(DateTime.UtcNow),
             SeasonId = evt.SeasonId,
-            SeasonName = seasonName ?? evt.Season?.Name
+            SeasonName = seasonName ?? evt.Season?.Name,
+            // Derived from the metadata column, so this stays correct in list queries where the
+            // poster bytes (a separate table) are deliberately not loaded.
+            HasPoster = evt.HasPoster,
+            PosterApproved = evt.IsPosterApproved,
+            PosterIsStale = evt.IsPosterStale,
+            PosterWidth = evt.PosterWidth,
+            PosterHeight = evt.PosterHeight,
+            PosterPrompt = evt.PosterPrompt
         };
     }
 }

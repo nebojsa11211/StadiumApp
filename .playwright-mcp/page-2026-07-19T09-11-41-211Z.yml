@@ -1,0 +1,15 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e4]:
+    - generic [ref=f1e5]: 20:45
+    - generic [ref=f1e18]:
+      - text: HALF
+      - generic [ref=f1e20]: TIME
+  - generic [ref=f1e22]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f1e23] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=f1e24]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

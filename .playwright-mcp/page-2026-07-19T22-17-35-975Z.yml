@@ -1,0 +1,27 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - generic [ref=f4e4]:
+      - generic [ref=f4e5]: 20:45
+      - generic [ref=f4e16]:
+        - banner [ref=f4e17]:
+          - button "Back" [ref=f4e18] [cursor=pointer]: ‹
+          - generic [ref=f4e19]:
+            - generic [ref=f4e20]: Tvoja košarica
+            - generic [ref=f4e21]: Prazno
+        - generic [ref=f4e23]:
+          - generic [ref=f4e24]: 🛒
+          - paragraph [ref=f4e25]: Košarica je prazna.
+          - button "Natrag na ponudu" [ref=f4e26] [cursor=pointer]
+    - complementary [ref=f4e27]:
+      - img "QR code for https://localhost:7020/cart" [ref=f4e28]
+      - generic [ref=f4e29]: Otvori na mobitelu
+      - generic [ref=f4e30]: https://localhost:7020/cart
+  - generic [ref=f4e31]:
+    - text: An unhandled exception has occurred. See browser dev tools for details.
+    - link "Reload" [ref=f4e32] [cursor=pointer]:
+      - /url: ""
+    - text: 🗙
+  - generic [ref=f4e33]: Stadium viewer initialized with keyboard navigation support
+  - status
+  - alert
+  - status

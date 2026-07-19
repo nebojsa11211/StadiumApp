@@ -15,10 +15,17 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.28" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
+    <!-- Renders the desktop companion QR in MobileShell entirely in-process (PngByteQRCode is
+         managed-only, no System.Drawing), so no JS lib or external QR service is needed. -->
+    <PackageReference Include="QRCoder" Version="1.4.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StadiumDrinkOrdering.UI\StadiumDrinkOrdering.UI.csproj" />
   </ItemGroup>
 
   <!-- NOTE: intentionally does NOT reference StadiumDrinkOrdering.Shared. Shared is coupled to the

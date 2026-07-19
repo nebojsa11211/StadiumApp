@@ -1,0 +1,231 @@
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@inject IStringLocalizer<SharedResources> Localizer
+
+@if (Order != null)
+{
+    <div id="bar-orderdetails-modal-overlay" class="modal-overlay" @onclick="Close">
+        <div id="bar-orderdetails-modal-body" class="order-modal" @onclick:stopPropagation="true">
+            <div id="bar-orderdetails-modal-header" class="modal-header">
+                <div id="bar-orderdetails-modal-title" class="modal-title">
+                    <h3>@Localizer["OrderModal_OrderNumber", Order.Id]</h3>
+                    <span class="status-badge @Order.Status.ToString().ToLower()">
+                        @GetOrderStatusLabel(Order.Status)
+                    </span>
+                </div>
+                <button id="bar-orderdetails-modal-close-btn" class="btn-close" @onclick="Close">✕</button>
+            </div>
+
+            <div id="bar-orderdetails-modal-content" class="modal-content">
+                <div id="bar-orderdetails-grid" class="order-details-grid">
+                    <!-- Customer & Seat Info -->
+                    <div id="bar-orderdetails-section-delivery" class="detail-section">
+                        <h4>📍 @Localizer["OrderModal_DeliveryInformation"]</h4>
+                        <div id="bar-orderdetails-card-delivery" class="detail-card">
+                            <div id="bar-orderdetails-seat-display" class="seat-display">
+                                <strong>@GetSeatInfo(Order)</strong>
+                                <span>@Localizer["OrderModal_Section", GetSectionInfo(Order)]</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(Order.CustomerName))
+                            {
+                                <div id="bar-orderdetails-customer" class="event-info">
+                                    <strong>@Order.CustomerName</strong>
+                                </div>
+                            }
+                            @if (Order.Event != null)
+                            {
+                                <div id="bar-orderdetails-event-info" class="event-info">
+                                    <strong>@Order.Event.EventName</strong>
+                                    <span>@Order.Event.EventDate.ToString("MMM dd, yyyy")</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Order Timeline -->
+                    <div id="bar-orderdetails-section-timeline" class="detail-section">
+                        <h4>⏱️ @Localizer["OrderModal_OrderTimeline"]</h4>
+                        <div id="bar-orderdetails-timeline" class="timeline">
+                            <div id="bar-orderdetails-timeline-ordered" class="timeline-item completed">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <strong>@Localizer["OrderModal_TimelineOrdered"]</strong>
+                                    <span>@Order.CreatedAt.ToString("HH:mm")</span>
+                                </div>
+                            </div>
+                            @if (Order.AcceptedAt.HasValue)
+                            {
+                                <div id="bar-orderdetails-timeline-accepted" class="timeline-item completed">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <strong>@Localizer["OrderModal_TimelineAccepted"]</strong>
+                                        <span>@Order.AcceptedAt.Value.ToString("HH:mm")</span>
+                                    </div>
+                                </div>
+                            }
+                            @if (Order.PreparedAt.HasValue)
+                            {
+                                <div id="bar-orderdetails-timeline-prepared" class="timeline-item completed">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <strong>@Localizer["OrderModal_TimelinePrepared"]</strong>
+                                        <span>@Order.PreparedAt.Value.ToString("HH:mm")</span>
+                                    </div>
+                                </div>
+                            }
+                            @if (Order.DeliveredAt.HasValue)
+                            {
+                                <div id="bar-orderdetails-timeline-delivered" class="timeline-item completed">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <strong>@Localizer["OrderModal_TimelineDelivered"]</strong>
+                                        <span>@Order.DeliveredAt.Value.ToString("HH:mm")</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Payment -->
+                    <div id="bar-orderdetails-section-payment" class="detail-section">
+                        <h4>💳 @Localizer["OrderModal_Payment"]</h4>
+                        <div id="bar-orderdetails-card-payment" class="detail-card payment-card">
+                            @if (Order.Payment != null)
+                            {
+                                <div id="bar-orderdetails-payment-method" class="payment-method">
+                                    <strong>@GetPaymentMethodLabel(Order.Payment.Method)</strong>
+                                    @if (Order.Payment.Direction == PaymentDirection.Out)
+                                    {
+                                        <span id="bar-orderdetails-payment-direction" class="payment-direction-out">
+                                            @Localizer["OrderModal_Refund"]
+                                        </span>
+                                    }
+                                    <span class="payment-status @Order.Payment.Status.ToString().ToLower()">
+                                        @GetPaymentStatusLabel(Order.Payment.Status)
+                                    </span>
+                                </div>
+                                <div id="bar-orderdetails-payment-meta" class="payment-meta">
+                                    <span>€@Order.Payment.Amount.ToString("F2")</span>
+                                    @if (Order.Payment.ProcessedAt.HasValue)
+                                    {
+                                        <span>@Order.Payment.ProcessedAt.Value.ToString("HH:mm")</span>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(Order.Payment.FailureReason))
+                                {
+                                    <div id="bar-orderdetails-payment-failure" class="payment-failure">
+                                        ⚠️ @Order.Payment.FailureReason
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div id="bar-orderdetails-payment-none" class="payment-none">
+                                    @Localizer["OrderModal_NoPayment"]
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div id="bar-orderdetails-section-items" class="detail-section full-width">
+                    <h4>🍻 @Localizer["OrderModal_OrderItems"]</h4>
+                    <div id="bar-orderdetails-items-list" class="items-list">
+                        @foreach (var item in Order.OrderItems)
+                        {
+                            <div id="@($"bar-orderdetails-item-{item.Id}")" class="item-detail">
+                                <div class="item-info">
+                                    <div class="item-name">@(item.Drink?.Name ?? item.DrinkName)</div>
+                                    @if (!string.IsNullOrEmpty(item.SpecialInstructions))
+                                    {
+                                        <div class="special-instructions">📝 @item.SpecialInstructions</div>
+                                    }
+                                </div>
+                                <div class="item-quantity">×@item.Quantity</div>
+                                <div class="item-price">€@item.TotalPrice.ToString("F2")</div>
+                            </div>
+                        }
+                    </div>
+                    <div id="bar-orderdetails-total" class="order-total-detail">
+                        <strong>@Localizer["OrderModal_Total", Order.TotalAmount.ToString("F2")]</strong>
+                    </div>
+                </div>
+
+                @if (ChildContent != null)
+                {
+                    <div id="bar-orderdetails-modal-actions" class="modal-actions">
+                        @ChildContent
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public OrderDto? Order { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    /// <summary>Optional action buttons rendered in the modal footer. Omit for a read-only view.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private Task Close() => OnClose.InvokeAsync();
+
+    private string GetPaymentMethodLabel(PaymentMethod method) => method switch
+    {
+        PaymentMethod.CreditCard => Localizer["PaymentMethod_CreditCard"].Value,
+        PaymentMethod.DebitCard => Localizer["PaymentMethod_DebitCard"].Value,
+        PaymentMethod.DigitalWallet => Localizer["PaymentMethod_DigitalWallet"].Value,
+        PaymentMethod.BankTransfer => Localizer["PaymentMethod_BankTransfer"].Value,
+        PaymentMethod.Cash => Localizer["PaymentMethod_Cash"].Value,
+        PaymentMethod.TicketWallet => Localizer["PaymentMethod_TicketWallet"].Value,
+        _ => method.ToString()
+    };
+
+    private string GetPaymentStatusLabel(PaymentStatus status) => status switch
+    {
+        PaymentStatus.Pending => Localizer["PaymentStatus_Pending"].Value,
+        PaymentStatus.Processing => Localizer["PaymentStatus_Processing"].Value,
+        PaymentStatus.Completed => Localizer["PaymentStatus_Completed"].Value,
+        PaymentStatus.Failed => Localizer["PaymentStatus_Failed"].Value,
+        PaymentStatus.Refunded => Localizer["PaymentStatus_Refunded"].Value,
+        PaymentStatus.Cancelled => Localizer["PaymentStatus_Cancelled"].Value,
+        _ => status.ToString()
+    };
+
+    private string GetOrderStatusLabel(OrderStatus status) => status switch
+    {
+        OrderStatus.Pending => Localizer["OrderStatus_Pending"].Value,
+        OrderStatus.Accepted => Localizer["OrderStatus_Accepted"].Value,
+        OrderStatus.InPreparation => Localizer["OrderStatus_InPreparation"].Value,
+        OrderStatus.Ready => Localizer["OrderStatus_Ready"].Value,
+        OrderStatus.OutForDelivery => Localizer["OrderStatus_OutForDelivery"].Value,
+        OrderStatus.Delivered => Localizer["OrderStatus_Delivered"].Value,
+        OrderStatus.Cancelled => Localizer["OrderStatus_Cancelled"].Value,
+        _ => status.ToString()
+    };
+
+    private static string GetSectionInfo(OrderDto order)
+    {
+        if (order.Seat?.Section != null)
+            return order.Seat.Section.SectionName;
+
+        if (string.IsNullOrEmpty(order.SeatNumber)) return "";
+        var parts = order.SeatNumber.Split('-');
+        return parts.Length > 0 ? parts[0] : "";
+    }
+
+    private string GetSeatInfo(OrderDto order)
+    {
+        // SeatPath is the server-computed human-readable location; fall back to the
+        // linked Seat, then to the legacy SeatNumber string.
+        if (!string.IsNullOrWhiteSpace(order.SeatPath))
+            return order.SeatPath;
+
+        if (order.Seat?.Section != null)
+            return Localizer["OrderModal_RowSeat", order.Seat.RowNumber, order.Seat.SeatNumber].Value;
+
+        return order.SeatNumber;
+    }
+}

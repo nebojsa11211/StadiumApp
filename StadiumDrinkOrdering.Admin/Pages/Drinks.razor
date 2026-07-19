@@ -11,6 +11,9 @@
                 Title='@L["Drinks_MainTitle"]'
                 Subtitle='@L["Drinks_Subtitle"]'>
         <Actions>
+            <button class="pill-btn" @onclick="ShowCategoryManager" id="admin-manage-categories-btn">
+                <i class="bi bi-tags"></i><span>@L["Drinks_ManageCategoriesButton"]</span>
+            </button>
             <button class="pill-btn pill-btn--primary" @onclick="ShowCreateDrinkModal" id="admin-add-drink-btn">
                 <i class="bi bi-plus-lg"></i><span>@L["Drinks_AddNewDrinkButton"]</span>
             </button>
@@ -494,6 +497,11 @@
         </div>
     </div>
 }
+
+@* Category management lives here as an overlay (it used to be its own /categories page). *@
+<CategoryManagerModal Visible="showCategoryManager"
+                      OnClose="HideCategoryManager"
+                      OnCategoriesChanged="OnCategoriesChanged" />
 
 @if (!string.IsNullOrEmpty(alertMessage))
 {

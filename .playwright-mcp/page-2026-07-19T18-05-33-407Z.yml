@@ -1,0 +1,185 @@
+- generic [ref=f1e28]:
+  - complementary [ref=f1e29]:
+    - generic [ref=f1e30]:
+      - generic [ref=f1e31]: 
+      - generic [ref=f1e33]:
+        - generic [ref=f1e34]: STADIUM
+        - generic [ref=f1e35]: BAR
+    - generic [ref=f1e36]:
+      - generic [ref=f1e37]: 20:05:33
+      - generic [ref=f1e38]: 19. 07. 26 HR
+    - navigation [ref=f1e39]:
+      - link " Nadzorna ploča" [ref=f1e40] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f1e41]: 
+        - generic [ref=f1e42]: Nadzorna ploča
+      - link " Nadzorna ploča narudžbi" [ref=f1e43] [cursor=pointer]:
+        - /url: order-queue
+        - generic [ref=f1e44]: 
+        - generic [ref=f1e45]: Nadzorna ploča narudžbi
+      - link " Moje narudžbe" [ref=f1e46] [cursor=pointer]:
+        - /url: my-orders
+        - generic [ref=f1e47]: 
+        - generic [ref=f1e48]: Moje narudžbe
+      - link " Nadoplata" [ref=f1e49] [cursor=pointer]:
+        - /url: topup
+        - generic [ref=f1e50]: 
+        - generic [ref=f1e51]: Nadoplata
+      - link " Povijest nadoplata" [ref=f1e52] [cursor=pointer]:
+        - /url: topup-history
+        - generic [ref=f1e53]: 
+        - generic [ref=f1e54]: Povijest nadoplata
+      - generic [ref=f1e55]: Sustav
+      - link " Sistemski zapisnici" [ref=f1e56] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f1e57]: 
+        - generic [ref=f1e58]: Sistemski zapisnici
+    - generic [ref=f1e59]:
+      - 'generic "Ažuriranja narudžbi u direktnom prijenosu: povezano" [ref=f1e61]': Uživo
+      - generic [ref=f1e64]:
+        - generic [ref=f1e65]: "N"
+        - generic [ref=f1e66]:
+          - button "Odjava" [ref=f1e67] [cursor=pointer]
+          - generic [ref=f1e68]: nebojsa.medancic+staff1@gmail.com
+      - generic [ref=f1e69]:
+        - generic [ref=f1e70]: HR/EN
+        - generic [ref=f1e71]:
+          - button "HR" [ref=f1e72] [cursor=pointer]
+          - button "EN" [ref=f1e73] [cursor=pointer]
+  - main [ref=f1e74]:
+    - generic [ref=f1e75]:
+      - generic [ref=f1e76]: 
+      - generic [ref=f1e78]:
+        - generic [ref=f1e79]: Trenutni događaj
+        - heading "Istra444 - Zagreb444" [level=2] [ref=f1e80]
+        - generic [ref=f1e82]:
+          - generic [ref=f1e83]: 
+          - text: ned 19 srp, 15:08
+      - generic [ref=f1e84]: LIVE
+    - generic [ref=f1e87]:
+      - generic [ref=f1e88]:
+        - generic [ref=f1e89]:
+          - generic [ref=f1e90]: Bar stanica
+          - heading "Nadzorna ploča barmena" [level=1] [ref=f1e91]
+          - paragraph [ref=f1e92]: Upravljanje narudžbama u stvarnom vremenu i ispunjavanje
+        - generic [ref=f1e93]:
+          - generic [ref=f1e94]: Ažurirano 20:05:15
+          - button " Osvježi" [ref=f1e95] [cursor=pointer]:
+            - generic [ref=f1e96]: 
+            - text: Osvježi
+      - generic [ref=f1e97]:
+        - generic [ref=f1e100]:
+          - generic [ref=f1e101]:
+            - generic [ref=f1e102]:
+              - heading "0" [level=4] [ref=f1e103]
+              - generic [ref=f1e104]: Narudžbe na čekanju
+            - generic [ref=f1e105]: 
+          - generic [ref=f1e107]: čekaju prihvaćanje
+        - generic [ref=f1e110]:
+          - generic [ref=f1e111]:
+            - generic [ref=f1e112]:
+              - heading "0" [level=4] [ref=f1e113]
+              - generic [ref=f1e114]: U pripremi
+            - generic [ref=f1e115]: 
+          - generic [ref=f1e117]: u pripremi
+        - generic [ref=f1e120]:
+          - generic [ref=f1e121]:
+            - generic [ref=f1e122]:
+              - heading "0" [level=4] [ref=f1e123]
+              - generic [ref=f1e124]: Spremno za dostavu
+            - generic [ref=f1e125]: 
+          - generic [ref=f1e127]: spremno za preuzimanje
+        - generic [ref=f1e130]:
+          - generic [ref=f1e131]:
+            - generic [ref=f1e132]:
+              - heading "1" [level=4] [ref=f1e133]
+              - generic [ref=f1e134]: Preuzeto
+            - generic [ref=f1e135]: 
+          - generic [ref=f1e137]: preuzeo dostavljač
+        - generic [ref=f1e140]:
+          - generic [ref=f1e141]:
+            - generic [ref=f1e142]:
+              - heading "0" [level=4] [ref=f1e143]
+              - generic [ref=f1e144]: Dostavljeno
+            - generic [ref=f1e145]: 
+          - generic [ref=f1e147]: dostavljeno gostu
+      - generic [ref=f1e148]:
+        - generic [ref=f1e2]:
+          - heading "Nedavne narudžbe" [level=5] [ref=f1e4]
+          - table [ref=f1e150]:
+            - rowgroup [ref=f1e151]:
+              - row [ref=f1e152]:
+                - 'columnheader "Narudžba #" [ref=f1e153]'
+                - columnheader "Kupac" [ref=f1e154]
+                - columnheader "Sjedalo" [ref=f1e155]
+                - columnheader "Stavke" [ref=f1e156]
+                - columnheader "Stanje" [ref=f1e157]
+                - columnheader "Vrijeme" [ref=f1e158]
+                - columnheader "Radnje" [ref=f1e159]
+            - rowgroup [ref=f1e160]:
+              - row [ref=f1e161]:
+                - cell "#462" [ref=f1e162]
+                - cell "Nikola Jurić" [ref=f1e163]
+                - cell "2" [ref=f1e164]
+                - cell "1 Stavke" [ref=f1e165]
+                - cell "OutForDelivery" [ref=f1e166]
+                - cell "00:00" [ref=f1e168]
+                - cell [ref=f1e169]:
+                  - button "Prikazi" [active] [ref=f1e170] [cursor=pointer]
+        - generic [ref=f1e171]:
+          - generic [ref=f1e173]:
+            - heading "Brze radnje" [level=5] [ref=f1e175]
+            - generic [ref=f1e177]:
+              - link " View Order Queue" [ref=f1e178] [cursor=pointer]:
+                - /url: /order-queue
+                - generic [ref=f1e179]: 
+                - text: View Order Queue
+              - link " My Assigned Orders" [ref=f1e180] [cursor=pointer]:
+                - /url: /my-orders
+                - generic [ref=f1e181]: 
+                - text: My Assigned Orders
+          - generic [ref=f1e183]:
+            - heading "Status veze" [level=6] [ref=f1e184]
+            - generic [ref=f1e185]:
+              - generic [ref=f1e186]:
+                - generic [ref=f1e187]: 
+                - text: Povezan
+              - generic [ref=f1e188]: "Zadnje: 20:05:12"
+            - generic [ref=f1e189]: Konekcija SignalR je uspostavljena
+    - generic [ref=f1e191]:
+      - generic [ref=f1e192]:
+        - generic [ref=f1e193]:
+          - 'heading "Order #462" [level=3] [ref=f1e194]'
+          - generic [ref=f1e195]: OutForDelivery
+        - button "✕" [ref=f1e196] [cursor=pointer]
+      - generic [ref=f1e197]:
+        - generic [ref=f1e198]:
+          - generic [ref=f1e199]:
+            - heading "📍 Delivery Information" [level=4] [ref=f1e200]
+            - generic [ref=f1e201]:
+              - generic [ref=f1e202]:
+                - strong [ref=f1e203]: Sjever1 · Row 7 · Seat 2
+                - generic [ref=f1e204]: Section Sjever1
+              - strong [ref=f1e206]: Nikola Jurić
+              - generic [ref=f1e207]:
+                - strong [ref=f1e208]: Istra444 - Zagreb444
+                - generic [ref=f1e209]: srp 19, 2026
+          - generic [ref=f1e210]:
+            - heading "⏱️ Order Timeline" [level=4] [ref=f1e211]
+            - generic [ref=f1e212]:
+              - generic [ref=f1e215]:
+                - strong [ref=f1e216]: Ordered
+                - generic [ref=f1e217]: 14:54
+              - generic [ref=f1e220]:
+                - strong [ref=f1e221]: Accepted
+                - generic [ref=f1e222]: 14:55
+              - generic [ref=f1e225]:
+                - strong [ref=f1e226]: Prepared
+                - generic [ref=f1e227]: 14:55
+        - generic [ref=f1e228]:
+          - heading "🍻 Order Items" [level=4] [ref=f1e229]
+          - generic [ref=f1e231]:
+            - generic [ref=f1e232]: Beer
+            - generic [ref=f1e234]: ×2
+            - generic [ref=f1e235]: €12,00
+          - strong [ref=f1e237]: "Total: €12,00"

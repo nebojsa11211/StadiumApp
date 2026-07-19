@@ -38,7 +38,7 @@ public class TicketAuthService : ITicketAuthService
                 };
             }
 
-            // Gate drink ordering on the event's lifecycle status (Phase 2 only: Active / InProgress).
+            // Gate drink ordering on the event's lifecycle status (Phase 2 only: Active).
             // This is the authoritative source of truth — replaces ad-hoc EventDate math and blocks
             // both future (not started) and past (ended/cancelled) events. Because reuse is now governed
             // by "one active session per live event" (below) rather than a sticky IsUsed flag, this

@@ -1,4 +1,8 @@
 @inherits LayoutComponentBase
+@implements IDisposable
+@using QRCoder
+@inject NavigationManager Nav
+@inject IStringLocalizer<SharedResources> Localizer
 
 @* Chrome-less mobile shell. On phones the runner app fills the screen exactly as before.
    On wide viewports the whole app is presented inside a realistic phone device (metal bezel,
@@ -25,4 +29,49 @@
             </div>
         </div>
     </div>
+
+    @* Desktop-only companion panel beside the phone: scanning this opens the exact page you are
+       looking at on a real handset. Encodes the live request URL, so on the LAN address
+       (https://192.168.178.32:7060/login) the phone reaches this machine — the Runner is bound to
+       the LAN IP only, so that is what a desktop viewer is already on.
+       Deliberately outside #runner-mobile-shell-screen — it is presentation chrome, not app UI,
+       and CSS hides it under 520px where the phone frame collapses and the app owns the viewport. *@
+    <aside id="runner-mobile-shell-qr" class="runner-shell-qr">
+        <img id="runner-mobile-shell-qr-img" class="runner-shell-qr-img"
+             src="@QrDataUri" alt="QR code for @_currentUrl" />
+        <div id="runner-mobile-shell-qr-caption" class="runner-shell-qr-caption">@Localizer["Shell_QrCaption"]</div>
+        <div id="runner-mobile-shell-qr-url" class="runner-shell-qr-url">@_currentUrl</div>
+    </aside>
 </div>
+
+@code {
+    private string _currentUrl = "";
+
+    protected override void OnInitialized()
+    {
+        _currentUrl = Nav.Uri;
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        _currentUrl = e.Location;
+        InvokeAsync(StateHasChanged);
+    }
+
+    // PNG (not SVG) because QRCoder's SVG renderer pulls in System.Drawing types; PngByteQRCode is
+    // dependency-free and therefore safe under the browser-wasm runtime. ECC L keeps the module
+    // count low for a long URL, which keeps the code readable at this small size.
+    private string QrDataUri
+    {
+        get
+        {
+            using var generator = new QRCodeGenerator();
+            using var data = generator.CreateQrCode(_currentUrl, QRCodeGenerator.ECCLevel.L);
+            var png = new PngByteQRCode(data).GetGraphic(8);
+            return $"data:image/png;base64,{Convert.ToBase64String(png)}";
+        }
+    }
+
+    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
+}

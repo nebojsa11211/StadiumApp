@@ -127,10 +127,13 @@ else
             </div>
         }
     </div>
+
+    <OrderDetailsModal Order="@selectedOrder" OnClose="@CloseOrderDetails" />
 }
 
 @code {
     private DashboardViewModel dashboardData = new() { IsLoading = true };
+    private OrderDto? selectedOrder;
     private bool isRefreshing = false;
     private bool isReconnecting = false;
     private DateTime? lastConnectedTime = null;
@@ -183,6 +186,15 @@ else
         try
         {
             dashboardData = await DashboardService.GetDashboardDataAsync();
+
+            // The refresh replaces the order objects, so re-point an open details overlay at the
+            // fresh instance. If the order dropped off the recent list, keep the last snapshot.
+            if (selectedOrder != null)
+            {
+                selectedOrder = dashboardData.RecentOrders.FirstOrDefault(o => o.Id == selectedOrder.Id)
+                                ?? selectedOrder;
+            }
+
             await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
@@ -226,9 +238,14 @@ else
         }
     }
 
-    private async Task HandleOrderClick(OrderDto order)
+    private void HandleOrderClick(OrderDto order)
     {
-        Navigation.NavigateTo($"/order-queue");
+        selectedOrder = order;
+    }
+
+    private void CloseOrderDetails()
+    {
+        selectedOrder = null;
     }
 
     private async Task HandleReconnectClick()

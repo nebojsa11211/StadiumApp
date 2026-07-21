@@ -1,4 +1,4 @@
-{
+﻿{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -12,7 +12,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://192.168.178.32:7040;https://localhost:7040",
+      "applicationUrl": "https://192.168.178.44:7040;https://localhost:7040",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -21,7 +21,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://192.168.178.32:7040;https://localhost:7040",
+      "applicationUrl": "https://192.168.178.44:7040;https://localhost:7040",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -51,29 +51,31 @@ This document defines the **permanent and fixed port assignments** for all Stadi
 Every `commandName: Project` launch profile binds **two** endpoints:
 
 ```
-https://192.168.178.32:<port>;https://localhost:<port>
+https://192.168.178.44:<port>;https://localhost:<port>
 ```
 
 **Order matters.** Visual Studio opens the browser at the **first** URL, so the LAN address is
-listed first — that is what makes F5 land on `https://192.168.178.32:7020/...` instead of
+listed first — that is what makes F5 land on `https://192.168.178.44:7020/...` instead of
 `localhost`. Swap the order to go back to a localhost address bar. `localhost` keeps working
 either way; both endpoints are always bound.
 
-> ⚠️ Because the LAN address is now the F5 target and there is **no LAN certificate**, the desktop
-> browser shows a certificate warning on every launch (`ERR_CERT_COMMON_NAME_INVALID`) — the dev
-> cert is only valid for the name `localhost`. See "No LAN certificate yet" below.
+> ⚠️ Because the LAN address is the F5 target, the desktop browser shows a certificate warning on
+> every launch (`ERR_CERT_COMMON_NAME_INVALID`) unless the LAN certificate is installed — the ASP.NET
+> dev cert is only valid for the name `localhost`. See "The LAN certificate" below.
 
 > Switching origin also means a **fresh `localStorage`**: JWTs saved under `https://localhost:7030`
-> are not visible to `https://192.168.178.32:7030`, so you will be asked to log in again.
+> are not visible to `https://192.168.178.44:7030`, so you will be asked to log in again.
 
-> **Exception — the Runner lists `localhost` first on purpose.** It is a Blazor WASM app, and its
-> `inspectUri` points the debugger at `wss://{url.hostname}:{url.port}/_framework/debug/ws-proxy`.
-> Launching it at the LAN address makes VS fail with *"Failed to launch debug adapter … Could not
-> open wss://192.168.178.32:7060/_framework/debug/ws-proxy"*, because the WASM debug proxy expects
-> a loopback origin and a `wss://` handshake cannot be manually accepted the way an untrusted page
-> can. The Runner is still **bound** to the LAN address — just browse to
-> `https://192.168.178.32:7060` on the phone manually. Do not reorder it unless a trusted LAN
-> certificate is installed.
+> **Exception — the Runner binds the LAN address ONLY**, and loads the LAN certificate explicitly via
+> `Kestrel__Certificates__Default__*` in its launch profile. It is the phone app, so it is served over
+> the LAN or not at all. The trade-off: its `inspectUri` (`wss://{url.hostname}:{url.port}/_framework/
+> debug/ws-proxy`) was removed, because the Blazor WASM debug proxy expects a loopback origin — VS
+> otherwise fails with *"Failed to launch debug adapter … Could not open wss://…:7060/_framework/debug/
+> ws-proxy"*. To debug the Runner's C# in VS, temporarily point `applicationUrl` back at
+> `https://localhost:7060`, drop the two `Kestrel__Certificates__*` variables, and restore `inspectUri`.
+>
+> Because the Runner is LAN-only, its profile has a single URL with no `;` — `set-dev-host.ps1`
+> handles that shape separately from the two-endpoint pair the other five apps use.
 
 > **Gotcha:** `Customer` and `Bar` also pin a `"Urls"` key in their `appsettings.Development.json`.
 > `WebApplication` applies that key **over** the host URLs from `applicationUrl`, so it must list the
@@ -85,21 +87,36 @@ either way; both endpoints are always bound.
    Adds an inbound TCP rule for 7010–7060 on the **Private** profile only.
    Undo with `.\open-lan-dev-ports.ps1 -Remove`.
 2. Start the apps from Visual Studio as usual.
-3. On the phone, browse to `https://192.168.178.32:<port>`.
+3. On the phone, browse to `https://192.168.178.44:<port>`.
 
-### ⚠️ No LAN certificate yet
-The ASP.NET dev certificate is only valid for the name `localhost`, so hitting the app by IP
-produces a certificate warning you must tap through on every device. Consequences:
+### 🔐 The LAN certificate
+The ASP.NET dev certificate is only valid for the name `localhost`, so hitting an app by IP produces
+a certificate warning. `certificates\stadium-lan.pfx` is a self-signed cert whose SAN list carries the
+**LAN IP** (plus `localhost`, `api`, and the machine name), which is what makes the IP origin
+trustable. The Runner loads it via `Kestrel__Certificates__Default__Path` in its launch profile.
 
-- Normal page testing works fine.
-- **Service workers will not register**, so the Runner PWA **cannot be installed** and offline
-  mode cannot be tested over the LAN. Fixing this requires minting a certificate with the IP in
-  its SAN list and trusting it on the phone.
+```powershell
+.\generate-lan-cert.ps1                          # auto-detect the current LAN IP
+.\generate-lan-cert.ps1 -IpAddress 192.168.1.50  # or set it explicitly
+.\generate-lan-cert.ps1 -Trust                   # also add it to Cert:\CurrentUser\Root
+```
+
+**Run this once per machine, and again whenever the LAN IP changes** — the IP is baked into the
+certificate, so `set-dev-host.ps1` alone is not enough. The `.pfx` is gitignored (`*.pfx`), so a fresh
+clone has only the public `.cer` and the Runner fails to start with
+`FileNotFoundException: Could not find file '…\certificates\stadium-lan.pfx'` until you run it.
+
+- **Desktop**: pass `-Trust`, or double-click `stadium-lan.cer` → Install Certificate → Trusted Root
+  Certification Authorities.
+- **Phone**: transfer `stadium-lan.cer` and install it as a trusted credential. Until you do,
+  **service workers will not register**, so the Runner PWA cannot be installed and offline mode
+  cannot be tested over the LAN.
+- Re-running mints a **new** cert, so every device that trusted the old `.cer` must install the new one.
 - Server-to-server calls are unaffected — every client app already sets
   `ServerCertificateCustomValidationCallback => true`.
 
 ### ⚠️ The LAN address is a DHCP lease
-`192.168.178.32` is baked into all six launch profiles. When the lease changes, re-stamp them:
+`192.168.178.44` is baked into all six launch profiles. When the lease changes, re-stamp them:
 
 ```powershell
 .\set-dev-host.ps1                          # auto-detect the current LAN IP
@@ -114,7 +131,7 @@ A **DHCP reservation** on the router avoids this entirely and is the recommended
   browser reached them. No change needed.
 - **Runner (WASM)** runs in the *browser*, where `localhost` means the phone. It therefore derives
   the API host from the origin that served it (see `Runner/Program.cs`) — loaded from
-  `https://192.168.178.32:7060`, it calls `https://192.168.178.32:7010`. An explicit non-loopback
+  `https://192.168.178.44:7060`, it calls `https://192.168.178.44:7010`. An explicit non-loopback
   `ApiSettings:BaseUrl` in `wwwroot/appsettings.json` still overrides this, so pointing the Runner
   at a staging API remains config-only.
 - **API CORS**: in **Development only**, the API accepts any loopback or RFC1918 private-range

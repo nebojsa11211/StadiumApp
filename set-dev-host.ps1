@@ -73,11 +73,18 @@ foreach ($app in $apps.Keys) {
     $lanFirst   = "https://[^`":;]+:$port;https://localhost:$port"
     $localFirst = "https://localhost:$port;https://[^`":;]+:$port"
 
+    # The Runner is LAN-ONLY (it is the phone app), so it has a single url with no ';' - match that too,
+    # otherwise it silently reports "already correct" while still pointing at the stale lease.
+    $lanOnly = "https://(?!localhost)[^`":;]+:$port"
+
     if ($content -match $lanFirst) {
         $updated = [regex]::Replace($content, $lanFirst, "https://$($IpAddress):$port;https://localhost:$port")
     }
     elseif ($content -match $localFirst) {
         $updated = [regex]::Replace($content, $localFirst, "https://localhost:$port;https://$($IpAddress):$port")
+    }
+    elseif ($content -match $lanOnly) {
+        $updated = [regex]::Replace($content, $lanOnly, "https://$($IpAddress):$port")
     }
     else {
         $updated = $content

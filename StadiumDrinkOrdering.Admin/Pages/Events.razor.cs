@@ -1051,6 +1051,12 @@ public partial class Events : ComponentBase, IDisposable
         return $"{Fmt(from)} → {Fmt(to)}";
     }
 
+    /// <summary>
+    /// Money for the card's results strip — thousands-separated so a five-figure gate stays readable
+    /// (the rest of the card uses plain "F2" for single prices, which never reach that size).
+    /// </summary>
+    private static string Money(decimal amount) => $"€{amount.ToString("N2")}";
+
     // --- Lifecycle display helpers (badge colour, button style, labels) ---
 
     /// <summary>

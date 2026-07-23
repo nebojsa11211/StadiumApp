@@ -36,6 +36,29 @@ public class EventDto
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
 
+    /// <summary>
+    /// Realised ticket takings: the sum of this event's non-cancelled ticket prices. Computed the
+    /// same way as <see cref="EventStatisticsDto.TicketRevenue"/>, so a card can show the headline
+    /// result of a finished event without opening the full statistics page.
+    /// </summary>
+    public decimal TicketRevenue { get; set; }
+
+    /// <summary>
+    /// This event's share of the season passes that cover it. A pass is paid for once per season and
+    /// its per-event tickets are priced at 0, so its price is split evenly across the events it grants
+    /// access to — without this, a season-ticketed match would report almost no takings.
+    /// </summary>
+    public decimal SeasonTicketRevenue { get; set; }
+
+    /// <summary>Non-cancelled drink orders placed for this event.</summary>
+    public int DrinkOrders { get; set; }
+
+    /// <summary>Realised drink takings: the sum of this event's non-cancelled order totals.</summary>
+    public decimal DrinksRevenue { get; set; }
+
+    /// <summary><see cref="TicketRevenue"/> + <see cref="SeasonTicketRevenue"/> + <see cref="DrinksRevenue"/>.</summary>
+    public decimal TotalRevenue => TicketRevenue + SeasonTicketRevenue + DrinksRevenue;
+
     /// <summary>The season this event belongs to, if any.</summary>
     public int? SeasonId { get; set; }
     /// <summary>Display name of the linked season (e.g. "2026/2027"), if any.</summary>

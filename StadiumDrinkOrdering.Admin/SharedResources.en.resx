@@ -2554,6 +2554,30 @@
   <data name="Events_SeasonPassNote" xml:space="preserve">
     <value>{0} via season passes</value>
   </data>
+  <data name="Events_AttendanceLabel" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
+  <data name="Events_ResultsTitle" xml:space="preserve">
+    <value>Financial result</value>
+  </data>
+  <data name="Events_TicketRevenueLabel" xml:space="preserve">
+    <value>Ticket revenue</value>
+  </data>
+  <data name="Events_SeasonRevenueLabel" xml:space="preserve">
+    <value>Season passes</value>
+  </data>
+  <data name="Events_SeasonRevenueNote" xml:space="preserve">
+    <value>({0}, amortised share)</value>
+  </data>
+  <data name="Events_DrinkRevenueLabel" xml:space="preserve">
+    <value>Drink revenue</value>
+  </data>
+  <data name="Events_DrinkOrdersNote" xml:space="preserve">
+    <value>({0} orders)</value>
+  </data>
+  <data name="Events_TotalRevenueLabel" xml:space="preserve">
+    <value>Total revenue</value>
+  </data>
   <data name="Events_BasePriceLabel" xml:space="preserve">
     <value>Base Price</value>
   </data>
@@ -2693,7 +2717,7 @@
     <value>Total revenue</value>
   </data>
   <data name="EventStats_TotalRevenueHint" xml:space="preserve">
-    <value>Tickets + drinks</value>
+    <value>Tickets + season passes + drinks</value>
   </data>
   <data name="EventStats_TicketsSoldLabel" xml:space="preserve">
     <value>Tickets sold</value>
@@ -2724,6 +2748,9 @@
   </data>
   <data name="EventStats_TicketRevenueLabel" xml:space="preserve">
     <value>Ticket revenue</value>
+  </data>
+  <data name="EventStats_SeasonRevenueLabel" xml:space="preserve">
+    <value>Season passes (amortised share)</value>
   </data>
   <data name="EventStats_DrinksTitle" xml:space="preserve">
     <value>Drink ordering</value>
@@ -3622,6 +3649,12 @@
   <data name="Index_NoOrdersThisEvent" xml:space="preserve">
     <value>No orders for this event</value>
   </data>
+  <data name="Index_OrdersScopeTitle" xml:space="preserve">
+    <value>These orders belong only to this event</value>
+  </data>
+  <data name="Index_OrdersNoLiveEventNote" xml:space="preserve">
+    <value>No event is live right now — these orders are from the selected event.</value>
+  </data>
   <data name="Index_ViewAllOrders" xml:space="preserve">
     <value>View all orders</value>
   </data>
@@ -4120,6 +4153,28 @@
   <data name="Wallets_Close" xml:space="preserve"><value>Close</value></data>
   <data name="Wallets_ActionFailed" xml:space="preserve"><value>Action failed.</value></data>
   <data name="Nav_Venue" xml:space="preserve"><value>Venue &amp; Branding</value></data>
+  <data name="Nav_Setup" xml:space="preserve"><value>Setup</value></data>
+  <data name="Setup_PageTitle" xml:space="preserve"><value>Setup — Stadium Admin</value></data>
+  <data name="Setup_Eyebrow" xml:space="preserve"><value>Getting started</value></data>
+  <data name="Setup_Heading" xml:space="preserve"><value>Initial setup</value></data>
+  <data name="Setup_Subtitle" xml:space="preserve"><value>A few things must be configured before the system is ready to use.</value></data>
+  <data name="Setup_Loading" xml:space="preserve"><value>Checking setup…</value></data>
+  <data name="Setup_Intro" xml:space="preserve"><value>Complete the outstanding items below. Each one takes you to the page where you can configure it.</value></data>
+  <data name="Setup_AllDone" xml:space="preserve"><value>All set — the essentials are configured. You're ready to go.</value></data>
+  <data name="Setup_Done" xml:space="preserve"><value>Done</value></data>
+  <data name="Setup_Configure" xml:space="preserve"><value>Configure</value></data>
+  <data name="Setup_Refresh" xml:space="preserve"><value>Re-check</value></data>
+  <data name="Setup_Dismiss" xml:space="preserve"><value>Hide reminder</value></data>
+  <data name="Setup_BannerText" xml:space="preserve"><value>Your stadium isn't fully configured yet. A few essentials still need setting up.</value></data>
+  <data name="Setup_BannerAction" xml:space="preserve"><value>Finish setup</value></data>
+  <data name="Setup_Item_Stadium_Title" xml:space="preserve"><value>Stadium structure</value></data>
+  <data name="Setup_Item_Stadium_Desc" xml:space="preserve"><value>Import or draw the stadium layout (tribunes, sectors and seats). Everything else depends on this.</value></data>
+  <data name="Setup_Item_Venue_Title" xml:space="preserve"><value>Home club &amp; address</value></data>
+  <data name="Setup_Item_Venue_Desc" xml:space="preserve"><value>Set the home club name and the stadium address shown to customers.</value></data>
+  <data name="Setup_Item_Drinks_Title" xml:space="preserve"><value>Drink categories &amp; drinks</value></data>
+  <data name="Setup_Item_Drinks_Desc" xml:space="preserve"><value>Add at least one category and one drink so fans have something to order.</value></data>
+  <data name="Setup_Item_Staff_Title" xml:space="preserve"><value>Staff members</value></data>
+  <data name="Setup_Item_Staff_Desc" xml:space="preserve"><value>Create at least one bartender or waiter account to run the bar.</value></data>
   <data name="Venue_PageTitle" xml:space="preserve"><value>Venue &amp; Branding</value></data>
   <data name="Venue_Heading" xml:space="preserve"><value>Venue &amp; Branding</value></data>
   <data name="Venue_Subtitle" xml:space="preserve"><value>Stadium identity and the clubs resident here.</value></data>

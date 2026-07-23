@@ -1,0 +1,411 @@
+@page "/season-generator"
+@using StadiumDrinkOrdering.Shared.DTOs.Integration
+@inject SimulatorApiClient Api
+@inject IStringLocalizer<SharedResources> Localizer
+
+<PageTitle>@Localizer["SeasonGen_PageTitle"]</PageTitle>
+
+<div id="simulator-seasongen-container" class="sim-card">
+    <h5 id="simulator-seasongen-title" class="mb-1"><i class="bi bi-calendar-range"></i> @Localizer["SeasonGen_Title"]</h5>
+    <p id="simulator-seasongen-intro" class="text-muted small">@Localizer["SeasonGen_Intro"]</p>
+
+    @if (seasons.Count == 0)
+    {
+        <div id="simulator-seasongen-no-seasons" class="alert alert-warning mb-0">
+            <i class="bi bi-exclamation-triangle"></i> @Localizer["SeasonGen_NoSeasons"]
+        </div>
+    }
+    else
+    {
+        <div id="simulator-seasongen-form" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label mb-0 small" for="simulator-seasongen-season">@Localizer["SeasonGen_SeasonLabel"]</label>
+                <select id="simulator-seasongen-season" class="form-select form-select-sm" @bind="selectedSeasonExternalId">
+                    @foreach (var s in seasons.Where(s => s.ExternalSeasonId != null))
+                    {
+                        <option value="@s.ExternalSeasonId">@s.Name @(s.IsCurrent ? "★" : "") · @s.EventCount @Localizer["SeasonGen_EventsWord"] · @s.SeasonTicketCount @Localizer["SeasonGen_PassesWord"]</option>
+                    }
+                </select>
+                <div class="form-text">@Localizer["SeasonGen_SeasonHint"]</div>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label mb-0 small" for="simulator-seasongen-past">@Localizer["SeasonGen_PastLabel"]</label>
+                <input id="simulator-seasongen-past" type="number" min="0" max="30" class="form-control form-control-sm" @bind="pastMatches" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0 small" for="simulator-seasongen-future">@Localizer["SeasonGen_FutureLabel"]</label>
+                <input id="simulator-seasongen-future" type="number" min="0" max="30" class="form-control form-control-sm" @bind="futureMatches" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0 small" for="simulator-seasongen-price">@Localizer["SeasonGen_PriceLabel"]</label>
+                <input id="simulator-seasongen-price" type="number" min="1" step="1" class="form-control form-control-sm" @bind="basePrice" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0 small" for="simulator-seasongen-interval">@Localizer["SeasonGen_IntervalLabel"]</label>
+                <input id="simulator-seasongen-interval" type="number" min="1" max="30" class="form-control form-control-sm" @bind="intervalDays" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label mb-0 small" for="simulator-seasongen-home">@Localizer["SeasonGen_HomeLabel"]</label>
+                <input id="simulator-seasongen-home" type="text" class="form-control form-control-sm" @bind="homeTeam" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label mb-0 small" for="simulator-seasongen-opponents">@Localizer["SeasonGen_OpponentsLabel"]</label>
+                <input id="simulator-seasongen-opponents" type="text" class="form-control form-control-sm" @bind="opponentList" />
+                <div class="form-text">@Localizer["SeasonGen_OpponentsHint"]</div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label mb-0 small">@Localizer["SeasonGen_PastFillLabel"]</label>
+                <div class="input-group input-group-sm">
+                    <input id="simulator-seasongen-past-fill-min" type="number" min="0" max="100" class="form-control" @bind="pastFillMin" />
+                    <span class="input-group-text">–</span>
+                    <input id="simulator-seasongen-past-fill-max" type="number" min="0" max="100" class="form-control" @bind="pastFillMax" />
+                    <span class="input-group-text">%</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label mb-0 small">@Localizer["SeasonGen_FutureFillLabel"]</label>
+                <div class="input-group input-group-sm">
+                    <input id="simulator-seasongen-future-fill-min" type="number" min="0" max="100" class="form-control" @bind="futureFillMin" />
+                    <span class="input-group-text">–</span>
+                    <input id="simulator-seasongen-future-fill-max" type="number" min="0" max="100" class="form-control" @bind="futureFillMax" />
+                    <span class="input-group-text">%</span>
+                </div>
+                <div class="form-text">
+                    @Localizer["SeasonGen_FutureFillHint"]
+                    @if (stadiumCapacity > 0)
+                    {
+                        <span id="simulator-seasongen-capacity-note"> · @Localizer["SeasonGen_CapacityNote", stadiumCapacity.ToString("N0")]</span>
+                    }
+                    @if (FillIsClamped)
+                    {
+                        <span id="simulator-seasongen-cap-warning" class="text-warning"> · @Localizer["SeasonGen_CapWarning", stadiumCapacity.ToString("N0")]</span>
+                    }
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-check form-check-inline">
+                    <input id="simulator-seasongen-drinks" class="form-check-input" type="checkbox" @bind="generateDrinkOrders" />
+                    <label class="form-check-label small" for="simulator-seasongen-drinks">@Localizer["SeasonGen_DrinkOrdersLabel"]</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input id="simulator-seasongen-attendance" class="form-check-input" type="checkbox" @bind="settleAttendance" />
+                    <label class="form-check-label small" for="simulator-seasongen-attendance">@Localizer["SeasonGen_AttendanceLabel"]</label>
+                </div>
+            </div>
+
+            <div class="col-12 d-flex align-items-center gap-2">
+                <button id="simulator-seasongen-generate-btn" class="btn btn-primary btn-sm"
+                        @onclick="GenerateAsync" disabled="@(busy || selectedSeasonExternalId == null || TotalMatches == 0)">
+                    @if (busy)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1"></span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-magic me-1"></i>
+                    }
+                    @Localizer["SeasonGen_GenerateButton", TotalMatches]
+                </button>
+                @if (busy)
+                {
+                    <span id="simulator-seasongen-progress" class="small text-muted">
+                        @Localizer["SeasonGen_Progress", done, TotalMatches] — @currentFixture
+                    </span>
+                }
+            </div>
+        </div>
+
+        @if (results.Count > 0)
+        {
+            <hr />
+            <div id="simulator-seasongen-summary" class="small mb-2">
+                <strong>@Localizer["SeasonGen_SummaryTitle"]</strong>
+                @Localizer["SeasonGen_SummaryLine",
+                    results.Count,
+                    results.Sum(r => r.TicketsSold),
+                    results.Sum(r => r.SeasonTicketsCovered),
+                    results.Sum(r => r.DrinkOrders),
+                    results.Sum(r => r.DrinkRevenue).ToString("N2")]
+            </div>
+            <div class="table-responsive">
+                <table id="simulator-seasongen-results" class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>@Localizer["SeasonGen_ColFixture"]</th>
+                            <th>@Localizer["SeasonGen_ColKickOff"]</th>
+                            <th>@Localizer["SeasonGen_ColStatus"]</th>
+                            <th class="text-end">@Localizer["SeasonGen_ColTickets"]</th>
+                            <th class="text-end">@Localizer["SeasonGen_ColPasses"]</th>
+                            <th class="text-end">@Localizer["SeasonGen_ColAttended"]</th>
+                            <th class="text-end">@Localizer["SeasonGen_ColOrders"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in results.OrderBy(r => r.KickOff))
+                        {
+                            <tr id="simulator-seasongen-row-@r.EventId" class="@(r.Accepted ? null : "table-danger")">
+                                <td>@r.EventName <span class="text-muted small">#@r.EventId</span></td>
+                                <td class="text-nowrap small">@r.KickOff.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                <td><span class="badge @(r.IsPast ? "bg-secondary" : "bg-success")">@r.Status</span></td>
+                                <td class="text-end">@r.TicketsSold</td>
+                                <td class="text-end">@r.SeasonTicketsCovered</td>
+                                <td class="text-end">@(r.IsPast ? r.TicketsAttended.ToString() : "—")</td>
+                                <td class="text-end">@(r.DrinkOrders > 0 ? $"{r.DrinkOrders} · €{r.DrinkRevenue:N2}" : "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+
+    @if (log.Count > 0)
+    {
+        <hr />
+        <div id="simulator-seasongen-log" class="sim-log small">
+            @foreach (var line in log)
+            {
+                <div>@line</div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<ExternalSeasonSummaryDto> seasons = new();
+    private string? selectedSeasonExternalId;
+
+    private int pastMatches = 7;
+    private int futureMatches = 7;
+    private int intervalDays = 7;
+    private decimal basePrice = 25;
+
+    // A played match fills up; an upcoming one is still selling, and the further out it is the less
+    // of it has gone — so the future range is applied nearest-first.
+    private int pastFillMin = 55, pastFillMax = 92;
+    private int futureFillMin = 8, futureFillMax = 45;
+
+    private bool generateDrinkOrders = true;
+    private bool settleAttendance = true;
+
+    private string homeTeam = "GNK Dinamo Zagreb";
+    private string opponentList = "HNK Hajduk Split, HNK Rijeka, NK Osijek, NK Slaven Belupo, NK Lokomotiva, NK Varaždin, HNK Gorica, HNK Šibenik, NK Istra 1961, NK Rudeš";
+
+    private bool busy;
+    private int done;
+    private string currentFixture = "";
+    private readonly List<SimulateMatchResult> results = new();
+    private readonly List<string> log = new();
+
+    private int TotalMatches => Math.Max(0, pastMatches) + Math.Max(0, futureMatches);
+
+    /// <summary>Drawn stadium capacity, so a fill percentage means a real number of seats.</summary>
+    private int stadiumCapacity;
+
+    /// <summary>
+    /// Safety ceiling on one fixture's crowd, for the case where no stadium has been drawn and the
+    /// fill percentage has nothing real to apply to. A drawn stadium sells up to its own capacity.
+    /// </summary>
+    private const int PerFixtureTicketCap = 5000;
+
+    /// <summary>
+    /// True when the requested fill can't physically be met — the ground would sell out first. The
+    /// season-pass seats are part of that: they are already occupied before a single ticket is sold.
+    /// </summary>
+    private bool FillIsClamped
+    {
+        get
+        {
+            if (stadiumCapacity <= 0) return false;
+            var passSeats = seasons.FirstOrDefault(s => s.ExternalSeasonId == selectedSeasonExternalId)?.SeasonTicketCount ?? 0;
+            var wanted = stadiumCapacity * Math.Max(pastFillMax, futureFillMax) / 100;
+            return passSeats + wanted > stadiumCapacity;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSeasonsAsync();
+
+        try
+        {
+            stadiumCapacity = (await Api.GetSectionsAsync()).Sum(s => s.Capacity);
+        }
+        catch
+        {
+            stadiumCapacity = 0;
+        }
+
+        // Default the home side to the venue's own club rather than a hardcoded name.
+        try
+        {
+            var venue = await Api.GetVenueAsync();
+            var club = venue?.Clubs?.FirstOrDefault(c => c.IsPrimary) ?? venue?.Clubs?.FirstOrDefault();
+            if (club != null && !string.IsNullOrWhiteSpace(club.Name))
+                homeTeam = club.Name;
+        }
+        catch
+        {
+            // Keep the form default when the venue can't be read.
+        }
+    }
+
+    private async Task LoadSeasonsAsync()
+    {
+        try
+        {
+            seasons = await Api.GetSeasonsAsync();
+            selectedSeasonExternalId ??= seasons.FirstOrDefault(s => s.IsCurrent && s.ExternalSeasonId != null)?.ExternalSeasonId
+                                         ?? seasons.FirstOrDefault(s => s.ExternalSeasonId != null)?.ExternalSeasonId;
+        }
+        catch (Exception ex)
+        {
+            Log($"⚠ {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Builds the fixture list and asks the API to stand each one up. Past fixtures are laid out
+    /// backwards from today and future ones forwards, both on the configured interval, so the season
+    /// reads as a schedule rather than a pile of events on one date.
+    /// </summary>
+    private async Task GenerateAsync()
+    {
+        if (selectedSeasonExternalId == null) return;
+
+        busy = true;
+        done = 0;
+        results.Clear();
+        var season = seasons.First(s => s.ExternalSeasonId == selectedSeasonExternalId);
+        Log($"▶ {season.Name}: {pastMatches} played + {futureMatches} upcoming fixtures");
+
+        try
+        {
+            var opponents = opponentList
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList();
+            if (opponents.Count == 0)
+                opponents.Add("Visiting XI");
+
+            var fixtures = BuildFixtures(season, opponents);
+
+            foreach (var fixture in fixtures)
+            {
+                currentFixture = $"{homeTeam} – {fixture.Opponent}";
+                StateHasChanged();
+
+                var result = await Api.SimulateMatchAsync(new SimulateMatchRequest
+                {
+                    ExternalSeasonId = selectedSeasonExternalId!,
+                    HomeTeam = homeTeam,
+                    AwayTeam = fixture.Opponent,
+                    KickOff = fixture.KickOff,
+                    BaseTicketPrice = basePrice,
+                    TicketsToSell = fixture.Tickets,
+                    SettleAttendance = settleAttendance,
+                    GenerateDrinkOrders = generateDrinkOrders
+                });
+
+                results.Add(result);
+                done++;
+
+                Log(result.Accepted
+                    ? $"✔ {result.EventName} ({result.Status}) — {result.TicketsSold} tickets, {result.SeasonTicketsCovered} pass seats"
+                      + (result.DrinkOrders > 0 ? $", {result.DrinkOrders} drink orders €{result.DrinkRevenue:N2}" : "")
+                    : $"⚠ {fixture.Opponent}: {result.Message}");
+
+                StateHasChanged();
+            }
+
+            Log($"✅ Done — {results.Count(r => r.Accepted)}/{fixtures.Count} fixtures created");
+            await LoadSeasonsAsync();
+        }
+        catch (Exception ex)
+        {
+            Log($"⚠ Generation failed: {ex.Message}");
+        }
+        finally
+        {
+            busy = false;
+            currentFixture = "";
+        }
+    }
+
+    /// <summary>
+    /// Lays fixtures out on the calendar and decides how full each one is. Dates are clamped inside
+    /// the season's own window — a fixture outside it would belong to a different season — and
+    /// kick-offs use the times a league actually plays at.
+    /// </summary>
+    private List<(DateTime KickOff, string Opponent, int Tickets)> BuildFixtures(
+        ExternalSeasonSummaryDto season, List<string> opponents)
+    {
+        var list = new List<(DateTime, string, int)>();
+        var now = DateTime.UtcNow;
+        var seasonStart = season.StartDate.ToUniversalTime();
+        var seasonEnd = season.EndDate.ToUniversalTime();
+        var rng = new Random();
+        int[] kickOffHours = { 15, 17, 19, 20 };
+        var opponentIndex = 0;
+
+        string NextOpponent() => opponents[opponentIndex++ % opponents.Count];
+
+        // Played fixtures: backwards from the most recent slot before today. If the season has only
+        // just started there may not be room for all of them at the requested interval, so the
+        // spacing is compressed to fit rather than pushing fixtures outside the season.
+        var pastCount = Math.Max(0, pastMatches);
+        if (pastCount > 0)
+        {
+            var latestPast = now.AddDays(-1);
+            var earliest = seasonStart;
+            var availableDays = Math.Max(1, (latestPast - earliest).TotalDays);
+            var step = Math.Min(intervalDays, availableDays / pastCount);
+
+            for (var i = 0; i < pastCount; i++)
+            {
+                var date = latestPast.AddDays(-step * i);
+                if (date < earliest) date = earliest.AddDays(i * 0.5);
+                list.Add((AtKickOff(date), NextOpponent(), FillTickets(pastFillMin, pastFillMax)));
+            }
+        }
+
+        // Upcoming fixtures: forwards from the next slot, nearest first so the fill can taper.
+        var futureCount = Math.Max(0, futureMatches);
+        for (var i = 0; i < futureCount; i++)
+        {
+            var date = now.AddDays(intervalDays * (i + 1));
+            if (date > seasonEnd) date = seasonEnd.AddDays(-(futureCount - i));
+            // The nearest match has sold the most; the last one has barely opened.
+            var span = Math.Max(1, futureCount - 1);
+            var high = futureFillMax - (futureFillMax - futureFillMin) * i / span;
+            var low = Math.Max(futureFillMin, high - 8);
+            list.Add((AtKickOff(date), NextOpponent(), FillTickets((int)low, (int)high)));
+        }
+
+        return list.Select(x => (x.Item1, x.Item2, x.Item3)).ToList();
+
+        // Kick-off hours are the local times a league actually plays at, so they are built in local
+        // time and then converted — stamping them straight onto a UTC date would shift every fixture
+        // by the venue's offset and produce 22:00 kick-offs.
+        DateTime AtKickOff(DateTime day) =>
+            DateTime.SpecifyKind(day.Date.AddHours(kickOffHours[rng.Next(kickOffHours.Length)]), DateTimeKind.Local)
+                .ToUniversalTime();
+
+        // Fill is a percentage of the drawn stadium, clamped to the API's per-call ticket ceiling.
+        int FillTickets(int minPercent, int maxPercent)
+        {
+            var capacity = stadiumCapacity > 0 ? stadiumCapacity : PerFixtureTicketCap;
+            var pct = rng.Next(Math.Min(minPercent, maxPercent), Math.Max(minPercent, maxPercent) + 1);
+            return Math.Clamp(capacity * pct / 100, 1, PerFixtureTicketCap);
+        }
+    }
+
+    private void Log(string message)
+    {
+        log.Insert(0, $"[{DateTime.Now:HH:mm:ss}] {message}");
+        if (log.Count > 200) log.RemoveAt(log.Count - 1);
+    }
+}

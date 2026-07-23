@@ -295,6 +295,25 @@
 .dot-full { background: #e7444e; }
 
 /* ---- recent orders ---- */
+/* Which event the recent-orders table is scoped to (name + phase badge in the card head). */
+.dash-orders-scope {
+    display: inline-flex; align-items: center; gap: 7px;
+    min-width: 0; max-width: 62%;
+}
+.dash-orders-scope-name {
+    font-size: 12.5px; font-weight: 600; color: var(--d-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dash-orders-scope .dash-event-phase { flex: none; }
+
+/* Shown when the scoped event isn't live, so past/upcoming rows aren't read as current activity. */
+.dash-orders-note {
+    display: flex; align-items: center; gap: 6px;
+    margin: -2px 0 10px; padding: 6px 9px; border-radius: 7px;
+    background: var(--d-bg); color: var(--d-muted);
+    font-size: 12px; line-height: 1.35;
+}
+
 .dash-orders-table { width: 100%; border-collapse: collapse; }
 .dash-orders-table th {
     text-align: left; font-size: 12px; font-weight: 600; color: var(--d-faint);

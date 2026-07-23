@@ -61,6 +61,31 @@ public class DemoDataController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Generates a match-day's worth of drink orders for one event, sized and shaped by its actual
+    /// attendance (see <see cref="IDemoDataService.GenerateMatchDayDrinkSalesForEventAsync"/>). Pass
+    /// <c>?replaceExisting=true</c> to regenerate an event that already has orders.
+    /// </summary>
+    [HttpPost("event/{eventId:int}/drink-sales")]
+    public async Task<IActionResult> GenerateMatchDayDrinkSales(int eventId, [FromQuery] bool replaceExisting = false)
+    {
+        try
+        {
+            var result = await _demoDataService.GenerateMatchDayDrinkSalesForEventAsync(eventId, replaceExisting);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating match-day drink sales for event {EventId}", eventId);
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "An error occurred while generating match-day drink sales",
+                error = ex.Message
+            });
+        }
+    }
+
     [HttpPost("generate-comprehensive")]
     public async Task<IActionResult> GenerateComprehensiveDemoData()
     {

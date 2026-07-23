@@ -124,6 +124,23 @@ public class SimulatorApiClient
     }
 
     /// <summary>
+    /// Asks the API to stand up one complete fixture — event, crowd, and for a past date a played
+    /// match's attendance and drink orders. Signed like the webhook. The season generator issues one
+    /// of these per fixture rather than thousands of individual ticket webhooks.
+    /// </summary>
+    public async Task<SimulateMatchResult> SimulateMatchAsync(SimulateMatchRequest request)
+    {
+        var body = JsonSerializer.Serialize(request, Json);
+        using var content = new StringContent(body, Encoding.UTF8, "application/json");
+        using var req = new HttpRequestMessage(HttpMethod.Post, "api/integration/ticketing/simulate-match") { Content = content };
+        req.Headers.TryAddWithoutValidation("X-Signature", "sha256=" + Sign(body));
+
+        var resp = await _http.SendAsync(req);
+        var result = await resp.Content.ReadFromJsonAsync<SimulateMatchResult>(Json);
+        return result ?? new SimulateMatchResult { Accepted = false, Message = $"HTTP {(int)resp.StatusCode}" };
+    }
+
+    /// <summary>
     /// Deletes an event (and its tickets) by external id. Signed like the webhook over the raw —
     /// empty — body. Returns whether the delete succeeded plus a message for the activity log.
     /// </summary>

@@ -646,4 +646,106 @@
   <data name="Credentials_ShowShell" xml:space="preserve">
     <value>Show shell accounts</value>
   </data>
+  <data name="Layout_TabSeasonGenerator" xml:space="preserve">
+    <value>Season generator</value>
+  </data>
+  <data name="SeasonGen_PageTitle" xml:space="preserve">
+    <value>Season generator - Ticketing Simulator</value>
+  </data>
+  <data name="SeasonGen_Title" xml:space="preserve">
+    <value>Season generator</value>
+  </data>
+  <data name="SeasonGen_Intro" xml:space="preserve">
+    <value>Builds a whole season of fixtures in one run: played matches (with attendance and drink orders) and upcoming ones still selling. Each fixture is created through the same integration path a real ticketing feed uses, so existing season passes are extended to cover it.</value>
+  </data>
+  <data name="SeasonGen_NoSeasons" xml:space="preserve">
+    <value>No seasons yet. Create one on the Simulator tab first.</value>
+  </data>
+  <data name="SeasonGen_SeasonLabel" xml:space="preserve">
+    <value>Season</value>
+  </data>
+  <data name="SeasonGen_SeasonHint" xml:space="preserve">
+    <value>Fixtures are added to this season; season passes extend to each new match.</value>
+  </data>
+  <data name="SeasonGen_EventsWord" xml:space="preserve">
+    <value>events</value>
+  </data>
+  <data name="SeasonGen_PassesWord" xml:space="preserve">
+    <value>passes</value>
+  </data>
+  <data name="SeasonGen_PastLabel" xml:space="preserve">
+    <value>Played matches</value>
+  </data>
+  <data name="SeasonGen_FutureLabel" xml:space="preserve">
+    <value>Upcoming matches</value>
+  </data>
+  <data name="SeasonGen_PriceLabel" xml:space="preserve">
+    <value>Base price (EUR)</value>
+  </data>
+  <data name="SeasonGen_IntervalLabel" xml:space="preserve">
+    <value>Days apart</value>
+  </data>
+  <data name="SeasonGen_HomeLabel" xml:space="preserve">
+    <value>Home team</value>
+  </data>
+  <data name="SeasonGen_OpponentsLabel" xml:space="preserve">
+    <value>Opponents</value>
+  </data>
+  <data name="SeasonGen_OpponentsHint" xml:space="preserve">
+    <value>Comma-separated; used in order and reused if there are more fixtures than names.</value>
+  </data>
+  <data name="SeasonGen_PastFillLabel" xml:space="preserve">
+    <value>Played match attendance</value>
+  </data>
+  <data name="SeasonGen_FutureFillLabel" xml:space="preserve">
+    <value>Upcoming match sales</value>
+  </data>
+  <data name="SeasonGen_FutureFillHint" xml:space="preserve">
+    <value>Applied nearest-first, so the next match has sold the most.</value>
+  </data>
+  <data name="SeasonGen_CapacityNote" xml:space="preserve">
+    <value>stadium holds {0}</value>
+  </data>
+  <data name="SeasonGen_CapWarning" xml:space="preserve">
+    <value>fill exceeds free seats — fixtures will sell out at {0}</value>
+  </data>
+  <data name="SeasonGen_DrinkOrdersLabel" xml:space="preserve">
+    <value>Generate drink orders for played matches</value>
+  </data>
+  <data name="SeasonGen_AttendanceLabel" xml:space="preserve">
+    <value>Settle attendance (attended / no-show / refunded)</value>
+  </data>
+  <data name="SeasonGen_GenerateButton" xml:space="preserve">
+    <value>Generate {0} fixtures</value>
+  </data>
+  <data name="SeasonGen_Progress" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="SeasonGen_SummaryTitle" xml:space="preserve">
+    <value>Result:</value>
+  </data>
+  <data name="SeasonGen_SummaryLine" xml:space="preserve">
+    <value>{0} fixtures · {1} tickets sold · {2} season-pass seats · {3} drink orders (EUR {4})</value>
+  </data>
+  <data name="SeasonGen_ColFixture" xml:space="preserve">
+    <value>Fixture</value>
+  </data>
+  <data name="SeasonGen_ColKickOff" xml:space="preserve">
+    <value>Kick-off</value>
+  </data>
+  <data name="SeasonGen_ColStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="SeasonGen_ColTickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="SeasonGen_ColPasses" xml:space="preserve">
+    <value>Pass seats</value>
+  </data>
+  <data name="SeasonGen_ColAttended" xml:space="preserve">
+    <value>Attended</value>
+  </data>
+  <data name="SeasonGen_ColOrders" xml:space="preserve">
+    <value>Drink orders</value>
+  </data>
 </root>

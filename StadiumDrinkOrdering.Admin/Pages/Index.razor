@@ -170,7 +170,24 @@
             <div class="dash-card dash-orders-card" id="admin-dashboard-orders-card">
                 <div class="dash-card-head">
                     <h2 class="dash-card-title">@L["Index_RecentOrders"]</h2>
+                    @* The table is event-scoped, never "live only" — name the event so rows from a
+                       finished or upcoming event can't be mistaken for current activity. *@
+                    @if (_selectedEvent != null)
+                    {
+                        <span class="dash-orders-scope" id="admin-dashboard-orders-scope" title="@L["Index_OrdersScopeTitle"]">
+                            <span class="dash-orders-scope-name">@_selectedEvent.Name</span>
+                            <span class="dash-event-phase phase-@GetPhaseModifier(_selectedEvent.Phase)">
+                                <i class="dot"></i>@_selectedEvent.StatusName
+                            </span>
+                        </span>
+                    }
                 </div>
+                @if (_selectedEvent != null && !SelectedEventIsLive && _recentOrders.Count > 0)
+                {
+                    <div class="dash-orders-note" id="admin-dashboard-orders-note">
+                        <i class="bi bi-info-circle"></i> @L["Index_OrdersNoLiveEventNote"]
+                    </div>
+                }
                 <table class="dash-orders-table">
                     <thead>
                         <tr><th class="sortable @(sortState.IsSorted("id") ? "is-sorted" : "")" @onclick='() => SortBy("id")'>@L["Index_HeaderID"]<span class="sort-ind">@sortState.Indicator("id")</span></th><th class="sortable @(sortState.IsSorted("seat") ? "is-sorted" : "")" @onclick='() => SortBy("seat")'>@L["Index_HeaderSeat"]<span class="sort-ind">@sortState.Indicator("seat")</span></th><th class="sortable @(sortState.IsSorted("amount") ? "is-sorted" : "")" @onclick='() => SortBy("amount")'>@L["Index_HeaderAmount"]<span class="sort-ind">@sortState.Indicator("amount")</span></th><th class="sortable @(sortState.IsSorted("status") ? "is-sorted" : "")" @onclick='() => SortBy("status")'>@L["Index_HeaderStatus"]<span class="sort-ind">@sortState.Indicator("status")</span></th></tr>

@@ -49,7 +49,42 @@ public interface IDemoDataService
     /// for an event that already has non-cancelled orders, so re-running never doubles up.
     /// </summary>
     Task<VariedSalesSeedResult> GenerateVariedPerEventSalesAsync(int? seasonId = null);
+
+    /// <summary>
+    /// Generates a match-day's worth of drink orders for ONE event, modelled on how a real crowd
+    /// actually buys rather than a flat random count (which is what
+    /// <see cref="GenerateDrinkSalesForCompletedEventsAsync"/> does for bulk seeding):
+    /// <list type="bullet">
+    /// <item>volume scales with the seats actually occupied — roughly a third of attendees buy,
+    /// and some of those come back for a second round;</item>
+    /// <item>orders are placed from real occupied seats and attributed to the ticket holder's
+    /// account when one exists;</item>
+    /// <item>timing follows a match profile — a build-up, a large half-time spike, then a tail —
+    /// instead of being spread evenly over the whole window;</item>
+    /// <item>baskets are beer-led and small, the way in-seat delivery orders are;</item>
+    /// <item>outcomes are terminal (the match is over) but not uniformly happy: a few orders were
+    /// cancelled or failed to reach the fan.</item>
+    /// </list>
+    /// Refuses an event that already has orders unless <paramref name="replaceExisting"/> is set,
+    /// in which case its existing orders are removed first so figures never silently double.
+    /// </summary>
+    Task<EventDrinkSalesResult> GenerateMatchDayDrinkSalesForEventAsync(int eventId, bool replaceExisting = false);
 }
+
+/// <summary>Outcome of generating a match-day's drink orders for a single event.</summary>
+public record EventDrinkSalesResult(
+    bool Success,
+    string Message,
+    int EventId = 0,
+    string EventName = "",
+    int Attendance = 0,
+    int Orders = 0,
+    int LineItems = 0,
+    int DrinksSold = 0,
+    decimal Revenue = 0m,
+    int Delivered = 0,
+    int Cancelled = 0,
+    int DeliveryFailed = 0);
 
 /// <summary>Outcome of seeding the GNK Dinamo 2025/26 home-fixture sample.</summary>
 public record DinamoSeasonSeedResult(
@@ -1078,6 +1113,286 @@ public class DemoDataService : IDemoDataService
             return 0;
         }
     }
+
+    // ---- Match-day drink sales for one event ----------------------------------------------------
+
+    /// <summary>Marks orders produced by the match-day generator, so a re-run can recognise them.</summary>
+    private const string MatchDaySalesNote = "Match-day simulated drink order";
+
+    /// <summary>
+    /// Share of attending fans who order at least one drink to their seat, and the share of those
+    /// buyers who come back for a second round. In-seat delivery is a minority behaviour even at a
+    /// busy match — most of the crowd either uses the concourse or doesn't drink.
+    /// </summary>
+    private const double BuyerShare = 0.34;
+    private const double SecondRoundShare = 0.22;
+
+    /// <summary>
+    /// When during the match orders land, as (fromMinute, toMinute, weight) after kick-off. Half-time
+    /// is the spike every stadium bar plans for; the rest builds up to it and tails off after.
+    /// </summary>
+    private static readonly (int From, int To, int Weight)[] MatchDayProfile =
+    {
+        (0, 15, 18),    // early arrivals settling in
+        (15, 45, 22),   // first half
+        (45, 60, 35),   // half-time rush
+        (60, 90, 20),   // second half
+        (90, 115, 5)    // final stretch / full time
+    };
+
+    /// <summary>
+    /// Relative popularity by drink category at a football match. Keyed by category name so a newly
+    /// added drink inherits its category's weight; anything uncategorised gets a small share rather
+    /// than being excluded.
+    /// </summary>
+    private static readonly Dictionary<string, int> CategoryPopularity = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Beer"] = 40,
+        ["SoftDrink"] = 20,
+        ["Water"] = 15,
+        ["Juice"] = 8,
+        ["EnergyDrink"] = 7,
+        ["Coffee"] = 6,
+        ["Tea"] = 4
+    };
+    private const int DefaultCategoryPopularity = 5;
+
+    public async Task<EventDrinkSalesResult> GenerateMatchDayDrinkSalesForEventAsync(int eventId, bool replaceExisting = false)
+    {
+        try
+        {
+            var evt = await _context.Events.FirstOrDefaultAsync(e => e.Id == eventId);
+            if (evt == null)
+                return new EventDrinkSalesResult(false, $"Event {eventId} not found");
+
+            var existing = await _context.Orders.Where(o => o.EventId == eventId).ToListAsync();
+            if (existing.Count > 0)
+            {
+                if (!replaceExisting)
+                {
+                    return new EventDrinkSalesResult(false,
+                        $"Event {eventId} already has {existing.Count} order(s). Pass replaceExisting to regenerate.",
+                        eventId, evt.EventName);
+                }
+
+                var staleIds = existing.Select(o => o.Id).ToList();
+                _context.OrderItems.RemoveRange(
+                    await _context.OrderItems.Where(i => staleIds.Contains(i.OrderId)).ToListAsync());
+                _context.Orders.RemoveRange(existing);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Removed {Count} existing orders for event {EventId} before regenerating",
+                    existing.Count, eventId);
+            }
+
+            var drinks = await _context.Drinks
+                .Include(d => d.Category)
+                .Where(d => d.IsAvailable)
+                .ToListAsync();
+            if (drinks.Count == 0)
+                return new EventDrinkSalesResult(false, "No available drinks to sell", eventId, evt.EventName);
+
+            // The crowd: seats actually occupied for this match (season-derived tickets included —
+            // a pass holder buys drinks like anyone else).
+            var attendees = await _context.Tickets
+                .AsNoTracking()
+                .Where(t => t.EventId == eventId && t.Status != TicketStatuses.Cancelled)
+                .Select(t => new
+                {
+                    t.TicketNumber,
+                    t.SeatId,
+                    t.CustomerEmail,
+                    Row = t.Seat != null ? t.Seat.RowNumber : 0,
+                    Number = t.Seat != null ? t.Seat.SeatNumber : 0
+                })
+                .ToListAsync();
+
+            if (attendees.Count == 0)
+                return new EventDrinkSalesResult(false, "Event has no attendees to order drinks", eventId, evt.EventName);
+
+            // Orders carry a customer FK. Match the ticket holder's account by email where we have one;
+            // otherwise the order is attributed to some customer account (a walk-up buying at the seat).
+            // Grouped rather than keyed directly: nothing guarantees one account per email address,
+            // and a duplicate would otherwise throw here instead of just picking the first match.
+            var customersByEmail = (await _context.Users
+                    .Where(u => u.Role == UserRole.Customer)
+                    .Select(u => new { u.Email, u.Id })
+                    .ToListAsync())
+                .GroupBy(u => u.Email, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.First().Id, StringComparer.OrdinalIgnoreCase);
+            var customerIds = customersByEmail.Values.ToList();
+            if (customerIds.Count == 0)
+                customerIds = await _context.Users.Select(u => u.Id).ToListAsync();
+            if (customerIds.Count == 0)
+                return new EventDrinkSalesResult(false, "No user to attribute orders to", eventId, evt.EventName);
+
+            // The match window: kick-off to full time, clamped inside the event's own window so no
+            // order is ever timestamped outside the event it belongs to.
+            var kickOff = DateTime.SpecifyKind(evt.EventDate, DateTimeKind.Utc);
+            var windowEnd = DateTime.SpecifyKind(evt.EventEndDate ?? evt.EventDate.AddHours(2), DateTimeKind.Utc);
+            var matchMinutes = Math.Min(115, Math.Max(1, (windowEnd - kickOff).TotalMinutes));
+            var profileScale = matchMinutes / 115.0;
+
+            // Who buys, and who comes back for a second round.
+            var buyerCount = Math.Max(1, (int)Math.Round(attendees.Count * BuyerShare));
+            var buyers = attendees.OrderBy(_ => Random.Shared.Next()).Take(buyerCount).ToList();
+            var repeatCount = (int)Math.Round(buyerCount * SecondRoundShare);
+            var orderSeats = buyers
+                .Concat(buyers.OrderBy(_ => Random.Shared.Next()).Take(repeatCount))
+                .ToList();
+
+            var drinkWeights = drinks
+                .Select(d => CategoryPopularity.GetValueOrDefault(d.Category?.Name ?? "", DefaultCategoryPopularity))
+                .ToArray();
+
+            var orders = new List<Order>();
+            var items = new List<OrderItem>();
+            int delivered = 0, cancelled = 0, deliveryFailed = 0, drinksSold = 0;
+            decimal revenue = 0m;
+
+            for (var i = 0; i < orderSeats.Count; i++)
+            {
+                var seat = orderSeats[i];
+                var placedAt = kickOff.AddMinutes(PickMatchMinute() * profileScale);
+
+                var order = new Order
+                {
+                    EventId = eventId,
+                    SeatId = seat.SeatId,
+                    CustomerId = ResolveCustomerId(seat.CustomerEmail),
+                    TicketNumber = Truncate(seat.TicketNumber, 50),
+                    SeatNumber = Truncate($"R{seat.Row}S{seat.Number}", 10),
+                    TotalAmount = 0, // priced once its items exist
+                    Status = OrderStatus.Delivered,
+                    CreatedAt = placedAt,
+                    Notes = MatchDaySalesNote
+                };
+
+                // A finished match leaves no order mid-flight: each one either reached the fan, was
+                // cancelled, or came back to the bar as a failed delivery.
+                var outcome = Random.Shared.Next(100);
+                if (outcome < 4)
+                {
+                    order.Status = OrderStatus.Cancelled;
+                    order.AcceptedAt = placedAt.AddMinutes(Random.Shared.Next(1, 3));
+                    order.CancelledAt = placedAt.AddMinutes(Random.Shared.Next(3, 9));
+                    cancelled++;
+                }
+                else if (outcome < 7)
+                {
+                    order.Status = OrderStatus.DeliveryFailed;
+                    order.AcceptedAt = placedAt.AddMinutes(Random.Shared.Next(1, 3));
+                    order.InPreparationAt = placedAt.AddMinutes(Random.Shared.Next(3, 6));
+                    order.PreparedAt = placedAt.AddMinutes(Random.Shared.Next(6, 10));
+                    order.DeliveryAttempts = Random.Shared.Next(1, 3);
+                    order.LastDeliveryAttemptAt = placedAt.AddMinutes(Random.Shared.Next(10, 20));
+                    order.LastDeliveryFailureReason = Random.Shared.Next(10) < 7
+                        ? DeliveryFailureReason.CustomerNotAtSeat
+                        : DeliveryFailureReason.CustomerRefused;
+                    deliveryFailed++;
+                }
+                else
+                {
+                    order.AcceptedAt = placedAt.AddMinutes(Random.Shared.Next(1, 3));
+                    order.InPreparationAt = placedAt.AddMinutes(Random.Shared.Next(3, 6));
+                    order.PreparedAt = placedAt.AddMinutes(Random.Shared.Next(6, 11));
+                    order.DeliveredAt = placedAt.AddMinutes(Random.Shared.Next(11, 22));
+                    order.ActualDeliveryTime = order.DeliveredAt;
+                    delivered++;
+                }
+
+                orders.Add(order);
+            }
+
+            _context.Orders.AddRange(orders);
+            await _context.SaveChangesAsync(); // assigns order ids
+
+            foreach (var order in orders)
+            {
+                // In-seat baskets are small: usually one line, sometimes a couple for the row.
+                var lineCount = WeightedPick(new[] { 1, 2, 3 }, new[] { 55, 32, 13 });
+                var chosen = new HashSet<int>();
+                decimal orderTotal = 0m;
+
+                for (var line = 0; line < lineCount; line++)
+                {
+                    var drink = drinks[WeightedIndex(drinkWeights)];
+                    if (!chosen.Add(drink.Id))
+                        continue; // same drink twice in one basket is just a bigger quantity
+
+                    var quantity = WeightedPick(new[] { 1, 2, 3, 4 }, new[] { 45, 35, 14, 6 });
+                    var lineTotal = drink.Price * quantity;
+                    orderTotal += lineTotal;
+                    drinksSold += quantity;
+
+                    items.Add(new OrderItem
+                    {
+                        OrderId = order.Id,
+                        DrinkId = drink.Id,
+                        Quantity = quantity,
+                        UnitPrice = drink.Price,
+                        TotalPrice = lineTotal
+                    });
+                }
+
+                order.TotalAmount = orderTotal;
+                // Cancelled orders never became revenue; the statistics already exclude them, but keep
+                // the running total here honest too.
+                if (order.Status != OrderStatus.Cancelled)
+                    revenue += orderTotal;
+            }
+
+            _context.OrderItems.AddRange(items);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Generated {Orders} match-day drink orders ({Items} lines, {Drinks} drinks, {Revenue:C}) for event {EventId}",
+                orders.Count, items.Count, drinksSold, revenue, eventId);
+
+            return new EventDrinkSalesResult(true, "Match-day drink sales generated",
+                eventId, evt.EventName, attendees.Count, orders.Count, items.Count, drinksSold,
+                revenue, delivered, cancelled, deliveryFailed);
+
+            int ResolveCustomerId(string? email) =>
+                email != null && customersByEmail.TryGetValue(email, out var id)
+                    ? id
+                    : customerIds[Random.Shared.Next(customerIds.Count)];
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating match-day drink sales for event {EventId}", eventId);
+            return new EventDrinkSalesResult(false, $"Error: {ex.Message}", eventId);
+        }
+    }
+
+    /// <summary>Picks a minute after kick-off from <see cref="MatchDayProfile"/>.</summary>
+    private static double PickMatchMinute()
+    {
+        var segment = MatchDayProfile[WeightedIndex(MatchDayProfile.Select(s => s.Weight).ToArray())];
+        return segment.From + Random.Shared.NextDouble() * (segment.To - segment.From);
+    }
+
+    /// <summary>Index into <paramref name="weights"/>, chosen proportionally to the weights.</summary>
+    private static int WeightedIndex(int[] weights)
+    {
+        var total = weights.Sum();
+        if (total <= 0)
+            return Random.Shared.Next(weights.Length);
+
+        var roll = Random.Shared.Next(total);
+        for (var i = 0; i < weights.Length; i++)
+        {
+            roll -= weights[i];
+            if (roll < 0)
+                return i;
+        }
+        return weights.Length - 1;
+    }
+
+    /// <summary>Weighted pick from a small set of values.</summary>
+    private static T WeightedPick<T>(T[] values, int[] weights) => values[WeightedIndex(weights)];
+
+    private static string Truncate(string? value, int max) =>
+        string.IsNullOrEmpty(value) ? "" : value.Length <= max ? value : value[..max];
 
     // Marks tickets/orders this generator creates so re-runs can recognise (and skip) them.
     private const string VariedSalesSource = "DemoVariedSales";

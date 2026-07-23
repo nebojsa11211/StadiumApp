@@ -208,8 +208,8 @@
 
     private static string GetSectionInfo(OrderDto order)
     {
-        if (order.Seat?.Section != null)
-            return order.Seat.Section.SectionName;
+        if (!string.IsNullOrWhiteSpace(order.Seat?.SectionName))
+            return order.Seat!.SectionName!;
 
         if (string.IsNullOrEmpty(order.SeatNumber)) return "";
         var parts = order.SeatNumber.Split('-');
@@ -223,7 +223,7 @@
         if (!string.IsNullOrWhiteSpace(order.SeatPath))
             return order.SeatPath;
 
-        if (order.Seat?.Section != null)
+        if (order.Seat != null)
             return Localizer["OrderModal_RowSeat", order.Seat.RowNumber, order.Seat.SeatNumber].Value;
 
         return order.SeatNumber;

@@ -12,6 +12,8 @@
     --pitch: #1f7a4d;
     --pitch-dark: #176239;
     --pitch-soft: #eaf3ec;
+    --delivered: #6d28d9;
+    --delivered-dark: #5b21b6;
     width: 100%;
     color: var(--ink);
 }
@@ -310,7 +312,7 @@
 .stat-bar__seg.is-accepted,
 .stat-bar__seg.is-preparing { background: var(--stadium-info); }
 .stat-bar__seg.is-ready { background: var(--pitch); }
-.stat-bar__seg.is-delivered { background: var(--stadium-gray-400); }
+.stat-bar__seg.is-delivered { background: var(--delivered); }
 .stat-bar__seg.is-cancelled { background: var(--stadium-danger); }
 
 .stat-legend {
@@ -563,8 +565,8 @@ select.field__input { cursor: pointer; }
 .status.is-preparing .status__dot { background: var(--stadium-info); }
 .status.is-ready { color: var(--pitch-dark); }
 .status.is-ready .status__dot { background: var(--pitch); }
-.status.is-delivered { color: var(--stadium-gray-500); }
-.status.is-delivered .status__dot { background: var(--stadium-gray-400); }
+.status.is-delivered { color: var(--delivered-dark); }
+.status.is-delivered .status__dot { background: var(--delivered); }
 .status.is-cancelled { color: #991b1b; }
 .status.is-cancelled .status__dot { background: var(--stadium-danger); }
 

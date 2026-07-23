@@ -175,10 +175,10 @@
 
             // Learn code → name from structured orders FIRST, so legacy seats in this same batch can
             // be normalized against it when their sector is resolved below.
-            foreach (var section in orders.Select(o => o.Seat?.Section).Where(s => s != null))
+            foreach (var seat in orders.Select(o => o.Seat).Where(s => s != null))
             {
-                if (!string.IsNullOrWhiteSpace(section!.SectionCode) && !string.IsNullOrWhiteSpace(section.SectionName))
-                    sectorNames[section.SectionCode.Trim()] = section.SectionName.Trim();
+                if (!string.IsNullOrWhiteSpace(seat!.SectionCode) && !string.IsNullOrWhiteSpace(seat.SectionName))
+                    sectorNames[seat.SectionCode!.Trim()] = seat.SectionName!.Trim();
             }
             ReconcileSectorNames();
 
@@ -281,7 +281,7 @@
 
     private string SectorOf(OrderDto o)
     {
-        var section = o.Seat?.Section?.SectionName;
+        var section = o.Seat?.SectionName;
         if (!string.IsNullOrWhiteSpace(section))
             return section!.Trim();
 

@@ -10,6 +10,12 @@ public interface IEventService
     Task<IEnumerable<Event>> GetEventsAsync(bool activeOnly = false);
     Task<Dictionary<int, int>> GetSoldSeatCountsAsync(IEnumerable<int> eventIds);
     Task<Dictionary<int, int>> GetSeasonSoldSeatCountsAsync(IEnumerable<int> eventIds);
+    /// <summary>
+    /// Realised takings per event — tickets and drinks — for a set of events, computed the same way
+    /// as <see cref="GetEventStatisticsAsync"/> (cancelled tickets and orders excluded). Events with
+    /// neither tickets nor orders are absent from the dictionary.
+    /// </summary>
+    Task<Dictionary<int, EventRevenueSummary>> GetRevenueSummariesAsync(IEnumerable<int> eventIds);
     Task<Event?> GetEventByIdAsync(int id);
     Task<Event> CreateEventAsync(Event eventItem);
     Task<Event?> UpdateEventAsync(int id, Event eventItem);
@@ -128,6 +134,17 @@ public class EventStatusTransitionResult
         new() { Success = false, ErrorMessage = message, PreviousStatus = from };
 }
 
+/// <summary>
+/// Realised takings for one event, all excluding cancelled records: direct ticket sales, this
+/// event's amortized share of the season passes covering it, and drink sales. The batched
+/// counterpart of the revenue figures in <see cref="EventStatisticsDto"/>.
+/// </summary>
+public record EventRevenueSummary(
+    decimal TicketRevenue,
+    decimal SeasonTicketRevenue,
+    int DrinkOrders,
+    decimal DrinksRevenue);
+
 public class EventService : IEventService
 {
     private readonly ApplicationDbContext _context;
@@ -218,6 +235,95 @@ public class EventService : IEventService
             .GroupBy(t => t.EventId)
             .Select(g => new { EventId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.EventId, x => x.Count);
+    }
+
+    /// <summary>
+    /// Two grouped aggregates (tickets, orders) for the whole set, so an events list can show each
+    /// finished event's result without a per-card statistics call.
+    /// </summary>
+    public async Task<Dictionary<int, EventRevenueSummary>> GetRevenueSummariesAsync(IEnumerable<int> eventIds)
+    {
+        var ids = eventIds.Distinct().ToList();
+        if (ids.Count == 0)
+            return new Dictionary<int, EventRevenueSummary>();
+
+        var ticketRevenue = await _context.Tickets
+            .AsNoTracking()
+            .Where(t => ids.Contains(t.EventId)
+                        && t.Status != TicketStatuses.Cancelled)
+            .GroupBy(t => t.EventId)
+            .Select(g => new { EventId = g.Key, Revenue = g.Sum(t => t.Price) })
+            .ToDictionaryAsync(x => x.EventId, x => x.Revenue);
+
+        var drinkTotals = await _context.Orders
+            .AsNoTracking()
+            .Where(o => o.EventId != null
+                        && ids.Contains(o.EventId.Value)
+                        && o.Status != OrderStatus.Cancelled)
+            .GroupBy(o => o.EventId!.Value)
+            .Select(g => new { EventId = g.Key, Orders = g.Count(), Revenue = g.Sum(o => o.TotalAmount) })
+            .ToDictionaryAsync(x => x.EventId, x => new { x.Orders, x.Revenue });
+
+        var seasonRevenue = await GetAmortizedSeasonRevenueAsync(ids);
+
+        // An event appears here if it produced anything at all — direct ticket sales, a season-pass
+        // share, or drink orders — so no source of takings can silently drop an event.
+        return ids
+            .Where(id => ticketRevenue.ContainsKey(id) || seasonRevenue.ContainsKey(id) || drinkTotals.ContainsKey(id))
+            .ToDictionary(
+                id => id,
+                id => new EventRevenueSummary(
+                    ticketRevenue.GetValueOrDefault(id),
+                    seasonRevenue.GetValueOrDefault(id),
+                    drinkTotals.GetValueOrDefault(id)?.Orders ?? 0,
+                    drinkTotals.GetValueOrDefault(id)?.Revenue ?? 0m));
+    }
+
+    /// <summary>
+    /// Season-pass takings attributed to each of <paramref name="eventIds"/>.
+    ///
+    /// A pass is bought once for a whole season, but its per-event access tickets are deliberately
+    /// priced at 0 so the pass money is not counted once per match (see the ingestion service). That
+    /// makes a season-ticketed match look like it took almost nothing next to a walk-up one. This
+    /// splits each non-cancelled pass's price evenly across the events it actually grants access to —
+    /// its non-cancelled derived tickets — and gives every event the shares of the passes covering it.
+    ///
+    /// The split is over the pass's real coverage rather than the season's event count, so a pass
+    /// issued mid-season (or one whose event was later cancelled) is spread over the matches it can
+    /// be used for, and the shares of a pass always add back up to exactly its price.
+    /// </summary>
+    private async Task<Dictionary<int, decimal>> GetAmortizedSeasonRevenueAsync(List<int> ids)
+    {
+        if (ids.Count == 0)
+            return new Dictionary<int, decimal>();
+
+        // How many events each pass grants access to. Computed across ALL events, not just the ones
+        // asked about: the divisor is the pass's whole season, however much of it is on this page.
+        var coverage = _context.Tickets
+            .AsNoTracking()
+            .Where(t => t.Kind == TicketKind.Season
+                        && t.SeasonTicketId != null
+                        && t.Status != TicketStatuses.Cancelled)
+            .GroupBy(t => t.SeasonTicketId!.Value)
+            .Select(g => new { PassId = g.Key, Events = g.Count() });
+
+        var query =
+            from t in _context.Tickets.AsNoTracking()
+            where ids.Contains(t.EventId)
+                  && t.Kind == TicketKind.Season
+                  && t.SeasonTicketId != null
+                  && t.Status != TicketStatuses.Cancelled
+            join pass in _context.SeasonTickets.AsNoTracking()
+                             .Where(p => p.Status != TicketStatuses.Cancelled)
+                on t.SeasonTicketId!.Value equals pass.Id
+            join c in coverage on pass.Id equals c.PassId
+            group pass.Price / c.Events by t.EventId into g
+            select new { EventId = g.Key, Revenue = g.Sum() };
+
+        var byEvent = await query.ToDictionaryAsync(x => x.EventId, x => x.Revenue);
+
+        // Dividing a price by its coverage leaves long fractions; money is shown to the cent.
+        return byEvent.ToDictionary(x => x.Key, x => Math.Round(x.Value, 2));
     }
 
     public async Task<Event?> GetEventByIdAsync(int id)
@@ -874,6 +980,11 @@ public class EventService : IEventService
         var seasonTicketsSold = tickets.Count(t => t.Kind == TicketKind.Season);
         var ticketRevenue = tickets.Sum(t => t.Price);
 
+        // Season passes are priced on the pass, not the match, so this event's share of them is
+        // amortized in — exactly as the events grid does, so the two never disagree.
+        var seasonTicketRevenue = (await GetAmortizedSeasonRevenueAsync(new List<int> { id }))
+            .GetValueOrDefault(id);
+
         // Physical capacity = sum of drawn overlay sectors' seats (mirrors ITicketIngestionService).
         var overlays = await _context.StadiumSectorOverlays
             .AsNoTracking()
@@ -914,12 +1025,13 @@ public class EventService : IEventService
             TotalCapacity = totalCapacity,
             OccupancyPercent = occupancyPercent,
             TicketRevenue = ticketRevenue,
+            SeasonTicketRevenue = seasonTicketRevenue,
             TotalOrders = totalOrders,
             TotalDrinksSold = totalDrinksSold,
             DrinksRevenue = drinksRevenue,
             AverageOrderValue = averageOrderValue,
             MostPopularDrink = mostPopularDrink,
-            TotalRevenue = ticketRevenue + drinksRevenue,
+            TotalRevenue = ticketRevenue + seasonTicketRevenue + drinksRevenue,
             CalculatedAt = DateTime.UtcNow
         };
     }

@@ -126,6 +126,14 @@ public class Venue
     [StringLength(150)]
     public string? EmailFromName { get; set; }
 
+    /// <summary>
+    /// True once an admin has dismissed the first-run setup banner. Stored on the singleton venue
+    /// row (rather than a separate settings table) since the venue already is this installation's
+    /// singleton. The banner also stops showing on its own once setup is actually complete; this
+    /// flag lets the admin silence it earlier.
+    /// </summary>
+    public bool SetupDismissed { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 

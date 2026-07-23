@@ -272,11 +272,16 @@ public partial class Index : ComponentBase, IDisposable
         return ordered[^1]; // most recent past (list is ordered ascending by date)
     }
 
+    /// <summary>True when the selected event is actually in progress (drives the "not live" note).</summary>
+    private bool SelectedEventIsLive => _selectedEvent?.Phase == EventPhase.Active;
+
     /// <summary>Recomputes all scoped metrics for the selected event from the loaded order set.</summary>
     private void ApplyEventScope()
     {
+        // No event selected means nothing is in scope. Falling back to every order here used to
+        // mix orders from all events together while the empty state still said "select an event".
         var scoped = _selectedEvent == null
-            ? _allOrders
+            ? new List<OrderDto>()
             : _allOrders.Where(o => o.EventId == _selectedEvent.Id).ToList();
 
         _activeDrinkOrders = scoped.Count(o =>

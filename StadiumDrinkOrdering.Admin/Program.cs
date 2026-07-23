@@ -190,6 +190,9 @@ builder.Services.AddScoped<SeasonStateService>();
 // Tracks the live (game-day) event so the shell can show a read-only event bar on every page.
 builder.Services.AddScoped<LiveEventService>();
 
+// First-run setup readiness, backing the setup banner in DashboardLayout and the /admin/setup page.
+builder.Services.AddScoped<SetupStatusService>();
+
 Console.WriteLine("✅ Registered specialized Admin API services:");
 Console.WriteLine("   - OrderService: Order management operations");
 Console.WriteLine("   - UserService: User management operations");

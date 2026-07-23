@@ -1145,7 +1145,10 @@
                 ExternalSeasonTicketId = extId,
                 ExternalSeasonId = selectedSeasonExternalId!,
                 SectionCode = sectorCode,
-                Price = 0m, // price isn't relevant to the simulator — we only care which seats a pass occupies
+                // The venue configures a season-pass price per sector; quote it so the pass carries
+                // real money. It is amortized across the season's matches on the receiving side, so
+                // a pass sold at 0 would make every match it covers report no season takings.
+                Price = SeasonPassPriceFor(sectorCode),
                 HolderName = Names[_rng.Next(Names.Length)],
                 HolderOib = RandomOib(),
                 SoldAt = DateTime.UtcNow
@@ -1168,6 +1171,22 @@
             Log($"⚠ Season ticket error: {ex.Message}");
             return null;
         }
+    }
+
+    /// <summary>
+    /// What a season pass for this sector sells for: the price the venue configured on the sector
+    /// (stadium drawing tool). Falls back to the sector's single-event price × a nominal 10-match
+    /// season when no season price is set, so a pass never goes out worth nothing — and to 0 only
+    /// when the sector carries no price at all.
+    /// </summary>
+    private decimal SeasonPassPriceFor(string sectorCode)
+    {
+        var sector = sections.FirstOrDefault(s => s.SectionCode == sectorCode);
+        if (sector?.SeasonTicketPrice is decimal configured && configured > 0)
+            return configured;
+        if (sector?.Price is decimal single && single > 0)
+            return decimal.Round(single * 10m, 2);
+        return 0m;
     }
 
     /// <summary>Picks a sector at random, weighted by capacity, so bulk passes spread realistically.</summary>

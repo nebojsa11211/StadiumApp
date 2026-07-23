@@ -345,6 +345,7 @@ builder.Services.AddScoped<IStadiumStructureService, StadiumStructureService>();
 builder.Services.AddScoped<ISeatMappingService, SeatMappingService>();
 builder.Services.AddScoped<IOverlaySeatService, OverlaySeatService>();
 builder.Services.AddScoped<ITicketIngestionService, TicketIngestionService>();
+builder.Services.AddScoped<IMatchSimulationService, MatchSimulationService>();
 builder.Services.AddScoped<ILoggingService, LoggingService>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<ITicketAuthService, TicketAuthService>();
@@ -553,6 +554,19 @@ using (var scope = app.Services.CreateScope())
     {
         logger.LogCritical(ex, "Database initialization failed - starting in a degraded state");
     }
+
+    // One-time (idempotent) cleanup: ensure every existing fixture's away team appears in the Teams
+    // directory and is linked to it. Fixtures created before the directory auto-created entries only
+    // stored the opponent as a free-text name, so the Teams page showed nothing. This heals them on
+    // the next boot; after the first run its WHERE filter matches ~0 rows, so the cost is negligible.
+    try
+    {
+        await BackfillAwayTeamsAsync(context, logger);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Away-team directory backfill failed; the Teams page may be missing entries");
+    }
 }
 
 
@@ -664,6 +678,55 @@ static bool IsTcpPortOpen(string host, int port, TimeSpan timeout)
 }
 
 // Database initialization method - FIXED VERSION
+// Ensures every fixture that names an away team has a matching Teams-directory entry and is linked
+// to it. Idempotent and cheap: only fixtures with an away-team name but no link are considered, and
+// opponents that share a name collapse to a single directory entry.
+static async Task BackfillAwayTeamsAsync(ApplicationDbContext context, ILogger logger)
+{
+    var events = await context.Events
+        .Where(e => e.AwayTeam != null && e.AwayTeamId == null)
+        .ToListAsync();
+
+    if (events.Count == 0)
+        return;
+
+    var createdTeams = 0;
+    // Keyed by normalized name so N fixtures naming the same opponent create one Team, not N.
+    var byKey = new Dictionary<string, StadiumDrinkOrdering.Shared.Models.Team>();
+
+    foreach (var evt in events)
+    {
+        var key = StadiumDrinkOrdering.Shared.Models.Team.Normalize(evt.AwayTeam);
+        if (key == null)
+            continue;
+
+        if (!byKey.TryGetValue(key, out var team))
+        {
+            team = await context.Teams.FirstOrDefaultAsync(t => t.NormalizedName == key);
+            if (team == null)
+            {
+                team = new StadiumDrinkOrdering.Shared.Models.Team
+                {
+                    NormalizedName = key,
+                    Name = evt.AwayTeam!.Trim(),
+                    CreatedAt = DateTime.UtcNow
+                };
+                context.Teams.Add(team);
+                createdTeams++;
+            }
+            byKey[key] = team;
+        }
+
+        // Set the navigation so a not-yet-saved Team's Id is fixed onto the event on SaveChanges.
+        evt.AwayTeamProfile = team;
+    }
+
+    await context.SaveChangesAsync();
+    logger.LogInformation(
+        "Away-team backfill: created {Created} directory team(s), linked {Linked} fixture(s)",
+        createdTeams, events.Count);
+}
+
 static async Task InitializeDatabaseAsync(ApplicationDbContext context, ILogger logger, IWebHostEnvironment environment, bool verifySeedPasswords)
 {
     // Docker Desktop's Windows port proxy typically refuses/times-out the first few connections to

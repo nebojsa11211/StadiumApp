@@ -1,0 +1,114 @@
+@page "/admin/setup"
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Admin.Services
+@inject SetupStatusService SetupState
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> L
+@implements IDisposable
+
+<PageTitle>@L["Setup_PageTitle"]</PageTitle>
+
+<div id="admin-setup-main-container" class="container-fluid">
+    <PageHeader Id="admin-setup-header"
+                Eyebrow='@L["Setup_Eyebrow"]'
+                Title='@L["Setup_Heading"]'
+                Subtitle='@L["Setup_Subtitle"]' />
+
+    @if (status is null)
+    {
+        <div id="admin-setup-loading" class="d-flex align-items-center text-muted">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            <span>@L["Setup_Loading"]</span>
+        </div>
+    }
+    else
+    {
+        @if (status.IsComplete)
+        {
+            <div id="admin-setup-complete" class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                <span>@L["Setup_AllDone"]</span>
+            </div>
+        }
+        else
+        {
+            <p id="admin-setup-intro" class="text-muted mb-4">@L["Setup_Intro"]</p>
+        }
+
+        <div id="admin-setup-list" class="list-group mb-4">
+            @foreach (var item in Items)
+            {
+                <div id="@($"admin-setup-item-{item.Key}")"
+                     class="list-group-item d-flex align-items-center gap-3 py-3">
+                    <i class="bi @(item.Done ? "bi-check-circle-fill text-success" : "bi-circle text-secondary") fs-4"></i>
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">@item.Title</div>
+                        <div class="text-muted small">@item.Description</div>
+                    </div>
+                    @if (item.Done)
+                    {
+                        <span id="@($"admin-setup-badge-{item.Key}")" class="badge bg-success-subtle text-success-emphasis">
+                            @L["Setup_Done"]
+                        </span>
+                    }
+                    else
+                    {
+                        <button id="@($"admin-setup-configure-{item.Key}")"
+                                class="btn btn-sm btn-primary"
+                                @onclick="() => Navigation.NavigateTo(item.Route)">
+                            @L["Setup_Configure"] <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="d-flex gap-2">
+            <button id="admin-setup-refresh-btn" class="btn btn-outline-secondary btn-sm" @onclick="RefreshAsync">
+                <i class="bi bi-arrow-clockwise me-1"></i>@L["Setup_Refresh"]
+            </button>
+            @if (!status.IsComplete && !status.Dismissed)
+            {
+                <button id="admin-setup-dismiss-btn" class="btn btn-outline-secondary btn-sm" @onclick="DismissAsync">
+                    <i class="bi bi-bell-slash me-1"></i>@L["Setup_Dismiss"]
+                </button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private SetupStatusDto? status => SetupState.Status;
+
+    private record SetupItem(string Key, bool Done, string Title, string Description, string Route);
+
+    private IEnumerable<SetupItem> Items => status is null
+        ? Enumerable.Empty<SetupItem>()
+        : new[]
+        {
+            new SetupItem("stadium", status.HasStadiumStructure,
+                L["Setup_Item_Stadium_Title"], L["Setup_Item_Stadium_Desc"], "admin/stadium-structure"),
+            new SetupItem("venue", status.HasVenueIdentity,
+                L["Setup_Item_Venue_Title"], L["Setup_Item_Venue_Desc"], "admin/venue-settings"),
+            new SetupItem("drinks", status.HasCategories && status.HasDrinks,
+                L["Setup_Item_Drinks_Title"], L["Setup_Item_Drinks_Desc"], "drinks"),
+            new SetupItem("staff", status.HasStaff,
+                L["Setup_Item_Staff_Title"], L["Setup_Item_Staff_Desc"], "users"),
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        SetupState.OnChanged += OnChanged;
+        await SetupState.EnsureLoadedAsync();
+        // Always re-read on entering the page so items completed elsewhere show as done.
+        await SetupState.ReloadAsync();
+    }
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    private Task RefreshAsync() => SetupState.ReloadAsync();
+
+    private Task DismissAsync() => SetupState.DismissAsync();
+
+    public void Dispose() => SetupState.OnChanged -= OnChanged;
+}

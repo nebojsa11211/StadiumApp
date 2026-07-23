@@ -2584,6 +2584,30 @@
   <data name="Events_SeasonPassNote" xml:space="preserve">
     <value>{0} preko sezonskih ulaznica</value>
   </data>
+  <data name="Events_AttendanceLabel" xml:space="preserve">
+    <value>Posjećenost</value>
+  </data>
+  <data name="Events_ResultsTitle" xml:space="preserve">
+    <value>Financijski rezultat</value>
+  </data>
+  <data name="Events_TicketRevenueLabel" xml:space="preserve">
+    <value>Prihod od ulaznica</value>
+  </data>
+  <data name="Events_SeasonRevenueLabel" xml:space="preserve">
+    <value>Sezonske ulaznice</value>
+  </data>
+  <data name="Events_SeasonRevenueNote" xml:space="preserve">
+    <value>({0}, razmjerni dio)</value>
+  </data>
+  <data name="Events_DrinkRevenueLabel" xml:space="preserve">
+    <value>Prihod od pića</value>
+  </data>
+  <data name="Events_DrinkOrdersNote" xml:space="preserve">
+    <value>({0} narudžbi)</value>
+  </data>
+  <data name="Events_TotalRevenueLabel" xml:space="preserve">
+    <value>Ukupan prihod</value>
+  </data>
   <data name="Events_BasePriceLabel" xml:space="preserve">
     <value>Bazna cijena</value>
   </data>
@@ -2723,7 +2747,7 @@
     <value>Ukupni prihod</value>
   </data>
   <data name="EventStats_TotalRevenueHint" xml:space="preserve">
-    <value>Ulaznice + pića</value>
+    <value>Ulaznice + sezonske + pića</value>
   </data>
   <data name="EventStats_TicketsSoldLabel" xml:space="preserve">
     <value>Prodane ulaznice</value>
@@ -2754,6 +2778,9 @@
   </data>
   <data name="EventStats_TicketRevenueLabel" xml:space="preserve">
     <value>Prihod od ulaznica</value>
+  </data>
+  <data name="EventStats_SeasonRevenueLabel" xml:space="preserve">
+    <value>Sezonske ulaznice (razmjerni dio)</value>
   </data>
   <data name="EventStats_DrinksTitle" xml:space="preserve">
     <value>Narudžbe pića</value>
@@ -3652,6 +3679,12 @@
   <data name="Index_NoOrdersThisEvent" xml:space="preserve">
     <value>Nema narudžbi za ovaj događaj</value>
   </data>
+  <data name="Index_OrdersScopeTitle" xml:space="preserve">
+    <value>Ove narudžbe pripadaju isključivo ovom događaju</value>
+  </data>
+  <data name="Index_OrdersNoLiveEventNote" xml:space="preserve">
+    <value>Trenutno nema događaja uživo — prikazane narudžbe pripadaju odabranom događaju.</value>
+  </data>
   <data name="Index_ViewAllOrders" xml:space="preserve">
     <value>Vidi sve narudžbe</value>
   </data>
@@ -4150,6 +4183,28 @@
   <data name="Wallets_Close" xml:space="preserve"><value>Zatvori</value></data>
   <data name="Wallets_ActionFailed" xml:space="preserve"><value>Radnja nije uspjela.</value></data>
   <data name="Nav_Venue" xml:space="preserve"><value>Stadion i brend</value></data>
+  <data name="Nav_Setup" xml:space="preserve"><value>Postavljanje</value></data>
+  <data name="Setup_PageTitle" xml:space="preserve"><value>Postavljanje — Administracija stadiona</value></data>
+  <data name="Setup_Eyebrow" xml:space="preserve"><value>Početak rada</value></data>
+  <data name="Setup_Heading" xml:space="preserve"><value>Početno postavljanje</value></data>
+  <data name="Setup_Subtitle" xml:space="preserve"><value>Nekoliko stvari mora biti postavljeno prije nego što je sustav spreman za korištenje.</value></data>
+  <data name="Setup_Loading" xml:space="preserve"><value>Provjera postavljanja…</value></data>
+  <data name="Setup_Intro" xml:space="preserve"><value>Dovršite preostale stavke u nastavku. Svaka vas vodi na stranicu na kojoj je možete postaviti.</value></data>
+  <data name="Setup_AllDone" xml:space="preserve"><value>Sve je spremno — osnovno je postavljeno. Možete započeti.</value></data>
+  <data name="Setup_Done" xml:space="preserve"><value>Gotovo</value></data>
+  <data name="Setup_Configure" xml:space="preserve"><value>Postavi</value></data>
+  <data name="Setup_Refresh" xml:space="preserve"><value>Ponovno provjeri</value></data>
+  <data name="Setup_Dismiss" xml:space="preserve"><value>Sakrij podsjetnik</value></data>
+  <data name="Setup_BannerText" xml:space="preserve"><value>Vaš stadion još nije potpuno postavljen. Nekoliko osnovnih stvari treba postaviti.</value></data>
+  <data name="Setup_BannerAction" xml:space="preserve"><value>Dovrši postavljanje</value></data>
+  <data name="Setup_Item_Stadium_Title" xml:space="preserve"><value>Struktura stadiona</value></data>
+  <data name="Setup_Item_Stadium_Desc" xml:space="preserve"><value>Uvezite ili nacrtajte raspored stadiona (tribine, sektore i sjedala). O tome ovisi sve ostalo.</value></data>
+  <data name="Setup_Item_Venue_Title" xml:space="preserve"><value>Domaći klub i adresa</value></data>
+  <data name="Setup_Item_Venue_Desc" xml:space="preserve"><value>Postavite naziv domaćeg kluba i adresu stadiona koja se prikazuje kupcima.</value></data>
+  <data name="Setup_Item_Drinks_Title" xml:space="preserve"><value>Kategorije pića i pića</value></data>
+  <data name="Setup_Item_Drinks_Desc" xml:space="preserve"><value>Dodajte barem jednu kategoriju i jedno piće kako bi navijači imali što naručiti.</value></data>
+  <data name="Setup_Item_Staff_Title" xml:space="preserve"><value>Članovi osoblja</value></data>
+  <data name="Setup_Item_Staff_Desc" xml:space="preserve"><value>Stvorite barem jedan račun konobara ili šankera za rad šanka.</value></data>
   <data name="Venue_PageTitle" xml:space="preserve"><value>Stadion i brend</value></data>
   <data name="Venue_Heading" xml:space="preserve"><value>Stadion i brend</value></data>
   <data name="Venue_Subtitle" xml:space="preserve"><value>Identitet stadiona i klubovi koji ovdje nastupaju.</value></data>

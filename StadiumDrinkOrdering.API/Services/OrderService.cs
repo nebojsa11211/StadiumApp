@@ -391,38 +391,32 @@ public class OrderService : IOrderService
 
     public async Task<List<OrderDto>> GetOrdersAsync(OrderStatus? status = null)
     {
-        try
+        // AsNoTracking: this is a read-only projection, and it also keeps EF from wiring up the
+        // inverse navigations (Event.Orders, Section.Seats, …) between the loaded entities.
+        var query = _context.Orders
+            .AsNoTracking()
+            .Include(o => o.Customer)
+            .Include(o => o.AcceptedByUser)
+            .Include(o => o.InPreparationByUser)
+            .Include(o => o.PreparedByUser)
+            .Include(o => o.DeliveredByUser)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Drink)
+            .Include(o => o.Payment)
+            .Include(o => o.Event)
+            .Include(o => o.Seat)
+                .ThenInclude(s => s.Section)
+            .Include(o => o.TicketSession!)
+                .ThenInclude(ts => ts.Ticket)
+            .AsQueryable();
+
+        if (status.HasValue)
         {
-            var query = _context.Orders
-    .Include(o => o.Customer)
-    .Include(o => o.AcceptedByUser)
-    .Include(o => o.InPreparationByUser)
-    .Include(o => o.PreparedByUser)
-    .Include(o => o.DeliveredByUser)
-    .Include(o => o.OrderItems)
-        .ThenInclude(oi => oi.Drink)
-    .Include(o => o.Payment)
-    .Include(o => o.Event)
-    .Include(o => o.Seat)
-        .ThenInclude(s => s.Section)
-    .Include(o => o.TicketSession!)
-        .ThenInclude(ts => ts.Ticket)
-    .AsQueryable();
-
-            if (status.HasValue)
-            {
-                query = query.Where(o => o.Status == status.Value);
-            }
-
-            var orders = await query.OrderByDescending(o => o.CreatedAt).ToListAsync();
-            var tmp = orders.Select(MapToOrderDto).ToList();
-            return tmp; 
-        }
-        catch (Exception ex)
-         {
-            return null;
+            query = query.Where(o => o.Status == status.Value);
         }
 
+        var orders = await query.OrderByDescending(o => o.CreatedAt).ToListAsync();
+        return orders.Select(MapToOrderDto).ToList();
     }
 
     public async Task<List<OrderDto>> GetOrdersByCustomerAsync(int customerId)
@@ -956,8 +950,24 @@ public class OrderService : IOrderService
             DeliveryAttempts = order.DeliveryAttempts,
             LastDeliveryFailureReason = order.LastDeliveryFailureReason,
             LastDeliveryAttemptAt = order.LastDeliveryAttemptAt,
-            Event = order.Event,
-            Seat = order.Seat,
+            Event = order.Event == null ? null : new OrderEventDto
+            {
+                Id = order.Event.Id,
+                EventName = order.Event.EventName,
+                EventType = order.Event.EventType,
+                EventDate = order.Event.EventDate,
+                SeasonId = order.Event.SeasonId
+            },
+            Seat = order.Seat == null ? null : new OrderSeatDto
+            {
+                Id = order.Seat.Id,
+                RowNumber = order.Seat.RowNumber,
+                SeatNumber = order.Seat.SeatNumber,
+                SeatCode = order.Seat.SeatCode,
+                SectionId = order.Seat.SectionId,
+                SectionCode = order.Seat.Section?.SectionCode,
+                SectionName = order.Seat.Section?.SectionName
+            },
             OrderItems = order.OrderItems.Select(oi => new OrderItemDto
             {
                 Id = oi.Id,

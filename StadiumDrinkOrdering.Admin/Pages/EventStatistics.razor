@@ -127,6 +127,10 @@
                             <dd class="mono" id="admin-event-stats-ticketing-occupancy">@stats.OccupancyPercent.ToString("0.#")%</dd>
                             <dt>@L["EventStats_TicketRevenueLabel"]</dt>
                             <dd class="mono" id="admin-event-stats-ticketing-revenue">€@stats.TicketRevenue.ToString("N2")</dd>
+                            @* Season passes are bought once per season and their per-event tickets are
+                               priced at 0, so this event's share of them is reported on its own line. *@
+                            <dt>@L["EventStats_SeasonRevenueLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-ticketing-season-revenue">€@stats.SeasonTicketRevenue.ToString("N2")</dd>
                         </dl>
                     </div>
                 </div>

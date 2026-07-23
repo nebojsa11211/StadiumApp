@@ -39,10 +39,37 @@ public class OrderDto
     public int DeliveryAttempts { get; set; }
     public DeliveryFailureReason? LastDeliveryFailureReason { get; set; }
     public DateTime? LastDeliveryAttemptAt { get; set; }
-    public Event? Event { get; set; }
-    public Seat? Seat { get; set; }
+    // Slim, self-contained views of the linked event and seat. These deliberately do NOT expose the
+    // EF entities: an entity carries its navigation collections (Event.Orders, Seat.Section.Seats, …),
+    // which EF's navigation fixup populates for every order in the same query — serializing that
+    // turned a list of N orders into an O(N²) payload (121 orders ≈ 48 MB, the full list never
+    // finished). Keep these flat and additive.
+    public OrderEventDto? Event { get; set; }
+    public OrderSeatDto? Seat { get; set; }
     public List<OrderItemDto> OrderItems { get; set; } = new();
     public PaymentDto? Payment { get; set; }
+}
+
+/// <summary>The bits of the linked <see cref="Models.Event"/> an order view needs (name, date, season scope).</summary>
+public class OrderEventDto
+{
+    public int Id { get; set; }
+    public string EventName { get; set; } = string.Empty;
+    public string EventType { get; set; } = string.Empty;
+    public DateTime EventDate { get; set; }
+    public int? SeasonId { get; set; }
+}
+
+/// <summary>The linked seat with its section flattened in, so no entity graph is dragged along.</summary>
+public class OrderSeatDto
+{
+    public int Id { get; set; }
+    public int RowNumber { get; set; }
+    public int SeatNumber { get; set; }
+    public string SeatCode { get; set; } = string.Empty;
+    public int SectionId { get; set; }
+    public string? SectionCode { get; set; }
+    public string? SectionName { get; set; }
 }
 
 public class CreateOrderDto

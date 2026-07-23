@@ -821,12 +821,41 @@ public class EventController : ControllerBase
             : (await _db.Clubs.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Name.ToLower() == homeKey))?.Id;
 
-        evt.AwayTeamId = awayKey == null
-            ? null
-            : (await _db.Teams.AsNoTracking()
-                .FirstOrDefaultAsync(t => t.NormalizedName == awayKey))?.Id;
+        // Set the navigation (not the raw FK) so a freshly created, not-yet-saved directory entry
+        // still has its Id fixed up onto the event by the single SaveChanges below.
+        if (awayKey == null)
+        {
+            evt.AwayTeamId = null;
+            evt.AwayTeamProfile = null;
+        }
+        else
+        {
+            evt.AwayTeamProfile = await EnsureAwayTeamAsync(awayKey, evt.AwayTeam);
+        }
 
         await _db.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Returns the directory <see cref="Team"/> for a normalized away-team name, creating a
+    /// name-only entry (no crest, no curated colours) when a fixture names an opponent that is not
+    /// yet in the directory. This keeps the Teams page reflecting every opponent that appears on a
+    /// fixture; a crest and branding can be filled in later on that page.
+    /// </summary>
+    private async Task<Team> EnsureAwayTeamAsync(string normalizedName, string? displayName)
+    {
+        var team = await _db.Teams.FirstOrDefaultAsync(t => t.NormalizedName == normalizedName);
+        if (team == null)
+        {
+            team = new Team
+            {
+                NormalizedName = normalizedName,
+                Name = (displayName ?? normalizedName).Trim(),
+                CreatedAt = DateTime.UtcNow
+            };
+            _db.Teams.Add(team);
+        }
+        return team;
     }
 
     /// <summary>Crests are small logos, not photographs — cap them well below the poster limit.</summary>
@@ -1134,6 +1163,9 @@ public class EventController : ControllerBase
         var seasonNames = await _seasonService.GetSeasonNamesAsync(
             eventList.Where(e => e.SeasonId != null).Select(e => e.SeasonId!.Value));
         var stadiumCapacity = await _ingestion.GetStadiumCapacityAsync();
+        // Ticket and drink takings, so a finished event's card can state its result without a
+        // per-card statistics call (two grouped aggregates for the whole page).
+        var revenues = await _eventService.GetRevenueSummariesAsync(ids);
 
         return eventList
             .Select(e => MapEventToDto(
@@ -1141,7 +1173,8 @@ public class EventController : ControllerBase
                 soldCounts.GetValueOrDefault(e.Id, 0),
                 e.SeasonId != null ? seasonNames.GetValueOrDefault(e.SeasonId.Value) : null,
                 seasonSoldCounts.GetValueOrDefault(e.Id, 0),
-                stadiumCapacity))
+                stadiumCapacity,
+                revenues.GetValueOrDefault(e.Id)))
             .ToList();
     }
 
@@ -1193,7 +1226,7 @@ public class EventController : ControllerBase
     /// endpoints use raw SQL that omits it). When null, sold seats are counted from the
     /// loaded Tickets navigation. Both paths funnel through <see cref="TicketStatuses.CountsAsSold"/>.
     /// </param>
-    private EventDto MapEventToDto(Event evt, int? soldSeatsOverride = null, string? seasonName = null, int? seasonSoldOverride = null, int? stadiumCapacity = null)
+    private EventDto MapEventToDto(Event evt, int? soldSeatsOverride = null, string? seasonName = null, int? seasonSoldOverride = null, int? stadiumCapacity = null, EventRevenueSummary? revenue = null)
     {
         if (evt == null)
         {
@@ -1237,6 +1270,12 @@ public class EventController : ControllerBase
             BasePrice = evt.BaseTicketPrice ?? 0m,
             IsActive = evt.IsActive,
             CreatedAt = evt.CreatedAt,
+            // Realised takings, batched by the list endpoints. Single-event endpoints don't pass a
+            // summary — they leave these at zero rather than firing extra aggregates per request.
+            TicketRevenue = revenue?.TicketRevenue ?? 0m,
+            SeasonTicketRevenue = revenue?.SeasonTicketRevenue ?? 0m,
+            DrinkOrders = revenue?.DrinkOrders ?? 0,
+            DrinksRevenue = revenue?.DrinksRevenue ?? 0m,
             Status = evt.Status,
             StatusName = evt.Status.ToString(),
             Phase = EventLifecycle.PhaseOf(evt.Status),

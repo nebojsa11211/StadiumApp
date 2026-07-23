@@ -167,6 +167,29 @@
                                                 </div>
                                             </dd>
                                         }
+                                        @if (evt.Status == EventStatus.Completed)
+                                        {
+                                            @* A finished event reports what it actually did: the
+                                               gate it drew, and (below the list) what it took. *@
+                                            var attendance = Math.Max(0, evt.Capacity - evt.AvailableSeats);
+                                            var attendancePct = evt.Capacity > 0 ? (int)Math.Round(100.0 * attendance / evt.Capacity) : 0;
+                                            <dt><i class="bi bi-people-fill"></i> @L["Events_AttendanceLabel"]</dt>
+                                            <dd id="admin-event-attendance-@evt.Id">
+                                                <span class="mono fw-medium" id="admin-event-tickets-sold-@evt.Id">@attendance.ToString("N0")</span> @L["Events_SeatsSold"]
+                                                <span class="text-muted">·</span>
+                                                <span class="mono" id="admin-event-attendance-pct-@evt.Id">@attendancePct%</span>
+                                                @if (evt.SeasonTicketsSold > 0)
+                                                {
+                                                    <div class="event-occupancy__note" id="admin-event-completed-season-sold-@evt.Id">@L["Events_SeasonPassNote", evt.SeasonTicketsSold.ToString("N0")]</div>
+                                                }
+                                            </dd>
+                                            <dt class="event-occupancy__bar-label"><i class="bi bi-bar-chart-steps"></i></dt>
+                                            <dd class="event-occupancy__bar-cell">
+                                                <div class="event-occupancy__bar" id="admin-event-attendance-bar-@evt.Id" title="@attendancePct% @L["Events_SeatsSold"]">
+                                                    <div class="event-occupancy__fill" style="width:@(attendancePct)%"></div>
+                                                </div>
+                                            </dd>
+                                        }
                                         <dt><i class="bi bi-cash"></i> @L["Events_BasePriceLabel"]</dt>
                                         <dd class="mono" id="admin-event-price-@evt.Id">€@evt.BasePrice.ToString("F2")</dd>
                                         <dt><i class="bi bi-calendar-range"></i> @L["Events_Season"]</dt>
@@ -193,6 +216,46 @@
                                             }
                                         </dd>
                                     </dl>
+                                    @if (evt.Status == EventStatus.Completed)
+                                    {
+                                        @* Headline takings for a finished event. The full breakdown
+                                           (orders, drinks, best seller) lives on the statistics page
+                                           this card links to — these are the three numbers an admin
+                                           scanning the grid wants without opening anything. *@
+                                        <div class="event-results" id="admin-event-results-@evt.Id">
+                                            <div class="event-results__title" id="admin-event-results-title-@evt.Id">
+                                                <i class="bi bi-cash-coin"></i> @L["Events_ResultsTitle"]
+                                            </div>
+                                            <div class="event-results__row" id="admin-event-results-tickets-@evt.Id">
+                                                <span class="event-results__label">@L["Events_TicketRevenueLabel"]</span>
+                                                <span class="event-results__value mono" id="admin-event-ticket-revenue-@evt.Id">@Money(evt.TicketRevenue)</span>
+                                            </div>
+                                            @if (evt.SeasonTicketsSold > 0)
+                                            {
+                                                @* Season-derived tickets are priced at 0 (the pass is paid for once per
+                                                   season), so the pass money is amortized across its events and shown on
+                                                   its own line — otherwise a season-ticketed match reads as a shortfall. *@
+                                                <div class="event-results__row" id="admin-event-results-season-@evt.Id">
+                                                    <span class="event-results__label">
+                                                        @L["Events_SeasonRevenueLabel"]
+                                                        <span class="event-results__hint" id="admin-event-season-revenue-note-@evt.Id">@L["Events_SeasonRevenueNote", evt.SeasonTicketsSold.ToString("N0")]</span>
+                                                    </span>
+                                                    <span class="event-results__value mono" id="admin-event-season-revenue-@evt.Id">@Money(evt.SeasonTicketRevenue)</span>
+                                                </div>
+                                            }
+                                            <div class="event-results__row" id="admin-event-results-drinks-@evt.Id">
+                                                <span class="event-results__label">
+                                                    @L["Events_DrinkRevenueLabel"]
+                                                    <span class="event-results__hint" id="admin-event-drink-orders-@evt.Id">@L["Events_DrinkOrdersNote", evt.DrinkOrders.ToString("N0")]</span>
+                                                </span>
+                                                <span class="event-results__value mono" id="admin-event-drink-revenue-@evt.Id">@Money(evt.DrinksRevenue)</span>
+                                            </div>
+                                            <div class="event-results__row event-results__row--total" id="admin-event-results-total-@evt.Id">
+                                                <span class="event-results__label">@L["Events_TotalRevenueLabel"]</span>
+                                                <span class="event-results__value mono" id="admin-event-total-revenue-@evt.Id">@Money(evt.TotalRevenue)</span>
+                                            </div>
+                                        </div>
+                                    }
                                     @if (!string.IsNullOrEmpty(evt.Description))
                                     {
                                         <p class="event-card__desc" id="admin-event-description-@evt.Id">@evt.Description</p>

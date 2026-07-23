@@ -646,4 +646,106 @@
   <data name="Credentials_ShowShell" xml:space="preserve">
     <value>Prikaži ljuske računa</value>
   </data>
+  <data name="Layout_TabSeasonGenerator" xml:space="preserve">
+    <value>Generator sezone</value>
+  </data>
+  <data name="SeasonGen_PageTitle" xml:space="preserve">
+    <value>Generator sezone - Simulator prodaje ulaznica</value>
+  </data>
+  <data name="SeasonGen_Title" xml:space="preserve">
+    <value>Generator sezone</value>
+  </data>
+  <data name="SeasonGen_Intro" xml:space="preserve">
+    <value>Izrađuje cijelu sezonu utakmica u jednom prolazu: odigrane utakmice (s posjećenošću i narudžbama pića) i nadolazeće koje su još u prodaji. Svaka se utakmica stvara istim integracijskim putem kojim stiže i stvarni sustav prodaje, pa se postojeće sezonske ulaznice proširuju i na nju.</value>
+  </data>
+  <data name="SeasonGen_NoSeasons" xml:space="preserve">
+    <value>Još nema sezona. Prvo je stvorite na kartici Simulator.</value>
+  </data>
+  <data name="SeasonGen_SeasonLabel" xml:space="preserve">
+    <value>Sezona</value>
+  </data>
+  <data name="SeasonGen_SeasonHint" xml:space="preserve">
+    <value>Utakmice se dodaju u ovu sezonu; sezonske ulaznice šire se na svaku novu utakmicu.</value>
+  </data>
+  <data name="SeasonGen_EventsWord" xml:space="preserve">
+    <value>događaja</value>
+  </data>
+  <data name="SeasonGen_PassesWord" xml:space="preserve">
+    <value>sezonskih</value>
+  </data>
+  <data name="SeasonGen_PastLabel" xml:space="preserve">
+    <value>Odigrane utakmice</value>
+  </data>
+  <data name="SeasonGen_FutureLabel" xml:space="preserve">
+    <value>Nadolazeće utakmice</value>
+  </data>
+  <data name="SeasonGen_PriceLabel" xml:space="preserve">
+    <value>Bazna cijena (EUR)</value>
+  </data>
+  <data name="SeasonGen_IntervalLabel" xml:space="preserve">
+    <value>Razmak (dana)</value>
+  </data>
+  <data name="SeasonGen_HomeLabel" xml:space="preserve">
+    <value>Domaća momčad</value>
+  </data>
+  <data name="SeasonGen_OpponentsLabel" xml:space="preserve">
+    <value>Protivnici</value>
+  </data>
+  <data name="SeasonGen_OpponentsHint" xml:space="preserve">
+    <value>Odvojeni zarezom; koriste se redom i ponavljaju ako je utakmica više nego imena.</value>
+  </data>
+  <data name="SeasonGen_PastFillLabel" xml:space="preserve">
+    <value>Posjećenost odigranih</value>
+  </data>
+  <data name="SeasonGen_FutureFillLabel" xml:space="preserve">
+    <value>Prodaja nadolazećih</value>
+  </data>
+  <data name="SeasonGen_FutureFillHint" xml:space="preserve">
+    <value>Primjenjuje se od najbliže utakmice, pa je sljedeća najviše prodana.</value>
+  </data>
+  <data name="SeasonGen_CapacityNote" xml:space="preserve">
+    <value>stadion prima {0}</value>
+  </data>
+  <data name="SeasonGen_CapWarning" xml:space="preserve">
+    <value>popunjenost premašuje slobodna mjesta — utakmice će se rasprodati na {0}</value>
+  </data>
+  <data name="SeasonGen_DrinkOrdersLabel" xml:space="preserve">
+    <value>Generiraj narudžbe pića za odigrane utakmice</value>
+  </data>
+  <data name="SeasonGen_AttendanceLabel" xml:space="preserve">
+    <value>Razriješi posjećenost (došli / nisu došli / vraćeno)</value>
+  </data>
+  <data name="SeasonGen_GenerateButton" xml:space="preserve">
+    <value>Generiraj {0} utakmica</value>
+  </data>
+  <data name="SeasonGen_Progress" xml:space="preserve">
+    <value>{0} od {1}</value>
+  </data>
+  <data name="SeasonGen_SummaryTitle" xml:space="preserve">
+    <value>Rezultat:</value>
+  </data>
+  <data name="SeasonGen_SummaryLine" xml:space="preserve">
+    <value>{0} utakmica · {1} prodanih ulaznica · {2} sezonskih mjesta · {3} narudžbi pića (EUR {4})</value>
+  </data>
+  <data name="SeasonGen_ColFixture" xml:space="preserve">
+    <value>Utakmica</value>
+  </data>
+  <data name="SeasonGen_ColKickOff" xml:space="preserve">
+    <value>Početak</value>
+  </data>
+  <data name="SeasonGen_ColStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="SeasonGen_ColTickets" xml:space="preserve">
+    <value>Ulaznice</value>
+  </data>
+  <data name="SeasonGen_ColPasses" xml:space="preserve">
+    <value>Sezonska mjesta</value>
+  </data>
+  <data name="SeasonGen_ColAttended" xml:space="preserve">
+    <value>Došli</value>
+  </data>
+  <data name="SeasonGen_ColOrders" xml:space="preserve">
+    <value>Narudžbe pića</value>
+  </data>
 </root>

@@ -91,6 +91,9 @@
             <a href="admin/settings" class="@NavClass("admin/settings", "dash-nav-sub")" id="admin-dashboard-nav-settings">
                 <i class="bi bi-gear"></i><span>@L["Nav_Settings"]</span>
             </a>
+            <a href="admin/setup" class="@NavClass("admin/setup", "dash-nav-sub")" id="admin-dashboard-nav-setup">
+                <i class="bi bi-rocket-takeoff"></i><span>@L["Nav_Setup"]</span>
+            </a>
         </nav>
 
         <div class="dash-sidebar-footer" id="admin-dashboard-sidebar-footer">
@@ -122,6 +125,17 @@
 
     @* ============================ MAIN ============================ *@
     <main class="dash-main" id="admin-dashboard-main">
+        @* First-run nudge: shown until the minimum config is in place or the admin dismisses it. *@
+        @if (Setup.ShouldShowBanner)
+        {
+            <div class="alert alert-warning d-flex align-items-center gap-2 mb-3" role="alert" id="admin-dashboard-setup-banner">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span class="flex-grow-1">@L["Setup_BannerText"]</span>
+                <a href="admin/setup" class="btn btn-sm btn-warning" id="admin-dashboard-setup-banner-link">@L["Setup_BannerAction"]</a>
+                <button type="button" class="btn-close" aria-label="Dismiss" id="admin-dashboard-setup-banner-dismiss" @onclick="DismissSetupBanner"></button>
+            </div>
+        }
+
         @* Shell-wide season scope. Rendered here so every admin page carries
            #admin-dashboard-current-season. Pages read the selection from SeasonState. *@
         <SeasonFilterBanner Seasons="SeasonState.Seasons"

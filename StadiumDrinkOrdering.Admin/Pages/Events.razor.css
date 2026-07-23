@@ -129,6 +129,63 @@
     transition: width 0.3s ease;
 }
 
+/* ---- Completed-event results ---------------------------------------------------------------
+   The takings of a finished event, set apart from the metadata grid above it: a tinted block so
+   the money reads as an outcome rather than another configured field. */
+.event-results {
+    margin-top: 0.9rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--stadium-gray-200);
+    border-radius: 0.5rem;
+    background: var(--stadium-gray-50, #f8f9fa);
+}
+
+.event-results__title {
+    font-family: var(--stadium-font-mono);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--stadium-gray-500);
+    margin-bottom: 0.4rem;
+}
+
+.event-results__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    padding: 0.15rem 0;
+}
+
+.event-results__label {
+    color: var(--stadium-gray-500);
+}
+
+.event-results__hint {
+    font-size: 0.72rem;
+    color: var(--stadium-gray-400);
+}
+
+.event-results__value {
+    color: var(--stadium-gray-900);
+    white-space: nowrap;
+}
+
+/* The combined total closes the block, so it carries the weight. */
+.event-results__row--total {
+    margin-top: 0.3rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--stadium-gray-200);
+}
+
+.event-results__row--total .event-results__label,
+.event-results__row--total .event-results__value {
+    font-weight: 600;
+    color: var(--stadium-gray-900);
+}
+
 .event-card__desc {
     margin: 0.9rem 0 0;
     padding-top: 0.85rem;

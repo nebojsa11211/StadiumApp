@@ -29,8 +29,17 @@ public class EventStatisticsDto
     /// <summary>Tickets sold as a percentage of <see cref="TotalCapacity"/>, rounded to 1 dp.</summary>
     public decimal OccupancyPercent { get; set; }
 
-    /// <summary>Sum of non-cancelled ticket prices.</summary>
+    /// <summary>
+    /// Sum of non-cancelled ticket prices. Season-derived tickets are priced at 0 (the pass is paid
+    /// for once per season), so their money is reported separately in <see cref="SeasonTicketRevenue"/>.
+    /// </summary>
     public decimal TicketRevenue { get; set; }
+
+    /// <summary>
+    /// This event's amortized share of the season passes covering it: each non-cancelled pass's price
+    /// split evenly across the events it grants access to. Included in <see cref="TotalRevenue"/>.
+    /// </summary>
+    public decimal SeasonTicketRevenue { get; set; }
 
     // --- Drink ordering ---
 
@@ -51,7 +60,7 @@ public class EventStatisticsDto
 
     // --- Combined ---
 
-    /// <summary><see cref="TicketRevenue"/> + <see cref="DrinksRevenue"/>.</summary>
+    /// <summary><see cref="TicketRevenue"/> + <see cref="SeasonTicketRevenue"/> + <see cref="DrinksRevenue"/>.</summary>
     public decimal TotalRevenue { get; set; }
 
     /// <summary>When these figures were computed (UTC).</summary>

@@ -107,6 +107,45 @@ public class IntegrationController : ControllerBase
     }
 
     /// <summary>
+    /// Testing hook: builds one complete fixture in a season — creates the event, sells it a crowd,
+    /// and for a past date settles it like a played match (attendance mix, optional drink orders).
+    /// Signed like the webhook. The simulator's season generator calls this once per fixture.
+    /// </summary>
+    [HttpPost("simulate-match")]
+    public async Task<ActionResult<SimulateMatchResult>> SimulateMatch(
+        [FromServices] IMatchSimulationService simulation, CancellationToken ct)
+    {
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
+        if (!VerifySignature(body, Request.Headers[SignatureHeader].ToString()))
+        {
+            _logger.LogWarning("Rejected simulate-match: invalid or missing signature");
+            return Unauthorized(new SimulateMatchResult { Accepted = false, Message = "Invalid signature" });
+        }
+
+        SimulateMatchRequest? request;
+        try
+        {
+            request = System.Text.Json.JsonSerializer.Deserialize<SimulateMatchRequest>(body, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Rejected simulate-match: malformed JSON");
+            return BadRequest(new SimulateMatchResult { Accepted = false, Message = "Malformed JSON" });
+        }
+
+        if (request == null)
+            return BadRequest(new SimulateMatchResult { Accepted = false, Message = "Empty payload" });
+
+        var result = await simulation.SimulateMatchAsync(request, ct);
+        return result.Accepted ? Ok(result) : UnprocessableEntity(result);
+    }
+
+    /// <summary>
     /// The plaintext passwords the development seeder hands out. Stored passwords are BCrypt
     /// hashes and cannot be reversed, so the users endpoint instead *probes* each candidate
     /// against the hash and reports the one that verifies — never a guess.
@@ -216,6 +255,8 @@ public class IntegrationController : ControllerBase
                 Rows = o.Rows,
                 SeatsPerRow = o.SeatsPerRow,
                 Type = o.Type,
+                Price = o.Price,
+                SeasonTicketPrice = o.SeasonTicketPrice,
                 Color = o.Color,
                 ShapeType = o.ShapeType,
                 UseVariableSeating = o.UseVariableSeating,

@@ -248,6 +248,73 @@ public class SimulatedDrinkOrderResult
     public decimal TotalAmount { get; set; }
 }
 
+/// <summary>
+/// Asks the API to stand up one complete fixture: create the event in a season, sell it a crowd,
+/// and — for a fixture whose date has already passed — settle it like a match that has been played
+/// (attended/no-show/refunded tickets, and optionally a match-day's drink orders). The season
+/// generator in the simulator issues one of these per fixture so a whole season can be built up.
+/// </summary>
+public class SimulateMatchRequest
+{
+    /// <summary>Season the fixture belongs to, by its external id. Required.</summary>
+    public string ExternalSeasonId { get; set; } = string.Empty;
+
+    /// <summary>Display name; when blank one is composed from the two teams.</summary>
+    public string? EventName { get; set; }
+
+    public string? HomeTeam { get; set; }
+    public string? AwayTeam { get; set; }
+
+    /// <summary>Kick-off (UTC). A time in the past produces a played fixture, in the future a sellable one.</summary>
+    public DateTime KickOff { get; set; }
+
+    /// <summary>Length of the fixture's window; 2 hours if left unset.</summary>
+    public int DurationMinutes { get; set; } = 120;
+
+    public decimal BaseTicketPrice { get; set; } = 25m;
+
+    /// <summary>How many ordinary single-event tickets to sell. Season-pass seats are added on top.</summary>
+    public int TicketsToSell { get; set; }
+
+    /// <summary>
+    /// For a played fixture: settle its tickets into a realistic attendance mix (attended / no-show /
+    /// refunded) instead of leaving them all "Active". Ignored for a future fixture.
+    /// </summary>
+    public bool SettleAttendance { get; set; } = true;
+
+    /// <summary>For a played fixture: also generate that match's drink orders. Ignored for a future one.</summary>
+    public bool GenerateDrinkOrders { get; set; }
+}
+
+/// <summary>What a single simulated fixture produced.</summary>
+public class SimulateMatchResult
+{
+    public bool Accepted { get; set; }
+    public string Message { get; set; } = string.Empty;
+
+    public int EventId { get; set; }
+    public string ExternalEventId { get; set; } = string.Empty;
+    public string EventName { get; set; } = string.Empty;
+    public DateTime KickOff { get; set; }
+
+    /// <summary>True when the fixture's window had already elapsed, so it was created as played.</summary>
+    public bool IsPast { get; set; }
+
+    /// <summary>Status the event ended up in ("Completed", "OnSale", ...).</summary>
+    public string Status { get; set; } = string.Empty;
+
+    public int TicketsSold { get; set; }
+
+    /// <summary>Season-pass seats extended to this fixture when it joined the season.</summary>
+    public int SeasonTicketsCovered { get; set; }
+
+    public int TicketsAttended { get; set; }
+    public int TicketsRefunded { get; set; }
+
+    public int DrinkOrders { get; set; }
+    public decimal DrinkRevenue { get; set; }
+}
+
 /// <summary>Outcome of an admin "simulate ticket sales" run (Stadium Overview testing tool).</summary>
 public class SimulatedTicketSalesResult
 {
@@ -306,6 +373,19 @@ public class StadiumSectionInfoDto
 
     /// <summary>Sector classification: standard, vip, wheelchair, premium, family.</summary>
     public string Type { get; set; } = "standard";
+
+    /// <summary>
+    /// Configured single-event ticket price for every seat in this sector, when the sector sets one.
+    /// Null means pricing falls back to the event's base price × the sector-type multiplier.
+    /// </summary>
+    public decimal? Price { get; set; }
+
+    /// <summary>
+    /// Configured price of a season pass for a seat in this sector, when one is set. The external
+    /// system quotes this when selling a pass, so the money it reports matches what the venue
+    /// configured — a pass sold at 0 would report no takings for any match it covers.
+    /// </summary>
+    public decimal? SeasonTicketPrice { get; set; }
 
     /// <summary>Display color for the sector on the stadium canvas (hex, e.g. <c>#007bff</c>).</summary>
     public string Color { get; set; } = "#007bff";

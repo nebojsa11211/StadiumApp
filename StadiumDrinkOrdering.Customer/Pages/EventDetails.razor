@@ -3,10 +3,12 @@
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components.Stadium
 @using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.Configuration
 @using Microsoft.Extensions.Localization
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IConfiguration Configuration
 @inject IStringLocalizer<SharedResources> Localizer
 
 <PageTitle>@EventTitle — HALFTIME</PageTitle>
@@ -394,6 +396,8 @@ else
                 points.AddRange(cartItems.Where(x => x.SectorId == sid).Select(x => (x.RowNumber, x.SeatNumber)));
                 var highlight = points.Distinct().Select(p => new { row = p.Row, seat = p.Seat }).ToArray();
 
+                var apiBase = AppConfiguration.ResolveApiBaseUrl(Configuration).TrimEnd('/');
+                await JSRuntime.InvokeVoidAsync("setStadiumMapImageUrl", $"{apiBase}/api/venue/stadium-image");
                 await JSRuntime.InvokeVoidAsync("renderSectorPreview",
                     "customer-seat-locator-canvas", json, 0.08, Localizer["EventDetails_SeatLabelFormat"].Value, null, highlight);
             }

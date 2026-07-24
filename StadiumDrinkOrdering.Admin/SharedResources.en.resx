@@ -66,6 +66,30 @@
   <data name="Logout" xml:space="preserve">
     <value>Logout</value>
   </data>
+  <data name="Profile_Title" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Profile_ViewDetails" xml:space="preserve">
+    <value>View profile details</value>
+  </data>
+  <data name="Profile_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Profile_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Profile_UserId" xml:space="preserve">
+    <value>User ID</value>
+  </data>
+  <data name="Profile_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Profile_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Profile_Authenticated" xml:space="preserve">
+    <value>Authenticated</value>
+  </data>
   <data name="Register" xml:space="preserve">
     <value>Register</value>
   </data>
@@ -491,7 +515,7 @@
     <value>Upload a stadium picture to start drawing</value>
   </data>
   <data name="Drawing_BlueprintLoaded" xml:space="preserve">
-    <value>✅ Stadium blueprint loaded</value>
+    <value>✅ Stadium image loaded</value>
   </data>
   <data name="Drawing_ClearBtn" xml:space="preserve">
     <value>Clear</value>
@@ -4167,8 +4191,8 @@
   <data name="Setup_Dismiss" xml:space="preserve"><value>Hide reminder</value></data>
   <data name="Setup_BannerText" xml:space="preserve"><value>Your stadium isn't fully configured yet. A few essentials still need setting up.</value></data>
   <data name="Setup_BannerAction" xml:space="preserve"><value>Finish setup</value></data>
-  <data name="Setup_Item_Stadium_Title" xml:space="preserve"><value>Stadium structure</value></data>
-  <data name="Setup_Item_Stadium_Desc" xml:space="preserve"><value>Import or draw the stadium layout (tribunes, sectors and seats). Everything else depends on this.</value></data>
+  <data name="Setup_Item_Stadium_Title" xml:space="preserve"><value>Stadium layout &amp; image</value></data>
+  <data name="Setup_Item_Stadium_Desc" xml:space="preserve"><value>Upload your stadium's seat-map picture and draw its layout on top — tribunes, sectors and seats. Everything else depends on this.</value></data>
   <data name="Setup_Item_Venue_Title" xml:space="preserve"><value>Home club &amp; address</value></data>
   <data name="Setup_Item_Venue_Desc" xml:space="preserve"><value>Set the home club name and the stadium address shown to customers.</value></data>
   <data name="Setup_Item_Drinks_Title" xml:space="preserve"><value>Drink categories &amp; drinks</value></data>
@@ -4320,6 +4344,23 @@
   <data name="Settings_PurgeCancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Settings_PurgeSuccess" xml:space="preserve"><value>All transactional data deleted ({0} rows removed).</value></data>
   <data name="Settings_PurgeFailed" xml:space="preserve"><value>Failed to delete data. No changes were made.</value></data>
+  <data name="Settings_ResetTitle" xml:space="preserve"><value>Factory reset</value></data>
+  <data name="Settings_ResetSubtitle" xml:space="preserve"><value>Wipe whole areas of the system and start over. Pick exactly what to remove — anything not selected is kept.</value></data>
+  <data name="Settings_ResetKeepsAdmin" xml:space="preserve"><value>Your admin account is kept — you'll sign in again with the same email and password.</value></data>
+  <data name="Settings_ResetArea_Operational" xml:space="preserve"><value>Tickets, orders, events, seasons &amp; wallets</value></data>
+  <data name="Settings_ResetArea_Stadium" xml:space="preserve"><value>Stadium structure (tribunes, rings, sectors, seats)</value></data>
+  <data name="Settings_ResetArea_Users" xml:space="preserve"><value>All accounts except yours (staff, waiters, fans)</value></data>
+  <data name="Settings_ResetArea_Catalog" xml:space="preserve"><value>Drink catalog (drinks, categories, stock)</value></data>
+  <data name="Settings_ResetArea_Directories" xml:space="preserve"><value>Teams &amp; clubs directory</value></data>
+  <data name="Settings_ResetArea_FirstRun" xml:space="preserve"><value>Return to the first-run setup guide afterwards</value></data>
+  <data name="Settings_ResetOperationalRequired" xml:space="preserve"><value>required by the areas above</value></data>
+  <data name="Settings_ResetButton" xml:space="preserve"><value>Factory reset…</value></data>
+  <data name="Settings_ResetConfirmTitle" xml:space="preserve"><value>Confirm factory reset</value></data>
+  <data name="Settings_ResetConfirmBody" xml:space="preserve"><value>This permanently deletes the following areas. This cannot be undone.</value></data>
+  <data name="Settings_ResetConfirmPromptLabel" xml:space="preserve"><value>Type RESET EVERYTHING to confirm</value></data>
+  <data name="Settings_ResetConfirmButton" xml:space="preserve"><value>Yes, reset now</value></data>
+  <data name="Settings_ResetSuccess" xml:space="preserve"><value>Factory reset complete ({0} rows removed).</value></data>
+  <data name="Settings_ResetFailed" xml:space="preserve"><value>Factory reset failed. No changes were made.</value></data>
   <data name="Settings_BackupSection" xml:space="preserve"><value>Backup &amp; restore</value></data>
   <data name="Settings_BackupSubtitle" xml:space="preserve"><value>Save a snapshot of the database to a file, or restore selected tables from a backup file.</value></data>
   <data name="Settings_BackupExportTitle" xml:space="preserve"><value>Create a backup</value></data>

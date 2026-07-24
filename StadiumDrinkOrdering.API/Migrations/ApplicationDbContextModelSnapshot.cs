@@ -7269,6 +7269,13 @@ namespace StadiumDrinkOrdering.API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<byte[]>("StadiumImage")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("StadiumImageContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<bool>("TicketSalesEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")

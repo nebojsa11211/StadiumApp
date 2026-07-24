@@ -17,12 +17,18 @@ public partial class DashboardLayout : LayoutComponentBase, IDisposable
     private DateTime _now = DateTime.Now;
     private System.Timers.Timer? _clock;
     private string _userEmail = "admin@stadium.com";
+    private string? _userRole;
+    private string? _userId;
     private string _lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    private bool _showProfile;
 
     protected override void OnInitialized()
     {
         if (!string.IsNullOrWhiteSpace(AuthStateService.UserEmail))
             _userEmail = AuthStateService.UserEmail!;
+
+        _userRole = AuthStateService.UserRole;
+        _userId = AuthStateService.UserId;
 
         _clock = new System.Timers.Timer(1000);
         _clock.Elapsed += (_, _) => InvokeAsync(() =>
@@ -44,8 +50,6 @@ public partial class DashboardLayout : LayoutComponentBase, IDisposable
         await LiveEvents.EnsureLoadedAsync();
         await Setup.EnsureLoadedAsync();
     }
-
-    private Task DismissSetupBanner() => Setup.DismissAsync();
 
     /// <summary>
     /// True on the dashboard, which renders its own interactive event bar. The shell's read-only
@@ -100,8 +104,19 @@ public partial class DashboardLayout : LayoutComponentBase, IDisposable
         return string.IsNullOrEmpty(name) ? "A" : name[..1].ToUpperInvariant();
     }
 
+    private void OpenProfile()
+    {
+        // Refresh in case the auth state changed since first render.
+        _userRole = AuthStateService.UserRole;
+        _userId = AuthStateService.UserId;
+        _showProfile = true;
+    }
+
+    private void CloseProfile() => _showProfile = false;
+
     private async Task HandleLogout()
     {
+        _showProfile = false;
         await AuthStateService.LogoutAsync();
         Navigation.NavigateTo("/login");
     }

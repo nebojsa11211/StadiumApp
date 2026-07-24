@@ -14,6 +14,7 @@
 @inject IConfiguration Configuration
 @inject ITokenStorageService TokenStorage
 @inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
 @inject ILogger<Settings> Logger
 @inject IStringLocalizer<SharedResources> L
 
@@ -546,6 +547,73 @@
                 </button>
             </div>
         </div>
+
+        <div class="card mb-4 border-danger" id="admin-settings-reset-card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0" id="admin-settings-reset-title">@L["Settings_ResetTitle"]</h5>
+            </div>
+            <div class="card-body" id="admin-settings-reset-body">
+                <p class="text-muted mb-3" id="admin-settings-reset-subtitle">@L["Settings_ResetSubtitle"]</p>
+
+                <div class="alert alert-warning py-2" id="admin-settings-reset-keepadmin">
+                    <i class="bi bi-shield-check me-1"></i>@L["Settings_ResetKeepsAdmin"]
+                </div>
+
+                <div class="form-check" id="admin-settings-reset-area-operational-group">
+                    <input class="form-check-input" type="checkbox" id="admin-settings-reset-area-operational"
+                           checked="@(resetOperational || ResetOperationalLocked)"
+                           disabled="@ResetOperationalLocked"
+                           @onchange="e => resetOperational = e.Value is bool b && b" />
+                    <label class="form-check-label" for="admin-settings-reset-area-operational">
+                        @L["Settings_ResetArea_Operational"]
+                        @if (ResetOperationalLocked)
+                        {
+                            <span class="text-muted small">— @L["Settings_ResetOperationalRequired"]</span>
+                        }
+                    </label>
+                </div>
+
+                <div class="form-check" id="admin-settings-reset-area-stadium-group">
+                    <input class="form-check-input" type="checkbox" id="admin-settings-reset-area-stadium"
+                           checked="@resetStadium"
+                           @onchange="e => resetStadium = e.Value is bool b && b" />
+                    <label class="form-check-label" for="admin-settings-reset-area-stadium">@L["Settings_ResetArea_Stadium"]</label>
+                </div>
+
+                <div class="form-check" id="admin-settings-reset-area-users-group">
+                    <input class="form-check-input" type="checkbox" id="admin-settings-reset-area-users"
+                           checked="@resetUsers"
+                           @onchange="e => resetUsers = e.Value is bool b && b" />
+                    <label class="form-check-label" for="admin-settings-reset-area-users">@L["Settings_ResetArea_Users"]</label>
+                </div>
+
+                <div class="form-check" id="admin-settings-reset-area-catalog-group">
+                    <input class="form-check-input" type="checkbox" id="admin-settings-reset-area-catalog"
+                           checked="@resetCatalog"
+                           @onchange="e => resetCatalog = e.Value is bool b && b" />
+                    <label class="form-check-label" for="admin-settings-reset-area-catalog">@L["Settings_ResetArea_Catalog"]</label>
+                </div>
+
+                <div class="form-check" id="admin-settings-reset-area-directories-group">
+                    <input class="form-check-input" type="checkbox" id="admin-settings-reset-area-directories"
+                           checked="@resetDirectories"
+                           @onchange="e => resetDirectories = e.Value is bool b && b" />
+                    <label class="form-check-label" for="admin-settings-reset-area-directories">@L["Settings_ResetArea_Directories"]</label>
+                </div>
+
+                <div class="form-check mb-3" id="admin-settings-reset-area-firstrun-group">
+                    <input class="form-check-input" type="checkbox" id="admin-settings-reset-area-firstrun"
+                           checked="@resetFirstRun"
+                           @onchange="e => resetFirstRun = e.Value is bool b && b" />
+                    <label class="form-check-label" for="admin-settings-reset-area-firstrun">@L["Settings_ResetArea_FirstRun"]</label>
+                </div>
+
+                <button type="button" id="admin-settings-reset-btn" class="btn btn-danger"
+                        @onclick="OpenResetModal" disabled="@(isResetting || !AnyResetAreaSelected)">
+                    <i class="bi bi-exclamation-octagon me-1"></i>@L["Settings_ResetButton"]
+                </button>
+            </div>
+        </div>
         }
     }
 </div>
@@ -634,6 +702,73 @@
     </div>
 }
 
+@if (showResetModal)
+{
+    <div class="modal fade show d-block" id="admin-settings-reset-modal" tabindex="-1"
+         style="background-color: rgba(0,0,0,0.5);" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-danger" id="admin-settings-reset-modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="admin-settings-reset-modal-title">@L["Settings_ResetConfirmTitle"]</h5>
+                    <button type="button" id="admin-settings-reset-modal-close" class="btn-close btn-close-white"
+                            @onclick="CloseResetModal" disabled="@isResetting"></button>
+                </div>
+                <div class="modal-body" id="admin-settings-reset-modal-body">
+                    <p id="admin-settings-reset-modal-text">@L["Settings_ResetConfirmBody"]</p>
+                    <ul class="small text-muted" id="admin-settings-reset-modal-list">
+                        @if (resetOperational || ResetOperationalLocked)
+                        {
+                            <li>@L["Settings_ResetArea_Operational"]</li>
+                        }
+                        @if (resetStadium)
+                        {
+                            <li>@L["Settings_ResetArea_Stadium"]</li>
+                        }
+                        @if (resetUsers)
+                        {
+                            <li>@L["Settings_ResetArea_Users"]</li>
+                        }
+                        @if (resetCatalog)
+                        {
+                            <li>@L["Settings_ResetArea_Catalog"]</li>
+                        }
+                        @if (resetDirectories)
+                        {
+                            <li>@L["Settings_ResetArea_Directories"]</li>
+                        }
+                        @if (resetFirstRun)
+                        {
+                            <li>@L["Settings_ResetArea_FirstRun"]</li>
+                        }
+                    </ul>
+                    <div class="alert alert-warning py-2" id="admin-settings-reset-modal-keepadmin">
+                        <i class="bi bi-shield-check me-1"></i>@L["Settings_ResetKeepsAdmin"]
+                    </div>
+                    <label class="form-label fw-semibold" for="admin-settings-reset-confirm-input">
+                        @L["Settings_ResetConfirmPromptLabel"]
+                    </label>
+                    <input type="text" id="admin-settings-reset-confirm-input" class="form-control"
+                           @bind="resetConfirmText" @bind:event="oninput" autocomplete="off" disabled="@isResetting" />
+                </div>
+                <div class="modal-footer" id="admin-settings-reset-modal-footer">
+                    <button type="button" id="admin-settings-reset-cancel-btn" class="btn btn-secondary"
+                            @onclick="CloseResetModal" disabled="@isResetting">
+                        @L["Settings_PurgeCancel"]
+                    </button>
+                    <button type="button" id="admin-settings-reset-confirm-btn" class="btn btn-danger"
+                            @onclick="FactoryResetAsync" disabled="@(isResetting || !IsResetConfirmed)">
+                        @if (isResetting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        @L["Settings_ResetConfirmButton"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private string activeTab = "ticketing";
 
@@ -664,6 +799,24 @@
     private string purgeConfirmText = string.Empty;
     private bool IsPurgeConfirmed =>
         string.Equals(purgeConfirmText.Trim(), "DELETE", StringComparison.Ordinal);
+
+    // Factory reset (scoped) state
+    private bool resetOperational;
+    private bool resetStadium;
+    private bool resetUsers;
+    private bool resetCatalog;
+    private bool resetDirectories;
+    private bool resetFirstRun;
+    private bool showResetModal;
+    private bool isResetting;
+    private string resetConfirmText = string.Empty;
+
+    // Any deeper area forces the operational layer along with it (tickets/orders reference the data
+    // those areas remove), so the operational checkbox is auto-ticked and locked while one is selected.
+    private bool ResetOperationalLocked => resetStadium || resetUsers || resetCatalog || resetDirectories;
+    private bool AnyResetAreaSelected => resetOperational || ResetOperationalLocked || resetFirstRun;
+    private bool IsResetConfirmed =>
+        string.Equals(resetConfirmText.Trim(), "RESET EVERYTHING", StringComparison.Ordinal);
 
     // Backup & restore state
     private const long MaxBackupBytes = 512L * 1024 * 1024; // matches the API upload limit
@@ -1059,6 +1212,69 @@
         finally
         {
             isPurging = false;
+        }
+    }
+
+    private void OpenResetModal()
+    {
+        if (!AnyResetAreaSelected) return;
+        resetConfirmText = string.Empty;
+        showResetModal = true;
+    }
+
+    private void CloseResetModal()
+    {
+        if (isResetting) return;
+        showResetModal = false;
+    }
+
+    private async Task FactoryResetAsync()
+    {
+        if (!IsResetConfirmed || !AnyResetAreaSelected) return;
+        isResetting = true;
+        try
+        {
+            var request = new FactoryResetRequestDto
+            {
+                Operational = resetOperational,
+                StadiumStructure = resetStadium,
+                Users = resetUsers,
+                Catalog = resetCatalog,
+                Directories = resetDirectories,
+                ResetToFirstRun = resetFirstRun
+            };
+
+            var resp = await Api.PostAsJsonAsync("api/admin/maintenance/factory-reset", request);
+            if (resp.IsSuccessStatusCode)
+            {
+                var summary = await resp.Content.ReadFromJsonAsync<FactoryResetResultDto>();
+                showResetModal = false;
+
+                if (resetUsers)
+                {
+                    // Clearing accounts also invalidated our own refresh token — re-authenticate cleanly.
+                    Navigation.NavigateTo("/login", forceLoad: true);
+                    return;
+                }
+
+                ShowAlert(L["Settings_ResetSuccess", summary?.TotalRowsDeleted ?? 0], true);
+                resetOperational = resetStadium = resetUsers = resetCatalog = resetDirectories = resetFirstRun = false;
+                // Row counts shown in the backup panel are now stale.
+                await LoadBackupTablesAsync();
+            }
+            else
+            {
+                ShowAlert(L["Settings_ResetFailed"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to run factory reset");
+            ShowAlert(L["Settings_ResetFailed"], false);
+        }
+        finally
+        {
+            isResetting = false;
         }
     }
 

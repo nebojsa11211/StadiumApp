@@ -18,7 +18,8 @@ namespace StadiumDrinkOrdering.API.Controllers;
 [ApiController]
 public class VenueController : ControllerBase
 {
-    private const long MaxImageBytes = 4 * 1024 * 1024; // 4 MB
+    private const long MaxImageBytes = 4 * 1024 * 1024; // 4 MB (logos / photos)
+    private const long MaxMapImageBytes = 10 * 1024 * 1024; // 10 MB (stadium seat-map images run larger)
     private static readonly string[] AllowedImageTypes =
         { "image/png", "image/jpeg", "image/webp", "image/svg+xml" };
 
@@ -229,6 +230,49 @@ public class VenueController : ControllerBase
         return File(venue.Photo, venue.PhotoContentType ?? "application/octet-stream");
     }
 
+    // ---- Stadium seat-map image ----------------------------------------------------------
+    // The background the seat-map sectors are drawn on. Replaces the old hardcoded blueprint PNG:
+    // each installation uploads its own (via the drawing tool, part of first-run setup). GET is
+    // anonymous so the Customer app can read it cross-origin like the other branding images.
+
+    [HttpPost("stadium-image")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<IActionResult> UploadStadiumImage(IFormFile file)
+    {
+        var validation = ValidateImage(file, MaxMapImageBytes);
+        if (validation != null) return validation;
+
+        var venue = await GetOrCreateVenueAsync();
+        venue.StadiumImage = await ReadFileAsync(file);
+        venue.StadiumImageContentType = file.ContentType;
+        venue.UpdatedAt = DateTime.UtcNow;
+        venue.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpDelete("stadium-image")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<IActionResult> DeleteStadiumImage()
+    {
+        var venue = await GetOrCreateVenueAsync();
+        venue.StadiumImage = null;
+        venue.StadiumImageContentType = null;
+        venue.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpGet("stadium-image")]
+    public async Task<IActionResult> GetStadiumImage()
+    {
+        var venue = await _context.Venues.AsNoTracking().FirstOrDefaultAsync();
+        if (venue?.StadiumImage == null || venue.StadiumImage.Length == 0)
+            return NotFound();
+        return File(venue.StadiumImage, venue.StadiumImageContentType ?? "application/octet-stream");
+    }
+
     // ---- Club logo (venue-level) ---------------------------------------------------------
 
     [HttpPost("club-logo")]
@@ -419,12 +463,13 @@ public class VenueController : ControllerBase
         club.DisplayOrder = dto.DisplayOrder;
     }
 
-    private BadRequestObjectResult? ValidateImage(IFormFile? file)
+    private BadRequestObjectResult? ValidateImage(IFormFile? file, long? maxBytes = null)
     {
+        var limit = maxBytes ?? MaxImageBytes;
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
-        if (file.Length > MaxImageBytes)
-            return BadRequest("Image exceeds the 4 MB size limit.");
+        if (file.Length > limit)
+            return BadRequest($"Image exceeds the {limit / (1024 * 1024)} MB size limit.");
         if (!AllowedImageTypes.Contains(file.ContentType))
             return BadRequest("Unsupported image type. Use PNG, JPEG, WebP or SVG.");
         return null;
@@ -455,6 +500,7 @@ public class VenueController : ControllerBase
         Website = v.Website,
         HasPhoto = v.Photo != null && v.Photo.Length > 0,
         HasClubLogo = v.ClubLogo != null && v.ClubLogo.Length > 0,
+        HasStadiumImage = v.StadiumImage != null && v.StadiumImage.Length > 0,
         UpdatedAt = v.UpdatedAt,
         UpdatedBy = v.UpdatedBy,
         Clubs = v.Clubs

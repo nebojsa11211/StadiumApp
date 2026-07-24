@@ -183,6 +183,9 @@
         if (!s) return;
         const img = new Image();
         img.onload = function () { s.bg = img; draw(s); };
+        // No stadium image uploaded (404) or a load error: keep the background blank and still
+        // render the sectors on top of the plain canvas.
+        img.onerror = function () { s.bg = null; draw(s); };
         img.src = url;
     };
 

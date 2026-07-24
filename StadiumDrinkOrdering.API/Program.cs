@@ -515,6 +515,28 @@ app.MapHub<StadiumDrinkOrdering.API.Hubs.CustomerHub>("/customerHub");
 // Add health check endpoint
 app.MapHealthChecks("/health");
 
+// Anonymous diagnostic endpoint: which database is this API actually talking to? Surfaced by the
+// frontend apps as a small "Local vs Supabase" badge. Derived from the resolved connection string's
+// host so it stays truthful even under a Docker/production DefaultConnection override.
+var databaseLabel = "Unknown";
+try
+{
+    var host = new Npgsql.NpgsqlConnectionStringBuilder(connectionString).Host ?? string.Empty;
+    databaseLabel = host.Contains("supabase", StringComparison.OrdinalIgnoreCase) ? "Supabase"
+        : (string.IsNullOrWhiteSpace(host)
+            || host.Contains("localhost", StringComparison.OrdinalIgnoreCase)
+            || host.Contains("127.0.0.1")) ? "Local"
+        : host;
+}
+catch { /* leave as Unknown if the connection string can't be parsed */ }
+
+// Anonymous object (camelCase JSON): matched by property name in the UI's SystemInfoDto.
+app.MapGet("/api/system/info", () => Results.Ok(new
+{
+    database = databaseLabel,
+    environment = app.Environment.EnvironmentName
+})).AllowAnonymous();
+
 // ================================================================================================
 // OPEN THE LISTENING SOCKET *FIRST*, then warm the database.
 // ================================================================================================

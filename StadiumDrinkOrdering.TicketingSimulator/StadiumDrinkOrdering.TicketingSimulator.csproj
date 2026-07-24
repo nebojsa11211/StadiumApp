@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StadiumDrinkOrdering.Shared\StadiumDrinkOrdering.Shared.csproj" />
+    <ProjectReference Include="..\StadiumDrinkOrdering.UI\StadiumDrinkOrdering.UI.csproj" />
   </ItemGroup>
 
 </Project>

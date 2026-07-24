@@ -281,8 +281,11 @@
     // --- Rendering --------------------------------------------------------------
 
     // The real stadium map lives in the SAME 1170x898 coordinate space as the sector
-    // percentages, so we can crop it directly to the sector region for context.
-    const BG_SRC = '/images/stadium-blueprint.png';
+    // percentages, so we can crop it directly to the sector region for context. The image is the
+    // venue's uploaded stadium image; the Blazor host provides its absolute URL (the API is a
+    // different origin) via setStadiumMapImageUrl. When none is set / it 404s, previews render
+    // without the map crop (see the naturalWidth guard in drawPreview).
+    window.setStadiumMapImageUrl = function (url) { window.stadiumMapImageUrl = url || null; };
     let bgImage = null;
 
     window.renderSectorPreview = function (canvasId, sectorJson, marginFrac, tipTemplate, dotNetRef, highlight) {
@@ -312,7 +315,7 @@
             bgImage = new Image();
             bgImage.onload = () => drawPreview(canvas, sector, marginFrac || 0);
             bgImage.onerror = () => drawPreview(canvas, sector, marginFrac || 0);
-            bgImage.src = BG_SRC;
+            bgImage.src = window.stadiumMapImageUrl || '/api/venue/stadium-image';
         }
         drawPreview(canvas, sector, marginFrac || 0);
     };

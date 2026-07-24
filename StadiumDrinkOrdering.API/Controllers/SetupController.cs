@@ -33,11 +33,15 @@ public class SetupController : ControllerBase
         var hasStructure = await _context.Tribunes.AnyAsync()
                            || await _context.StadiumSectorOverlays.AnyAsync();
 
+        // Cheap existence check — never pulls the (potentially multi-MB) image blob into memory.
+        var hasStadiumImage = await _context.Venues.AnyAsync(v => v.StadiumImage != null);
+
         var venue = await _context.Venues.AsNoTracking().FirstOrDefaultAsync();
 
         var dto = new SetupStatusDto
         {
             HasStadiumStructure = hasStructure,
+            HasStadiumImage = hasStadiumImage,
             HasCategories = await _context.Categories.AnyAsync(),
             HasDrinks = await _context.Drinks.AnyAsync(),
             HasStaff = await _context.Users.AnyAsync(u =>

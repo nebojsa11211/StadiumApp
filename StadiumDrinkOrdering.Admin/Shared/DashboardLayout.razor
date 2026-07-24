@@ -4,13 +4,19 @@
 @inject IStringLocalizer<SharedResources> L
 
 @* Modern dashboard shell: shared sidebar (admin-dashboard-sidebar) + page content in dash-main. *@
-<div class="dash" id="admin-dashboard">
+<div class="dash dashboard-shell-root" id="admin-dashboard">
 
     @* ============================ SIDEBAR ============================ *@
     <aside class="dash-sidebar" id="admin-dashboard-sidebar">
         <div class="dash-brand" id="admin-dashboard-brand">
             <div class="dash-brand-logo" id="admin-dashboard-brand-logo" aria-hidden="true">
-                <i class="bi bi-building"></i>
+                @* Inline SVG stadium mark: self-contained so the logo renders even if the
+                   CDN icon font fails to load. currentColor inherits the white brand colour. *@
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="12" cy="10" rx="9" ry="5.5" stroke="currentColor" stroke-width="1.6" />
+                    <ellipse cx="12" cy="10" rx="3.6" ry="2.2" fill="currentColor" fill-opacity="0.4" stroke="currentColor" stroke-width="1.2" />
+                    <path d="M3 10v3.5c0 1.6 4.03 3.2 9 3.2s9-1.6 9-3.2V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
             </div>
             <div class="dash-brand-text" id="admin-dashboard-brand-text">
                 <span class="dash-brand-name">STADIUM</span>
@@ -105,10 +111,12 @@
                 </div>
             </div>
 
-            <div class="dash-profile" id="admin-dashboard-profile">
+            <div class="dash-profile" id="admin-dashboard-profile" role="button" tabindex="0"
+                 title="@L["Profile_ViewDetails"]" @onclick="OpenProfile">
                 <div class="dash-avatar" id="admin-dashboard-avatar">@GetInitials()</div>
                 <div class="dash-profile-info" id="admin-dashboard-profile-info">
-                    <button class="dash-logout" id="admin-dashboard-logout-btn" @onclick="HandleLogout">@L["Logout"]</button>
+                    <button class="dash-logout" id="admin-dashboard-logout-btn"
+                            @onclick="HandleLogout" @onclick:stopPropagation="true">@L["Logout"]</button>
                     <div class="dash-profile-email">@_userEmail</div>
                 </div>
             </div>
@@ -132,7 +140,6 @@
                 <i class="bi bi-exclamation-triangle-fill"></i>
                 <span class="flex-grow-1">@L["Setup_BannerText"]</span>
                 <a href="admin/setup" class="btn btn-sm btn-warning" id="admin-dashboard-setup-banner-link">@L["Setup_BannerAction"]</a>
-                <button type="button" class="btn-close" aria-label="Dismiss" id="admin-dashboard-setup-banner-dismiss" @onclick="DismissSetupBanner"></button>
             </div>
         }
 
@@ -151,4 +158,57 @@
         }
         @Body
     </main>
+
+    <StadiumDrinkOrdering.UI.Components.DatabaseBadge />
+
+    @* ============================ PROFILE OVERLAY ============================ *@
+    @if (_showProfile)
+    {
+        <div class="dash-profile-overlay" id="admin-dashboard-profile-overlay" @onclick="CloseProfile">
+            <div class="dash-profile-modal" id="admin-dashboard-profile-modal" @onclick:stopPropagation="true">
+                <button type="button" class="dash-profile-modal-close" id="admin-dashboard-profile-modal-close"
+                        aria-label="@L["Close"]" @onclick="CloseProfile">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+
+                <div class="dash-profile-modal-head" id="admin-dashboard-profile-modal-head">
+                    <div class="dash-avatar dash-profile-modal-avatar" id="admin-dashboard-profile-modal-avatar">@GetInitials()</div>
+                    <div class="dash-profile-modal-title">@L["Profile_Title"]</div>
+                    <div class="dash-profile-modal-email" id="admin-dashboard-profile-modal-email">@_userEmail</div>
+                </div>
+
+                <dl class="dash-profile-modal-body" id="admin-dashboard-profile-modal-body">
+                    <div class="dash-profile-row">
+                        <dt><i class="bi bi-envelope"></i> @L["Profile_Email"]</dt>
+                        <dd id="admin-dashboard-profile-field-email">@_userEmail</dd>
+                    </div>
+                    <div class="dash-profile-row">
+                        <dt><i class="bi bi-shield-lock"></i> @L["Profile_Role"]</dt>
+                        <dd id="admin-dashboard-profile-field-role">@(_userRole ?? "—")</dd>
+                    </div>
+                    <div class="dash-profile-row">
+                        <dt><i class="bi bi-person-badge"></i> @L["Profile_UserId"]</dt>
+                        <dd id="admin-dashboard-profile-field-id">@(_userId ?? "—")</dd>
+                    </div>
+                    <div class="dash-profile-row">
+                        <dt><i class="bi bi-translate"></i> @L["Profile_Language"]</dt>
+                        <dd id="admin-dashboard-profile-field-lang">@_lang.ToUpperInvariant()</dd>
+                    </div>
+                    <div class="dash-profile-row">
+                        <dt><i class="bi bi-check-circle"></i> @L["Profile_Status"]</dt>
+                        <dd id="admin-dashboard-profile-field-status">
+                            <span class="dash-profile-status-dot"></span>@L["Profile_Authenticated"]
+                        </dd>
+                    </div>
+                </dl>
+
+                <div class="dash-profile-modal-foot" id="admin-dashboard-profile-modal-foot">
+                    <button type="button" class="dash-profile-logout-btn" id="admin-dashboard-profile-modal-logout"
+                            @onclick="HandleLogout">
+                        <i class="bi bi-box-arrow-right"></i> @L["Logout"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 </div>

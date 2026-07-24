@@ -16,7 +16,9 @@
 </div>
 
 @code {
-    private string backgroundImageUrl = "/images/stadium-blueprint.png";
+    // Null until resolved from the venue; no default image ships, so the canvas stays blank
+    // when the venue has no stadium image uploaded.
+    private string? backgroundImageUrl;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -55,6 +57,7 @@
             // Read-only: no active tool, pointer-events disabled on the canvas
             await JSRuntime.InvokeVoidAsync("setDrawingTool", "");
 
+            await LoadStadiumImageAsync();
             if (!string.IsNullOrEmpty(backgroundImageUrl))
             {
                 await JSRuntime.InvokeVoidAsync("setBackgroundImage", backgroundImageUrl);
@@ -65,6 +68,25 @@
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error initializing stadium canvas view");
+        }
+    }
+
+    /// <summary>Resolves the venue's uploaded stadium image URL (cache-busted), or leaves the
+    /// background blank when the venue has none.</summary>
+    private async Task LoadStadiumImageAsync()
+    {
+        try
+        {
+            var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+            var venue = await HttpClient.GetFromJsonAsync<StadiumDrinkOrdering.Shared.DTOs.VenueDto>($"{apiBaseUrl}/api/venue");
+            backgroundImageUrl = venue?.HasStadiumImage == true
+                ? $"{apiBaseUrl}/api/venue/stadium-image?v={DateTime.UtcNow.Ticks}"
+                : null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not load venue stadium image for canvas view");
+            backgroundImageUrl = null;
         }
     }
 

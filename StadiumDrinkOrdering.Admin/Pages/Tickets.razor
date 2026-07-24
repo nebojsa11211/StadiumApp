@@ -366,11 +366,14 @@
                                 </div>
                             }
 
-                            <!-- Stadium blueprint locator: real drawing-tool image with a pin on this seat's sector -->
+                            <!-- Stadium seat locator: the venue's uploaded stadium image with a pin on this
+                                 seat's sector. Hidden entirely when no stadium image has been uploaded. -->
+                            @if (hasStadiumImage == true)
+                            {
                             <div class="seatmap" id="admin-tickets-detail-seatmap">
                                 <span class="section-label">@L["Tickets_DetailSeatLocation"]</span>
                                 <div class="seatmap__frame" id="admin-tickets-detail-seatmap-frame">
-                                    <img class="seatmap__img" src="/images/stadium-blueprint.png"
+                                    <img class="seatmap__img" src="@StadiumImageUrl"
                                          alt="@L["Tickets_DetailSeatLocation"]" id="admin-tickets-detail-seatmap-img" />
                                     @if (matchedOverlay != null)
                                     {
@@ -396,6 +399,7 @@
                                     }
                                 </span>
                             </div>
+                            }
                         </div>
 
                         <!-- RIGHT: facts + spending breakdown -->

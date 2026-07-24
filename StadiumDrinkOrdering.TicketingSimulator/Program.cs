@@ -39,6 +39,16 @@ builder.Services.AddHttpClient<SimulatorApiClient>(client =>
     ServerCertificateCustomValidationCallback = (_, _, _, _) => true
 });
 
+// Typed client for the small "which database" diagnostic badge (anonymous /api/system/info).
+builder.Services.AddHttpClient<StadiumDrinkOrdering.UI.SystemInfoClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

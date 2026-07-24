@@ -73,6 +73,17 @@ public class Venue
     public string? PhotoContentType { get; set; }
 
     /// <summary>
+    /// The stadium seat-map background image — the picture the 1170x898 blueprint sectors are drawn
+    /// on top of in the drawing tool and every seat-map viewer. Stored in-DB (PostgreSQL bytea)
+    /// alongside its content type. Null until a club uploads its own; no default image ships, so the
+    /// canvas is empty until this is set (part of first-run setup).
+    /// </summary>
+    public byte[]? StadiumImage { get; set; }
+
+    [StringLength(100)]
+    public string? StadiumImageContentType { get; set; }
+
+    /// <summary>
     /// Master switch for this installation's direct-to-customer ticket sales. When false the
     /// Customer app hides its buy flow and the cart/order API rejects new purchases, so tickets
     /// enter the system only via the external ticketing integration. Defaults to true.

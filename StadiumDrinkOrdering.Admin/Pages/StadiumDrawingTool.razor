@@ -4,9 +4,13 @@
 @using System.Text.Json
 @using System.Net.Http
 @using System.Net.Http.Json
+@using System.Net.Http.Headers
 @using StadiumDrinkOrdering.Admin.Components.Stadium
+@using StadiumDrinkOrdering.Shared.Authentication.Interfaces
 @inject IJSRuntime JSRuntime
 @inject HttpClient HttpClient
+@inject IHttpClientFactory HttpClientFactory
+@inject ITokenStorageService TokenStorage
 @inject NavigationManager NavigationManager
 @inject IConfiguration Configuration
 @inject ILogger<StadiumDrawingTool> Logger
@@ -307,11 +311,49 @@
             IsVisible = true
         });
 
-        // Set default stadium image
-        backgroundImageUrl = "/images/stadium-blueprint.png";
+        // Load the venue's uploaded stadium image, if any. No default ships — an empty
+        // backgroundImageUrl leaves the canvas blank until a club uploads its own image
+        // (part of first-run setup).
+        await LoadStadiumImageAsync();
 
         // Load sector overlay configuration
         await LoadSectorOverlays();
+    }
+
+    // The shared HttpClient does not carry the JWT (the AuthenticationHandler runs in a different DI
+    // scope), so — like VenueSettings — build the AuthenticatedClient and attach the circuit token
+    // ourselves for the authorized stadium-image write calls.
+    private HttpClient AuthApi
+    {
+        get
+        {
+            var client = HttpClientFactory.CreateClient("AuthenticatedClient");
+            var token = TokenStorage.Token;
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return client;
+        }
+    }
+
+    private string ApiBaseUrl =>
+        Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+
+    /// <summary>Loads the venue's saved stadium image URL (cache-busted) into the canvas background,
+    /// or leaves it blank when the venue has none.</summary>
+    private async Task LoadStadiumImageAsync()
+    {
+        try
+        {
+            var venue = await AuthApi.GetFromJsonAsync<StadiumDrinkOrdering.Shared.DTOs.VenueDto>("api/venue");
+            backgroundImageUrl = venue?.HasStadiumImage == true
+                ? $"{ApiBaseUrl}/api/venue/stadium-image?v={DateTime.UtcNow.Ticks}"
+                : string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not load venue stadium image; starting with a blank canvas");
+            backgroundImageUrl = string.Empty;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -354,7 +396,7 @@
                 // Initialize with no tool selected (empty string = default state, allows click-to-edit on sectors)
                 await JSRuntime.InvokeVoidAsync("setDrawingTool", "");
 
-                // Load default stadium image
+                // Apply the venue's stadium image if one was uploaded; otherwise the canvas stays blank.
                 if (!string.IsNullOrEmpty(backgroundImageUrl))
                 {
                     await JSRuntime.InvokeVoidAsync("setBackgroundImage", backgroundImageUrl);
@@ -645,20 +687,58 @@
     private async Task HandleImageUpload(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        if (file != null)
-        {
-            var buffer = new byte[file.Size];
-            await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).ReadAsync(buffer);
-            var base64 = Convert.ToBase64String(buffer);
-            backgroundImageUrl = $"data:{file.ContentType};base64,{base64}";
+        if (file == null) return;
 
-            await JSRuntime.InvokeVoidAsync("setBackgroundImage", backgroundImageUrl);
-            ShowAlert("Stadium image uploaded successfully!", "success");
+        try
+        {
+            // Persist the image on the venue (so every viewer and a page reload see it) rather than
+            // holding it client-side. The canvas then points at the saved endpoint.
+            using var content = new MultipartFormDataContent();
+            var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            var streamContent = new StreamContent(stream);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(
+                string.IsNullOrEmpty(file.ContentType) ? "application/octet-stream" : file.ContentType);
+            content.Add(streamContent, "file", file.Name);
+
+            var resp = await AuthApi.PostAsync("api/venue/stadium-image", content);
+            if (resp.IsSuccessStatusCode)
+            {
+                backgroundImageUrl = $"{ApiBaseUrl}/api/venue/stadium-image?v={DateTime.UtcNow.Ticks}";
+                await JSRuntime.InvokeVoidAsync("setBackgroundImage", backgroundImageUrl);
+                ShowAlert("Stadium image uploaded successfully!", "success");
+            }
+            else
+            {
+                var err = await resp.Content.ReadAsStringAsync();
+                ShowAlert($"Error uploading stadium image: {err}", "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error uploading stadium image");
+            ShowAlert($"Error uploading stadium image: {ex.Message}", "danger");
         }
     }
 
     private async Task ClearImage()
     {
+        try
+        {
+            var resp = await AuthApi.DeleteAsync("api/venue/stadium-image");
+            if (!resp.IsSuccessStatusCode)
+            {
+                var err = await resp.Content.ReadAsStringAsync();
+                ShowAlert($"Error clearing stadium image: {err}", "danger");
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error clearing stadium image");
+            ShowAlert($"Error clearing stadium image: {ex.Message}", "danger");
+            return;
+        }
+
         backgroundImageUrl = string.Empty;
         await JSRuntime.InvokeVoidAsync("clearBackgroundImage");
         ShowAlert("Stadium image cleared!", "info");

@@ -57,6 +57,9 @@ builder.Services.AddTransient<BearerTokenHandler>();
 builder.Services.AddHttpClient<RunnerApiService>(client => client.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<BearerTokenHandler>();
 
+// Typed client for the small "which database" diagnostic badge (anonymous /api/system/info).
+builder.Services.AddHttpClient<StadiumDrinkOrdering.UI.SystemInfoClient>(client => client.BaseAddress = new Uri(apiBaseUrl));
+
 var host = builder.Build();
 
 // Apply the persisted UI culture (default Croatian) before the first render. The choice is stored

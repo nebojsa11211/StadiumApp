@@ -1,0 +1,41 @@
+@namespace StadiumDrinkOrdering.UI.Components
+@using StadiumDrinkOrdering.UI
+@inject SystemInfoClient SystemInfo
+
+@* Small fixed-corner badge showing which database the API is talking to (Local vs Supabase).
+   Purely diagnostic — hides itself if the info can't be fetched. Placed once per app layout.
+   Position is configurable so it can dodge each app's chrome (e.g. the Runner's bottom tab bar). *@
+@if (_info is not null)
+{
+    <div id="db-badge"
+         title="@($"API database: {_info.Database} · {_info.Environment}")"
+         style="position:fixed; z-index:2000; @PositionCss display:inline-flex;
+                align-items:center; gap:6px; padding:4px 9px; border-radius:999px;
+                font-size:11px; font-weight:600; line-height:1; letter-spacing:.2px;
+                color:#e5e7eb; background:rgba(17,24,39,.88); border:1px solid @Accent;
+                box-shadow:0 2px 8px rgba(0,0,0,.25); pointer-events:none; user-select:none;
+                font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
+        <span style="width:7px; height:7px; border-radius:50%; background:@Accent;
+                     box-shadow:0 0 6px @Accent;"></span>
+        <span>DB: @_info.Database</span>
+    </div>
+}
+
+@code {
+    /// <summary>Fixed-position offsets, e.g. "left:10px; bottom:10px;". Defaults to bottom-left.</summary>
+    [Parameter] public string PositionCss { get; set; } = "left:10px; bottom:10px;";
+
+    private SystemInfoDto? _info;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _info = await SystemInfo.GetSystemInfoAsync();
+    }
+
+    private string Accent => _info?.Database switch
+    {
+        "Supabase" => "#3ecf8e", // Supabase green
+        "Local"    => "#f59e0b", // amber = local dev DB
+        _          => "#9ca3af"  // neutral grey for anything else
+    };
+}

@@ -58,6 +58,18 @@ builder.Services.AddHttpClient<IStaffApiService, StaffApiService>(client =>
     return handler;
 });
 
+// Typed client for the small "which database" diagnostic badge (anonymous /api/system/info).
+builder.Services.AddHttpClient<StadiumDrinkOrdering.UI.SystemInfoClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    return handler;
+});
+
 // ✅ Add standardized shared authentication services with refresh token support.
 // Registered explicitly (rather than via the 3-generic AddSharedAuthentication overload) because
 // StaffSecureApiService needs a string apiBaseUrl constructor argument and is registered through the

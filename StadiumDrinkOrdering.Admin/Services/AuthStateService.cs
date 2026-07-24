@@ -347,6 +347,8 @@ public interface IAuthStateService
 {
     bool IsAuthenticated { get; }
     string? UserEmail { get; }
+    string? UserRole { get; }
+    string? UserId { get; }
     event Action? OnAuthenticationStateChanged;
     Task InitializeAsync();
     Task LoginAsync(string token, string email);

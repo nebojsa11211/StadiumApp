@@ -66,6 +66,30 @@
   <data name="Logout" xml:space="preserve">
     <value>Odjava</value>
   </data>
+  <data name="Profile_Title" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="Profile_ViewDetails" xml:space="preserve">
+    <value>Prikaži podatke profila</value>
+  </data>
+  <data name="Profile_Email" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="Profile_Role" xml:space="preserve">
+    <value>Uloga</value>
+  </data>
+  <data name="Profile_UserId" xml:space="preserve">
+    <value>ID korisnika</value>
+  </data>
+  <data name="Profile_Language" xml:space="preserve">
+    <value>Jezik</value>
+  </data>
+  <data name="Profile_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Profile_Authenticated" xml:space="preserve">
+    <value>Prijavljen</value>
+  </data>
   <data name="Register" xml:space="preserve">
     <value>Registracija</value>
   </data>
@@ -521,7 +545,7 @@
     <value>Učitajte sliku stadiona da biste počeli s crtanjem</value>
   </data>
   <data name="Drawing_BlueprintLoaded" xml:space="preserve">
-    <value>✅ Plan stadiona učitan</value>
+    <value>✅ Slika stadiona učitana</value>
   </data>
   <data name="Drawing_ClearBtn" xml:space="preserve">
     <value>Očisti</value>
@@ -4197,8 +4221,8 @@
   <data name="Setup_Dismiss" xml:space="preserve"><value>Sakrij podsjetnik</value></data>
   <data name="Setup_BannerText" xml:space="preserve"><value>Vaš stadion još nije potpuno postavljen. Nekoliko osnovnih stvari treba postaviti.</value></data>
   <data name="Setup_BannerAction" xml:space="preserve"><value>Dovrši postavljanje</value></data>
-  <data name="Setup_Item_Stadium_Title" xml:space="preserve"><value>Struktura stadiona</value></data>
-  <data name="Setup_Item_Stadium_Desc" xml:space="preserve"><value>Uvezite ili nacrtajte raspored stadiona (tribine, sektore i sjedala). O tome ovisi sve ostalo.</value></data>
+  <data name="Setup_Item_Stadium_Title" xml:space="preserve"><value>Raspored i slika stadiona</value></data>
+  <data name="Setup_Item_Stadium_Desc" xml:space="preserve"><value>Učitajte sliku rasporeda sjedala vašeg stadiona i preko nje nacrtajte raspored — tribine, sektore i sjedala. O tome ovisi sve ostalo.</value></data>
   <data name="Setup_Item_Venue_Title" xml:space="preserve"><value>Domaći klub i adresa</value></data>
   <data name="Setup_Item_Venue_Desc" xml:space="preserve"><value>Postavite naziv domaćeg kluba i adresu stadiona koja se prikazuje kupcima.</value></data>
   <data name="Setup_Item_Drinks_Title" xml:space="preserve"><value>Kategorije pića i pića</value></data>
@@ -4350,6 +4374,23 @@
   <data name="Settings_PurgeCancel" xml:space="preserve"><value>Odustani</value></data>
   <data name="Settings_PurgeSuccess" xml:space="preserve"><value>Svi transakcijski podaci izbrisani ({0} redaka uklonjeno).</value></data>
   <data name="Settings_PurgeFailed" xml:space="preserve"><value>Brisanje podataka nije uspjelo. Nisu napravljene nikakve promjene.</value></data>
+  <data name="Settings_ResetTitle" xml:space="preserve"><value>Tvorničko vraćanje</value></data>
+  <data name="Settings_ResetSubtitle" xml:space="preserve"><value>Obrišite cijela područja sustava i počnite ispočetka. Odaberite točno što ukloniti — sve što nije odabrano ostaje.</value></data>
+  <data name="Settings_ResetKeepsAdmin" xml:space="preserve"><value>Vaš administratorski račun ostaje — ponovno ćete se prijaviti istom e-poštom i lozinkom.</value></data>
+  <data name="Settings_ResetArea_Operational" xml:space="preserve"><value>Ulaznice, narudžbe, događaji, sezone i novčanici</value></data>
+  <data name="Settings_ResetArea_Stadium" xml:space="preserve"><value>Struktura stadiona (tribine, prstenovi, sektori, sjedala)</value></data>
+  <data name="Settings_ResetArea_Users" xml:space="preserve"><value>Svi računi osim vašeg (osoblje, konobari, navijači)</value></data>
+  <data name="Settings_ResetArea_Catalog" xml:space="preserve"><value>Katalog pića (pića, kategorije, zalihe)</value></data>
+  <data name="Settings_ResetArea_Directories" xml:space="preserve"><value>Imenik timova i klubova</value></data>
+  <data name="Settings_ResetArea_FirstRun" xml:space="preserve"><value>Nakon toga vrati na vodič za početno postavljanje</value></data>
+  <data name="Settings_ResetOperationalRequired" xml:space="preserve"><value>obavezno za gornja područja</value></data>
+  <data name="Settings_ResetButton" xml:space="preserve"><value>Tvorničko vraćanje…</value></data>
+  <data name="Settings_ResetConfirmTitle" xml:space="preserve"><value>Potvrdite tvorničko vraćanje</value></data>
+  <data name="Settings_ResetConfirmBody" xml:space="preserve"><value>Ovo trajno briše sljedeća područja. Ne može se poništiti.</value></data>
+  <data name="Settings_ResetConfirmPromptLabel" xml:space="preserve"><value>Upišite RESET EVERYTHING za potvrdu</value></data>
+  <data name="Settings_ResetConfirmButton" xml:space="preserve"><value>Da, vrati sada</value></data>
+  <data name="Settings_ResetSuccess" xml:space="preserve"><value>Tvorničko vraćanje dovršeno ({0} redaka uklonjeno).</value></data>
+  <data name="Settings_ResetFailed" xml:space="preserve"><value>Tvorničko vraćanje nije uspjelo. Nisu napravljene nikakve promjene.</value></data>
   <data name="Settings_BackupSection" xml:space="preserve"><value>Sigurnosna kopija i vraćanje</value></data>
   <data name="Settings_BackupSubtitle" xml:space="preserve"><value>Spremite snimku baze podataka u datoteku ili vratite odabrane tablice iz datoteke sigurnosne kopije.</value></data>
   <data name="Settings_BackupExportTitle" xml:space="preserve"><value>Izradi sigurnosnu kopiju</value></data>

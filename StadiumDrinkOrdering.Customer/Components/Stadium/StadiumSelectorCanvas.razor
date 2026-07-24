@@ -1,8 +1,10 @@
 @using System.Text.Json
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Shared.Configuration
 @inject IApiService ApiService
 @inject IJSRuntime JSRuntime
+@inject IConfiguration Configuration
 @implements IDisposable
 
 @* Read-only stadium blueprint with clickable sector overlays (the admin drawing-tool canvas,
@@ -34,7 +36,10 @@
         try
         {
             await JSRuntime.InvokeVoidAsync("stadiumSelectorInit", "customer-stadium-canvas", _ref);
-            await JSRuntime.InvokeVoidAsync("stadiumSelectorSetBackground", "customer-stadium-canvas", "/images/stadium-blueprint.png");
+            // The seat-map background is the venue's uploaded stadium image (no default ships). The
+            // JS ignores a missing/404 image, so the sectors still render on a plain background.
+            var apiBaseUrl = AppConfiguration.ResolveApiBaseUrl(Configuration).TrimEnd('/');
+            await JSRuntime.InvokeVoidAsync("stadiumSelectorSetBackground", "customer-stadium-canvas", $"{apiBaseUrl}/api/venue/stadium-image");
             await LoadAndDrawAsync();
             _initialized = true;
         }

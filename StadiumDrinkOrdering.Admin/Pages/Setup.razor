@@ -67,12 +67,6 @@
             <button id="admin-setup-refresh-btn" class="btn btn-outline-secondary btn-sm" @onclick="RefreshAsync">
                 <i class="bi bi-arrow-clockwise me-1"></i>@L["Setup_Refresh"]
             </button>
-            @if (!status.IsComplete && !status.Dismissed)
-            {
-                <button id="admin-setup-dismiss-btn" class="btn btn-outline-secondary btn-sm" @onclick="DismissAsync">
-                    <i class="bi bi-bell-slash me-1"></i>@L["Setup_Dismiss"]
-                </button>
-            }
         </div>
     }
 </div>
@@ -86,8 +80,8 @@
         ? Enumerable.Empty<SetupItem>()
         : new[]
         {
-            new SetupItem("stadium", status.HasStadiumStructure,
-                L["Setup_Item_Stadium_Title"], L["Setup_Item_Stadium_Desc"], "admin/stadium-structure"),
+            new SetupItem("stadium", status.HasStadiumStructure && status.HasStadiumImage,
+                L["Setup_Item_Stadium_Title"], L["Setup_Item_Stadium_Desc"], "admin/stadium-drawing-tool"),
             new SetupItem("venue", status.HasVenueIdentity,
                 L["Setup_Item_Venue_Title"], L["Setup_Item_Venue_Desc"], "admin/venue-settings"),
             new SetupItem("drinks", status.HasCategories && status.HasDrinks,
@@ -107,8 +101,6 @@
     private void OnChanged() => InvokeAsync(StateHasChanged);
 
     private Task RefreshAsync() => SetupState.ReloadAsync();
-
-    private Task DismissAsync() => SetupState.DismissAsync();
 
     public void Dispose() => SetupState.OnChanged -= OnChanged;
 }

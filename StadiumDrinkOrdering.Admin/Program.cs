@@ -122,6 +122,19 @@ builder.Services.AddHttpClient("ApiClient", client =>
     return handler;
 });
 
+// Typed client for the small "which database" diagnostic badge (anonymous /api/system/info).
+builder.Services.AddHttpClient<StadiumDrinkOrdering.UI.SystemInfoClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler();
+    if (builder.Environment.IsDevelopment() || containerEnv == "true")
+        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    return handler;
+});
+
 // Register throttling service as singleton for persistent state
 builder.Services.AddSingleton<IThrottlingService, ThrottlingService>();
 

@@ -87,6 +87,18 @@ public partial class Tickets : ComponentBase
     // Stadium blueprint locator: cached sector overlays + the overlay matching the open ticket's seat.
     private List<StadiumSectorOverlay>? sectorOverlays;
     private StadiumSectorOverlay? matchedOverlay;
+
+    // Null until resolved; the seat locator is hidden while false (no stadium image uploaded).
+    private bool? hasStadiumImage;
+
+    private string StadiumImageUrl
+    {
+        get
+        {
+            var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+            return $"{apiBaseUrl}/api/venue/stadium-image";
+        }
+    }
     // Exact pin for the individual seat within the matched sector (blueprint %). Null => pin the sector centre.
     private double? seatPinXPercent;
     private double? seatPinYPercent;
@@ -430,9 +442,24 @@ public partial class Tickets : ComponentBase
 
         try
         {
+            var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+
+            // Resolve once whether a stadium image exists — the locator is only shown when it does.
+            if (hasStadiumImage == null)
+            {
+                try
+                {
+                    var venue = await HttpClient.GetFromJsonAsync<VenueDto>($"{apiBaseUrl}/api/venue");
+                    hasStadiumImage = venue?.HasStadiumImage ?? false;
+                }
+                catch
+                {
+                    hasStadiumImage = false;
+                }
+            }
+
             if (sectorOverlays == null)
             {
-                var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
                 var jsonOptions = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true,

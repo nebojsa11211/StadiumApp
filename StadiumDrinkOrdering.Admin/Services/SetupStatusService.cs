@@ -27,8 +27,8 @@ public class SetupStatusService
     /// <summary>Last loaded status, or null before the first successful load / when unauthenticated.</summary>
     public SetupStatusDto? Status { get; private set; }
 
-    /// <summary>Show the setup banner: we have a status, it's incomplete, and not dismissed.</summary>
-    public bool ShouldShowBanner => Status is { IsComplete: false, Dismissed: false };
+    /// <summary>Show the setup banner whenever setup is incomplete. The banner is not dismissible.</summary>
+    public bool ShouldShowBanner => Status is { IsComplete: false };
 
     public Task EnsureLoadedAsync() => _loadTask ??= LoadAsync();
 
@@ -39,30 +39,13 @@ public class SetupStatusService
     {
         try
         {
-            Status = await _api.GetAsync<SetupStatusDto>("setup/status");
+            Status = await _api.GetAsync<SetupStatusDto>("api/setup/status");
         }
         catch (Exception ex)
         {
             // Never take the shell down over a setup check — just don't show the banner.
             _logger.LogWarning(ex, "Failed to load setup status");
             Status = null;
-        }
-
-        OnChanged?.Invoke();
-    }
-
-    /// <summary>Dismiss the banner server-side and update local state.</summary>
-    public async Task DismissAsync()
-    {
-        try
-        {
-            await _api.PostAsync("setup/dismiss");
-            if (Status != null)
-                Status.Dismissed = true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Failed to dismiss setup banner");
         }
 
         OnChanged?.Invoke();

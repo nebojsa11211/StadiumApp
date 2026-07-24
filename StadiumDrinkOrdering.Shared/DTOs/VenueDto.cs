@@ -25,6 +25,9 @@ public class VenueDto
 
     /// <summary>True when a club logo is stored; fetch it from the club-logo endpoint.</summary>
     public bool HasClubLogo { get; set; }
+
+    /// <summary>True when a stadium seat-map image is stored; fetch it from the stadium-image endpoint.</summary>
+    public bool HasStadiumImage { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public string? UpdatedBy { get; set; }
 

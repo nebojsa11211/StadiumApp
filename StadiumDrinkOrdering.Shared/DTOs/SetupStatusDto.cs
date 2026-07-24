@@ -12,6 +12,10 @@ public class SetupStatusDto
     /// map everything else depends on.</summary>
     public bool HasStadiumStructure { get; set; }
 
+    /// <summary>A stadium seat-map background image has been uploaded for this venue (no default
+    /// ships — each club uploads its own in the drawing tool).</summary>
+    public bool HasStadiumImage { get; set; }
+
     /// <summary>At least one drink category exists.</summary>
     public bool HasCategories { get; set; }
 
@@ -29,5 +33,5 @@ public class SetupStatusDto
 
     /// <summary>True once every prerequisite is met.</summary>
     public bool IsComplete =>
-        HasStadiumStructure && HasCategories && HasDrinks && HasStaff && HasVenueIdentity;
+        HasStadiumStructure && HasStadiumImage && HasCategories && HasDrinks && HasStaff && HasVenueIdentity;
 }

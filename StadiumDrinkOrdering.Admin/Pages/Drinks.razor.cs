@@ -52,6 +52,9 @@ public partial class Drinks : ComponentBase
     // Category management overlay (replaces the former standalone /categories page)
     private bool showCategoryManager = false;
 
+    // "Generate common categories & drinks" starter-catalog action
+    private bool isGeneratingCatalog = false;
+
     // Below this level a drink is flagged as low stock (badge, filter, metric).
     private const int LowStockThreshold = 10;
 
@@ -360,6 +363,43 @@ public partial class Drinks : ComponentBase
             {
                 ShowAlert("Failed to delete drink", "danger");
             }
+        }
+    }
+
+    /// <summary>
+    /// Fills an empty (or partial) catalog with the standard set of categories and drinks. The API
+    /// side is idempotent — anything already present is skipped — so pressing this twice is harmless.
+    /// </summary>
+    private async Task GenerateCatalog()
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", L["Drinks_GenerateCatalogConfirm"].Value))
+            return;
+
+        isGeneratingCatalog = true;
+        try
+        {
+            var result = await ApiService.SeedCatalogAsync();
+            if (result == null)
+            {
+                ShowAlert(L["Drinks_GenerateCatalogFailed"], "danger");
+                return;
+            }
+
+            await LoadCategories();
+            await LoadDrinks();
+
+            if (result.DrinksCreated == 0 && result.CategoriesCreated == 0)
+            {
+                ShowAlert(L["Drinks_GenerateCatalogNothingNew"], "success");
+            }
+            else
+            {
+                ShowAlert(L["Drinks_GenerateCatalogSuccess", result.DrinksCreated, result.CategoriesCreated, result.DrinksSkipped], "success");
+            }
+        }
+        finally
+        {
+            isGeneratingCatalog = false;
         }
     }
 

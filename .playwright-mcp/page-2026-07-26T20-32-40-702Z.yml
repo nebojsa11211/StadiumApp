@@ -1,0 +1,144 @@
+- generic [ref=f1e131]:
+  - banner [ref=f1e132]:
+    - generic [ref=f1e133]:
+      - generic [ref=f1e134]: 
+      - text: Stadium Ticketing Simulator
+    - generic [ref=f1e135]: external system stand-in
+    - combobox [ref=f1e138]:
+      - option "Hrvatski"
+      - option "English" [selected]
+  - navigation [ref=f1e139]:
+    - link " Simulator" [ref=f1e140] [cursor=pointer]:
+      - /url: /
+      - generic [ref=f1e141]: 
+      - text: Simulator
+    - link " Season generator" [ref=f1e142] [cursor=pointer]:
+      - /url: season-generator
+      - generic [ref=f1e143]: 
+      - text: Season generator
+    - link " Credentials" [ref=f1e144] [cursor=pointer]:
+      - /url: credentials
+      - generic [ref=f1e145]: 
+      - text: Credentials
+  - main [ref=f1e146]:
+    - heading "External Ticketing Simulator" [level=1] [ref=f1e147]
+    - paragraph [ref=f1e148]: Stands in for the real ticketing system. Create an event and simulate sales — everything syncs to the Stadium app via signed webhooks.
+    - generic [ref=f1e149]:
+      - generic [ref=f1e150]: 
+      - text: "API:"
+      - code [ref=f1e151]: https://localhost:7010/
+      - generic [ref=f1e152]: · 1 sections discovered
+      - button "Reload" [ref=f1e153] [cursor=pointer]
+    - generic [ref=f1e154]:
+      - generic [ref=f1e155]:
+        - generic [ref=f1e156]:
+          - generic [ref=f1e157]: 
+          - text: Stadium
+        - generic [ref=f1e158]: 1 sectors
+        - button " Details" [ref=f1e159] [cursor=pointer]:
+          - generic [ref=f1e160]: 
+          - text: Details
+      - generic [ref=f1e162]:
+        - generic [ref=f1e164]:
+          - generic [ref=f1e165]: "1"
+          - generic [ref=f1e166]: Sectors
+        - generic [ref=f1e168]:
+          - generic [ref=f1e169]: "200"
+          - generic [ref=f1e170]: Seats
+        - generic [ref=f1e172]:
+          - generic [ref=f1e173]: "10"
+          - generic [ref=f1e174]: Rows
+        - generic [ref=f1e176]:
+          - generic [ref=f1e177]: "1"
+          - generic [ref=f1e178]: Sector types
+    - generic [ref=f1e179]:
+      - generic [ref=f1e180]:
+        - generic [ref=f1e181]:
+          - generic [ref=f1e182]: 
+          - text: 0. Seasons
+        - generic [ref=f1e183]: "1"
+        - button "Refresh" [disabled]
+      - generic [ref=f1e185]:
+        - generic [ref=f1e186]:
+          - generic [ref=f1e187]:
+            - generic [ref=f1e188]: Season name
+            - textbox "2026/2027" [ref=f1e189]: 2026/2027 (simulator)
+          - generic [ref=f1e190]:
+            - generic [ref=f1e191]: Starts
+            - textbox [ref=f1e192]: 2026-01-01
+          - generic [ref=f1e193]:
+            - generic [ref=f1e194]: Ends
+            - textbox [ref=f1e195]: 2027-05-31
+          - generic [ref=f1e197]:
+            - checkbox [checked] [ref=f1e198]
+            - generic [ref=f1e199]: Set current
+          - generic [ref=f1e200]:
+            - button " Create" [disabled]:
+              - generic: 
+              - text: Create
+        - table [ref=f1e203]:
+          - rowgroup [ref=f1e204]:
+            - row [ref=f1e205]:
+              - columnheader "Season" [ref=f1e206]
+              - columnheader "Window" [ref=f1e207]
+              - columnheader "Current" [ref=f1e208]
+              - columnheader "Events" [ref=f1e209]
+              - columnheader "Passes" [ref=f1e210]
+              - columnheader "Action" [ref=f1e211]
+          - rowgroup [ref=f1e212]:
+            - row [ref=f1e213]:
+              - cell [ref=f1e214]:
+                - strong [ref=f1e215]: 2026/2027
+                - generic [ref=f1e216]:
+                  - text: "#2 ·"
+                  - code
+              - cell "2026-07-01 → 2027-05-31" [ref=f1e217]
+              - cell "current" [ref=f1e218]
+              - cell "0" [ref=f1e220]
+              - cell "0" [ref=f1e221]
+              - cell "selected" [ref=f1e222]
+    - generic [ref=f1e224]:
+      - generic [ref=f1e225]:
+        - generic [ref=f1e226]: 
+        - text: 1. Event
+      - generic [ref=f1e228]:
+        - generic [ref=f1e229]:
+          - generic [ref=f1e230]: Type
+          - combobox [ref=f1e231]:
+            - option "Match" [selected]
+            - option "Concert"
+            - option "Other"
+        - generic [ref=f1e232]:
+          - generic [ref=f1e233]: Home team
+          - textbox [ref=f1e234]: NK Istra
+        - generic [ref=f1e235]:
+          - generic [ref=f1e236]: Away team
+          - textbox [ref=f1e237]: Zagreb
+        - generic [ref=f1e238]:
+          - generic [ref=f1e239]: Start
+          - textbox [ref=f1e240]: 2026-08-02T18:00
+        - generic [ref=f1e241]:
+          - generic [ref=f1e242]: End
+          - textbox [ref=f1e243]: 2026-08-02T20:00
+        - generic [ref=f1e244]:
+          - generic [ref=f1e245]: Season
+          - combobox [ref=f1e246]:
+            - option "(no season)" [selected]
+            - option "2026/2027"
+        - generic [ref=f1e247]:
+          - button " Create & sync" [disabled]:
+            - generic: 
+            - text: Create & sync
+    - generic [ref=f1e250]:
+      - generic [ref=f1e251]:
+        - generic [ref=f1e252]:
+          - generic [ref=f1e253]: 
+          - text: Existing events
+        - button "Refresh" [disabled]
+      - paragraph [ref=f1e256]: No events created yet. Create one above to get started.
+    - generic [ref=f1e257]:
+      - generic [ref=f1e258]:
+        - generic [ref=f1e259]: 
+        - text: Activity log
+      - generic [ref=f1e260]: No activity yet.
+  - 'generic "API database: Supabase · Development"': "DB: Supabase"

@@ -1,0 +1,210 @@
+@page "/admin/registered-cups"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Net.Http.Headers
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Authentication.Interfaces
+@inject IHttpClientFactory HttpClientFactory
+@inject ITokenStorageService TokenStorage
+@inject ILogger<RegisteredCups> Logger
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@L["RegCups_PageTitle"]</PageTitle>
+
+<div class="console" id="admin-regcups-main-container">
+    <PageHeader Id="admin-regcups-header"
+                Eyebrow='@L["RegCups_Eyebrow"]'
+                Title='@L["RegCups_Title"]'
+                Subtitle='@L["RegCups_Intro"]' />
+
+    @if (!string.IsNullOrEmpty(alert))
+    {
+        <div class="alert @alertClass alert-dismissible d-flex justify-content-between align-items-center" id="admin-regcups-alert">
+            <span>@alert</span>
+            <button type="button" class="btn-close" @onclick="() => alert = null"></button>
+        </div>
+    }
+
+    <div class="card mb-4" id="admin-regcups-add-card">
+        <div class="card-header"><h5 class="mb-0">@L["RegCups_AddTitle"]</h5></div>
+        <div class="card-body">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label" for="admin-regcups-qr-input">@L["RegCups_Qr"]</label>
+                    <input id="admin-regcups-qr-input" class="form-control" @bind="newQr" autocomplete="off" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="admin-regcups-type-input">@L["RegCups_Type"]</label>
+                    <select id="admin-regcups-type-input" class="form-select" @bind="newTypeId">
+                        <option value="0">@L["RegCups_NoType"]</option>
+                        @foreach (var t in types)
+                        {
+                            <option value="@t.Id">@t.Name (@t.VolumeMl ml)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-check form-switch mt-4">
+                        <input class="form-check-input" type="checkbox" role="switch" id="admin-regcups-approved-input"
+                               checked="@newApproved" @onchange="e => newApproved = e.Value is bool b && b" />
+                        <label class="form-check-label" for="admin-regcups-approved-input">@L["RegCups_Approved"]</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" id="admin-regcups-add-btn" @onclick="AddAsync"
+                            disabled="@(busy || string.IsNullOrWhiteSpace(newQr))">
+                        <i class="bi bi-plus-lg"></i> @L["RegCups_Add"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (list is null)
+    {
+        <div class="loading-state" id="admin-regcups-loading">
+            <span class="loading-spinner"></span><p>@L["RegCups_Loading"]</p>
+        </div>
+    }
+    else if (list.Cups.Count == 0)
+    {
+        <div class="empty" id="admin-regcups-empty"><i class="bi bi-cup"></i><p>@L["RegCups_Empty"]</p></div>
+    }
+    else
+    {
+        <div class="table-responsive" id="admin-regcups-table-responsive">
+            <table class="table" id="admin-regcups-table">
+                <thead><tr>
+                    <th>@L["RegCups_ColQr"]</th>
+                    <th>@L["RegCups_ColType"]</th>
+                    <th>@L["RegCups_ColApproved"]</th>
+                    <th>@L["RegCups_ColStatus"]</th>
+                    <th>@L["RegCups_ColOwner"]</th>
+                    <th class="text-end">@L["RegCups_ColActions"]</th>
+                </tr></thead>
+                <tbody>
+                    @foreach (var c in list.Cups)
+                    {
+                        <tr id="admin-regcups-row-@c.Id">
+                            <td class="font-monospace">@c.QrToken</td>
+                            <td>@(c.CupTypeName ?? "—")@(c.VolumeMl is int v ? $" · {v} ml" : "")</td>
+                            <td>@(c.IsApproved ? L["RegCups_Yes"] : L["RegCups_No"])</td>
+                            <td>@c.Status</td>
+                            <td>@(c.OwnerLabel ?? "—")</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="() => ToggleApprovedAsync(c)" disabled="@busy">
+                                    @(c.IsApproved ? L["RegCups_Unapprove"] : L["RegCups_Approve"])
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" @onclick="() => ToggleStatusAsync(c)" disabled="@busy">
+                                    @(c.Status == "Active" ? L["RegCups_Retire"] : L["RegCups_Activate"])
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteAsync(c)" disabled="@busy">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private RegisteredCupListDto? list;
+    private List<CupTypeDto> types = new();
+    private string newQr = string.Empty;
+    private int newTypeId;
+    private bool newApproved = true;
+    private bool busy;
+    private string? alert;
+    private string alertClass = "alert-success";
+
+    private HttpClient Api
+    {
+        get
+        {
+            var client = HttpClientFactory.CreateClient("AuthenticatedClient");
+            var token = TokenStorage.Token;
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return client;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        types = await Api.GetFromJsonAsync<List<CupTypeDto>>("api/cups/types") ?? new();
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        try { list = await Api.GetFromJsonAsync<RegisteredCupListDto>("api/admin/registered-cups"); }
+        catch (Exception ex) { Logger.LogError(ex, "Failed to load registered cups"); }
+        StateHasChanged();
+    }
+
+    private RegisteredCupUpsertDto Upsert(RegisteredCupDto c) => new()
+    {
+        QrToken = c.QrToken, CupTypeId = c.CupTypeId, IsApproved = c.IsApproved, Status = c.Status
+    };
+
+    private async Task AddAsync()
+    {
+        busy = true;
+        try
+        {
+            var dto = new RegisteredCupUpsertDto
+            {
+                QrToken = newQr.Trim(),
+                CupTypeId = newTypeId > 0 ? newTypeId : null,
+                IsApproved = newApproved,
+                Status = "Active"
+            };
+            var resp = await Api.PostAsJsonAsync("api/admin/registered-cups", dto);
+            if (resp.IsSuccessStatusCode) { newQr = ""; newTypeId = 0; newApproved = true; Show(L["RegCups_Saved"], true); await LoadAsync(); }
+            else Show(await resp.Content.ReadAsStringAsync(), false);
+        }
+        catch (Exception ex) { Logger.LogError(ex, "Add registered cup failed"); Show(L["RegCups_SaveFailed"], false); }
+        finally { busy = false; }
+    }
+
+    private async Task ToggleApprovedAsync(RegisteredCupDto c)
+    {
+        var dto = Upsert(c); dto.IsApproved = !c.IsApproved;
+        await PutAsync(c.Id, dto);
+    }
+
+    private async Task ToggleStatusAsync(RegisteredCupDto c)
+    {
+        var dto = Upsert(c); dto.Status = c.Status == "Active" ? "Retired" : "Active";
+        await PutAsync(c.Id, dto);
+    }
+
+    private async Task PutAsync(int id, RegisteredCupUpsertDto dto)
+    {
+        busy = true;
+        try
+        {
+            var resp = await Api.PutAsJsonAsync($"api/admin/registered-cups/{id}", dto);
+            if (resp.IsSuccessStatusCode) { await LoadAsync(); } else Show(L["RegCups_SaveFailed"], false);
+        }
+        catch (Exception ex) { Logger.LogError(ex, "Update registered cup failed"); Show(L["RegCups_SaveFailed"], false); }
+        finally { busy = false; }
+    }
+
+    private async Task DeleteAsync(RegisteredCupDto c)
+    {
+        busy = true;
+        try
+        {
+            var resp = await Api.DeleteAsync($"api/admin/registered-cups/{c.Id}");
+            if (resp.IsSuccessStatusCode) await LoadAsync();
+        }
+        catch (Exception ex) { Logger.LogError(ex, "Delete registered cup failed"); Show(L["RegCups_SaveFailed"], false); }
+        finally { busy = false; }
+    }
+
+    private void Show(string msg, bool ok) { alert = msg; alertClass = ok ? "alert-success" : "alert-danger"; }
+}

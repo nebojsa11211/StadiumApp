@@ -117,6 +117,7 @@ else
 
     <DrinkSheet Drink="_sheetDrink" OnClose="() => _sheetDrink = null" OnAdd="SheetAdd"
                 Available="@SpendableAfterCart"
+                CupSettings="@_cupSettings"
                 OnTopUp="@(() => Nav.NavigateTo("/wallet"))" />
 }
 
@@ -127,6 +128,7 @@ else
     private int _selected;
     private DrinkDto? _sheetDrink;
     private WalletSummaryDto? _wallet;
+    private CupsSettingsDto? _cupSettings;
     private int? _lastSeenOrderId;
 
     // Drives the CartBar's affordability line. Null — no wallet, or the best-effort load failed — means
@@ -157,6 +159,7 @@ else
 
         await LoadDrinks();
         await LoadWallet();
+        _cupSettings = await Api.GetCupsSettingsAsync();
         _loading = false;
     }
 
@@ -240,7 +243,7 @@ else
     private void SheetAdd(DrinkOrderRequest req)
     {
         var drink = _drinks.FirstOrDefault(d => d.Id == req.DrinkId);
-        if (drink != null) State.AddDrink(drink, req.Quantity, req.Note);
+        if (drink != null) State.AddDrink(drink, req.Quantity, req.Note, req.CupMode, req.CupQrToken);
         _sheetDrink = null;
     }
 

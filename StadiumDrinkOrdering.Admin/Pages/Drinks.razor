@@ -11,6 +11,18 @@
                 Title='@L["Drinks_MainTitle"]'
                 Subtitle='@L["Drinks_Subtitle"]'>
         <Actions>
+            <button class="pill-btn" @onclick="GenerateCatalog" disabled="@isGeneratingCatalog" id="admin-generate-catalog-btn">
+                @if (isGeneratingCatalog)
+                {
+                    <span class="spinner-border spinner-border-sm" id="admin-generate-catalog-spinner"></span>
+                    <span>@L["Drinks_GeneratingCatalog"]</span>
+                }
+                else
+                {
+                    <i class="bi bi-magic"></i>
+                    <span>@L["Drinks_GenerateCatalogButton"]</span>
+                }
+            </button>
             <button class="pill-btn" @onclick="ShowCategoryManager" id="admin-manage-categories-btn">
                 <i class="bi bi-tags"></i><span>@L["Drinks_ManageCategoriesButton"]</span>
             </button>
@@ -47,7 +59,19 @@
             <p id="admin-drinks-empty-title">@L["Drinks_NoDrinksFound"]</p>
             <span id="admin-drinks-empty-message">@L["Drinks_StartByAddingMessage"]</span>
             <div style="margin-top:1rem;" id="admin-drinks-empty-button-container">
-                <button class="pill-btn pill-btn--primary" @onclick="ShowCreateDrinkModal" id="admin-add-first-drink-btn">
+                <button class="pill-btn pill-btn--primary" @onclick="GenerateCatalog" disabled="@isGeneratingCatalog" id="admin-generate-catalog-empty-btn">
+                    @if (isGeneratingCatalog)
+                    {
+                        <span class="spinner-border spinner-border-sm" id="admin-generate-catalog-empty-spinner"></span>
+                        <span>@L["Drinks_GeneratingCatalog"]</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-magic"></i>
+                        <span>@L["Drinks_GenerateCatalogButton"]</span>
+                    }
+                </button>
+                <button class="pill-btn" @onclick="ShowCreateDrinkModal" id="admin-add-first-drink-btn">
                     <i class="bi bi-plus"></i><span>@L["Drinks_AddFirstDrinkButton"]</span>
                 </button>
             </div>

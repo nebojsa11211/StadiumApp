@@ -136,19 +136,34 @@ public class OrderItemDto
     public decimal UnitPrice { get; set; }
     public decimal TotalPrice { get; set; }
     public string? SpecialInstructions { get; set; }
+
+    /// <summary>How this line is served w.r.t. reusable cups (None/Deposit/Honor/BYOC).</summary>
+    public CupMode CupMode { get; set; } = CupMode.None;
+
+    /// <summary>Refundable cup deposit charged on this line (0 unless deposit mode).</summary>
+    public decimal CupDepositAmount { get; set; }
 }
 
 public class CreateOrderItemDto
 {
     [Required]
     public int DrinkId { get; set; }
-    
+
     [Required]
     [Range(1, 100)]
     public int Quantity { get; set; }
-    
+
     [StringLength(200)]
     public string? SpecialInstructions { get; set; }
+
+    /// <summary>Reusable-cup handling requested for this line. The deposit amount is not trusted from the
+    /// client — it is derived server-side from the venue's configured deposit. Defaults to None.</summary>
+    public CupMode CupMode { get; set; } = CupMode.None;
+
+    /// <summary>For <see cref="Models.CupMode.ByocQr"/>: the scanned QR of the customer's own cup. The
+    /// server resolves it to a registered cup and (when the venue requires it) rejects unknown/unapproved
+    /// cups. Ignored for other modes.</summary>
+    public string? CupQrToken { get; set; }
 }
 
 

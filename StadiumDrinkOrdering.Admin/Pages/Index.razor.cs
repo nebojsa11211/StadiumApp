@@ -62,7 +62,28 @@ public partial class Index : ComponentBase, IDisposable
     private int _seasonTicketsSold;
     /// <summary>Sold seats that are ordinary single-event tickets (total minus season-derived).</summary>
     private int NormalTicketsSold => Math.Max(0, _ticketsSold - _seasonTicketsSold);
-    private decimal _eventRevenue;
+    /// <summary>
+    /// Realised ticket takings for the selected event: its non-cancelled single-event tickets plus
+    /// this fixture's amortized share of season-pass revenue. Server-computed (see
+    /// <c>EventDto.TicketRevenue</c>/<c>SeasonTicketRevenue</c>), so it refreshes on load rather than
+    /// on the live TicketSold push — the sold *count* updates live, this figure does not.
+    /// </summary>
+    private decimal _ticketRevenue;
+
+    /// <summary>
+    /// Realised drink takings, summed from the live order set so SignalR order pushes move it
+    /// immediately. Cancelled orders are excluded, matching the server's definition of realised
+    /// revenue in <c>EventService.GetEventStatisticsAsync</c>.
+    /// </summary>
+    private decimal _drinksRevenue;
+
+    /// <summary>
+    /// Headline for the revenue card. Computed from the two figures above rather than read from
+    /// <c>EventDto.TotalRevenue</c> so the headline always equals the sum of the chips shown under
+    /// it — the server's total carries its own (load-time) drinks figure and would drift from the
+    /// live one between refreshes.
+    /// </summary>
+    private decimal TotalEventRevenue => _ticketRevenue + _drinksRevenue;
     private int _activeDrinkOrders;
     private List<OrderDto> _recentOrders = new();
 
@@ -290,7 +311,15 @@ public partial class Index : ComponentBase, IDisposable
             o.Status == OrderStatus.InPreparation ||
             o.Status == OrderStatus.OutForDelivery);
 
-        _eventRevenue = scoped.Sum(o => o.TotalAmount);
+        // Cancelled orders are excluded so this reflects realised sales, as the server does. The old
+        // single "total revenue" figure summed every scoped order and counted cancellations as income.
+        _drinksRevenue = scoped
+            .Where(o => o.Status != OrderStatus.Cancelled)
+            .Sum(o => o.TotalAmount);
+
+        _ticketRevenue = (_selectedEvent?.TicketRevenue ?? 0m)
+                         + (_selectedEvent?.SeasonTicketRevenue ?? 0m);
+
         _recentOrders = scoped.OrderByDescending(o => o.CreatedAt).Take(5).ToList();
         _ticketsSold = _selectedEvent == null
             ? 0

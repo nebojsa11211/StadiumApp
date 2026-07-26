@@ -21,17 +21,20 @@ public class MatchSimulationService : IMatchSimulationService
     private readonly ApplicationDbContext _context;
     private readonly ITicketIngestionService _ingestion;
     private readonly IDemoDataService _demoData;
+    private readonly IAccountProvisioningService _accountProvisioning;
     private readonly ILogger<MatchSimulationService> _logger;
 
     public MatchSimulationService(
         ApplicationDbContext context,
         ITicketIngestionService ingestion,
         IDemoDataService demoData,
+        IAccountProvisioningService accountProvisioning,
         ILogger<MatchSimulationService> logger)
     {
         _context = context;
         _ingestion = ingestion;
         _demoData = demoData;
+        _accountProvisioning = accountProvisioning;
         _logger = logger;
     }
 
@@ -41,6 +44,57 @@ public class MatchSimulationService : IMatchSimulationService
     /// </summary>
     private const int AttendedPercent = 85;
     private const int RefundedPercent = 5; // the remainder are no-shows
+
+    /// <summary>
+    /// How many distinct people a simulated crowd is drawn from. A whole season is thousands of
+    /// tickets; drawing them from a handful of names makes every drink order in the ground belong to
+    /// the same few accounts, which is useless for testing anything per-customer. Capped rather than
+    /// unbounded so a generated season doesn't bury Admin → Customers under a new fan per ticket.
+    /// </summary>
+    private const int FanPoolSize = 200;
+
+    /// <summary>One simulated fan: a stable identity, so the same person recurs across fixtures and
+    /// seasons instead of a fresh account being minted per ticket.</summary>
+    private sealed record SimulatedFan(string Name, string Email, string Oib);
+
+    private static readonly string[] FanFirstNames =
+    {
+        "Ivan", "Marko", "Ana", "Petra", "Luka", "Josip", "Marija", "Tomislav", "Ivana", "Filip",
+        "Sara", "Nikola", "Maja", "Stjepan", "Lucija", "Antonio", "Katarina", "Domagoj", "Nina", "Mislav"
+    };
+
+    private static readonly string[] FanLastNames =
+    {
+        "Horvat", "Kovacevic", "Babic", "Novak", "Maric", "Juric", "Vukovic", "Peric", "Simic", "Barisic"
+    };
+
+    /// <summary>
+    /// The fan pool, built once and deterministically so a rerun reuses the same people (and therefore
+    /// the same provisioned accounts) rather than doubling the customer list every time.
+    /// </summary>
+    private static readonly IReadOnlyList<SimulatedFan> FanPool = BuildFanPool();
+
+    private static List<SimulatedFan> BuildFanPool()
+    {
+        var fans = new List<SimulatedFan>(FanPoolSize);
+        foreach (var last in FanLastNames)
+        {
+            foreach (var first in FanFirstNames)
+            {
+                if (fans.Count >= FanPoolSize)
+                    return fans;
+
+                // OIB derived from the position in the pool: 11 digits, stable per fan, so the fan's
+                // ticket and their provisioned account always agree on who they are.
+                var oib = (10_000_000_000L + fans.Count).ToString();
+                fans.Add(new SimulatedFan(
+                    $"{first} {last}",
+                    $"{first}.{last}@example.com".ToLowerInvariant(),
+                    oib));
+            }
+        }
+        return fans;
+    }
 
     public async Task<SimulateMatchResult> SimulateMatchAsync(SimulateMatchRequest request, CancellationToken ct = default)
     {
@@ -103,7 +157,20 @@ public class MatchSimulationService : IMatchSimulationService
 
         // Sell it a crowd of ordinary single-event tickets on top of the season-pass seats.
         if (request.TicketsToSell > 0)
+        {
             result.TicketsSold = await SellCrowdAsync(eventId, name, kickOff, request.TicketsToSell, request.BaseTicketPrice, ct);
+
+            // A crowd was asked for and none could be seated: the fixture exists but is empty, which
+            // is not a success worth reporting silently. The only cause left is an undrawn stadium.
+            if (result.TicketsSold == 0)
+            {
+                result.Message = "Fixture created but no tickets could be sold: no stadium sectors are " +
+                                 "drawn. Draw the stadium in Admin → Stadium Drawing Tool first.";
+                _logger.LogWarning(
+                    "Simulated fixture {Name} sold 0 of {Requested} requested tickets — no drawn sectors to sell into.",
+                    name, request.TicketsToSell);
+            }
+        }
 
         if (isPast)
         {
@@ -124,6 +191,17 @@ public class MatchSimulationService : IMatchSimulationService
                 var drinks = await _demoData.GenerateMatchDayDrinkSalesForEventAsync(eventId, replaceExisting: true);
                 result.DrinkOrders = drinks.Orders;
                 result.DrinkRevenue = drinks.Revenue;
+
+                // Drink generation declining the fixture is the one outcome a caller can't infer from
+                // the numbers: zero orders looks identical whether the bar sold nothing or the
+                // generator never ran. Carry its reason back rather than reporting a silent zero.
+                if (!drinks.Success)
+                {
+                    result.DrinkOrdersMessage = drinks.Message;
+                    _logger.LogWarning(
+                        "Simulated fixture {Name} (event {EventId}) generated no drink orders: {Reason}",
+                        name, eventId, drinks.Message);
+                }
             }
         }
 
@@ -167,13 +245,13 @@ public class MatchSimulationService : IMatchSimulationService
             .ToHashSet();
 
         // Per sector: the section that backs it, its existing seat rows, and the next free position.
+        // A sector that has never been sold into has no backing section yet, so stand it up through
+        // the ingestion path's own resolver — skipping it instead would silently sell nothing at all
+        // on a stadium that has been drawn but not yet sold into.
         var sectors = new List<SectorFill>();
         foreach (var overlay in overlays)
         {
-            var section = await _context.StadiumSections
-                .FirstOrDefaultAsync(s => s.Id == overlay.StadiumSectionId || s.SectionCode == overlay.SectorCode, ct);
-            if (section == null)
-                continue; // never sold into — the ingestion path creates it on the first real sale
+            var section = await _ingestion.EnsureBackingSectionAsync(overlay, ct);
 
             var seats = await _context.Seats
                 .Where(s => s.SectionId == section.Id)
@@ -193,10 +271,11 @@ public class MatchSimulationService : IMatchSimulationService
         if (sectors.Count == 0)
             return 0;
 
-        var names = new[] { "Ivan Horvat", "Marko Kovačević", "Ana Babić", "Petra Novak", "Luka Marić",
-                            "Josip Jurić", "Marija Vuković", "Tomislav Perić", "Ivana Šimić", "Filip Barišić" };
         var tickets = new List<Ticket>(count);
         var stamp = DateTime.UtcNow.Ticks;
+
+        // Who actually turned out, so only these get an account provisioned below.
+        var fansInAttendance = new Dictionary<string, SimulatedFan>(StringComparer.OrdinalIgnoreCase);
 
         for (var i = 0; i < count; i++)
         {
@@ -212,7 +291,9 @@ public class MatchSimulationService : IMatchSimulationService
                 seat = TakeSeat(sector)!;
             }
 
-            var person = names[Random.Shared.Next(names.Length)];
+            var fan = FanPool[Random.Shared.Next(FanPool.Count)];
+            fansInAttendance[fan.Email] = fan;
+
             tickets.Add(new Ticket
             {
                 TicketNumber = $"TK{stamp}{i:D5}",
@@ -220,9 +301,9 @@ public class MatchSimulationService : IMatchSimulationService
                 Seat = seat, // navigation, so a newly built Seat row is inserted alongside
                 QRCode = string.Empty,
                 QRCodeToken = Guid.NewGuid().ToString(),
-                CustomerName = person,
-                CustomerEmail = $"{person.Replace(" ", ".").ToLowerInvariant()}@example.com",
-                CustomerOib = Random.Shared.NextInt64(10000000000, 99999999999).ToString(),
+                CustomerName = fan.Name,
+                CustomerEmail = fan.Email,
+                CustomerOib = fan.Oib,
                 Price = decimal.Round(basePrice + (decimal)(Random.Shared.NextDouble() * 20), 2),
                 PurchaseDate = DateTime.UtcNow,
                 Status = TicketStatuses.Active,
@@ -238,6 +319,9 @@ public class MatchSimulationService : IMatchSimulationService
 
         _context.Tickets.AddRange(tickets);
         await _context.SaveChangesAsync(ct);
+
+        await ProvisionFansAsync(fansInAttendance.Values, ct);
+
         return tickets.Count;
 
         static bool HasRoom(SectorFill s) => s.FreeSeats.Count > 0 || s.Occupied.Count < s.Capacity;
@@ -267,6 +351,45 @@ public class MatchSimulationService : IMatchSimulationService
             }
             return null;
         }
+    }
+
+    /// <summary>
+    /// Gives every simulated fan in the crowd a claimable shell account — exactly as the real webhook
+    /// sale path does (<see cref="ITicketIngestionService"/>'s TicketSold handler). Without this the
+    /// fan's email matches no account, and everything downstream that resolves a ticket to a customer
+    /// — drink orders above all — falls back to whatever account it can find, which is how a whole
+    /// season's orders end up on one customer.
+    ///
+    /// Existing accounts are filtered out in a single query first: provisioning opens its own DbContext
+    /// scope per call, so re-offering the same 200 fans on every fixture of a season would be hundreds
+    /// of pointless scopes. No activation mail is sent — these are throwaway @example.com addresses.
+    /// </summary>
+    private async Task ProvisionFansAsync(IEnumerable<SimulatedFan> fans, CancellationToken ct)
+    {
+        var byEmail = fans
+            .GroupBy(f => f.Email, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+        if (byEmail.Count == 0)
+            return;
+
+        var emails = byEmail.Keys.ToList();
+        var existing = (await _context.Users
+                .Where(u => emails.Contains(u.Email))
+                .Select(u => u.Email)
+                .ToListAsync(ct))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var provisioned = 0;
+        foreach (var fan in byEmail.Values.Where(f => !existing.Contains(f.Email)))
+        {
+            await _accountProvisioning.EnsureShellAccountAsync(
+                fan.Email, fan.Name, null, "SimulatedSeasonCrowd", sendActivation: false, oib: fan.Oib);
+            provisioned++;
+        }
+
+        if (provisioned > 0)
+            _logger.LogInformation(
+                "Provisioned {Count} new simulated fan account(s) of {Total} in the crowd", provisioned, byEmail.Count);
     }
 
     /// <summary>Working state for filling one sector: its free seats and next buildable position.</summary>

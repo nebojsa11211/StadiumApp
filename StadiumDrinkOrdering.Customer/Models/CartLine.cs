@@ -1,3 +1,5 @@
+using StadiumDrinkOrdering.Shared.Models;
+
 namespace StadiumDrinkOrdering.Customer.Models;
 
 /// <summary>
@@ -12,4 +14,11 @@ public class CartLine
     public decimal UnitPrice { get; set; }
     public decimal TotalPrice { get; set; }
     public string? SpecialInstructions { get; set; }
+
+    /// <summary>How this line is served w.r.t. reusable cups (None/Deposit/Honor/BYOC). The deposit/discount
+    /// amount is applied server-side from venue config at checkout.</summary>
+    public CupMode CupMode { get; set; } = CupMode.None;
+
+    /// <summary>For BYOC lines: the scanned/entered QR of the customer's own cup.</summary>
+    public string? CupQrToken { get; set; }
 }

@@ -78,6 +78,12 @@ public interface IApiService
     Task<bool> GetTicketSalesEnabledAsync();
     Task<AppSettingsDto> GetAppSettingsAsync();
 
+    // Reusable-cup settings (public read) — whether cups are offered and which modes / deposit amount.
+    Task<CupsSettingsDto> GetCupsSettingsAsync();
+
+    // Resolve a scanned BYOC cup QR to validate it and show the discount before adding a drink.
+    Task<CupResolveDto?> ResolveCupAsync(string token);
+
     // Customer Ticketing methods
     Task<List<CustomerEventDto>?> GetAvailableEventsAsync(CustomerEventFilterDto? filter = null);
     Task<CustomerEventDetailsDto?> GetEventDetailsAsync(int eventId);
@@ -826,6 +832,40 @@ public class ApiService : IApiService
         {
             Console.WriteLine($"Error loading app settings: {ex.Message}");
             return new AppSettingsDto(); // Fail open — server-side enforcement remains authoritative.
+        }
+    }
+
+    public async Task<CupsSettingsDto> GetCupsSettingsAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("api/venue/cups-settings");
+            if (!response.IsSuccessStatusCode)
+                return new CupsSettingsDto(); // Fail safe: default has cups off, so the chooser stays hidden.
+
+            var body = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<CupsSettingsDto>(body, _jsonOptions) ?? new CupsSettingsDto();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading cup settings: {ex.Message}");
+            return new CupsSettingsDto();
+        }
+    }
+
+    public async Task<CupResolveDto?> ResolveCupAsync(string token)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/cups/resolve?token={Uri.EscapeDataString(token)}");
+            if (!response.IsSuccessStatusCode) return null;
+            var body = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<CupResolveDto>(body, _jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error resolving cup: {ex.Message}");
+            return null;
         }
     }
 

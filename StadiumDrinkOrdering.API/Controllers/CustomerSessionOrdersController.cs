@@ -143,7 +143,9 @@ public class CustomerSessionOrdersController : ControllerBase
                 {
                     DrinkId = i.DrinkId,
                     Quantity = i.Quantity,
-                    SpecialInstructions = i.SpecialInstructions
+                    SpecialInstructions = i.SpecialInstructions,
+                    CupMode = i.CupMode,
+                    CupQrToken = i.CupQrToken
                 })
                 .ToList(),
             PaymentMethod = paymentMethod
@@ -171,6 +173,7 @@ public class CustomerSessionOrdersController : ControllerBase
             OrderId = order.Id,
             Status = order.Status.ToString(),
             TotalAmount = order.TotalAmount,
+            CupDepositTotal = order.OrderItems.Sum(i => i.CupDepositAmount),
             SeatPath = string.IsNullOrWhiteSpace(order.SeatPath) ? BuildSeat(session) : order.SeatPath
         });
     }

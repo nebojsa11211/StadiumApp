@@ -1981,6 +1981,24 @@
   <data name="Drinks_ManageCategoriesButton" xml:space="preserve">
     <value>Manage Categories</value>
   </data>
+  <data name="Drinks_GenerateCatalogButton" xml:space="preserve">
+    <value>Generate Common Drinks</value>
+  </data>
+  <data name="Drinks_GeneratingCatalog" xml:space="preserve">
+    <value>Generating…</value>
+  </data>
+  <data name="Drinks_GenerateCatalogConfirm" xml:space="preserve">
+    <value>Add the standard set of categories and drinks (beer, soft drinks, water, coffee, tea, juice, energy drinks, cocktails)? Anything that already exists is left unchanged.</value>
+  </data>
+  <data name="Drinks_GenerateCatalogSuccess" xml:space="preserve">
+    <value>Added {0} drink(s) and {1} category(ies). {2} drink(s) already existed and were skipped.</value>
+  </data>
+  <data name="Drinks_GenerateCatalogNothingNew" xml:space="preserve">
+    <value>Nothing to add — the common categories and drinks already exist.</value>
+  </data>
+  <data name="Drinks_GenerateCatalogFailed" xml:space="preserve">
+    <value>Failed to generate the common categories and drinks.</value>
+  </data>
   <data name="Drinks_LoadingMessage" xml:space="preserve">
     <value>Loading drinks...</value>
   </data>
@@ -2680,6 +2698,25 @@
   <data name="Events_DeletedAlert" xml:space="preserve">
     <value>Event deleted successfully.</value>
   </data>
+  <data name="Events_PurgeBtn" xml:space="preserve"><value>Delete everything</value></data>
+  <data name="Events_PurgeTooltip" xml:space="preserve"><value>Delete the event together with its tickets, orders, payments and revenue</value></data>
+  <data name="Events_PurgeModalTitle" xml:space="preserve"><value>Delete '{0}' and ALL its data</value></data>
+  <data name="Events_PurgeLoadingPreview" xml:space="preserve"><value>Checking what would be deleted…</value></data>
+  <data name="Events_PurgePreviewFailed" xml:space="preserve"><value>Could not work out what this event contains. Nothing has been deleted.</value></data>
+  <data name="Events_PurgeIntro" xml:space="preserve"><value>This will permanently delete:</value></data>
+  <data name="Events_PurgeRowTickets" xml:space="preserve"><value>Match tickets</value></data>
+  <data name="Events_PurgeRowOrders" xml:space="preserve"><value>Drink orders</value></data>
+  <data name="Events_PurgeRowDrinks" xml:space="preserve"><value>Drinks sold</value></data>
+  <data name="Events_PurgeRowPayments" xml:space="preserve"><value>Payment records</value></data>
+  <data name="Events_PurgePassesNote" xml:space="preserve"><value>{0} season pass(es) lose their access ticket for this match. The passes themselves are kept — they belong to the season, not to this fixture.</value></data>
+  <data name="Events_PurgeWalletWarningTitle" xml:space="preserve"><value>Fan money will be destroyed</value></data>
+  <data name="Events_PurgeWalletWarningBody" xml:space="preserve"><value>{0} ticket wallet(s) still hold {1}. This balance is deleted, not refunded. Cash it out first if the fans are owed it.</value></data>
+  <data name="Events_PurgeIrreversible" xml:space="preserve"><value>This cannot be undone.</value></data>
+  <data name="Events_PurgeConfirmPrompt" xml:space="preserve"><value>Type {0} to confirm:</value></data>
+  <data name="Events_PurgeConfirmBtn" xml:space="preserve"><value>Delete everything</value></data>
+  <data name="Events_PurgeCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Events_PurgedAlert" xml:space="preserve"><value>'{0}' and all its data were deleted ({1} rows).</value></data>
+  <data name="Events_PurgeFailedAlert" xml:space="preserve"><value>Failed to delete the event's data. Nothing was deleted.</value></data>
   <data name="Events_DeleteFailedAlert" xml:space="preserve">
     <value>Failed to delete event: {0}</value>
   </data>
@@ -3634,6 +3671,10 @@
   <data name="Index_TotalRevenue" xml:space="preserve">
     <value>Total Revenue</value>
   </data>
+  <data name="Index_RevenueTickets" xml:space="preserve"><value>Tickets</value></data>
+  <data name="Index_RevenueTicketsHint" xml:space="preserve"><value>Ticket sales for this event, including its share of season-pass revenue</value></data>
+  <data name="Index_RevenueDrinks" xml:space="preserve"><value>Drinks</value></data>
+  <data name="Index_RevenueDrinksHint" xml:space="preserve"><value>Drink orders at this event, excluding cancelled ones</value></data>
   <data name="Index_ForThisEvent" xml:space="preserve">
     <value>for this event</value>
   </data>
@@ -4050,6 +4091,24 @@
 <data name="Seasons_SetCurrentMsg" xml:space="preserve"><value>'{0}' is now the current season.</value></data>
 <data name="Seasons_SetCurrentFailed" xml:space="preserve"><value>Failed to set current season.</value></data>
 <data name="Seasons_DeleteConfirm" xml:space="preserve"><value>Delete season '{0}'? Linked events will be unlinked.</value></data>
+<data name="Seasons_PurgeBtn" xml:space="preserve"><value>Delete everything</value></data>
+<data name="Seasons_PurgeTooltip" xml:space="preserve"><value>Delete the season together with its events, tickets, orders and revenue</value></data>
+<data name="Seasons_PurgeModalTitle" xml:space="preserve"><value>Delete season '{0}' and ALL its data</value></data>
+<data name="Seasons_PurgeLoadingPreview" xml:space="preserve"><value>Checking what would be deleted…</value></data>
+<data name="Seasons_PurgePreviewFailed" xml:space="preserve"><value>Could not work out what this season contains. Nothing has been deleted.</value></data>
+<data name="Seasons_PurgeIntro" xml:space="preserve"><value>This will permanently delete:</value></data>
+<data name="Seasons_PurgeRowEvents" xml:space="preserve"><value>Events (fixtures)</value></data>
+<data name="Seasons_PurgeRowTickets" xml:space="preserve"><value>Match tickets</value></data>
+<data name="Seasons_PurgeRowPasses" xml:space="preserve"><value>Season passes</value></data>
+<data name="Seasons_PurgeRowOrders" xml:space="preserve"><value>Drink orders</value></data>
+<data name="Seasons_PurgeRowDrinks" xml:space="preserve"><value>Drinks sold</value></data>
+<data name="Seasons_PurgeWalletWarningTitle" xml:space="preserve"><value>Fan money will be destroyed</value></data>
+<data name="Seasons_PurgeWalletWarningBody" xml:space="preserve"><value>{0} ticket wallet(s) still hold {1}. This balance is deleted, not refunded. Cash it out first if the fans are owed it.</value></data>
+<data name="Seasons_PurgeIrreversible" xml:space="preserve"><value>This cannot be undone.</value></data>
+<data name="Seasons_PurgeConfirmPrompt" xml:space="preserve"><value>Type {0} to confirm:</value></data>
+<data name="Seasons_PurgeConfirmBtn" xml:space="preserve"><value>Delete everything</value></data>
+<data name="Seasons_PurgedMsg" xml:space="preserve"><value>Season '{0}' and all its data were deleted ({1} rows).</value></data>
+<data name="Seasons_PurgeFailed" xml:space="preserve"><value>Failed to delete the season's data. Nothing was deleted.</value></data>
 <data name="Seasons_DeletedMsg" xml:space="preserve"><value>Season '{0}' deleted.</value></data>
 <data name="Seasons_DeleteFailed" xml:space="preserve"><value>Failed to delete season.</value></data>
   <!-- Seasons statistics (KPI row, revenue column, expandable per-season detail) -->
@@ -4271,6 +4330,101 @@
   <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Ticket sales are ON — customers can buy tickets in the app.</value></data>
   <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Ticket sales are OFF — tickets only come from the external system.</value></data>
   <data name="Settings_PaymentsSection" xml:space="preserve"><value>Payments</value></data>
+  <data name="Settings_CupsSection" xml:space="preserve"><value>Reusable Cups</value></data>
+  <data name="Nav_Cups" xml:space="preserve"><value>Reusable Cups</value></data>
+  <data name="Nav_RegCups" xml:space="preserve"><value>Registered Cups</value></data>
+  <data name="Cups_CupsSaved" xml:space="preserve"><value>Cups saved</value></data>
+  <data name="Cups_CupsSavedHint" xml:space="preserve"><value>BYOC servings — single-use cups avoided</value></data>
+  <data name="Cups_ByocDiscount" xml:space="preserve"><value>BYOC discount given</value></data>
+  <data name="Cups_ByocDiscountHint" xml:space="preserve"><value>Total discount for own-cup servings</value></data>
+  <data name="Cups_PerEvent" xml:space="preserve"><value>By event</value></data>
+  <data name="Cups_NoEvents" xml:space="preserve"><value>No cup activity for any event yet.</value></data>
+  <data name="Cups_ColEvent" xml:space="preserve"><value>Event</value></data>
+  <data name="Cups_ColHeld" xml:space="preserve"><value>Held</value></data>
+  <data name="Cups_ColLiability" xml:space="preserve"><value>Liability</value></data>
+  <data name="Cups_ColRefunded" xml:space="preserve"><value>Refunded</value></data>
+  <data name="Cups_ColForfeited" xml:space="preserve"><value>Forfeited</value></data>
+  <data name="Cups_ColSaved" xml:space="preserve"><value>Saved</value></data>
+  <data name="RegCups_PageTitle" xml:space="preserve"><value>Registered Cups</value></data>
+  <data name="RegCups_Eyebrow" xml:space="preserve"><value>Reusable Cups</value></data>
+  <data name="RegCups_Title" xml:space="preserve"><value>Registered Cups</value></data>
+  <data name="RegCups_Intro" xml:space="preserve"><value>Approved bring-your-own cups. A registered, approved, active cup earns the BYOC discount at ordering.</value></data>
+  <data name="RegCups_Loading" xml:space="preserve"><value>Loading cups…</value></data>
+  <data name="RegCups_Empty" xml:space="preserve"><value>No cups registered yet.</value></data>
+  <data name="RegCups_AddTitle" xml:space="preserve"><value>Register a cup</value></data>
+  <data name="RegCups_Qr" xml:space="preserve"><value>QR code</value></data>
+  <data name="RegCups_Type" xml:space="preserve"><value>Cup type</value></data>
+  <data name="RegCups_NoType" xml:space="preserve"><value>(none)</value></data>
+  <data name="RegCups_Approved" xml:space="preserve"><value>Approved</value></data>
+  <data name="RegCups_Add" xml:space="preserve"><value>Register</value></data>
+  <data name="RegCups_ColQr" xml:space="preserve"><value>QR code</value></data>
+  <data name="RegCups_ColType" xml:space="preserve"><value>Type</value></data>
+  <data name="RegCups_ColApproved" xml:space="preserve"><value>Approved</value></data>
+  <data name="RegCups_ColStatus" xml:space="preserve"><value>Status</value></data>
+  <data name="RegCups_ColOwner" xml:space="preserve"><value>Owner</value></data>
+  <data name="RegCups_ColActions" xml:space="preserve"><value>Actions</value></data>
+  <data name="RegCups_Retire" xml:space="preserve"><value>Retire</value></data>
+  <data name="RegCups_Activate" xml:space="preserve"><value>Activate</value></data>
+  <data name="RegCups_Approve" xml:space="preserve"><value>Approve</value></data>
+  <data name="RegCups_Unapprove" xml:space="preserve"><value>Unapprove</value></data>
+  <data name="RegCups_Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="RegCups_No" xml:space="preserve"><value>No</value></data>
+  <data name="RegCups_Saved" xml:space="preserve"><value>Cup registered.</value></data>
+  <data name="RegCups_SaveFailed" xml:space="preserve"><value>Could not save the cup.</value></data>
+  <data name="Cups_PageTitle" xml:space="preserve"><value>Reusable Cups</value></data>
+  <data name="Cups_Eyebrow" xml:space="preserve"><value>Reporting</value></data>
+  <data name="Cups_Title" xml:space="preserve"><value>Reusable Cups</value></data>
+  <data name="Cups_Intro" xml:space="preserve"><value>Deposit liability, return rate and shrinkage for reusable cups.</value></data>
+  <data name="Cups_Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Cups_Loading" xml:space="preserve"><value>Loading cup figures…</value></data>
+  <data name="Cups_Error" xml:space="preserve"><value>Could not load the cup dashboard.</value></data>
+  <data name="Cups_OutstandingCups" xml:space="preserve"><value>Cups outstanding</value></data>
+  <data name="Cups_Liability" xml:space="preserve"><value>Deposit liability</value></data>
+  <data name="Cups_LiabilityHint" xml:space="preserve"><value>Money owed back on returns</value></data>
+  <data name="Cups_ReturnRate" xml:space="preserve"><value>Return rate</value></data>
+  <data name="Cups_ReturnedOfIssued" xml:space="preserve"><value>returned</value></data>
+  <data name="Cups_ShrinkageCost" xml:space="preserve"><value>Shrinkage cost</value></data>
+  <data name="Cups_ShrinkageHint" xml:space="preserve"><value>Forfeited cups × replacement cost</value></data>
+  <data name="Cups_DepositBreakdown" xml:space="preserve"><value>Deposit breakdown</value></data>
+  <data name="Cups_ColMetric" xml:space="preserve"><value>Status</value></data>
+  <data name="Cups_ColCount" xml:space="preserve"><value>Count</value></data>
+  <data name="Cups_ColAmount" xml:space="preserve"><value>Amount</value></data>
+  <data name="Cups_RowHeld" xml:space="preserve"><value>Held (outstanding)</value></data>
+  <data name="Cups_RowRefunded" xml:space="preserve"><value>Refunded</value></data>
+  <data name="Cups_RowForfeited" xml:space="preserve"><value>Forfeited (breakage)</value></data>
+  <data name="Settings_CupsIntro" xml:space="preserve"><value>Offer drinks in reusable club-branded cups. Turn the feature on, then enable the modes and rules you want. Everything is off until you enable it.</value></data>
+  <data name="Settings_CupsEnabled" xml:space="preserve"><value>Enable reusable cups</value></data>
+  <data name="Settings_CupsEnabledHint" xml:space="preserve"><value>Master switch. When off, cups are never offered anywhere in the customer or staff apps.</value></data>
+  <data name="Settings_CupModesTitle" xml:space="preserve"><value>Modes</value></data>
+  <data name="Settings_CupDepositMode" xml:space="preserve"><value>Deposit rental</value></data>
+  <data name="Settings_CupDepositModeHint" xml:space="preserve"><value>Customer pays a refundable deposit per cup, refunded when the cup is returned.</value></data>
+  <data name="Settings_CupHonorMode" xml:space="preserve"><value>Honor system</value></data>
+  <data name="Settings_CupHonorModeHint" xml:space="preserve"><value>No money held — cups are handed out on trust and tracked for shrinkage.</value></data>
+  <data name="Settings_CupByocMode" xml:space="preserve"><value>Bring your own cup</value></data>
+  <data name="Settings_CupByocModeHint" xml:space="preserve"><value>Customer uses their own reusable cup identified by a scannable QR code.</value></data>
+  <data name="Settings_CupDepositTitle" xml:space="preserve"><value>Deposit settings</value></data>
+  <data name="Settings_CupDepositAmount" xml:space="preserve"><value>Deposit per cup (€)</value></data>
+  <data name="Settings_CupRefundWindow" xml:space="preserve"><value>Refundable until</value></data>
+  <data name="Settings_CupRefundWindow_EndOfEvent" xml:space="preserve"><value>End of the event</value></data>
+  <data name="Settings_CupRefundWindow_Plus24h" xml:space="preserve"><value>24 hours after the event</value></data>
+  <data name="Settings_CupRefundWindow_NoExpiry" xml:space="preserve"><value>Never expires</value></data>
+  <data name="Settings_CupBindingTitle" xml:space="preserve"><value>Deposit binding</value></data>
+  <data name="Settings_CupBindingHint" xml:space="preserve"><value>How a deposit is tied to its refund. Enable any combination.</value></data>
+  <data name="Settings_CupBindTicketWallet" xml:space="preserve"><value>Bind to ticket / wallet (scan the ticket to refund)</value></data>
+  <data name="Settings_CupBindReturnToken" xml:space="preserve"><value>Printed return token</value></data>
+  <data name="Settings_CupBindReturnTokenNoPrinter" xml:space="preserve"><value>needs a receipt printer</value></data>
+  <data name="Settings_CupBindCupQr" xml:space="preserve"><value>Individually QR'd deposit cups</value></data>
+  <data name="Settings_CupRefundTitle" xml:space="preserve"><value>Refund path</value></data>
+  <data name="Settings_CupRefundHint" xml:space="preserve"><value>Where a deposit refund goes. Enable at least one.</value></data>
+  <data name="Settings_CupRefundWallet" xml:space="preserve"><value>Wallet credit (recommended)</value></data>
+  <data name="Settings_CupRefundOriginal" xml:space="preserve"><value>Original payment method (card / cash)</value></data>
+  <data name="Settings_CupByocTitle" xml:space="preserve"><value>Bring-your-own-cup settings</value></data>
+  <data name="Settings_CupByocDiscount" xml:space="preserve"><value>Discount per serving (€)</value></data>
+  <data name="Settings_CupByocRequireApproved" xml:space="preserve"><value>Only accept approved (registered) cups</value></data>
+  <data name="Settings_CupByocRequireApprovedHint" xml:space="preserve"><value>Rejects unknown cups, so every pour is a measured serving into an approved cup.</value></data>
+  <data name="Settings_CupsInvalidWarning" xml:space="preserve"><value>Enable at least one mode. For deposit mode, enable at least one binding and one refund path.</value></data>
+  <data name="Settings_CupsSaved" xml:space="preserve"><value>Cup settings saved.</value></data>
+  <data name="Settings_CupsSaveFailed" xml:space="preserve"><value>Could not save cup settings.</value></data>
   <data name="Settings_PaymentsIntro" xml:space="preserve"><value>Choose which payment methods fans can pick when ordering drinks in the customer app. Disabled methods are hidden from the cart and rejected by the order API.</value></data>
   <data name="Settings_PayWallet" xml:space="preserve"><value>HALFTIME Wallet</value></data>
   <data name="Settings_PayWalletHint" xml:space="preserve"><value>Pay from the fan's wallet balance. The order is charged immediately at checkout.</value></data>

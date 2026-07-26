@@ -1,5 +1,8 @@
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
+@using StadiumDrinkOrdering.Customer.Services
 @inject IStringLocalizer<SharedResources> Localizer
+@inject IApiService Api
 
 @* Bottom sheet for a drink: quantity + special instructions, then add. Visible whenever Drink != null. *@
 
@@ -31,6 +34,63 @@
         </div>
 
         <textarea id="customer-drink-sheet-note-input" class="note-in" rows="2" @bind="_note" placeholder="@Localizer["DrinkSheet_SpecialInstructions"]"></textarea>
+
+        @* Reusable-cup choice — only shown when the venue has cups enabled with at least one usable mode. *@
+        @if (CupSettings is { CupsEnabled: true } && (CupSettings.CupDepositModeEnabled || CupSettings.CupHonorModeEnabled || CupSettings.CupByocEnabled))
+        {
+            <div id="customer-drink-sheet-cup" style="margin:10px 0 2px;">
+                <div style="font-size:.85rem;color:#666;margin-bottom:6px;">@Localizer["DrinkSheet_CupMode"]</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button type="button" id="customer-drink-sheet-cup-none" style="@CupBtnStyle(_cupMode == CupMode.None)" @onclick="() => SetMode(CupMode.None)">@Localizer["DrinkSheet_CupNone"]</button>
+                    @if (CupSettings.CupDepositModeEnabled)
+                    {
+                        <button type="button" id="customer-drink-sheet-cup-deposit" style="@CupBtnStyle(_cupMode == CupMode.Deposit)" @onclick="() => SetMode(CupMode.Deposit)">@Localizer["DrinkSheet_CupDeposit"]</button>
+                    }
+                    @if (CupSettings.CupHonorModeEnabled)
+                    {
+                        <button type="button" id="customer-drink-sheet-cup-honor" style="@CupBtnStyle(_cupMode == CupMode.HonorSystem)" @onclick="() => SetMode(CupMode.HonorSystem)">@Localizer["DrinkSheet_CupHonor"]</button>
+                    }
+                    @if (CupSettings.CupByocEnabled)
+                    {
+                        <button type="button" id="customer-drink-sheet-cup-byoc" style="@CupBtnStyle(_cupMode == CupMode.ByocQr)" @onclick="() => SetMode(CupMode.ByocQr)">@Localizer["DrinkSheet_CupByoc"]</button>
+                    }
+                </div>
+                @if (_cupMode == CupMode.Deposit)
+                {
+                    <div id="customer-drink-sheet-cup-hint" style="font-size:.8rem;color:#666;margin-top:6px;">
+                        @Localizer["DrinkSheet_CupDepositHint", (CupSettings.CupDepositAmount * _qty).ToString("F2")]
+                    </div>
+                }
+                else if (_cupMode == CupMode.HonorSystem)
+                {
+                    <div id="customer-drink-sheet-cup-hint" style="font-size:.8rem;color:#666;margin-top:6px;">@Localizer["DrinkSheet_CupHonorHint"]</div>
+                }
+                else if (_cupMode == CupMode.ByocQr)
+                {
+                    <div id="customer-drink-sheet-cup-byoc-block" style="margin-top:8px;">
+                        <div style="display:flex;gap:8px;">
+                            <input id="customer-drink-sheet-cup-token" class="note-in" style="flex:1;margin:0;" @bind="_cupToken"
+                                   placeholder="@Localizer["DrinkSheet_CupByocPlaceholder"]" autocomplete="off" />
+                            <button type="button" id="customer-drink-sheet-cup-check" style="@CupBtnStyle(false)" @onclick="ResolveCup"
+                                    disabled="@(_resolvingCup || string.IsNullOrWhiteSpace(_cupToken))">@Localizer["DrinkSheet_CupByocCheck"]</button>
+                        </div>
+                        @if (_cupResolve is { } r)
+                        {
+                            <div id="customer-drink-sheet-cup-byoc-status" style="font-size:.8rem;margin-top:6px;color:@(r.Usable ? "#059669" : "#dc2626");">
+                                @if (r.Usable)
+                                {
+                                    @Localizer["DrinkSheet_CupByocOk", r.Discount.ToString("F2")]
+                                }
+                                else
+                                {
+                                    @(r.Reason ?? Localizer["DrinkSheet_CupByocBad"])
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
 
         @* What's left to spend after the cart already in play, so the fan sizes this drink against
            real money rather than discovering the shortfall on the CartBar afterwards. Null Available
@@ -66,8 +126,15 @@
     [Parameter] public decimal? Available { get; set; }
     [Parameter] public EventCallback OnTopUp { get; set; }
 
+    // Venue reusable-cup config; null/disabled means the cup chooser is not shown.
+    [Parameter] public CupsSettingsDto? CupSettings { get; set; }
+
     private int _qty = 1;
     private string? _note;
+    private CupMode _cupMode = CupMode.None;
+    private string? _cupToken;
+    private CupResolveDto? _cupResolve;
+    private bool _resolvingCup;
     private int? _lastId;
 
     protected override void OnParametersSet()
@@ -77,6 +144,9 @@
         {
             _qty = 1;
             _note = null;
+            _cupMode = CupMode.None;
+            _cupToken = null;
+            _cupResolve = null;
             _lastId = Drink.Id;
         }
         else if (Drink == null)
@@ -88,9 +158,29 @@
     private void Inc() => _qty = Math.Min(20, _qty + 1);
     private void Dec() => _qty = Math.Max(1, _qty - 1);
 
+    private void SetMode(CupMode mode)
+    {
+        _cupMode = mode;
+        if (mode != CupMode.ByocQr) { _cupToken = null; _cupResolve = null; }
+    }
+
+    private async Task ResolveCup()
+    {
+        if (string.IsNullOrWhiteSpace(_cupToken)) return;
+        _resolvingCup = true;
+        try { _cupResolve = await Api.ResolveCupAsync(_cupToken.Trim()); }
+        finally { _resolvingCup = false; }
+    }
+
+    // Selected vs unselected cup-mode pill (inline so the sheet needs no extra CSS).
+    private static string CupBtnStyle(bool selected) =>
+        $"padding:8px 12px;border-radius:10px;font-size:.85rem;cursor:pointer;border:1px solid {(selected ? "#2563eb" : "#ccc")};" +
+        $"background:{(selected ? "#2563eb" : "#fff")};color:{(selected ? "#fff" : "#333")};";
+
     private async Task Submit()
     {
         if (Drink != null)
-            await OnAdd.InvokeAsync(new DrinkOrderRequest(Drink.Id, _qty, _note));
+            await OnAdd.InvokeAsync(new DrinkOrderRequest(Drink.Id, _qty, _note, _cupMode,
+                _cupMode == CupMode.ByocQr ? _cupToken?.Trim() : null));
     }
 }

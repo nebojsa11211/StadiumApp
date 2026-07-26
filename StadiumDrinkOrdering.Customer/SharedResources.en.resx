@@ -1486,6 +1486,22 @@
   <data name="DrinkSheet_AddToCart" xml:space="preserve">
     <value>Add to Cart ·</value>
   </data>
+  <data name="DrinkSheet_CupMode" xml:space="preserve"><value>Reusable cup</value></data>
+  <data name="DrinkSheet_CupNone" xml:space="preserve"><value>Standard</value></data>
+  <data name="DrinkSheet_CupDeposit" xml:space="preserve"><value>Deposit cup</value></data>
+  <data name="DrinkSheet_CupHonor" xml:space="preserve"><value>Reusable (trust)</value></data>
+  <data name="DrinkSheet_CupDepositHint" xml:space="preserve"><value>+€{0} refundable deposit, returned when you bring the cup back.</value></data>
+  <data name="DrinkSheet_CupHonorHint" xml:space="preserve"><value>Please bring the cup back after the match.</value></data>
+  <data name="Cart_CupDepositLabel" xml:space="preserve"><value>Cup deposit (refundable)</value></data>
+  <data name="Cart_CupDepositBadge" xml:space="preserve"><value>Deposit cup</value></data>
+  <data name="Cart_CupHonorBadge" xml:space="preserve"><value>Reusable cup</value></data>
+  <data name="DrinkSheet_CupByoc" xml:space="preserve"><value>My own cup</value></data>
+  <data name="DrinkSheet_CupByocPlaceholder" xml:space="preserve"><value>Scan or enter your cup code</value></data>
+  <data name="DrinkSheet_CupByocCheck" xml:space="preserve"><value>Check</value></data>
+  <data name="DrinkSheet_CupByocOk" xml:space="preserve"><value>✓ Approved cup — €{0} off</value></data>
+  <data name="DrinkSheet_CupByocBad" xml:space="preserve"><value>This cup can't be used.</value></data>
+  <data name="Cart_ByocDiscountLabel" xml:space="preserve"><value>Own-cup discount</value></data>
+  <data name="Cart_CupByocBadge" xml:space="preserve"><value>My cup</value></data>
   <data name="OrderTimeline_Status1" xml:space="preserve">
     <value>Order Received</value>
   </data>

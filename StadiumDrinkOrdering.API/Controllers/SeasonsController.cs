@@ -137,4 +137,53 @@ public class SeasonsController : ControllerBase
             return Conflict(new { message = "This season has season tickets. Refund them before deleting the season." });
         return NoContent();
     }
+
+    /// <summary>
+    /// What a full purge of this season would destroy. Read-only; call before showing the
+    /// confirmation dialog so the admin sees the exact damage.
+    /// </summary>
+    [HttpGet("{id:int}/purge-preview")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<SeasonPurgePreviewDto>> GetPurgePreview(int id, CancellationToken ct)
+    {
+        var preview = await _seasons.GetPurgePreviewAsync(id, ct);
+        return preview == null ? NotFound() : Ok(preview);
+    }
+
+    /// <summary>
+    /// Permanently deletes the season and EVERYTHING attached to it: its events, match tickets,
+    /// season passes, orders, order items and payments — plus any anonymous ticket wallets, whose
+    /// remaining balance is destroyed rather than refunded. Irreversible.
+    /// The caller must echo the season's exact name in <c>confirmName</c>, so a mis-aimed request
+    /// (wrong id, replayed call) cannot wipe the wrong season.
+    /// </summary>
+    [HttpPost("{id:int}/purge")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<SeasonPurgeResultDto>> PurgeSeason(
+        int id, [FromBody] PurgeSeasonRequest request, CancellationToken ct)
+    {
+        var season = await _seasons.GetSeasonAsync(id, ct);
+        if (season == null)
+            return NotFound();
+
+        if (!string.Equals(request?.ConfirmName?.Trim(), season.Name, StringComparison.Ordinal))
+            return BadRequest(new { message = "The confirmation name does not match this season's name. Nothing was deleted." });
+
+        try
+        {
+            var result = await _seasons.PurgeSeasonAsync(id, ct);
+            return result == null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Purge of season {SeasonId} failed and was rolled back", id);
+            return StatusCode(500, new { message = "Failed to purge the season. No changes were made.", error = ex.Message });
+        }
+    }
+
+    /// <summary>Body of a purge request — the typed confirmation of the season's name.</summary>
+    public class PurgeSeasonRequest
+    {
+        public string? ConfirmName { get; set; }
+    }
 }

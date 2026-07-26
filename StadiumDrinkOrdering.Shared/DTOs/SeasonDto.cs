@@ -155,6 +155,59 @@ public class SeasonPassQrDto
     public string ImageDataUri { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// What a full season purge would destroy, gathered before the admin confirms. Every figure is a
+/// live count taken at preview time, so the confirmation dialog can state the damage precisely
+/// instead of "and all related data".
+/// </summary>
+public class SeasonPurgePreviewDto
+{
+    public int SeasonId { get; set; }
+    public string SeasonName { get; set; } = string.Empty;
+
+    /// <summary>Events (fixtures) linked to the season — all of them are deleted, not unlinked.</summary>
+    public int Events { get; set; }
+    /// <summary>Match tickets across those events, including season-pass–derived ones.</summary>
+    public int Tickets { get; set; }
+    /// <summary>Season passes (annual tickets) sold for this season.</summary>
+    public int SeasonPasses { get; set; }
+    /// <summary>Revenue booked on those season passes, which disappears with them.</summary>
+    public decimal PassRevenue { get; set; }
+    /// <summary>Drink orders placed at those events (all statuses, including cancelled).</summary>
+    public int Orders { get; set; }
+    /// <summary>Gross value of those orders.</summary>
+    public decimal OrderRevenue { get; set; }
+    /// <summary>Individual drinks sold across those orders.</summary>
+    public int DrinksSold { get; set; }
+
+    /// <summary>
+    /// Ticket-owned (anonymous bearer) wallets that would be destroyed with their tickets.
+    /// </summary>
+    public int TicketWallets { get; set; }
+    /// <summary>
+    /// Money still sitting on those wallets. This balance is <b>destroyed, not refunded</b> — the
+    /// single most important number on the confirmation dialog.
+    /// </summary>
+    public decimal TicketWalletBalance { get; set; }
+}
+
+/// <summary>Row counts actually removed by a season purge, for the post-run report.</summary>
+public class SeasonPurgeResultDto
+{
+    public string SeasonName { get; set; } = string.Empty;
+    public int Events { get; set; }
+    public int Tickets { get; set; }
+    public int SeasonPasses { get; set; }
+    public int Orders { get; set; }
+    public int OrderItems { get; set; }
+    public int Payments { get; set; }
+    public int TicketWallets { get; set; }
+    /// <summary>Balance destroyed along with the ticket wallets.</summary>
+    public decimal TicketWalletBalance { get; set; }
+    /// <summary>Grand total of every row removed, including cascaded children.</summary>
+    public int TotalRowsDeleted { get; set; }
+}
+
 public class CreateSeasonDto
 {
     [Required]

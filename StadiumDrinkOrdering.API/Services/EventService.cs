@@ -25,6 +25,19 @@ public interface IEventService
     /// </summary>
     Task<bool> IsEventNameTakenAsync(string name, int? excludeEventId = null);
     Task<bool> DeleteEventAsync(int id);
+
+    /// <summary>
+    /// Everything a full purge of this event would destroy. Null when the event does not exist.
+    /// Read-only — nothing is modified.
+    /// </summary>
+    Task<EventPurgePreviewDto?> GetPurgePreviewAsync(int id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Permanently deletes the event together with its tickets AND their orders, order items and
+    /// payments — the records a plain <see cref="DeleteEventAsync"/> deliberately keeps. Destructive
+    /// and irreversible. Null when the event does not exist.
+    /// </summary>
+    Task<EventPurgeResultDto?> PurgeEventAsync(int id, CancellationToken ct = default);
     Task<bool> ActivateEventAsync(int id);
     Task<bool> DeactivateEventAsync(int id);
     /// <summary>
@@ -696,6 +709,41 @@ public class EventService : IEventService
         return kept.Count == 0 ? null : System.Text.Json.JsonSerializer.Serialize(kept);
     }
 
+    /// <summary>
+    /// Refuses a plain delete while any of the event's tickets carries a stored-value wallet.
+    /// <c>Wallet.TicketId</c> is RESTRICT, so those tickets cannot be removed anyway — without this
+    /// check the delete reached the database and surfaced an opaque FK error instead of telling the
+    /// admin what to do. Checked before the transaction opens: it is read-only and fails fast.
+    /// Zero-balance wallets block too — the wallet row is what the constraint protects, and silently
+    /// discarding one would still lose a fan's bearer instrument.
+    /// </summary>
+    private async Task GuardNoFundedTicketWalletsAsync(int eventId)
+    {
+        // Same two-step shape the purge uses (materialise ticket ids, then match wallets with
+        // Contains): a proven translation rather than a correlated subquery over Wallets.
+        var ticketIds = await _context.Tickets
+            .Where(t => t.EventId == eventId)
+            .Select(t => t.Id)
+            .ToListAsync();
+
+        if (ticketIds.Count == 0)
+            return;
+
+        var wallets = await _context.Wallets
+            .Where(w => w.TicketId != null && ticketIds.Contains(w.TicketId.Value))
+            .Select(w => w.Balance)
+            .ToListAsync();
+
+        if (wallets.Count == 0)
+            return;
+
+        _logger.LogWarning(
+            "Refused plain delete of event {EventId}: {Count} ticket wallet(s) hold {Balance}",
+            eventId, wallets.Count, wallets.Sum());
+
+        throw new TicketWalletsBlockDeleteException(wallets.Count, wallets.Sum());
+    }
+
     public async Task<bool> DeleteEventAsync(int id)
     {
         var eventItem = await _context.Events.FindAsync(id);
@@ -703,6 +751,7 @@ public class EventService : IEventService
             return false;
 
         await GuardSeasonOpenAsync(eventItem.SeasonId);
+        await GuardNoFundedTicketWalletsAsync(id);
 
         // Force delete: remove the event together with all its tickets and their dependent
         // sessions. Tickets/TicketSessions/OrderSessions hold Restrict FKs into Event/Ticket,
@@ -761,6 +810,213 @@ public class EventService : IEventService
             "Force-deleted event {EventName} (ID: {EventId}) and {TicketCount} ticket(s)",
             eventItem.EventName, id, ticketCount);
         return true;
+    }
+
+    /// <summary>
+    /// The id sets an event purge operates on. Materialised up front: each set is derived from rows
+    /// the purge itself removes, so a lazily-evaluated query would come back empty mid-run.
+    /// </summary>
+    private sealed record EventPurgeScope(
+        List<int> TicketIds,
+        List<int> OrderIds,
+        List<int> WalletIds,
+        List<long> WalletTransactionIds);
+
+    private async Task<EventPurgeScope> ResolveEventPurgeScopeAsync(int eventId, CancellationToken ct)
+    {
+        var ticketIds = await _context.Tickets
+            .Where(t => t.EventId == eventId)
+            .Select(t => t.Id)
+            .ToListAsync(ct);
+
+        // Orders placed at this event, plus orders that reach it only through a session bound to one
+        // of its tickets (walk-up flows set the session, not always EventId).
+        var orderIds = await _context.Orders
+            .Where(o => o.EventId == eventId
+                        || (o.SessionId != null && _context.OrderSessions
+                                .Any(os => os.Id == o.SessionId && ticketIds.Contains(os.TicketId)))
+                        || (o.TicketSessionId != null && _context.TicketSessions
+                                .Any(ts => ts.Id == o.TicketSessionId
+                                           && (ts.EventId == eventId || ticketIds.Contains(ts.TicketId)))))
+            .Select(o => o.Id)
+            .ToListAsync(ct);
+
+        // Wallet -> Ticket is RESTRICT, so a funded ticket blocks its own deletion. The purge removes
+        // these explicitly; this is exactly the case the plain DeleteEventAsync trips over.
+        var walletIds = await _context.Wallets
+            .Where(w => w.TicketId != null && ticketIds.Contains(w.TicketId.Value))
+            .Select(w => w.Id)
+            .ToListAsync(ct);
+
+        var walletTransactionIds = await _context.WalletTransactions
+            .Where(wt => walletIds.Contains(wt.WalletId))
+            .Select(wt => wt.Id)
+            .ToListAsync(ct);
+
+        return new EventPurgeScope(ticketIds, orderIds, walletIds, walletTransactionIds);
+    }
+
+    public async Task<EventPurgePreviewDto?> GetPurgePreviewAsync(int id, CancellationToken ct = default)
+    {
+        var eventItem = await _context.Events
+            .AsNoTracking()
+            .Where(e => e.Id == id)
+            .Select(e => new { e.Id, e.EventName, e.EventDate })
+            .FirstOrDefaultAsync(ct);
+
+        if (eventItem == null)
+            return null;
+
+        var scope = await ResolveEventPurgeScopeAsync(id, ct);
+
+        var ticketRevenue = await _context.Tickets
+            .Where(t => scope.TicketIds.Contains(t.Id))
+            .SumAsync(t => (decimal?)t.Price, ct) ?? 0m;
+
+        var orderRevenue = await _context.Orders
+            .Where(o => scope.OrderIds.Contains(o.Id))
+            .SumAsync(o => (decimal?)o.TotalAmount, ct) ?? 0m;
+
+        var drinksSold = await _context.OrderItems
+            .Where(oi => scope.OrderIds.Contains(oi.OrderId))
+            .SumAsync(oi => (int?)oi.Quantity, ct) ?? 0;
+
+        var payments = await _context.Payments
+            .CountAsync(p => p.OrderId != null && scope.OrderIds.Contains(p.OrderId.Value), ct);
+
+        // Passes keep existing; they just lose this fixture's access ticket.
+        var affectedPasses = await _context.Tickets
+            .Where(t => scope.TicketIds.Contains(t.Id) && t.SeasonTicketId != null)
+            .Select(t => t.SeasonTicketId)
+            .Distinct()
+            .CountAsync(ct);
+
+        var walletBalance = await _context.Wallets
+            .Where(w => scope.WalletIds.Contains(w.Id))
+            .SumAsync(w => (decimal?)w.Balance, ct) ?? 0m;
+
+        return new EventPurgePreviewDto
+        {
+            EventId = eventItem.Id,
+            // Mirror EventController's DTO fallback exactly: the admin types back what the UI shows,
+            // and a blank-named event would otherwise be impossible to confirm.
+            EventName = string.IsNullOrWhiteSpace(eventItem.EventName)
+                ? $"Event {eventItem.Id}"
+                : eventItem.EventName,
+            EventDate = eventItem.EventDate,
+            Tickets = scope.TicketIds.Count,
+            TicketRevenue = ticketRevenue,
+            Orders = scope.OrderIds.Count,
+            OrderRevenue = orderRevenue,
+            DrinksSold = drinksSold,
+            Payments = payments,
+            AffectedSeasonPasses = affectedPasses,
+            TicketWallets = scope.WalletIds.Count,
+            TicketWalletBalance = walletBalance
+        };
+    }
+
+    public async Task<EventPurgeResultDto?> PurgeEventAsync(int id, CancellationToken ct = default)
+    {
+        var eventItem = await _context.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id, ct);
+
+        if (eventItem == null)
+            return null;
+
+        // Same freeze rule as the plain delete: a closed season's fixtures are settled history.
+        await GuardSeasonOpenAsync(eventItem.SeasonId);
+
+        var result = new EventPurgeResultDto { EventName = eventItem.EventName };
+
+        var strategy = _context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            await using var tx = await _context.Database.BeginTransactionAsync(ct);
+
+            // Re-resolve inside the transaction so a retry works from the current state.
+            var scope = await ResolveEventPurgeScopeAsync(id, ct);
+
+            // Capture the balance before the rows go — it cannot be reconstructed afterwards.
+            result.TicketWalletBalance = await _context.Wallets
+                .Where(w => scope.WalletIds.Contains(w.Id))
+                .SumAsync(w => (decimal?)w.Balance, ct) ?? 0m;
+
+            var total = 0;
+
+            // 1. Sessions RESTRICT-reference tickets and the event.
+            total += await _context.TicketSessions
+                .Where(ts => ts.EventId == id || scope.TicketIds.Contains(ts.TicketId))
+                .ExecuteDeleteAsync(ct);
+            total += await _context.OrderSessions
+                .Where(os => scope.TicketIds.Contains(os.TicketId))
+                .ExecuteDeleteAsync(ct);
+
+            // 2. Order graph. Payments RESTRICT-reference wallet transactions, so every payment tied to
+            //    a purged order or a purged wallet's ledger goes before both.
+            result.OrderItems = await _context.OrderItems
+                .Where(oi => scope.OrderIds.Contains(oi.OrderId))
+                .ExecuteDeleteAsync(ct);
+            total += result.OrderItems;
+
+            result.Payments = await _context.Payments
+                .Where(p => (p.OrderId != null && scope.OrderIds.Contains(p.OrderId.Value))
+                            || (p.WalletTransactionId != null
+                                && scope.WalletTransactionIds.Contains(p.WalletTransactionId.Value)))
+                .ExecuteDeleteAsync(ct);
+            total += result.Payments;
+
+            total += await _context.CupDeposits
+                .Where(cd => (cd.OrderId != null && scope.OrderIds.Contains(cd.OrderId.Value))
+                             || (cd.TicketId != null && scope.TicketIds.Contains(cd.TicketId.Value)))
+                .ExecuteDeleteAsync(ct);
+
+            result.Orders = await _context.Orders
+                .Where(o => scope.OrderIds.Contains(o.Id))
+                .ExecuteDeleteAsync(ct);
+            total += result.Orders;
+
+            // 3. Wallet ledger then wallets — both before their tickets (RESTRICT).
+            total += await _context.WalletTransactions
+                .Where(wt => scope.WalletIds.Contains(wt.WalletId))
+                .ExecuteDeleteAsync(ct);
+
+            result.TicketWallets = await _context.Wallets
+                .Where(w => scope.WalletIds.Contains(w.Id))
+                .ExecuteDeleteAsync(ct);
+            total += result.TicketWallets;
+
+            // 4. Tickets. Season passes are deliberately NOT touched: a pass belongs to the season,
+            //    not to one fixture, so it survives minus this match's access ticket.
+            result.Tickets = await _context.Tickets
+                .Where(t => scope.TicketIds.Contains(t.Id))
+                .ExecuteDeleteAsync(ct);
+            total += result.Tickets;
+
+            // 5. Event-owned data, then the event. These cascade, but are removed explicitly so the run
+            //    does not depend on the DB cascade wiring being intact.
+            total += await _context.EventAnalytics.Where(x => x.EventId == id).ExecuteDeleteAsync(ct);
+            total += await _context.EventStaffAssignments.Where(x => x.EventId == id).ExecuteDeleteAsync(ct);
+            total += await _context.EventSectorPrices.Where(x => x.EventId == id).ExecuteDeleteAsync(ct);
+            total += await _context.EventPosters.Where(x => x.EventId == id).ExecuteDeleteAsync(ct);
+            total += await _context.CartItems.Where(x => x.EventId == id).ExecuteDeleteAsync(ct);
+            total += await _context.SeatReservations.Where(x => x.EventId == id).ExecuteDeleteAsync(ct);
+
+            total += await _context.Events.Where(e => e.Id == id).ExecuteDeleteAsync(ct);
+
+            result.TotalRowsDeleted = total;
+            await tx.CommitAsync(ct);
+        });
+
+        _logger.LogWarning(
+            "PURGED event {EventName} (ID: {EventId}). Tickets={Tickets}, Orders={Orders}, " +
+            "OrderItems={OrderItems}, Payments={Payments}, TicketWallets={Wallets}, " +
+            "DestroyedWalletBalance={Balance}, TotalRows={Total}",
+            eventItem.EventName, id, result.Tickets, result.Orders, result.OrderItems,
+            result.Payments, result.TicketWallets, result.TicketWalletBalance, result.TotalRowsDeleted);
+
+        return result;
     }
 
     public async Task<bool> ActivateEventAsync(int id)

@@ -289,6 +289,12 @@
 .dash-kpi-chip--regular b { color: #1d4ed8; }
 .dash-kpi-chip--season { background: #ede9fe; border-color: #ddd6fe; color: #6d28d9; }
 .dash-kpi-chip--season b { color: #6d28d9; }
+/* Revenue split. Deliberately not the blue/violet of the ticket-count chips above: these sit in a
+   different card and read as money, so a same-hue pair would suggest the same breakdown. */
+.dash-kpi-chip--tickets { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
+.dash-kpi-chip--tickets b { color: #047857; }
+.dash-kpi-chip--drinks { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+.dash-kpi-chip--drinks b { color: #c2410c; }
 
 /* ---- generic card ---- */
 .dash-card {

@@ -1,0 +1,482 @@
+@page "/cup-returns"
+@using System.Globalization
+@using StadiumDrinkOrdering.Shared.DTOs
+@inject IStaffApiService ApiService
+@inject IAuthStateService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> Localizer
+@implements IAsyncDisposable
+
+<PageTitle>@Localizer["CupReturns_PageTitle"]</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    <div class="alert alert-warning m-3" id="bar-cupreturns-auth-warning">@Localizer["CupReturns_LoginRequired"]</div>
+}
+else
+{
+    <div class="container py-3" id="bar-cupreturns-container" style="max-width:640px;">
+        <h3 id="bar-cupreturns-heading">@Localizer["CupReturns_Heading"]</h3>
+        <p class="text-muted" id="bar-cupreturns-subtitle">@Localizer["CupReturns_Subtitle"]</p>
+
+        @* ---- Step 1: identify the ticket ---- *@
+        <div class="card mb-3" id="bar-cupreturns-identify-card">
+            <div class="card-body">
+                <form id="bar-cupreturns-identify-form" @onsubmit="ResolveAsync">
+                    <label for="bar-cupreturns-code-input" class="form-label">@Localizer["CupReturns_IdentifyLabel"]</label>
+                    <div class="input-group input-group-lg mb-3">
+                        <input id="bar-cupreturns-code-input" type="text" class="form-control"
+                               @bind="codeInput" @bind:event="oninput"
+                               placeholder="@Localizer["CupReturns_CodePlaceholder"]"
+                               disabled="@isResolving" autocomplete="off" />
+                        <button id="bar-cupreturns-resolve-btn" class="btn btn-primary" type="submit"
+                                disabled="@(isResolving || string.IsNullOrWhiteSpace(codeInput))">
+                            @if (isResolving)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                            }
+                            else
+                            {
+                                <span>@Localizer["CupReturns_ResolveBtn"]</span>
+                            }
+                        </button>
+                    </div>
+                </form>
+
+                @if (!scannerActive)
+                {
+                    <button id="bar-cupreturns-scan-btn" class="btn btn-outline-dark w-100" @onclick="RequestScan" disabled="@isResolving">
+                        📷 @Localizer["CupReturns_ScanBtn"]
+                    </button>
+                }
+                else
+                {
+                    <div id="bar-cupreturns-scanner" class="text-center">
+                        <video id="@ScannerVideoId" playsinline muted
+                               style="width:100%; max-height:320px; background:#000; border-radius:.5rem;"></video>
+                        <p class="text-muted small mt-2 mb-2">@Localizer["CupReturns_ScanningHint"]</p>
+                        <button id="bar-cupreturns-stop-scan-btn" class="btn btn-outline-secondary w-100" @onclick="StopScannerAsync">
+                            @Localizer["CupReturns_StopScanBtn"]
+                        </button>
+                    </div>
+                }
+
+                @if (scannerUnsupported)
+                {
+                    <div class="alert alert-warning mt-3 mb-0" id="bar-cupreturns-scanner-unsupported">@Localizer["CupReturns_ScannerUnsupported"]</div>
+                }
+                @if (!string.IsNullOrEmpty(scannerError))
+                {
+                    <div class="alert alert-danger mt-3 mb-0" id="bar-cupreturns-scanner-error">@scannerError</div>
+                }
+                @if (notFound)
+                {
+                    <div class="alert alert-warning mt-3 mb-0" id="bar-cupreturns-notfound">@Localizer["CupReturns_NotFound"]</div>
+                }
+                @if (!string.IsNullOrEmpty(resolveError))
+                {
+                    <div class="alert alert-danger mt-3 mb-0" id="bar-cupreturns-resolve-error">@resolveError</div>
+                }
+            </div>
+        </div>
+
+        @* ---- Step 2: resolved ticket → refund deposits ---- *@
+        @if (lookup is { Found: true })
+        {
+            <div class="card mb-3" id="bar-cupreturns-resolved-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="fw-semibold" id="bar-cupreturns-holder">@Display(lookup.HolderName)</div>
+                            <div class="text-muted small">@Localizer["CupReturns_Ticket"] @Display(lookup.TicketNumber)</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="h4 mb-0" id="bar-cupreturns-outstanding-cups">@lookup.OutstandingCups</div>
+                            <div class="text-muted small">@Localizer["CupReturns_OutstandingCups"]</div>
+                        </div>
+                    </div>
+
+                    @if (lookup.OutstandingCups == 0)
+                    {
+                        <div class="alert alert-secondary mb-0" id="bar-cupreturns-none">@Localizer["CupReturns_NoneOutstanding"]</div>
+                    }
+                    else
+                    {
+                        <div class="text-muted small mb-2" id="bar-cupreturns-outstanding-amount">
+                            @Localizer["CupReturns_Refundable"]: @FormatMoney(lookup.OutstandingAmount, lookup.Currency)
+                        </div>
+                        <label for="bar-cupreturns-count-input" class="form-label">@Localizer["CupReturns_CountLabel"]</label>
+                        <div class="input-group input-group-lg mb-3">
+                            <input id="bar-cupreturns-count-input" type="number" min="1" max="@lookup.OutstandingCups"
+                                   class="form-control" @bind="returnCount" disabled="@isSubmitting" />
+                            <button id="bar-cupreturns-refund-btn" class="btn btn-success" @onclick="RefundAsync"
+                                    disabled="@(isSubmitting || returnCount < 1 || returnCount > lookup.OutstandingCups)">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                }
+                                @Localizer["CupReturns_RefundBtn"]
+                            </button>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(submitError))
+                    {
+                        <div class="alert alert-danger mt-2 mb-0" id="bar-cupreturns-submit-error">@submitError</div>
+                    }
+
+                    @* Cup-QR binding: assign a scanned physical cup to the ticket's next held deposit. *@
+                    @if (_cupSettings?.CupDepositBindCupQr == true && lookup.OutstandingCups > 0)
+                    {
+                        <hr />
+                        <div id="bar-cupreturns-assign">
+                            <div class="fw-semibold mb-1">@Localizer["CupReturns_AssignTitle"]</div>
+                            <div class="text-muted small mb-2">@Localizer["CupReturns_AssignHint"]</div>
+                            <div class="input-group">
+                                <input id="bar-cupreturns-assign-token" class="form-control" @bind="_assignCupToken"
+                                       placeholder="@Localizer["CupReturns_AssignPlaceholder"]" autocomplete="off" disabled="@_assigning" />
+                                <button id="bar-cupreturns-assign-btn" class="btn btn-outline-primary" @onclick="AssignCup"
+                                        disabled="@(_assigning || string.IsNullOrWhiteSpace(_assignCupToken))">
+                                    @if (_assigning)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    }
+                                    @Localizer["CupReturns_AssignBtn"]
+                                </button>
+                            </div>
+                            @if (_assignResult is { } ar)
+                            {
+                                <div id="bar-cupreturns-assign-result" class="mt-2 small" style="color:@(ar.Success ? "#059669" : "#dc2626");">
+                                    @(ar.Success
+                                        ? string.Format(Localizer["CupReturns_AssignOk"].Value, ar.RemainingUnassigned)
+                                        : (ar.Error ?? Localizer["CupReturns_AssignFail"].Value))
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @* ---- Result ---- *@
+        @if (result is not null)
+        {
+            <div class="card mb-3 border-success" id="bar-cupreturns-result-card">
+                <div class="card-body text-center">
+                    @if (result.Success)
+                    {
+                        <div class="display-6 text-success mb-2">✓</div>
+                        <h5 id="bar-cupreturns-result-title">@Localizer["CupReturns_SuccessTitle"]</h5>
+                        <p class="mb-1" id="bar-cupreturns-result-summary">
+                            @string.Format(Localizer["CupReturns_RefundedSummary"].Value, result.RefundedCups, FormatMoney(result.RefundedAmount, result.Currency))
+                        </p>
+                        <p class="text-muted small mb-3" id="bar-cupreturns-result-balance">
+                            @Localizer["CupReturns_NewBalance"]: @FormatMoney(result.WalletBalance, result.Currency)
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="display-6 text-danger mb-2">✕</div>
+                        <h5 id="bar-cupreturns-result-fail-title">@Localizer["CupReturns_Fail"]</h5>
+                        <p class="text-muted" id="bar-cupreturns-result-fail-text">@(result.Error ?? Localizer["CupReturns_Fail"].Value)</p>
+                    }
+                    <button class="btn btn-outline-primary" @onclick="ResetAll" id="bar-cupreturns-reset-btn">@Localizer["CupReturns_Reset"]</button>
+                </div>
+            </div>
+        }
+
+        @* ---- Honor-system bulk return (no money) ---- *@
+        <div class="card" id="bar-cupreturns-honor-card">
+            <div class="card-body">
+                <h6 id="bar-cupreturns-honor-title">@Localizer["CupReturns_HonorTitle"]</h6>
+                <p class="text-muted small" id="bar-cupreturns-honor-hint">@Localizer["CupReturns_HonorHint"]</p>
+                <div class="input-group">
+                    <input id="bar-cupreturns-honor-count" type="number" min="1" class="form-control"
+                           @bind="honorCount" disabled="@isHonorSubmitting" />
+                    <button id="bar-cupreturns-honor-btn" class="btn btn-outline-secondary" @onclick="ReturnHonorAsync"
+                            disabled="@(isHonorSubmitting || honorCount < 1)">
+                        @if (isHonorSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        @Localizer["CupReturns_HonorReturnBtn"]
+                    </button>
+                </div>
+                @if (honorResult is not null)
+                {
+                    <div class="alert alert-success mt-2 mb-0" id="bar-cupreturns-honor-result">
+                        @string.Format(Localizer["CupReturns_HonorDone"].Value, honorResult.Value)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // Identify + resolve
+    private string codeInput = string.Empty;
+    private bool isResolving;
+    private string? resolveError;
+    private bool notFound;
+    private CupReturnLookupDto? lookup;
+
+    // Refund
+    private int returnCount = 1;
+    private bool isSubmitting;
+    private string? submitError;
+    private CupReturnResultDto? result;
+
+    // Honor return
+    private int honorCount = 1;
+    private bool isHonorSubmitting;
+    private int? honorResult;
+
+    // Cup-QR binding (assign a scanned physical cup to a held deposit)
+    private CupsSettingsDto? _cupSettings;
+    private string? _assignCupToken;
+    private CupAssignResultDto? _assignResult;
+    private bool _assigning;
+
+    // Scanner (reuses the shared barTopupScanner JS with our own video id + object ref)
+    private bool scannerActive;
+    private bool pendingScannerStart;
+    private bool scannerUnsupported;
+    private string? scannerError;
+    private DotNetObjectReference<CupReturns>? selfRef;
+    private const string ScannerVideoId = "bar-cupreturns-scanner-video";
+
+    protected override void OnInitialized()
+    {
+        AuthService.OnAuthenticationStateChanged += OnAuthStateChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cupSettings = await ApiService.GetCupsSettingsAsync();
+    }
+
+    private void OnAuthStateChanged()
+    {
+        if (!AuthService.IsAuthenticated)
+            InvokeAsync(() => Navigation.NavigateTo("/login"));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (pendingScannerStart)
+        {
+            pendingScannerStart = false;
+            await StartScannerAsync();
+        }
+    }
+
+    private async Task ResolveAsync()
+    {
+        var query = codeInput?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(query))
+            return;
+
+        await StopScannerAsync();
+        isResolving = true;
+        resolveError = null;
+        notFound = false;
+        lookup = null;
+        result = null;
+        submitError = null;
+        StateHasChanged();
+
+        try
+        {
+            var res = await ApiService.LookupCupsAsync(query);
+            if (res is null)
+                resolveError = Localizer["CupReturns_ResolveError"].Value;
+            else if (!res.Found)
+                notFound = true;
+            else
+            {
+                lookup = res;
+                returnCount = res.OutstandingCups > 0 ? res.OutstandingCups : 1;
+            }
+        }
+        catch
+        {
+            resolveError = Localizer["CupReturns_ResolveError"].Value;
+        }
+        finally
+        {
+            isResolving = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefundAsync()
+    {
+        if (lookup is null || returnCount < 1)
+            return;
+
+        isSubmitting = true;
+        submitError = null;
+        StateHasChanged();
+
+        try
+        {
+            var request = new CupReturnRequestDto
+            {
+                Query = string.IsNullOrWhiteSpace(lookup.TicketNumber) ? codeInput.Trim() : lookup.TicketNumber!,
+                Count = returnCount,
+                IdempotencyKey = Guid.NewGuid().ToString()
+            };
+            var res = await ApiService.ReturnCupsAsync(request);
+            if (res is null)
+                submitError = Localizer["CupReturns_Fail"].Value;
+            else
+                result = res;
+        }
+        catch
+        {
+            submitError = Localizer["CupReturns_Fail"].Value;
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ReturnHonorAsync()
+    {
+        if (honorCount < 1)
+            return;
+
+        isHonorSubmitting = true;
+        honorResult = null;
+        StateHasChanged();
+
+        try
+        {
+            honorResult = await ApiService.ReturnHonorCupsAsync(new HonorCupReturnRequestDto { Count = honorCount });
+        }
+        catch
+        {
+            honorResult = null;
+        }
+        finally
+        {
+            isHonorSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AssignCup()
+    {
+        if (lookup is null || string.IsNullOrWhiteSpace(_assignCupToken)) return;
+        _assigning = true;
+        _assignResult = null;
+        StateHasChanged();
+        try
+        {
+            var req = new CupAssignRequestDto
+            {
+                Query = string.IsNullOrWhiteSpace(lookup.TicketNumber) ? codeInput.Trim() : lookup.TicketNumber!,
+                CupQrToken = _assignCupToken.Trim()
+            };
+            _assignResult = await ApiService.AssignCupAsync(req);
+            if (_assignResult?.Success == true) _assignCupToken = null;
+        }
+        catch
+        {
+            _assignResult = new CupAssignResultDto { Success = false };
+        }
+        finally
+        {
+            _assigning = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ResetAll()
+    {
+        codeInput = string.Empty;
+        lookup = null;
+        result = null;
+        submitError = null;
+        resolveError = null;
+        notFound = false;
+        returnCount = 1;
+        _assignCupToken = null;
+        _assignResult = null;
+    }
+
+    // ---- Scanner (identical contract to TicketTopup) ----
+    private void RequestScan()
+    {
+        scannerUnsupported = false;
+        scannerError = null;
+        scannerActive = true;
+        pendingScannerStart = true;
+    }
+
+    private async Task StartScannerAsync()
+    {
+        try
+        {
+            selfRef ??= DotNetObjectReference.Create(this);
+            var res = await JS.InvokeAsync<ScanStartResult>("barTopupScanner.start", ScannerVideoId, selfRef);
+            if (res is null || !res.Supported)
+            {
+                scannerUnsupported = true;
+                scannerActive = false;
+            }
+            else if (!res.Started)
+            {
+                scannerError = res.Error;
+                scannerActive = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            scannerError = ex.Message;
+            scannerActive = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task StopScannerAsync()
+    {
+        if (!scannerActive && !pendingScannerStart)
+            return;
+        scannerActive = false;
+        pendingScannerStart = false;
+        try { await JS.InvokeVoidAsync("barTopupScanner.stop"); } catch { }
+    }
+
+    [JSInvokable]
+    public Task OnQrDecoded(string text) => InvokeAsync(async () =>
+    {
+        scannerActive = false;
+        pendingScannerStart = false;
+        codeInput = text;
+        await ResolveAsync();
+    });
+
+    public async ValueTask DisposeAsync()
+    {
+        AuthService.OnAuthenticationStateChanged -= OnAuthStateChanged;
+        try { await JS.InvokeVoidAsync("barTopupScanner.stop"); } catch { }
+        selfRef?.Dispose();
+    }
+
+    private static string Display(string? s) => string.IsNullOrWhiteSpace(s) ? "—" : s;
+
+    private static string FormatMoney(decimal amount, string? currency) =>
+        $"{amount.ToString("0.00", CultureInfo.InvariantCulture)} {currency ?? "EUR"}";
+
+    private sealed class ScanStartResult
+    {
+        public bool Supported { get; set; }
+        public bool Started { get; set; }
+        public string? Error { get; set; }
+    }
+}

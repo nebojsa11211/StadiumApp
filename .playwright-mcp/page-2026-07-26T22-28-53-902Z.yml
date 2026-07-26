@@ -1,0 +1,427 @@
+- generic [ref=e5]:
+  - complementary [ref=e6]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: STADIUM
+      - generic [ref=e15]: ADMIN
+    - generic [ref=e16]:
+      - generic [ref=e17]: 00:28:53
+      - generic [ref=e18]: 27/07/26 HR
+    - navigation [ref=e19]:
+      - link " Dashboard" [ref=e20] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=e21]: 
+        - generic [ref=e22]: Dashboard
+      - generic [ref=e23]: Operations
+      - link " Orders" [ref=e24] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=e25]: 
+        - generic [ref=e26]: Orders
+      - link " Drinks" [ref=e27] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=e28]: 
+        - generic [ref=e29]: Drinks
+      - link " Wallets" [ref=e30] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=e31]: 
+        - generic [ref=e32]: Wallets
+      - generic [ref=e33]: Events & Ticketing
+      - link " Events" [ref=e34] [cursor=pointer]:
+        - /url: events
+        - generic [ref=e35]: 
+        - generic [ref=e36]: Events
+      - link " Seasons" [ref=e37] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=e38]: 
+        - generic [ref=e39]: Seasons
+      - link " Teams" [ref=e40] [cursor=pointer]:
+        - /url: admin/teams
+        - generic [ref=e41]: 
+        - generic [ref=e42]: Teams
+      - link " Tickets" [ref=e43] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=e44]: 
+        - generic [ref=e45]: Tickets
+      - generic [ref=e46]: Stadium Management
+      - link "👁 Overview" [ref=e47] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=e48]: 👁
+        - generic [ref=e49]: Overview
+      - link " Drawing Tool" [ref=e50] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=e51]: 
+        - generic [ref=e52]: Drawing Tool
+      - link " Stadium Info" [ref=e53] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=e54]: 
+        - generic [ref=e55]: Stadium Info
+      - link " Venue & Branding" [ref=e56] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=e57]: 
+        - generic [ref=e58]: Venue & Branding
+      - generic [ref=e59]: Analytics
+      - link " Analytics" [ref=e60] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=e61]: 
+        - generic [ref=e62]: Analytics
+      - link " Customers" [ref=e63] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=e64]: 
+        - generic [ref=e65]: Customers
+      - link " Customer Analytics" [ref=e66] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=e67]: 
+        - generic [ref=e68]: Customer Analytics
+      - link " Reusable Cups" [ref=e69] [cursor=pointer]:
+        - /url: admin/cups
+        - generic [ref=e70]: 
+        - generic [ref=e71]: Reusable Cups
+      - link " Registered Cups" [ref=e72] [cursor=pointer]:
+        - /url: admin/registered-cups
+        - generic [ref=e73]: 
+        - generic [ref=e74]: Registered Cups
+      - generic [ref=e75]: System
+      - link " Team Accounts" [ref=e76] [cursor=pointer]:
+        - /url: users
+        - generic [ref=e77]: 
+        - generic [ref=e78]: Team Accounts
+      - link " Logs" [ref=e79] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=e80]: 
+        - generic [ref=e81]: Logs
+      - link " Database" [ref=e82] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=e83]: 
+        - generic [ref=e84]: Database
+      - link " Settings" [ref=e85] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=e86]: 
+        - generic [ref=e87]: Settings
+      - link " Setup" [ref=e88] [cursor=pointer]:
+        - /url: admin/setup
+        - generic [ref=e89]: 
+        - generic [ref=e90]: Setup
+    - generic [ref=e91]:
+      - generic [ref=e92]:
+        - generic [ref=e93]: 
+        - generic [ref=e94]:
+          - generic [ref=e95]: Centralized Logging
+          - generic [ref=e96]: "Last published: 00:28"
+      - button "N Logout nebojsa.medancic+adminStadion@gmail.com" [ref=e97] [cursor=pointer]:
+        - generic [ref=e98]: "N"
+        - generic [ref=e99]:
+          - button "Logout" [ref=e100]
+          - generic [ref=e101]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=e102]:
+        - generic [ref=e103]: HR/EN
+        - generic [ref=e104]:
+          - button "HR" [ref=e105] [cursor=pointer]
+          - button "EN" [ref=e106] [cursor=pointer]
+  - main [ref=e107]:
+    - generic [ref=e108]:
+      - button "" [ref=e109] [cursor=pointer]
+      - generic [ref=e111]:
+        - generic [ref=e112]: 
+        - generic [ref=e113]: "Current season:"
+        - strong [ref=e114]: 2026/2027
+        - generic [ref=e115]:
+          - generic [ref=e116]: 
+          - text: Current
+        - generic [ref=e117]: (Jul 2026 – May 2027)
+        - generic [ref=e118]:
+          - generic [ref=e119]: 
+          - text: 20 Season Passes
+      - generic [ref=e120]:
+        - combobox "Select season" [ref=e121] [cursor=pointer]:
+          - option "All seasons"
+          - option "2026/2027" [selected]
+          - option "Season SEASON-A474A2B1"
+          - option "No season"
+        - button "" [ref=e122] [cursor=pointer]
+    - generic [ref=e124]:
+      - generic [ref=e125]:
+        - generic [ref=e126]:
+          - generic [ref=e127]: Finance
+          - heading "Fan Wallets" [level=1] [ref=e128]
+          - paragraph [ref=e129]: Inspect, freeze, adjust and refund fan wallet balances.
+        - generic [ref=e130]:
+          - textbox "Search by name or email…" [ref=e131]
+          - button " Search" [ref=e132] [cursor=pointer]:
+            - generic [ref=e133]: 
+            - generic [ref=e134]: Search
+      - table [ref=e136]:
+        - rowgroup [ref=e137]:
+          - row [ref=e138]:
+            - columnheader "Fan" [ref=e139] [cursor=pointer]
+            - columnheader "Balance" [ref=e140] [cursor=pointer]
+            - columnheader "Status" [ref=e141] [cursor=pointer]
+            - columnheader "Actions" [ref=e142]
+        - rowgroup [ref=e143]:
+          - row [ref=e144]:
+            - cell "🎟️ Ticket Ticket TK63920701663239604700174 Anonymous — no account" [ref=e145]:
+              - generic [ref=e146]:
+                - generic [ref=e147]: 🎟️ Ticket
+                - text: Ticket TK63920701663239604700174
+              - generic [ref=e148]: Anonymous — no account
+            - cell "€70.00" [ref=e149]
+            - cell "Active" [ref=e150]
+            - cell [ref=e152]:
+              - button " Manage" [active] [ref=e153] [cursor=pointer]:
+                - generic [ref=e154]: 
+                - generic [ref=e155]: Manage
+          - row [ref=e156]:
+            - cell "luka.kovacevic@example.com luka.kovacevic@example.com" [ref=e157]:
+              - generic [ref=e158]: luka.kovacevic@example.com
+              - generic [ref=e159]: luka.kovacevic@example.com
+            - cell "€69.00" [ref=e160]
+            - cell "Active" [ref=e161]
+            - cell [ref=e163]:
+              - button " Manage" [ref=e164] [cursor=pointer]:
+                - generic [ref=e165]: 
+                - generic [ref=e166]: Manage
+          - row [ref=e167]:
+            - cell "luka.peric@example.com luka.peric@example.com" [ref=e168]:
+              - generic [ref=e169]: luka.peric@example.com
+              - generic [ref=e170]: luka.peric@example.com
+            - cell "€68.00" [ref=e171]
+            - cell "Active" [ref=e172]
+            - cell [ref=e174]:
+              - button " Manage" [ref=e175] [cursor=pointer]:
+                - generic [ref=e176]: 
+                - generic [ref=e177]: Manage
+          - row [ref=e178]:
+            - cell "ana.maric@example.com ana.maric@example.com" [ref=e179]:
+              - generic [ref=e180]: ana.maric@example.com
+              - generic [ref=e181]: ana.maric@example.com
+            - cell "€66.00" [ref=e182]
+            - cell "Active" [ref=e183]
+            - cell [ref=e185]:
+              - button " Manage" [ref=e186] [cursor=pointer]:
+                - generic [ref=e187]: 
+                - generic [ref=e188]: Manage
+          - row [ref=e189]:
+            - cell "antonio.maric@example.com antonio.maric@example.com" [ref=e190]:
+              - generic [ref=e191]: antonio.maric@example.com
+              - generic [ref=e192]: antonio.maric@example.com
+            - cell "€60.00" [ref=e193]
+            - cell "Active" [ref=e194]
+            - cell [ref=e196]:
+              - button " Manage" [ref=e197] [cursor=pointer]:
+                - generic [ref=e198]: 
+                - generic [ref=e199]: Manage
+          - row [ref=e200]:
+            - cell "nikola.vukovic@example.com nikola.vukovic@example.com" [ref=e201]:
+              - generic [ref=e202]: nikola.vukovic@example.com
+              - generic [ref=e203]: nikola.vukovic@example.com
+            - cell "€56.50" [ref=e204]
+            - cell "Active" [ref=e205]
+            - cell [ref=e207]:
+              - button " Manage" [ref=e208] [cursor=pointer]:
+                - generic [ref=e209]: 
+                - generic [ref=e210]: Manage
+          - row [ref=e211]:
+            - cell "luka.maric@example.com luka.maric@example.com" [ref=e212]:
+              - generic [ref=e213]: luka.maric@example.com
+              - generic [ref=e214]: luka.maric@example.com
+            - cell "€52.00" [ref=e215]
+            - cell "Active" [ref=e216]
+            - cell [ref=e218]:
+              - button " Manage" [ref=e219] [cursor=pointer]:
+                - generic [ref=e220]: 
+                - generic [ref=e221]: Manage
+          - row [ref=e222]:
+            - cell "nina.barisic@example.com nina.barisic@example.com" [ref=e223]:
+              - generic [ref=e224]: nina.barisic@example.com
+              - generic [ref=e225]: nina.barisic@example.com
+            - cell "€50.00" [ref=e226]
+            - cell "Active" [ref=e227]
+            - cell [ref=e229]:
+              - button " Manage" [ref=e230] [cursor=pointer]:
+                - generic [ref=e231]: 
+                - generic [ref=e232]: Manage
+          - row [ref=e233]:
+            - cell "antonio.barisic@example.com antonio.barisic@example.com" [ref=e234]:
+              - generic [ref=e235]: antonio.barisic@example.com
+              - generic [ref=e236]: antonio.barisic@example.com
+            - cell "€50.00" [ref=e237]
+            - cell "Active" [ref=e238]
+            - cell [ref=e240]:
+              - button " Manage" [ref=e241] [cursor=pointer]:
+                - generic [ref=e242]: 
+                - generic [ref=e243]: Manage
+          - row [ref=e244]:
+            - cell "tomislav.vukovic@example.com tomislav.vukovic@example.com" [ref=e245]:
+              - generic [ref=e246]: tomislav.vukovic@example.com
+              - generic [ref=e247]: tomislav.vukovic@example.com
+            - cell "€50.00" [ref=e248]
+            - cell "Active" [ref=e249]
+            - cell [ref=e251]:
+              - button " Manage" [ref=e252] [cursor=pointer]:
+                - generic [ref=e253]: 
+                - generic [ref=e254]: Manage
+          - row [ref=e255]:
+            - cell "nina.babic@example.com nina.babic@example.com" [ref=e256]:
+              - generic [ref=e257]: nina.babic@example.com
+              - generic [ref=e258]: nina.babic@example.com
+            - cell "€50.00" [ref=e259]
+            - cell "Active" [ref=e260]
+            - cell [ref=e262]:
+              - button " Manage" [ref=e263] [cursor=pointer]:
+                - generic [ref=e264]: 
+                - generic [ref=e265]: Manage
+          - row [ref=e266]:
+            - cell "marija.peric@example.com marija.peric@example.com" [ref=e267]:
+              - generic [ref=e268]: marija.peric@example.com
+              - generic [ref=e269]: marija.peric@example.com
+            - cell "€47.00" [ref=e270]
+            - cell "Active" [ref=e271]
+            - cell [ref=e273]:
+              - button " Manage" [ref=e274] [cursor=pointer]:
+                - generic [ref=e275]: 
+                - generic [ref=e276]: Manage
+          - row [ref=e277]:
+            - cell "maja.barisic@example.com maja.barisic@example.com" [ref=e278]:
+              - generic [ref=e279]: maja.barisic@example.com
+              - generic [ref=e280]: maja.barisic@example.com
+            - cell "€46.00" [ref=e281]
+            - cell "Active" [ref=e282]
+            - cell [ref=e284]:
+              - button " Manage" [ref=e285] [cursor=pointer]:
+                - generic [ref=e286]: 
+                - generic [ref=e287]: Manage
+          - row [ref=e288]:
+            - cell "🎟️ Ticket Ticket TK63920701667017863600066 Anonymous — no account" [ref=e289]:
+              - generic [ref=e290]:
+                - generic [ref=e291]: 🎟️ Ticket
+                - text: Ticket TK63920701667017863600066
+              - generic [ref=e292]: Anonymous — no account
+            - cell "€44.40" [ref=e293]
+            - cell "Active" [ref=e294]
+            - cell [ref=e296]:
+              - button " Manage" [ref=e297] [cursor=pointer]:
+                - generic [ref=e298]: 
+                - generic [ref=e299]: Manage
+          - row [ref=e300]:
+            - cell "marija.juric@example.com marija.juric@example.com" [ref=e301]:
+              - generic [ref=e302]: marija.juric@example.com
+              - generic [ref=e303]: marija.juric@example.com
+            - cell "€44.00" [ref=e304]
+            - cell "Active" [ref=e305]
+            - cell [ref=e307]:
+              - button " Manage" [ref=e308] [cursor=pointer]:
+                - generic [ref=e309]: 
+                - generic [ref=e310]: Manage
+          - row [ref=e311]:
+            - cell "marija.babic@example.com marija.babic@example.com" [ref=e312]:
+              - generic [ref=e313]: marija.babic@example.com
+              - generic [ref=e314]: marija.babic@example.com
+            - cell "€43.50" [ref=e315]
+            - cell "Active" [ref=e316]
+            - cell [ref=e318]:
+              - button " Manage" [ref=e319] [cursor=pointer]:
+                - generic [ref=e320]: 
+                - generic [ref=e321]: Manage
+          - row [ref=e322]:
+            - cell "🎟️ Ticket Ticket TK63920701669088530500120 Anonymous — no account" [ref=e323]:
+              - generic [ref=e324]:
+                - generic [ref=e325]: 🎟️ Ticket
+                - text: Ticket TK63920701669088530500120
+              - generic [ref=e326]: Anonymous — no account
+            - cell "€42.00" [ref=e327]
+            - cell "Active" [ref=e328]
+            - cell [ref=e330]:
+              - button " Manage" [ref=e331] [cursor=pointer]:
+                - generic [ref=e332]: 
+                - generic [ref=e333]: Manage
+          - row [ref=e334]:
+            - cell "🎟️ Ticket Ticket TK63920701663239604700147 Anonymous — no account" [ref=e335]:
+              - generic [ref=e336]:
+                - generic [ref=e337]: 🎟️ Ticket
+                - text: Ticket TK63920701663239604700147
+              - generic [ref=e338]: Anonymous — no account
+            - cell "€40.00" [ref=e339]
+            - cell "Active" [ref=e340]
+            - cell [ref=e342]:
+              - button " Manage" [ref=e343] [cursor=pointer]:
+                - generic [ref=e344]: 
+                - generic [ref=e345]: Manage
+          - row [ref=e346]:
+            - cell "🎟️ Ticket Ticket TK63920701667017863600122 Anonymous — no account" [ref=e347]:
+              - generic [ref=e348]:
+                - generic [ref=e349]: 🎟️ Ticket
+                - text: Ticket TK63920701667017863600122
+              - generic [ref=e350]: Anonymous — no account
+            - cell "€40.00" [ref=e351]
+            - cell "Active" [ref=e352]
+            - cell [ref=e354]:
+              - button " Manage" [ref=e355] [cursor=pointer]:
+                - generic [ref=e356]: 
+                - generic [ref=e357]: Manage
+          - row [ref=e358]:
+            - cell "domagoj.simic@example.com domagoj.simic@example.com" [ref=e359]:
+              - generic [ref=e360]: domagoj.simic@example.com
+              - generic [ref=e361]: domagoj.simic@example.com
+            - cell "€40.00" [ref=e362]
+            - cell "Active" [ref=e363]
+            - cell [ref=e365]:
+              - button " Manage" [ref=e366] [cursor=pointer]:
+                - generic [ref=e367]: 
+                - generic [ref=e368]: Manage
+      - generic [ref=e369]:
+        - generic [ref=e370]:
+          - paragraph [ref=e371]: Showing 1 to 20 of 25
+          - generic [ref=e372]:
+            - generic [ref=e373]: Show
+            - combobox "Show" [ref=e374] [cursor=pointer]:
+              - option "10"
+              - option "20" [selected]
+              - option "50"
+              - option "100"
+        - generic [ref=e375]:
+          - button "" [disabled] [ref=e376]
+          - button "1" [ref=e378] [cursor=pointer]
+          - button "2" [ref=e379] [cursor=pointer]
+          - button "" [ref=e380] [cursor=pointer]
+    - dialog [ref=e382]:
+      - generic [ref=e383]:
+        - generic [ref=e384]:
+          - 'heading "Manage wallet: Ticket TK63920701663239604700174 Active" [level=5] [ref=e385]':
+            - text: "Manage wallet: Ticket TK63920701663239604700174"
+            - generic [ref=e386]: Active
+          - button [ref=e387] [cursor=pointer]
+        - generic [ref=e388]:
+          - generic [ref=e389]:
+            - generic [ref=e390]:
+              - generic [ref=e391]: Balance
+              - generic [ref=e392]: €70.00
+            - button " Freeze" [ref=e393] [cursor=pointer]:
+              - generic [ref=e394]: 
+              - text: Freeze
+          - generic [ref=e395]:
+            - generic [ref=e398]:
+              - heading "Manual adjustment" [level=6] [ref=e399]
+              - spinbutton "Amount (+/−)" [ref=e400]: "0"
+              - textbox "Reason" [ref=e401]
+              - button "Apply adjustment" [disabled]
+            - generic [ref=e404]:
+              - heading "Refund" [level=6] [ref=e405]
+              - spinbutton "Amount" [ref=e406]: "0"
+              - textbox "Reason" [ref=e407]
+              - button "Issue refund" [disabled]
+          - heading "Ledger" [level=6] [ref=e408]
+          - table [ref=e410]:
+            - rowgroup [ref=e411]:
+              - row [ref=e412]:
+                - columnheader "Date" [ref=e413]
+                - columnheader "Type" [ref=e414]
+                - columnheader "Reason" [ref=e415]
+                - columnheader "Amount" [ref=e416]
+                - columnheader "Balance after" [ref=e417]
+            - rowgroup [ref=e418]:
+              - row [ref=e419]:
+                - cell "2026-06-01 20:39" [ref=e420]
+                - cell "Deposit" [ref=e421]
+                - 'cell "Cash top-up on ticket #8901 before GNK Dinamo Zagreb - WT 2026-06-01" [ref=e422]'
+                - cell "+€70.00" [ref=e423]
+                - cell "€70.00" [ref=e424]
+        - button "Close" [ref=e426] [cursor=pointer]
+  - 'generic "API database: Supabase · Development"': "DB: Supabase"

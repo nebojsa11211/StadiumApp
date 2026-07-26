@@ -115,7 +115,22 @@
                     </div>
                     <div class="dash-kpi-icon"><i class="bi bi-cash-stack"></i></div>
                 </div>
-                <div class="dash-kpi-value">@_eventRevenue.ToString("N0")€</div>
+                <div class="dash-kpi-value">@TotalEventRevenue.ToString("N0")€</div>
+                @if (_selectedEvent != null)
+                {
+                    <div class="dash-kpi-breakdown" id="admin-dashboard-kpi-revenue-breakdown">
+                        <span class="dash-kpi-chip dash-kpi-chip--tickets" id="admin-dashboard-kpi-revenue-tickets" title="@L["Index_RevenueTicketsHint"]">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <span class="dash-kpi-chip-label">@L["Index_RevenueTickets"]</span>
+                            <b>@_ticketRevenue.ToString("N0")€</b>
+                        </span>
+                        <span class="dash-kpi-chip dash-kpi-chip--drinks" id="admin-dashboard-kpi-revenue-drinks" title="@L["Index_RevenueDrinksHint"]">
+                            <i class="bi bi-cup-straw"></i>
+                            <span class="dash-kpi-chip-label">@L["Index_RevenueDrinks"]</span>
+                            <b>@_drinksRevenue.ToString("N0")€</b>
+                        </span>
+                    </div>
+                }
             </div>
 
             <div class="dash-kpi-card" id="admin-dashboard-kpi-orders">

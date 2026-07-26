@@ -90,6 +90,9 @@ public class CreateOrderResult
 
 public class OrderService : IOrderService
 {
+    /// <summary>Fungible-pool cup type used for all Phase-1 deposit/honor cups (seeded row).</summary>
+    private const int DefaultCupTypeId = 1;
+
     private readonly ApplicationDbContext _context;
     private readonly IWalletService _walletService;
 
@@ -187,6 +190,72 @@ public class OrderService : IOrderService
             }
         }
 
+        // Reusable cups: validate any requested cup handling against the venue config (never trust the
+        // client's deposit/discount), resolve BYOC cups up front, and pre-load the running outstanding
+        // count so each pool cup issued can snapshot QuantityAfter.
+        var wantsCups = createOrderDto.OrderItems.Any(i => i.CupMode != CupMode.None);
+        decimal cupDepositAmount = 0m;
+        decimal cupByocDiscount = 0m;
+        int cupOutstanding = 0;
+        var byocCups = new Dictionary<CreateOrderItemDto, RegisteredCup?>();
+        if (wantsCups)
+        {
+            var vcfg = await _context.Venues
+                .Select(v => new
+                {
+                    v.CupsEnabled, v.CupDepositModeEnabled, v.CupHonorModeEnabled, v.CupByocEnabled,
+                    v.CupDepositAmount, v.CupByocDiscountAmount, v.CupByocRequireApprovedCup
+                })
+                .FirstOrDefaultAsync();
+
+            if (vcfg is null || !vcfg.CupsEnabled)
+                return CreateOrderResult.Fail(CreateOrderOutcome.ValidationFailed, "Reusable cups are not available.");
+
+            foreach (var i in createOrderDto.OrderItems.Where(i => i.CupMode != CupMode.None))
+            {
+                var modeAllowed = i.CupMode switch
+                {
+                    CupMode.Deposit => vcfg.CupDepositModeEnabled,
+                    CupMode.HonorSystem => vcfg.CupHonorModeEnabled,
+                    CupMode.ByocQr => vcfg.CupByocEnabled,
+                    _ => false
+                };
+                if (!modeAllowed)
+                    return CreateOrderResult.Fail(CreateOrderOutcome.ValidationFailed,
+                        i.CupMode == CupMode.ByocQr
+                            ? "Bring-your-own-cup is not available."
+                            : "The requested cup option is not available.");
+
+                // Resolve + validate a BYOC line's scanned cup up front, so we fail before any writes.
+                if (i.CupMode == CupMode.ByocQr)
+                {
+                    RegisteredCup? cup = null;
+                    if (!string.IsNullOrWhiteSpace(i.CupQrToken))
+                    {
+                        var tok = i.CupQrToken.Trim();
+                        cup = await _context.RegisteredCups.FirstOrDefaultAsync(c => c.QrToken == tok);
+                    }
+                    if (vcfg.CupByocRequireApprovedCup)
+                    {
+                        if (cup is null)
+                            return CreateOrderResult.Fail(CreateOrderOutcome.ValidationFailed,
+                                "Scan an approved cup to use bring-your-own-cup.");
+                        if (cup.Status != RegisteredCupStatus.Active || !cup.IsApproved)
+                            return CreateOrderResult.Fail(CreateOrderOutcome.ValidationFailed,
+                                "That cup isn't approved for use.");
+                    }
+                    byocCups[i] = cup;
+                }
+            }
+
+            cupDepositAmount = vcfg.CupDepositAmount;
+            cupByocDiscount = vcfg.CupByocDiscountAmount;
+            cupOutstanding = await _context.CupMovements
+                .Where(m => m.CupTypeId == DefaultCupTypeId)
+                .Select(m => (int?)m.Delta)
+                .SumAsync() ?? 0;
+        }
+
         // Create order with enhanced session information
         var order = new Order
         {
@@ -234,6 +303,66 @@ public class OrderService : IOrderService
                 Order = order,
                 CreatedAt = DateTime.UtcNow
             });
+
+            // Reusable cups for this line (validated above).
+            if (orderItemDto.CupMode == CupMode.ByocQr)
+            {
+                // Customer's OWN cup — not the venue pool: no deposit and no pool movement. Apply the
+                // configured BYOC discount and link the scanned registered cup (attribution / "cups saved").
+                orderItem.CupMode = CupMode.ByocQr;
+                var cup = byocCups.TryGetValue(orderItemDto, out var rc) ? rc : null;
+                orderItem.RegisteredCupId = cup?.Id;
+                orderItem.CupTypeId = cup?.CupTypeId;
+
+                if (cupByocDiscount > 0m)
+                {
+                    // Never discount a line below zero.
+                    var discount = Math.Min(cupByocDiscount * orderItemDto.Quantity, orderItem.TotalPrice);
+                    orderItem.TotalPrice -= discount;
+                    totalAmount -= discount;
+                }
+            }
+            else if (orderItemDto.CupMode != CupMode.None)
+            {
+                // Venue-pool cup (Deposit / Honor): the cup leaves the pool. A deposit line also holds one
+                // refundable CupDeposit per cup (so a partial return can be refunded cup-by-cup) and folds
+                // its value into the order total, so the same payment that covers the drinks collects it.
+                orderItem.CupMode = orderItemDto.CupMode;
+                orderItem.CupTypeId = DefaultCupTypeId;
+
+                if (orderItemDto.CupMode == CupMode.Deposit)
+                {
+                    for (var c = 0; c < orderItemDto.Quantity; c++)
+                    {
+                        _context.CupDeposits.Add(new CupDeposit
+                        {
+                            CupTypeId = DefaultCupTypeId,
+                            Amount = cupDepositAmount,
+                            Status = CupDepositStatus.Held,
+                            TicketId = ticket.Id,
+                            Order = order,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+
+                    var lineDeposit = cupDepositAmount * orderItemDto.Quantity;
+                    orderItem.CupDepositAmount = lineDeposit;
+                    totalAmount += lineDeposit;
+                }
+
+                cupOutstanding += orderItemDto.Quantity;
+                _context.CupMovements.Add(new CupMovement
+                {
+                    CupTypeId = DefaultCupTypeId,
+                    Delta = orderItemDto.Quantity,
+                    QuantityAfter = cupOutstanding,
+                    Type = CupMovementType.Issued,
+                    Mode = orderItemDto.CupMode,
+                    Order = order,
+                    TicketId = ticket.Id,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
         }
 
         order.TotalAmount = totalAmount;
@@ -277,6 +406,11 @@ public class OrderService : IOrderService
                 ProcessedAt = DateTime.UtcNow
             });
             await _context.SaveChangesAsync();
+
+            // Refund-to-original-wallet: point any cup deposits on this order at the wallet that actually
+            // paid, so a later return credits that same wallet rather than defaulting to the ticket wallet.
+            await _context.CupDeposits.Where(d => d.OrderId == order.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.WalletId, debit.Transaction!.WalletId));
         }
         // Ticket-wallet payment: charge the anonymous bearer balance loaded on THIS order's ticket. Same
         // shape as the user-wallet path — order exists first, an insufficient/closed result moves no money
@@ -313,6 +447,10 @@ public class OrderService : IOrderService
                 ProcessedAt = DateTime.UtcNow
             });
             await _context.SaveChangesAsync();
+
+            // Refund-to-original-wallet: point this order's cup deposits at the ticket wallet that paid.
+            await _context.CupDeposits.Where(d => d.OrderId == order.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.WalletId, debit.Transaction!.WalletId));
         }
         // Offline method chosen at checkout (cash / card): no money moves now — it's collected at the bar
         // or on delivery — but record the fan's intended method as a Pending payment so staff see cash vs
@@ -363,8 +501,56 @@ public class OrderService : IOrderService
             .ToListAsync();
         _context.StockMovements.RemoveRange(saleMovements);
 
+        // Likewise erase any reusable-cup rows this order created (deposit was never collected because
+        // the payment was declined), so no cup is left "outstanding" and no phantom deposit is held.
+        var cupMovements = await _context.CupMovements.Where(m => m.OrderId == orderId).ToListAsync();
+        _context.CupMovements.RemoveRange(cupMovements);
+        var cupDeposits = await _context.CupDeposits.Where(d => d.OrderId == orderId).ToListAsync();
+        _context.CupDeposits.RemoveRange(cupDeposits);
+
         _context.OrderItems.RemoveRange(order.OrderItems);
         _context.Orders.Remove(order);
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// When an order is cancelled, its cup deposits were already returned as part of the order-total refund
+    /// (or were never collected, for an unpaid order), so void any still-Held ones to stop them being
+    /// cup-refunded a second time at the returns station, and return their cups to the pool count. Safe to
+    /// call after a wallet refund cleared the change tracker (it re-queries).
+    /// </summary>
+    private async Task VoidHeldCupDepositsForOrderAsync(int orderId, int? actorUserId)
+    {
+        var deposits = await _context.CupDeposits
+            .Where(d => d.OrderId == orderId && d.Status == CupDepositStatus.Held)
+            .ToListAsync();
+        if (deposits.Count == 0)
+            return;
+
+        var outstanding = await _context.CupMovements
+            .Where(m => m.CupTypeId == DefaultCupTypeId)
+            .Select(m => (int?)m.Delta).SumAsync() ?? 0;
+
+        foreach (var d in deposits)
+        {
+            d.Status = CupDepositStatus.Voided;
+            d.ResolvedAt = DateTime.UtcNow;
+            outstanding -= 1;
+            _context.CupMovements.Add(new CupMovement
+            {
+                CupTypeId = DefaultCupTypeId,
+                Delta = -1,
+                QuantityAfter = outstanding,
+                Type = CupMovementType.Returned,
+                Mode = CupMode.Deposit,
+                TicketId = d.TicketId,
+                OrderId = orderId,
+                CupDepositId = d.Id,
+                UserId = actorUserId,
+                Note = "Cup deposit voided (order cancelled)",
+                CreatedAt = DateTime.UtcNow
+            });
+        }
         await _context.SaveChangesAsync();
     }
 
@@ -652,6 +838,10 @@ public class OrderService : IOrderService
             }
         }
 
+        // The refund returned the order total including any cup deposit — void held deposits so the returns
+        // station can't refund them a second time.
+        await VoidHeldCupDepositsForOrderAsync(orderId, userId);
+
         return true;
     }
 
@@ -787,6 +977,10 @@ public class OrderService : IOrderService
             }
         }
 
+        // The refund returned the order total including any cup deposit — void held deposits so the returns
+        // station can't refund them a second time.
+        await VoidHeldCupDepositsForOrderAsync(orderId, userId);
+
         return true;
     }
 
@@ -876,6 +1070,11 @@ public class OrderService : IOrderService
                 referenceType: "Order", referenceId: orderId,
                 description: $"Refund for order #{orderId} ({reason})", actorUserId: actorUserId);
         }
+
+        // Void held cup deposits on every cancelled order (paid or offline) so none can be cup-refunded
+        // again after their order-total refund.
+        foreach (var o in orders)
+            await VoidHeldCupDepositsForOrderAsync(o.Id, actorUserId);
 
         return orders.Count;
     }
@@ -976,7 +1175,9 @@ public class OrderService : IOrderService
                 Quantity = oi.Quantity,
                 UnitPrice = oi.UnitPrice,
                 TotalPrice = oi.TotalPrice,
-                SpecialInstructions = oi.SpecialInstructions
+                SpecialInstructions = oi.SpecialInstructions,
+                CupMode = oi.CupMode,
+                CupDepositAmount = oi.CupDepositAmount
             }).ToList(),
             Payment = order.Payment != null ? new PaymentDto
             {

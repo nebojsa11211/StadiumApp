@@ -137,6 +137,52 @@ public class Venue
     [StringLength(150)]
     public string? EmailFromName { get; set; }
 
+    // ---- Reusable cups ----------------------------------------------------------------------
+    // Club-branded reusable cup rentals. Master switch plus per-mode toggles; deposit binding is
+    // all-combinations-configurable and the refund path defaults to wallet credit. Off by default so
+    // existing installations are unaffected until an operator opts in. See docs/reusable-cups-design.md.
+
+    /// <summary>Master switch for the whole reusable-cup feature.</summary>
+    public bool CupsEnabled { get; set; }
+
+    /// <summary>Deposit rental mode available (refundable deposit per cup).</summary>
+    public bool CupDepositModeEnabled { get; set; }
+
+    /// <summary>Honor-system mode available (trust-based, no money held).</summary>
+    public bool CupHonorModeEnabled { get; set; }
+
+    /// <summary>Bring-your-own-cup mode available (customer's own QR'd cup).</summary>
+    public bool CupByocEnabled { get; set; }
+
+    /// <summary>Refundable deposit charged per cup in deposit mode.</summary>
+    [Range(0, 9999.99)]
+    public decimal CupDepositAmount { get; set; } = 2.00m;
+
+    /// <summary>Binding combo: deposit recorded against the ticket/wallet (refunded on ticket scan).</summary>
+    public bool CupDepositBindTicketWallet { get; set; } = true;
+
+    /// <summary>Binding combo: a printed return-token QR is proof of deposit (requires a receipt printer).</summary>
+    public bool CupDepositBindReturnToken { get; set; }
+
+    /// <summary>Binding combo: individually QR'd deposit cups scanned in/out.</summary>
+    public bool CupDepositBindCupQr { get; set; }
+
+    /// <summary>Refund path: credit the wallet (default — instant, stays in the ecosystem).</summary>
+    public bool CupRefundToWallet { get; set; } = true;
+
+    /// <summary>Refund path: return to the original payment method (card async / cash).</summary>
+    public bool CupRefundToOriginalMethod { get; set; }
+
+    /// <summary>When an unreturned deposit forfeits to breakage revenue.</summary>
+    public CupRefundWindow CupRefundWindow { get; set; } = CupRefundWindow.EndOfEvent;
+
+    /// <summary>Per-serving discount applied when a valid approved BYOC cup is scanned.</summary>
+    [Range(0, 9999.99)]
+    public decimal CupByocDiscountAmount { get; set; }
+
+    /// <summary>Only registered/approved cups are accepted for BYOC (hygiene + volume standardisation).</summary>
+    public bool CupByocRequireApprovedCup { get; set; } = true;
+
     /// <summary>
     /// True once an admin has dismissed the first-run setup banner. Stored on the singleton venue
     /// row (rather than a separate settings table) since the venue already is this installation's

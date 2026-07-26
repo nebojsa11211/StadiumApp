@@ -107,11 +107,23 @@ public class DemoDataService : IDemoDataService
     private readonly IQRCodeService _qrCodeService;
     private readonly ILogger<DemoDataService> _logger;
 
-    public DemoDataService(ApplicationDbContext context, IQRCodeService qrCodeService, ILogger<DemoDataService> logger)
+    /// <summary>
+    /// The per-ticket balance cap a seeded anonymous wallet must respect, read from the same
+    /// <c>TicketWallet:MaxBalance</c> setting <see cref="IWalletService"/> enforces at the counter —
+    /// generated data that breaks the venue's own limit would be worse than no data.
+    /// </summary>
+    private readonly decimal _ticketWalletMaxBalance;
+
+    public DemoDataService(
+        ApplicationDbContext context,
+        IQRCodeService qrCodeService,
+        IConfiguration configuration,
+        ILogger<DemoDataService> logger)
     {
         _context = context;
         _qrCodeService = qrCodeService;
         _logger = logger;
+        _ticketWalletMaxBalance = configuration.GetValue<decimal?>("TicketWallet:MaxBalance") ?? 100m;
     }
 
     public async Task<bool> GenerateComprehensiveDemoDataAsync()
@@ -1165,6 +1177,16 @@ public class DemoDataService : IDemoDataService
             if (evt == null)
                 return new EventDrinkSalesResult(false, $"Event {eventId} not found");
 
+            // Read the catalogue before anything is deleted below: a venue with no drinks can't be
+            // given a match day, and finding that out after the previous run's orders were dropped
+            // would leave the fixture with neither the old sales nor new ones.
+            var drinks = await _context.Drinks
+                .Include(d => d.Category)
+                .Where(d => d.IsAvailable)
+                .ToListAsync();
+            if (drinks.Count == 0)
+                return new EventDrinkSalesResult(false, "No available drinks to sell", eventId, evt.EventName);
+
             var existing = await _context.Orders.Where(o => o.EventId == eventId).ToListAsync();
             if (existing.Count > 0)
             {
@@ -1176,6 +1198,8 @@ public class DemoDataService : IDemoDataService
                 }
 
                 var staleIds = existing.Select(o => o.Id).ToList();
+                await UndoStockLedgerAsync(staleIds);
+                await UndoWalletLedgerAsync(staleIds);
                 _context.OrderItems.RemoveRange(
                     await _context.OrderItems.Where(i => staleIds.Contains(i.OrderId)).ToListAsync());
                 _context.Orders.RemoveRange(existing);
@@ -1184,13 +1208,6 @@ public class DemoDataService : IDemoDataService
                     existing.Count, eventId);
             }
 
-            var drinks = await _context.Drinks
-                .Include(d => d.Category)
-                .Where(d => d.IsAvailable)
-                .ToListAsync();
-            if (drinks.Count == 0)
-                return new EventDrinkSalesResult(false, "No available drinks to sell", eventId, evt.EventName);
-
             // The crowd: seats actually occupied for this match (season-derived tickets included —
             // a pass holder buys drinks like anyone else).
             var attendees = await _context.Tickets
@@ -1198,6 +1215,7 @@ public class DemoDataService : IDemoDataService
                 .Where(t => t.EventId == eventId && t.Status != TicketStatuses.Cancelled)
                 .Select(t => new
                 {
+                    TicketId = t.Id,
                     t.TicketNumber,
                     t.SeatId,
                     t.CustomerEmail,
@@ -1246,8 +1264,20 @@ public class DemoDataService : IDemoDataService
 
             var orders = new List<Order>();
             var items = new List<OrderItem>();
+
+            // Which ticket each order was placed from. Carried by reference rather than looked up from
+            // Order.TicketNumber later, because a ticket-owned wallet is addressed by ticket id and the
+            // order only keeps the (truncatable) number.
+            var ticketIdByOrder = new Dictionary<Order, int>();
+
             int delivered = 0, cancelled = 0, deliveryFailed = 0, drinksSold = 0;
             decimal revenue = 0m;
+
+            // Orders that couldn't be matched to their seat's ticket holder and had to be attributed to
+            // an arbitrary account. A handful is normal (a ticket with no email); all of them means the
+            // holders were never provisioned accounts, and every order in the ground lands on whoever
+            // the fallback happens to pick — worth saying out loud rather than shipping silently.
+            var unattributed = 0;
 
             for (var i = 0; i < orderSeats.Count; i++)
             {
@@ -1301,6 +1331,7 @@ public class DemoDataService : IDemoDataService
                 }
 
                 orders.Add(order);
+                ticketIdByOrder[order] = seat.TicketId;
             }
 
             _context.Orders.AddRange(orders);
@@ -1341,27 +1372,608 @@ public class DemoDataService : IDemoDataService
                     revenue += orderTotal;
             }
 
+            // Every line moves real stock, exactly as a live order does — the bar is drawn down as the
+            // match is played and topped up by a delivery beforehand. Without this a fixture would sell
+            // thousands of drinks out of thin air: stock levels never move and the drink's history in
+            // Admin → Drinks stays empty, which is the one place the sales should be most visible.
+            // Added to the same SaveChanges as the lines, so orders, items and ledger commit together.
+            var movements = BuildMatchDayStockLedger(evt, kickOff, orders, items, drinks);
+            _context.StockMovements.AddRange(movements);
+
             _context.OrderItems.AddRange(items);
             await _context.SaveChangesAsync();
 
+            // Part of the crowd pays from a stored-value balance rather than at the bar, so the fixture
+            // leaves funded wallets and a spend ledger behind it. Runs last because it prices its
+            // deposits from the orders' final totals, which only exist once the lines above are priced.
+            var walletSeed = await SeedMatchDayWalletsAsync(evt, kickOff, orders, ticketIdByOrder);
+
             _logger.LogInformation(
-                "Generated {Orders} match-day drink orders ({Items} lines, {Drinks} drinks, {Revenue:C}) for event {EventId}",
-                orders.Count, items.Count, drinksSold, revenue, eventId);
+                "Generated {Orders} match-day drink orders ({Items} lines, {Drinks} drinks, {Revenue:C}) for event {EventId}, " +
+                "{Movements} stock movement(s), {Wallets} wallet(s) funded with {Funded:C} across {Payments} wallet payment(s)",
+                orders.Count, items.Count, drinksSold, revenue, eventId, movements.Count,
+                walletSeed.Wallets, walletSeed.Funded, walletSeed.Payments);
+
+            if (unattributed > 0)
+                _logger.LogWarning(
+                    "{Unattributed} of {Orders} drink orders for event {EventId} could not be matched to the " +
+                    "seat's ticket holder and were attributed to one of {Candidates} arbitrary customer " +
+                    "account(s) — the holders have no account for their email. Every order lands on the same " +
+                    "customer when only one candidate exists.",
+                    unattributed, orders.Count, eventId, customerIds.Count);
 
             return new EventDrinkSalesResult(true, "Match-day drink sales generated",
                 eventId, evt.EventName, attendees.Count, orders.Count, items.Count, drinksSold,
                 revenue, delivered, cancelled, deliveryFailed);
 
-            int ResolveCustomerId(string? email) =>
-                email != null && customersByEmail.TryGetValue(email, out var id)
-                    ? id
-                    : customerIds[Random.Shared.Next(customerIds.Count)];
+            int ResolveCustomerId(string? email)
+            {
+                if (email != null && customersByEmail.TryGetValue(email, out var id))
+                    return id;
+
+                unattributed++;
+                return customerIds[Random.Shared.Next(customerIds.Count)];
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating match-day drink sales for event {EventId}", eventId);
             return new EventDrinkSalesResult(false, $"Error: {ex.Message}", eventId);
         }
+    }
+
+    /// <summary>
+    /// Stock a match-day delivery leaves over once the fixture has sold what it is going to sell, as a
+    /// share of that fixture's demand and as an absolute floor. A bar that ends every match on exactly
+    /// zero is as obviously seeded as one whose stock never moves.
+    /// </summary>
+    private const int MatchDayRestockTailPercent = 25;
+    private const int MatchDayRestockMinimumTail = 12;
+
+    /// <summary>How long before kick-off the match-day delivery lands, so it precedes the first sale.</summary>
+    private const int MatchDayDeliveryHoursBeforeKickOff = 3;
+
+    /// <summary>
+    /// Writes the inventory ledger for a generated match day and leaves each drink on the balance the
+    /// fixture ends with. Three kinds of movement come out of it, the same three a live match produces:
+    /// a <see cref="StockMovementType.Restock"/> delivery before the gates open, a
+    /// <see cref="StockMovementType.Sale"/> per order line, and a
+    /// <see cref="StockMovementType.OrderCancelled"/> return for anything the fan sent back.
+    ///
+    /// The delivery is sized from the day's actual demand rather than guessed, which is why the ledger
+    /// is built after the lines exist: a fixture must not drive stock negative, and topping up per sale
+    /// as stock ran out would litter the history with dribbles instead of one delivery.
+    ///
+    /// Movements are applied in timestamp order so each row's <see cref="StockMovement.QuantityAfter"/>
+    /// is the balance that actually followed it — the history table reads as a running total, and the
+    /// drink's final <c>StockQuantity</c> is the last row's balance.
+    /// </summary>
+    private static List<StockMovement> BuildMatchDayStockLedger(
+        Event evt, DateTime kickOff, List<Order> orders, List<OrderItem> items, List<Drink> drinks)
+    {
+        var drinksById = drinks.ToDictionary(d => d.Id);
+        var ordersById = orders.ToDictionary(o => o.Id);
+
+        var movements = new List<StockMovement>(items.Count + drinksById.Count);
+        var balances = new Dictionary<int, int>();
+
+        // The delivery: one row per drink the fixture will sell, timestamped before the first sale.
+        var deliveredAt = kickOff.AddHours(-MatchDayDeliveryHoursBeforeKickOff);
+        foreach (var line in items.GroupBy(i => i.DrinkId))
+        {
+            var drink = drinksById[line.Key];
+            var demand = line.Sum(i => i.Quantity);
+            var balance = drink.StockQuantity;
+
+            var target = demand + Math.Max(MatchDayRestockMinimumTail, demand * MatchDayRestockTailPercent / 100);
+            if (balance < target)
+            {
+                var delta = target - balance;
+                balance += delta;
+                movements.Add(new StockMovement
+                {
+                    DrinkId = drink.Id,
+                    Delta = delta,
+                    QuantityAfter = balance,
+                    Type = StockMovementType.Restock,
+                    Note = Truncate($"Match-day delivery — {evt.EventName}", 500),
+                    CreatedAt = deliveredAt
+                });
+            }
+
+            balances[drink.Id] = balance;
+        }
+
+        // The match: each line is reserved when its order is placed, and handed back if that order was
+        // cancelled. A failed delivery is not a return — the drink was poured and never came back into
+        // stock — which is exactly how the live order path treats it.
+        var timeline = new List<(DateTime At, OrderItem Item, StockMovementType Type)>(items.Count);
+        foreach (var item in items)
+        {
+            var order = ordersById[item.OrderId];
+            timeline.Add((order.CreatedAt, item, StockMovementType.Sale));
+            if (order.Status == OrderStatus.Cancelled)
+                timeline.Add((order.CancelledAt ?? order.CreatedAt, item, StockMovementType.OrderCancelled));
+        }
+
+        foreach (var entry in timeline.OrderBy(e => e.At))
+        {
+            var delta = entry.Type == StockMovementType.Sale ? -entry.Item.Quantity : entry.Item.Quantity;
+            var balance = balances[entry.Item.DrinkId] + delta;
+            balances[entry.Item.DrinkId] = balance;
+
+            movements.Add(new StockMovement
+            {
+                DrinkId = entry.Item.DrinkId,
+                Delta = delta,
+                QuantityAfter = balance,
+                Type = entry.Type,
+                OrderId = entry.Item.OrderId,
+                CreatedAt = entry.At
+            });
+        }
+
+        // Leave the catalogue on the balance the ledger just described.
+        foreach (var (drinkId, balance) in balances)
+            drinksById[drinkId].StockQuantity = balance;
+
+        return movements;
+    }
+
+    /// <summary>
+    /// Takes back the stock a set of soon-to-be-deleted orders moved, and drops their ledger rows.
+    /// Regenerating a fixture must not drain the bar a second time, and history pointing at orders that
+    /// no longer exist is worse than no history at all (the order link is nulled, not cascaded, so the
+    /// rows would otherwise survive as unattributable sales).
+    ///
+    /// Only the order-linked rows go. The match-day delivery that fed them stays: that stock was really
+    /// delivered, and leaving it means the replacement run finds enough on the shelf and doesn't write a
+    /// second delivery for the same fixture.
+    /// </summary>
+    private async Task UndoStockLedgerAsync(List<int> orderIds)
+    {
+        if (orderIds.Count == 0)
+            return;
+
+        var stale = await _context.StockMovements
+            .Where(m => m.OrderId != null && orderIds.Contains(m.OrderId.Value))
+            .ToListAsync();
+        if (stale.Count == 0)
+            return;
+
+        // Loaded by id rather than reusing the available-drinks list: a drink can have been withdrawn
+        // from sale since the orders were generated, and its stock still has to come back.
+        var affectedIds = stale.Select(m => m.DrinkId).Distinct().ToList();
+        var affected = await _context.Drinks
+            .Where(d => affectedIds.Contains(d.Id))
+            .ToDictionaryAsync(d => d.Id);
+
+        foreach (var movement in stale)
+        {
+            if (affected.TryGetValue(movement.DrinkId, out var drink))
+                drink.StockQuantity -= movement.Delta;
+        }
+
+        _context.StockMovements.RemoveRange(stale);
+    }
+
+    // ---- Match-day stored-value wallets ---------------------------------------------------------
+
+    /// <summary>
+    /// Share of the fixture's drink buyers who pay from a stored-value balance instead of settling at
+    /// the bar. Well short of everyone: the wallet is a convenience some of the crowd has adopted, and
+    /// a ground where every single fan pays by wallet tests nothing about the mixed-tender reality.
+    /// </summary>
+    private const double WalletPayerShare = 0.45;
+
+    /// <summary>
+    /// Of those, the share paying from the anonymous balance loaded on their ticket rather than from a
+    /// registered account wallet — the walk-up who put cash on the ticket at the gate.
+    /// </summary>
+    private const double TicketWalletPayerShare = 0.3;
+
+    /// <summary>Spare change a fan leaves on the balance beyond what the round costs, in euro.</summary>
+    private static readonly int[] TopUpFloatSteps = { 0, 10, 20 };
+
+    /// <summary>What one call to <see cref="SeedMatchDayWalletsAsync"/> ended up creating.</summary>
+    private sealed record MatchDayWalletSeed(int Wallets, int Payments, decimal Funded);
+
+    /// <summary>One wallet's generated match day, held in memory until the whole batch is written.</summary>
+    private sealed class WalletDraft
+    {
+        public required Wallet Wallet { get; init; }
+        public required bool IsTicketOwned { get; init; }
+        public required List<WalletTransaction> Entries { get; init; }
+        /// <summary>The top-up entry, if this match day needed one — it gets its own funding Payment.</summary>
+        public WalletTransaction? Deposit { get; init; }
+        /// <summary>Order behind each spend entry, so the Payment rows can be built once ids exist.</summary>
+        public required List<(WalletTransaction Entry, Order Order)> Spends { get; init; }
+    }
+
+    /// <summary>
+    /// Gives part of a played fixture's crowd a stored-value balance they topped up before kick-off and
+    /// paid their rounds from, so a generated season leaves funded wallets and a spend ledger behind —
+    /// which is what Admin → Wallets reads. Both owner kinds are produced: registered fans' account
+    /// wallets and the anonymous bearer balances loaded onto a ticket.
+    ///
+    /// Written in bulk rather than through <c>IWalletService</c>: that service opens a guarded
+    /// transaction per entry, which is the right shape for one fan at a counter and the wrong one for a
+    /// season's worth of fixtures over a remote database. The invariants it protects are honoured here
+    /// instead — one wallet per owner, a chronological ledger whose running
+    /// <see cref="WalletTransaction.BalanceAfter"/> ends on the wallet's <see cref="Wallet.Balance"/>,
+    /// no balance ever negative, unique idempotency keys, and the ticket-wallet cap.
+    /// </summary>
+    private async Task<MatchDayWalletSeed> SeedMatchDayWalletsAsync(
+        Event evt, DateTime kickOff, List<Order> orders, Dictionary<Order, int> ticketIdByOrder)
+    {
+        // Only a priced order can be paid for. (A basket can come out empty when its lines all landed
+        // on the same drink and collapsed into one.)
+        var payable = orders.Where(o => o.TotalAmount > 0m).ToList();
+        if (payable.Count == 0)
+            return new MatchDayWalletSeed(0, 0, 0m);
+
+        // One decision per seat, not per order: a fan who is paying by balance pays that way all match.
+        // Grouping by ticket rather than by customer is what makes the anonymous wallet expressible at
+        // all — that balance belongs to the seat, not to an account.
+        var userPayers = new Dictionary<int, List<Order>>();
+        var ticketPayers = new Dictionary<int, List<Order>>();
+
+        foreach (var seat in payable.GroupBy(o => ticketIdByOrder.GetValueOrDefault(o)))
+        {
+            if (seat.Key == 0 || Random.Shared.NextDouble() >= WalletPayerShare)
+                continue;
+
+            var seatOrders = seat.ToList();
+            if (Random.Shared.NextDouble() < TicketWalletPayerShare)
+            {
+                ticketPayers[seat.Key] = seatOrders;
+            }
+            else
+            {
+                // A simulated fan can hold more than one seat at a fixture; their single account wallet
+                // pays for all of them, because a user has exactly one wallet.
+                var customerId = seatOrders[0].CustomerId;
+                if (!userPayers.TryGetValue(customerId, out var forCustomer))
+                    userPayers[customerId] = forCustomer = new List<Order>();
+                forCustomer.AddRange(seatOrders);
+            }
+        }
+
+        if (userPayers.Count == 0 && ticketPayers.Count == 0)
+            return new MatchDayWalletSeed(0, 0, 0m);
+
+        // Reuse whatever these fans already hold. A fan recurs across the fixtures of a season, so a
+        // second wallet for the same owner is not merely wrong — it breaks the unique-owner index.
+        var userIds = userPayers.Keys.ToList();
+        var ticketIds = ticketPayers.Keys.ToList();
+        var held = await _context.Wallets
+            .Where(w => (w.UserId != null && userIds.Contains(w.UserId.Value))
+                     || (w.TicketId != null && ticketIds.Contains(w.TicketId.Value)))
+            .ToListAsync();
+        var byUser = held.Where(w => w.UserId != null).ToDictionary(w => w.UserId!.Value);
+        var byTicket = held.Where(w => w.TicketId != null).ToDictionary(w => w.TicketId!.Value);
+
+        // What those wallets have already done. Needed because a fixture is not always generated after
+        // everything else that touched the wallet — an admin can regenerate an old match — and a block
+        // of entries inserted into the middle of a ledger has to be priced against the position at that
+        // moment and leave the rows after it still telling the truth. Tracked, so the shift sticks.
+        var heldIds = held.Select(w => w.Id).ToList();
+        var priorByWallet = heldIds.Count == 0
+            ? new Dictionary<int, List<WalletTransaction>>()
+            : (await _context.WalletTransactions.Where(t => heldIds.Contains(t.WalletId)).ToListAsync())
+                .GroupBy(t => t.WalletId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+        // Cash onto a ticket is handed over a counter, so the top-up is attributed to bar staff the way
+        // the real one is. Null when the venue has no staff account yet — the entry stands either way.
+        var barStaffId = await _context.Users
+            .Where(u => u.Role == UserRole.Bartender || u.Role == UserRole.Waiter)
+            .Select(u => (int?)u.Id)
+            .FirstOrDefaultAsync();
+
+        var drafts = new List<WalletDraft>();
+
+        foreach (var (userId, forCustomer) in userPayers)
+        {
+            var wallet = byUser.GetValueOrDefault(userId);
+            var draft = BuildWalletDraft(
+                wallet, PriorFor(wallet), WalletOwnerType.User, userId, forCustomer,
+                evt, maxBalance: null, actorUserId: userId);
+            if (draft != null)
+                drafts.Add(draft);
+        }
+
+        foreach (var (ticketId, forSeat) in ticketPayers)
+        {
+            var wallet = byTicket.GetValueOrDefault(ticketId);
+            var draft = BuildWalletDraft(
+                wallet, PriorFor(wallet), WalletOwnerType.Ticket, ticketId, forSeat,
+                evt, maxBalance: _ticketWalletMaxBalance, actorUserId: barStaffId);
+            if (draft != null)
+                drafts.Add(draft);
+        }
+
+        List<WalletTransaction> PriorFor(Wallet? wallet) =>
+            wallet == null ? new List<WalletTransaction>() : priorByWallet.GetValueOrDefault(wallet.Id, new());
+
+        if (drafts.Count == 0)
+            return new MatchDayWalletSeed(0, 0, 0m);
+
+        foreach (var draft in drafts)
+        {
+            if (draft.Wallet.Id == 0)
+                _context.Wallets.Add(draft.Wallet);
+            _context.WalletTransactions.AddRange(draft.Entries);
+        }
+        // Committed before the Payment rows because a funding Payment is keyed to the ledger row it
+        // funded, and that identity only exists once the entry is inserted.
+        await _context.SaveChangesAsync();
+
+        foreach (var draft in drafts)
+        {
+            if (draft.Deposit is { } deposit)
+            {
+                _context.Payments.Add(new Payment
+                {
+                    WalletTransactionId = deposit.Id,
+                    // Cash over the counter for a ticket; the fan's card in the app for an account.
+                    PaymentMethod = draft.IsTicketOwned ? PaymentMethod.Cash : PaymentMethod.CreditCard,
+                    Direction = PaymentDirection.In,
+                    // Cash has no gateway reference, matching the counter top-up path.
+                    TransactionId = draft.IsTicketOwned ? null : $"SIMDEP-{deposit.Id}",
+                    Amount = deposit.Amount,
+                    Currency = deposit.Currency,
+                    Status = PaymentStatus.Completed,
+                    PaymentDate = deposit.CreatedAt,
+                    CreatedAt = deposit.CreatedAt,
+                    ProcessedAt = deposit.CreatedAt
+                });
+            }
+
+            foreach (var (entry, order) in draft.Spends)
+            {
+                _context.Payments.Add(new Payment
+                {
+                    OrderId = order.Id,
+                    WalletTransactionId = entry.Id,
+                    PaymentMethod = draft.IsTicketOwned ? PaymentMethod.TicketWallet : PaymentMethod.DigitalWallet,
+                    Direction = PaymentDirection.In,
+                    TransactionId = entry.Id.ToString(),
+                    Amount = order.TotalAmount,
+                    Currency = entry.Currency,
+                    Status = PaymentStatus.Completed,
+                    PaymentDate = order.CreatedAt,
+                    CreatedAt = order.CreatedAt,
+                    ProcessedAt = order.CreatedAt
+                });
+            }
+        }
+        await _context.SaveChangesAsync();
+
+        return new MatchDayWalletSeed(
+            Wallets: drafts.Count,
+            Payments: drafts.Sum(d => d.Spends.Count),
+            Funded: drafts.Sum(d => d.Deposit?.Amount ?? 0m));
+    }
+
+    /// <summary>
+    /// Lays out one wallet's match day: a top-up before the first round (only for what the balance
+    /// can't already cover), a spend per order, and a refund for anything cancelled — chained in time
+    /// so every entry's running balance is the one that actually followed it.
+    ///
+    /// <paramref name="prior"/> is the wallet's existing ledger. The new block is priced and chained
+    /// from the position at <i>its own</i> moment rather than from today's balance, and anything dated
+    /// after it is shifted by the block's net, so inserting a backdated fixture (an admin regenerating
+    /// an old match) leaves every running balance correct instead of only the last one.
+    ///
+    /// Returns null when this owner can't sensibly pay by balance, in which case the seat just pays at
+    /// the bar: a frozen or closed wallet, or a bearer balance whose cap can't stretch to the round.
+    /// </summary>
+    private static WalletDraft? BuildWalletDraft(
+        Wallet? held, List<WalletTransaction> prior, WalletOwnerType ownerType, int ownerId,
+        List<Order> paidOrders, Event evt, decimal? maxBalance, int? actorUserId)
+    {
+        if (held is { Status: not WalletStatus.Active })
+            return null;
+
+        var charges = paidOrders.Sum(o => o.TotalAmount);
+        var firstRound = paidOrders.Min(o => o.CreatedAt);
+        var toppedUpAt = firstRound.AddMinutes(-Random.Shared.Next(20, 120));
+
+        var settled = prior.Where(t => t.Status == WalletTransactionStatus.Completed).ToList();
+        var opening = settled.Where(t => t.CreatedAt < toppedUpAt).Sum(t => t.Amount);
+        var after = settled.Where(t => t.CreatedAt >= toppedUpAt).ToList();
+
+        // What this block may spend without pushing the balance below zero at any point in the ledger:
+        // the position when it starts, and the lowest the wallet ever gets afterwards. With nothing
+        // dated later — the normal case, a fixture generated in order — this is simply the balance.
+        var spendable = after.Count == 0 ? opening : Math.Min(opening, after.Min(t => t.BalanceAfter));
+
+        // People load a note, not exact change — and leave a little on for next time.
+        var deposit = 0m;
+        if (spendable < charges)
+        {
+            deposit = Math.Ceiling((charges - spendable) / 10m) * 10m
+                      + TopUpFloatSteps[Random.Shared.Next(TopUpFloatSteps.Length)];
+        }
+        else if (Random.Shared.Next(4) == 0)
+        {
+            // Already in funds, but topped up anyway — the reason a wallet's balance drifts upward.
+            deposit = 10m * Random.Shared.Next(1, 4);
+        }
+
+        if (maxBalance is decimal cap)
+        {
+            // A bearer balance is capped at the counter. Trim the top-up so no point in the ledger ends
+            // up over the limit; if the cap can't cover the round at all, this seat pays at the bar
+            // rather than leaving an over-limit wallet behind.
+            var peak = after.Count == 0 ? opening : Math.Max(opening, after.Max(t => t.BalanceAfter));
+            deposit = Math.Min(deposit, Math.Max(0m, cap - peak));
+            if (spendable + deposit < charges)
+                return null;
+        }
+
+        var wallet = held ?? new Wallet
+        {
+            OwnerType = ownerType,
+            UserId = ownerType == WalletOwnerType.User ? ownerId : null,
+            TicketId = ownerType == WalletOwnerType.Ticket ? ownerId : null,
+            Balance = 0m,
+            Currency = "EUR",
+            Status = WalletStatus.Active,
+            CreatedAt = toppedUpAt
+        };
+
+        var entries = new List<WalletTransaction>();
+        var spends = new List<(WalletTransaction, Order)>();
+        WalletTransaction? topUp = null;
+
+        if (deposit > 0m)
+        {
+            topUp = new WalletTransaction
+            {
+                Type = WalletTransactionType.Deposit,
+                Amount = deposit,
+                CreatedAt = toppedUpAt,
+                // Unique per run: this is generated data, so there is no earlier attempt to collapse
+                // onto, and a stable key would collide the moment a fixture is regenerated.
+                IdempotencyKey = $"seed-topup-{Guid.NewGuid():N}",
+                ReferenceType = ownerType == WalletOwnerType.Ticket ? "TicketTopup" : "Deposit",
+                ReferenceId = ownerType == WalletOwnerType.Ticket ? ownerId : null,
+                Description = ownerType == WalletOwnerType.Ticket
+                    ? $"Cash top-up on ticket #{ownerId} before {evt.EventName}"
+                    : $"Deposit before {evt.EventName}",
+                CreatedByUserId = actorUserId
+            };
+            entries.Add(topUp);
+        }
+
+        foreach (var order in paidOrders)
+        {
+            // The order path's own key shape, so a later cancel/refund of this order is recognised as
+            // the same money rather than posted twice.
+            var spend = new WalletTransaction
+            {
+                Type = WalletTransactionType.Payment,
+                Amount = -order.TotalAmount,
+                CreatedAt = order.CreatedAt,
+                IdempotencyKey = $"order-{order.Id}",
+                ReferenceType = "Order",
+                ReferenceId = order.Id,
+                Description = $"Drink order #{order.Id}",
+                CreatedByUserId = actorUserId
+            };
+            entries.Add(spend);
+            spends.Add((spend, order));
+
+            if (order.Status == OrderStatus.Cancelled)
+            {
+                entries.Add(new WalletTransaction
+                {
+                    Type = WalletTransactionType.Refund,
+                    Amount = order.TotalAmount,
+                    CreatedAt = order.CancelledAt ?? order.CreatedAt,
+                    IdempotencyKey = $"refund-order-{order.Id}",
+                    ReferenceType = "Order",
+                    ReferenceId = order.Id,
+                    Description = $"Refund for cancelled order #{order.Id}",
+                    CreatedByUserId = actorUserId
+                });
+            }
+        }
+
+        foreach (var entry in entries)
+        {
+            entry.Currency = wallet.Currency;
+            entry.Status = WalletTransactionStatus.Completed;
+            entry.CompletedAt = entry.CreatedAt;
+            // Set through the navigation so a wallet being inserted in this same batch has its
+            // generated id fixed up onto the entry.
+            entry.Wallet = wallet;
+        }
+
+        // Rewrite the whole chain rather than just appending: this block may have landed in the middle
+        // of an existing history, and everything after it now follows a different position.
+        RechainWallet(wallet, prior.Concat(entries));
+
+        var newest = entries.Max(e => e.CreatedAt);
+        wallet.UpdatedAt = wallet.UpdatedAt is { } stamped && stamped > newest ? stamped : newest;
+
+        return new WalletDraft
+        {
+            Wallet = wallet,
+            IsTicketOwned = ownerType == WalletOwnerType.Ticket,
+            Entries = entries,
+            Deposit = topUp,
+            Spends = spends
+        };
+    }
+
+    /// <summary>
+    /// Rewrites a wallet's running-balance snapshots from its own ledger and leaves the wallet on the
+    /// closing figure. The ledger is the source of truth, so the chain is just the settled entries
+    /// summed in time order — which is what keeps every snapshot honest when a block of entries is
+    /// inserted into, or lifted out of, the middle of a history rather than appended to the end.
+    /// Entries still awaiting settlement are left alone; they are not part of the balance yet.
+    /// </summary>
+    private static void RechainWallet(Wallet wallet, IEnumerable<WalletTransaction> entries)
+    {
+        var balance = 0m;
+        foreach (var entry in entries
+                     .Where(e => e.Status == WalletTransactionStatus.Completed)
+                     .OrderBy(e => e.CreatedAt).ThenBy(e => e.Id))
+        {
+            balance += entry.Amount;
+            entry.BalanceAfter = balance;
+        }
+
+        wallet.Balance = balance;
+    }
+
+    /// <summary>
+    /// Takes back what a set of soon-to-be-deleted orders moved through the wallets, and clears the
+    /// Payment rows that recorded it. Both are required before the orders themselves can go: a Payment
+    /// points at its order, and at its ledger row through a Restrict FK.
+    ///
+    /// As with the stock ledger, only the order-linked entries go. The top-ups stay — the fan really
+    /// did load that money — so the balance returns to what it was before the fixture, and the
+    /// replacement run finds them in funds and tops up only what it needs to.
+    /// </summary>
+    private async Task UndoWalletLedgerAsync(List<int> orderIds)
+    {
+        if (orderIds.Count == 0)
+            return;
+
+        var payments = await _context.Payments
+            .Where(p => p.OrderId != null && orderIds.Contains(p.OrderId.Value))
+            .ToListAsync();
+        _context.Payments.RemoveRange(payments);
+
+        var stale = await _context.WalletTransactions
+            .Where(t => t.ReferenceType == "Order" && t.ReferenceId != null && orderIds.Contains(t.ReferenceId.Value))
+            .ToListAsync();
+        if (stale.Count == 0)
+            return;
+
+        var walletIds = stale.Select(t => t.WalletId).Distinct().ToList();
+        var wallets = await _context.Wallets
+            .Where(w => walletIds.Contains(w.Id))
+            .ToDictionaryAsync(w => w.Id);
+
+        // Every entry of every affected wallet, so what survives can be re-chained: removing a spend
+        // from the middle of a history moves the balance of everything that followed it, and leaving
+        // those snapshots at their old values would be the same lie as never restoring the balance.
+        var remaining = (await _context.WalletTransactions
+                .Where(t => walletIds.Contains(t.WalletId))
+                .ToListAsync())
+            .Except(stale)
+            .GroupBy(t => t.WalletId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        _context.WalletTransactions.RemoveRange(stale);
+
+        foreach (var (walletId, wallet) in wallets)
+            RechainWallet(wallet, remaining.GetValueOrDefault(walletId, new List<WalletTransaction>()));
     }
 
     /// <summary>Picks a minute after kick-off from <see cref="MatchDayProfile"/>.</summary>

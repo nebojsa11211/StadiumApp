@@ -1486,6 +1486,22 @@
   <data name="DrinkSheet_AddToCart" xml:space="preserve">
     <value>Dodaj u košaricu ·</value>
   </data>
+  <data name="DrinkSheet_CupMode" xml:space="preserve"><value>Višekratna čaša</value></data>
+  <data name="DrinkSheet_CupNone" xml:space="preserve"><value>Standardno</value></data>
+  <data name="DrinkSheet_CupDeposit" xml:space="preserve"><value>Čaša uz polog</value></data>
+  <data name="DrinkSheet_CupHonor" xml:space="preserve"><value>Višekratna (povjerenje)</value></data>
+  <data name="DrinkSheet_CupDepositHint" xml:space="preserve"><value>+€{0} povratni polog, vraća se kad vratite čašu.</value></data>
+  <data name="DrinkSheet_CupHonorHint" xml:space="preserve"><value>Molimo vratite čašu nakon utakmice.</value></data>
+  <data name="Cart_CupDepositLabel" xml:space="preserve"><value>Polog za čašu (povratni)</value></data>
+  <data name="Cart_CupDepositBadge" xml:space="preserve"><value>Čaša uz polog</value></data>
+  <data name="Cart_CupHonorBadge" xml:space="preserve"><value>Višekratna čaša</value></data>
+  <data name="DrinkSheet_CupByoc" xml:space="preserve"><value>Vlastita čaša</value></data>
+  <data name="DrinkSheet_CupByocPlaceholder" xml:space="preserve"><value>Skenirajte ili upišite kôd čaše</value></data>
+  <data name="DrinkSheet_CupByocCheck" xml:space="preserve"><value>Provjeri</value></data>
+  <data name="DrinkSheet_CupByocOk" xml:space="preserve"><value>✓ Odobrena čaša — €{0} popusta</value></data>
+  <data name="DrinkSheet_CupByocBad" xml:space="preserve"><value>Ova čaša se ne može koristiti.</value></data>
+  <data name="Cart_ByocDiscountLabel" xml:space="preserve"><value>Popust za vlastitu čašu</value></data>
+  <data name="Cart_CupByocBadge" xml:space="preserve"><value>Moja čaša</value></data>
   <data name="OrderTimeline_Status1" xml:space="preserve">
     <value>Narudžba zaprimljena</value>
   </data>

@@ -31,6 +31,15 @@ public interface ITicketIngestionService
     Task<int> GetStadiumCapacityAsync(CancellationToken ct = default);
 
     /// <summary>
+    /// The <see cref="StadiumSection"/> backing a drawing-tool overlay sector — tickets bind to
+    /// Seat → StadiumSection, so a sector cannot be sold into until this row exists. Creates it and
+    /// links it to the overlay on first use; idempotent thereafter. Exposed so callers that sell
+    /// seats outside the webhook path (the match simulator) stand the section up the same way
+    /// instead of silently skipping a freshly-drawn sector.
+    /// </summary>
+    Task<StadiumSection> EnsureBackingSectionAsync(StadiumSectorOverlay overlay, CancellationToken ct = default);
+
+    /// <summary>
     /// Full per-seat map of one sector for an event: every real seat position (row/number) with
     /// its actual occupancy — free, single-match sold, or held by a season pass. Returns null when
     /// the event or sector is unknown. Read-only (never allocates seats or backing sections).
@@ -1515,6 +1524,9 @@ public class TicketIngestionService : ITicketIngestionService
     /// Maps a drawing-tool overlay sector to a backing StadiumSection (tickets bind to Seat →
     /// StadiumSection). Creates the section on first use and links it back to the overlay.
     /// </summary>
+    public Task<StadiumSection> EnsureBackingSectionAsync(StadiumSectorOverlay overlay, CancellationToken ct = default)
+        => ResolveBackingSectionAsync(overlay, ct);
+
     private async Task<StadiumSection> ResolveBackingSectionAsync(StadiumSectorOverlay overlay, CancellationToken ct)
     {
         if (overlay.StadiumSectionId is int sid)

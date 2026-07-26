@@ -112,6 +112,72 @@ public class VenueController : ControllerBase
         CashPaymentEnabled = venue.CashPaymentEnabled
     };
 
+    // ---- Reusable-cup settings -----------------------------------------------------------
+
+    /// <summary>
+    /// Public read of the reusable-cup configuration so the Customer app can gate its cup UI (like
+    /// <see cref="GetSettings"/>). See docs/reusable-cups-design.md.
+    /// </summary>
+    [HttpGet("cups-settings")]
+    public async Task<ActionResult<CupsSettingsDto>> GetCupsSettings()
+    {
+        var venue = await GetOrCreateVenueAsync();
+        return Ok(ToCupsDto(venue));
+    }
+
+    [HttpPut("cups-settings")]
+    [Authorize(Policy = AuthorizationPolicies.RequireAdminRole)]
+    public async Task<ActionResult<CupsSettingsDto>> UpdateCupsSettings([FromBody] CupsSettingsDto dto)
+    {
+        // Reject a self-inconsistent config (e.g. deposit mode on with no binding or no refund path)
+        // rather than persist a setup that lets deposits be taken but never returned.
+        if (!dto.IsValid)
+            return BadRequest("Invalid cup configuration: enable at least one mode, and for deposit mode " +
+                              "at least one binding and one refund path.");
+
+        var venue = await GetOrCreateVenueAsync();
+        ApplyCupsSettings(venue, dto);
+        venue.UpdatedAt = DateTime.UtcNow;
+        venue.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        await _context.SaveChangesAsync();
+        return Ok(ToCupsDto(venue));
+    }
+
+    private static CupsSettingsDto ToCupsDto(Venue v) => new()
+    {
+        CupsEnabled = v.CupsEnabled,
+        CupDepositModeEnabled = v.CupDepositModeEnabled,
+        CupHonorModeEnabled = v.CupHonorModeEnabled,
+        CupByocEnabled = v.CupByocEnabled,
+        CupDepositAmount = v.CupDepositAmount,
+        CupDepositBindTicketWallet = v.CupDepositBindTicketWallet,
+        CupDepositBindReturnToken = v.CupDepositBindReturnToken,
+        CupDepositBindCupQr = v.CupDepositBindCupQr,
+        CupRefundToWallet = v.CupRefundToWallet,
+        CupRefundToOriginalMethod = v.CupRefundToOriginalMethod,
+        CupRefundWindow = v.CupRefundWindow,
+        CupByocDiscountAmount = v.CupByocDiscountAmount,
+        CupByocRequireApprovedCup = v.CupByocRequireApprovedCup
+    };
+
+    private static void ApplyCupsSettings(Venue v, CupsSettingsDto dto)
+    {
+        v.CupsEnabled = dto.CupsEnabled;
+        v.CupDepositModeEnabled = dto.CupDepositModeEnabled;
+        v.CupHonorModeEnabled = dto.CupHonorModeEnabled;
+        v.CupByocEnabled = dto.CupByocEnabled;
+        v.CupDepositAmount = dto.CupDepositAmount;
+        v.CupDepositBindTicketWallet = dto.CupDepositBindTicketWallet;
+        v.CupDepositBindReturnToken = dto.CupDepositBindReturnToken;
+        v.CupDepositBindCupQr = dto.CupDepositBindCupQr;
+        v.CupRefundToWallet = dto.CupRefundToWallet;
+        v.CupRefundToOriginalMethod = dto.CupRefundToOriginalMethod;
+        v.CupRefundWindow = dto.CupRefundWindow;
+        v.CupByocDiscountAmount = dto.CupByocDiscountAmount;
+        v.CupByocRequireApprovedCup = dto.CupByocRequireApprovedCup;
+    }
+
     // ---- Email (SMTP) settings -----------------------------------------------------------
 
     /// <summary>Read the installation's outgoing-email configuration. Admin-only; the SMTP password

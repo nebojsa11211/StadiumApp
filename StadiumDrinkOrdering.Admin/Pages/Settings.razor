@@ -7,6 +7,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Models
 @using StadiumDrinkOrdering.Shared.Services
 @using StadiumDrinkOrdering.Shared.Authentication.Interfaces
 @inject IImageGenerationClient ImageGen
@@ -63,6 +64,13 @@
                         class="nav-link @(activeTab == "payments" ? "active" : "")"
                         @onclick='() => activeTab = "payments"'>
                     <i class="bi bi-credit-card me-1"></i>@L["Settings_PaymentsSection"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button type="button" id="admin-settings-tab-cups"
+                        class="nav-link @(activeTab == "cups" ? "active" : "")"
+                        @onclick='() => activeTab = "cups"'>
+                    <i class="bi bi-cup-straw me-1"></i>@L["Settings_CupsSection"]
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -190,6 +198,181 @@
                         @L["Settings_Save"]
                     </button>
                 </div>
+            </div>
+        </div>
+        }
+
+        @if (activeTab == "cups")
+        {
+        <div class="card mb-4" id="admin-settings-cups-card">
+            <div class="card-header">
+                <h5 class="mb-0" id="admin-settings-cups-title">@L["Settings_CupsSection"]</h5>
+            </div>
+            <div class="card-body" id="admin-settings-cups-body">
+                <p class="text-muted" id="admin-settings-cups-intro">@L["Settings_CupsIntro"]</p>
+
+                @if (cups is null)
+                {
+                    <div id="admin-settings-cups-loading" class="text-muted">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>@L["Settings_Loading"]
+                    </div>
+                }
+                else
+                {
+                    <div class="form-check form-switch mb-3" id="admin-settings-cups-enabled-group">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="admin-settings-cups-enabled-input"
+                               checked="@cups.CupsEnabled"
+                               @onchange="e => cups.CupsEnabled = e.Value is bool b && b" />
+                        <label class="form-check-label fw-semibold" for="admin-settings-cups-enabled-input">
+                            @L["Settings_CupsEnabled"]
+                        </label>
+                        <div class="form-text" id="admin-settings-cups-enabled-hint">@L["Settings_CupsEnabledHint"]</div>
+                    </div>
+
+                    <fieldset disabled="@(!cups.CupsEnabled)" id="admin-settings-cups-fieldset">
+                        <h6 class="fw-semibold mt-3" id="admin-settings-cups-modes-title">@L["Settings_CupModesTitle"]</h6>
+
+                        <div class="form-check form-switch" id="admin-settings-cups-deposit-mode-group">
+                            <input class="form-check-input" type="checkbox" role="switch"
+                                   id="admin-settings-cups-deposit-mode-input"
+                                   checked="@cups.CupDepositModeEnabled"
+                                   @onchange="e => cups.CupDepositModeEnabled = e.Value is bool b && b" />
+                            <label class="form-check-label" for="admin-settings-cups-deposit-mode-input">@L["Settings_CupDepositMode"]</label>
+                        </div>
+                        <div class="form-text mb-2">@L["Settings_CupDepositModeHint"]</div>
+
+                        <div class="form-check form-switch" id="admin-settings-cups-honor-mode-group">
+                            <input class="form-check-input" type="checkbox" role="switch"
+                                   id="admin-settings-cups-honor-mode-input"
+                                   checked="@cups.CupHonorModeEnabled"
+                                   @onchange="e => cups.CupHonorModeEnabled = e.Value is bool b && b" />
+                            <label class="form-check-label" for="admin-settings-cups-honor-mode-input">@L["Settings_CupHonorMode"]</label>
+                        </div>
+                        <div class="form-text mb-2">@L["Settings_CupHonorModeHint"]</div>
+
+                        <div class="form-check form-switch" id="admin-settings-cups-byoc-mode-group">
+                            <input class="form-check-input" type="checkbox" role="switch"
+                                   id="admin-settings-cups-byoc-mode-input"
+                                   checked="@cups.CupByocEnabled"
+                                   @onchange="e => cups.CupByocEnabled = e.Value is bool b && b" />
+                            <label class="form-check-label" for="admin-settings-cups-byoc-mode-input">@L["Settings_CupByocMode"]</label>
+                        </div>
+                        <div class="form-text mb-3">@L["Settings_CupByocModeHint"]</div>
+
+                        @if (cups.CupDepositModeEnabled)
+                        {
+                            <hr />
+                            <h6 class="fw-semibold" id="admin-settings-cups-deposit-title">@L["Settings_CupDepositTitle"]</h6>
+
+                            <div class="row g-3 align-items-end mb-2">
+                                <div class="col-md-4" id="admin-settings-cups-deposit-amount-group">
+                                    <label class="form-label" for="admin-settings-cups-deposit-amount-input">@L["Settings_CupDepositAmount"]</label>
+                                    <input type="number" step="0.10" min="0" class="form-control"
+                                           id="admin-settings-cups-deposit-amount-input" @bind="cups.CupDepositAmount" />
+                                </div>
+                                <div class="col-md-4" id="admin-settings-cups-refund-window-group">
+                                    <label class="form-label" for="admin-settings-cups-refund-window-input">@L["Settings_CupRefundWindow"]</label>
+                                    <select class="form-select" id="admin-settings-cups-refund-window-input"
+                                            @bind="cups.CupRefundWindow">
+                                        <option value="@CupRefundWindow.EndOfEvent">@L["Settings_CupRefundWindow_EndOfEvent"]</option>
+                                        <option value="@CupRefundWindow.EndOfEventPlus24h">@L["Settings_CupRefundWindow_Plus24h"]</option>
+                                        <option value="@CupRefundWindow.NoExpiry">@L["Settings_CupRefundWindow_NoExpiry"]</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="fw-semibold mt-2" id="admin-settings-cups-binding-title">@L["Settings_CupBindingTitle"]</div>
+                            <div class="form-text mb-1">@L["Settings_CupBindingHint"]</div>
+
+                            <div class="form-check form-switch" id="admin-settings-cups-bind-ticket-group">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="admin-settings-cups-bind-ticket-input"
+                                       checked="@cups.CupDepositBindTicketWallet"
+                                       @onchange="e => cups.CupDepositBindTicketWallet = e.Value is bool b && b" />
+                                <label class="form-check-label" for="admin-settings-cups-bind-ticket-input">@L["Settings_CupBindTicketWallet"]</label>
+                            </div>
+
+                            <div class="form-check form-switch" id="admin-settings-cups-bind-token-group">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="admin-settings-cups-bind-token-input"
+                                       checked="@cups.CupDepositBindReturnToken"
+                                       disabled
+                                       @onchange="e => cups.CupDepositBindReturnToken = e.Value is bool b && b" />
+                                <label class="form-check-label text-muted" for="admin-settings-cups-bind-token-input">
+                                    @L["Settings_CupBindReturnToken"]
+                                    <span class="badge bg-secondary ms-1">@L["Settings_CupBindReturnTokenNoPrinter"]</span>
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch" id="admin-settings-cups-bind-cupqr-group">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="admin-settings-cups-bind-cupqr-input"
+                                       checked="@cups.CupDepositBindCupQr"
+                                       @onchange="e => cups.CupDepositBindCupQr = e.Value is bool b && b" />
+                                <label class="form-check-label" for="admin-settings-cups-bind-cupqr-input">@L["Settings_CupBindCupQr"]</label>
+                            </div>
+
+                            <div class="fw-semibold mt-3" id="admin-settings-cups-refund-title">@L["Settings_CupRefundTitle"]</div>
+                            <div class="form-text mb-1">@L["Settings_CupRefundHint"]</div>
+
+                            <div class="form-check form-switch" id="admin-settings-cups-refund-wallet-group">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="admin-settings-cups-refund-wallet-input"
+                                       checked="@cups.CupRefundToWallet"
+                                       @onchange="e => cups.CupRefundToWallet = e.Value is bool b && b" />
+                                <label class="form-check-label" for="admin-settings-cups-refund-wallet-input">@L["Settings_CupRefundWallet"]</label>
+                            </div>
+
+                            <div class="form-check form-switch" id="admin-settings-cups-refund-original-group">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="admin-settings-cups-refund-original-input"
+                                       checked="@cups.CupRefundToOriginalMethod"
+                                       @onchange="e => cups.CupRefundToOriginalMethod = e.Value is bool b && b" />
+                                <label class="form-check-label" for="admin-settings-cups-refund-original-input">@L["Settings_CupRefundOriginal"]</label>
+                            </div>
+                        }
+
+                        @if (cups.CupByocEnabled)
+                        {
+                            <hr />
+                            <h6 class="fw-semibold" id="admin-settings-cups-byoc-title">@L["Settings_CupByocTitle"]</h6>
+                            <div class="row g-3 align-items-end mb-2">
+                                <div class="col-md-4" id="admin-settings-cups-byoc-discount-group">
+                                    <label class="form-label" for="admin-settings-cups-byoc-discount-input">@L["Settings_CupByocDiscount"]</label>
+                                    <input type="number" step="0.10" min="0" class="form-control"
+                                           id="admin-settings-cups-byoc-discount-input" @bind="cups.CupByocDiscountAmount" />
+                                </div>
+                            </div>
+                            <div class="form-check form-switch" id="admin-settings-cups-byoc-approved-group">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="admin-settings-cups-byoc-approved-input"
+                                       checked="@cups.CupByocRequireApprovedCup"
+                                       @onchange="e => cups.CupByocRequireApprovedCup = e.Value is bool b && b" />
+                                <label class="form-check-label" for="admin-settings-cups-byoc-approved-input">@L["Settings_CupByocRequireApproved"]</label>
+                            </div>
+                            <div class="form-text">@L["Settings_CupByocRequireApprovedHint"]</div>
+                        }
+                    </fieldset>
+
+                    @if (!cups.IsValid)
+                    {
+                        <div id="admin-settings-cups-invalid" class="alert alert-danger mt-3 mb-0 py-2">
+                            <i class="bi bi-exclamation-triangle me-1"></i>@L["Settings_CupsInvalidWarning"]
+                        </div>
+                    }
+
+                    <div class="d-flex align-items-center gap-3 mt-4">
+                        <button type="button" id="admin-settings-cups-save-btn" class="btn btn-primary"
+                                @onclick="SaveCupsAsync" disabled="@(isSavingCups || !cups.IsValid)">
+                            @if (isSavingCups)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            @L["Settings_Save"]
+                        </button>
+                    </div>
+                }
             </div>
         </div>
         }
@@ -782,6 +965,9 @@
     private bool isTestingEmail;
     private string testRecipient = string.Empty;
 
+    private CupsSettingsDto? cups;
+    private bool isSavingCups;
+
     private string? alertMessage;
     private string alertClass = "alert-success";
 
@@ -1057,6 +1243,7 @@
         {
             settings = await Api.GetFromJsonAsync<AppSettingsDto>("api/venue/settings");
             email = await Api.GetFromJsonAsync<EmailSettingsDto>("api/venue/email-settings");
+            cups = await Api.GetFromJsonAsync<CupsSettingsDto>("api/venue/cups-settings");
         }
         catch (Exception ex)
         {
@@ -1095,6 +1282,34 @@
         finally
         {
             isSavingEmail = false;
+        }
+    }
+
+    private async Task SaveCupsAsync()
+    {
+        if (cups is null || !cups.IsValid) return;
+        isSavingCups = true;
+        try
+        {
+            var resp = await Api.PutAsJsonAsync("api/venue/cups-settings", cups);
+            if (resp.IsSuccessStatusCode)
+            {
+                cups = await resp.Content.ReadFromJsonAsync<CupsSettingsDto>();
+                ShowAlert(L["Settings_CupsSaved"], true);
+            }
+            else
+            {
+                ShowAlert(L["Settings_CupsSaveFailed"], false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save cup settings");
+            ShowAlert(L["Settings_CupsSaveFailed"], false);
+        }
+        finally
+        {
+            isSavingCups = false;
         }
     }
 

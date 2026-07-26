@@ -742,6 +742,41 @@
   <data name="TicketTopup_NavLabel" xml:space="preserve">
     <value>Nadoplata</value>
   </data>
+  <data name="CupReturns_NavLabel" xml:space="preserve"><value>Povrat čaša</value></data>
+  <data name="CupReturns_PageTitle" xml:space="preserve"><value>Povrat čaša</value></data>
+  <data name="CupReturns_Heading" xml:space="preserve"><value>Povrat višekratnih čaša</value></data>
+  <data name="CupReturns_Subtitle" xml:space="preserve"><value>Skenirajte ulaznicu kupca za povrat pologa za čaše.</value></data>
+  <data name="CupReturns_LoginRequired" xml:space="preserve"><value>Prijavite se za obradu povrata čaša.</value></data>
+  <data name="CupReturns_IdentifyLabel" xml:space="preserve"><value>QR ili broj ulaznice</value></data>
+  <data name="CupReturns_CodePlaceholder" xml:space="preserve"><value>Skenirajte ili upišite kôd ulaznice</value></data>
+  <data name="CupReturns_ResolveBtn" xml:space="preserve"><value>Pronađi</value></data>
+  <data name="CupReturns_ScanBtn" xml:space="preserve"><value>Skeniraj ulaznicu</value></data>
+  <data name="CupReturns_ScanningHint" xml:space="preserve"><value>Usmjerite kameru na QR kôd ulaznice.</value></data>
+  <data name="CupReturns_StopScanBtn" xml:space="preserve"><value>Zaustavi skeniranje</value></data>
+  <data name="CupReturns_ScannerUnsupported" xml:space="preserve"><value>Ovaj uređaj ne može skenirati QR kôd — upišite kôd ručno.</value></data>
+  <data name="CupReturns_NotFound" xml:space="preserve"><value>Nijedna ulaznica ne odgovara tom kôdu.</value></data>
+  <data name="CupReturns_ResolveError" xml:space="preserve"><value>Ulaznicu nije moguće pronaći. Pokušajte ponovno.</value></data>
+  <data name="CupReturns_Ticket" xml:space="preserve"><value>Ulaznica</value></data>
+  <data name="CupReturns_OutstandingCups" xml:space="preserve"><value>čaša vani</value></data>
+  <data name="CupReturns_Refundable" xml:space="preserve"><value>Za povrat</value></data>
+  <data name="CupReturns_NoneOutstanding" xml:space="preserve"><value>Za ovu ulaznicu nema nevraćenih pologa za čaše.</value></data>
+  <data name="CupReturns_CountLabel" xml:space="preserve"><value>Broj čaša koje se vraćaju</value></data>
+  <data name="CupReturns_RefundBtn" xml:space="preserve"><value>Vrati polog</value></data>
+  <data name="CupReturns_SuccessTitle" xml:space="preserve"><value>Polog vraćen</value></data>
+  <data name="CupReturns_RefundedSummary" xml:space="preserve"><value>Vraćeno {0} čaša — {1} vraćeno.</value></data>
+  <data name="CupReturns_NewBalance" xml:space="preserve"><value>Stanje novčanika</value></data>
+  <data name="CupReturns_Fail" xml:space="preserve"><value>Povrat nije moguće dovršiti.</value></data>
+  <data name="CupReturns_Reset" xml:space="preserve"><value>Novi povrat</value></data>
+  <data name="CupReturns_HonorTitle" xml:space="preserve"><value>Čaše na povjerenje</value></data>
+  <data name="CupReturns_HonorHint" xml:space="preserve"><value>Vratite čaše na povjerenje skupno (bez pologa i povrata novca).</value></data>
+  <data name="CupReturns_HonorReturnBtn" xml:space="preserve"><value>Vrati</value></data>
+  <data name="CupReturns_HonorDone" xml:space="preserve"><value>Zabilježeno {0} vraćenih čaša na povjerenje.</value></data>
+  <data name="CupReturns_AssignTitle" xml:space="preserve"><value>Dodijeli čašu ovoj ulaznici</value></data>
+  <data name="CupReturns_AssignHint" xml:space="preserve"><value>Skenirajte fizičku čašu pri predaji kako bi se mogla vratiti skeniranjem čaše.</value></data>
+  <data name="CupReturns_AssignPlaceholder" xml:space="preserve"><value>Skenirajte ili upišite kôd čaše</value></data>
+  <data name="CupReturns_AssignBtn" xml:space="preserve"><value>Dodijeli</value></data>
+  <data name="CupReturns_AssignOk" xml:space="preserve"><value>Čaša dodijeljena. Još {0} nedodijeljenih na ovoj ulaznici.</value></data>
+  <data name="CupReturns_AssignFail" xml:space="preserve"><value>Dodjela čaše nije uspjela.</value></data>
   <data name="TicketTopup_PageTitle" xml:space="preserve">
     <value>Nadoplata novčanika</value>
   </data>

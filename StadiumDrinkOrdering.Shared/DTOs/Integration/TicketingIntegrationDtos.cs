@@ -313,6 +313,13 @@ public class SimulateMatchResult
 
     public int DrinkOrders { get; set; }
     public decimal DrinkRevenue { get; set; }
+
+    /// <summary>
+    /// Why a played fixture produced no drink orders, in the generator's own words — an empty drinks
+    /// catalogue, nobody in the ground, a failure part-way through. Null when the orders were
+    /// generated, and null for an upcoming fixture, which has no match day to sell into yet.
+    /// </summary>
+    public string? DrinkOrdersMessage { get; set; }
 }
 
 /// <summary>Outcome of an admin "simulate ticket sales" run (Stadium Overview testing tool).</summary>

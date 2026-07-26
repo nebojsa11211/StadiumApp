@@ -50,6 +50,14 @@ public interface IStaffApiService
     Task<BarTopupResolveResultDto?> ResolveTopupAsync(string query);
     Task<BarTopupResultDto?> SubmitTopupAsync(BarTopupRequestDto request);
 
+    // Reusable-cup returns: look up a ticket's outstanding cup deposits, refund them (wallet credit),
+    // or record a bulk return of honor-system cups.
+    Task<CupReturnLookupDto?> LookupCupsAsync(string query);
+    Task<CupReturnResultDto?> ReturnCupsAsync(CupReturnRequestDto request);
+    Task<int?> ReturnHonorCupsAsync(HonorCupReturnRequestDto request);
+    Task<CupAssignResultDto?> AssignCupAsync(CupAssignRequestDto request);
+    Task<CupsSettingsDto?> GetCupsSettingsAsync();
+
     // Bar-counter cash history (top-ups + ticket loads + cash-outs), for the history/reconciliation page.
     Task<BarTopupHistoryListDto?> GetBarTopupHistoryAsync(string? search, bool onlyMine, int page, int pageSize);
 
@@ -575,6 +583,116 @@ public class StaffApiService : IStaffApiService
         catch (Exception ex)
         {
             Console.WriteLine($"Error submitting top-up: {ex.Message}");
+        }
+        return null;
+    }
+
+    // ---- Reusable-cup returns (api/bar/cups) ----
+
+    // Look up a scanned/typed ticket and report its outstanding (held) cup deposits.
+    public async Task<CupReturnLookupDto?> LookupCupsAsync(string query)
+    {
+        try
+        {
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.GetAsync($"api/bar/cups/lookup?query={Uri.EscapeDataString(query.Trim())}");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<CupReturnLookupDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error looking up cup deposits: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Refund up to Count of the ticket's held cup deposits (wallet credit). Fresh IdempotencyKey per attempt.
+    public async Task<CupReturnResultDto?> ReturnCupsAsync(CupReturnRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/cups/return", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<CupReturnResultDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error returning cups: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Record a bulk return of honor-system cups (no money moves). Returns how many were recorded.
+    public async Task<int?> ReturnHonorCupsAsync(HonorCupReturnRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/cups/return-honor", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<int>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error returning honor cups: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Bind a scanned physical cup's QR to the ticket's next unassigned held deposit (cup-QR binding).
+    public async Task<CupAssignResultDto?> AssignCupAsync(CupAssignRequestDto request)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await EnsureAuthHeaderAsync();
+            var response = await _httpClient.PostAsync("api/bar/cups/assign-cup", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<CupAssignResultDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error assigning cup: {ex.Message}");
+        }
+        return null;
+    }
+
+    // Public read of the venue's cup config, so the returns page can show cup-QR features only when enabled.
+    public async Task<CupsSettingsDto?> GetCupsSettingsAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("api/venue/cups-settings");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<CupsSettingsDto>(responseJson, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading cup settings: {ex.Message}");
         }
         return null;
     }

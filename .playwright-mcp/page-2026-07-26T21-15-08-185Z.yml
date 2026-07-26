@@ -1,0 +1,156 @@
+- generic [ref=f1e77]:
+  - banner [ref=f1e78]:
+    - generic [ref=f1e79]:
+      - generic [ref=f1e80]: 
+      - text: Stadium Ticketing Simulator
+    - generic [ref=f1e81]: external system stand-in
+    - combobox [ref=f1e84]:
+      - option "Hrvatski"
+      - option "English" [selected]
+  - navigation [ref=f1e85]:
+    - link " Simulator" [ref=f1e86] [cursor=pointer]:
+      - /url: /
+      - generic [ref=f1e87]: 
+      - text: Simulator
+    - link " Season generator" [ref=f1e88] [cursor=pointer]:
+      - /url: season-generator
+      - generic [ref=f1e89]: 
+      - text: Season generator
+    - link " Credentials" [ref=f1e90] [cursor=pointer]:
+      - /url: credentials
+      - generic [ref=f1e91]: 
+      - text: Credentials
+  - main [ref=f1e92]:
+    - generic [ref=f1e93]:
+      - heading " Season generator" [level=5] [ref=f1e94]:
+        - generic [ref=f1e95]: 
+        - text: Season generator
+      - paragraph [ref=f1e96]: "Builds a whole season of fixtures in one run: played matches (with attendance and drink orders) and upcoming ones still selling. Each fixture is created through the same integration path a real ticketing feed uses, so existing season passes are extended to cover it."
+      - generic [ref=f1e97]:
+        - generic [ref=f1e98]:
+          - generic [ref=f1e99]: Season
+          - combobox "Season" [ref=f1e100]:
+            - option "2026/2027 · 14 events · 20 passes"
+            - option "Attribution check ★ · 3 events · 15 passes" [selected]
+          - generic [ref=f1e101]: Fixtures are added to this season; season passes extend to each new match.
+        - generic [ref=f1e102]:
+          - generic [ref=f1e103]: Played matches
+          - spinbutton "Played matches" [ref=f1e104]: "2"
+        - generic [ref=f1e105]:
+          - generic [ref=f1e106]: Upcoming matches
+          - spinbutton "Upcoming matches" [ref=f1e107]: "1"
+        - generic [ref=f1e108]:
+          - generic [ref=f1e109]: Base price (EUR)
+          - spinbutton "Base price (EUR)" [ref=f1e110]: "25"
+        - generic [ref=f1e111]:
+          - generic [ref=f1e112]: Days apart
+          - spinbutton "Days apart" [ref=f1e113]: "7"
+        - generic [ref=f1e114]:
+          - generic [ref=f1e115]: Home team
+          - textbox "Home team" [ref=f1e116]: NK Istra
+        - generic [ref=f1e117]:
+          - generic [ref=f1e118]: Opponents
+          - textbox "Opponents" [ref=f1e119]: HNK Hajduk Split, HNK Rijeka, NK Osijek, NK Slaven Belupo, NK Lokomotiva, NK Varaždin, HNK Gorica, HNK Šibenik, NK Istra 1961, NK Rudeš
+          - generic [ref=f1e120]: Comma-separated; used in order and reused if there are more fixtures than names.
+        - generic [ref=f1e121]:
+          - generic [ref=f1e122]: Season passes
+          - generic [ref=f1e123]:
+            - spinbutton "Season passes" [ref=f1e124]: "10"
+            - generic [ref=f1e125]: "%"
+          - generic [ref=f1e126]:
+            - text: Share of the ground held by season-pass holders, sold before the fixtures so every match counts them.
+            - generic [ref=f1e127]: · 20 pass seats
+            - generic [ref=f1e159]: · season already holds 15, so 5 will be sold
+        - generic [ref=f1e128]:
+          - generic [ref=f1e129]: Played match attendance
+          - generic [ref=f1e130]:
+            - spinbutton [ref=f1e131]: "40"
+            - generic [ref=f1e132]: –
+            - spinbutton [ref=f1e133]: "50"
+            - generic [ref=f1e134]: "%"
+        - generic [ref=f1e135]:
+          - generic [ref=f1e136]: Upcoming match sales
+          - generic [ref=f1e137]:
+            - spinbutton [ref=f1e138]: "10"
+            - generic [ref=f1e139]: –
+            - spinbutton [ref=f1e140]: "20"
+            - generic [ref=f1e141]: "%"
+          - generic [ref=f1e142]:
+            - text: Applied nearest-first, so the next match has sold the most.
+            - generic [ref=f1e143]: · stadium holds 200
+        - generic [ref=f1e144]:
+          - generic [ref=f1e145]:
+            - checkbox "Generate drink orders for played matches" [checked] [ref=f1e146]
+            - generic [ref=f1e147]: Generate drink orders for played matches
+          - generic [ref=f1e148]:
+            - checkbox "Settle attendance (attended / no-show / refunded)" [checked] [ref=f1e149]
+            - generic [ref=f1e150]: Settle attendance (attended / no-show / refunded)
+        - button " Generate 3 fixtures" [ref=f1e152] [cursor=pointer]:
+          - generic [ref=f1e160]: 
+          - text: Generate 3 fixtures
+        - generic [ref=f1e162]:
+          - heading " Generation finished" [level=6] [ref=f1e163]:
+            - generic [ref=f1e164]: 
+            - text: Generation finished
+          - generic [ref=f1e165]: 3 of 3 fixtures created — 2 played, 1 upcoming · 212 tickets sold · 45 season-pass seats · 84 drink orders (EUR 777.60)
+          - generic [ref=f1e166]: "Season passes: 15 of 20 sold before the fixtures."
+          - generic [ref=f1e167]:
+            - strong [ref=f1e168]: "Worth checking:"
+            - list [ref=f1e169]:
+              - listitem [ref=f1e170]: "5 of 20 season pass(es) could not be sold: Sector 'SECT1' has no free seat for a season ticket"
+          - button "Dismiss" [ref=f1e171] [cursor=pointer]
+      - separator [ref=f1e172]
+      - generic [ref=f1e173]:
+        - strong [ref=f1e174]: "Result:"
+        - text: 3 fixtures · 212 tickets sold · 45 season-pass seats · 84 drink orders (EUR 777.60)
+      - table [ref=f1e176]:
+        - rowgroup [ref=f1e177]:
+          - row [ref=f1e178]:
+            - columnheader "Fixture" [ref=f1e179]
+            - columnheader "Kick-off" [ref=f1e180]
+            - columnheader "Status" [ref=f1e181]
+            - columnheader "Tickets" [ref=f1e182]
+            - columnheader "Pass seats" [ref=f1e183]
+            - columnheader "Attended" [ref=f1e184]
+            - columnheader "Drink orders" [ref=f1e185]
+        - rowgroup [ref=f1e186]:
+          - row [ref=f1e187]:
+            - 'cell "NK Istra - HNK Rijeka #71" [ref=f1e188]':
+              - text: NK Istra - HNK Rijeka
+              - generic [ref=f1e189]: "#71"
+            - cell "2026-07-18 20:00" [ref=f1e190]
+            - cell "Completed" [ref=f1e191]
+            - cell "100" [ref=f1e193]
+            - cell "15" [ref=f1e194]
+            - cell "97" [ref=f1e195]
+            - cell "45 · €402.70" [ref=f1e196]
+          - row [ref=f1e197]:
+            - 'cell "NK Istra - HNK Hajduk Split #70" [ref=f1e198]':
+              - text: NK Istra - HNK Hajduk Split
+              - generic [ref=f1e199]: "#70"
+            - cell "2026-07-25 15:00" [ref=f1e200]
+            - cell "Completed" [ref=f1e201]
+            - cell "84" [ref=f1e203]
+            - cell "15" [ref=f1e204]
+            - cell "86" [ref=f1e205]
+            - cell "39 · €374.90" [ref=f1e206]
+          - row [ref=f1e207]:
+            - 'cell "NK Istra - NK Osijek #72" [ref=f1e208]':
+              - text: NK Istra - NK Osijek
+              - generic [ref=f1e209]: "#72"
+            - cell "2026-08-02 15:00" [ref=f1e210]
+            - cell "OnSale" [ref=f1e211]
+            - cell "28" [ref=f1e213]
+            - cell "15" [ref=f1e214]
+            - cell "—" [ref=f1e215]
+            - cell "—" [ref=f1e216]
+      - separator [ref=f1e155]
+      - generic [ref=f1e156]:
+        - generic [ref=f1e157]: "[23:14:50] ✅ Done — 3/3 fixtures created"
+        - generic [ref=f1e158]: "[23:14:50] ✔ NK Istra - NK Osijek (OnSale) — 28 tickets, 15 pass seats"
+        - generic [ref=f1e217]: "[23:14:48] ✔ NK Istra - HNK Rijeka (Completed) — 100 tickets, 15 pass seats, 45 drink orders €402.70"
+        - generic [ref=f1e218]: "[23:14:42] ✔ NK Istra - HNK Hajduk Split (Completed) — 84 tickets, 15 pass seats, 39 drink orders €374.90"
+        - generic [ref=f1e219]: "[23:14:34] 🎟 15 season pass(es) sold, 5 failed: Sector 'SECT1' has no free seat for a season ticket"
+        - generic [ref=f1e220]: "[23:14:26] 🎟 Selling 20 season pass(es) before the fixtures (10% of 200 seats)"
+        - generic [ref=f1e221]: "[23:14:26] ▶ Attribution check: 2 played + 1 upcoming fixtures"
+  - 'generic "API database: Supabase · Development"': "DB: Supabase"

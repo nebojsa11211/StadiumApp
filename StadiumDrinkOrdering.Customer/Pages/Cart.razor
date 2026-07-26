@@ -44,6 +44,10 @@
                         <div id="customer-cart-item-info-@item.DrinkId" class="ci">
                             <div id="customer-cart-item-name-@item.DrinkId" class="n">@item.DrinkName</div>
                             <div id="customer-cart-item-price-@item.DrinkId" class="p tnum">@Localizer["Cart_UnitPriceLabel", item.UnitPrice.ToString("F2")]</div>
+                            @if (item.CupMode != CupMode.None)
+                            {
+                                <div id="customer-cart-item-cup-@item.DrinkId" class="s" style="color:#2563eb;font-size:.78rem;">🥤 @CupLabel(item.CupMode)</div>
+                            }
                         </div>
                         <div id="customer-cart-item-step-@item.DrinkId" class="mini-step">
                             <button id="customer-cart-item-qty-dec-@item.DrinkId" @onclick="() => Change(item.DrinkId, item.Quantity - 1)" aria-label="@Localizer["Cart_DecreaseButton_Aria"]">−</button>
@@ -96,6 +100,14 @@
             <div id="customer-cart-summary" class="summary">
                 <div id="customer-cart-summary-subtotal" class="sr"><span>@Localizer["Cart_SubtotalLabel"]</span><b class="tnum">€@State.Subtotal.ToString("F2")</b></div>
                 <div id="customer-cart-summary-fee" class="sr"><span>@Localizer["Cart_FeeLabel"]</span><b class="tnum">€@ServiceFee.ToString("F2")</b></div>
+                @if (DepositTotal > 0)
+                {
+                    <div id="customer-cart-summary-deposit" class="sr"><span>@Localizer["Cart_CupDepositLabel"]</span><b class="tnum">€@DepositTotal.ToString("F2")</b></div>
+                }
+                @if (ByocDiscountTotal > 0)
+                {
+                    <div id="customer-cart-summary-byoc" class="sr"><span>@Localizer["Cart_ByocDiscountLabel"]</span><b class="tnum">-€@ByocDiscountTotal.ToString("F2")</b></div>
+                }
                 <div id="customer-cart-summary-total" class="sr total"><span>@Localizer["Cart_TotalLabel"]</span><b class="tnum">€@Total.ToString("F2")</b></div>
             </div>
 
@@ -140,8 +152,30 @@
     // Accepted payment methods for this installation. Defaults to all-enabled so a settings
     // fetch failure never blocks checkout — the order API re-checks and is authoritative.
     private AppSettingsDto _settings = new();
+    // Reusable-cup config; defaults to "off" so the deposit line stays hidden until loaded/enabled.
+    private CupsSettingsDto _cupSettings = new();
 
-    private decimal Total => State.Subtotal + (State.Count > 0 ? ServiceFee : 0m);
+    // Refundable cup deposits shown to the fan before paying. The API recomputes this authoritatively at
+    // checkout from the same venue config, so the displayed figure matches what is actually charged.
+    private decimal DepositTotal => _cupSettings.CupsEnabled && _cupSettings.CupDepositModeEnabled
+        ? State.Items.Where(i => i.CupMode == CupMode.Deposit).Sum(i => _cupSettings.CupDepositAmount * i.Quantity)
+        : 0m;
+
+    // BYOC discount for lines using the customer's own cup (capped at the line total, matching the server).
+    private decimal ByocDiscountTotal => _cupSettings.CupsEnabled && _cupSettings.CupByocEnabled
+        ? State.Items.Where(i => i.CupMode == CupMode.ByocQr)
+            .Sum(i => Math.Min(_cupSettings.CupByocDiscountAmount * i.Quantity, i.UnitPrice * i.Quantity))
+        : 0m;
+
+    private decimal Total => State.Subtotal + (State.Count > 0 ? ServiceFee : 0m) + DepositTotal - ByocDiscountTotal;
+
+    private string CupLabel(CupMode mode) => mode switch
+    {
+        CupMode.Deposit => Localizer["Cart_CupDepositBadge"],
+        CupMode.HonorSystem => Localizer["Cart_CupHonorBadge"],
+        CupMode.ByocQr => Localizer["Cart_CupByocBadge"],
+        _ => string.Empty
+    };
     private string SubtitleText => State.Count > 0 ? Localizer["Cart_ItemCountSubtitle", State.Count, State.Count == 1 ? Localizer["Cart_Item"] : Localizer["Cart_Items"]] : Localizer["Cart_EmptySubtitle"];
     private string WalletText => _wallet is { Exists: true } ? $"Stanje €{_wallet.Balance:F2}" : Localizer["Cart_WalletPlaceholder"];
     // Ticket holder paying from this wallet; anonymous bearer tickets carry no name.
@@ -168,6 +202,7 @@
             _wallet = await Api.GetSessionWalletSummaryAsync(State.SessionToken!);
 
         _settings = await Api.GetAppSettingsAsync();
+        _cupSettings = await Api.GetCupsSettingsAsync();
 
         // Preselect wallet only when it's offered AND there's actually a wallet to charge; otherwise
         // fall back to the first method the operator still accepts.

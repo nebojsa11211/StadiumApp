@@ -133,8 +133,9 @@ public class OrderSessionState
 
     public int QtyOf(int drinkId) => Items.FirstOrDefault(i => i.DrinkId == drinkId)?.Quantity ?? 0;
 
-    /// <summary>Add (or increment) a drink in the client cart.</summary>
-    public void AddDrink(DrinkDto drink, int quantity = 1, string? note = null)
+    /// <summary>Add (or increment) a drink in the client cart. A non-None <paramref name="cupMode"/> sets the
+    /// line's reusable-cup handling; incrementing with the default None never clears a mode already chosen.</summary>
+    public void AddDrink(DrinkDto drink, int quantity = 1, string? note = null, CupMode cupMode = CupMode.None, string? cupQrToken = null)
     {
         if (quantity <= 0) return;
         var line = Items.FirstOrDefault(i => i.DrinkId == drink.Id);
@@ -144,6 +145,8 @@ public class OrderSessionState
             Items.Add(line);
         }
         if (!string.IsNullOrWhiteSpace(note)) line.SpecialInstructions = note;
+        if (cupMode != CupMode.None) line.CupMode = cupMode;
+        if (cupMode == CupMode.ByocQr) line.CupQrToken = cupQrToken;
         line.Quantity += quantity;
         line.TotalPrice = line.UnitPrice * line.Quantity;
         OnChange?.Invoke();
@@ -189,7 +192,9 @@ public class OrderSessionState
             {
                 DrinkId = i.DrinkId,
                 Quantity = i.Quantity,
-                SpecialInstructions = i.SpecialInstructions
+                SpecialInstructions = i.SpecialInstructions,
+                CupMode = i.CupMode,
+                CupQrToken = i.CupQrToken
             }).ToList()
         };
 

@@ -661,6 +661,12 @@
   <data name="SeasonGen_NoSeasons" xml:space="preserve">
     <value>Još nema sezona. Prvo je stvorite na kartici Simulator.</value>
   </data>
+  <data name="SeasonGen_NoLinkedSeasons" xml:space="preserve">
+    <value>Postoji {0} sezona, ali nijedna ne dolazi iz ovog simulatora pa nema u što generirati: {1}. Samo sezona stvorena na kartici Simulator nosi vanjski id koji generirana utakmica treba — sezona dodana u Adminu ili kroz početno punjenje ovdje se ne može koristiti.</value>
+  </data>
+  <data name="SeasonGen_SeasonUnlinked" xml:space="preserve">
+    <value>nije iz ovog simulatora, ne može se koristiti</value>
+  </data>
   <data name="SeasonGen_SeasonLabel" xml:space="preserve">
     <value>Sezona</value>
   </data>
@@ -726,6 +732,57 @@
   </data>
   <data name="SeasonGen_SummaryLine" xml:space="preserve">
     <value>{0} utakmica · {1} prodanih ulaznica · {2} sezonskih mjesta · {3} narudžbi pića (EUR {4})</value>
+  </data>
+  <data name="SeasonGen_DoneTitle" xml:space="preserve">
+    <value>Generiranje završeno</value>
+  </data>
+  <data name="SeasonGen_DoneLine" xml:space="preserve">
+    <value>Stvoreno {0} od {1} utakmica — {2} odigranih, {3} predstojećih · {4} prodanih ulaznica · {5} sezonskih mjesta · {6} narudžbi pića (EUR {7})</value>
+  </data>
+  <data name="SeasonGen_DoneWarningsTitle" xml:space="preserve">
+    <value>Vrijedi provjeriti:</value>
+  </data>
+  <data name="SeasonGen_DoneDismiss" xml:space="preserve">
+    <value>Zatvori</value>
+  </data>
+  <data name="SeasonGen_WarnPastSkipped" xml:space="preserve">
+    <value>Preskočeno {0} od {1} odigranih utakmica — sezona počinje {2}, pa je do sada moglo biti odigrano samo {3}. Odigrane utakmice su one koje stvaraju posjećenost i narudžbe pića.</value>
+  </data>
+  <data name="SeasonGen_WarnNoTickets" xml:space="preserve">
+    <value>{0} od {1} stvorenih utakmica nije prodalo nijednu ulaznicu. {2}</value>
+  </data>
+  <data name="SeasonGen_PassesLabel" xml:space="preserve">
+    <value>Sezonske karte</value>
+  </data>
+  <data name="SeasonGen_PassesHint" xml:space="preserve">
+    <value>Dio stadiona koji drže vlasnici sezonskih karata; prodaju se prije utakmica da ih svaka utakmica uračuna.</value>
+  </data>
+  <data name="SeasonGen_PassesNote" xml:space="preserve">
+    <value>{0} sjedala sa sezonskom kartom</value>
+  </data>
+  <data name="SeasonGen_PassesExisting" xml:space="preserve">
+    <value>sezona već ima {0}, pa će se prodati {1}</value>
+  </data>
+  <data name="SeasonGen_PassProgress" xml:space="preserve">
+    <value>Prodaja sezonskih karata {0}/{1}…</value>
+  </data>
+  <data name="SeasonGen_DonePassLine" xml:space="preserve">
+    <value>Sezonske karte: prodano {0} od {1} prije utakmica.</value>
+  </data>
+  <data name="SeasonGen_WarnPassesFailed" xml:space="preserve">
+    <value>{0} od {1} sezonskih karata nije se moglo prodati: {2}</value>
+  </data>
+  <data name="SeasonGen_WarnNoSectorsForPasses" xml:space="preserve">
+    <value>Zatraženo je {0} sezonskih karata, ali nijedan sektor stadiona nije nacrtan pa nijedna nije mogla dobiti sjedalo. Prvo nacrtajte stadion u Admin → Alat za crtanje stadiona.</value>
+  </data>
+  <data name="SeasonGen_WarnNoDrinks" xml:space="preserve">
+    <value>{0} od {1} odigranih utakmica nije generiralo nijednu narudžbu pića. {2}</value>
+  </data>
+  <data name="SeasonGen_WarnRejected" xml:space="preserve">
+    <value>API je odbio {0} utakmica: {1}</value>
+  </data>
+  <data name="SeasonGen_WarnAborted" xml:space="preserve">
+    <value>Izvođenje je prekinuto: {0}</value>
   </data>
   <data name="SeasonGen_ColFixture" xml:space="preserve">
     <value>Utakmica</value>

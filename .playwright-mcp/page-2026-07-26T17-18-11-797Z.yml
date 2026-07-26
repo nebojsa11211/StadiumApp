@@ -1,0 +1,79 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: 
+      - text: Simulator prodaje ulaznica
+    - generic [ref=e6]: zamjena za vanjski sustav
+    - combobox [ref=e9]:
+      - option "Hrvatski" [selected]
+      - option "English"
+  - navigation [ref=e10]:
+    - link " Simulator" [ref=e11] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e12]: 
+      - text: Simulator
+    - link " Generator sezone" [ref=e13] [cursor=pointer]:
+      - /url: season-generator
+      - generic [ref=e14]: 
+      - text: Generator sezone
+    - link " Pristupni podaci" [ref=e15] [cursor=pointer]:
+      - /url: credentials
+      - generic [ref=e16]: 
+      - text: Pristupni podaci
+  - main [ref=e17]:
+    - generic [ref=e18]:
+      - heading " Generator sezone" [level=5] [ref=e19]:
+        - generic [ref=e20]: 
+        - text: Generator sezone
+      - paragraph [ref=e21]: "Izrađuje cijelu sezonu utakmica u jednom prolazu: odigrane utakmice (s posjećenošću i narudžbama pića) i nadolazeće koje su još u prodaji. Svaka se utakmica stvara istim integracijskim putem kojim stiže i stvarni sustav prodaje, pa se postojeće sezonske ulaznice proširuju i na nju."
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: Sezona
+          - combobox "Sezona" [ref=e25]:
+            - option "2026/2027 ★ · 21 događaja · 40 sezonskih" [selected]
+          - generic [ref=e26]: Utakmice se dodaju u ovu sezonu; sezonske ulaznice šire se na svaku novu utakmicu.
+        - generic [ref=e27]:
+          - generic [ref=e28]: Odigrane utakmice
+          - spinbutton "Odigrane utakmice" [ref=e29]: "7"
+        - generic [ref=e30]:
+          - generic [ref=e31]: Nadolazeće utakmice
+          - spinbutton "Nadolazeće utakmice" [ref=e32]: "7"
+        - generic [ref=e33]:
+          - generic [ref=e34]: Bazna cijena (EUR)
+          - spinbutton "Bazna cijena (EUR)" [ref=e35]: "25"
+        - generic [ref=e36]:
+          - generic [ref=e37]: Razmak (dana)
+          - spinbutton "Razmak (dana)" [ref=e38]: "7"
+        - generic [ref=e39]:
+          - generic [ref=e40]: Domaća momčad
+          - textbox "Domaća momčad" [ref=e41]: NK Istra
+        - generic [ref=e42]:
+          - generic [ref=e43]: Protivnici
+          - textbox "Protivnici" [ref=e44]: HNK Hajduk Split, HNK Rijeka, NK Osijek, NK Slaven Belupo, NK Lokomotiva, NK Varaždin, HNK Gorica, HNK Šibenik, NK Istra 1961, NK Rudeš
+          - generic [ref=e45]: Odvojeni zarezom; koriste se redom i ponavljaju ako je utakmica više nego imena.
+        - generic [ref=e46]:
+          - generic [ref=e47]: Posjećenost odigranih
+          - generic [ref=e48]:
+            - spinbutton [ref=e49]: "55"
+            - generic [ref=e50]: –
+            - spinbutton [ref=e51]: "92"
+            - generic [ref=e52]: "%"
+        - generic [ref=e53]:
+          - generic [ref=e54]: Prodaja nadolazećih
+          - generic [ref=e55]:
+            - spinbutton [ref=e56]: "8"
+            - generic [ref=e57]: –
+            - spinbutton [ref=e58]: "45"
+            - generic [ref=e59]: "%"
+          - generic [ref=e60]: Primjenjuje se od najbliže utakmice, pa je sljedeća najviše prodana. · stadion prima 200 · popunjenost premašuje slobodna mjesta — utakmice će se rasprodati na 200
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - checkbox "Generiraj narudžbe pića za odigrane utakmice" [checked] [ref=e63]
+            - generic [ref=e64]: Generiraj narudžbe pića za odigrane utakmice
+          - generic [ref=e65]:
+            - checkbox "Razriješi posjećenost (došli / nisu došli / vraćeno)" [checked] [ref=e66]
+            - generic [ref=e67]: Razriješi posjećenost (došli / nisu došli / vraćeno)
+        - button " Generiraj 14 utakmica" [ref=e69] [cursor=pointer]:
+          - generic [ref=e70]: 
+          - text: Generiraj 14 utakmica
+  - 'generic "API database: Supabase · Development"': "DB: Supabase"

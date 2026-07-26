@@ -30,6 +30,13 @@ public class SessionOrderItemDto
     public int DrinkId { get; set; }
     public int Quantity { get; set; }
     public string? SpecialInstructions { get; set; }
+
+    /// <summary>Reusable-cup handling for this line. The deposit amount is derived server-side from the
+    /// venue config, never trusted from the client. Defaults to None (disposable).</summary>
+    public CupMode CupMode { get; set; } = CupMode.None;
+
+    /// <summary>For BYOC lines: the scanned QR of the customer's own cup (resolved + validated server-side).</summary>
+    public string? CupQrToken { get; set; }
 }
 
 public class SessionOrderResultDto
@@ -40,6 +47,9 @@ public class SessionOrderResultDto
     public string Status { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
     public string SeatPath { get; set; } = string.Empty;
+
+    /// <summary>Portion of <see cref="TotalAmount"/> that is refundable cup deposit (0 when no cups).</summary>
+    public decimal CupDepositTotal { get; set; }
 
     /// <summary>True when a wallet payment was declined for insufficient balance. No order was created and no
     /// money moved — the fan can top up (or switch to another method) and retry.</summary>

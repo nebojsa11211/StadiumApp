@@ -79,6 +79,12 @@ public class ApplicationDbContext : DbContext
     public DbSet<EmailTemplate> EmailTemplates { get; set; }
     public DbSet<Club> Clubs { get; set; }
 
+    // Reusable cups (deposit / honor / BYOC) — see docs/reusable-cups-design.md
+    public DbSet<CupType> CupTypes { get; set; }
+    public DbSet<CupMovement> CupMovements { get; set; }
+    public DbSet<CupDeposit> CupDeposits { get; set; }
+    public DbSet<RegisteredCup> RegisteredCups { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -211,6 +217,19 @@ public class ApplicationDbContext : DbContext
                 .WithMany(d => d.OrderItems)
                 .HasForeignKey(e => e.DrinkId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Reusable-cup handling per line. Cup design is Restrict (types are only deactivated, not
+            // deleted, so history stays intact); a scanned personal cup nulls out if that cup row is
+            // ever removed, keeping the order line.
+            entity.Property(e => e.CupDepositAmount).HasPrecision(10, 2);
+            entity.HasOne(e => e.CupType)
+                .WithMany()
+                .HasForeignKey(e => e.CupTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.RegisteredCup)
+                .WithMany()
+                .HasForeignKey(e => e.RegisteredCupId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Payment configuration
@@ -852,6 +871,14 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.EmailFromName).HasMaxLength(150);
             entity.Property(e => e.SmtpPort).HasDefaultValue(587);
             entity.Property(e => e.SmtpUseSsl).HasDefaultValue(true);
+            // Reusable cups: off by default so existing installations are unaffected; the "on"
+            // sub-toggles default true so a venue that flips the master switch gets sane defaults.
+            entity.Property(e => e.CupDepositAmount).HasPrecision(10, 2).HasDefaultValue(2.00m);
+            entity.Property(e => e.CupByocDiscountAmount).HasPrecision(10, 2).HasDefaultValue(0m);
+            entity.Property(e => e.CupDepositBindTicketWallet).HasDefaultValue(true);
+            entity.Property(e => e.CupRefundToWallet).HasDefaultValue(true);
+            entity.Property(e => e.CupByocRequireApprovedCup).HasDefaultValue(true);
+            entity.Property(e => e.CupRefundWindow).HasDefaultValue(CupRefundWindow.EndOfEvent);
         });
 
         // Email template overrides (one row per customized template)
@@ -876,6 +903,88 @@ public class ApplicationDbContext : DbContext
                 .WithMany(v => v.Clubs)
                 .HasForeignKey(e => e.VenueId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ---- Reusable cups (see docs/reusable-cups-design.md) --------------------------------
+
+        modelBuilder.Entity<CupType>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.UnitCost).HasPrecision(10, 2);
+            entity.Property(e => e.LogoContentType).HasMaxLength(100);
+        });
+
+        // Reusable-cup ledger (append-only), mirroring StockMovement.
+        modelBuilder.Entity<CupMovement>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Note).HasMaxLength(500);
+            entity.Property(e => e.UserEmail).HasMaxLength(256);
+            entity.HasIndex(e => new { e.CupTypeId, e.CreatedAt });
+
+            // Types are only deactivated, never deleted, so Restrict keeps the ledger intact.
+            entity.HasOne(e => e.CupType)
+                .WithMany()
+                .HasForeignKey(e => e.CupTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            // Keep the ledger row if the related order is ever hard-deleted.
+            entity.HasOne(e => e.Order)
+                .WithMany()
+                .HasForeignKey(e => e.OrderId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Cup deposits (link + state; money lives on the wallet ledger).
+        modelBuilder.Entity<CupDeposit>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Amount).HasPrecision(10, 2);
+            entity.Property(e => e.ReturnTokenQr).HasMaxLength(200);
+            entity.Property(e => e.CupQrToken).HasMaxLength(200);
+            // Return station lookup: "outstanding deposits on this ticket".
+            entity.HasIndex(e => new { e.TicketId, e.Status });
+            entity.HasIndex(e => e.OrderId);
+            // Return-by-cup-QR: find the held deposit bound to a scanned cup.
+            entity.HasIndex(e => e.CupQrToken);
+
+            entity.HasOne(e => e.CupType)
+                .WithMany()
+                .HasForeignKey(e => e.CupTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.Order)
+                .WithMany()
+                .HasForeignKey(e => e.OrderId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Registered personal / premium cups (BYOC).
+        modelBuilder.Entity<RegisteredCup>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.QrToken).HasMaxLength(200).IsRequired();
+            entity.HasIndex(e => e.QrToken).IsUnique();
+            entity.HasIndex(e => new { e.OwnerType, e.UserId });
+            entity.HasIndex(e => new { e.OwnerType, e.TicketId });
+
+            entity.HasOne(e => e.CupType)
+                .WithMany()
+                .HasForeignKey(e => e.CupTypeId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.Ticket)
+                .WithMany()
+                .HasForeignKey(e => e.TicketId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // At most one owner (a cup may be sold but not yet assigned). Mirrors Wallet's owner rule,
+            // relaxed from exactly-one to allow unassigned approved club cups.
+            entity.ToTable(t => t.HasCheckConstraint(
+                "CK_RegisteredCups_AtMostOneOwner",
+                "NOT (\"UserId\" IS NOT NULL AND \"TicketId\" IS NOT NULL)"));
         });
 
         // Seed data
@@ -905,6 +1014,20 @@ public class ApplicationDbContext : DbContext
                 Id = 1,
                 Name = "Stadium",
                 Country = "Croatia",
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            }
+        );
+
+        // Seed a default reusable-cup type so the fungible pool has a home the moment cups are enabled.
+        // Fixed timestamp to avoid migration churn (see docs/reusable-cups-design.md).
+        modelBuilder.Entity<CupType>().HasData(
+            new CupType
+            {
+                Id = 1,
+                Name = "Club Cup",
+                VolumeMl = 500,
+                UnitCost = 1.00m,
+                IsActive = true,
                 CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
         );

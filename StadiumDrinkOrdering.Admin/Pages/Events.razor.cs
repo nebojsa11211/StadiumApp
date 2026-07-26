@@ -131,6 +131,20 @@ public partial class Events : ComponentBase, IDisposable
     private EventDto? editingEvent;
     private bool showEventModal = false;
     private bool isSaving = false;
+    private bool showPurgeModal;
+    private bool purgeLoading;
+    private bool isPurging;
+    private EventDto? purgeEvent;
+    private EventPurgePreviewDto? purgePreview;
+    private string purgeConfirmText = "";
+
+    // The event's exact name must be typed back before the purge unlocks — the same check the API
+    // repeats server-side. Names repeat across fixtures, but the request is scoped by id in the route,
+    // so this confirms "I know which event I'm looking at", not global uniqueness.
+    private bool IsPurgeConfirmed =>
+        purgeEvent != null &&
+        string.Equals(purgeConfirmText.Trim(), purgeEvent.Name?.Trim(), StringComparison.Ordinal);
+
     private string alertMessage = "";
     private string alertType = "";
     private bool loadingFailed = false;
@@ -1181,8 +1195,108 @@ public partial class Events : ComponentBase, IDisposable
             }
             else
             {
-                ShowAlert(L["Events_DeleteFailedAlert", errorMessage ?? string.Empty], "danger");
+                // The API returns { "message": ... } for refusals it wants shown verbatim (closed
+                // season, ticket wallets holding a balance). Surface that instead of the raw body.
+                var apiMessage = ExtractApiMessage(errorMessage ?? string.Empty);
+                ShowAlert(apiMessage ?? L["Events_DeleteFailedAlert", errorMessage ?? string.Empty].Value, "danger");
             }
+        }
+    }
+
+    private async Task ShowPurgeModal(EventDto evt)
+    {
+        // A closed season's schedule is frozen — same rule as the plain delete.
+        if (IsSeasonClosed(evt.SeasonId))
+        {
+            ShowAlert(SeasonClosedMessage(evt.SeasonId), "danger");
+            return;
+        }
+
+        purgeEvent = evt;
+        purgePreview = null;
+        purgeConfirmText = "";
+        showPurgeModal = true;
+        purgeLoading = true;
+        StateHasChanged();
+        try
+        {
+            purgePreview = await ApiService.GetAsync<EventPurgePreviewDto>($"events/{evt.Id}/purge-preview");
+        }
+        catch (Exception ex)
+        {
+            purgePreview = null;
+            ShowAlert(ex.Message, "danger");
+        }
+        finally
+        {
+            purgeLoading = false;
+        }
+    }
+
+    private void ClosePurgeModal()
+    {
+        if (isPurging) return;
+        showPurgeModal = false;
+        purgeEvent = null;
+        purgePreview = null;
+        purgeConfirmText = "";
+    }
+
+    private async Task PurgeEvent()
+    {
+        if (purgeEvent == null || !IsPurgeConfirmed)
+            return;
+
+        isPurging = true;
+        var eventName = purgeEvent.Name;
+        try
+        {
+            // Raw POST so the API's own failure message (e.g. a closed season) reaches the alert.
+            var response = await ApiService.Http.PostAsync(
+                $"events/{purgeEvent.Id}/purge",
+                new { ConfirmName = purgeConfirmText.Trim() });
+
+            var body = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                var result = JsonSerializer.Deserialize<EventPurgeResultDto>(
+                    body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                showPurgeModal = false;
+                purgeEvent = null;
+                purgePreview = null;
+                purgeConfirmText = "";
+                await LoadEvents();
+                ShowAlert(L["Events_PurgedAlert", eventName, (result?.TotalRowsDeleted ?? 0).ToString("N0")], "success");
+            }
+            else
+            {
+                ShowAlert(ExtractApiMessage(body) ?? L["Events_PurgeFailedAlert"].Value, "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert(ex.Message, "danger");
+        }
+        finally
+        {
+            isPurging = false;
+        }
+    }
+
+    /// <summary>Pulls the API's <c>{ "message": ... }</c> out of an error body, or null if absent.</summary>
+    private static string? ExtractApiMessage(string body)
+    {
+        if (string.IsNullOrWhiteSpace(body))
+            return null;
+        try
+        {
+            using var doc = JsonDocument.Parse(body);
+            return doc.RootElement.TryGetProperty("message", out var m) ? m.GetString() : null;
+        }
+        catch (JsonException)
+        {
+            return null;
         }
     }
 

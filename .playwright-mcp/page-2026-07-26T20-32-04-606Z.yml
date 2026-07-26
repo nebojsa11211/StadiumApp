@@ -1,0 +1,32 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: 
+      - text: Stadium Ticketing Simulator
+    - generic [ref=e6]: external system stand-in
+    - combobox [ref=e9]:
+      - option "Hrvatski"
+      - option "English" [selected]
+  - navigation [ref=e10]:
+    - link " Simulator" [ref=e11] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e12]: 
+      - text: Simulator
+    - link " Season generator" [ref=e13] [cursor=pointer]:
+      - /url: season-generator
+      - generic [ref=e14]: 
+      - text: Season generator
+    - link " Credentials" [ref=e15] [cursor=pointer]:
+      - /url: credentials
+      - generic [ref=e16]: 
+      - text: Credentials
+  - main [ref=e17]:
+    - generic [ref=e18]:
+      - heading " Season generator" [level=5] [ref=e19]:
+        - generic [ref=e20]: 
+        - text: Season generator
+      - paragraph [ref=e21]: "Builds a whole season of fixtures in one run: played matches (with attendance and drink orders) and upcoming ones still selling. Each fixture is created through the same integration path a real ticketing feed uses, so existing season passes are extended to cover it."
+      - generic [ref=e22]:
+        - generic [ref=e23]: 
+        - text: "1 season(s) exist, but none of them came from this simulator, so there is nothing to generate into: 2026/2027. Only a season created on the Simulator tab carries the external id a generated fixture needs — a season added in Admin, or by seeding, cannot be used here."
+  - 'generic "API database: Supabase · Development"': "DB: Supabase"

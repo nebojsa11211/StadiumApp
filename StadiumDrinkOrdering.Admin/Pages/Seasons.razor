@@ -5,6 +5,7 @@
 @inject IAdminApiService ApiService
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<SharedResources> L
+@inject SeasonStateService SeasonState
 
 <PageTitle>@L["Seasons_PageTitle"]</PageTitle>
 
@@ -192,6 +193,12 @@
                                     </button>
                                     <button class="pill-btn pill-btn--danger" @onclick="() => DeleteSeason(s)" id="admin-season-delete-btn-@s.Id">
                                         <i class="bi bi-trash"></i><span>@L["Seasons_Delete"]</span>
+                                    </button>
+                                    @* Escalation from the safe delete above: wipes the season's whole data graph,
+                                       not just the season row. Deliberately the last action in the group. *@
+                                    <button class="pill-btn pill-btn--danger" @onclick="() => ShowPurgeModal(s)" id="admin-season-purge-btn-@s.Id"
+                                            title="@L["Seasons_PurgeTooltip"]">
+                                        <i class="bi bi-fire"></i><span>@L["Seasons_PurgeBtn"]</span>
                                     </button>
                                 </td>
                             </tr>
@@ -441,6 +448,99 @@
     </div>
 }
 
+@if (showPurgeModal && purgeSeason != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);" id="admin-season-purge-modal">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" id="admin-season-purge-dialog">
+            <div class="modal-content border-danger" id="admin-season-purge-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="admin-season-purge-title">
+                        <i class="bi bi-exclamation-octagon-fill"></i> @L["Seasons_PurgeModalTitle", purgeSeason.Name]
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="ClosePurgeModal" disabled="@isPurging" id="admin-season-purge-close"></button>
+                </div>
+                <div class="modal-body" id="admin-season-purge-body">
+                    @if (purgeLoading)
+                    {
+                        <div class="loading-state"><span class="loading-spinner"></span><p>@L["Seasons_PurgeLoadingPreview"]</p></div>
+                    }
+                    else if (purgePreview == null)
+                    {
+                        <p class="text-danger mb-0" id="admin-season-purge-preview-failed">@L["Seasons_PurgePreviewFailed"]</p>
+                    }
+                    else
+                    {
+                        <p id="admin-season-purge-intro">@L["Seasons_PurgeIntro"]</p>
+                        <table class="table table-sm mb-3" id="admin-season-purge-preview-table">
+                            <tbody>
+                                <tr id="admin-season-purge-row-events">
+                                    <td>@L["Seasons_PurgeRowEvents"]</td>
+                                    <td class="text-end mono">@purgePreview.Events.ToString("N0")</td>
+                                </tr>
+                                <tr id="admin-season-purge-row-tickets">
+                                    <td>@L["Seasons_PurgeRowTickets"]</td>
+                                    <td class="text-end mono">@purgePreview.Tickets.ToString("N0")</td>
+                                </tr>
+                                <tr id="admin-season-purge-row-passes">
+                                    <td>@L["Seasons_PurgeRowPasses"]</td>
+                                    <td class="text-end mono">@purgePreview.SeasonPasses.ToString("N0") · €@purgePreview.PassRevenue.ToString("N0")</td>
+                                </tr>
+                                <tr id="admin-season-purge-row-orders">
+                                    <td>@L["Seasons_PurgeRowOrders"]</td>
+                                    <td class="text-end mono">@purgePreview.Orders.ToString("N0") · €@purgePreview.OrderRevenue.ToString("N0")</td>
+                                </tr>
+                                <tr id="admin-season-purge-row-drinks">
+                                    <td>@L["Seasons_PurgeRowDrinks"]</td>
+                                    <td class="text-end mono">@purgePreview.DrinksSold.ToString("N0")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        @* Stored-value balances are the one thing here that is real money owed to a fan.
+                           They are destroyed, not refunded, so the warning is unmissable and separate. *@
+                        @if (purgePreview.TicketWallets > 0)
+                        {
+                            <div class="console-alert console-alert--danger" id="admin-season-purge-wallet-warning">
+                                <i class="bi bi-wallet2"></i>
+                                <div>
+                                    <strong>@L["Seasons_PurgeWalletWarningTitle"]</strong>
+                                    <p class="mb-0">
+                                        @L["Seasons_PurgeWalletWarningBody",
+                                           purgePreview.TicketWallets.ToString("N0"),
+                                           "€" + purgePreview.TicketWalletBalance.ToString("N2")]
+                                    </p>
+                                </div>
+                            </div>
+                        }
+
+                        <p class="text-danger fw-semibold mt-3 mb-2" id="admin-season-purge-irreversible">
+                            <i class="bi bi-exclamation-triangle-fill"></i> @L["Seasons_PurgeIrreversible"]
+                        </p>
+                        <label class="form-label fw-semibold" for="admin-season-purge-confirm-input" id="admin-season-purge-confirm-label">
+                            @L["Seasons_PurgeConfirmPrompt", purgeSeason.Name]
+                        </label>
+                        <input type="text" class="form-control" id="admin-season-purge-confirm-input"
+                               @bind="purgeConfirmText" @bind:event="oninput" autocomplete="off" disabled="@isPurging" />
+                    }
+                </div>
+                <div class="modal-footer" id="admin-season-purge-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="ClosePurgeModal" disabled="@isPurging" id="admin-season-purge-cancel-btn">
+                        @L["Seasons_Cancel"]
+                    </button>
+                    <button type="button" class="btn btn-danger" @onclick="PurgeSeason"
+                            disabled="@(isPurging || !IsPurgeConfirmed)" id="admin-season-purge-confirm-btn">
+                        @if (isPurging)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        @L["Seasons_PurgeConfirmBtn"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @if (!string.IsNullOrEmpty(alertMessage))
 {
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;" id="admin-season-alert-container">
@@ -473,6 +573,18 @@
     private bool qrLoading;
     private string qrLabel = "";
     private SeasonPassQrDto? qr;
+
+    private bool showPurgeModal;
+    private bool purgeLoading;
+    private bool isPurging;
+    private SeasonDto? purgeSeason;
+    private SeasonPurgePreviewDto? purgePreview;
+    private string purgeConfirmText = "";
+
+    // The season's exact name must be typed back before the purge button unlocks — the same check the
+    // API repeats server-side, so a stale page or replayed request can't wipe the wrong season.
+    private bool IsPurgeConfirmed =>
+        purgeSeason != null && string.Equals(purgeConfirmText.Trim(), purgeSeason.Name, StringComparison.Ordinal);
 
     private string alertMessage = "";
     private string alertType = "";
@@ -682,6 +794,17 @@
         }
     }
 
+    /// <summary>
+    /// Reloads this page and the shell's season scope after a season was created, edited, deleted or
+    /// purged, so the banner in <c>DashboardLayout</c> (<c>#admin-dashboard-current-season</c>) — and
+    /// every page scoped by it — stops showing a season that no longer exists.
+    /// </summary>
+    private async Task ReloadAfterMutationAsync()
+    {
+        await LoadSeasons();
+        await SeasonState.ReloadAsync();
+    }
+
     private void ShowCreateModal()
     {
         editing = null;
@@ -735,7 +858,7 @@
                     IsCurrent = form.IsCurrent
                 };
                 var created = await ApiService.PostAsync<SeasonDto>("seasons", dto);
-                if (created != null) { await LoadSeasons(); HideModal(); ShowAlert(L["Seasons_CreatedMsg", created.Name], "success"); }
+                if (created != null) { await ReloadAfterMutationAsync(); HideModal(); ShowAlert(L["Seasons_CreatedMsg", created.Name], "success"); }
                 else ShowAlert(L["Seasons_CreateFailed"], "danger");
             }
             else
@@ -748,7 +871,7 @@
                     IsCurrent = form.IsCurrent
                 };
                 var updated = await ApiService.PostAsync<SeasonDto>($"seasons/{editing.Id}", dto);
-                if (updated != null) { await LoadSeasons(); HideModal(); ShowAlert(L["Seasons_UpdatedMsg", updated.Name], "success"); }
+                if (updated != null) { await ReloadAfterMutationAsync(); HideModal(); ShowAlert(L["Seasons_UpdatedMsg", updated.Name], "success"); }
                 else ShowAlert(L["Seasons_UpdateFailed"], "danger");
             }
         }
@@ -804,7 +927,7 @@
     private async Task SetCurrent(SeasonDto s)
     {
         var updated = await ApiService.PostAsync<SeasonDto>($"seasons/{s.Id}/set-current", null);
-        if (updated != null) { await LoadSeasons(); ShowAlert(L["Seasons_SetCurrentMsg", updated.Name], "success"); }
+        if (updated != null) { await ReloadAfterMutationAsync(); ShowAlert(L["Seasons_SetCurrentMsg", updated.Name], "success"); }
         else ShowAlert(L["Seasons_SetCurrentFailed"], "danger");
     }
 
@@ -814,8 +937,99 @@
             return;
 
         var (success, error) = await ApiService.DeleteAsync($"seasons/{s.Id}");
-        if (success) { await LoadSeasons(); ShowAlert(L["Seasons_DeletedMsg", s.Name], "success"); }
+        if (success) { await ReloadAfterMutationAsync(); ShowAlert(L["Seasons_DeletedMsg", s.Name], "success"); }
         else ShowAlert(string.IsNullOrWhiteSpace(error) ? L["Seasons_DeleteFailed"] : error, "danger");
+    }
+
+    private async Task ShowPurgeModal(SeasonDto s)
+    {
+        purgeSeason = s;
+        purgePreview = null;
+        purgeConfirmText = "";
+        showPurgeModal = true;
+        purgeLoading = true;
+        StateHasChanged();
+        try
+        {
+            purgePreview = await ApiService.GetAsync<SeasonPurgePreviewDto>($"seasons/{s.Id}/purge-preview");
+        }
+        catch (Exception ex)
+        {
+            purgePreview = null;
+            ShowAlert(ex.Message, "danger");
+        }
+        finally
+        {
+            purgeLoading = false;
+        }
+    }
+
+    private void ClosePurgeModal()
+    {
+        if (isPurging) return;
+        showPurgeModal = false;
+        purgeSeason = null;
+        purgePreview = null;
+        purgeConfirmText = "";
+    }
+
+    private async Task PurgeSeason()
+    {
+        if (purgeSeason == null || !IsPurgeConfirmed)
+            return;
+
+        isPurging = true;
+        var seasonName = purgeSeason.Name;
+        try
+        {
+            // Raw POST (not PostAsync<T>) so the API's own failure message reaches the alert instead
+            // of being flattened into a null result.
+            var response = await ApiService.PostAsync(
+                $"seasons/{purgeSeason.Id}/purge",
+                new { ConfirmName = purgeConfirmText.Trim() });
+
+            var body = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                var result = System.Text.Json.JsonSerializer.Deserialize<SeasonPurgeResultDto>(
+                    body, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                showPurgeModal = false;
+                purgeSeason = null;
+                purgePreview = null;
+                purgeConfirmText = "";
+                await ReloadAfterMutationAsync();
+                ShowAlert(L["Seasons_PurgedMsg", seasonName, (result?.TotalRowsDeleted ?? 0).ToString("N0")], "success");
+            }
+            else
+            {
+                ShowAlert(ExtractApiMessage(body) ?? L["Seasons_PurgeFailed"].Value, "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert(ex.Message, "danger");
+        }
+        finally
+        {
+            isPurging = false;
+        }
+    }
+
+    /// <summary>Pulls the API's <c>{ "message": ... }</c> out of an error body, or null if absent.</summary>
+    private static string? ExtractApiMessage(string body)
+    {
+        if (string.IsNullOrWhiteSpace(body))
+            return null;
+        try
+        {
+            using var doc = System.Text.Json.JsonDocument.Parse(body);
+            return doc.RootElement.TryGetProperty("message", out var m) ? m.GetString() : null;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return null;
+        }
     }
 
     private void ShowAlert(string message, string type)

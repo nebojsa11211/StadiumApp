@@ -1,0 +1,212 @@
+@page "/admin/cups"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Net.Http.Headers
+@using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Shared.Authentication.Interfaces
+@inject IHttpClientFactory HttpClientFactory
+@inject ITokenStorageService TokenStorage
+@inject ILogger<CupDashboard> Logger
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@L["Cups_PageTitle"]</PageTitle>
+
+<div class="console" id="admin-cups-main-container">
+    <PageHeader Id="admin-cups-header"
+                Eyebrow='@L["Cups_Eyebrow"]'
+                Title='@L["Cups_Title"]'
+                Subtitle='@L["Cups_Intro"]'>
+        <Actions>
+            <button class="pill-btn pill-btn--primary" @onclick="LoadAsync" id="admin-cups-refresh-btn">
+                <i class="bi bi-arrow-clockwise"></i><span>@L["Cups_Refresh"]</span>
+            </button>
+        </Actions>
+    </PageHeader>
+
+    @if (isLoading)
+    {
+        <div class="loading-state" id="admin-cups-loading">
+            <span class="loading-spinner"></span><p id="admin-cups-loading-text">@L["Cups_Loading"]</p>
+        </div>
+    }
+    else if (data is null)
+    {
+        <div class="alert alert-danger d-flex justify-content-between align-items-center" id="admin-cups-error">
+            <span>@L["Cups_Error"]</span>
+            <button class="btn btn-sm btn-outline-danger" @onclick="LoadAsync" id="admin-cups-retry-btn">@L["Cups_Refresh"]</button>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3" id="admin-cups-stat-row">
+            <div class="col-md-3 col-sm-6" id="admin-cups-stat-outstanding-col">
+                <div class="card h-100" id="admin-cups-stat-outstanding">
+                    <div class="card-body">
+                        <div class="text-muted small">@L["Cups_OutstandingCups"]</div>
+                        <div class="h3 mb-0">@data.OutstandingCups</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" id="admin-cups-stat-liability-col">
+                <div class="card h-100 border-warning" id="admin-cups-stat-liability">
+                    <div class="card-body">
+                        <div class="text-muted small">@L["Cups_Liability"]</div>
+                        <div class="h3 mb-0">@Money(data.OutstandingDepositLiability)</div>
+                        <div class="form-text">@L["Cups_LiabilityHint"]</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" id="admin-cups-stat-returnrate-col">
+                <div class="card h-100" id="admin-cups-stat-returnrate">
+                    <div class="card-body">
+                        <div class="text-muted small">@L["Cups_ReturnRate"]</div>
+                        <div class="h3 mb-0">@data.ReturnRatePercent.ToString("0.#")%</div>
+                        <div class="form-text">@data.CupsReturned / @data.CupsIssued @L["Cups_ReturnedOfIssued"]</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" id="admin-cups-stat-shrinkage-col">
+                <div class="card h-100" id="admin-cups-stat-shrinkage">
+                    <div class="card-body">
+                        <div class="text-muted small">@L["Cups_ShrinkageCost"]</div>
+                        <div class="h3 mb-0">@Money(data.ShrinkageCost)</div>
+                        <div class="form-text">@L["Cups_ShrinkageHint"]</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" id="admin-cups-stat-saved-col">
+                <div class="card h-100 border-success" id="admin-cups-stat-saved">
+                    <div class="card-body">
+                        <div class="text-muted small">@L["Cups_CupsSaved"]</div>
+                        <div class="h3 mb-0">@data.CupsSaved</div>
+                        <div class="form-text">@L["Cups_CupsSavedHint"]</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" id="admin-cups-stat-byoc-discount-col">
+                <div class="card h-100" id="admin-cups-stat-byoc-discount">
+                    <div class="card-body">
+                        <div class="text-muted small">@L["Cups_ByocDiscount"]</div>
+                        <div class="h3 mb-0">@Money(data.ByocDiscountGiven)</div>
+                        <div class="form-text">@L["Cups_ByocDiscountHint"]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4" id="admin-cups-breakdown-card">
+            <div class="card-header"><h5 class="mb-0" id="admin-cups-breakdown-title">@L["Cups_DepositBreakdown"]</h5></div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" id="admin-cups-breakdown-table">
+                        <thead><tr>
+                            <th>@L["Cups_ColMetric"]</th>
+                            <th class="text-end">@L["Cups_ColCount"]</th>
+                            <th class="text-end">@L["Cups_ColAmount"]</th>
+                        </tr></thead>
+                        <tbody>
+                            <tr>
+                                <td>@L["Cups_RowHeld"]</td>
+                                <td class="text-end">@data.OutstandingCups</td>
+                                <td class="text-end">@Money(data.OutstandingDepositLiability)</td>
+                            </tr>
+                            <tr>
+                                <td>@L["Cups_RowRefunded"]</td>
+                                <td class="text-end">@data.DepositsRefundedCount</td>
+                                <td class="text-end">@Money(data.DepositsRefundedAmount)</td>
+                            </tr>
+                            <tr>
+                                <td>@L["Cups_RowForfeited"]</td>
+                                <td class="text-end">@data.DepositsForfeitedCount</td>
+                                <td class="text-end">@Money(data.DepositsForfeitedAmount)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4" id="admin-cups-byevent-card">
+            <div class="card-header"><h5 class="mb-0" id="admin-cups-byevent-title">@L["Cups_PerEvent"]</h5></div>
+            <div class="card-body">
+                @if (byEvent is null || byEvent.Count == 0)
+                {
+                    <p class="text-muted mb-0" id="admin-cups-byevent-empty">@L["Cups_NoEvents"]</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table" id="admin-cups-byevent-table">
+                            <thead><tr>
+                                <th>@L["Cups_ColEvent"]</th>
+                                <th class="text-end">@L["Cups_ColHeld"]</th>
+                                <th class="text-end">@L["Cups_ColLiability"]</th>
+                                <th class="text-end">@L["Cups_ColRefunded"]</th>
+                                <th class="text-end">@L["Cups_ColForfeited"]</th>
+                                <th class="text-end">@L["Cups_ColSaved"]</th>
+                            </tr></thead>
+                            <tbody>
+                                @foreach (var e in byEvent)
+                                {
+                                    <tr id="admin-cups-byevent-row-@e.EventId">
+                                        <td>@e.EventName</td>
+                                        <td class="text-end">@e.DepositsHeld</td>
+                                        <td class="text-end">@Money(e.DepositLiability)</td>
+                                        <td class="text-end">@e.DepositsRefunded</td>
+                                        <td class="text-end">@e.DepositsForfeited</td>
+                                        <td class="text-end">@e.CupsSaved</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private CupDashboardDto? data;
+    private List<CupEventReportDto>? byEvent;
+
+    // Same self-contained client pattern as Settings.razor: the shared AuthenticationHandler runs in a
+    // different DI scope, so attach the circuit-scoped JWT ourselves for authorized reads.
+    private HttpClient Api
+    {
+        get
+        {
+            var client = HttpClientFactory.CreateClient("AuthenticatedClient");
+            var token = TokenStorage.Token;
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return client;
+        }
+    }
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        isLoading = true;
+        StateHasChanged();
+        try
+        {
+            data = await Api.GetFromJsonAsync<CupDashboardDto>("api/admin/cups/dashboard");
+            byEvent = await Api.GetFromJsonAsync<List<CupEventReportDto>>("api/admin/cups/by-event");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load cup dashboard");
+            data = null;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private static string Money(decimal amount) => $"€{amount.ToString("0.00")}";
+}

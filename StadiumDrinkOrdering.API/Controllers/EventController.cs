@@ -1020,11 +1020,71 @@ public class EventController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
+        catch (TicketWalletsBlockDeleteException ex)
+        {
+            // 409: the request is well-formed but conflicts with stored-value balances the plain
+            // delete refuses to destroy. The message points the admin at "Delete everything".
+            return Conflict(new { message = ex.Message, walletCount = ex.WalletCount, totalBalance = ex.TotalBalance });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting event {EventId}", id);
             return StatusCode(500, "Internal server error");
         }
+    }
+
+    /// <summary>
+    /// What a full purge of this event would destroy. Read-only; call before showing the
+    /// confirmation dialog so the admin sees the exact damage.
+    /// </summary>
+    [HttpGet("{id:int}/purge-preview")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<EventPurgePreviewDto>> GetEventPurgePreview(int id, CancellationToken ct)
+    {
+        var preview = await _eventService.GetPurgePreviewAsync(id, ct);
+        return preview == null ? NotFound() : Ok(preview);
+    }
+
+    /// <summary>
+    /// Permanently deletes the event AND its money records — tickets, orders, order items and
+    /// payments — unlike the plain delete, which keeps the orders and merely unlinks them. Any
+    /// anonymous ticket wallet is destroyed with its balance rather than refunded. Irreversible.
+    /// The caller must echo the event's exact name in <c>confirmName</c>.
+    /// </summary>
+    [HttpPost("{id:int}/purge")]
+    [Authorize(Policy = AuthorizationPolicies.CanManageEvents)]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<EventPurgeResultDto>> PurgeEvent(
+        int id, [FromBody] PurgeEventRequest request, CancellationToken ct)
+    {
+        var preview = await _eventService.GetPurgePreviewAsync(id, ct);
+        if (preview == null)
+            return NotFound();
+
+        if (!string.Equals(request?.ConfirmName?.Trim(), preview.EventName?.Trim(), StringComparison.Ordinal))
+            return BadRequest(new { message = "The confirmation name does not match this event's name. Nothing was deleted." });
+
+        try
+        {
+            var result = await _eventService.PurgeEventAsync(id, ct);
+            return result == null ? NotFound() : Ok(result);
+        }
+        catch (SeasonClosedException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Purge of event {EventId} failed and was rolled back", id);
+            return StatusCode(500, new { message = "Failed to purge the event. No changes were made.", error = ex.Message });
+        }
+    }
+
+    /// <summary>Body of an event purge request — the typed confirmation of the event's name.</summary>
+    public class PurgeEventRequest
+    {
+        public string? ConfirmName { get; set; }
     }
 
     /// <summary>

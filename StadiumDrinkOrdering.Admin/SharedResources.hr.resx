@@ -2011,6 +2011,24 @@
   <data name="Drinks_ManageCategoriesButton" xml:space="preserve">
     <value>Upravljaj kategorijama</value>
   </data>
+  <data name="Drinks_GenerateCatalogButton" xml:space="preserve">
+    <value>Generiraj uobičajena pića</value>
+  </data>
+  <data name="Drinks_GeneratingCatalog" xml:space="preserve">
+    <value>Generiranje…</value>
+  </data>
+  <data name="Drinks_GenerateCatalogConfirm" xml:space="preserve">
+    <value>Dodati standardni skup kategorija i pića (pivo, gazirano, voda, kava, čaj, sok, energetska pića, kokteli)? Sve što već postoji ostaje nepromijenjeno.</value>
+  </data>
+  <data name="Drinks_GenerateCatalogSuccess" xml:space="preserve">
+    <value>Dodano {0} pića i {1} kategorija. {2} pića već je postojalo i preskočeno je.</value>
+  </data>
+  <data name="Drinks_GenerateCatalogNothingNew" xml:space="preserve">
+    <value>Nema što dodati — uobičajene kategorije i pića već postoje.</value>
+  </data>
+  <data name="Drinks_GenerateCatalogFailed" xml:space="preserve">
+    <value>Generiranje uobičajenih kategorija i pića nije uspjelo.</value>
+  </data>
   <data name="Drinks_LoadingMessage" xml:space="preserve">
     <value>Učitavanje pića...</value>
   </data>
@@ -2710,6 +2728,25 @@
   <data name="Events_DeletedAlert" xml:space="preserve">
     <value>Događaj je uspješno izbrisan.</value>
   </data>
+  <data name="Events_PurgeBtn" xml:space="preserve"><value>Obriši sve</value></data>
+  <data name="Events_PurgeTooltip" xml:space="preserve"><value>Obriši događaj zajedno s njegovim ulaznicama, narudžbama, plaćanjima i prihodima</value></data>
+  <data name="Events_PurgeModalTitle" xml:space="preserve"><value>Obriši '{0}' i SVE njegove podatke</value></data>
+  <data name="Events_PurgeLoadingPreview" xml:space="preserve"><value>Provjeravam što bi bilo obrisano…</value></data>
+  <data name="Events_PurgePreviewFailed" xml:space="preserve"><value>Nije moguće utvrditi što događaj sadrži. Ništa nije obrisano.</value></data>
+  <data name="Events_PurgeIntro" xml:space="preserve"><value>Ovo će trajno obrisati:</value></data>
+  <data name="Events_PurgeRowTickets" xml:space="preserve"><value>Ulaznice za utakmicu</value></data>
+  <data name="Events_PurgeRowOrders" xml:space="preserve"><value>Narudžbe pića</value></data>
+  <data name="Events_PurgeRowDrinks" xml:space="preserve"><value>Prodana pića</value></data>
+  <data name="Events_PurgeRowPayments" xml:space="preserve"><value>Zapisi o plaćanju</value></data>
+  <data name="Events_PurgePassesNote" xml:space="preserve"><value>{0} sezonskih propusnica gubi ulaznicu za ovu utakmicu. Same propusnice se zadržavaju — pripadaju sezoni, a ne ovoj utakmici.</value></data>
+  <data name="Events_PurgeWalletWarningTitle" xml:space="preserve"><value>Novac navijača bit će uništen</value></data>
+  <data name="Events_PurgeWalletWarningBody" xml:space="preserve"><value>{0} novčanik(a) na ulaznicama još drži {1}. Taj se iznos briše, a ne vraća. Prvo ga isplatite ako pripada navijačima.</value></data>
+  <data name="Events_PurgeIrreversible" xml:space="preserve"><value>Ovo se ne može poništiti.</value></data>
+  <data name="Events_PurgeConfirmPrompt" xml:space="preserve"><value>Upišite {0} za potvrdu:</value></data>
+  <data name="Events_PurgeConfirmBtn" xml:space="preserve"><value>Obriši sve</value></data>
+  <data name="Events_PurgeCancel" xml:space="preserve"><value>Odustani</value></data>
+  <data name="Events_PurgedAlert" xml:space="preserve"><value>'{0}' i svi njegovi podaci su obrisani ({1} zapisa).</value></data>
+  <data name="Events_PurgeFailedAlert" xml:space="preserve"><value>Brisanje podataka događaja nije uspjelo. Ništa nije obrisano.</value></data>
   <data name="Events_DeleteFailedAlert" xml:space="preserve">
     <value>Brisanje događaja nije uspjelo: {0}</value>
   </data>
@@ -3664,6 +3701,10 @@
   <data name="Index_TotalRevenue" xml:space="preserve">
     <value>Ukupni Prihod</value>
   </data>
+  <data name="Index_RevenueTickets" xml:space="preserve"><value>Ulaznice</value></data>
+  <data name="Index_RevenueTicketsHint" xml:space="preserve"><value>Prodaja ulaznica za ovaj događaj, uključujući njegov dio prihoda od sezonskih propusnica</value></data>
+  <data name="Index_RevenueDrinks" xml:space="preserve"><value>Pića</value></data>
+  <data name="Index_RevenueDrinksHint" xml:space="preserve"><value>Narudžbe pića na ovom događaju, bez otkazanih</value></data>
   <data name="Index_ForThisEvent" xml:space="preserve">
     <value>za ovaj događaj</value>
   </data>
@@ -4080,6 +4121,24 @@
 <data name="Seasons_SetCurrentMsg" xml:space="preserve"><value>'{0}' je sada trenutna sezona.</value></data>
 <data name="Seasons_SetCurrentFailed" xml:space="preserve"><value>Postavljanje trenutne sezone nije uspjelo.</value></data>
 <data name="Seasons_DeleteConfirm" xml:space="preserve"><value>Obrisati sezonu '{0}'? Povezani događaji bit će odvojeni.</value></data>
+<data name="Seasons_PurgeBtn" xml:space="preserve"><value>Obriši sve</value></data>
+<data name="Seasons_PurgeTooltip" xml:space="preserve"><value>Obriši sezonu zajedno s njezinim događajima, ulaznicama, narudžbama i prihodima</value></data>
+<data name="Seasons_PurgeModalTitle" xml:space="preserve"><value>Obriši sezonu '{0}' i SVE njezine podatke</value></data>
+<data name="Seasons_PurgeLoadingPreview" xml:space="preserve"><value>Provjeravam što bi bilo obrisano…</value></data>
+<data name="Seasons_PurgePreviewFailed" xml:space="preserve"><value>Nije moguće utvrditi što sezona sadrži. Ništa nije obrisano.</value></data>
+<data name="Seasons_PurgeIntro" xml:space="preserve"><value>Ovo će trajno obrisati:</value></data>
+<data name="Seasons_PurgeRowEvents" xml:space="preserve"><value>Događaji (utakmice)</value></data>
+<data name="Seasons_PurgeRowTickets" xml:space="preserve"><value>Ulaznice za utakmice</value></data>
+<data name="Seasons_PurgeRowPasses" xml:space="preserve"><value>Sezonske propusnice</value></data>
+<data name="Seasons_PurgeRowOrders" xml:space="preserve"><value>Narudžbe pića</value></data>
+<data name="Seasons_PurgeRowDrinks" xml:space="preserve"><value>Prodana pića</value></data>
+<data name="Seasons_PurgeWalletWarningTitle" xml:space="preserve"><value>Novac navijača bit će uništen</value></data>
+<data name="Seasons_PurgeWalletWarningBody" xml:space="preserve"><value>{0} novčanik(a) na ulaznicama još drži {1}. Taj se iznos briše, a ne vraća. Prvo ga isplatite ako pripada navijačima.</value></data>
+<data name="Seasons_PurgeIrreversible" xml:space="preserve"><value>Ovo se ne može poništiti.</value></data>
+<data name="Seasons_PurgeConfirmPrompt" xml:space="preserve"><value>Upišite {0} za potvrdu:</value></data>
+<data name="Seasons_PurgeConfirmBtn" xml:space="preserve"><value>Obriši sve</value></data>
+<data name="Seasons_PurgedMsg" xml:space="preserve"><value>Sezona '{0}' i svi njezini podaci su obrisani ({1} zapisa).</value></data>
+<data name="Seasons_PurgeFailed" xml:space="preserve"><value>Brisanje podataka sezone nije uspjelo. Ništa nije obrisano.</value></data>
 <data name="Seasons_DeletedMsg" xml:space="preserve"><value>Sezona '{0}' je obrisana.</value></data>
 <data name="Seasons_DeleteFailed" xml:space="preserve"><value>Brisanje sezone nije uspjelo.</value></data>
   <!-- Seasons statistics (KPI red, stupac prihoda, proširivi detalji po sezoni) -->
@@ -4301,6 +4360,101 @@
   <data name="Settings_TicketSalesOn" xml:space="preserve"><value>Prodaja ulaznica je UKLJUČENA — kupci mogu kupovati ulaznice u aplikaciji.</value></data>
   <data name="Settings_TicketSalesOff" xml:space="preserve"><value>Prodaja ulaznica je ISKLJUČENA — ulaznice dolaze samo iz vanjskog sustava.</value></data>
   <data name="Settings_PaymentsSection" xml:space="preserve"><value>Plaćanje</value></data>
+  <data name="Settings_CupsSection" xml:space="preserve"><value>Višekratne čaše</value></data>
+  <data name="Nav_Cups" xml:space="preserve"><value>Višekratne čaše</value></data>
+  <data name="Nav_RegCups" xml:space="preserve"><value>Registrirane čaše</value></data>
+  <data name="Cups_CupsSaved" xml:space="preserve"><value>Ušteđene čaše</value></data>
+  <data name="Cups_CupsSavedHint" xml:space="preserve"><value>Posluživanja s vlastitom čašom — izbjegnute jednokratne</value></data>
+  <data name="Cups_ByocDiscount" xml:space="preserve"><value>Odobreni BYOC popust</value></data>
+  <data name="Cups_ByocDiscountHint" xml:space="preserve"><value>Ukupni popust za posluživanja s vlastitom čašom</value></data>
+  <data name="Cups_PerEvent" xml:space="preserve"><value>Po događaju</value></data>
+  <data name="Cups_NoEvents" xml:space="preserve"><value>Još nema aktivnosti čaša ni za jedan događaj.</value></data>
+  <data name="Cups_ColEvent" xml:space="preserve"><value>Događaj</value></data>
+  <data name="Cups_ColHeld" xml:space="preserve"><value>Zadržano</value></data>
+  <data name="Cups_ColLiability" xml:space="preserve"><value>Obveza</value></data>
+  <data name="Cups_ColRefunded" xml:space="preserve"><value>Vraćeno</value></data>
+  <data name="Cups_ColForfeited" xml:space="preserve"><value>Propalo</value></data>
+  <data name="Cups_ColSaved" xml:space="preserve"><value>Ušteđeno</value></data>
+  <data name="RegCups_PageTitle" xml:space="preserve"><value>Registrirane čaše</value></data>
+  <data name="RegCups_Eyebrow" xml:space="preserve"><value>Višekratne čaše</value></data>
+  <data name="RegCups_Title" xml:space="preserve"><value>Registrirane čaše</value></data>
+  <data name="RegCups_Intro" xml:space="preserve"><value>Odobrene vlastite čaše. Registrirana, odobrena i aktivna čaša ostvaruje BYOC popust pri naručivanju.</value></data>
+  <data name="RegCups_Loading" xml:space="preserve"><value>Učitavanje čaša…</value></data>
+  <data name="RegCups_Empty" xml:space="preserve"><value>Još nema registriranih čaša.</value></data>
+  <data name="RegCups_AddTitle" xml:space="preserve"><value>Registriraj čašu</value></data>
+  <data name="RegCups_Qr" xml:space="preserve"><value>QR kôd</value></data>
+  <data name="RegCups_Type" xml:space="preserve"><value>Vrsta čaše</value></data>
+  <data name="RegCups_NoType" xml:space="preserve"><value>(nijedna)</value></data>
+  <data name="RegCups_Approved" xml:space="preserve"><value>Odobreno</value></data>
+  <data name="RegCups_Add" xml:space="preserve"><value>Registriraj</value></data>
+  <data name="RegCups_ColQr" xml:space="preserve"><value>QR kôd</value></data>
+  <data name="RegCups_ColType" xml:space="preserve"><value>Vrsta</value></data>
+  <data name="RegCups_ColApproved" xml:space="preserve"><value>Odobreno</value></data>
+  <data name="RegCups_ColStatus" xml:space="preserve"><value>Status</value></data>
+  <data name="RegCups_ColOwner" xml:space="preserve"><value>Vlasnik</value></data>
+  <data name="RegCups_ColActions" xml:space="preserve"><value>Radnje</value></data>
+  <data name="RegCups_Retire" xml:space="preserve"><value>Povuci</value></data>
+  <data name="RegCups_Activate" xml:space="preserve"><value>Aktiviraj</value></data>
+  <data name="RegCups_Approve" xml:space="preserve"><value>Odobri</value></data>
+  <data name="RegCups_Unapprove" xml:space="preserve"><value>Ukloni odobrenje</value></data>
+  <data name="RegCups_Yes" xml:space="preserve"><value>Da</value></data>
+  <data name="RegCups_No" xml:space="preserve"><value>Ne</value></data>
+  <data name="RegCups_Saved" xml:space="preserve"><value>Čaša registrirana.</value></data>
+  <data name="RegCups_SaveFailed" xml:space="preserve"><value>Spremanje čaše nije uspjelo.</value></data>
+  <data name="Cups_PageTitle" xml:space="preserve"><value>Višekratne čaše</value></data>
+  <data name="Cups_Eyebrow" xml:space="preserve"><value>Izvještaji</value></data>
+  <data name="Cups_Title" xml:space="preserve"><value>Višekratne čaše</value></data>
+  <data name="Cups_Intro" xml:space="preserve"><value>Obveza po pologu, stopa povrata i gubici za višekratne čaše.</value></data>
+  <data name="Cups_Refresh" xml:space="preserve"><value>Osvježi</value></data>
+  <data name="Cups_Loading" xml:space="preserve"><value>Učitavanje podataka o čašama…</value></data>
+  <data name="Cups_Error" xml:space="preserve"><value>Nije moguće učitati nadzornu ploču čaša.</value></data>
+  <data name="Cups_OutstandingCups" xml:space="preserve"><value>Čaše na terenu</value></data>
+  <data name="Cups_Liability" xml:space="preserve"><value>Obveza po pologu</value></data>
+  <data name="Cups_LiabilityHint" xml:space="preserve"><value>Novac koji treba vratiti pri povratu</value></data>
+  <data name="Cups_ReturnRate" xml:space="preserve"><value>Stopa povrata</value></data>
+  <data name="Cups_ReturnedOfIssued" xml:space="preserve"><value>vraćeno</value></data>
+  <data name="Cups_ShrinkageCost" xml:space="preserve"><value>Trošak gubitaka</value></data>
+  <data name="Cups_ShrinkageHint" xml:space="preserve"><value>Propali pologi × trošak zamjene</value></data>
+  <data name="Cups_DepositBreakdown" xml:space="preserve"><value>Raščlamba pologa</value></data>
+  <data name="Cups_ColMetric" xml:space="preserve"><value>Status</value></data>
+  <data name="Cups_ColCount" xml:space="preserve"><value>Broj</value></data>
+  <data name="Cups_ColAmount" xml:space="preserve"><value>Iznos</value></data>
+  <data name="Cups_RowHeld" xml:space="preserve"><value>Zadržano (nevraćeno)</value></data>
+  <data name="Cups_RowRefunded" xml:space="preserve"><value>Vraćeno</value></data>
+  <data name="Cups_RowForfeited" xml:space="preserve"><value>Propalo (gubitak)</value></data>
+  <data name="Settings_CupsIntro" xml:space="preserve"><value>Ponudite piće u višekratnim čašama s grbom kluba. Uključite značajku pa zatim odaberite načine i pravila koja želite. Sve je isključeno dok ne uključite.</value></data>
+  <data name="Settings_CupsEnabled" xml:space="preserve"><value>Omogući višekratne čaše</value></data>
+  <data name="Settings_CupsEnabledHint" xml:space="preserve"><value>Glavni prekidač. Kad je isključen, čaše se nigdje ne nude u aplikacijama za kupce ili osoblje.</value></data>
+  <data name="Settings_CupModesTitle" xml:space="preserve"><value>Načini</value></data>
+  <data name="Settings_CupDepositMode" xml:space="preserve"><value>Najam uz polog</value></data>
+  <data name="Settings_CupDepositModeHint" xml:space="preserve"><value>Kupac plaća povratni polog po čaši koji se vraća kad vrati čašu.</value></data>
+  <data name="Settings_CupHonorMode" xml:space="preserve"><value>Sustav povjerenja</value></data>
+  <data name="Settings_CupHonorModeHint" xml:space="preserve"><value>Bez zadržavanja novca — čaše se dijele uz povjerenje i prate zbog gubitaka.</value></data>
+  <data name="Settings_CupByocMode" xml:space="preserve"><value>Vlastita čaša</value></data>
+  <data name="Settings_CupByocModeHint" xml:space="preserve"><value>Kupac koristi vlastitu višekratnu čašu označenu QR kodom koji se skenira.</value></data>
+  <data name="Settings_CupDepositTitle" xml:space="preserve"><value>Postavke pologa</value></data>
+  <data name="Settings_CupDepositAmount" xml:space="preserve"><value>Polog po čaši (€)</value></data>
+  <data name="Settings_CupRefundWindow" xml:space="preserve"><value>Povrat moguć do</value></data>
+  <data name="Settings_CupRefundWindow_EndOfEvent" xml:space="preserve"><value>Kraja događaja</value></data>
+  <data name="Settings_CupRefundWindow_Plus24h" xml:space="preserve"><value>24 sata nakon događaja</value></data>
+  <data name="Settings_CupRefundWindow_NoExpiry" xml:space="preserve"><value>Nikad ne istječe</value></data>
+  <data name="Settings_CupBindingTitle" xml:space="preserve"><value>Vezivanje pologa</value></data>
+  <data name="Settings_CupBindingHint" xml:space="preserve"><value>Kako je polog vezan uz svoj povrat. Omogućite bilo koju kombinaciju.</value></data>
+  <data name="Settings_CupBindTicketWallet" xml:space="preserve"><value>Veži uz ulaznicu / novčanik (skeniraj ulaznicu za povrat)</value></data>
+  <data name="Settings_CupBindReturnToken" xml:space="preserve"><value>Ispisani token za povrat</value></data>
+  <data name="Settings_CupBindReturnTokenNoPrinter" xml:space="preserve"><value>potreban pisač računa</value></data>
+  <data name="Settings_CupBindCupQr" xml:space="preserve"><value>Pojedinačno QR-označene čaše s pologom</value></data>
+  <data name="Settings_CupRefundTitle" xml:space="preserve"><value>Način povrata</value></data>
+  <data name="Settings_CupRefundHint" xml:space="preserve"><value>Kamo ide povrat pologa. Omogućite barem jedan.</value></data>
+  <data name="Settings_CupRefundWallet" xml:space="preserve"><value>Uplata u novčanik (preporučeno)</value></data>
+  <data name="Settings_CupRefundOriginal" xml:space="preserve"><value>Izvorni način plaćanja (kartica / gotovina)</value></data>
+  <data name="Settings_CupByocTitle" xml:space="preserve"><value>Postavke vlastite čaše</value></data>
+  <data name="Settings_CupByocDiscount" xml:space="preserve"><value>Popust po posluživanju (€)</value></data>
+  <data name="Settings_CupByocRequireApproved" xml:space="preserve"><value>Prihvaćaj samo odobrene (registrirane) čaše</value></data>
+  <data name="Settings_CupByocRequireApprovedHint" xml:space="preserve"><value>Odbija nepoznate čaše pa je svako posluživanje odmjerena količina u odobrenu čašu.</value></data>
+  <data name="Settings_CupsInvalidWarning" xml:space="preserve"><value>Omogućite barem jedan način. Za najam uz polog omogućite barem jedno vezivanje i jedan način povrata.</value></data>
+  <data name="Settings_CupsSaved" xml:space="preserve"><value>Postavke čaša spremljene.</value></data>
+  <data name="Settings_CupsSaveFailed" xml:space="preserve"><value>Spremanje postavki čaša nije uspjelo.</value></data>
   <data name="Settings_PaymentsIntro" xml:space="preserve"><value>Odaberite koje načine plaćanja navijači mogu izabrati pri naručivanju pića u aplikaciji za kupce. Isključeni načini skriveni su u košarici i odbija ih API za narudžbe.</value></data>
   <data name="Settings_PayWallet" xml:space="preserve"><value>HALFTIME novčanik</value></data>
   <data name="Settings_PayWalletHint" xml:space="preserve"><value>Plaćanje sa stanja novčanika navijača. Narudžba se naplaćuje odmah pri naplati.</value></data>

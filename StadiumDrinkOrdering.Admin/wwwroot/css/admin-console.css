@@ -634,6 +634,19 @@ select.field__input { cursor: pointer; }
     color: var(--muted);
 }
 
+/* The descendant rules above are meant for the empty state's own icon/title/message, but they
+   also reach inside any button placed in the empty state — repainting a primary button's label
+   muted grey and its icon gray-300 on the green fill. Hand the button's own colours back. */
+.empty .pill-btn span {
+    font-size: inherit;
+    color: inherit;
+}
+
+.empty .pill-btn .oi, .empty .pill-btn .bi {
+    font-size: 0.72rem;
+    color: inherit;
+}
+
 /* ----- Loading state ------------------------------------------------------- */
 .loading-state {
     text-align: center;

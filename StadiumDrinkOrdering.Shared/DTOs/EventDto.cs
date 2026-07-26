@@ -118,3 +118,53 @@ public class TransitionEventStatusRequest
     [Required]
     public EventStatus NewStatus { get; set; }
 }
+/// <summary>
+/// What a full purge of a single event would destroy, gathered before the admin confirms.
+/// Mirrors <see cref="SeasonPurgePreviewDto"/> at event scope: unlike the plain event delete —
+/// which keeps the orders and merely unlinks them — a purge removes the money records too.
+/// </summary>
+public class EventPurgePreviewDto
+{
+    public int EventId { get; set; }
+    public string EventName { get; set; } = string.Empty;
+    public DateTime EventDate { get; set; }
+
+    /// <summary>Match tickets issued for this event, including season-pass-derived ones.</summary>
+    public int Tickets { get; set; }
+    /// <summary>Revenue booked on those tickets.</summary>
+    public decimal TicketRevenue { get; set; }
+    /// <summary>Drink orders placed at this event (all statuses, including cancelled).</summary>
+    public int Orders { get; set; }
+    /// <summary>Gross value of those orders — the revenue that disappears.</summary>
+    public decimal OrderRevenue { get; set; }
+    /// <summary>Individual drinks sold across those orders.</summary>
+    public int DrinksSold { get; set; }
+    /// <summary>Payment records attached to those orders.</summary>
+    public int Payments { get; set; }
+
+    /// <summary>
+    /// Season passes that lose their access ticket for this match. The passes themselves survive —
+    /// they belong to the season, not to one fixture — so this is a heads-up, not a deletion count.
+    /// </summary>
+    public int AffectedSeasonPasses { get; set; }
+
+    /// <summary>Ticket-owned (anonymous bearer) wallets that would be destroyed with their tickets.</summary>
+    public int TicketWallets { get; set; }
+    /// <summary>Money still on those wallets. Destroyed, not refunded.</summary>
+    public decimal TicketWalletBalance { get; set; }
+}
+
+/// <summary>Row counts actually removed by an event purge, for the post-run report.</summary>
+public class EventPurgeResultDto
+{
+    public string EventName { get; set; } = string.Empty;
+    public int Tickets { get; set; }
+    public int Orders { get; set; }
+    public int OrderItems { get; set; }
+    public int Payments { get; set; }
+    public int TicketWallets { get; set; }
+    /// <summary>Balance destroyed along with the ticket wallets.</summary>
+    public decimal TicketWalletBalance { get; set; }
+    /// <summary>Grand total of every row removed, including cascaded children.</summary>
+    public int TotalRowsDeleted { get; set; }
+}

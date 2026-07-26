@@ -49,6 +49,12 @@ namespace StadiumDrinkOrdering.Admin.Services.Drinks
             return result.IsSuccess ? result.Data : null;
         }
 
+        public async Task<SeedCatalogResultDto?> SeedCatalogAsync()
+        {
+            var result = await PostWithErrorHandlingAsync<SeedCatalogResultDto>("drinks/seed-catalog", new { });
+            return result.IsSuccess ? result.Data : null;
+        }
+
         public async Task<IEnumerable<StockMovementDto>?> GetStockMovementsAsync(int id, int take = 50)
         {
             var result = await GetWithErrorHandlingAsync<IEnumerable<StockMovementDto>>($"drinks/{id}/stock-movements?take={take}");

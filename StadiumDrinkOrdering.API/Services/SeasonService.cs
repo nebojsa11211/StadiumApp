@@ -14,6 +14,18 @@ public interface ISeasonService
 
     /// <summary>Returns null when not found, false when blocked (has season tickets), true when deleted.</summary>
     Task<(bool found, bool deleted)> DeleteSeasonAsync(int id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Everything a full purge of this season would destroy. Null when the season does not exist.
+    /// Read-only — nothing is modified.
+    /// </summary>
+    Task<SeasonPurgePreviewDto?> GetPurgePreviewAsync(int id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Permanently deletes the season together with its events, match tickets, season passes,
+    /// orders and payments. Destructive and irreversible. Null when the season does not exist.
+    /// </summary>
+    Task<SeasonPurgeResultDto?> PurgeSeasonAsync(int id, CancellationToken ct = default);
     Task<SeasonDto?> SetCurrentAsync(int id, CancellationToken ct = default);
     Task<Dictionary<int, string>> GetSeasonNamesAsync(IEnumerable<int> seasonIds, CancellationToken ct = default);
 
@@ -235,6 +247,229 @@ public class SeasonService : ISeasonService
         await _context.SaveChangesAsync(ct);
         _logger.LogInformation("Deleted season {Name} (ID: {Id})", season.Name, id);
         return (true, true);
+    }
+
+    /// <summary>
+    /// The id sets a purge operates on, resolved once up front. They must be materialised before any
+    /// delete runs: each set is derived from rows the purge itself removes, so a lazily-evaluated
+    /// query would come back empty half-way through and silently skip records.
+    /// </summary>
+    private sealed record PurgeScope(
+        List<int> EventIds,
+        List<int> TicketIds,
+        List<int> SeasonTicketIds,
+        List<int> OrderIds,
+        List<int> WalletIds,
+        List<long> WalletTransactionIds);
+
+    private async Task<PurgeScope> ResolvePurgeScopeAsync(int seasonId, CancellationToken ct)
+    {
+        var eventIds = await _context.Events
+            .Where(e => e.SeasonId == seasonId)
+            .Select(e => e.Id)
+            .ToListAsync(ct);
+
+        var seasonTicketIds = await _context.SeasonTickets
+            .Where(st => st.SeasonId == seasonId)
+            .Select(st => st.Id)
+            .ToListAsync(ct);
+
+        // Match tickets at this season's events, plus any pass-derived ticket that points back at one
+        // of its passes (defensive: such a ticket normally sits on a season event anyway).
+        var ticketIds = await _context.Tickets
+            .Where(t => eventIds.Contains(t.EventId)
+                        || (t.SeasonTicketId != null && seasonTicketIds.Contains(t.SeasonTicketId.Value)))
+            .Select(t => t.Id)
+            .ToListAsync(ct);
+
+        // Orders placed at a season event, plus orders that reach the season only through a session
+        // bound to one of its tickets (walk-up flows set the session, not always EventId).
+        var orderIds = await _context.Orders
+            .Where(o => (o.EventId != null && eventIds.Contains(o.EventId.Value))
+                        || (o.SessionId != null && _context.OrderSessions
+                                .Any(os => os.Id == o.SessionId && ticketIds.Contains(os.TicketId)))
+                        || (o.TicketSessionId != null && _context.TicketSessions
+                                .Any(ts => ts.Id == o.TicketSessionId
+                                           && (ticketIds.Contains(ts.TicketId) || eventIds.Contains(ts.EventId)))))
+            .Select(o => o.Id)
+            .ToListAsync(ct);
+
+        // Anonymous bearer wallets living on those tickets. Wallet -> Ticket is RESTRICT precisely so
+        // a funded ticket can't vanish underneath its balance; the purge deletes them explicitly.
+        var walletIds = await _context.Wallets
+            .Where(w => w.TicketId != null && ticketIds.Contains(w.TicketId.Value))
+            .Select(w => w.Id)
+            .ToListAsync(ct);
+
+        var walletTransactionIds = await _context.WalletTransactions
+            .Where(wt => walletIds.Contains(wt.WalletId))
+            .Select(wt => wt.Id)
+            .ToListAsync(ct);
+
+        return new PurgeScope(eventIds, ticketIds, seasonTicketIds, orderIds, walletIds, walletTransactionIds);
+    }
+
+    public async Task<SeasonPurgePreviewDto?> GetPurgePreviewAsync(int id, CancellationToken ct = default)
+    {
+        var season = await _context.Seasons.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id, ct);
+        if (season == null)
+            return null;
+
+        var scope = await ResolvePurgeScopeAsync(id, ct);
+
+        // Unlike the season's headline statistics, the preview counts EVERY order and pass — including
+        // cancelled ones — because the purge removes them regardless of status.
+        var orderRevenue = await _context.Orders
+            .Where(o => scope.OrderIds.Contains(o.Id))
+            .SumAsync(o => (decimal?)o.TotalAmount, ct) ?? 0m;
+
+        var drinksSold = await _context.OrderItems
+            .Where(oi => scope.OrderIds.Contains(oi.OrderId))
+            .SumAsync(oi => (int?)oi.Quantity, ct) ?? 0;
+
+        var passRevenue = await _context.SeasonTickets
+            .Where(st => scope.SeasonTicketIds.Contains(st.Id))
+            .SumAsync(st => (decimal?)st.Price, ct) ?? 0m;
+
+        var walletBalance = await _context.Wallets
+            .Where(w => scope.WalletIds.Contains(w.Id))
+            .SumAsync(w => (decimal?)w.Balance, ct) ?? 0m;
+
+        return new SeasonPurgePreviewDto
+        {
+            SeasonId = season.Id,
+            SeasonName = season.Name,
+            Events = scope.EventIds.Count,
+            Tickets = scope.TicketIds.Count,
+            SeasonPasses = scope.SeasonTicketIds.Count,
+            PassRevenue = passRevenue,
+            Orders = scope.OrderIds.Count,
+            OrderRevenue = orderRevenue,
+            DrinksSold = drinksSold,
+            TicketWallets = scope.WalletIds.Count,
+            TicketWalletBalance = walletBalance
+        };
+    }
+
+    public async Task<SeasonPurgeResultDto?> PurgeSeasonAsync(int id, CancellationToken ct = default)
+    {
+        var season = await _context.Seasons.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id, ct);
+        if (season == null)
+            return null;
+
+        var result = new SeasonPurgeResultDto { SeasonName = season.Name };
+
+        // The context uses a retrying execution strategy (EnableRetryOnFailure), which forbids a
+        // manually-started transaction unless the whole unit runs inside the strategy.
+        var strategy = _context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            await using var tx = await _context.Database.BeginTransactionAsync(ct);
+
+            // Re-resolve inside the transaction so a retry works from the current state.
+            var scope = await ResolvePurgeScopeAsync(id, ct);
+
+            // Record the balance about to be destroyed before the rows go — it is the one figure that
+            // cannot be reconstructed afterwards.
+            result.TicketWalletBalance = await _context.Wallets
+                .Where(w => scope.WalletIds.Contains(w.Id))
+                .SumAsync(w => (decimal?)w.Balance, ct) ?? 0m;
+
+            var total = 0;
+
+            // 1. Sessions RESTRICT-reference tickets and events, so they go first. Orders point at
+            //    sessions through optional SET NULL FKs, so orders can safely outlive them for now.
+            total += await _context.TicketSessions
+                .Where(ts => scope.EventIds.Contains(ts.EventId) || scope.TicketIds.Contains(ts.TicketId))
+                .ExecuteDeleteAsync(ct);
+            total += await _context.OrderSessions
+                .Where(os => scope.TicketIds.Contains(os.TicketId))
+                .ExecuteDeleteAsync(ct);
+
+            // 2. Order graph. Payments RESTRICT-reference wallet transactions, so every payment tied to
+            //    either a purged order or a purged wallet's ledger must go before both.
+            result.OrderItems = await _context.OrderItems
+                .Where(oi => scope.OrderIds.Contains(oi.OrderId))
+                .ExecuteDeleteAsync(ct);
+            total += result.OrderItems;
+
+            result.Payments = await _context.Payments
+                .Where(p => (p.OrderId != null && scope.OrderIds.Contains(p.OrderId.Value))
+                            || (p.WalletTransactionId != null
+                                && scope.WalletTransactionIds.Contains(p.WalletTransactionId.Value)))
+                .ExecuteDeleteAsync(ct);
+            total += result.Payments;
+
+            // Cup deposits are bound to a purged order or ticket; the deposit money lives on the wallet
+            // ledger being destroyed alongside, so the link rows go with it.
+            total += await _context.CupDeposits
+                .Where(cd => (cd.OrderId != null && scope.OrderIds.Contains(cd.OrderId.Value))
+                             || (cd.TicketId != null && scope.TicketIds.Contains(cd.TicketId.Value)))
+                .ExecuteDeleteAsync(ct);
+
+            result.Orders = await _context.Orders
+                .Where(o => scope.OrderIds.Contains(o.Id))
+                .ExecuteDeleteAsync(ct);
+            total += result.Orders;
+
+            // 3. Wallet ledger, then the wallets themselves — both before their tickets (RESTRICT).
+            total += await _context.WalletTransactions
+                .Where(wt => scope.WalletIds.Contains(wt.WalletId))
+                .ExecuteDeleteAsync(ct);
+
+            result.TicketWallets = await _context.Wallets
+                .Where(w => scope.WalletIds.Contains(w.Id))
+                .ExecuteDeleteAsync(ct);
+            total += result.TicketWallets;
+
+            // 4. Tickets (now free of session, order and wallet references), then the passes that
+            //    RESTRICT-reference nothing further up.
+            result.Tickets = await _context.Tickets
+                .Where(t => scope.TicketIds.Contains(t.Id))
+                .ExecuteDeleteAsync(ct);
+            total += result.Tickets;
+
+            result.SeasonPasses = await _context.SeasonTickets
+                .Where(st => scope.SeasonTicketIds.Contains(st.Id))
+                .ExecuteDeleteAsync(ct);
+            total += result.SeasonPasses;
+
+            // 5. Event-owned data, then the events. These all cascade from Event, but they are removed
+            //    explicitly so the run does not depend on the DB cascade wiring being intact.
+            total += await _context.EventAnalytics
+                .Where(x => scope.EventIds.Contains(x.EventId)).ExecuteDeleteAsync(ct);
+            total += await _context.EventStaffAssignments
+                .Where(x => scope.EventIds.Contains(x.EventId)).ExecuteDeleteAsync(ct);
+            total += await _context.EventSectorPrices
+                .Where(x => scope.EventIds.Contains(x.EventId)).ExecuteDeleteAsync(ct);
+            total += await _context.EventPosters
+                .Where(x => scope.EventIds.Contains(x.EventId)).ExecuteDeleteAsync(ct);
+            total += await _context.CartItems
+                .Where(x => scope.EventIds.Contains(x.EventId)).ExecuteDeleteAsync(ct);
+            total += await _context.SeatReservations
+                .Where(x => scope.EventIds.Contains(x.EventId)).ExecuteDeleteAsync(ct);
+
+            result.Events = await _context.Events
+                .Where(e => scope.EventIds.Contains(e.Id))
+                .ExecuteDeleteAsync(ct);
+            total += result.Events;
+
+            // 6. Finally the season row itself.
+            total += await _context.Seasons.Where(s => s.Id == id).ExecuteDeleteAsync(ct);
+
+            result.TotalRowsDeleted = total;
+            await tx.CommitAsync(ct);
+        });
+
+        _logger.LogWarning(
+            "PURGED season {Name} (ID: {Id}). Events={Events}, Tickets={Tickets}, Passes={Passes}, " +
+            "Orders={Orders}, OrderItems={OrderItems}, Payments={Payments}, TicketWallets={Wallets}, " +
+            "DestroyedWalletBalance={Balance}, TotalRows={Total}",
+            season.Name, id, result.Events, result.Tickets, result.SeasonPasses, result.Orders,
+            result.OrderItems, result.Payments, result.TicketWallets, result.TicketWalletBalance,
+            result.TotalRowsDeleted);
+
+        return result;
     }
 
     public async Task<SeasonDto?> SetCurrentAsync(int id, CancellationToken ct = default)

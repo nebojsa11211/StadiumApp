@@ -1,0 +1,1147 @@
+- generic [ref=f2e10]:
+  - complementary [ref=f2e11]:
+    - generic [ref=f2e18]:
+      - generic [ref=f2e19]: STADIUM
+      - generic [ref=f2e20]: ADMIN
+    - generic [ref=f2e21]:
+      - generic [ref=f2e22]: 23:55:48
+      - generic [ref=f2e23]: 26/07/26 HR
+    - navigation [ref=f2e24]:
+      - link " Dashboard" [ref=f2e25] [cursor=pointer]:
+        - /url: ""
+        - generic [ref=f2e26]: 
+        - generic [ref=f2e27]: Dashboard
+      - generic [ref=f2e28]: Operations
+      - link " Orders" [ref=f2e29] [cursor=pointer]:
+        - /url: orders
+        - generic [ref=f2e30]: 
+        - generic [ref=f2e31]: Orders
+      - link " Drinks" [ref=f2e32] [cursor=pointer]:
+        - /url: drinks
+        - generic [ref=f2e33]: 
+        - generic [ref=f2e34]: Drinks
+      - link " Wallets" [ref=f2e35] [cursor=pointer]:
+        - /url: admin/wallets
+        - generic [ref=f2e36]: 
+        - generic [ref=f2e37]: Wallets
+      - generic [ref=f2e38]: Events & Ticketing
+      - link " Events" [ref=f2e39] [cursor=pointer]:
+        - /url: events
+        - generic [ref=f2e40]: 
+        - generic [ref=f2e41]: Events
+      - link " Seasons" [ref=f2e42] [cursor=pointer]:
+        - /url: admin/seasons
+        - generic [ref=f2e43]: 
+        - generic [ref=f2e44]: Seasons
+      - link " Teams" [ref=f2e45] [cursor=pointer]:
+        - /url: admin/teams
+        - generic [ref=f2e46]: 
+        - generic [ref=f2e47]: Teams
+      - link " Tickets" [ref=f2e48] [cursor=pointer]:
+        - /url: tickets
+        - generic [ref=f2e49]: 
+        - generic [ref=f2e50]: Tickets
+      - generic [ref=f2e51]: Stadium Management
+      - link "👁 Overview" [ref=f2e52] [cursor=pointer]:
+        - /url: admin/stadium-overview
+        - generic [ref=f2e53]: 👁
+        - generic [ref=f2e54]: Overview
+      - link " Drawing Tool" [ref=f2e55] [cursor=pointer]:
+        - /url: admin/stadium-drawing-tool
+        - generic [ref=f2e56]: 
+        - generic [ref=f2e57]: Drawing Tool
+      - link " Stadium Info" [ref=f2e58] [cursor=pointer]:
+        - /url: admin/stadium-info
+        - generic [ref=f2e59]: 
+        - generic [ref=f2e60]: Stadium Info
+      - link " Venue & Branding" [ref=f2e61] [cursor=pointer]:
+        - /url: admin/venue-settings
+        - generic [ref=f2e62]: 
+        - generic [ref=f2e63]: Venue & Branding
+      - generic [ref=f2e64]: Analytics
+      - link " Analytics" [ref=f2e65] [cursor=pointer]:
+        - /url: analytics
+        - generic [ref=f2e66]: 
+        - generic [ref=f2e67]: Analytics
+      - link " Customers" [ref=f2e68] [cursor=pointer]:
+        - /url: customers
+        - generic [ref=f2e69]: 
+        - generic [ref=f2e70]: Customers
+      - link " Customer Analytics" [ref=f2e71] [cursor=pointer]:
+        - /url: customer-analytics
+        - generic [ref=f2e72]: 
+        - generic [ref=f2e73]: Customer Analytics
+      - link " Reusable Cups" [ref=f2e74] [cursor=pointer]:
+        - /url: admin/cups
+        - generic [ref=f2e75]: 
+        - generic [ref=f2e76]: Reusable Cups
+      - link " Registered Cups" [ref=f2e77] [cursor=pointer]:
+        - /url: admin/registered-cups
+        - generic [ref=f2e78]: 
+        - generic [ref=f2e79]: Registered Cups
+      - generic [ref=f2e80]: System
+      - link " Team Accounts" [ref=f2e81] [cursor=pointer]:
+        - /url: users
+        - generic [ref=f2e82]: 
+        - generic [ref=f2e83]: Team Accounts
+      - link " Logs" [ref=f2e84] [cursor=pointer]:
+        - /url: logs
+        - generic [ref=f2e85]: 
+        - generic [ref=f2e86]: Logs
+      - link " Database" [ref=f2e87] [cursor=pointer]:
+        - /url: datagrid
+        - generic [ref=f2e88]: 
+        - generic [ref=f2e89]: Database
+      - link " Settings" [ref=f2e90] [cursor=pointer]:
+        - /url: admin/settings
+        - generic [ref=f2e91]: 
+        - generic [ref=f2e92]: Settings
+      - link " Setup" [ref=f2e93] [cursor=pointer]:
+        - /url: admin/setup
+        - generic [ref=f2e94]: 
+        - generic [ref=f2e95]: Setup
+    - generic [ref=f2e96]:
+      - generic [ref=f2e97]:
+        - generic [ref=f2e98]: 
+        - generic [ref=f2e99]:
+          - generic [ref=f2e100]: Centralized Logging
+          - generic [ref=f2e101]: "Last published: 23:55"
+      - button "N Logout nebojsa.medancic+adminStadion@gmail.com" [ref=f2e102] [cursor=pointer]:
+        - generic [ref=f2e103]: "N"
+        - generic [ref=f2e104]:
+          - button "Logout" [ref=f2e105]
+          - generic [ref=f2e106]: nebojsa.medancic+adminStadion@gmail.com
+      - generic [ref=f2e107]:
+        - generic [ref=f2e108]: HR/EN
+        - generic [ref=f2e109]:
+          - button "HR" [ref=f2e110] [cursor=pointer]
+          - button "EN" [ref=f2e111] [cursor=pointer]
+  - main [ref=f2e112]:
+    - generic [ref=f2e113]:
+      - button "" [ref=f2e114] [cursor=pointer]
+      - generic [ref=f2e116]:
+        - generic [ref=f2e117]: 
+        - generic [ref=f2e118]: "Current season:"
+        - strong [ref=f2e119]: 2026/2027
+        - generic [ref=f2e120]:
+          - generic [ref=f2e121]: 
+          - text: Current
+        - generic [ref=f2e122]: (Jul 2026 – May 2027)
+        - generic [ref=f2e123]:
+          - generic [ref=f2e124]: 
+          - text: 20 Season Passes
+      - generic [ref=f2e125]:
+        - combobox "Select season" [ref=f2e126] [cursor=pointer]:
+          - option "All seasons"
+          - option "2026/2027" [selected]
+          - option "Season SEASON-A474A2B1"
+          - option "No season"
+        - button "" [ref=f2e127] [cursor=pointer]
+    - generic [ref=f2e129]:
+      - generic [ref=f2e130]:
+        - generic [ref=f2e131]:
+          - generic [ref=f2e132]: Drinks
+          - heading "Drink Management" [level=1] [ref=f2e133]
+          - paragraph [ref=f2e134]: Manage your beverage catalog, stock levels and availability
+        - generic [ref=f2e135]:
+          - button " Generate Common Drinks" [ref=f2e136] [cursor=pointer]:
+            - generic [ref=f2e137]: 
+            - generic [ref=f2e138]: Generate Common Drinks
+          - button " Manage Categories" [ref=f2e139] [cursor=pointer]:
+            - generic [ref=f2e140]: 
+            - generic [ref=f2e141]: Manage Categories
+          - button " Add New Drink" [ref=f2e142] [cursor=pointer]:
+            - generic [ref=f2e143]: 
+            - generic [ref=f2e144]: Add New Drink
+      - generic [ref=f2e145]:
+        - article [ref=f2e146]:
+          - generic [ref=f2e147]:
+            - generic [ref=f2e148]: Total Drinks
+            - generic [ref=f2e149]: 
+          - generic [ref=f2e150]: "23"
+          - generic [ref=f2e151]: In the catalog
+        - article [ref=f2e153]:
+          - generic [ref=f2e154]:
+            - generic [ref=f2e155]: Available
+            - generic [ref=f2e156]: 
+          - generic [ref=f2e157]: "23"
+          - generic [ref=f2e158]: Orderable now
+        - article [ref=f2e160]:
+          - generic [ref=f2e161]:
+            - generic [ref=f2e162]: Low Stock
+            - generic [ref=f2e163]: 
+          - generic [ref=f2e164]: "0"
+          - generic [ref=f2e165]: Below 10 units
+        - article [ref=f2e167]:
+          - generic [ref=f2e168]:
+            - generic [ref=f2e169]: Categories
+            - generic [ref=f2e170]: 
+          - generic [ref=f2e171]: "8"
+          - generic [ref=f2e172]: Distinct types
+      - generic [ref=f2e174]:
+        - heading "Filter Drinks" [level=2] [ref=f2e176]
+        - generic [ref=f2e177]:
+          - generic [ref=f2e178]:
+            - generic [ref=f2e179]: Category
+            - combobox "Category" [ref=f2e180] [cursor=pointer]:
+              - option "All Categories" [selected]
+              - option "🍺 Beer"
+              - option "🥤 SoftDrink"
+              - option "💧 Water"
+              - option "☕ Coffee"
+              - option "🍵 Tea"
+              - option "🧃 Juice"
+              - option "⚡ EnergyDrink"
+              - option "🍸 Cocktail"
+          - generic [ref=f2e181]:
+            - generic [ref=f2e182]: Availability
+            - combobox "Availability" [ref=f2e183] [cursor=pointer]:
+              - option "All Drinks" [selected]
+              - option "Available Only"
+              - option "Unavailable Only"
+              - option "Low Stock (< 10)"
+          - generic [ref=f2e184]:
+            - generic [ref=f2e185]: Search
+            - textbox "Search" [ref=f2e186]:
+              - /placeholder: Search drinks...
+      - generic [ref=f2e187]:
+        - heading "Drinks 23" [level=2] [ref=f2e189]:
+          - text: Drinks
+          - generic [ref=f2e190]: "23"
+        - table [ref=f2e191]:
+          - rowgroup [ref=f2e192]:
+            - row [ref=f2e193]:
+              - columnheader "Drink" [ref=f2e194] [cursor=pointer]
+              - columnheader "Category" [ref=f2e195] [cursor=pointer]
+              - columnheader "Description" [ref=f2e196] [cursor=pointer]
+              - columnheader "Price" [ref=f2e197] [cursor=pointer]
+              - columnheader "Stock" [ref=f2e198] [cursor=pointer]
+              - columnheader "Status" [ref=f2e199] [cursor=pointer]
+              - columnheader "Actions" [ref=f2e200]
+          - rowgroup [ref=f2e201]:
+            - row [ref=f2e202]:
+              - cell "🥤 Heineken" [ref=f2e203]:
+                - generic [ref=f2e204]:
+                  - generic [ref=f2e205]: 🥤
+                  - generic [ref=f2e206]: Heineken
+              - cell "🍺 Beer" [ref=f2e207]
+              - cell "Bottled lager, 0.33 L" [ref=f2e208]
+              - cell "€4.50" [ref=f2e209]
+              - cell "12" [ref=f2e210]
+              - cell [ref=f2e211]
+              - cell [ref=f2e214]:
+                - generic [ref=f2e215]:
+                  - button " Add stock" [ref=f2e216] [cursor=pointer]:
+                    - generic [ref=f2e217]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e218] [cursor=pointer]:
+                    - generic [ref=f2e219]: 
+                    - text: History
+                  - button " Edit" [ref=f2e220] [cursor=pointer]:
+                    - generic [ref=f2e221]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e222] [cursor=pointer]:
+                    - generic [ref=f2e223]: 
+                    - generic [ref=f2e224]: Disable
+                  - button " Delete" [ref=f2e225] [cursor=pointer]:
+                    - generic [ref=f2e226]: 
+                    - text: Delete
+            - row [ref=f2e227]:
+              - cell "🥤 Karlovačko" [ref=f2e228]:
+                - generic [ref=f2e229]:
+                  - generic [ref=f2e230]: 🥤
+                  - generic [ref=f2e231]: Karlovačko
+              - cell "🍺 Beer" [ref=f2e232]
+              - cell "Draft lager, 0.5 L" [ref=f2e233]
+              - cell "€4.00" [ref=f2e234]
+              - cell "12" [ref=f2e235]
+              - cell [ref=f2e236]
+              - cell [ref=f2e239]:
+                - generic [ref=f2e240]:
+                  - button " Add stock" [ref=f2e241] [cursor=pointer]:
+                    - generic [ref=f2e242]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e243] [cursor=pointer]:
+                    - generic [ref=f2e244]: 
+                    - text: History
+                  - button " Edit" [ref=f2e245] [cursor=pointer]:
+                    - generic [ref=f2e246]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e247] [cursor=pointer]:
+                    - generic [ref=f2e248]: 
+                    - generic [ref=f2e249]: Disable
+                  - button " Delete" [ref=f2e250] [cursor=pointer]:
+                    - generic [ref=f2e251]: 
+                    - text: Delete
+            - row [ref=f2e252]:
+              - cell "🥤 Ožujsko" [ref=f2e253]:
+                - generic [ref=f2e254]:
+                  - generic [ref=f2e255]: 🥤
+                  - generic [ref=f2e256]: Ožujsko
+              - cell "🍺 Beer" [ref=f2e257]
+              - cell "Draft lager, 0.5 L" [ref=f2e258]
+              - cell "€4.00" [ref=f2e259]
+              - cell "16" [ref=f2e260]
+              - cell [ref=f2e261]
+              - cell [ref=f2e264]:
+                - generic [ref=f2e265]:
+                  - button " Add stock" [ref=f2e266] [cursor=pointer]:
+                    - generic [ref=f2e267]: 
+                    - text: Add stock
+                  - button " History" [active] [ref=f2e268] [cursor=pointer]:
+                    - generic [ref=f2e269]: 
+                    - text: History
+                  - button " Edit" [ref=f2e270] [cursor=pointer]:
+                    - generic [ref=f2e271]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e272] [cursor=pointer]:
+                    - generic [ref=f2e273]: 
+                    - generic [ref=f2e274]: Disable
+                  - button " Delete" [ref=f2e275] [cursor=pointer]:
+                    - generic [ref=f2e276]: 
+                    - text: Delete
+            - row [ref=f2e277]:
+              - cell "🥤 Ožujsko Cool" [ref=f2e278]:
+                - generic [ref=f2e279]:
+                  - generic [ref=f2e280]: 🥤
+                  - generic [ref=f2e281]: Ožujsko Cool
+              - cell "🍺 Beer" [ref=f2e282]
+              - cell "Non-alcoholic beer, 0.33 L" [ref=f2e283]
+              - cell "€3.50" [ref=f2e284]
+              - cell "12" [ref=f2e285]
+              - cell [ref=f2e286]
+              - cell [ref=f2e289]:
+                - generic [ref=f2e290]:
+                  - button " Add stock" [ref=f2e291] [cursor=pointer]:
+                    - generic [ref=f2e292]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e293] [cursor=pointer]:
+                    - generic [ref=f2e294]: 
+                    - text: History
+                  - button " Edit" [ref=f2e295] [cursor=pointer]:
+                    - generic [ref=f2e296]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e297] [cursor=pointer]:
+                    - generic [ref=f2e298]: 
+                    - generic [ref=f2e299]: Disable
+                  - button " Delete" [ref=f2e300] [cursor=pointer]:
+                    - generic [ref=f2e301]: 
+                    - text: Delete
+            - row [ref=f2e302]:
+              - cell "🥤 Aperol Spritz" [ref=f2e303]:
+                - generic [ref=f2e304]:
+                  - generic [ref=f2e305]: 🥤
+                  - generic [ref=f2e306]: Aperol Spritz
+              - cell "🍸 Cocktail" [ref=f2e307]
+              - cell "Aperol, prosecco, soda" [ref=f2e308]
+              - cell "€7.00" [ref=f2e309]
+              - cell "41" [ref=f2e310]
+              - cell [ref=f2e311]
+              - cell [ref=f2e314]:
+                - generic [ref=f2e315]:
+                  - button " Add stock" [ref=f2e316] [cursor=pointer]:
+                    - generic [ref=f2e317]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e318] [cursor=pointer]:
+                    - generic [ref=f2e319]: 
+                    - text: History
+                  - button " Edit" [ref=f2e320] [cursor=pointer]:
+                    - generic [ref=f2e321]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e322] [cursor=pointer]:
+                    - generic [ref=f2e323]: 
+                    - generic [ref=f2e324]: Disable
+                  - button " Delete" [ref=f2e325] [cursor=pointer]:
+                    - generic [ref=f2e326]: 
+                    - text: Delete
+            - row [ref=f2e327]:
+              - cell "🥤 Gin & Tonic" [ref=f2e328]:
+                - generic [ref=f2e329]:
+                  - generic [ref=f2e330]: 🥤
+                  - generic [ref=f2e331]: Gin & Tonic
+              - cell "🍸 Cocktail" [ref=f2e332]
+              - cell "Gin with tonic water" [ref=f2e333]
+              - cell "€7.50" [ref=f2e334]
+              - cell "47" [ref=f2e335]
+              - cell [ref=f2e336]
+              - cell [ref=f2e339]:
+                - generic [ref=f2e340]:
+                  - button " Add stock" [ref=f2e341] [cursor=pointer]:
+                    - generic [ref=f2e342]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e343] [cursor=pointer]:
+                    - generic [ref=f2e344]: 
+                    - text: History
+                  - button " Edit" [ref=f2e345] [cursor=pointer]:
+                    - generic [ref=f2e346]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e347] [cursor=pointer]:
+                    - generic [ref=f2e348]: 
+                    - generic [ref=f2e349]: Disable
+                  - button " Delete" [ref=f2e350] [cursor=pointer]:
+                    - generic [ref=f2e351]: 
+                    - text: Delete
+            - row [ref=f2e352]:
+              - cell "🥤 Mojito" [ref=f2e353]:
+                - generic [ref=f2e354]:
+                  - generic [ref=f2e355]: 🥤
+                  - generic [ref=f2e356]: Mojito
+              - cell "🍸 Cocktail" [ref=f2e357]
+              - cell "Rum, lime, mint, soda" [ref=f2e358]
+              - cell "€7.00" [ref=f2e359]
+              - cell "45" [ref=f2e360]
+              - cell [ref=f2e361]
+              - cell [ref=f2e364]:
+                - generic [ref=f2e365]:
+                  - button " Add stock" [ref=f2e366] [cursor=pointer]:
+                    - generic [ref=f2e367]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e368] [cursor=pointer]:
+                    - generic [ref=f2e369]: 
+                    - text: History
+                  - button " Edit" [ref=f2e370] [cursor=pointer]:
+                    - generic [ref=f2e371]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e372] [cursor=pointer]:
+                    - generic [ref=f2e373]: 
+                    - generic [ref=f2e374]: Disable
+                  - button " Delete" [ref=f2e375] [cursor=pointer]:
+                    - generic [ref=f2e376]: 
+                    - text: Delete
+            - row [ref=f2e377]:
+              - cell "🥤 Cappuccino" [ref=f2e378]:
+                - generic [ref=f2e379]:
+                  - generic [ref=f2e380]: 🥤
+                  - generic [ref=f2e381]: Cappuccino
+              - cell "☕ Coffee" [ref=f2e382]
+              - cell "Espresso with steamed milk" [ref=f2e383]
+              - cell "€2.50" [ref=f2e384]
+              - cell "109" [ref=f2e385]
+              - cell [ref=f2e386]
+              - cell [ref=f2e389]:
+                - generic [ref=f2e390]:
+                  - button " Add stock" [ref=f2e391] [cursor=pointer]:
+                    - generic [ref=f2e392]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e393] [cursor=pointer]:
+                    - generic [ref=f2e394]: 
+                    - text: History
+                  - button " Edit" [ref=f2e395] [cursor=pointer]:
+                    - generic [ref=f2e396]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e397] [cursor=pointer]:
+                    - generic [ref=f2e398]: 
+                    - generic [ref=f2e399]: Disable
+                  - button " Delete" [ref=f2e400] [cursor=pointer]:
+                    - generic [ref=f2e401]: 
+                    - text: Delete
+            - row [ref=f2e402]:
+              - cell "🥤 Espresso" [ref=f2e403]:
+                - generic [ref=f2e404]:
+                  - generic [ref=f2e405]: 🥤
+                  - generic [ref=f2e406]: Espresso
+              - cell "☕ Coffee" [ref=f2e407]
+              - cell "Single shot" [ref=f2e408]
+              - cell "€2.00" [ref=f2e409]
+              - cell "100" [ref=f2e410]
+              - cell [ref=f2e411]
+              - cell [ref=f2e414]:
+                - generic [ref=f2e415]:
+                  - button " Add stock" [ref=f2e416] [cursor=pointer]:
+                    - generic [ref=f2e417]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e418] [cursor=pointer]:
+                    - generic [ref=f2e419]: 
+                    - text: History
+                  - button " Edit" [ref=f2e420] [cursor=pointer]:
+                    - generic [ref=f2e421]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e422] [cursor=pointer]:
+                    - generic [ref=f2e423]: 
+                    - generic [ref=f2e424]: Disable
+                  - button " Delete" [ref=f2e425] [cursor=pointer]:
+                    - generic [ref=f2e426]: 
+                    - text: Delete
+            - row [ref=f2e427]:
+              - cell "🥤 Iced Coffee" [ref=f2e428]:
+                - generic [ref=f2e429]:
+                  - generic [ref=f2e430]: 🥤
+                  - generic [ref=f2e431]: Iced Coffee
+              - cell "☕ Coffee" [ref=f2e432]
+              - cell "Cold coffee with milk, 0.3 L" [ref=f2e433]
+              - cell "€3.00" [ref=f2e434]
+              - cell "66" [ref=f2e435]
+              - cell [ref=f2e436]
+              - cell [ref=f2e439]:
+                - generic [ref=f2e440]:
+                  - button " Add stock" [ref=f2e441] [cursor=pointer]:
+                    - generic [ref=f2e442]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e443] [cursor=pointer]:
+                    - generic [ref=f2e444]: 
+                    - text: History
+                  - button " Edit" [ref=f2e445] [cursor=pointer]:
+                    - generic [ref=f2e446]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e447] [cursor=pointer]:
+                    - generic [ref=f2e448]: 
+                    - generic [ref=f2e449]: Disable
+                  - button " Delete" [ref=f2e450] [cursor=pointer]:
+                    - generic [ref=f2e451]: 
+                    - text: Delete
+            - row [ref=f2e452]:
+              - cell "🥤 Monster" [ref=f2e453]:
+                - generic [ref=f2e454]:
+                  - generic [ref=f2e455]: 🥤
+                  - generic [ref=f2e456]: Monster
+              - cell "⚡ EnergyDrink" [ref=f2e457]
+              - cell "Energy drink, 0.5 L" [ref=f2e458]
+              - cell "€4.50" [ref=f2e459]
+              - cell "87" [ref=f2e460]
+              - cell [ref=f2e461]
+              - cell [ref=f2e464]:
+                - generic [ref=f2e465]:
+                  - button " Add stock" [ref=f2e466] [cursor=pointer]:
+                    - generic [ref=f2e467]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e468] [cursor=pointer]:
+                    - generic [ref=f2e469]: 
+                    - text: History
+                  - button " Edit" [ref=f2e470] [cursor=pointer]:
+                    - generic [ref=f2e471]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e472] [cursor=pointer]:
+                    - generic [ref=f2e473]: 
+                    - generic [ref=f2e474]: Disable
+                  - button " Delete" [ref=f2e475] [cursor=pointer]:
+                    - generic [ref=f2e476]: 
+                    - text: Delete
+            - row [ref=f2e477]:
+              - cell "🥤 Red Bull" [ref=f2e478]:
+                - generic [ref=f2e479]:
+                  - generic [ref=f2e480]: 🥤
+                  - generic [ref=f2e481]: Red Bull
+              - cell "⚡ EnergyDrink" [ref=f2e482]
+              - cell "Energy drink, 0.25 L" [ref=f2e483]
+              - cell "€4.00" [ref=f2e484]
+              - cell "109" [ref=f2e485]
+              - cell [ref=f2e486]
+              - cell [ref=f2e489]:
+                - generic [ref=f2e490]:
+                  - button " Add stock" [ref=f2e491] [cursor=pointer]:
+                    - generic [ref=f2e492]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e493] [cursor=pointer]:
+                    - generic [ref=f2e494]: 
+                    - text: History
+                  - button " Edit" [ref=f2e495] [cursor=pointer]:
+                    - generic [ref=f2e496]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e497] [cursor=pointer]:
+                    - generic [ref=f2e498]: 
+                    - generic [ref=f2e499]: Disable
+                  - button " Delete" [ref=f2e500] [cursor=pointer]:
+                    - generic [ref=f2e501]: 
+                    - text: Delete
+            - row [ref=f2e502]:
+              - cell "🥤 Apple Juice" [ref=f2e503]:
+                - generic [ref=f2e504]:
+                  - generic [ref=f2e505]: 🥤
+                  - generic [ref=f2e506]: Apple Juice
+              - cell "🧃 Juice" [ref=f2e507]
+              - cell "100% juice, 0.33 L" [ref=f2e508]
+              - cell "€3.20" [ref=f2e509]
+              - cell "103" [ref=f2e510]
+              - cell [ref=f2e511]
+              - cell [ref=f2e514]:
+                - generic [ref=f2e515]:
+                  - button " Add stock" [ref=f2e516] [cursor=pointer]:
+                    - generic [ref=f2e517]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e518] [cursor=pointer]:
+                    - generic [ref=f2e519]: 
+                    - text: History
+                  - button " Edit" [ref=f2e520] [cursor=pointer]:
+                    - generic [ref=f2e521]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e522] [cursor=pointer]:
+                    - generic [ref=f2e523]: 
+                    - generic [ref=f2e524]: Disable
+                  - button " Delete" [ref=f2e525] [cursor=pointer]:
+                    - generic [ref=f2e526]: 
+                    - text: Delete
+            - row [ref=f2e527]:
+              - cell "🥤 Lemonade" [ref=f2e528]:
+                - generic [ref=f2e529]:
+                  - generic [ref=f2e530]: 🥤
+                  - generic [ref=f2e531]: Lemonade
+              - cell "🧃 Juice" [ref=f2e532]
+              - cell "Freshly squeezed, 0.4 L" [ref=f2e533]
+              - cell "€3.50" [ref=f2e534]
+              - cell "61" [ref=f2e535]
+              - cell [ref=f2e536]
+              - cell [ref=f2e539]:
+                - generic [ref=f2e540]:
+                  - button " Add stock" [ref=f2e541] [cursor=pointer]:
+                    - generic [ref=f2e542]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e543] [cursor=pointer]:
+                    - generic [ref=f2e544]: 
+                    - text: History
+                  - button " Edit" [ref=f2e545] [cursor=pointer]:
+                    - generic [ref=f2e546]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e547] [cursor=pointer]:
+                    - generic [ref=f2e548]: 
+                    - generic [ref=f2e549]: Disable
+                  - button " Delete" [ref=f2e550] [cursor=pointer]:
+                    - generic [ref=f2e551]: 
+                    - text: Delete
+            - row [ref=f2e552]:
+              - cell "🥤 Orange Juice" [ref=f2e553]:
+                - generic [ref=f2e554]:
+                  - generic [ref=f2e555]: 🥤
+                  - generic [ref=f2e556]: Orange Juice
+              - cell "🧃 Juice" [ref=f2e557]
+              - cell "100% juice, 0.33 L" [ref=f2e558]
+              - cell "€3.20" [ref=f2e559]
+              - cell "100" [ref=f2e560]
+              - cell [ref=f2e561]
+              - cell [ref=f2e564]:
+                - generic [ref=f2e565]:
+                  - button " Add stock" [ref=f2e566] [cursor=pointer]:
+                    - generic [ref=f2e567]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e568] [cursor=pointer]:
+                    - generic [ref=f2e569]: 
+                    - text: History
+                  - button " Edit" [ref=f2e570] [cursor=pointer]:
+                    - generic [ref=f2e571]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e572] [cursor=pointer]:
+                    - generic [ref=f2e573]: 
+                    - generic [ref=f2e574]: Disable
+                  - button " Delete" [ref=f2e575] [cursor=pointer]:
+                    - generic [ref=f2e576]: 
+                    - text: Delete
+            - row [ref=f2e577]:
+              - cell "🥤 Coca-Cola" [ref=f2e578]:
+                - generic [ref=f2e579]:
+                  - generic [ref=f2e580]: 🥤
+                  - generic [ref=f2e581]: Coca-Cola
+              - cell "🥤 SoftDrink" [ref=f2e582]
+              - cell "Chilled, 0.5 L" [ref=f2e583]
+              - cell "€3.00" [ref=f2e584]
+              - cell "181" [ref=f2e585]
+              - cell [ref=f2e586]
+              - cell [ref=f2e589]:
+                - generic [ref=f2e590]:
+                  - button " Add stock" [ref=f2e591] [cursor=pointer]:
+                    - generic [ref=f2e592]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e593] [cursor=pointer]:
+                    - generic [ref=f2e594]: 
+                    - text: History
+                  - button " Edit" [ref=f2e595] [cursor=pointer]:
+                    - generic [ref=f2e596]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e597] [cursor=pointer]:
+                    - generic [ref=f2e598]: 
+                    - generic [ref=f2e599]: Disable
+                  - button " Delete" [ref=f2e600] [cursor=pointer]:
+                    - generic [ref=f2e601]: 
+                    - text: Delete
+            - row [ref=f2e602]:
+              - cell "🥤 Coca-Cola Zero" [ref=f2e603]:
+                - generic [ref=f2e604]:
+                  - generic [ref=f2e605]: 🥤
+                  - generic [ref=f2e606]: Coca-Cola Zero
+              - cell "🥤 SoftDrink" [ref=f2e607]
+              - cell "Sugar free, 0.5 L" [ref=f2e608]
+              - cell "€3.00" [ref=f2e609]
+              - cell "112" [ref=f2e610]
+              - cell [ref=f2e611]
+              - cell [ref=f2e614]:
+                - generic [ref=f2e615]:
+                  - button " Add stock" [ref=f2e616] [cursor=pointer]:
+                    - generic [ref=f2e617]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e618] [cursor=pointer]:
+                    - generic [ref=f2e619]: 
+                    - text: History
+                  - button " Edit" [ref=f2e620] [cursor=pointer]:
+                    - generic [ref=f2e621]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e622] [cursor=pointer]:
+                    - generic [ref=f2e623]: 
+                    - generic [ref=f2e624]: Disable
+                  - button " Delete" [ref=f2e625] [cursor=pointer]:
+                    - generic [ref=f2e626]: 
+                    - text: Delete
+            - row [ref=f2e627]:
+              - cell "🥤 Fanta" [ref=f2e628]:
+                - generic [ref=f2e629]:
+                  - generic [ref=f2e630]: 🥤
+                  - generic [ref=f2e631]: Fanta
+              - cell "🥤 SoftDrink" [ref=f2e632]
+              - cell "Orange, 0.5 L" [ref=f2e633]
+              - cell "€3.00" [ref=f2e634]
+              - cell "108" [ref=f2e635]
+              - cell [ref=f2e636]
+              - cell [ref=f2e639]:
+                - generic [ref=f2e640]:
+                  - button " Add stock" [ref=f2e641] [cursor=pointer]:
+                    - generic [ref=f2e642]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e643] [cursor=pointer]:
+                    - generic [ref=f2e644]: 
+                    - text: History
+                  - button " Edit" [ref=f2e645] [cursor=pointer]:
+                    - generic [ref=f2e646]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e647] [cursor=pointer]:
+                    - generic [ref=f2e648]: 
+                    - generic [ref=f2e649]: Disable
+                  - button " Delete" [ref=f2e650] [cursor=pointer]:
+                    - generic [ref=f2e651]: 
+                    - text: Delete
+            - row [ref=f2e652]:
+              - cell "🥤 Sprite" [ref=f2e653]:
+                - generic [ref=f2e654]:
+                  - generic [ref=f2e655]: 🥤
+                  - generic [ref=f2e656]: Sprite
+              - cell "🥤 SoftDrink" [ref=f2e657]
+              - cell "Lemon-lime, 0.5 L" [ref=f2e658]
+              - cell "€3.00" [ref=f2e659]
+              - cell "112" [ref=f2e660]
+              - cell [ref=f2e661]
+              - cell [ref=f2e664]:
+                - generic [ref=f2e665]:
+                  - button " Add stock" [ref=f2e666] [cursor=pointer]:
+                    - generic [ref=f2e667]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e668] [cursor=pointer]:
+                    - generic [ref=f2e669]: 
+                    - text: History
+                  - button " Edit" [ref=f2e670] [cursor=pointer]:
+                    - generic [ref=f2e671]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e672] [cursor=pointer]:
+                    - generic [ref=f2e673]: 
+                    - generic [ref=f2e674]: Disable
+                  - button " Delete" [ref=f2e675] [cursor=pointer]:
+                    - generic [ref=f2e676]: 
+                    - text: Delete
+            - row [ref=f2e677]:
+              - cell "🥤 Hot Tea" [ref=f2e678]:
+                - generic [ref=f2e679]:
+                  - generic [ref=f2e680]: 🥤
+                  - generic [ref=f2e681]: Hot Tea
+              - cell "🍵 Tea" [ref=f2e682]
+              - cell "Black or herbal, 0.25 L" [ref=f2e683]
+              - cell "€2.20" [ref=f2e684]
+              - cell "94" [ref=f2e685]
+              - cell [ref=f2e686]
+              - cell [ref=f2e689]:
+                - generic [ref=f2e690]:
+                  - button " Add stock" [ref=f2e691] [cursor=pointer]:
+                    - generic [ref=f2e692]: 
+                    - text: Add stock
+                  - button " History" [ref=f2e693] [cursor=pointer]:
+                    - generic [ref=f2e694]: 
+                    - text: History
+                  - button " Edit" [ref=f2e695] [cursor=pointer]:
+                    - generic [ref=f2e696]: 
+                    - text: Edit
+                  - button " Disable" [ref=f2e697] [cursor=pointer]:
+                    - generic [ref=f2e698]: 
+                    - generic [ref=f2e699]: Disable
+                  - button " Delete" [ref=f2e700] [cursor=pointer]:
+                    - generic [ref=f2e701]: 
+                    - text: Delete
+        - generic [ref=f2e702]:
+          - generic [ref=f2e703]:
+            - paragraph [ref=f2e704]: Showing 1 to 20 of 23
+            - generic [ref=f2e705]:
+              - generic [ref=f2e706]: Show
+              - combobox "Show" [ref=f2e707] [cursor=pointer]:
+                - option "10"
+                - option "20" [selected]
+                - option "50"
+                - option "100"
+          - generic [ref=f2e708]:
+            - button "" [disabled] [ref=f2e709]
+            - button "1" [ref=f2e711] [cursor=pointer]
+            - button "2" [ref=f2e712] [cursor=pointer]
+            - button "" [ref=f2e713] [cursor=pointer]
+    - generic [ref=f2e717]:
+      - generic [ref=f2e718]:
+        - generic [ref=f2e719]:
+          - generic [ref=f2e720]: 
+          - generic [ref=f2e722]:
+            - generic [ref=f2e723]: Stock history
+            - heading "Ožujsko" [level=5] [ref=f2e724]
+        - button "Close" [ref=f2e725] [cursor=pointer]:
+          - generic [ref=f2e726]: 
+      - table [ref=f2e728]:
+        - rowgroup [ref=f2e729]:
+          - row [ref=f2e730]:
+            - columnheader "Date" [ref=f2e731]
+            - columnheader "Type" [ref=f2e732]
+            - columnheader "Change" [ref=f2e733]
+            - columnheader "Balance" [ref=f2e734]
+            - columnheader "By" [ref=f2e735]
+            - columnheader "Note" [ref=f2e736]
+        - rowgroup [ref=f2e737]:
+          - row [ref=f2e738]:
+            - cell "2026-07-20 20:29" [ref=f2e739]
+            - cell [ref=f2e740]
+            - cell "-2" [ref=f2e743]
+            - cell "187" [ref=f2e744]
+            - cell "System" [ref=f2e745]
+            - cell "#1287" [ref=f2e746]
+          - row [ref=f2e748]:
+            - cell "2026-07-20 19:42" [ref=f2e749]
+            - cell [ref=f2e750]
+            - cell "-1" [ref=f2e753]
+            - cell "189" [ref=f2e754]
+            - cell "System" [ref=f2e755]
+            - cell "#1272" [ref=f2e756]
+          - row [ref=f2e758]:
+            - cell "2026-07-20 19:31" [ref=f2e759]
+            - cell [ref=f2e760]
+            - cell "-4" [ref=f2e763]
+            - cell "190" [ref=f2e764]
+            - cell "System" [ref=f2e765]
+            - cell "#1268" [ref=f2e766]
+          - row [ref=f2e768]:
+            - cell "2026-07-20 19:26" [ref=f2e769]
+            - cell [ref=f2e770]
+            - cell "-3" [ref=f2e773]
+            - cell "194" [ref=f2e774]
+            - cell "System" [ref=f2e775]
+            - cell "#1279" [ref=f2e776]
+          - row [ref=f2e778]:
+            - cell "2026-07-20 19:23" [ref=f2e779]
+            - cell [ref=f2e780]
+            - cell "-1" [ref=f2e783]
+            - cell "197" [ref=f2e784]
+            - cell "System" [ref=f2e785]
+            - cell "#1281" [ref=f2e786]
+          - row [ref=f2e788]:
+            - cell "2026-07-20 19:14" [ref=f2e789]
+            - cell [ref=f2e790]
+            - cell "-2" [ref=f2e793]
+            - cell "198" [ref=f2e794]
+            - cell "System" [ref=f2e795]
+            - cell "#1275" [ref=f2e796]
+          - row [ref=f2e798]:
+            - cell "2026-07-13 22:49" [ref=f2e799]
+            - cell [ref=f2e800]
+            - cell "+4" [ref=f2e803]
+            - cell "161" [ref=f2e804]
+            - cell "System" [ref=f2e805]
+            - cell "#1342" [ref=f2e806]
+          - row [ref=f2e808]:
+            - cell "2026-07-13 22:44" [ref=f2e809]
+            - cell [ref=f2e810]
+            - cell "-4" [ref=f2e813]
+            - cell "157" [ref=f2e814]
+            - cell "System" [ref=f2e815]
+            - cell "#1342" [ref=f2e816]
+          - row [ref=f2e818]:
+            - cell "2026-07-13 22:19" [ref=f2e819]
+            - cell [ref=f2e820]
+            - cell "-1" [ref=f2e823]
+            - cell "161" [ref=f2e824]
+            - cell "System" [ref=f2e825]
+            - cell "#1350" [ref=f2e826]
+          - row [ref=f2e828]:
+            - cell "2026-07-13 22:14" [ref=f2e829]
+            - cell [ref=f2e830]
+            - cell "-1" [ref=f2e833]
+            - cell "162" [ref=f2e834]
+            - cell "System" [ref=f2e835]
+            - cell "#1290" [ref=f2e836]
+          - row [ref=f2e838]:
+            - cell "2026-07-13 22:10" [ref=f2e839]
+            - cell [ref=f2e840]
+            - cell "-1" [ref=f2e843]
+            - cell "163" [ref=f2e844]
+            - cell "System" [ref=f2e845]
+            - cell "#1305" [ref=f2e846]
+          - row [ref=f2e848]:
+            - cell "2026-07-13 22:09" [ref=f2e849]
+            - cell [ref=f2e850]
+            - cell "-2" [ref=f2e853]
+            - cell "164" [ref=f2e854]
+            - cell "System" [ref=f2e855]
+            - cell "#1304" [ref=f2e856]
+          - row [ref=f2e858]:
+            - cell "2026-07-13 22:04" [ref=f2e859]
+            - cell [ref=f2e860]
+            - cell "-2" [ref=f2e863]
+            - cell "166" [ref=f2e864]
+            - cell "System" [ref=f2e865]
+            - cell "#1351" [ref=f2e866]
+          - row [ref=f2e868]:
+            - cell "2026-07-13 22:01" [ref=f2e869]
+            - cell [ref=f2e870]
+            - cell "-1" [ref=f2e873]
+            - cell "168" [ref=f2e874]
+            - cell "System" [ref=f2e875]
+            - cell "#1356" [ref=f2e876]
+          - row [ref=f2e878]:
+            - cell "2026-07-13 21:59" [ref=f2e879]
+            - cell [ref=f2e880]
+            - cell "-3" [ref=f2e883]
+            - cell "169" [ref=f2e884]
+            - cell "System" [ref=f2e885]
+            - cell "#1322" [ref=f2e886]
+          - row [ref=f2e888]:
+            - cell "2026-07-13 21:57" [ref=f2e889]
+            - cell [ref=f2e890]
+            - cell "-2" [ref=f2e893]
+            - cell "172" [ref=f2e894]
+            - cell "System" [ref=f2e895]
+            - cell "#1312" [ref=f2e896]
+          - row [ref=f2e898]:
+            - cell "2026-07-13 21:56" [ref=f2e899]
+            - cell [ref=f2e900]
+            - cell "-3" [ref=f2e903]
+            - cell "174" [ref=f2e904]
+            - cell "System" [ref=f2e905]
+            - cell "#1346" [ref=f2e906]
+          - row [ref=f2e908]:
+            - cell "2026-07-13 21:48" [ref=f2e909]
+            - cell [ref=f2e910]
+            - cell "-1" [ref=f2e913]
+            - cell "177" [ref=f2e914]
+            - cell "System" [ref=f2e915]
+            - cell "#1328" [ref=f2e916]
+          - row [ref=f2e918]:
+            - cell "2026-07-13 21:46" [ref=f2e919]
+            - cell [ref=f2e920]
+            - cell "-1" [ref=f2e923]
+            - cell "178" [ref=f2e924]
+            - cell "System" [ref=f2e925]
+            - cell "#1348" [ref=f2e926]
+          - row [ref=f2e928]:
+            - cell "2026-07-13 21:43" [ref=f2e929]
+            - cell [ref=f2e930]
+            - cell "-2" [ref=f2e933]
+            - cell "179" [ref=f2e934]
+            - cell "System" [ref=f2e935]
+            - cell "#1359" [ref=f2e936]
+          - row [ref=f2e938]:
+            - cell "2026-07-13 21:39" [ref=f2e939]
+            - cell [ref=f2e940]
+            - cell "-3" [ref=f2e943]
+            - cell "181" [ref=f2e944]
+            - cell "System" [ref=f2e945]
+            - cell "#1327" [ref=f2e946]
+          - row [ref=f2e948]:
+            - cell "2026-07-13 21:33" [ref=f2e949]
+            - cell [ref=f2e950]
+            - cell "-1" [ref=f2e953]
+            - cell "184" [ref=f2e954]
+            - cell "System" [ref=f2e955]
+            - cell "#1307" [ref=f2e956]
+          - row [ref=f2e958]:
+            - cell "2026-07-13 21:17" [ref=f2e959]
+            - cell [ref=f2e960]
+            - cell "-2" [ref=f2e963]
+            - cell "185" [ref=f2e964]
+            - cell "System" [ref=f2e965]
+            - cell "#1340" [ref=f2e966]
+          - row [ref=f2e968]:
+            - cell "2026-07-06 22:22" [ref=f2e969]
+            - cell [ref=f2e970]
+            - cell "-1" [ref=f2e973]
+            - cell "12" [ref=f2e974]
+            - cell "System" [ref=f2e975]
+            - cell "#1430" [ref=f2e976]
+          - row [ref=f2e978]:
+            - cell "2026-07-06 22:15" [ref=f2e979]
+            - cell [ref=f2e980]
+            - cell "-4" [ref=f2e983]
+            - cell "13" [ref=f2e984]
+            - cell "System" [ref=f2e985]
+            - cell "#1381" [ref=f2e986]
+          - row [ref=f2e988]:
+            - cell "2026-07-06 22:10" [ref=f2e989]
+            - cell [ref=f2e990]
+            - cell "-2" [ref=f2e993]
+            - cell "17" [ref=f2e994]
+            - cell "System" [ref=f2e995]
+            - cell "#1395" [ref=f2e996]
+          - row [ref=f2e998]:
+            - cell "2026-07-06 22:07" [ref=f2e999]
+            - cell [ref=f2e1000]
+            - cell "-2" [ref=f2e1003]
+            - cell "19" [ref=f2e1004]
+            - cell "System" [ref=f2e1005]
+            - cell "#1427" [ref=f2e1006]
+          - row [ref=f2e1008]:
+            - cell "2026-07-06 22:03" [ref=f2e1009]
+            - cell [ref=f2e1010]
+            - cell "-2" [ref=f2e1013]
+            - cell "21" [ref=f2e1014]
+            - cell "System" [ref=f2e1015]
+            - cell "#1407" [ref=f2e1016]
+          - row [ref=f2e1018]:
+            - cell "2026-07-06 22:02" [ref=f2e1019]
+            - cell [ref=f2e1020]
+            - cell "-1" [ref=f2e1023]
+            - cell "23" [ref=f2e1024]
+            - cell "System" [ref=f2e1025]
+            - cell "#1428" [ref=f2e1026]
+          - row [ref=f2e1028]:
+            - cell "2026-07-06 21:58" [ref=f2e1029]
+            - cell [ref=f2e1030]
+            - cell "-2" [ref=f2e1033]
+            - cell "24" [ref=f2e1034]
+            - cell "System" [ref=f2e1035]
+            - cell "#1422" [ref=f2e1036]
+          - row [ref=f2e1038]:
+            - cell "2026-07-06 21:57" [ref=f2e1039]
+            - cell [ref=f2e1040]
+            - cell "-3" [ref=f2e1043]
+            - cell "26" [ref=f2e1044]
+            - cell "System" [ref=f2e1045]
+            - cell "#1405" [ref=f2e1046]
+          - row [ref=f2e1048]:
+            - cell "2026-07-06 21:55" [ref=f2e1049]
+            - cell [ref=f2e1050]
+            - cell "-1" [ref=f2e1053]
+            - cell "29" [ref=f2e1054]
+            - cell "System" [ref=f2e1055]
+            - cell "#1438" [ref=f2e1056]
+          - row [ref=f2e1058]:
+            - cell "2026-07-06 21:49" [ref=f2e1059]
+            - cell [ref=f2e1060]
+            - cell "-2" [ref=f2e1063]
+            - cell "30" [ref=f2e1064]
+            - cell "System" [ref=f2e1065]
+            - cell "#1385" [ref=f2e1066]
+          - row [ref=f2e1068]:
+            - cell "2026-07-06 21:49" [ref=f2e1069]
+            - cell [ref=f2e1070]
+            - cell "-2" [ref=f2e1073]
+            - cell "32" [ref=f2e1074]
+            - cell "System" [ref=f2e1075]
+            - cell "#1372" [ref=f2e1076]
+          - row [ref=f2e1078]:
+            - cell "2026-07-06 21:46" [ref=f2e1079]
+            - cell [ref=f2e1080]
+            - cell "-1" [ref=f2e1083]
+            - cell "34" [ref=f2e1084]
+            - cell "System" [ref=f2e1085]
+            - cell "#1418" [ref=f2e1086]
+          - row [ref=f2e1088]:
+            - cell "2026-07-06 21:45" [ref=f2e1089]
+            - cell [ref=f2e1090]
+            - cell "-1" [ref=f2e1093]
+            - cell "35" [ref=f2e1094]
+            - cell "System" [ref=f2e1095]
+            - cell "#1365" [ref=f2e1096]
+          - row [ref=f2e1098]:
+            - cell "2026-07-06 21:45" [ref=f2e1099]
+            - cell [ref=f2e1100]
+            - cell "-2" [ref=f2e1103]
+            - cell "36" [ref=f2e1104]
+            - cell "System" [ref=f2e1105]
+            - cell "#1387" [ref=f2e1106]
+          - row [ref=f2e1108]:
+            - cell "2026-07-06 21:35" [ref=f2e1109]
+            - cell [ref=f2e1110]
+            - cell "-1" [ref=f2e1113]
+            - cell "38" [ref=f2e1114]
+            - cell "System" [ref=f2e1115]
+            - cell "#1411" [ref=f2e1116]
+          - row [ref=f2e1118]:
+            - cell "2026-07-06 21:33" [ref=f2e1119]
+            - cell [ref=f2e1120]
+            - cell "-1" [ref=f2e1123]
+            - cell "39" [ref=f2e1124]
+            - cell "System" [ref=f2e1125]
+            - cell "#1420" [ref=f2e1126]
+          - row [ref=f2e1128]:
+            - cell "2026-07-06 21:31" [ref=f2e1129]
+            - cell [ref=f2e1130]
+            - cell "-2" [ref=f2e1133]
+            - cell "40" [ref=f2e1134]
+            - cell "System" [ref=f2e1135]
+            - cell "#1375" [ref=f2e1136]
+          - row [ref=f2e1138]:
+            - cell "2026-07-06 21:30" [ref=f2e1139]
+            - cell [ref=f2e1140]
+            - cell "-4" [ref=f2e1143]
+            - cell "42" [ref=f2e1144]
+            - cell "System" [ref=f2e1145]
+            - cell "#1384" [ref=f2e1146]
+          - row [ref=f2e1148]:
+            - cell "2026-07-06 21:09" [ref=f2e1149]
+            - cell [ref=f2e1150]
+            - cell "-1" [ref=f2e1153]
+            - cell "46" [ref=f2e1154]
+            - cell "System" [ref=f2e1155]
+            - cell "#1424" [ref=f2e1156]
+          - row [ref=f2e1158]:
+            - cell "2026-07-06 21:01" [ref=f2e1159]
+            - cell [ref=f2e1160]
+            - cell "-2" [ref=f2e1163]
+            - cell "47" [ref=f2e1164]
+            - cell "System" [ref=f2e1165]
+            - cell "#1378" [ref=f2e1166]
+          - row [ref=f2e1168]:
+            - cell "2026-07-06 18:00" [ref=f2e1169]
+            - cell [ref=f2e1170]
+            - cell "+44" [ref=f2e1173]
+            - cell "49" [ref=f2e1174]
+            - cell "System" [ref=f2e1175]
+            - cell "Match-day delivery — GNK Dinamo Zagreb - NK Istra 1961" [ref=f2e1176]
+          - row [ref=f2e1177]:
+            - cell "2026-06-08 22:30" [ref=f2e1178]
+            - cell [ref=f2e1179]
+            - cell "-4" [ref=f2e1182]
+            - cell "16" [ref=f2e1183]
+            - cell "System" [ref=f2e1184]
+            - cell "#1555" [ref=f2e1185]
+          - row [ref=f2e1187]:
+            - cell "2026-06-08 22:24" [ref=f2e1188]
+            - cell [ref=f2e1189]
+            - cell "-2" [ref=f2e1192]
+            - cell "20" [ref=f2e1193]
+            - cell "System" [ref=f2e1194]
+            - cell "#1525" [ref=f2e1195]
+          - row [ref=f2e1197]:
+            - cell "2026-06-08 22:12" [ref=f2e1198]
+            - cell [ref=f2e1199]
+            - cell "-1" [ref=f2e1202]
+            - cell "22" [ref=f2e1203]
+            - cell "System" [ref=f2e1204]
+            - cell "#1576" [ref=f2e1205]
+          - row [ref=f2e1207]:
+            - cell "2026-06-08 21:59" [ref=f2e1208]
+            - cell [ref=f2e1209]
+            - cell "-4" [ref=f2e1212]
+            - cell "23" [ref=f2e1213]
+            - cell "System" [ref=f2e1214]
+            - cell "#1535" [ref=f2e1215]
+          - row [ref=f2e1217]:
+            - cell "2026-06-08 21:57" [ref=f2e1218]
+            - cell [ref=f2e1219]
+            - cell "+4" [ref=f2e1222]
+            - cell "27" [ref=f2e1223]
+            - cell "System" [ref=f2e1224]
+            - cell "#1566" [ref=f2e1225]
+          - row [ref=f2e1227]:
+            - cell "2026-06-08 21:55" [ref=f2e1228]
+            - cell [ref=f2e1229]
+            - cell "-1" [ref=f2e1232]
+            - cell "23" [ref=f2e1233]
+            - cell "System" [ref=f2e1234]
+            - cell "#1528" [ref=f2e1235]
+      - button "Close" [ref=f2e1238] [cursor=pointer]
+  - 'generic "API database: Supabase · Development"': "DB: Supabase"

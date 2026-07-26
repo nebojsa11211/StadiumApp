@@ -1,0 +1,95 @@
+- generic [ref=f1e135]:
+  - banner [ref=f1e136]:
+    - generic [ref=f1e137]:
+      - generic [ref=f1e138]: 
+      - text: Stadium Ticketing Simulator
+    - generic [ref=f1e139]: external system stand-in
+    - combobox [ref=f1e142]:
+      - option "Hrvatski"
+      - option "English" [selected]
+  - navigation [ref=f1e143]:
+    - link " Simulator" [ref=f1e144] [cursor=pointer]:
+      - /url: /
+      - generic [ref=f1e145]: 
+      - text: Simulator
+    - link " Season generator" [ref=f1e146] [cursor=pointer]:
+      - /url: season-generator
+      - generic [ref=f1e147]: 
+      - text: Season generator
+    - link " Credentials" [ref=f1e148] [cursor=pointer]:
+      - /url: credentials
+      - generic [ref=f1e149]: 
+      - text: Credentials
+  - main [ref=f1e150]:
+    - generic [ref=f1e151]:
+      - heading " Season generator" [level=5] [ref=f1e152]:
+        - generic [ref=f1e153]: 
+        - text: Season generator
+      - paragraph [ref=f1e154]: "Builds a whole season of fixtures in one run: played matches (with attendance and drink orders) and upcoming ones still selling. Each fixture is created through the same integration path a real ticketing feed uses, so existing season passes are extended to cover it."
+      - generic [ref=f1e77]:
+        - generic [ref=f1e78]:
+          - generic [ref=f1e79]: Season
+          - combobox "Season" [ref=f1e80]:
+            - option "Pass verification ★ · 0 events · 0 passes" [selected]
+            - option "2026/2027 (simulator) · 14 events · 0 passes"
+            - option "2026/2027 — not from this simulator, cannot be used" [disabled]
+          - generic [ref=f1e81]: Fixtures are added to this season; season passes extend to each new match.
+        - generic [ref=f1e82]:
+          - generic [ref=f1e83]: Played matches
+          - spinbutton "Played matches" [ref=f1e84]: "2"
+        - generic [ref=f1e85]:
+          - generic [ref=f1e86]: Upcoming matches
+          - spinbutton "Upcoming matches" [ref=f1e87]: "2"
+        - generic [ref=f1e88]:
+          - generic [ref=f1e89]: Base price (EUR)
+          - spinbutton "Base price (EUR)" [ref=f1e90]: "25"
+        - generic [ref=f1e91]:
+          - generic [ref=f1e92]: Days apart
+          - spinbutton "Days apart" [ref=f1e93]: "7"
+        - generic [ref=f1e94]:
+          - generic [ref=f1e95]: Home team
+          - textbox "Home team" [ref=f1e96]: NK Istra
+        - generic [ref=f1e97]:
+          - generic [ref=f1e98]: Opponents
+          - textbox "Opponents" [ref=f1e99]: HNK Hajduk Split, HNK Rijeka, NK Osijek, NK Slaven Belupo, NK Lokomotiva, NK Varaždin, HNK Gorica, HNK Šibenik, NK Istra 1961, NK Rudeš
+          - generic [ref=f1e100]: Comma-separated; used in order and reused if there are more fixtures than names.
+        - generic [ref=f1e101]:
+          - generic [ref=f1e102]: Season passes
+          - generic [ref=f1e103]:
+            - spinbutton "Season passes" [ref=f1e104]: "10"
+            - generic [ref=f1e105]: "%"
+          - generic [ref=f1e106]:
+            - text: Share of the ground held by season-pass holders, sold before the fixtures so every match counts them.
+            - generic [ref=f1e107]: · 20 pass seats
+        - generic [ref=f1e108]:
+          - generic [ref=f1e109]: Played match attendance
+          - generic [ref=f1e110]:
+            - spinbutton [ref=f1e111]: "40"
+            - generic [ref=f1e112]: –
+            - spinbutton [ref=f1e113]: "50"
+            - generic [ref=f1e114]: "%"
+        - generic [ref=f1e115]:
+          - generic [ref=f1e116]: Upcoming match sales
+          - generic [ref=f1e117]:
+            - spinbutton [ref=f1e118]: "10"
+            - generic [ref=f1e119]: –
+            - spinbutton [ref=f1e120]: "20"
+            - generic [ref=f1e121]: "%"
+          - generic [ref=f1e122]:
+            - text: Applied nearest-first, so the next match has sold the most.
+            - generic [ref=f1e123]: · stadium holds 200
+        - generic [ref=f1e125]:
+          - generic [ref=f1e126]:
+            - checkbox "Generate drink orders for played matches" [checked] [ref=f1e127]
+            - generic [ref=f1e128]: Generate drink orders for played matches
+          - generic [ref=f1e129]:
+            - checkbox "Settle attendance (attended / no-show / refunded)" [checked] [ref=f1e130]
+            - generic [ref=f1e131]: Settle attendance (attended / no-show / refunded)
+        - generic [ref=f1e132]:
+          - button "Generate 4 fixtures" [disabled]
+          - generic [ref=f1e156]: Selling season passes 0/20…
+      - separator [ref=f1e157]
+      - generic [ref=f1e158]:
+        - generic [ref=f1e159]: "[22:50:23] 🎟 Selling 20 season pass(es) before the fixtures (10% of 200 seats)"
+        - generic [ref=f1e160]: "[22:50:23] ▶ Pass verification: 2 played + 2 upcoming fixtures"
+  - 'generic "API database: Supabase · Development"': "DB: Supabase"

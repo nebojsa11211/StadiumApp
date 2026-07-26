@@ -1,0 +1,403 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: 
+      - text: Stadium Ticketing Simulator
+    - generic [ref=e6]: external system stand-in
+    - combobox [ref=e9]:
+      - option "Hrvatski"
+      - option "English" [selected]
+  - navigation [ref=e10]:
+    - link " Simulator" [ref=e11] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e12]: 
+      - text: Simulator
+    - link " Season generator" [ref=e13] [cursor=pointer]:
+      - /url: season-generator
+      - generic [ref=e14]: 
+      - text: Season generator
+    - link " Credentials" [ref=e15] [cursor=pointer]:
+      - /url: credentials
+      - generic [ref=e16]: 
+      - text: Credentials
+  - main [ref=e17]:
+    - heading "External Ticketing Simulator" [level=1] [ref=e18]
+    - paragraph [ref=e19]: Stands in for the real ticketing system. Create an event and simulate sales — everything syncs to the Stadium app via signed webhooks.
+    - generic [ref=e20]:
+      - generic [ref=e21]: 
+      - text: "API:"
+      - code [ref=e22]: https://localhost:7010/
+      - text: · 1 sections discovered
+      - button "Reload" [ref=e23] [cursor=pointer]
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - generic [ref=e27]: 
+          - text: Stadium
+        - generic [ref=e28]: 1 sectors
+        - button " Details" [ref=e29] [cursor=pointer]:
+          - generic [ref=e30]: 
+          - text: Details
+      - generic [ref=e32]:
+        - generic [ref=e34]:
+          - generic [ref=e35]: "1"
+          - generic [ref=e36]: Sectors
+        - generic [ref=e38]:
+          - generic [ref=e39]: "200"
+          - generic [ref=e40]: Seats
+        - generic [ref=e42]:
+          - generic [ref=e43]: "10"
+          - generic [ref=e44]: Rows
+        - generic [ref=e46]:
+          - generic [ref=e47]: "1"
+          - generic [ref=e48]: Sector types
+    - generic [ref=e49]:
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - generic [ref=e52]: 
+          - text: 0. Seasons
+        - generic [ref=e53]: "2"
+        - button "Refresh" [ref=e54] [cursor=pointer]
+      - generic [ref=e55]:
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]: Season name
+            - textbox "2026/2027" [ref=e59]
+          - generic [ref=e60]:
+            - generic [ref=e61]: Starts
+            - textbox [ref=e62]: 2026-08-01
+          - generic [ref=e63]:
+            - generic [ref=e64]: Ends
+            - textbox [ref=e65]: 2027-05-31
+          - generic [ref=e67]:
+            - checkbox [checked] [ref=e68]
+            - generic [ref=e69]: Set current
+          - button " Create" [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: 
+            - text: Create
+        - table [ref=e73]:
+          - rowgroup [ref=e74]:
+            - row [ref=e75]:
+              - columnheader "Season" [ref=e76]
+              - columnheader "Window" [ref=e77]
+              - columnheader "Current" [ref=e78]
+              - columnheader "Events" [ref=e79]
+              - columnheader "Passes" [ref=e80]
+              - columnheader "Action" [ref=e81]
+          - rowgroup [ref=e82]:
+            - row [ref=e83]:
+              - cell [ref=e84]:
+                - strong [ref=e85]: 2026/2027
+                - generic [ref=e86]:
+                  - text: "#2 ·"
+                  - code
+              - cell "2026-07-01 → 2027-05-31" [ref=e87]
+              - cell [ref=e88]
+              - cell "0" [ref=e89]
+              - cell "0" [ref=e90]
+              - cell "selected" [ref=e91]
+            - row [ref=e93]:
+              - cell [ref=e94]:
+                - strong [ref=e95]: 2026/2027 (simulator)
+                - generic [ref=e96]:
+                  - text: "#3 ·"
+                  - code [ref=e97]: SEASON-7BEAF969
+              - cell "2026-01-01 → 2027-05-31" [ref=e98]
+              - cell "current" [ref=e99]
+              - cell "14" [ref=e101]
+              - cell "0" [ref=e102]
+              - cell [ref=e103]:
+                - button "Select" [ref=e104] [cursor=pointer]
+    - generic [ref=e105]:
+      - generic [ref=e106]:
+        - generic [ref=e107]: 
+        - text: 1. Event
+      - generic [ref=e109]:
+        - generic [ref=e110]:
+          - generic [ref=e111]: Type
+          - combobox [ref=e112]:
+            - option "Match" [selected]
+            - option "Concert"
+            - option "Other"
+        - generic [ref=e113]:
+          - generic [ref=e114]: Home team
+          - textbox [ref=e115]: NK Istra
+        - generic [ref=e116]:
+          - generic [ref=e117]: Away team
+          - textbox [ref=e118]: Zagreb
+        - generic [ref=e119]:
+          - generic [ref=e120]: Start
+          - textbox [ref=e121]: 2026-08-02T18:00
+        - generic [ref=e122]:
+          - generic [ref=e123]: End
+          - textbox [ref=e124]: 2026-08-02T20:00
+        - generic [ref=e125]:
+          - generic [ref=e126]: Season
+          - combobox [ref=e127]:
+            - option "(no season)" [selected]
+            - option "2026/2027"
+            - option "2026/2027 (simulator)"
+        - button " Create & sync" [ref=e129] [cursor=pointer]:
+          - generic [ref=e130]: 
+          - text: Create & sync
+    - generic [ref=e131]:
+      - generic [ref=e132]:
+        - generic [ref=e133]:
+          - generic [ref=e134]: 
+          - text: Existing events
+        - generic [ref=e135]: "14"
+        - button "Refresh" [ref=e136] [cursor=pointer]
+      - table [ref=e138]:
+        - rowgroup [ref=e139]:
+          - row [ref=e140]:
+            - columnheader "Event" [ref=e141]
+            - columnheader "Start" [ref=e142]
+            - columnheader "End" [ref=e143]
+            - columnheader "Source" [ref=e144]
+            - columnheader "Sold / Capacity" [ref=e145]
+            - columnheader "Action" [ref=e146]
+        - rowgroup [ref=e147]:
+          - row [ref=e148]:
+            - cell [ref=e149]:
+              - strong [ref=e150]: NK Istra - NK Slaven Belupo
+              - generic [ref=e151]:
+                - text: "#51 ·"
+                - code [ref=e152]: EVT-45A0BAFE8A09
+            - cell "2026-09-13 15:00" [ref=e153]
+            - cell "2026-09-13 17:00" [ref=e154]
+            - cell "TicketingSimulator" [ref=e155]
+            - cell "16 / 200" [ref=e156]
+            - cell [ref=e157]:
+              - button " Select" [ref=e158] [cursor=pointer]:
+                - generic [ref=e159]: 
+                - text: Select
+              - button " Delete" [ref=e160] [cursor=pointer]:
+                - generic [ref=e161]: 
+                - text: Delete
+          - row [ref=e162]:
+            - cell [ref=e163]:
+              - strong [ref=e164]: NK Istra - NK Osijek
+              - generic [ref=e165]:
+                - text: "#50 ·"
+                - code [ref=e166]: EVT-8B2E80190B4D
+            - cell "2026-09-06 20:00" [ref=e167]
+            - cell "2026-09-06 22:00" [ref=e168]
+            - cell "TicketingSimulator" [ref=e169]
+            - cell "20 / 200" [ref=e170]
+            - cell [ref=e171]:
+              - button " Select" [ref=e172] [cursor=pointer]:
+                - generic [ref=e173]: 
+                - text: Select
+              - button " Delete" [ref=e174] [cursor=pointer]:
+                - generic [ref=e175]: 
+                - text: Delete
+          - row [ref=e176]:
+            - cell [ref=e177]:
+              - strong [ref=e178]: NK Istra - HNK Rijeka
+              - generic [ref=e179]:
+                - text: "#49 ·"
+                - code [ref=e180]: EVT-B9E8EEA4C3B6
+            - cell "2026-08-30 20:00" [ref=e181]
+            - cell "2026-08-30 22:00" [ref=e182]
+            - cell "TicketingSimulator" [ref=e183]
+            - cell "30 / 200" [ref=e184]
+            - cell [ref=e185]:
+              - button " Select" [ref=e186] [cursor=pointer]:
+                - generic [ref=e187]: 
+                - text: Select
+              - button " Delete" [ref=e188] [cursor=pointer]:
+                - generic [ref=e189]: 
+                - text: Delete
+          - row [ref=e190]:
+            - cell [ref=e191]:
+              - strong [ref=e192]: NK Istra - HNK Hajduk Split
+              - generic [ref=e193]:
+                - text: "#48 ·"
+                - code [ref=e194]: EVT-0D8051614D90
+            - cell "2026-08-23 17:00" [ref=e195]
+            - cell "2026-08-23 19:00" [ref=e196]
+            - cell "TicketingSimulator" [ref=e197]
+            - cell "46 / 200" [ref=e198]
+            - cell [ref=e199]:
+              - button " Select" [ref=e200] [cursor=pointer]:
+                - generic [ref=e201]: 
+                - text: Select
+              - button " Delete" [ref=e202] [cursor=pointer]:
+                - generic [ref=e203]: 
+                - text: Delete
+          - row [ref=e204]:
+            - cell [ref=e205]:
+              - strong [ref=e206]: NK Istra - NK Rudeš
+              - generic [ref=e207]:
+                - text: "#47 ·"
+                - code [ref=e208]: EVT-D742904C3F8C
+            - cell "2026-08-16 15:00" [ref=e209]
+            - cell "2026-08-16 17:00" [ref=e210]
+            - cell "TicketingSimulator" [ref=e211]
+            - cell "52 / 200" [ref=e212]
+            - cell [ref=e213]:
+              - button " Select" [ref=e214] [cursor=pointer]:
+                - generic [ref=e215]: 
+                - text: Select
+              - button " Delete" [ref=e216] [cursor=pointer]:
+                - generic [ref=e217]: 
+                - text: Delete
+          - row [ref=e218]:
+            - cell [ref=e219]:
+              - strong [ref=e220]: NK Istra - NK Istra 1961
+              - generic [ref=e221]:
+                - text: "#46 ·"
+                - code [ref=e222]: EVT-6DF8E815BD2D
+            - cell "2026-08-09 20:00" [ref=e223]
+            - cell "2026-08-09 22:00" [ref=e224]
+            - cell "TicketingSimulator" [ref=e225]
+            - cell "62 / 200" [ref=e226]
+            - cell [ref=e227]:
+              - button " Select" [ref=e228] [cursor=pointer]:
+                - generic [ref=e229]: 
+                - text: Select
+              - button " Delete" [ref=e230] [cursor=pointer]:
+                - generic [ref=e231]: 
+                - text: Delete
+          - row [ref=e232]:
+            - cell [ref=e233]:
+              - strong [ref=e234]: NK Istra - HNK Šibenik
+              - generic [ref=e235]:
+                - text: "#45 ·"
+                - code [ref=e236]: EVT-0CCB929B586C
+            - cell "2026-08-02 15:00" [ref=e237]
+            - cell "2026-08-02 17:00" [ref=e238]
+            - cell "TicketingSimulator" [ref=e239]
+            - cell "90 / 200" [ref=e240]
+            - cell [ref=e241]:
+              - button " Select" [ref=e242] [cursor=pointer]:
+                - generic [ref=e243]: 
+                - text: Select
+              - button " Delete" [ref=e244] [cursor=pointer]:
+                - generic [ref=e245]: 
+                - text: Delete
+          - row [ref=e246]:
+            - cell [ref=e247]:
+              - strong [ref=e248]: NK Istra - HNK Gorica
+              - generic [ref=e249]:
+                - text: "#44 ·"
+                - code [ref=e250]: EVT-B60A5648F758
+            - cell "2026-06-13 19:00" [ref=e251]
+            - cell "2026-06-13 21:00" [ref=e252]
+            - cell "TicketingSimulator" [ref=e253]
+            - cell "147 / 200" [ref=e254]
+            - cell [ref=e255]:
+              - button " Select" [ref=e256] [cursor=pointer]:
+                - generic [ref=e257]: 
+                - text: Select
+              - button " Delete" [ref=e258] [cursor=pointer]:
+                - generic [ref=e259]: 
+                - text: Delete
+          - row [ref=e260]:
+            - cell [ref=e261]:
+              - strong [ref=e262]: NK Istra - NK Varaždin
+              - generic [ref=e263]:
+                - text: "#43 ·"
+                - code [ref=e264]: EVT-51F90F00ECCF
+            - cell "2026-06-20 17:00" [ref=e265]
+            - cell "2026-06-20 19:00" [ref=e266]
+            - cell "TicketingSimulator" [ref=e267]
+            - cell "120 / 200" [ref=e268]
+            - cell [ref=e269]:
+              - button " Select" [ref=e270] [cursor=pointer]:
+                - generic [ref=e271]: 
+                - text: Select
+              - button " Delete" [ref=e272] [cursor=pointer]:
+                - generic [ref=e273]: 
+                - text: Delete
+          - row [ref=e274]:
+            - cell [ref=e275]:
+              - strong [ref=e276]: NK Istra - NK Lokomotiva
+              - generic [ref=e277]:
+                - text: "#42 ·"
+                - code [ref=e278]: EVT-CD0AA7A40C8C
+            - cell "2026-06-27 17:00" [ref=e279]
+            - cell "2026-06-27 19:00" [ref=e280]
+            - cell "TicketingSimulator" [ref=e281]
+            - cell "129 / 200" [ref=e282]
+            - cell [ref=e283]:
+              - button " Select" [ref=e284] [cursor=pointer]:
+                - generic [ref=e285]: 
+                - text: Select
+              - button " Delete" [ref=e286] [cursor=pointer]:
+                - generic [ref=e287]: 
+                - text: Delete
+          - row [ref=e288]:
+            - cell [ref=e289]:
+              - strong [ref=e290]: NK Istra - NK Slaven Belupo
+              - generic [ref=e291]:
+                - text: "#41 ·"
+                - code [ref=e292]: EVT-81E58A3F3E56
+            - cell "2026-07-04 19:00" [ref=e293]
+            - cell "2026-07-04 21:00" [ref=e294]
+            - cell "TicketingSimulator" [ref=e295]
+            - cell "172 / 200" [ref=e296]
+            - cell [ref=e297]:
+              - button " Select" [ref=e298] [cursor=pointer]:
+                - generic [ref=e299]: 
+                - text: Select
+              - button " Delete" [ref=e300] [cursor=pointer]:
+                - generic [ref=e301]: 
+                - text: Delete
+          - row [ref=e302]:
+            - cell [ref=e303]:
+              - strong [ref=e304]: NK Istra - NK Osijek
+              - generic [ref=e305]:
+                - text: "#40 ·"
+                - code [ref=e306]: EVT-E79CBA925392
+            - cell "2026-07-11 15:00" [ref=e307]
+            - cell "2026-07-11 17:00" [ref=e308]
+            - cell "TicketingSimulator" [ref=e309]
+            - cell "120 / 200" [ref=e310]
+            - cell [ref=e311]:
+              - button " Select" [ref=e312] [cursor=pointer]:
+                - generic [ref=e313]: 
+                - text: Select
+              - button " Delete" [ref=e314] [cursor=pointer]:
+                - generic [ref=e315]: 
+                - text: Delete
+          - row [ref=e316]:
+            - cell [ref=e317]:
+              - strong [ref=e318]: NK Istra - HNK Rijeka
+              - generic [ref=e319]:
+                - text: "#39 ·"
+                - code [ref=e320]: EVT-04525CB09F19
+            - cell "2026-07-18 19:00" [ref=e321]
+            - cell "2026-07-18 21:00" [ref=e322]
+            - cell "TicketingSimulator" [ref=e323]
+            - cell "161 / 200" [ref=e324]
+            - cell [ref=e325]:
+              - button " Select" [ref=e326] [cursor=pointer]:
+                - generic [ref=e327]: 
+                - text: Select
+              - button " Delete" [ref=e328] [cursor=pointer]:
+                - generic [ref=e329]: 
+                - text: Delete
+          - row [ref=e330]:
+            - cell [ref=e331]:
+              - strong [ref=e332]: NK Istra - HNK Hajduk Split
+              - generic [ref=e333]:
+                - text: "#38 ·"
+                - code [ref=e334]: EVT-1AE8AD7483F5
+            - cell "2026-07-25 19:00" [ref=e335]
+            - cell "2026-07-25 21:00" [ref=e336]
+            - cell "TicketingSimulator" [ref=e337]
+            - cell "146 / 200" [ref=e338]
+            - cell [ref=e339]:
+              - button " Select" [ref=e340] [cursor=pointer]:
+                - generic [ref=e341]: 
+                - text: Select
+              - button " Delete" [ref=e342] [cursor=pointer]:
+                - generic [ref=e343]: 
+                - text: Delete
+    - generic [ref=e344]:
+      - generic [ref=e345]:
+        - generic [ref=e346]: 
+        - text: Activity log
+      - generic [ref=e347]: No activity yet.
+  - 'generic "API database: Supabase · Development"': "DB: Supabase"

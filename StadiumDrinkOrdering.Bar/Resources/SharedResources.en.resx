@@ -742,6 +742,41 @@
   <data name="TicketTopup_NavLabel" xml:space="preserve">
     <value>Top-up</value>
   </data>
+  <data name="CupReturns_NavLabel" xml:space="preserve"><value>Cup returns</value></data>
+  <data name="CupReturns_PageTitle" xml:space="preserve"><value>Cup returns</value></data>
+  <data name="CupReturns_Heading" xml:space="preserve"><value>Reusable cup returns</value></data>
+  <data name="CupReturns_Subtitle" xml:space="preserve"><value>Scan the customer's ticket to refund their cup deposits.</value></data>
+  <data name="CupReturns_LoginRequired" xml:space="preserve"><value>Please log in to process cup returns.</value></data>
+  <data name="CupReturns_IdentifyLabel" xml:space="preserve"><value>Ticket QR or number</value></data>
+  <data name="CupReturns_CodePlaceholder" xml:space="preserve"><value>Scan or type the ticket code</value></data>
+  <data name="CupReturns_ResolveBtn" xml:space="preserve"><value>Find</value></data>
+  <data name="CupReturns_ScanBtn" xml:space="preserve"><value>Scan ticket</value></data>
+  <data name="CupReturns_ScanningHint" xml:space="preserve"><value>Point the camera at the ticket QR code.</value></data>
+  <data name="CupReturns_StopScanBtn" xml:space="preserve"><value>Stop scanning</value></data>
+  <data name="CupReturns_ScannerUnsupported" xml:space="preserve"><value>This device can't scan QR codes — type the code instead.</value></data>
+  <data name="CupReturns_NotFound" xml:space="preserve"><value>No ticket matched that code.</value></data>
+  <data name="CupReturns_ResolveError" xml:space="preserve"><value>Could not look up that ticket. Try again.</value></data>
+  <data name="CupReturns_Ticket" xml:space="preserve"><value>Ticket</value></data>
+  <data name="CupReturns_OutstandingCups" xml:space="preserve"><value>cups out</value></data>
+  <data name="CupReturns_Refundable" xml:space="preserve"><value>Refundable</value></data>
+  <data name="CupReturns_NoneOutstanding" xml:space="preserve"><value>No cup deposits are outstanding for this ticket.</value></data>
+  <data name="CupReturns_CountLabel" xml:space="preserve"><value>Cups being returned</value></data>
+  <data name="CupReturns_RefundBtn" xml:space="preserve"><value>Refund</value></data>
+  <data name="CupReturns_SuccessTitle" xml:space="preserve"><value>Deposit refunded</value></data>
+  <data name="CupReturns_RefundedSummary" xml:space="preserve"><value>{0} cup(s) returned — {1} refunded.</value></data>
+  <data name="CupReturns_NewBalance" xml:space="preserve"><value>Wallet balance</value></data>
+  <data name="CupReturns_Fail" xml:space="preserve"><value>The return could not be completed.</value></data>
+  <data name="CupReturns_Reset" xml:space="preserve"><value>New return</value></data>
+  <data name="CupReturns_HonorTitle" xml:space="preserve"><value>Honor-system cups</value></data>
+  <data name="CupReturns_HonorHint" xml:space="preserve"><value>Return trust-based cups in bulk (no deposit, no refund).</value></data>
+  <data name="CupReturns_HonorReturnBtn" xml:space="preserve"><value>Return</value></data>
+  <data name="CupReturns_HonorDone" xml:space="preserve"><value>{0} honor cup(s) recorded as returned.</value></data>
+  <data name="CupReturns_AssignTitle" xml:space="preserve"><value>Assign a cup to this ticket</value></data>
+  <data name="CupReturns_AssignHint" xml:space="preserve"><value>Scan the physical cup as you hand it over, so it can be returned by scanning the cup.</value></data>
+  <data name="CupReturns_AssignPlaceholder" xml:space="preserve"><value>Scan or enter the cup code</value></data>
+  <data name="CupReturns_AssignBtn" xml:space="preserve"><value>Assign</value></data>
+  <data name="CupReturns_AssignOk" xml:space="preserve"><value>Cup assigned. {0} still unassigned on this ticket.</value></data>
+  <data name="CupReturns_AssignFail" xml:space="preserve"><value>Could not assign that cup.</value></data>
   <data name="TicketTopup_PageTitle" xml:space="preserve">
     <value>Wallet top-up</value>
   </data>

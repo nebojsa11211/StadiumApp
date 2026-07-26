@@ -39,6 +39,9 @@ builder.Services.AddHttpClient<SimulatorApiClient>(client =>
     ServerCertificateCustomValidationCallback = (_, _, _, _) => true
 });
 
+// Shared season-pass selling, used by both the manual home-page controls and the season generator.
+builder.Services.AddScoped<SeasonPassSeller>();
+
 // Typed client for the small "which database" diagnostic badge (anonymous /api/system/info).
 builder.Services.AddHttpClient<StadiumDrinkOrdering.UI.SystemInfoClient>(client =>
 {

@@ -313,6 +313,7 @@ builder.Services.AddScoped<DatabaseHealthCheck>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IWalletService, WalletService>();
+builder.Services.AddScoped<ICupService, CupService>();
 // Wallet deposit gateway: Mock (synchronous, default for dev) or Stripe (async intent + webhook).
 // Selected via WalletGateway:Provider so switching to real payments is config-only.
 var walletGatewayProvider = builder.Configuration.GetValue<string>("WalletGateway:Provider") ?? "Mock";
@@ -398,6 +399,11 @@ builder.Services.AddHostedService<WalletReconciliationBackgroundService>();
 // 5 min). Gated on EventLifecycle:AutoCompleteEnabled (default true); scans only the few live events
 // per pass, so it is far lighter than the log/rate cleanup services that were disabled above.
 builder.Services.AddHostedService<EventStatusTransitionService>();
+
+// Reusable-cup breakage sweep: forfeits held cup deposits whose refund window has elapsed (event over),
+// turning the liability into breakage. Gated on Cups:BreakageSweepEnabled (default true); a NoExpiry
+// venue window forfeits nothing. See docs/reusable-cups-design.md.
+builder.Services.AddHostedService<CupBreakageSweepService>();
 
 // Stripe Configuration
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));

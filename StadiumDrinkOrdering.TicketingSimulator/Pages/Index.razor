@@ -2,6 +2,7 @@
 @page "/simulator"
 @using StadiumDrinkOrdering.Shared.DTOs.Integration
 @inject SimulatorApiClient Api
+@inject SeasonPassSeller PassSeller
 @inject IStringLocalizer<SharedResources> Localizer
 @inject IJSRuntime JSRuntime
 @implements IDisposable
@@ -994,10 +995,11 @@
             var venue = await Api.GetVenueAsync();
             if (venue is null) return;
 
-            // Prefer the club flagged primary; fall back to the venue's free-text club label.
-            var primary = venue.Clubs.FirstOrDefault(c => c.IsPrimary) ?? venue.Clubs.FirstOrDefault();
-            var name = primary?.Name;
-            if (string.IsNullOrWhiteSpace(name)) name = venue.ClubName;
+            // The venue's own club label is the authoritative home side; the resident Clubs list is
+            // only a fallback for a venue whose club name hasn't been filled in.
+            var name = venue.ClubName;
+            if (string.IsNullOrWhiteSpace(name))
+                name = (venue.Clubs.FirstOrDefault(c => c.IsPrimary) ?? venue.Clubs.FirstOrDefault())?.Name;
             if (string.IsNullOrWhiteSpace(name)) return;
 
             homeTeam = name!.Trim();
@@ -1112,15 +1114,13 @@
         busy = true;
         try
         {
-            int made = 0, failed = 0;
-            for (var i = 0; i < count; i++)
-            {
-                var sector = PickWeightedSector();
-                var result = await SellOneSeasonTicketAsync(sector.SectionCode);
-                if (result != null) made++; else failed++;
-                if (i % 10 == 0) await InvokeAsync(StateHasChanged); // periodic progress refresh
-            }
-            Log($"🎟 Bulk season passes: {made} sold across sectors" + (failed > 0 ? $", {failed} failed (sector full?)" : ""));
+            var batch = await PassSeller.SellBatchAsync(
+                selectedSeasonExternalId!, sections, count,
+                onProgress: _ => InvokeAsync(StateHasChanged)); // periodic progress refresh
+            seasonTicketIds.AddRange(batch.ExternalIds);
+
+            Log($"🎟 Bulk season passes: {batch.Sold} sold across sectors"
+                + (batch.Failed > 0 ? $", {batch.Failed} failed (sector full?): {batch.FirstError}" : ""));
             await LoadSeasonsAsync();
             await RefreshSeasonOccupancyAsync();
         }
@@ -1130,78 +1130,23 @@
         }
     }
 
-    /// <summary>Sells one season pass into a sector; returns the result on success, null on reject/duplicate/error.</summary>
-    private async Task<TicketingWebhookResult?> SellOneSeasonTicketAsync(string sectorCode)
-    {
-        var extId = "STK-" + Guid.NewGuid().ToString("N")[..12].ToUpperInvariant();
-        var envelope = new TicketingWebhookEnvelope
-        {
-            EventType = TicketingEventTypes.SeasonTicketSold,
-            IdempotencyKey = Guid.NewGuid().ToString(),
-            OccurredAt = DateTime.UtcNow,
-            SourceSystem = Api.SourceSystem,
-            SeasonTicket = new ExternalSeasonTicketDto
-            {
-                ExternalSeasonTicketId = extId,
-                ExternalSeasonId = selectedSeasonExternalId!,
-                SectionCode = sectorCode,
-                // The venue configures a season-pass price per sector; quote it so the pass carries
-                // real money. It is amortized across the season's matches on the receiving side, so
-                // a pass sold at 0 would make every match it covers report no season takings.
-                Price = SeasonPassPriceFor(sectorCode),
-                HolderName = Names[_rng.Next(Names.Length)],
-                HolderOib = RandomOib(),
-                SoldAt = DateTime.UtcNow
-            }
-        };
-        try
-        {
-            var result = await Api.SendAsync(envelope);
-            if (result.Accepted && !result.Duplicate)
-            {
-                seasonTicketIds.Add(extId);
-                return result;
-            }
-            if (!result.Accepted)
-                Log($"⚠ Season ticket {sectorCode} rejected: {result.Message}");
-            return null;
-        }
-        catch (Exception ex)
-        {
-            Log($"⚠ Season ticket error: {ex.Message}");
-            return null;
-        }
-    }
-
     /// <summary>
-    /// What a season pass for this sector sells for: the price the venue configured on the sector
-    /// (stadium drawing tool). Falls back to the sector's single-event price × a nominal 10-match
-    /// season when no season price is set, so a pass never goes out worth nothing — and to 0 only
-    /// when the sector carries no price at all.
+    /// Sells one season pass into a sector; returns the sale on success, null on reject/duplicate/error.
+    /// The sale itself lives in <see cref="SeasonPassSeller"/> so this page and the season generator
+    /// sell passes identically.
     /// </summary>
-    private decimal SeasonPassPriceFor(string sectorCode)
+    private async Task<SeasonPassSeller.Sale?> SellOneSeasonTicketAsync(string sectorCode)
     {
-        var sector = sections.FirstOrDefault(s => s.SectionCode == sectorCode);
-        if (sector?.SeasonTicketPrice is decimal configured && configured > 0)
-            return configured;
-        if (sector?.Price is decimal single && single > 0)
-            return decimal.Round(single * 10m, 2);
-        return 0m;
-    }
-
-    /// <summary>Picks a sector at random, weighted by capacity, so bulk passes spread realistically.</summary>
-    private StadiumSectionInfoDto PickWeightedSector()
-    {
-        var total = sections.Sum(s => s.Capacity);
-        if (total <= 0) return sections[_rng.Next(sections.Count)];
-        var pick = _rng.Next(total);
-        var acc = 0;
-        foreach (var s in sections)
+        var sale = await PassSeller.SellOneAsync(selectedSeasonExternalId!, sections, sectorCode);
+        if (sale.IsNew)
         {
-            acc += s.Capacity;
-            if (pick < acc) return s;
+            seasonTicketIds.Add(sale.ExternalId);
+            return sale;
         }
-        return sections[^1];
+
+        if (!sale.Accepted)
+            Log($"⚠ Season ticket {sectorCode} rejected: {sale.Message}");
+        return null;
     }
 
     /// <summary>

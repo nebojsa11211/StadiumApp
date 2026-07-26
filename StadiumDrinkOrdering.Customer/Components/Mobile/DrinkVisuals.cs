@@ -1,3 +1,5 @@
+using StadiumDrinkOrdering.Shared.Models;
+
 namespace StadiumDrinkOrdering.Customer.Components.Mobile;
 
 /// <summary>
@@ -28,4 +30,4 @@ public static class DrinkVisuals
 }
 
 /// <summary>Payload emitted by the drink detail sheet when the fan confirms an add.</summary>
-public record DrinkOrderRequest(int DrinkId, int Quantity, string? Note);
+public record DrinkOrderRequest(int DrinkId, int Quantity, string? Note, CupMode CupMode = CupMode.None, string? CupQrToken = null);

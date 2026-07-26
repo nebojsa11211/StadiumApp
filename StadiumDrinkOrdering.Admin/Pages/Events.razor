@@ -291,6 +291,14 @@
                                                 id="admin-event-delete-btn-@evt.Id">
                                             <i class="bi bi-trash"></i><span>@L["Events_DeleteButton"]</span>
                                         </button>
+                                        @* Escalation from the delete above: also removes the orders, payments
+                                           and revenue that a plain delete keeps (merely unlinked). *@
+                                        <button class="pill-btn pill-btn--danger" @onclick="() => ShowPurgeModal(evt)"
+                                                disabled="@IsSeasonClosed(evt.SeasonId)"
+                                                title="@(IsSeasonClosed(evt.SeasonId) ? SeasonClosedMessage(evt.SeasonId) : L["Events_PurgeTooltip"].Value)"
+                                                id="admin-event-purge-btn-@evt.Id">
+                                            <i class="bi bi-fire"></i><span>@L["Events_PurgeBtn"]</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -874,6 +882,109 @@
                             <span class="spinner-border spinner-border-sm me-2"></span>
                         }
                         @(editingEvent == null ? @L["Events_CreateEventButton"] : @L["Events_SaveChangesButton"])
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showPurgeModal && purgeEvent != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);" id="admin-event-purge-modal">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" id="admin-event-purge-dialog">
+            <div class="modal-content border-danger" id="admin-event-purge-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="admin-event-purge-title">
+                        <i class="bi bi-exclamation-octagon-fill"></i> @L["Events_PurgeModalTitle", purgeEvent.Name]
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="ClosePurgeModal" disabled="@isPurging" id="admin-event-purge-close"></button>
+                </div>
+                <div class="modal-body" id="admin-event-purge-body">
+                    @* Event names repeat across a season's fixtures, so the date pins down which one. *@
+                    <p class="text-muted small mb-3" id="admin-event-purge-subtitle">
+                        <i class="bi bi-calendar-event"></i>
+                        @(purgeEvent.Date?.ToLocalTime().ToString("dddd, dd MMM yyyy · HH:mm") ?? "—") — ID @purgeEvent.Id
+                    </p>
+
+                    @if (purgeLoading)
+                    {
+                        <div class="loading-state"><span class="loading-spinner"></span><p>@L["Events_PurgeLoadingPreview"]</p></div>
+                    }
+                    else if (purgePreview == null)
+                    {
+                        <p class="text-danger mb-0" id="admin-event-purge-preview-failed">@L["Events_PurgePreviewFailed"]</p>
+                    }
+                    else
+                    {
+                        <p id="admin-event-purge-intro">@L["Events_PurgeIntro"]</p>
+                        <table class="table table-sm mb-3" id="admin-event-purge-preview-table">
+                            <tbody>
+                                <tr id="admin-event-purge-row-tickets">
+                                    <td>@L["Events_PurgeRowTickets"]</td>
+                                    <td class="text-end mono">@purgePreview.Tickets.ToString("N0") · €@purgePreview.TicketRevenue.ToString("N0")</td>
+                                </tr>
+                                <tr id="admin-event-purge-row-orders">
+                                    <td>@L["Events_PurgeRowOrders"]</td>
+                                    <td class="text-end mono">@purgePreview.Orders.ToString("N0") · €@purgePreview.OrderRevenue.ToString("N0")</td>
+                                </tr>
+                                <tr id="admin-event-purge-row-drinks">
+                                    <td>@L["Events_PurgeRowDrinks"]</td>
+                                    <td class="text-end mono">@purgePreview.DrinksSold.ToString("N0")</td>
+                                </tr>
+                                <tr id="admin-event-purge-row-payments">
+                                    <td>@L["Events_PurgeRowPayments"]</td>
+                                    <td class="text-end mono">@purgePreview.Payments.ToString("N0")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        @* Season passes survive a fixture purge — say so, or the count above reads as if
+                           annual passes were being cancelled too. *@
+                        @if (purgePreview.AffectedSeasonPasses > 0)
+                        {
+                            <div class="console-alert" id="admin-event-purge-passes-note">
+                                <i class="bi bi-info-circle"></i>
+                                <div>@L["Events_PurgePassesNote", purgePreview.AffectedSeasonPasses.ToString("N0")]</div>
+                            </div>
+                        }
+
+                        @if (purgePreview.TicketWallets > 0)
+                        {
+                            <div class="console-alert console-alert--danger" id="admin-event-purge-wallet-warning">
+                                <i class="bi bi-wallet2"></i>
+                                <div>
+                                    <strong>@L["Events_PurgeWalletWarningTitle"]</strong>
+                                    <p class="mb-0">
+                                        @L["Events_PurgeWalletWarningBody",
+                                           purgePreview.TicketWallets.ToString("N0"),
+                                           "€" + purgePreview.TicketWalletBalance.ToString("N2")]
+                                    </p>
+                                </div>
+                            </div>
+                        }
+
+                        <p class="text-danger fw-semibold mt-3 mb-2" id="admin-event-purge-irreversible">
+                            <i class="bi bi-exclamation-triangle-fill"></i> @L["Events_PurgeIrreversible"]
+                        </p>
+                        <label class="form-label fw-semibold" for="admin-event-purge-confirm-input" id="admin-event-purge-confirm-label">
+                            @L["Events_PurgeConfirmPrompt", purgeEvent.Name]
+                        </label>
+                        <input type="text" class="form-control" id="admin-event-purge-confirm-input"
+                               @bind="purgeConfirmText" @bind:event="oninput" autocomplete="off" disabled="@isPurging" />
+                    }
+                </div>
+                <div class="modal-footer" id="admin-event-purge-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="ClosePurgeModal" disabled="@isPurging" id="admin-event-purge-cancel-btn">
+                        @L["Events_PurgeCancel"]
+                    </button>
+                    <button type="button" class="btn btn-danger" @onclick="PurgeEvent"
+                            disabled="@(isPurging || !IsPurgeConfirmed)" id="admin-event-purge-confirm-btn">
+                        @if (isPurging)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        @L["Events_PurgeConfirmBtn"]
                     </button>
                 </div>
             </div>

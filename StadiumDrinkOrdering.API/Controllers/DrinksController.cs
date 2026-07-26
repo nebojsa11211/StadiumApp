@@ -208,6 +208,97 @@ public class DrinksController : ControllerBase
         return Ok(movements);
     }
 
+    /// <summary>
+    /// Generates the common starter catalog (standard categories + drinks) for a venue that has no
+    /// assortment yet. Idempotent: anything already present — matched on a loose name key, so
+    /// "Coca-Cola" won't be added next to an existing "Coca Cola" — is left untouched and reported
+    /// as skipped, which makes the button safe to press more than once.
+    /// </summary>
+    [HttpPost("seed-catalog")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<SeedCatalogResultDto>> SeedCatalog()
+    {
+        var result = new SeedCatalogResultDto();
+        var now = DateTime.UtcNow;
+
+        var existingCategories = await _context.Categories.ToListAsync();
+        var categoriesByKey = existingCategories
+            .GroupBy(c => DefaultDrinkCatalog.NameKey(c.Name))
+            .ToDictionary(g => g.Key, g => g.First());
+
+        foreach (var template in DefaultDrinkCatalog.Categories)
+        {
+            var key = DefaultDrinkCatalog.NameKey(template.Name);
+            if (categoriesByKey.ContainsKey(key))
+            {
+                result.CategoriesSkipped++;
+                continue;
+            }
+
+            var category = new Category
+            {
+                Name = template.Name,
+                DisplayName = template.DisplayName,
+                Icon = template.Icon,
+                IsActive = true,
+                SortOrder = template.SortOrder,
+                CreatedAt = now
+            };
+
+            _context.Categories.Add(category);
+            categoriesByKey[key] = category;
+            result.CategoriesCreated++;
+        }
+
+        // Save first so the newly added categories get their ids before drinks reference them.
+        if (result.CategoriesCreated > 0)
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        var existingDrinkKeys = (await _context.Drinks.Select(d => d.Name).ToListAsync())
+            .Select(DefaultDrinkCatalog.NameKey)
+            .ToHashSet();
+
+        foreach (var template in DefaultDrinkCatalog.Drinks)
+        {
+            var drinkKey = DefaultDrinkCatalog.NameKey(template.Name);
+            if (!existingDrinkKeys.Add(drinkKey))
+            {
+                result.DrinksSkipped++;
+                continue;
+            }
+
+            if (!categoriesByKey.TryGetValue(DefaultDrinkCatalog.NameKey(template.CategoryName), out var category))
+            {
+                // Should not happen (every catalog category is created above), but never orphan a drink.
+                result.DrinksSkipped++;
+                continue;
+            }
+
+            _context.Drinks.Add(new Drink
+            {
+                Name = template.Name,
+                Description = template.Description,
+                Price = template.Price,
+                StockQuantity = template.StockQuantity,
+                CategoryId = category.Id,
+                IsAvailable = true,
+                CreatedAt = now
+            });
+
+            result.DrinksCreated++;
+            result.CreatedDrinkNames.Add(template.Name);
+        }
+
+        if (result.DrinksCreated > 0)
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        return Ok(result);
+    }
+
     private int? CurrentUserId() =>
         int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var id) ? id : null;
 

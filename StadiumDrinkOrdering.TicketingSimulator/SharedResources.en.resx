@@ -661,6 +661,12 @@
   <data name="SeasonGen_NoSeasons" xml:space="preserve">
     <value>No seasons yet. Create one on the Simulator tab first.</value>
   </data>
+  <data name="SeasonGen_NoLinkedSeasons" xml:space="preserve">
+    <value>{0} season(s) exist, but none of them came from this simulator, so there is nothing to generate into: {1}. Only a season created on the Simulator tab carries the external id a generated fixture needs — a season added in Admin, or by seeding, cannot be used here.</value>
+  </data>
+  <data name="SeasonGen_SeasonUnlinked" xml:space="preserve">
+    <value>not from this simulator, cannot be used</value>
+  </data>
   <data name="SeasonGen_SeasonLabel" xml:space="preserve">
     <value>Season</value>
   </data>
@@ -726,6 +732,57 @@
   </data>
   <data name="SeasonGen_SummaryLine" xml:space="preserve">
     <value>{0} fixtures · {1} tickets sold · {2} season-pass seats · {3} drink orders (EUR {4})</value>
+  </data>
+  <data name="SeasonGen_DoneTitle" xml:space="preserve">
+    <value>Generation finished</value>
+  </data>
+  <data name="SeasonGen_DoneLine" xml:space="preserve">
+    <value>{0} of {1} fixtures created — {2} played, {3} upcoming · {4} tickets sold · {5} season-pass seats · {6} drink orders (EUR {7})</value>
+  </data>
+  <data name="SeasonGen_DoneWarningsTitle" xml:space="preserve">
+    <value>Worth checking:</value>
+  </data>
+  <data name="SeasonGen_DoneDismiss" xml:space="preserve">
+    <value>Dismiss</value>
+  </data>
+  <data name="SeasonGen_WarnPastSkipped" xml:space="preserve">
+    <value>{0} of {1} played fixture(s) skipped — the season starts {2}, so only {3} can have been played by now. Played fixtures are what produce attendance and drink orders.</value>
+  </data>
+  <data name="SeasonGen_WarnNoTickets" xml:space="preserve">
+    <value>{0} of {1} created fixture(s) sold no tickets. {2}</value>
+  </data>
+  <data name="SeasonGen_PassesLabel" xml:space="preserve">
+    <value>Season passes</value>
+  </data>
+  <data name="SeasonGen_PassesHint" xml:space="preserve">
+    <value>Share of the ground held by season-pass holders, sold before the fixtures so every match counts them.</value>
+  </data>
+  <data name="SeasonGen_PassesNote" xml:space="preserve">
+    <value>{0} pass seats</value>
+  </data>
+  <data name="SeasonGen_PassesExisting" xml:space="preserve">
+    <value>season already holds {0}, so {1} will be sold</value>
+  </data>
+  <data name="SeasonGen_PassProgress" xml:space="preserve">
+    <value>Selling season passes {0}/{1}…</value>
+  </data>
+  <data name="SeasonGen_DonePassLine" xml:space="preserve">
+    <value>Season passes: {0} of {1} sold before the fixtures.</value>
+  </data>
+  <data name="SeasonGen_WarnPassesFailed" xml:space="preserve">
+    <value>{0} of {1} season pass(es) could not be sold: {2}</value>
+  </data>
+  <data name="SeasonGen_WarnNoSectorsForPasses" xml:space="preserve">
+    <value>{0} season pass(es) were requested but no stadium sectors are drawn, so none could be seated. Draw the stadium in Admin → Stadium Drawing Tool first.</value>
+  </data>
+  <data name="SeasonGen_WarnNoDrinks" xml:space="preserve">
+    <value>{0} of {1} played fixture(s) generated no drink orders. {2}</value>
+  </data>
+  <data name="SeasonGen_WarnRejected" xml:space="preserve">
+    <value>{0} fixture(s) were rejected by the API: {1}</value>
+  </data>
+  <data name="SeasonGen_WarnAborted" xml:space="preserve">
+    <value>The run stopped early: {0}</value>
   </data>
   <data name="SeasonGen_ColFixture" xml:space="preserve">
     <value>Fixture</value>

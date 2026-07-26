@@ -11,6 +11,7 @@ namespace StadiumDrinkOrdering.Admin.Services.Drinks
         Task<bool> DeleteDrinkAsync(int id);
 
         Task<DrinkDto?> RestockDrinkAsync(int id, RestockDrinkDto restockDto);
+        Task<SeedCatalogResultDto?> SeedCatalogAsync();
         Task<IEnumerable<StockMovementDto>?> GetStockMovementsAsync(int id, int take = 50);
 
         Task<IEnumerable<CategoryDto>?> GetCategoriesAsync();

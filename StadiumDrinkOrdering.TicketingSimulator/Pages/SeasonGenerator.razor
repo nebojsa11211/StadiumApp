@@ -1,6 +1,7 @@
 @page "/season-generator"
 @using StadiumDrinkOrdering.Shared.DTOs.Integration
 @inject SimulatorApiClient Api
+@inject SeasonPassSeller PassSeller
 @inject IStringLocalizer<SharedResources> Localizer
 
 <PageTitle>@Localizer["SeasonGen_PageTitle"]</PageTitle>
@@ -15,15 +16,32 @@
             <i class="bi bi-exclamation-triangle"></i> @Localizer["SeasonGen_NoSeasons"]
         </div>
     }
+    else if (LinkedSeasons.Count == 0)
+    {
+        @* Seasons exist but none of them can be generated into. Without this the form would render
+           with an empty dropdown and a disabled button, and nothing on screen would say why. *@
+        <div id="simulator-seasongen-no-linked-seasons" class="alert alert-warning mb-0">
+            <i class="bi bi-exclamation-triangle"></i>
+            @Localizer["SeasonGen_NoLinkedSeasons",
+                seasons.Count,
+                string.Join(", ", seasons.Select(s => s.Name))]
+        </div>
+    }
     else
     {
         <div id="simulator-seasongen-form" class="row g-3">
             <div class="col-md-4">
                 <label class="form-label mb-0 small" for="simulator-seasongen-season">@Localizer["SeasonGen_SeasonLabel"]</label>
                 <select id="simulator-seasongen-season" class="form-select form-select-sm" @bind="selectedSeasonExternalId">
-                    @foreach (var s in seasons.Where(s => s.ExternalSeasonId != null))
+                    @foreach (var s in LinkedSeasons)
                     {
                         <option value="@s.ExternalSeasonId">@s.Name @(s.IsCurrent ? "★" : "") · @s.EventCount @Localizer["SeasonGen_EventsWord"] · @s.SeasonTicketCount @Localizer["SeasonGen_PassesWord"]</option>
+                    }
+                    @* Listed but unselectable, so a season that is missing from the choices is visibly
+                       present-and-unusable rather than simply absent. *@
+                    @foreach (var s in UnlinkedSeasons)
+                    {
+                        <option id="simulator-seasongen-season-unlinked-@s.SeasonId" value="" disabled>@s.Name @(s.IsCurrent ? "★" : "") — @Localizer["SeasonGen_SeasonUnlinked"]</option>
                     }
                 </select>
                 <div class="form-text">@Localizer["SeasonGen_SeasonHint"]</div>
@@ -54,6 +72,25 @@
                 <label class="form-label mb-0 small" for="simulator-seasongen-opponents">@Localizer["SeasonGen_OpponentsLabel"]</label>
                 <input id="simulator-seasongen-opponents" type="text" class="form-control form-control-sm" @bind="opponentList" />
                 <div class="form-text">@Localizer["SeasonGen_OpponentsHint"]</div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label mb-0 small" for="simulator-seasongen-passes">@Localizer["SeasonGen_PassesLabel"]</label>
+                <div class="input-group input-group-sm">
+                    <input id="simulator-seasongen-passes" type="number" min="0" max="100" class="form-control" @bind="seasonPassPercent" />
+                    <span class="input-group-text">%</span>
+                </div>
+                <div class="form-text">
+                    @Localizer["SeasonGen_PassesHint"]
+                    @if (TargetPassCount > 0)
+                    {
+                        <span id="simulator-seasongen-passes-note"> · @Localizer["SeasonGen_PassesNote", TargetPassCount.ToString("N0")]</span>
+                    }
+                    @if (ExistingPassCount > 0)
+                    {
+                        <span id="simulator-seasongen-passes-existing"> · @Localizer["SeasonGen_PassesExisting", ExistingPassCount.ToString("N0"), PassesToSell.ToString("N0")]</span>
+                    }
+                </div>
             </div>
 
             <div class="col-md-6">
@@ -110,13 +147,59 @@
                     }
                     @Localizer["SeasonGen_GenerateButton", TotalMatches]
                 </button>
-                @if (busy)
+                @if (busy && sellingPasses)
+                {
+                    <span id="simulator-seasongen-pass-progress" class="small text-muted">
+                        @Localizer["SeasonGen_PassProgress", passesSold, PassesToSell]
+                    </span>
+                }
+                else if (busy)
                 {
                     <span id="simulator-seasongen-progress" class="small text-muted">
                         @Localizer["SeasonGen_Progress", done, TotalMatches] — @currentFixture
                     </span>
                 }
             </div>
+
+            @if (outcome is not null)
+            {
+                <div class="col-12">
+                    <div id="simulator-seasongen-done"
+                         class="alert @(outcome.HasProblems ? "alert-warning" : "alert-success") alert-dismissible mb-0">
+                        <h6 id="simulator-seasongen-done-title" class="alert-heading mb-1">
+                            <i class="bi @(outcome.HasProblems ? "bi-exclamation-triangle" : "bi-check-circle")"></i>
+                            @Localizer["SeasonGen_DoneTitle"]
+                        </h6>
+                        <div id="simulator-seasongen-done-line" class="small">
+                            @Localizer["SeasonGen_DoneLine",
+                                outcome.Created, outcome.Requested,
+                                outcome.Played, outcome.Upcoming,
+                                outcome.Tickets, outcome.PassSeats,
+                                outcome.DrinkOrders, outcome.DrinkRevenue.ToString("N2")]
+                        </div>
+                        @if (outcome.PassesRequested > 0)
+                        {
+                            <div id="simulator-seasongen-done-passes" class="small">
+                                @Localizer["SeasonGen_DonePassLine", outcome.PassesSold, outcome.PassesRequested]
+                            </div>
+                        }
+                        @if (outcome.Warnings.Count > 0)
+                        {
+                            <div id="simulator-seasongen-done-warnings" class="small mt-2">
+                                <strong>@Localizer["SeasonGen_DoneWarningsTitle"]</strong>
+                                <ul class="mb-0 ps-3">
+                                    @foreach (var w in outcome.Warnings)
+                                    {
+                                        <li>@w</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        <button type="button" id="simulator-seasongen-done-close" class="btn-close"
+                                aria-label="@Localizer["SeasonGen_DoneDismiss"]" @onclick="() => outcome = null"></button>
+                    </div>
+                </div>
+            }
         </div>
 
         @if (results.Count > 0)
@@ -192,19 +275,84 @@
     private bool generateDrinkOrders = true;
     private bool settleAttendance = true;
 
+    /// <summary>
+    /// Share of the ground held by season-pass holders. Passes are sold before any fixture is created,
+    /// because a pass only reaches a match that already exists when it is sold — and a played fixture
+    /// settles its attendance and pours its drinks at creation, so a pass arriving afterwards would
+    /// sit unused and buy nothing.
+    /// </summary>
+    private int seasonPassPercent = 10;
+
     private string homeTeam = "GNK Dinamo Zagreb";
     private string opponentList = "HNK Hajduk Split, HNK Rijeka, NK Osijek, NK Slaven Belupo, NK Lokomotiva, NK Varaždin, HNK Gorica, HNK Šibenik, NK Istra 1961, NK Rudeš";
 
     private bool busy;
     private int done;
     private string currentFixture = "";
+
+    /// <summary>Set while the pass base is being sold, so the progress line reports that phase instead of fixtures.</summary>
+    private bool sellingPasses;
+    private int passesSold;
     private readonly List<SimulateMatchResult> results = new();
     private readonly List<string> log = new();
 
+    /// <summary>
+    /// End-of-run report shown when generation finishes: what was actually created versus asked for,
+    /// and anything that didn't go to plan. Null before the first run and once dismissed. The log
+    /// below is a running trace; this is the single answer to "what did that button just do?".
+    /// </summary>
+    private GenerationOutcome? outcome;
+
+    /// <summary>Problems noticed during a run, surfaced in the completion message.</summary>
+    private readonly List<string> runWarnings = new();
+
+    private sealed record GenerationOutcome(
+        int Requested,
+        int Created,
+        int Played,
+        int Upcoming,
+        int Tickets,
+        int PassSeats,
+        int DrinkOrders,
+        decimal DrinkRevenue,
+        int PassesSold,
+        int PassesRequested,
+        List<string> Warnings)
+    {
+        /// <summary>Anything short of "every fixture asked for was created cleanly".</summary>
+        public bool HasProblems => Warnings.Count > 0 || Created < Requested;
+    }
+
     private int TotalMatches => Math.Max(0, pastMatches) + Math.Max(0, futureMatches);
+
+    /// <summary>
+    /// The seasons this page can actually generate into. A fixture is stood up by naming its season's
+    /// external id in a webhook, and only a season the simulator created carries one — a season added
+    /// in Admin, or by seeding, has none and can never be the target of a generated fixture.
+    /// </summary>
+    private List<ExternalSeasonSummaryDto> LinkedSeasons =>
+        seasons.Where(s => s.ExternalSeasonId != null).ToList();
+
+    /// <summary>Seasons that exist but carry no external id, shown greyed out rather than hidden.</summary>
+    private List<ExternalSeasonSummaryDto> UnlinkedSeasons =>
+        seasons.Where(s => s.ExternalSeasonId == null).ToList();
 
     /// <summary>Drawn stadium capacity, so a fill percentage means a real number of seats.</summary>
     private int stadiumCapacity;
+
+    /// <summary>The drawn sectors, needed to spread season passes across the ground by capacity.</summary>
+    private List<StadiumSectionInfoDto> sections = new();
+
+    /// <summary>How many pass seats the requested percentage works out to on the drawn stadium.</summary>
+    private int TargetPassCount =>
+        stadiumCapacity > 0 ? stadiumCapacity * Math.Clamp(seasonPassPercent, 0, 100) / 100 : 0;
+
+    /// <summary>Passes the selected season already carries, so a re-run tops up instead of stacking.</summary>
+    private int ExistingPassCount =>
+        seasons.FirstOrDefault(s => s.ExternalSeasonId == selectedSeasonExternalId)?.SeasonTicketCount ?? 0;
+
+    /// <summary>The shortfall this run will actually sell — zero once the season is at or above target.</summary>
+    private int PassesToSell => Math.Max(0, TargetPassCount - ExistingPassCount);
 
     /// <summary>
     /// Safety ceiling on one fixture's crowd, for the case where no stadium has been drawn and the
@@ -221,7 +369,8 @@
         get
         {
             if (stadiumCapacity <= 0) return false;
-            var passSeats = seasons.FirstOrDefault(s => s.ExternalSeasonId == selectedSeasonExternalId)?.SeasonTicketCount ?? 0;
+            // The pass base this run will end up with, not just what is already there.
+            var passSeats = Math.Max(ExistingPassCount, TargetPassCount);
             var wanted = stadiumCapacity * Math.Max(pastFillMax, futureFillMax) / 100;
             return passSeats + wanted > stadiumCapacity;
         }
@@ -233,20 +382,28 @@
 
         try
         {
-            stadiumCapacity = (await Api.GetSectionsAsync()).Sum(s => s.Capacity);
+            sections = await Api.GetSectionsAsync();
+            stadiumCapacity = sections.Sum(s => s.Capacity);
         }
         catch
         {
+            sections = new();
             stadiumCapacity = 0;
         }
 
-        // Default the home side to the venue's own club rather than a hardcoded name.
+        // Default the home side to the venue's own club rather than a hardcoded name. The venue's
+        // ClubName (Admin → Venue Settings) is the authoritative home side and wins; the resident
+        // Clubs list is only a fallback for a venue that hasn't had that field filled in.
         try
         {
             var venue = await Api.GetVenueAsync();
-            var club = venue?.Clubs?.FirstOrDefault(c => c.IsPrimary) ?? venue?.Clubs?.FirstOrDefault();
-            if (club != null && !string.IsNullOrWhiteSpace(club.Name))
-                homeTeam = club.Name;
+            var venueClubName = venue?.ClubName;
+            if (string.IsNullOrWhiteSpace(venueClubName))
+                venueClubName = (venue?.Clubs?.FirstOrDefault(c => c.IsPrimary)
+                                 ?? venue?.Clubs?.FirstOrDefault())?.Name;
+
+            if (!string.IsNullOrWhiteSpace(venueClubName))
+                homeTeam = venueClubName.Trim();
         }
         catch
         {
@@ -259,8 +416,8 @@
         try
         {
             seasons = await Api.GetSeasonsAsync();
-            selectedSeasonExternalId ??= seasons.FirstOrDefault(s => s.IsCurrent && s.ExternalSeasonId != null)?.ExternalSeasonId
-                                         ?? seasons.FirstOrDefault(s => s.ExternalSeasonId != null)?.ExternalSeasonId;
+            selectedSeasonExternalId ??= LinkedSeasons.FirstOrDefault(s => s.IsCurrent)?.ExternalSeasonId
+                                         ?? LinkedSeasons.FirstOrDefault()?.ExternalSeasonId;
         }
         catch (Exception ex)
         {
@@ -279,12 +436,21 @@
 
         busy = true;
         done = 0;
+        passesSold = 0;
         results.Clear();
+        runWarnings.Clear();
+        outcome = null;
+        var requested = TotalMatches;
+        var passTarget = PassesToSell;
         var season = seasons.First(s => s.ExternalSeasonId == selectedSeasonExternalId);
         Log($"▶ {season.Name}: {pastMatches} played + {futureMatches} upcoming fixtures");
 
         try
         {
+            // Passes first: every fixture created afterwards materialises an access ticket per pass
+            // seat as it is stood up, which is what puts a real number in the Pass seats column.
+            await SellSeasonPassesAsync();
+
             var opponents = opponentList
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ToList();
@@ -316,6 +482,7 @@
                 Log(result.Accepted
                     ? $"✔ {result.EventName} ({result.Status}) — {result.TicketsSold} tickets, {result.SeasonTicketsCovered} pass seats"
                       + (result.DrinkOrders > 0 ? $", {result.DrinkOrders} drink orders €{result.DrinkRevenue:N2}" : "")
+                      + (result.DrinkOrdersMessage is { Length: > 0 } why ? $" — no drink orders: {why}" : "")
                     : $"⚠ {fixture.Opponent}: {result.Message}");
 
                 StateHasChanged();
@@ -327,12 +494,113 @@
         catch (Exception ex)
         {
             Log($"⚠ Generation failed: {ex.Message}");
+            runWarnings.Add(Localizer["SeasonGen_WarnAborted", ex.Message]);
         }
         finally
         {
             busy = false;
+            sellingPasses = false;
             currentFixture = "";
+            outcome = BuildOutcome(requested, passTarget);
         }
+    }
+
+    /// <summary>
+    /// Tops the season's pass base up to the requested share of the ground, selling only the shortfall
+    /// so re-running against the same season doesn't stack passes until the sectors fill. Sales go
+    /// through the ordinary season-ticket webhook, the same path the manual controls use.
+    /// </summary>
+    private async Task SellSeasonPassesAsync()
+    {
+        var toSell = PassesToSell;
+        if (toSell <= 0)
+        {
+            if (seasonPassPercent > 0 && ExistingPassCount > 0)
+                Log($"🎟 Season already holds {ExistingPassCount} pass(es) — at or above the {seasonPassPercent}% target, none sold");
+            return;
+        }
+
+        // A percentage of nothing is nothing: without a drawn stadium there are no sectors to seat a
+        // pass in, and the crowd can't be sold either — say so once rather than failing every sale.
+        if (sections.Count == 0)
+        {
+            var warning = Localizer["SeasonGen_WarnNoSectorsForPasses", toSell].Value;
+            runWarnings.Add(warning);
+            Log($"⚠ {warning}");
+            return;
+        }
+
+        sellingPasses = true;
+        Log($"🎟 Selling {toSell} season pass(es) before the fixtures ({seasonPassPercent}% of {stadiumCapacity:N0} seats)");
+
+        var batch = await PassSeller.SellBatchAsync(
+            selectedSeasonExternalId!, sections, toSell,
+            onProgress: async sold =>
+            {
+                passesSold = sold;
+                await InvokeAsync(StateHasChanged);
+            });
+
+        passesSold = batch.Sold;
+        sellingPasses = false;
+
+        Log($"🎟 {batch.Sold} season pass(es) sold"
+            + (batch.Failed > 0 ? $", {batch.Failed} failed: {batch.FirstError}" : ""));
+
+        if (batch.Failed > 0)
+        {
+            runWarnings.Add(Localizer["SeasonGen_WarnPassesFailed",
+                batch.Failed, toSell, batch.FirstError ?? ""]);
+        }
+    }
+
+    /// <summary>
+    /// Assembles the end-of-run report from what the API actually returned, adding the warnings a
+    /// caller would otherwise only spot by reading the table row by row: fixtures the API rejected,
+    /// and fixtures that were created but seated nobody (the API explains why in its message).
+    /// </summary>
+    private GenerationOutcome BuildOutcome(int requested, int passTarget)
+    {
+        var accepted = results.Where(r => r.Accepted).ToList();
+
+        var rejected = results.Where(r => !r.Accepted).ToList();
+        if (rejected.Count > 0)
+        {
+            runWarnings.Add(Localizer["SeasonGen_WarnRejected",
+                rejected.Count, rejected.First().Message ?? ""]);
+        }
+
+        // Every accepted fixture selling nothing has one cause and one message — report it once
+        // rather than repeating it per fixture.
+        var empty = accepted.Where(r => r.TicketsSold == 0).ToList();
+        if (empty.Count > 0)
+        {
+            runWarnings.Add(Localizer["SeasonGen_WarnNoTickets",
+                empty.Count, accepted.Count, empty.First().Message ?? ""]);
+        }
+
+        // Drink generation refusing a played fixture — same treatment: one cause, one message,
+        // counted against the played fixtures only, since an upcoming one never had a match day.
+        var played = accepted.Where(r => r.IsPast).ToList();
+        var noDrinks = played.Where(r => !string.IsNullOrEmpty(r.DrinkOrdersMessage)).ToList();
+        if (noDrinks.Count > 0)
+        {
+            runWarnings.Add(Localizer["SeasonGen_WarnNoDrinks",
+                noDrinks.Count, played.Count, noDrinks.First().DrinkOrdersMessage ?? ""]);
+        }
+
+        return new GenerationOutcome(
+            Requested: requested,
+            Created: accepted.Count,
+            Played: accepted.Count(r => r.IsPast),
+            Upcoming: accepted.Count(r => !r.IsPast),
+            Tickets: accepted.Sum(r => r.TicketsSold),
+            PassSeats: accepted.Sum(r => r.SeasonTicketsCovered),
+            DrinkOrders: accepted.Sum(r => r.DrinkOrders),
+            DrinkRevenue: accepted.Sum(r => r.DrinkRevenue),
+            PassesSold: passesSold,
+            PassesRequested: passTarget,
+            Warnings: runWarnings.ToList());
     }
 
     /// <summary>
@@ -353,21 +621,31 @@
 
         string NextOpponent() => opponents[opponentIndex++ % opponents.Count];
 
-        // Played fixtures: backwards from the most recent slot before today. If the season has only
-        // just started there may not be room for all of them at the requested interval, so the
-        // spacing is compressed to fit rather than pushing fixtures outside the season.
+        // Played fixtures: backwards from the most recent slot before today, and they have to fit
+        // between the season's start and now. A season that hasn't started yet — or only just has —
+        // has no room for all of them; the honest outcome is fewer played fixtures, not fixtures
+        // dated in the future and labelled as played. Spacing compresses to fit before any are
+        // dropped, and the shortfall is reported rather than silently absorbed.
         var pastCount = Math.Max(0, pastMatches);
         if (pastCount > 0)
         {
             var latestPast = now.AddDays(-1);
-            var earliest = seasonStart;
-            var availableDays = Math.Max(1, (latestPast - earliest).TotalDays);
-            var step = Math.Min(intervalDays, availableDays / pastCount);
+            var roomDays = (latestPast - seasonStart).TotalDays;
 
-            for (var i = 0; i < pastCount; i++)
+            // Fixtures sit at least a day apart, so N days of room holds floor(N)+1 of them.
+            var fits = roomDays < 0 ? 0 : Math.Min(pastCount, (int)Math.Floor(roomDays) + 1);
+            if (fits < pastCount)
+            {
+                var warning = Localizer["SeasonGen_WarnPastSkipped",
+                    pastCount - fits, pastCount, seasonStart.ToString("yyyy-MM-dd"), fits].Value;
+                runWarnings.Add(warning);
+                Log($"⚠ {warning}");
+            }
+
+            var step = fits > 1 ? Math.Min(intervalDays, roomDays / (fits - 1)) : intervalDays;
+            for (var i = 0; i < fits; i++)
             {
                 var date = latestPast.AddDays(-step * i);
-                if (date < earliest) date = earliest.AddDays(i * 0.5);
                 list.Add((AtKickOff(date), NextOpponent(), FillTickets(pastFillMin, pastFillMax)));
             }
         }
@@ -385,7 +663,12 @@
             list.Add((AtKickOff(date), NextOpponent(), FillTickets((int)low, (int)high)));
         }
 
-        return list.Select(x => (x.Item1, x.Item2, x.Item3)).ToList();
+        // Laid out backwards from today, but handed back in kick-off order so the season is *played*
+        // in order. Anything a fixture accumulates carries forward — the drink stock ledger above all,
+        // where each match day is recorded as a delivery followed by the sales that drew it down. Built
+        // newest-first, an older fixture would be written against stock a later one had already drunk,
+        // and the running balance in a drink's history would jump about instead of counting down.
+        return list.OrderBy(x => x.Item1).Select(x => (x.Item1, x.Item2, x.Item3)).ToList();
 
         // Kick-off hours are the local times a league actually plays at, so they are built in local
         // time and then converted — stamping them straight onto a UTC date would shift every fixture

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.API.Services;
+using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.DTOs.Integration;
 using StadiumDrinkOrdering.Shared.Models;
 
@@ -519,6 +520,99 @@ public class IntegrationController : ControllerBase
         _logger.LogInformation("Deleted external event {ExternalId} (internal {EventId}) via integration surface",
             externalEventId, evt.Id);
         return Ok(new { deleted = true, eventId = evt.Id });
+    }
+
+    /// <summary>
+    /// What a full purge of this event would destroy, by external id. Read-only, so the external
+    /// system/simulator can show the exact damage before asking for confirmation — the same preview
+    /// the Admin purge dialog uses.
+    /// </summary>
+    [HttpGet("events/{externalEventId}/purge-preview")]
+    public async Task<ActionResult<EventPurgePreviewDto>> GetPurgePreview(string externalEventId, CancellationToken ct)
+    {
+        var eventId = await _context.Events
+            .AsNoTracking()
+            .Where(e => e.ExternalEventId == externalEventId)
+            .Select(e => (int?)e.Id)
+            .FirstOrDefaultAsync(ct);
+
+        if (eventId == null)
+            return NotFound(new { message = $"No event mapped to external id '{externalEventId}'" });
+
+        var preview = await _eventService.GetPurgePreviewAsync(eventId.Value, ct);
+        return preview == null ? NotFound() : Ok(preview);
+    }
+
+    /// <summary>
+    /// Purges an externally-originated event: everything the plain delete removes, plus the money
+    /// records it deliberately keeps — orders, order items and payments — and any anonymous ticket
+    /// wallet, destroyed with its balance rather than refunded. Irreversible. Signed like the webhook
+    /// over the raw body, which must echo the event's exact name in <c>confirmName</c> — the same
+    /// guard the Admin purge applies, so a mis-sent call cannot wipe an event's takings.
+    /// </summary>
+    [HttpPost("events/{externalEventId}/purge")]
+    public async Task<ActionResult<EventPurgeResultDto>> PurgeEvent(string externalEventId, CancellationToken ct)
+    {
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
+        if (!VerifySignature(body, Request.Headers[SignatureHeader].ToString()))
+        {
+            _logger.LogWarning("Rejected purge-event: invalid or missing signature");
+            return Unauthorized(new { message = "Invalid signature" });
+        }
+
+        PurgeEventBody? request;
+        try
+        {
+            request = System.Text.Json.JsonSerializer.Deserialize<PurgeEventBody>(body, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Rejected purge-event: malformed JSON");
+            return BadRequest(new { message = "Malformed JSON" });
+        }
+
+        var evt = await _context.Events
+            .AsNoTracking()
+            .Where(e => e.ExternalEventId == externalEventId)
+            .Select(e => new { e.Id, e.EventName })
+            .FirstOrDefaultAsync(ct);
+
+        if (evt == null)
+            return NotFound(new { message = $"No event mapped to external id '{externalEventId}'" });
+
+        if (!string.Equals(request?.ConfirmName?.Trim(), evt.EventName?.Trim(), StringComparison.Ordinal))
+            return BadRequest(new { message = "The confirmation name does not match this event's name. Nothing was deleted." });
+
+        try
+        {
+            var result = await _eventService.PurgeEventAsync(evt.Id, ct);
+            if (result == null)
+                return NotFound(new { message = $"Event {evt.Id} not found" });
+
+            _logger.LogWarning("Purged external event {ExternalId} (internal {EventId}) via integration surface: {Rows} row(s) removed",
+                externalEventId, evt.Id, result.TotalRowsDeleted);
+            return Ok(result);
+        }
+        catch (SeasonClosedException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Purge of external event {ExternalId} failed and was rolled back", externalEventId);
+            return StatusCode(500, new { message = "Failed to purge the event. No changes were made.", error = ex.Message });
+        }
+    }
+
+    /// <summary>Body of an integration purge request — the typed confirmation of the event's name.</summary>
+    public class PurgeEventBody
+    {
+        public string? ConfirmName { get; set; }
     }
 
     /// <summary>

@@ -16,7 +16,7 @@ builder.Services.AddLocalization();
 // *device* — fine on the dev machine, broken on a phone hitting the LAN address. So we derive the
 // API host from whatever origin actually served the app and just swap in the API port. Loading the
 // Runner from https://localhost:7060 talks to https://localhost:7010; loading it from
-// https://192.168.178.32:7060 talks to https://192.168.178.32:7010, with no config change.
+// https://<lan-ip>:7060 talks to https://<lan-ip>:7010, with no config change.
 //
 // wwwroot/appsettings.json still wins when it names an explicit non-loopback host, so pointing the
 // Runner at a deployed/staging API stays a config-only change.

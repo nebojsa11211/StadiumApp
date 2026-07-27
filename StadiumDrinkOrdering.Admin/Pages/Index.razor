@@ -103,6 +103,11 @@
                             <span class="dash-kpi-chip-label">@L["Index_TicketsSeason"]</span>
                             <b>@_seasonTicketsSold.ToString("N0")</b>
                         </span>
+                        <span class="dash-kpi-chip dash-kpi-chip--free" id="admin-dashboard-kpi-tickets-free" title="@L["Index_SeatsFreeHint"]">
+                            <i class="bi bi-square"></i>
+                            <span class="dash-kpi-chip-label">@L["Index_SeatsFree"]</span>
+                            <b>@FreeSeats.ToString("N0")</b>
+                        </span>
                     </div>
                 }
             </div>

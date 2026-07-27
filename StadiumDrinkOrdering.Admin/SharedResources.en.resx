@@ -2712,7 +2712,8 @@
   <data name="Events_PurgeWalletWarningTitle" xml:space="preserve"><value>Fan money will be destroyed</value></data>
   <data name="Events_PurgeWalletWarningBody" xml:space="preserve"><value>{0} ticket wallet(s) still hold {1}. This balance is deleted, not refunded. Cash it out first if the fans are owed it.</value></data>
   <data name="Events_PurgeIrreversible" xml:space="preserve"><value>This cannot be undone.</value></data>
-  <data name="Events_PurgeConfirmPrompt" xml:space="preserve"><value>Type {0} to confirm:</value></data>
+  <data name="Events_PurgeConfirmPrompt" xml:space="preserve"><value>To confirm, type this event's full name exactly:</value></data>
+  <data name="Events_PurgeConfirmMismatch" xml:space="preserve"><value>Doesn't match yet — it must be the full name above, character for character.</value></data>
   <data name="Events_PurgeConfirmBtn" xml:space="preserve"><value>Delete everything</value></data>
   <data name="Events_PurgeCancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Events_PurgedAlert" xml:space="preserve"><value>'{0}' and all its data were deleted ({1} rows).</value></data>
@@ -3323,6 +3324,18 @@
   <data name="Analytics_SystemLogsButton" xml:space="preserve">
     <value>System Logs</value>
   </data>
+  <data name="Analytics_CustomerAnalyticsDesc" xml:space="preserve">
+    <value>Spend, retention and repeat orders</value>
+  </data>
+  <data name="Analytics_EventManagementDesc" xml:space="preserve">
+    <value>Schedule, activation and editing</value>
+  </data>
+  <data name="Analytics_OrderReportsDesc" xml:space="preserve">
+    <value>Volume, revenue and fulfilment</value>
+  </data>
+  <data name="Analytics_SystemLogsDesc" xml:space="preserve">
+    <value>Errors, audit trail and activity</value>
+  </data>
   <data name="CustAnalytics_PageTitle" xml:space="preserve">
     <value>Customer Analytics</value>
   </data>
@@ -3667,6 +3680,12 @@
   </data>
   <data name="Index_TicketsSeason" xml:space="preserve">
     <value>Season</value>
+  </data>
+  <data name="Index_SeatsFree" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="Index_SeatsFreeHint" xml:space="preserve">
+    <value>Seats still available for this event</value>
   </data>
   <data name="Index_TotalRevenue" xml:space="preserve">
     <value>Total Revenue</value>
@@ -4105,7 +4124,8 @@
 <data name="Seasons_PurgeWalletWarningTitle" xml:space="preserve"><value>Fan money will be destroyed</value></data>
 <data name="Seasons_PurgeWalletWarningBody" xml:space="preserve"><value>{0} ticket wallet(s) still hold {1}. This balance is deleted, not refunded. Cash it out first if the fans are owed it.</value></data>
 <data name="Seasons_PurgeIrreversible" xml:space="preserve"><value>This cannot be undone.</value></data>
-<data name="Seasons_PurgeConfirmPrompt" xml:space="preserve"><value>Type {0} to confirm:</value></data>
+<data name="Seasons_PurgeConfirmPrompt" xml:space="preserve"><value>To confirm, type this season's full name exactly:</value></data>
+<data name="Seasons_PurgeConfirmMismatch" xml:space="preserve"><value>Doesn't match yet — it must be the full name above, character for character.</value></data>
 <data name="Seasons_PurgeConfirmBtn" xml:space="preserve"><value>Delete everything</value></data>
 <data name="Seasons_PurgedMsg" xml:space="preserve"><value>Season '{0}' and all its data were deleted ({1} rows).</value></data>
 <data name="Seasons_PurgeFailed" xml:space="preserve"><value>Failed to delete the season's data. Nothing was deleted.</value></data>

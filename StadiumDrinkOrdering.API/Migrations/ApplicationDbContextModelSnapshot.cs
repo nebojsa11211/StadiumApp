@@ -7748,7 +7748,9 @@ namespace StadiumDrinkOrdering.API.Migrations
                     b.HasIndex("IdempotencyKey")
                         .IsUnique();
 
-                    b.HasIndex("WalletId");
+                    b.HasIndex("ReferenceType", "CreatedAt");
+
+                    b.HasIndex("WalletId", "CreatedAt");
 
                     b.ToTable("WalletTransactions");
                 });

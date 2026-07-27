@@ -2742,7 +2742,8 @@
   <data name="Events_PurgeWalletWarningTitle" xml:space="preserve"><value>Novac navijača bit će uništen</value></data>
   <data name="Events_PurgeWalletWarningBody" xml:space="preserve"><value>{0} novčanik(a) na ulaznicama još drži {1}. Taj se iznos briše, a ne vraća. Prvo ga isplatite ako pripada navijačima.</value></data>
   <data name="Events_PurgeIrreversible" xml:space="preserve"><value>Ovo se ne može poništiti.</value></data>
-  <data name="Events_PurgeConfirmPrompt" xml:space="preserve"><value>Upišite {0} za potvrdu:</value></data>
+  <data name="Events_PurgeConfirmPrompt" xml:space="preserve"><value>Za potvrdu upišite točan puni naziv događaja:</value></data>
+  <data name="Events_PurgeConfirmMismatch" xml:space="preserve"><value>Još se ne podudara — mora biti puni naziv iznad, znak po znak.</value></data>
   <data name="Events_PurgeConfirmBtn" xml:space="preserve"><value>Obriši sve</value></data>
   <data name="Events_PurgeCancel" xml:space="preserve"><value>Odustani</value></data>
   <data name="Events_PurgedAlert" xml:space="preserve"><value>'{0}' i svi njegovi podaci su obrisani ({1} zapisa).</value></data>
@@ -3353,6 +3354,18 @@
   <data name="Analytics_SystemLogsButton" xml:space="preserve">
     <value>Sustavski zapisnici</value>
   </data>
+  <data name="Analytics_CustomerAnalyticsDesc" xml:space="preserve">
+    <value>Potrošnja, zadržavanje i ponovljene narudžbe</value>
+  </data>
+  <data name="Analytics_EventManagementDesc" xml:space="preserve">
+    <value>Raspored, aktivacija i uređivanje</value>
+  </data>
+  <data name="Analytics_OrderReportsDesc" xml:space="preserve">
+    <value>Količina, prihod i realizacija</value>
+  </data>
+  <data name="Analytics_SystemLogsDesc" xml:space="preserve">
+    <value>Greške, revizijski trag i aktivnost</value>
+  </data>
   <data name="CustAnalytics_PageTitle" xml:space="preserve">
     <value>Analitika Kupaca</value>
   </data>
@@ -3697,6 +3710,12 @@
   </data>
   <data name="Index_TicketsSeason" xml:space="preserve">
     <value>Sezonske</value>
+  </data>
+  <data name="Index_SeatsFree" xml:space="preserve">
+    <value>Slobodno</value>
+  </data>
+  <data name="Index_SeatsFreeHint" xml:space="preserve">
+    <value>Mjesta koja su još u prodaji za ovaj događaj</value>
   </data>
   <data name="Index_TotalRevenue" xml:space="preserve">
     <value>Ukupni Prihod</value>
@@ -4135,7 +4154,8 @@
 <data name="Seasons_PurgeWalletWarningTitle" xml:space="preserve"><value>Novac navijača bit će uništen</value></data>
 <data name="Seasons_PurgeWalletWarningBody" xml:space="preserve"><value>{0} novčanik(a) na ulaznicama još drži {1}. Taj se iznos briše, a ne vraća. Prvo ga isplatite ako pripada navijačima.</value></data>
 <data name="Seasons_PurgeIrreversible" xml:space="preserve"><value>Ovo se ne može poništiti.</value></data>
-<data name="Seasons_PurgeConfirmPrompt" xml:space="preserve"><value>Upišite {0} za potvrdu:</value></data>
+<data name="Seasons_PurgeConfirmPrompt" xml:space="preserve"><value>Za potvrdu upišite točan puni naziv sezone:</value></data>
+<data name="Seasons_PurgeConfirmMismatch" xml:space="preserve"><value>Još se ne podudara — mora biti puni naziv iznad, znak po znak.</value></data>
 <data name="Seasons_PurgeConfirmBtn" xml:space="preserve"><value>Obriši sve</value></data>
 <data name="Seasons_PurgedMsg" xml:space="preserve"><value>Sezona '{0}' i svi njezini podaci su obrisani ({1} zapisa).</value></data>
 <data name="Seasons_PurgeFailed" xml:space="preserve"><value>Brisanje podataka sezone nije uspjelo. Ništa nije obrisano.</value></data>

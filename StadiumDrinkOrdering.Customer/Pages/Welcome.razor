@@ -15,7 +15,15 @@
 <PageTitle>@Localizer["Welcome_PageTitle"]</PageTitle>
 
 <div id="customer-welcome-container" class="welcome">
-    <div id="customer-welcome-crowd" class="wl-crowd"></div>
+    @* Living crowd backdrop: the same bokeh artwork on two layers that drift past each other
+       (near layer mirrored + screen-blended, so the lights slowly shimmer), plus a sweep of
+       camera flashes rippling across the stand. Decoration only - all CSS, no JS, and it stops
+       entirely under prefers-reduced-motion. *@
+    <div id="customer-welcome-crowd" class="wl-crowd" aria-hidden="true">
+        <div id="customer-welcome-crowd-far" class="wl-crowd-layer wl-crowd-far"></div>
+        <div id="customer-welcome-crowd-near" class="wl-crowd-layer wl-crowd-near"></div>
+        <div id="customer-welcome-crowd-flash" class="wl-crowd-flash"></div>
+    </div>
 
     <header class="wl-top">
         <div id="customer-welcome-logo" class="wl-logo">@Localizer["Welcome_Wordmark_Part1"]<span>@Localizer["Welcome_Wordmark_Part2"]</span></div>

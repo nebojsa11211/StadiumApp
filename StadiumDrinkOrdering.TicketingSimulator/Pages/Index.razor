@@ -344,6 +344,19 @@
             {
                 <div id="simulator-index-event-validation-msg" class="text-danger small mt-1"><i class="bi bi-exclamation-triangle"></i> @Localizer["Index_EndTimeValidationError"]</div>
             }
+
+            <div id="simulator-index-event-quick-row" class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-2 border-top">
+                <button id="simulator-index-event-newcurrent-btn" class="btn btn-sm btn-danger" title="@Localizer["Index_NewCurrentEventTooltip", CurrentEventHours]" @onclick="CreateCurrentEventAsync" disabled="@(busy || !connectionOk)">
+                    <i class="bi bi-lightning-charge-fill"></i> @Localizer["Index_NewCurrentEventButton"]
+                </button>
+                <span id="simulator-index-event-quick-hint" class="small text-muted">@Localizer["Index_NewCurrentEventHint", CurrentEventHours]</span>
+            </div>
+            @if (currentEventClash != null)
+            {
+                <div id="simulator-index-event-clash-msg" class="alert alert-warning py-2 mt-2 mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> @currentEventClash
+                </div>
+            }
         }
         else
         {
@@ -367,7 +380,13 @@
                 <button id="simulator-index-event-back-btn" class="btn btn-sm btn-outline-secondary" @onclick="ResetEvent">
                     <i class="bi bi-arrow-left"></i> @Localizer["Index_BackToEventsButton"]
                 </button>
-                <button id="simulator-index-event-reset-btn" class="btn btn-sm btn-outline-danger" @onclick="ResetEvent">@Localizer["Index_NewEventButton"]</button>
+                <button id="simulator-index-event-reset-btn" class="btn btn-sm btn-outline-secondary" @onclick="ResetEvent">@Localizer["Index_NewEventButton"]</button>
+                <button id="simulator-index-event-delete-btn" class="btn btn-sm btn-outline-danger" title="@Localizer["Index_DeleteEventTooltip"]" @onclick="DeleteCurrentEventAsync" disabled="@(busy || !connectionOk)">
+                    <i class="bi bi-trash"></i> @Localizer["Index_DeleteButton"]
+                </button>
+                <button id="simulator-index-event-purge-btn" class="btn btn-sm btn-danger" title="@Localizer["Index_PurgeEventTooltip"]" @onclick="PurgeCurrentEventAsync" disabled="@(busy || !connectionOk)">
+                    <i class="bi bi-fire"></i> @Localizer["Index_PurgeButton"]
+                </button>
             </div>
         }
     </div>
@@ -421,6 +440,9 @@
                                     </button>
                                     <button id="simulator-index-existing-delete-btn-@e.EventId" class="btn btn-sm btn-outline-danger ms-1" title="@Localizer["Index_DeleteEventTooltip"]" @onclick="() => DeleteEventAsync(e)" disabled="@(busy || !connectionOk)">
                                         <i class="bi bi-trash"></i> @Localizer["Index_DeleteButton"]
+                                    </button>
+                                    <button id="simulator-index-existing-purge-btn-@e.EventId" class="btn btn-sm btn-danger ms-1" title="@Localizer["Index_PurgeEventTooltip"]" @onclick="() => PurgeEventAsync(e)" disabled="@(busy || !connectionOk)">
+                                        <i class="bi bi-fire"></i> @Localizer["Index_PurgeButton"]
                                     </button>
                                 </td>
                             </tr>
@@ -816,6 +838,14 @@
     private DateTime eventEndDate = DateTime.Today.AddDays(7).AddHours(20);
     private const decimal basePrice = 45m;
 
+    // How long the quick "New current event" action runs from now. The same span stands in for an
+    // existing event that carries no explicit end when checking whether that window is free.
+    private const int CurrentEventHours = 3;
+
+    // Why the last "New current event" click was refused (another event owns that window), shown
+    // inline under the create form; null when there is nothing to report.
+    private string? currentEventClash;
+
     // Lifecycle of the loaded event (from the API). Ticket sales are only allowed while the event
     // is on sale; once it's live, selling stops and drink-order simulation opens up.
     private bool eventCanSell = true;
@@ -950,17 +980,14 @@
     private readonly List<string> log = new();
     private readonly Random _rng = new();
 
-    private static readonly string[] Names =
-        { "Ivan Horvat", "Marko Kovač", "Ana Babić", "Petra Novak", "Luka Marić", "Sara Jurić", "Tomislav Knežević", "Maja Vuković" };
-
-    // A random 11-digit OIB for a simulated buyer (format-only, no checksum — matches the app's capture
-    // rule). Lets ingested test tickets carry an OIB so the bar can resolve them to a (provisioned) account.
-    private string RandomOib()
-    {
-        var d = new char[11];
-        for (var i = 0; i < d.Length; i++) d[i] = (char)('0' + _rng.Next(0, 10));
-        return new string(d);
-    }
+    // Buyers come from the shared pool rather than a local name list, so a ticket sold here belongs to
+    // the same person the season generator would seat — one coherent customer base — and carries that
+    // person's stable email and OIB, which is what lets the bar resolve them to a provisioned account.
+    //
+    // Derived from the ticket's own external id rather than drawn at random, so replaying a sale
+    // re-sends the buyer the original sale carried without the page having to remember who that was.
+    private static SimulatedFanIdentity BuyerFor(string externalTicketId) =>
+        SimulatedFans.PickStable(SimulatedFans.Crowd, externalTicketId);
 
     private int TotalCapacity => sections.Sum(s => s.Capacity);
     private int TotalSold => sections.Sum(s => SoldCount(s.SectionCode));
@@ -1314,6 +1341,100 @@
         }
     }
 
+    /// <summary>
+    /// Deletes the event currently loaded into the card, without going back to the list to find its
+    /// row. Falls back to a summary built from the loaded state when the list doesn't hold it (it was
+    /// refreshed away, or the event was created after the last load).
+    /// </summary>
+    private Task DeleteCurrentEventAsync() => DeleteEventAsync(LoadedEventSummary());
+
+    /// <summary>Purges the event currently loaded into the card. See <see cref="PurgeEventAsync"/>.</summary>
+    private Task PurgeCurrentEventAsync() => PurgeEventAsync(LoadedEventSummary());
+
+    // The list row for the loaded event, or one rebuilt from the loaded state when the list doesn't
+    // hold it (refreshed away, or created since the last load).
+    private ExternalEventSummaryDto LoadedEventSummary() =>
+        existingEvents.FirstOrDefault(e => e.ExternalEventId == externalEventId)
+        ?? new ExternalEventSummaryDto
+        {
+            EventId = internalEventId ?? 0,
+            ExternalEventId = externalEventId,
+            EventName = eventName
+        };
+
+    /// <summary>
+    /// "Delete everything": wipes the event along with the money records a plain delete deliberately
+    /// keeps — drink orders, order items and payments — plus any anonymous ticket wallet, balance and
+    /// all. A plain delete only unlinks those orders, which leaves a test event's takings behind as
+    /// orphans; this is the way to make a simulated event vanish completely.
+    ///
+    /// Irreversible, so it confirms against the real damage: the API's purge preview is read first
+    /// and its counts are put in front of the operator. The event's name is echoed back to the API as
+    /// the same typed-confirmation guard the Admin purge uses.
+    /// </summary>
+    private async Task PurgeEventAsync(ExternalEventSummaryDto summary)
+    {
+        if (busy) return;
+
+        // Like every other action here, the purge is keyed by external id — an admin-created event
+        // has to be adopted first (harmless: it only assigns one).
+        var extId = await EnsureExternalIdAsync(summary);
+        if (extId == null) return;
+
+        // Spell out what will actually be destroyed. Without a preview we would be asking the
+        // operator to approve an unknown amount of damage, so a failed preview cancels the purge.
+        var preview = await Api.GetPurgePreviewAsync(extId);
+        if (preview == null)
+        {
+            Log($"❌ Could not read the purge preview for '{summary.EventName}' — nothing was deleted.");
+            return;
+        }
+
+        var damage = Localizer["Index_PurgeDamage",
+            preview.Tickets, preview.Orders, preview.OrderRevenue.ToString("0.00"),
+            preview.Payments, preview.TicketWallets, preview.TicketWalletBalance.ToString("0.00")].Value;
+
+        var confirmed = await JSRuntime.InvokeAsync<bool>(
+            "confirm", Localizer["Index_PurgeConfirm", summary.EventName, damage].Value);
+        if (!confirmed) return;
+
+        busy = true;
+        try
+        {
+            // The API matches this against the stored name, so send what it holds, not the page's
+            // local copy — an adopted or admin-renamed event can differ.
+            var (ok, result, message) = await Api.PurgeEventAsync(extId, preview.EventName);
+            if (!ok)
+            {
+                Log($"❌ Purge failed for '{summary.EventName}': {message}");
+                return;
+            }
+
+            Log($"🔥 Purged '{result?.EventName ?? summary.EventName}' — "
+                + $"{result?.Tickets ?? 0} ticket(s), {result?.Orders ?? 0} order(s), {result?.OrderItems ?? 0} order item(s), "
+                + $"{result?.Payments ?? 0} payment(s), {result?.TicketWallets ?? 0} wallet(s) "
+                + $"(€{result?.TicketWalletBalance ?? 0:0.00} destroyed) · {result?.TotalRowsDeleted ?? 0} row(s) total");
+
+            if (externalEventId == extId)
+            {
+                await ResetEvent(); // clears the loaded event + reloads the list
+            }
+            else
+            {
+                await LoadEventsAsync();
+                await LoadSeasonsAsync(); // season EventCount may have changed
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"❌ Purge error: {ex.Message}");
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
     // Deletes an existing event (and its tickets) after a confirm. Derived season-pass tickets go
     // with it; the season passes themselves survive. If the deleted event was the loaded one, clear it.
     private async Task DeleteEventAsync(ExternalEventSummaryDto summary)
@@ -1387,6 +1508,90 @@
         busy = true;
         try
         {
+            await CreateEventCoreAsync(
+                DateTime.SpecifyKind(eventDate, DateTimeKind.Utc),
+                DateTime.SpecifyKind(eventEndDate, DateTimeKind.Utc),
+                "Simulated event");
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
+    /// <summary>
+    /// One click for "the match is on right now": creates an event running from now to
+    /// now + <see cref="CurrentEventHours"/> hours, using whatever name/type/season the form already
+    /// carries, and takes it live straight away — so anything gated on a live event (drink ordering,
+    /// the staff apps' event gate) works immediately, without filling in the window by hand and then
+    /// clicking "Make live now".
+    ///
+    /// Refused when any other non-terminal event overlaps that window — including one merely
+    /// *scheduled* to start inside it — or when another event is already live, because the API keeps a
+    /// single live slot and a second contender would be left out of it.
+    /// </summary>
+    private async Task CreateCurrentEventAsync()
+    {
+        if (busy) return;
+        busy = true;
+        currentEventClash = null;
+        try
+        {
+            // Real UTC now, not the form's wall-clock value: the point of this button is an event the
+            // API itself agrees is happening at this moment.
+            var startUtc = DateTime.UtcNow;
+            var endUtc = startUtc.AddHours(CurrentEventHours);
+
+            // Re-read the list first — it may have been sitting on screen a while, and an event
+            // created elsewhere since then still occupies the window.
+            await LoadEventsAsync();
+            if (FindCurrentEventClash(startUtc, endUtc) is ExternalEventSummaryDto clash)
+            {
+                var window = WindowText(clash);
+                currentEventClash = Localizer["Index_NewCurrentEventClash", clash.EventName, window, clash.StatusName].Value;
+                Log($"❌ No current event created — '{clash.EventName}' ({clash.StatusName}, {window}) already occupies that window.");
+                return;
+            }
+
+            if (!await CreateEventCoreAsync(startUtc, endUtc, "Simulated current event"))
+                return;
+
+            // Mirror the window into the page's own local-time fields so the summary line reads in the
+            // operator's clock; going live re-bases it off these, keeping the 3-hour length.
+            eventDate = startUtc.ToLocalTime();
+            eventEndDate = endUtc.ToLocalTime();
+
+            if (!await GoLiveCoreAsync())
+            {
+                // Created but still OnSale — usable, just not live yet, so say so rather than leaving
+                // the operator to infer it from the status badge.
+                Log("⚠ Current event was created but could not be taken live — use 'Make live now'.");
+                return;
+            }
+
+            Log($"🕒 Current event is live, {eventDate:HH:mm} → {eventEndDate:HH:mm} ({CurrentEventHours}h).");
+
+            // Going live closes ticket sales, so an event with no season passes behind it has nobody
+            // seated and drink-order simulation has no seat to pick. Worth saying up front.
+            if (TotalOccupied == 0)
+                Log("⚠ No seats are occupied — link a season with passes before creating a live event, or drink orders will have no seat to attach to.");
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
+    /// <summary>
+    /// Sends the EventCreated webhook for the given UTC window and loads the created event into the
+    /// page. Shared by the form ("Create &amp; sync") and the quick "New current event" action, which
+    /// differ only in where the window comes from. Callers own the <c>busy</c> flag. Returns whether
+    /// the API accepted the event.
+    /// </summary>
+    private async Task<bool> CreateEventCoreAsync(DateTime startUtc, DateTime endUtc, string description)
+    {
+        try
+        {
             var extId = "SIM-" + Guid.NewGuid().ToString("N")[..8].ToUpperInvariant();
             var envelope = new TicketingWebhookEnvelope
             {
@@ -1401,11 +1606,11 @@
                     EventType = eventType,
                     HomeTeam = IsVersusType && !string.IsNullOrWhiteSpace(homeTeam) ? homeTeam.Trim() : null,
                     AwayTeam = IsVersusType && !string.IsNullOrWhiteSpace(awayTeam) ? awayTeam.Trim() : null,
-                    EventDate = DateTime.SpecifyKind(eventDate, DateTimeKind.Utc),
-                    EventEndDate = DateTime.SpecifyKind(eventEndDate, DateTimeKind.Utc),
+                    EventDate = startUtc,
+                    EventEndDate = endUtc,
                     TotalSeats = TotalCapacity,
                     BaseTicketPrice = basePrice,
-                    Description = "Simulated event",
+                    Description = description,
                     ExternalSeasonId = string.IsNullOrWhiteSpace(linkSeasonExternalId) ? null : linkSeasonExternalId
                 }
             };
@@ -1434,21 +1639,65 @@
                 ApplyEventState(existingEvents.FirstOrDefault(e => e.ExternalEventId == externalEventId));
                 await LoadSeasonsAsync();
                 await RefreshSeasonOccupancyAsync();
+                return true;
             }
-            else
-            {
-                Log($"❌ Event create rejected: {result.Message}");
-            }
+
+            Log($"❌ Event create rejected: {result.Message}");
         }
         catch (Exception ex)
         {
             Log($"❌ Event create error: {ex.Message}");
         }
-        finally
-        {
-            busy = false;
-        }
+        return false;
     }
+
+    /// <summary>
+    /// The first event standing in the way of a new current event over
+    /// <paramref name="startUtc"/>..<paramref name="endUtc"/>, or null when the way is clear. An event
+    /// clashes when its own window overlaps (so one merely scheduled to start inside the window counts
+    /// too), or when it is already live — the API allows a single Active event at a time, so a
+    /// stale-live one blocks the slot even if its window has drifted out of the way. Terminal events
+    /// (Completed/Cancelled) never clash; an event with no recorded end is assumed to run the same
+    /// <see cref="CurrentEventHours"/> hours.
+    /// </summary>
+    private ExternalEventSummaryDto? FindCurrentEventClash(DateTime startUtc, DateTime endUtc) =>
+        existingEvents.FirstOrDefault(e =>
+        {
+            if (IsTerminalStatus(e.StatusName)) return false;
+            if (e.CanOrderDrinks) return true; // already holds the single live slot
+            var (start, end) = WindowOf(e);
+            return start < endUtc && end > startUtc;
+        });
+
+    // The event's UTC window, defaulting a missing end to the standard current-event length.
+    private static (DateTime Start, DateTime End) WindowOf(ExternalEventSummaryDto e)
+    {
+        var start = AsUtc(e.EventDate);
+        return (start, e.EventEndDate is DateTime end ? AsUtc(end) : start.AddHours(CurrentEventHours));
+    }
+
+    // Local-time "start → end" label for an event, used in the clash message.
+    private static string WindowText(ExternalEventSummaryDto e)
+    {
+        var (start, end) = WindowOf(e);
+        return $"{start.ToLocalTime():yyyy-MM-dd HH:mm} → {end.ToLocalTime():HH:mm}";
+    }
+
+    // Event timestamps come off the API as UTC, but a JSON round-trip can leave the Kind unset —
+    // pin it so the window arithmetic compares like with like.
+    private static DateTime AsUtc(DateTime value) => value.Kind switch
+    {
+        DateTimeKind.Utc => value,
+        DateTimeKind.Local => value.ToUniversalTime(),
+        _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+    };
+
+    // A Completed/Cancelled event is done with; only the live-capable statuses can clash with a new
+    // current event. Fully qualified rather than importing Shared.Models, whose type names
+    // (Event, Ticket, …) would collide with the integration DTOs this page works in.
+    private static bool IsTerminalStatus(string? statusName) =>
+        Enum.TryParse<StadiumDrinkOrdering.Shared.Models.EventStatus>(statusName, ignoreCase: true, out var status)
+        && StadiumDrinkOrdering.Shared.Models.EventLifecycle.IsTerminal(status);
 
     // Slides the selected event's start to "now" and flips its lifecycle to Active on the API,
     // so features gated on the event being live (drink ordering, live ticket sessions) can be tested.
@@ -1456,6 +1705,24 @@
     {
         if (busy || externalEventId == null) return;
         busy = true;
+        try
+        {
+            await GoLiveCoreAsync();
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
+    /// <summary>
+    /// Sends the EventWentLive webhook for the loaded event and mirrors the resulting state locally.
+    /// Shared by the "Make live now" button and the quick "New current event" action, which goes live
+    /// as part of creating the event. Callers own the <c>busy</c> flag. Returns whether the API
+    /// accepted the transition.
+    /// </summary>
+    private async Task<bool> GoLiveCoreAsync()
+    {
         try
         {
             var envelope = new TicketingWebhookEnvelope
@@ -1486,20 +1753,16 @@
                 Log($"🔴 Event is now LIVE — window moved to now, {result.Message}");
                 await LoadEventsAsync();
                 ApplyEventState(existingEvents.FirstOrDefault(e => e.ExternalEventId == externalEventId));
+                return true;
             }
-            else
-            {
-                Log($"❌ Could not make event live: {result.Message}");
-            }
+
+            Log($"❌ Could not make event live: {result.Message}");
         }
         catch (Exception ex)
         {
             Log($"❌ Make-live failed: {ex.Message}");
         }
-        finally
-        {
-            busy = false;
-        }
+        return false;
     }
 
     private async Task EndEventAsync()
@@ -1574,20 +1837,29 @@
     private async Task<bool> SellOneAsync(StadiumSectionInfoDto s)
     {
         var extTicket = "TCK-" + Guid.NewGuid().ToString("N")[..12].ToUpperInvariant();
+        var buyer = BuyerFor(extTicket);
         var envelope = new TicketingWebhookEnvelope
         {
             EventType = TicketingEventTypes.TicketSold,
             IdempotencyKey = Guid.NewGuid().ToString(),
             OccurredAt = DateTime.UtcNow,
             SourceSystem = Api.SourceSystem,
+            // Filling a sector calls this in a loop, and every buyer is a plus-alias of one real
+            // mailbox — an invitation per seat would bury it. The account is still created and
+            // claimable; Admin's backfill can invite them deliberately.
+            SuppressActivationEmail = true,
             Ticket = new ExternalTicketDto
             {
                 ExternalTicketId = extTicket,
                 ExternalEventId = externalEventId!,
                 SectionCode = s.SectionCode,
                 Price = basePrice,
-                CustomerName = Names[_rng.Next(Names.Length)],
-                CustomerOib = RandomOib(),
+                CustomerName = buyer.Name,
+                // Supplying the email is what gets the buyer a claimable account on the receiving
+                // side; without it the ticket resolves to no one and their drink orders land on
+                // whatever account the attribution fallback happens to pick.
+                CustomerEmail = buyer.Email,
+                CustomerOib = buyer.Oib,
                 SoldAt = DateTime.UtcNow
             }
         };
@@ -1779,18 +2051,25 @@
             var healed = 0;
             foreach (var (section, ext) in all)
             {
+                // Same buyer the original sale carried — BuyerFor is derived from the ticket id, so a
+                // healed sale doesn't come back attributed to nobody (or to a different person).
+                var buyer = BuyerFor(ext);
                 var envelope = new TicketingWebhookEnvelope
                 {
                     EventType = TicketingEventTypes.TicketSold,
                     IdempotencyKey = Guid.NewGuid().ToString(),
                     OccurredAt = DateTime.UtcNow,
                     SourceSystem = Api.SourceSystem,
+                    SuppressActivationEmail = true,
                     Ticket = new ExternalTicketDto
                     {
                         ExternalTicketId = ext,
                         ExternalEventId = externalEventId!,
                         SectionCode = section,
                         Price = basePrice,
+                        CustomerName = buyer.Name,
+                        CustomerEmail = buyer.Email,
+                        CustomerOib = buyer.Oib,
                         SoldAt = DateTime.UtcNow
                     }
                 };
@@ -1912,6 +2191,7 @@
         eventStatusName = "";
         expandedSector = null;
         expandedSeatMap = null;
+        currentEventClash = null;
         lock (_lock) { soldCount.Clear(); soldIds.Clear(); seasonCount.Clear(); }
         Log("↩ Back to events list — cleared active event");
         await LoadEventsAsync();

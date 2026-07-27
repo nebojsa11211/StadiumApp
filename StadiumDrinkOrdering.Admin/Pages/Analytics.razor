@@ -102,18 +102,38 @@
                     <div class="panel__head">
                         <h2 class="panel__title"><i class="bi bi-tools"></i> @L["Analytics_ReportsTitle"]</h2>
                     </div>
-                    <div class="actions">
-                        <button class="action" @onclick="NavigateToCustomerAnalytics" id="admin-analytics-customer-analytics-btn">
-                            <i class="bi bi-people"></i><span>@L["Analytics_CustomerAnalyticsButton"]</span><i class="bi bi-chevron-right action__go"></i>
+                    <div class="actions actions--tiles" id="admin-analytics-quick-actions-list">
+                        <button type="button" class="action action--tile" @onclick="NavigateToCustomerAnalytics" id="admin-analytics-customer-analytics-btn">
+                            <i class="bi bi-people"></i>
+                            <span class="action__text">
+                                <span class="action__label">@L["Analytics_CustomerAnalyticsButton"]</span>
+                                <span class="action__desc">@L["Analytics_CustomerAnalyticsDesc"]</span>
+                            </span>
+                            <i class="bi bi-chevron-right action__go"></i>
                         </button>
-                        <button class="action" @onclick="NavigateToEvents" id="admin-analytics-events-btn">
-                            <i class="bi bi-calendar"></i><span>@L["Analytics_EventManagementButton"]</span><i class="bi bi-chevron-right action__go"></i>
+                        <button type="button" class="action action--tile" @onclick="NavigateToEvents" id="admin-analytics-events-btn">
+                            <i class="bi bi-calendar"></i>
+                            <span class="action__text">
+                                <span class="action__label">@L["Analytics_EventManagementButton"]</span>
+                                <span class="action__desc">@L["Analytics_EventManagementDesc"]</span>
+                            </span>
+                            <i class="bi bi-chevron-right action__go"></i>
                         </button>
-                        <button class="action" @onclick="NavigateToOrders" id="admin-analytics-orders-btn">
-                            <i class="bi bi-list-ul"></i><span>@L["Analytics_OrderReportsButton"]</span><i class="bi bi-chevron-right action__go"></i>
+                        <button type="button" class="action action--tile" @onclick="NavigateToOrders" id="admin-analytics-orders-btn">
+                            <i class="bi bi-list-ul"></i>
+                            <span class="action__text">
+                                <span class="action__label">@L["Analytics_OrderReportsButton"]</span>
+                                <span class="action__desc">@L["Analytics_OrderReportsDesc"]</span>
+                            </span>
+                            <i class="bi bi-chevron-right action__go"></i>
                         </button>
-                        <button class="action" @onclick="NavigateToLogs" id="admin-analytics-logs-btn">
-                            <i class="bi bi-graph-up"></i><span>@L["Analytics_SystemLogsButton"]</span><i class="bi bi-chevron-right action__go"></i>
+                        <button type="button" class="action action--tile" @onclick="NavigateToLogs" id="admin-analytics-logs-btn">
+                            <i class="bi bi-graph-up"></i>
+                            <span class="action__text">
+                                <span class="action__label">@L["Analytics_SystemLogsButton"]</span>
+                                <span class="action__desc">@L["Analytics_SystemLogsDesc"]</span>
+                            </span>
+                            <i class="bi bi-chevron-right action__go"></i>
                         </button>
                     </div>
                 </div>

@@ -294,7 +294,12 @@ public class WalletService : IWalletService
 
         var total = await query.CountAsync();
         var items = await query
-            .OrderByDescending(t => t.Id)
+            // By CreatedAt, not Id: BalanceAfter is a running total along the CreatedAt timeline, so any
+            // other order makes the balance column jump about. Id only agrees with time for entries
+            // written as they happen — a match day seeded in one batch, or any back-dated import, gets
+            // ids in insert order and would otherwise interleave nonsensically. Id breaks ties.
+            .OrderByDescending(t => t.CreatedAt)
+            .ThenByDescending(t => t.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(t => new WalletTransactionDto
@@ -1160,7 +1165,10 @@ public class WalletService : IWalletService
         var query = _context.WalletTransactions.AsNoTracking().Where(t => t.WalletId == walletId);
         var total = await query.CountAsync();
         var items = await query
-            .OrderByDescending(t => t.Id)
+            // Chronological, so the BalanceAfter column reads as a running balance — see the note in
+            // GetTransactionsAsync. Id is the tie-break only.
+            .OrderByDescending(t => t.CreatedAt)
+            .ThenByDescending(t => t.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(t => new WalletTransactionDto
@@ -1245,7 +1253,10 @@ public class WalletService : IWalletService
         var totalOut = await query.Where(x => x.Amount < 0).SumAsync(x => (decimal?)x.Amount) ?? 0m;
 
         var rows = await query
-            .OrderByDescending(x => x.Id)
+            // "Newest first" means when the cash actually moved at the counter, which is CreatedAt —
+            // a seeded or back-dated match day has ids in insert order, not in time order.
+            .OrderByDescending(x => x.CreatedAt)
+            .ThenByDescending(x => x.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

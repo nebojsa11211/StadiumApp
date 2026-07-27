@@ -321,6 +321,187 @@
 
 .panel__body { padding: 1.25rem; }
 
+/* ----- Board & rail (main column + side rail) ------------------------------
+   Layout primitives for "table on the left, supporting rail on the right".
+   These previously existed ONLY in Dashboard.razor.css, which is a *scoped*
+   stylesheet — so every other page using .board/.rail (e.g. Analytics) got no
+   layout at all and fell back to plain stacked blocks. They belong here.
+   Dashboard keeps its own scoped copies, which out-specify these. */
+.board {
+    display: grid;
+    grid-template-columns: minmax(0, 2.1fr) minmax(300px, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+/* Inside a board the grid gap owns the rhythm — drop the panel's own margin. */
+.board > .panel,
+.rail > .panel { margin-bottom: 0; }
+
+.rail > .panel + .panel { margin-top: 1rem; }
+
+/* A rail with no main-column sibling (e.g. no events yet) spans the board
+   instead of being squeezed into the wide column with dead space beside it. */
+.board > .rail:only-child { grid-column: 1 / -1; }
+
+@media (max-width: 900px) {
+    .board { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ----- Quick actions (rail navigation list) --------------------------------
+   Base list shared by console pages. Icon chip rule accepts both Open Iconic
+   (.oi, used by Dashboard) and Bootstrap Icons (.bi, used by newer pages). */
+.actions {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 0.75rem;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--stadium-gray-700);
+    text-align: left;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* min-width:0 lets long labels ellipsise instead of forcing the rail wider. */
+.action > span { flex: 1; min-width: 0; }
+
+.action > .oi:first-child,
+.action > .bi:first-child {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: var(--stadium-gray-100);
+    color: var(--stadium-gray-500);
+    font-size: 0.8rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.action__go {
+    flex-shrink: 0;
+    font-size: 0.62rem;
+    color: var(--stadium-gray-300);
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.action:hover { background: var(--stadium-gray-50); color: var(--ink); }
+
+.action:hover > .oi:first-child,
+.action:hover > .bi:first-child { background: var(--pitch-soft); color: var(--pitch); }
+
+.action:hover .action__go { color: var(--stadium-gray-400); transform: translateX(2px); }
+
+/* These are real <button>s but had no focus affordance at all — a keyboard
+   user could not tell which row was active. Safe/desirable on every page. */
+.action:focus-visible {
+    outline: 2px solid var(--pitch);
+    outline-offset: -2px;
+    background: var(--stadium-gray-50);
+    color: var(--ink);
+}
+
+/* ----- Quick actions · tile variant ----------------------------------------
+   Opt-in refinement (.actions--tiles / .action--tile) for rails where the
+   actions ARE the page's primary navigation rather than a footnote. Adds a
+   supporting description line, a chip that carries the accent at rest, and a
+   left accent bar echoing .metric::before. Applied only where opted in, so
+   the plain .action list elsewhere is untouched.
+   Fully token-driven (--surface/--ink/--muted/--pitch*), so it follows the
+   console's palette automatically wherever those tokens are remapped. */
+.actions--tiles { gap: 0.15rem; }
+
+.action--tile {
+    position: relative;
+    gap: 0.85rem;
+    padding: 0.7rem 0.8rem;
+    overflow: hidden;
+}
+
+/* Collapsed hairline that springs to full height on hover/focus. */
+.action--tile::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--pitch);
+    transform: scaleY(0);
+    transition: transform 0.18s ease;
+}
+
+.action--tile:hover::before,
+.action--tile:focus-visible::before { transform: scaleY(1); }
+
+.action--tile > .bi:first-child {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--pitch-soft);
+    color: var(--pitch);
+    font-size: 0.9rem;
+}
+
+.action--tile:hover > .bi:first-child,
+.action--tile:focus-visible > .bi:first-child {
+    background: var(--pitch);
+    color: #fff;
+}
+
+.action__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.action__label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--ink);
+}
+
+.action__desc {
+    font-size: 0.72rem;
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--muted);
+}
+
+.action--tile .action__go { font-size: 0.6rem; }
+
+@media (max-width: 560px) {
+    .action--tile { gap: 0.7rem; padding: 0.65rem 0.7rem; }
+    .action--tile > .bi:first-child { width: 30px; height: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .action,
+    .action__go,
+    .action--tile::before,
+    .action > .oi:first-child,
+    .action > .bi:first-child { transition: none; }
+
+    .action:hover .action__go { transform: none; }
+    .action--tile::before { transition: none; }
+}
+
 /* ----- Filters ------------------------------------------------------------- */
 .filters {
     display: flex;

@@ -42,6 +42,15 @@ public class TicketingWebhookEnvelope
 
     public string SourceSystem { get; set; } = "TicketingSimulator";
 
+    /// <summary>
+    /// Provision the buyer's claimable account silently, without mailing them an activation link.
+    /// Off by default, so a real feed's customers are invited as they always were. The simulator sets
+    /// it when selling in bulk: its fans are plus-aliases of one real mailbox (see
+    /// <c>SimulatedFans</c>), so a generated season would otherwise deliver hundreds of invitations
+    /// to it. The account is created either way and can be invited later from Admin.
+    /// </summary>
+    public bool SuppressActivationEmail { get; set; }
+
     /// <summary>Populated for EventCreated / EventUpdated.</summary>
     public ExternalEventDto? Event { get; set; }
 

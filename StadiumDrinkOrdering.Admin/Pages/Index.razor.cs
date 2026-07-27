@@ -63,6 +63,12 @@ public partial class Index : ComponentBase, IDisposable
     /// <summary>Sold seats that are ordinary single-event tickets (total minus season-derived).</summary>
     private int NormalTicketsSold => Math.Max(0, _ticketsSold - _seasonTicketsSold);
     /// <summary>
+    /// Seats still on sale for the selected event. Derived from the same capacity/sold pair the KPI
+    /// value uses (rather than <c>EventDto.AvailableSeats</c> directly) so it stays in step with the
+    /// live TicketSold push, which only updates the sold count.
+    /// </summary>
+    private int FreeSeats => Math.Max(0, (_selectedEvent?.Capacity ?? 0) - _ticketsSold);
+    /// <summary>
     /// Realised ticket takings for the selected event: its non-cancelled single-event tickets plus
     /// this fixture's amortized share of season-pass revenue. Server-computed (see
     /// <c>EventDto.TicketRevenue</c>/<c>SeasonTicketRevenue</c>), so it refreshes on load rather than

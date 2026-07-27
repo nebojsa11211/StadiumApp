@@ -967,11 +967,24 @@
                         <p class="text-danger fw-semibold mt-3 mb-2" id="admin-event-purge-irreversible">
                             <i class="bi bi-exclamation-triangle-fill"></i> @L["Events_PurgeIrreversible"]
                         </p>
-                        <label class="form-label fw-semibold" for="admin-event-purge-confirm-input" id="admin-event-purge-confirm-label">
-                            @L["Events_PurgeConfirmPrompt", purgeEvent.Name]
+                        <label class="form-label fw-semibold mb-1" for="admin-event-purge-confirm-input" id="admin-event-purge-confirm-label">
+                            @L["Events_PurgeConfirmPrompt"]
                         </label>
+                        @* On its own line rather than inline in the sentence — a fixture name read
+                           mid-sentence ("Type GNK Dinamo Zagreb - HNK Rijeka to confirm") gives no clue
+                           where the name starts and ends, and a near-miss silently leaves the button
+                           disabled. Same treatment as the season purge dialog. *@
+                        <div class="mb-2" id="admin-event-purge-confirm-name">
+                            <code class="user-select-all">@purgeEvent.Name</code>
+                        </div>
                         <input type="text" class="form-control" id="admin-event-purge-confirm-input"
                                @bind="purgeConfirmText" @bind:event="oninput" autocomplete="off" disabled="@isPurging" />
+                        @if (purgeConfirmText.Length > 0 && !IsPurgeConfirmed)
+                        {
+                            <div class="form-text text-danger" id="admin-event-purge-confirm-mismatch">
+                                <i class="bi bi-x-circle"></i> @L["Events_PurgeConfirmMismatch"]
+                            </div>
+                        }
                     }
                 </div>
                 <div class="modal-footer" id="admin-event-purge-footer">

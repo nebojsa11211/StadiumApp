@@ -516,11 +516,27 @@
                         <p class="text-danger fw-semibold mt-3 mb-2" id="admin-season-purge-irreversible">
                             <i class="bi bi-exclamation-triangle-fill"></i> @L["Seasons_PurgeIrreversible"]
                         </p>
-                        <label class="form-label fw-semibold" for="admin-season-purge-confirm-input" id="admin-season-purge-confirm-label">
-                            @L["Seasons_PurgeConfirmPrompt", purgeSeason.Name]
+                        <label class="form-label fw-semibold mb-1" for="admin-season-purge-confirm-input" id="admin-season-purge-confirm-label">
+                            @L["Seasons_PurgeConfirmPrompt"]
                         </label>
+                        @* The name goes on its own line rather than inline in the sentence. Read inline,
+                           "Type Season 2026/27 to confirm" looks like the word "Type" followed by a
+                           season number — and a name that merely wraps an external id ("Season
+                           SEASON-A474A2B1") reads as an instruction to type just the id. Typing the id
+                           leaves the button disabled with nothing on screen explaining why. *@
+                        <div class="mb-2" id="admin-season-purge-confirm-name">
+                            <code class="user-select-all">@purgeSeason.Name</code>
+                        </div>
                         <input type="text" class="form-control" id="admin-season-purge-confirm-input"
                                @bind="purgeConfirmText" @bind:event="oninput" autocomplete="off" disabled="@isPurging" />
+                        @* Says which half of the gate is still closed: without it a mistyped name is
+                           indistinguishable from a broken button. *@
+                        @if (purgeConfirmText.Length > 0 && !IsPurgeConfirmed)
+                        {
+                            <div class="form-text text-danger" id="admin-season-purge-confirm-mismatch">
+                                <i class="bi bi-x-circle"></i> @L["Seasons_PurgeConfirmMismatch"]
+                            </div>
+                        }
                     }
                 </div>
                 <div class="modal-footer" id="admin-season-purge-footer">

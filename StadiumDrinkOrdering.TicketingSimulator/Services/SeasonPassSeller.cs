@@ -1,4 +1,5 @@
 using StadiumDrinkOrdering.Shared.DTOs.Integration;
+using StadiumDrinkOrdering.Shared.Simulation;
 
 namespace StadiumDrinkOrdering.TicketingSimulator.Services;
 
@@ -20,55 +21,13 @@ public class SeasonPassSeller
     public SeasonPassSeller(SimulatorApiClient api) => _api = api;
 
     /// <summary>
-    /// How many distinct people passes are drawn from. A pass holder needs an email as much as a
-    /// single-match buyer does: the receiving side provisions a claimable account from it, and the
-    /// per-match access tickets it materialises copy it — which is what lets a pass holder's drink
-    /// orders be attributed to them rather than to an arbitrary account. Capped so a season's pass
-    /// base doesn't mint an account per pass.
+    /// The people passes are drawn from. A pass holder needs an email as much as a single-match buyer
+    /// does: the receiving side provisions a claimable account from it, and the per-match access tickets
+    /// it materialises copy it — which is what lets a pass holder's drink orders be attributed to them
+    /// rather than to an arbitrary account. Defined in <see cref="SimulatedFans"/> alongside the crowd
+    /// the API seats, so the two share one address format and are guaranteed to be different people.
     /// </summary>
-    private const int FanPoolSize = 200;
-
-    /// <summary>One simulated pass holder: a stable identity, so the same people hold passes across runs.</summary>
-    private sealed record Fan(string Name, string Email, string Oib);
-
-    private static readonly string[] FirstNames =
-    {
-        "Ivan", "Marko", "Ana", "Petra", "Luka", "Sara", "Tomislav", "Maja", "Josip", "Ivana",
-        "Filip", "Nikola", "Lucija", "Stjepan", "Marija", "Antonio", "Katarina", "Domagoj", "Nina", "Mislav"
-    };
-
-    private static readonly string[] LastNames =
-    {
-        "Horvat", "Kovac", "Babic", "Novak", "Maric", "Juric", "Knezevic", "Vukovic", "Peric", "Simic"
-    };
-
-    /// <summary>
-    /// Built once and deterministically, so repeated runs sell to the same people and reuse their
-    /// accounts instead of growing the customer list on every generation.
-    /// </summary>
-    private static readonly IReadOnlyList<Fan> FanPool = BuildFanPool();
-
-    private static List<Fan> BuildFanPool()
-    {
-        var fans = new List<Fan>(FanPoolSize);
-        foreach (var last in LastNames)
-        {
-            foreach (var first in FirstNames)
-            {
-                if (fans.Count >= FanPoolSize)
-                    return fans;
-
-                // Stable 11-digit OIB from the pool position, so a fan's pass and their account agree.
-                // Offset away from the single-match crowd's range so the two pools are distinct people.
-                var oib = (20_000_000_000L + fans.Count).ToString();
-                fans.Add(new Fan(
-                    $"{first} {last}",
-                    $"{first}.{last}@pass.example.com".ToLowerInvariant(),
-                    oib));
-            }
-        }
-        return fans;
-    }
+    private static readonly IReadOnlyList<SimulatedFanIdentity> FanPool = SimulatedFans.PassHolders;
 
     /// <summary>
     /// Outcome of one attempted pass sale, including what the receiving side did with it: how many
@@ -152,6 +111,9 @@ public class SeasonPassSeller
             IdempotencyKey = Guid.NewGuid().ToString(),
             OccurredAt = DateTime.UtcNow,
             SourceSystem = _api.SourceSystem,
+            // Bulk-generated holders share one real mailbox, so a season's pass base would land a few
+            // hundred activation invitations in it. The accounts are still created and claimable.
+            SuppressActivationEmail = true,
             SeasonTicket = new ExternalSeasonTicketDto
             {
                 ExternalSeasonTicketId = extId,

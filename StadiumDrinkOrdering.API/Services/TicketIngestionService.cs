@@ -5,6 +5,7 @@ using StadiumDrinkOrdering.API.Hubs;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.DTOs.Integration;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.Shared.Simulation;
 
 namespace StadiumDrinkOrdering.API.Services;
 
@@ -460,7 +461,8 @@ public class TicketIngestionService : ITicketIngestionService
         await _context.SaveChangesAsync(ct);
 
         // Give the buyer a claimable account so they can load a wallet / be topped up at the bar.
-        await _accountProvisioning.EnsureShellAccountAsync(dto.CustomerEmail, dto.CustomerName, null, "TicketSold", oib: dto.CustomerOib);
+        await _accountProvisioning.EnsureShellAccountAsync(dto.CustomerEmail, dto.CustomerName, null, "TicketSold",
+            sendActivation: !envelope.SuppressActivationEmail, oib: dto.CustomerOib);
 
         var result = new TicketingWebhookResult
         {
@@ -595,7 +597,8 @@ public class TicketIngestionService : ITicketIngestionService
         await _context.SaveChangesAsync(ct); // assigns seat.Id + pass.Id
 
         // Give the pass holder a claimable account (also links this pass to it by email).
-        await _accountProvisioning.EnsureShellAccountAsync(dto.HolderEmail, dto.HolderName, null, "SeasonTicketSold", oib: dto.HolderOib);
+        await _accountProvisioning.EnsureShellAccountAsync(dto.HolderEmail, dto.HolderName, null, "SeasonTicketSold",
+            sendActivation: !envelope.SuppressActivationEmail, oib: dto.HolderOib);
 
         // Materialize a derived access ticket for every event already in the season.
         var events = await _context.Events.Where(e => e.SeasonId == season.Id).ToListAsync(ct);
@@ -1030,12 +1033,11 @@ public class TicketIngestionService : ITicketIngestionService
             };
 
         var count = Math.Clamp(numberOfTickets, 1, 1000);
-        var customerNames = new[] { "John Doe", "Jane Smith", "Mike Johnson", "Sarah Wilson", "Tom Brown", "Lisa Davis", "Chris Miller", "Anna Garcia" };
 
         var created = 0;
-        // Track which simulated buyers we've already provisioned so 1000 tickets don't re-provision
-        // the same 8 names — EnsureShellAccountAsync is idempotent anyway, but this avoids the wasted
-        // DbContext scope per ticket.
+        // Track which simulated buyers we've already provisioned so 1000 tickets don't re-provision the
+        // same handful of fans — EnsureShellAccountAsync is idempotent anyway, but this avoids the
+        // wasted DbContext scope per ticket.
         var provisionedEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         for (var i = 0; i < count; i++)
         {
@@ -1046,9 +1048,14 @@ public class TicketIngestionService : ITicketIngestionService
             if (seat == null)
                 continue; // this sector is full — skip it
 
-            var customerName = customerNames[_rng.Next(customerNames.Length)];
-            var customerEmail = $"{customerName.Replace(" ", "").ToLower()}@example.com";
-            var customerOib = RandomOib();
+            // Drawn from the shared pool, so these buyers are the same people the season generator
+            // seats rather than a second set of strangers — and their OIB is stable per person instead
+            // of freshly random per ticket, which used to leave one account carrying a different OIB
+            // on every ticket it held.
+            var fan = SimulatedFans.Crowd[_rng.Next(SimulatedFans.Crowd.Count)];
+            var customerName = fan.Name;
+            var customerEmail = fan.Email;
+            var customerOib = fan.Oib;
             var ticket = new Ticket
             {
                 TicketNumber = $"TK{DateTime.UtcNow.Ticks}{_rng.Next(1000, 9999)}",
@@ -1078,8 +1085,8 @@ public class TicketIngestionService : ITicketIngestionService
 
             // Give the simulated buyer a claimable shell account too — exactly like the real webhook
             // sale path (HandleTicketSoldAsync) — so simulated fans appear under Admin → Customers and
-            // can be topped up at the bar by OIB. No activation email is sent because these are throwaway
-            // @example.com test addresses.
+            // can be topped up at the bar by OIB. No activation email is sent: a simulated fan's address
+            // is a plus-alias of one real mailbox, so a thousand tickets would flood it.
             if (provisionedEmails.Add(customerEmail))
                 await _accountProvisioning.EnsureShellAccountAsync(
                     customerEmail, customerName, null, "SimulatedTicketSale", sendActivation: false, oib: customerOib);
@@ -1169,16 +1176,6 @@ public class TicketIngestionService : ITicketIngestionService
     }
 
     private readonly Random _rng = new();
-
-    /// <summary>A random 11-digit string used as a simulated OIB for admin test tickets (format-only,
-    /// no checksum — matches the capture rule used across the app).</summary>
-    private string RandomOib()
-    {
-        var digits = new char[11];
-        for (var i = 0; i < digits.Length; i++)
-            digits[i] = (char)('0' + _rng.Next(0, 10));
-        return new string(digits);
-    }
 
     private async Task BroadcastAndRefreshAsync(Event evt, StadiumSection? section, string action, TicketingWebhookResult result, CancellationToken ct)
     {

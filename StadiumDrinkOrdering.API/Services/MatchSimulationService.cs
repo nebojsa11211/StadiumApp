@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StadiumDrinkOrdering.API.Data;
 using StadiumDrinkOrdering.Shared.DTOs.Integration;
 using StadiumDrinkOrdering.Shared.Models;
+using StadiumDrinkOrdering.Shared.Simulation;
 
 namespace StadiumDrinkOrdering.API.Services;
 
@@ -46,55 +47,10 @@ public class MatchSimulationService : IMatchSimulationService
     private const int RefundedPercent = 5; // the remainder are no-shows
 
     /// <summary>
-    /// How many distinct people a simulated crowd is drawn from. A whole season is thousands of
-    /// tickets; drawing them from a handful of names makes every drink order in the ground belong to
-    /// the same few accounts, which is useless for testing anything per-customer. Capped rather than
-    /// unbounded so a generated season doesn't bury Admin → Customers under a new fan per ticket.
+    /// The people a simulated crowd is drawn from — defined in <see cref="SimulatedFans"/> so the
+    /// crowd and the simulator's season-pass holders share one address format and never collide.
     /// </summary>
-    private const int FanPoolSize = 200;
-
-    /// <summary>One simulated fan: a stable identity, so the same person recurs across fixtures and
-    /// seasons instead of a fresh account being minted per ticket.</summary>
-    private sealed record SimulatedFan(string Name, string Email, string Oib);
-
-    private static readonly string[] FanFirstNames =
-    {
-        "Ivan", "Marko", "Ana", "Petra", "Luka", "Josip", "Marija", "Tomislav", "Ivana", "Filip",
-        "Sara", "Nikola", "Maja", "Stjepan", "Lucija", "Antonio", "Katarina", "Domagoj", "Nina", "Mislav"
-    };
-
-    private static readonly string[] FanLastNames =
-    {
-        "Horvat", "Kovacevic", "Babic", "Novak", "Maric", "Juric", "Vukovic", "Peric", "Simic", "Barisic"
-    };
-
-    /// <summary>
-    /// The fan pool, built once and deterministically so a rerun reuses the same people (and therefore
-    /// the same provisioned accounts) rather than doubling the customer list every time.
-    /// </summary>
-    private static readonly IReadOnlyList<SimulatedFan> FanPool = BuildFanPool();
-
-    private static List<SimulatedFan> BuildFanPool()
-    {
-        var fans = new List<SimulatedFan>(FanPoolSize);
-        foreach (var last in FanLastNames)
-        {
-            foreach (var first in FanFirstNames)
-            {
-                if (fans.Count >= FanPoolSize)
-                    return fans;
-
-                // OIB derived from the position in the pool: 11 digits, stable per fan, so the fan's
-                // ticket and their provisioned account always agree on who they are.
-                var oib = (10_000_000_000L + fans.Count).ToString();
-                fans.Add(new SimulatedFan(
-                    $"{first} {last}",
-                    $"{first}.{last}@example.com".ToLowerInvariant(),
-                    oib));
-            }
-        }
-        return fans;
-    }
+    private static readonly IReadOnlyList<SimulatedFanIdentity> FanPool = SimulatedFans.Crowd;
 
     public async Task<SimulateMatchResult> SimulateMatchAsync(SimulateMatchRequest request, CancellationToken ct = default)
     {
@@ -275,7 +231,7 @@ public class MatchSimulationService : IMatchSimulationService
         var stamp = DateTime.UtcNow.Ticks;
 
         // Who actually turned out, so only these get an account provisioned below.
-        var fansInAttendance = new Dictionary<string, SimulatedFan>(StringComparer.OrdinalIgnoreCase);
+        var fansInAttendance = new Dictionary<string, SimulatedFanIdentity>(StringComparer.OrdinalIgnoreCase);
 
         for (var i = 0; i < count; i++)
         {
@@ -362,9 +318,11 @@ public class MatchSimulationService : IMatchSimulationService
     ///
     /// Existing accounts are filtered out in a single query first: provisioning opens its own DbContext
     /// scope per call, so re-offering the same 200 fans on every fixture of a season would be hundreds
-    /// of pointless scopes. No activation mail is sent — these are throwaway @example.com addresses.
+    /// of pointless scopes. No activation mail is sent: a simulated fan's address is a plus-alias of a
+    /// real mailbox (<see cref="SimulatedFans"/>), so a full house would otherwise deliver thousands of
+    /// messages to it. They are claimable on demand via Admin's account backfill.
     /// </summary>
-    private async Task ProvisionFansAsync(IEnumerable<SimulatedFan> fans, CancellationToken ct)
+    private async Task ProvisionFansAsync(IEnumerable<SimulatedFanIdentity> fans, CancellationToken ct)
     {
         var byEmail = fans
             .GroupBy(f => f.Email, StringComparer.OrdinalIgnoreCase)

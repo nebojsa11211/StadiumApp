@@ -307,6 +307,34 @@
   <data name="Index_EndTimeValidationError" xml:space="preserve">
     <value>End time must be after the start time.</value>
   </data>
+  <data name="Index_PurgeButton" xml:space="preserve">
+    <value>Delete everything</value>
+  </data>
+  <data name="Index_PurgeEventTooltip" xml:space="preserve">
+    <value>Delete the event AND its drink orders, payments and ticket wallets. Irreversible — a plain delete keeps the orders and only unlinks them.</value>
+  </data>
+  <data name="Index_PurgeDamage" xml:space="preserve">
+    <value>{0} ticket(s), {1} drink order(s) worth €{2}, {3} payment(s), {4} ticket wallet(s) holding €{5}</value>
+  </data>
+  <data name="Index_PurgeConfirm" xml:space="preserve">
+    <value>Permanently delete “{0}” and everything attached to it?
+
+This destroys: {1}.
+
+Wallet balances are destroyed, not refunded. This cannot be undone.</value>
+  </data>
+  <data name="Index_NewCurrentEventButton" xml:space="preserve">
+    <value>New current event</value>
+  </data>
+  <data name="Index_NewCurrentEventTooltip" xml:space="preserve">
+    <value>Create an event running from now for {0} hours — using the name, type and season above — and take it live immediately.</value>
+  </data>
+  <data name="Index_NewCurrentEventHint" xml:space="preserve">
+    <value>Starts now, runs {0} hours, goes live immediately. Refused if another event is already live, or occupies — or is scheduled to start inside — that window. Live events cannot sell tickets, so link a season if you need occupied seats.</value>
+  </data>
+  <data name="Index_NewCurrentEventClash" xml:space="preserve">
+    <value>Not created: “{0}” ({2}) already occupies that window — {1}. End, cancel or delete it first.</value>
+  </data>
   <data name="Index_EventLabel" xml:space="preserve">
     <value>Event:</value>
   </data>

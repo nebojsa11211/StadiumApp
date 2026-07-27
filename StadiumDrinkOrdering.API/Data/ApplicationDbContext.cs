@@ -465,7 +465,16 @@ public class ApplicationDbContext : DbContext
 
             // The anti-double-charge guard: a given idempotency key posts at most one ledger row.
             entity.HasIndex(e => e.IdempotencyKey).IsUnique();
-            entity.HasIndex(e => e.WalletId);
+
+            // Every ledger read is "one wallet, newest first" — the Admin wallet modal and the fan's own
+            // history. CreatedAt trails WalletId so the index satisfies the filter and the sort in one
+            // walk; leading with WalletId also keeps it usable for plain WalletId lookups, which is why
+            // it replaces the old single-column index rather than sitting beside it.
+            entity.HasIndex(e => new { e.WalletId, e.CreatedAt });
+
+            // The bar's cash-reconciliation list: the three counter reference types, newest first,
+            // across every wallet.
+            entity.HasIndex(e => new { e.ReferenceType, e.CreatedAt });
 
             entity.HasOne(e => e.Wallet)
                 .WithMany(w => w.Transactions)

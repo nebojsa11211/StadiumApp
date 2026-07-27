@@ -141,6 +141,46 @@ public class SimulatorApiClient
     }
 
     /// <summary>
+    /// What a full purge of the event would destroy — tickets, orders, payments, ticket wallets and
+    /// their balances. Read-only; used to spell out the damage before asking for confirmation.
+    /// Null when the event is unknown or the API is unreachable.
+    /// </summary>
+    public async Task<EventPurgePreviewDto?> GetPurgePreviewAsync(string externalEventId)
+    {
+        var path = $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/purge-preview";
+        var resp = await _http.GetAsync(path);
+        return resp.IsSuccessStatusCode
+            ? await resp.Content.ReadFromJsonAsync<EventPurgePreviewDto>(Json)
+            : null;
+    }
+
+    /// <summary>
+    /// Purges an event: everything <see cref="DeleteEventAsync"/> removes, plus the orders, order
+    /// items, payments and ticket wallets it keeps. Irreversible. Signed like the webhook; the body
+    /// must echo <paramref name="confirmName"/> exactly as the event is named, or the API refuses.
+    /// Returns the row counts removed, or a message for the activity log on failure.
+    /// </summary>
+    public async Task<(bool Ok, EventPurgeResultDto? Result, string Message)> PurgeEventAsync(
+        string externalEventId, string confirmName)
+    {
+        var body = JsonSerializer.Serialize(new { confirmName }, Json);
+        using var content = new StringContent(body, Encoding.UTF8, "application/json");
+        var path = $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/purge";
+        using var req = new HttpRequestMessage(HttpMethod.Post, path) { Content = content };
+        req.Headers.TryAddWithoutValidation("X-Signature", "sha256=" + Sign(body));
+
+        var resp = await _http.SendAsync(req);
+        if (resp.IsSuccessStatusCode)
+        {
+            var result = await resp.Content.ReadFromJsonAsync<EventPurgeResultDto>(Json);
+            return (true, result, "Purged");
+        }
+
+        var text = await resp.Content.ReadAsStringAsync();
+        return (false, null, string.IsNullOrWhiteSpace(text) ? $"HTTP {(int)resp.StatusCode}" : text);
+    }
+
+    /// <summary>
     /// Deletes an event (and its tickets) by external id. Signed like the webhook over the raw —
     /// empty — body. Returns whether the delete succeeded plus a message for the activity log.
     /// </summary>

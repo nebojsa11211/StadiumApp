@@ -307,6 +307,34 @@
   <data name="Index_EndTimeValidationError" xml:space="preserve">
     <value>Vrijeme završetka mora biti nakon vremena početka.</value>
   </data>
+  <data name="Index_PurgeButton" xml:space="preserve">
+    <value>Obriši sve</value>
+  </data>
+  <data name="Index_PurgeEventTooltip" xml:space="preserve">
+    <value>Briše događaj I njegove narudžbe pića, plaćanja i novčanike ulaznica. Nepovratno — obično brisanje zadržava narudžbe i samo im uklanja vezu.</value>
+  </data>
+  <data name="Index_PurgeDamage" xml:space="preserve">
+    <value>{0} ulaznica, {1} narudžbi pića u vrijednosti €{2}, {3} plaćanja, {4} novčanika ulaznica s €{5}</value>
+  </data>
+  <data name="Index_PurgeConfirm" xml:space="preserve">
+    <value>Trajno obrisati „{0}” i sve što je uz njega vezano?
+
+Ovo uništava: {1}.
+
+Stanja novčanika se uništavaju, ne vraćaju. Ovo se ne može poništiti.</value>
+  </data>
+  <data name="Index_NewCurrentEventButton" xml:space="preserve">
+    <value>Novi trenutni događaj</value>
+  </data>
+  <data name="Index_NewCurrentEventTooltip" xml:space="preserve">
+    <value>Kreiraj događaj koji traje od sada {0} sata — s nazivom, vrstom i sezonom odabranima iznad — i odmah ga pokreni uživo.</value>
+  </data>
+  <data name="Index_NewCurrentEventHint" xml:space="preserve">
+    <value>Počinje sada, traje {0} sata, odmah ide uživo. Odbija se ako je drugi događaj već uživo ili zauzima taj termin — odnosno počinje unutar njega. Događaj uživo ne može prodavati ulaznice, pa povežite sezonu ako trebate zauzeta sjedala.</value>
+  </data>
+  <data name="Index_NewCurrentEventClash" xml:space="preserve">
+    <value>Nije kreirano: „{0}” ({2}) već zauzima taj termin — {1}. Prvo ga završite, otkažite ili obrišite.</value>
+  </data>
   <data name="Index_EventLabel" xml:space="preserve">
     <value>Događaj:</value>
   </data>

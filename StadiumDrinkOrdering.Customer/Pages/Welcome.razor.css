@@ -1,12 +1,100 @@
 .welcome{position:relative;flex:1;display:flex;flex-direction:column}
 
 /* ---------- floodlit crowd backdrop ---------- */
+/* The band is now just a masked, clipping frame; the artwork lives on the layers inside it so the
+   motion can be pure transform/opacity (composited) and never repaints this whole area. */
 .wl-crowd{
     position:absolute;left:0;right:0;top:0;height:86%;z-index:0;pointer-events:none;
-    background:url('/images/crowd.svg') center top/cover no-repeat;
+    overflow:hidden;isolation:isolate;
+    background:#0C1622;
     -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 64%,transparent 92%);
             mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 64%,transparent 92%);
     opacity:1;
+}
+
+/* Both layers are the same crowd.svg, inset past the edges so they can drift/zoom without ever
+   exposing a seam. */
+.wl-crowd-layer{
+    position:absolute;inset:-10% -12%;
+    background:url('/images/crowd.svg') center top/cover no-repeat;
+    backface-visibility:hidden;
+    will-change:transform;
+}
+
+/* far stand - a slow, wide breath */
+.wl-crowd-far{
+    transform:scale(1.04) translate3d(-1.1%,.4%,0);
+    animation:wl-crowd-far 52s ease-in-out infinite alternate;
+}
+
+/* near stand - mirrored so it does not read as a duplicate, screened over the far layer. As the two
+   bokeh fields slide across each other the lights keep re-forming: the crowd "shimmers". */
+.wl-crowd-near{
+    opacity:.5;mix-blend-mode:screen;
+    transform:scaleX(-1) scale(1.14) translate3d(1.6%,-.5%,0);
+    animation:wl-crowd-near 33s ease-in-out infinite alternate;
+}
+
+@keyframes wl-crowd-far{
+    from{transform:scale(1.04) translate3d(-1.1%,.4%,0)}
+    to  {transform:scale(1.10) translate3d(1.1%,-1.2%,0)}
+}
+@keyframes wl-crowd-near{
+    from{transform:scaleX(-1) scale(1.14) translate3d(1.6%,-.5%,0)}
+    to  {transform:scaleX(-1) scale(1.06) translate3d(-1.6%,.7%,0)}
+}
+
+/* ---------- camera flashes ---------- */
+/* A soft light band drifts along the stand and only shows through a scatter of pinholes, so the
+   phones in the crowd appear to flash in a wave. The pinholes are a STATIC mask (hand-scattered
+   rather than a repeating grid, which reads as a lattice) - only the band underneath animates, so
+   the whole effect stays on the compositor. */
+.wl-crowd-flash{
+    position:absolute;inset:0;overflow:hidden;
+    mix-blend-mode:screen;pointer-events:none;opacity:.85;
+    -webkit-mask-image:var(--wl-flash-dots);
+            mask-image:var(--wl-flash-dots);
+    -webkit-mask-repeat:no-repeat;
+            mask-repeat:no-repeat;
+
+    /* the pinholes: 23 hand-scattered phone screens across the stand */
+    --wl-flash-dots:
+        radial-gradient(circle at 6% 14%,#000 0 1.7px,transparent 3px),
+        radial-gradient(circle at 18% 9%,#000 0 1.2px,transparent 2.4px),
+        radial-gradient(circle at 30% 21%,#000 0 1.9px,transparent 3.2px),
+        radial-gradient(circle at 43% 12%,#000 0 1.3px,transparent 2.5px),
+        radial-gradient(circle at 55% 25%,#000 0 1.8px,transparent 3px),
+        radial-gradient(circle at 66% 9%,#000 0 1.2px,transparent 2.3px),
+        radial-gradient(circle at 78% 19%,#000 0 1.7px,transparent 2.9px),
+        radial-gradient(circle at 90% 14%,#000 0 1.4px,transparent 2.6px),
+        radial-gradient(circle at 12% 33%,#000 0 1.6px,transparent 2.8px),
+        radial-gradient(circle at 25% 41%,#000 0 1.2px,transparent 2.4px),
+        radial-gradient(circle at 37% 29%,#000 0 1.9px,transparent 3.1px),
+        radial-gradient(circle at 50% 45%,#000 0 1.4px,transparent 2.6px),
+        radial-gradient(circle at 62% 36%,#000 0 1.7px,transparent 2.9px),
+        radial-gradient(circle at 74% 48%,#000 0 1.3px,transparent 2.5px),
+        radial-gradient(circle at 87% 34%,#000 0 1.8px,transparent 3px),
+        radial-gradient(circle at 9% 52%,#000 0 1.3px,transparent 2.5px),
+        radial-gradient(circle at 22% 63%,#000 0 1.6px,transparent 2.8px),
+        radial-gradient(circle at 34% 55%,#000 0 1.2px,transparent 2.3px),
+        radial-gradient(circle at 47% 66%,#000 0 1.7px,transparent 2.9px),
+        radial-gradient(circle at 59% 59%,#000 0 1.3px,transparent 2.4px),
+        radial-gradient(circle at 71% 67%,#000 0 1.5px,transparent 2.7px),
+        radial-gradient(circle at 84% 57%,#000 0 1.2px,transparent 2.3px),
+        radial-gradient(circle at 95% 70%,#000 0 1.6px,transparent 2.8px);
+}
+.wl-crowd-flash::before{
+    content:'';position:absolute;top:-15%;bottom:-15%;left:0;width:52%;
+    background:linear-gradient(102deg,transparent 4%,rgba(214,234,255,.55) 34%,rgba(255,255,255,.9) 50%,rgba(214,234,255,.55) 66%,transparent 96%);
+    filter:blur(1px);
+    transform:translate3d(-130%,0,0);
+    will-change:transform;
+    animation:wl-crowd-flashwave 13s cubic-bezier(.4,0,.6,1) infinite;
+}
+@keyframes wl-crowd-flashwave{
+    0%  {transform:translate3d(-130%,0,0)}
+    48% {transform:translate3d(325%,0,0)}
+    100%{transform:translate3d(325%,0,0)}   /* rest between sweeps */
 }
 
 /* ---------- top brand bar ---------- */
@@ -310,6 +398,13 @@
     max-width:calc(100% - 40px);padding:12px 18px;border-radius:13px;
     background:#00C776;color:#04120C;font-size:14px;font-weight:800;text-align:center;
     box-shadow:0 16px 40px -12px rgba(0,199,118,.6);animation:wl-toast-in .22s var(--ease)}
+
+/* Motion in the backdrop is pure decoration - drop it entirely when the user asks for less. The
+   still frame is the same composition the page had before. */
+@media (prefers-reduced-motion:reduce){
+    .wl-crowd-far,.wl-crowd-near,.wl-crowd-flash::before{animation:none}
+    .wl-crowd-flash{display:none}
+}
 
 @keyframes wl-fade{from{opacity:0}to{opacity:1}}
 @keyframes wl-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}

@@ -177,7 +177,7 @@
         _ => string.Empty
     };
     private string SubtitleText => State.Count > 0 ? Localizer["Cart_ItemCountSubtitle", State.Count, State.Count == 1 ? Localizer["Cart_Item"] : Localizer["Cart_Items"]] : Localizer["Cart_EmptySubtitle"];
-    private string WalletText => _wallet is { Exists: true } ? $"Stanje €{_wallet.Balance:F2}" : Localizer["Cart_WalletPlaceholder"];
+    private string WalletText => _wallet is { Exists: true } ? Localizer["Cart_WalletBalance", _wallet.Balance.ToString("F2")] : Localizer["Cart_WalletPlaceholder"];
     // Ticket holder paying from this wallet; anonymous bearer tickets carry no name.
     private string FanName => string.IsNullOrWhiteSpace(State.CustomerName) ? Localizer["Order_GuestName"] : State.CustomerName;
     // Anonymous bearer balance loaded on the scanned ticket vs a registered fan's personal wallet.

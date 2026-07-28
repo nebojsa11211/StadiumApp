@@ -1,146 +1,183 @@
 using System.Net;
+using Microsoft.Extensions.Localization;
 
 namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
 {
+    /// <summary>
+    /// Maps HTTP failures to the message an admin actually sees. The tables below hold SharedResources
+    /// <em>keys</em>, not literal text, and are resolved through <see cref="ErrorLocalizer"/> at lookup
+    /// time so the same failure reads Croatian or English according to the current request culture.
+    /// </summary>
     public static class ErrorMessageMappings
     {
+        /// <summary>
+        /// <see cref="ApiResponse{T}.Failure"/> and friends are static factories with no DI, so the
+        /// localizer is handed over once at startup instead of injected. Safe to share: the localizer
+        /// holds no culture itself, resolving against CurrentUICulture on every lookup.
+        /// </summary>
+        public static class ErrorLocalizer
+        {
+            private static IStringLocalizer? _localizer;
+
+            public static void Configure(IStringLocalizer localizer) => _localizer = localizer;
+
+            /// <summary>Falls back to the key when startup wiring was skipped, so an admin still sees
+            /// something identifiable rather than an empty toast.</summary>
+            public static string Get(string key) => _localizer is null ? key : _localizer[key];
+        }
+
+        private static string L(string key) => ErrorLocalizer.Get(key);
+
+        /// <summary>Status code -> (title key, message key) plus the non-textual response metadata.</summary>
         public static readonly Dictionary<HttpStatusCode, ErrorMessageInfo> StatusCodeMessages = new()
         {
             // 4xx Client Errors
             {
                 HttpStatusCode.BadRequest,
-                new ErrorMessageInfo("Invalid Request", "⚠️ The request contains invalid data. Please check your input and try again.",
+                new ErrorMessageInfo("ApiErr_BadRequest_Title", "ApiErr_BadRequest_Msg",
                     severity: ErrorSeverity.Warning, isRetryable: false)
             },
             {
                 HttpStatusCode.Unauthorized,
-                new ErrorMessageInfo("Authentication Required", "🔐 Your session has expired. Please log in again to continue.",
+                new ErrorMessageInfo("ApiErr_Unauthorized_Title", "ApiErr_Unauthorized_Msg",
                     severity: ErrorSeverity.Critical, isRetryable: false, requiresAuth: true)
             },
             {
                 HttpStatusCode.Forbidden,
-                new ErrorMessageInfo("Access Denied", "❌ You don't have permission to perform this action. Contact your administrator if you believe this is an error.",
+                new ErrorMessageInfo("ApiErr_Forbidden_Title", "ApiErr_Forbidden_Msg",
                     severity: ErrorSeverity.Error, isRetryable: false)
             },
             {
                 HttpStatusCode.NotFound,
-                new ErrorMessageInfo("Not Found", "📭 The requested resource could not be found. It may have been deleted or moved.",
+                new ErrorMessageInfo("ApiErr_NotFound_Title", "ApiErr_NotFound_Msg",
                     severity: ErrorSeverity.Warning, isRetryable: false)
             },
             {
                 HttpStatusCode.Conflict,
-                new ErrorMessageInfo("Conflict", "⚠️ This action conflicts with the current state. Please refresh and try again.",
+                new ErrorMessageInfo("ApiErr_Conflict_Title", "ApiErr_Conflict_Msg",
                     severity: ErrorSeverity.Warning, isRetryable: true)
             },
             {
                 HttpStatusCode.UnprocessableEntity,
-                new ErrorMessageInfo("Validation Failed", "📋 Please correct the highlighted fields and try again.",
+                new ErrorMessageInfo("ApiErr_Validation_Title", "ApiErr_Validation_Msg",
                     severity: ErrorSeverity.Warning, isRetryable: false)
             },
             {
                 HttpStatusCode.TooManyRequests,
-                new ErrorMessageInfo("Too Many Requests", "⏳ You're performing actions too quickly. Please wait a moment and try again.",
+                new ErrorMessageInfo("ApiErr_TooManyRequests_Title", "ApiErr_TooManyRequests_Msg",
                     severity: ErrorSeverity.Warning, isRetryable: true, suggestedRetryDelay: TimeSpan.FromSeconds(30))
             },
 
             // 5xx Server Errors
             {
                 HttpStatusCode.InternalServerError,
-                new ErrorMessageInfo("Server Error", "⚠️ A server error occurred. Our technical team has been automatically notified.",
+                new ErrorMessageInfo("ApiErr_ServerError_Title", "ApiErr_ServerError_Msg",
                     severity: ErrorSeverity.Error, isRetryable: true)
             },
             {
                 HttpStatusCode.BadGateway,
-                new ErrorMessageInfo("Service Unavailable", "🌐 Unable to connect to our servers. Please check your internet connection.",
+                new ErrorMessageInfo("ApiErr_BadGateway_Title", "ApiErr_BadGateway_Msg",
                     severity: ErrorSeverity.Error, isRetryable: true)
             },
             {
                 HttpStatusCode.ServiceUnavailable,
-                new ErrorMessageInfo("Service Maintenance", "🔧 Our service is temporarily unavailable for maintenance. Please try again in a few minutes.",
+                new ErrorMessageInfo("ApiErr_ServiceUnavailable_Title", "ApiErr_ServiceUnavailable_Msg",
                     severity: ErrorSeverity.Warning, isRetryable: true, suggestedRetryDelay: TimeSpan.FromMinutes(2))
             },
             {
                 HttpStatusCode.GatewayTimeout,
-                new ErrorMessageInfo("Request Timeout", "⏱️ The request is taking longer than expected. Please try again.",
+                new ErrorMessageInfo("ApiErr_GatewayTimeout_Title", "ApiErr_GatewayTimeout_Msg",
                     severity: ErrorSeverity.Warning, isRetryable: true)
             }
         };
 
+        /// <summary>Endpoint fragment -> status code -> message key, for wording that beats the generic text.</summary>
         public static readonly Dictionary<string, Dictionary<HttpStatusCode, string>> EndpointSpecificMessages = new()
         {
             {
                 "auth/login",
                 new Dictionary<HttpStatusCode, string>
                 {
-                    { HttpStatusCode.Unauthorized, "🔐 Invalid email or password. Please check your credentials and try again." },
-                    { HttpStatusCode.TooManyRequests, "🛡️ Too many login attempts. Please wait 15 minutes before trying again." },
-                    { HttpStatusCode.BadRequest, "📧 Please enter a valid email address and password." }
+                    { HttpStatusCode.Unauthorized, "ApiErr_Login_Unauthorized" },
+                    { HttpStatusCode.TooManyRequests, "ApiErr_Login_TooMany" },
+                    { HttpStatusCode.BadRequest, "ApiErr_Login_BadRequest" }
                 }
             },
             {
                 "orders",
                 new Dictionary<HttpStatusCode, string>
                 {
-                    { HttpStatusCode.NotFound, "📦 This order could not be found. It may have been cancelled or deleted." },
-                    { HttpStatusCode.Conflict, "⚠️ This order has been modified by another user. Please refresh to see the latest changes." },
-                    { HttpStatusCode.UnprocessableEntity, "📋 Please check that all required order fields are filled correctly." }
+                    { HttpStatusCode.NotFound, "ApiErr_Orders_NotFound" },
+                    { HttpStatusCode.Conflict, "ApiErr_Orders_Conflict" },
+                    { HttpStatusCode.UnprocessableEntity, "ApiErr_Orders_Validation" }
                 }
             },
             {
                 "users",
                 new Dictionary<HttpStatusCode, string>
                 {
-                    { HttpStatusCode.Conflict, "👤 A user with this email address already exists." },
-                    { HttpStatusCode.Forbidden, "🔒 You don't have permission to manage user accounts." },
-                    { HttpStatusCode.UnprocessableEntity, "📋 Please provide a valid email address and strong password." }
+                    { HttpStatusCode.Conflict, "ApiErr_Users_Conflict" },
+                    { HttpStatusCode.Forbidden, "ApiErr_Users_Forbidden" },
+                    { HttpStatusCode.UnprocessableEntity, "ApiErr_Users_Validation" }
                 }
             },
             {
                 "stadium-structure",
                 new Dictionary<HttpStatusCode, string>
                 {
-                    { HttpStatusCode.BadRequest, "🏟️ The stadium structure file is invalid. Please check the format and try again." },
-                    { HttpStatusCode.RequestEntityTooLarge, "📁 The stadium structure file is too large. Maximum size is 10MB." },
-                    { HttpStatusCode.UnsupportedMediaType, "📄 Please upload a valid JSON file." }
+                    { HttpStatusCode.BadRequest, "ApiErr_Stadium_BadRequest" },
+                    { HttpStatusCode.RequestEntityTooLarge, "ApiErr_Stadium_TooLarge" },
+                    { HttpStatusCode.UnsupportedMediaType, "ApiErr_Stadium_MediaType" }
                 }
             }
         };
 
-        public static string GetContextSpecificMessage(string endpoint, HttpStatusCode statusCode)
+        /// <summary>Resource key of the endpoint-specific message, or null when none applies.</summary>
+        private static string? GetContextSpecificMessageKey(string endpoint, HttpStatusCode statusCode)
         {
             foreach (var (pattern, messages) in EndpointSpecificMessages)
             {
-                if (endpoint.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+                if (endpoint.Contains(pattern, StringComparison.OrdinalIgnoreCase)
+                    && messages.TryGetValue(statusCode, out var messageKey))
                 {
-                    if (messages.TryGetValue(statusCode, out var message))
-                    {
-                        return message;
-                    }
+                    return messageKey;
                 }
             }
 
-            return StatusCodeMessages.TryGetValue(statusCode, out var defaultInfo)
-                ? defaultInfo.Message
-                : "An unexpected error occurred. Please try again.";
+            return null;
         }
 
+        /// <summary>Localized message for an endpoint + status, falling back to the generic status text.</summary>
+        public static string GetContextSpecificMessage(string endpoint, HttpStatusCode statusCode)
+        {
+            var key = GetContextSpecificMessageKey(endpoint, statusCode);
+            if (key is not null)
+            {
+                return L(key);
+            }
+
+            return StatusCodeMessages.TryGetValue(statusCode, out var defaultInfo)
+                ? L(defaultInfo.Message)
+                : L("ApiErr_Unexpected");
+        }
+
+        /// <summary>
+        /// Returns an <see cref="ErrorMessageInfo"/> whose Title and Message are already localized, so
+        /// callers can surface them directly.
+        /// </summary>
         public static ErrorMessageInfo GetErrorInfo(HttpStatusCode statusCode, string? endpoint = null)
         {
             var defaultInfo = StatusCodeMessages.TryGetValue(statusCode, out var info)
                 ? info
-                : new ErrorMessageInfo("Error", "An unexpected error occurred.", ErrorSeverity.Error);
+                : new ErrorMessageInfo("ApiErr_Generic_Title", "ApiErr_Generic_Msg", ErrorSeverity.Error);
 
-            if (!string.IsNullOrEmpty(endpoint))
-            {
-                var contextMessage = GetContextSpecificMessage(endpoint, statusCode);
-                if (contextMessage != defaultInfo.Message)
-                {
-                    return new ErrorMessageInfo(defaultInfo.Title, contextMessage, defaultInfo.Severity,
-                        defaultInfo.IsRetryable, defaultInfo.RequiresAuth, defaultInfo.SuggestedRetryDelay);
-                }
-            }
+            // Endpoint-specific wording wins over the generic status text when one is defined.
+            var messageKey = endpoint is { Length: > 0 }
+                ? GetContextSpecificMessageKey(endpoint, statusCode) ?? defaultInfo.Message
+                : defaultInfo.Message;
 
-            return defaultInfo;
+            return new ErrorMessageInfo(L(defaultInfo.Title), L(messageKey), defaultInfo.Severity,
+                defaultInfo.IsRetryable, defaultInfo.RequiresAuth, defaultInfo.SuggestedRetryDelay);
         }
     }
 }

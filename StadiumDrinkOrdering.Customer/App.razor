@@ -1,6 +1,7 @@
 @using StadiumDrinkOrdering.Customer.Services
 @using StadiumDrinkOrdering.Customer.Components
 @inject ICustomerAuthStateService AuthStateService
+@inject IStringLocalizer<SharedResources> Localizer
 
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
@@ -10,15 +11,15 @@
         </AuthenticationInitializer>
     </Found>
     <NotFound>
-        <PageTitle>Stranica nije pronađena — HALFTIME</PageTitle>
+        <PageTitle>@Localizer["NotFound_PageTitle"]</PageTitle>
         <LayoutView Layout="@typeof(MobileShell)">
-            <ScreenHeader Title="Nije pronađeno" BackHref="/" />
+            <ScreenHeader Title="@Localizer["NotFound_HeaderTitle"]" BackHref="/" />
             <div class="gate" role="alert">
                 <div class="gate-icon">🔍</div>
-                <h2>Ništa ovdje</h2>
-                <p>Stranica koju tražiš ne postoji ili je premještena.</p>
+                <h2>@Localizer["NotFound_Heading"]</h2>
+                <p>@Localizer["NotFound_Text"]</p>
                 <div class="gate-actions">
-                    <a class="btn btn-primary" href="/">Početna</a>
+                    <a class="btn btn-primary" href="/">@Localizer["NotFound_HomeButton"]</a>
                 </div>
             </div>
         </LayoutView>

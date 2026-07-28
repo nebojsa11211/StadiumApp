@@ -4,6 +4,7 @@ using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using System.Text.Json;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Localization;
 
 namespace StadiumDrinkOrdering.Customer.Services;
 
@@ -11,7 +12,7 @@ namespace StadiumDrinkOrdering.Customer.Services;
 public enum CartAddOutcome { Added, NotOnSale, Unavailable, Error }
 
 /// <summary>Result of <see cref="IApiService.AddSeatToCartAsync"/>. <paramref name="Message"/> is a
-/// user-facing (Croatian) explanation when <paramref name="Success"/> is false.</summary>
+/// localized user-facing explanation when <paramref name="Success"/> is false.</summary>
 public record CartAddResult(bool Success, CartAddOutcome Outcome, string? Message);
 
 public interface IApiService
@@ -142,9 +143,12 @@ public class ApiService : IApiService
 
     public string? Token { get; set; }
 
-    public ApiService(HttpClient httpClient, ITokenStorageService? tokenStorage = null)
+    private readonly IStringLocalizer<SharedResources> _localizer;
+
+    public ApiService(HttpClient httpClient, IStringLocalizer<SharedResources> localizer, ITokenStorageService? tokenStorage = null)
     {
         _httpClient = httpClient;
+        _localizer = localizer;
         _tokenStorage = tokenStorage;
         _jsonOptions = new JsonSerializerOptions
         {
@@ -287,12 +291,12 @@ public class ApiService : IApiService
             }
             catch { /* non-JSON body — fall through */ }
 
-            return (false, string.IsNullOrWhiteSpace(error) ? "Aktivacija nije uspjela. Pokušaj ponovno." : error, null);
+            return (false, string.IsNullOrWhiteSpace(error) ? _localizer["Api_ActivationFailed"] : error, null);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error activating account: {ex.Message}");
-            return (false, "Nije moguće spojiti se na poslužitelj.", null);
+            return (false, _localizer["Api_CannotReachServer"], null);
         }
     }
 
@@ -343,7 +347,7 @@ public class ApiService : IApiService
             {
                 return new OrderPlacementResult { InsufficientFunds = true, Error = body };
             }
-            return new OrderPlacementResult { Error = string.IsNullOrWhiteSpace(body) ? "Failed to place order." : body };
+            return new OrderPlacementResult { Error = string.IsNullOrWhiteSpace(body) ? _localizer["Api_OrderPlacementFailed"] : body };
         }
         catch (Exception ex)
         {
@@ -996,24 +1000,24 @@ public class ApiService : IApiService
             {
                 if (body.Contains("disabled", StringComparison.OrdinalIgnoreCase))
                     return new CartAddResult(false, CartAddOutcome.NotOnSale,
-                        "Prodaja ulaznica putem aplikacije trenutno nije dostupna.");
+                        _localizer["Api_TicketSalesUnavailable"]);
 
                 if (body.Contains("on sale", StringComparison.OrdinalIgnoreCase))
                     return new CartAddResult(false, CartAddOutcome.NotOnSale,
-                        "Prodaja ulaznica za ovaj događaj trenutno nije otvorena.");
+                        _localizer["Api_TicketSalesNotOpen"]);
 
                 return new CartAddResult(false, CartAddOutcome.Unavailable,
-                    "Mjesto je u međuvremenu zauzeto.");
+                    _localizer["Api_SeatTaken"]);
             }
 
             return new CartAddResult(false, CartAddOutcome.Error,
-                "Došlo je do pogreške pri dodavanju mjesta. Pokušajte ponovno.");
+                _localizer["Api_AddSeatFailed"]);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error adding seat to cart: {ex.Message}");
             return new CartAddResult(false, CartAddOutcome.Error,
-                "Nije moguće dohvatiti poslužitelj. Provjerite vezu i pokušajte ponovno.");
+                _localizer["Api_ServerUnreachableRetry"]);
         }
     }
 
@@ -1227,7 +1231,7 @@ public class ApiService : IApiService
             }
             catch { /* fall through */ }
 
-            return new SessionOrderResultDto { Success = false, Error = string.IsNullOrWhiteSpace(body) ? "Order failed." : body };
+            return new SessionOrderResultDto { Success = false, Error = string.IsNullOrWhiteSpace(body) ? _localizer["Api_OrderFailed"] : body };
         }
         catch (Exception ex)
         {
@@ -1292,7 +1296,7 @@ public class ApiService : IApiService
             }
             catch { /* fall through */ }
 
-            return new ValidateTicketResponse { Success = false, ErrorMessage = string.IsNullOrWhiteSpace(body) ? "Neuspješno." : body };
+            return new ValidateTicketResponse { Success = false, ErrorMessage = string.IsNullOrWhiteSpace(body) ? _localizer["Api_Failed"] : body };
         }
         catch (Exception ex)
         {

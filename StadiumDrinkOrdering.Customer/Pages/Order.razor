@@ -87,7 +87,7 @@ else
                     @onclick="@(() => Nav.NavigateTo($"/track/{activeOrderId}"))">
                 <span id="customer-order-track-active-dot" class="ta-ic"><span class="pulse"></span></span>
                 <span id="customer-order-track-active-text" class="ta-txt">@Localizer["Order_TrackActive", activeOrderId]</span>
-                <span id="customer-order-track-active-go" class="ta-go">Prati ›</span>
+                <span id="customer-order-track-active-go" class="ta-go">@Localizer["Order_TrackGo"]</span>
             </button>
         }
         @if (_loading)

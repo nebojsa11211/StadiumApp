@@ -24,7 +24,7 @@
         <div class="current-event-banner__status">
             @if (ev.IsCurrentlyLive)
             {
-                <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+                <span class="live-badge"><span class="live-dot"></span> @Localizer["CurrentEvent_LiveBadge"]</span>
             }
             else
             {

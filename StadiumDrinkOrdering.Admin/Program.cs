@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Localization;
+using StadiumDrinkOrdering.Admin;
 using StadiumDrinkOrdering.Admin.Data;
 using StadiumDrinkOrdering.Admin.Services;
 using StadiumDrinkOrdering.Admin.Services.Orders;
@@ -343,6 +345,10 @@ builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
 // builder.Services.AddScoped<IStadiumLayoutGenerator, HNKRijekaLayoutGenerator>();
 
 var app = builder.Build();
+
+// ErrorMessageMappings is reached from static ApiResponse factories that have no DI, so hand it the
+// localizer once here. See Services/ErrorHandling/ErrorMessageMappings.cs.
+ErrorMessageMappings.ErrorLocalizer.Configure(app.Services.GetRequiredService<IStringLocalizer<SharedResources>>());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

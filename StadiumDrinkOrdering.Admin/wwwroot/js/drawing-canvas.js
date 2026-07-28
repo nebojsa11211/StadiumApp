@@ -73,7 +73,9 @@ window.setBackgroundImage = function(dataUrl) {
     const img = new Image();
     img.onload = function() {
         backgroundImage = img;
-        redrawCanvas();
+        // The image loads asynchronously and usually finishes AFTER drawSectorOverlays has run,
+        // so redraw through redrawWithSectors — a plain redrawCanvas here wipes the overlays.
+        redrawWithSectors();
     };
     img.src = dataUrl;
 };
@@ -81,7 +83,7 @@ window.setBackgroundImage = function(dataUrl) {
 // Clear background image
 window.clearBackgroundImage = function() {
     backgroundImage = null;
-    redrawCanvas();
+    redrawWithSectors();
 };
 
 // Update drawing properties
@@ -134,20 +136,20 @@ window.toggleLayerVisibility = function(layerId, visible) {
     const layer = layers.get(layerId);
     if (layer) {
         layer.visible = visible;
-        redrawCanvas();
+        redrawWithSectors();
     }
 };
 
 window.deleteLayer = function(layerId) {
     layers.delete(layerId);
-    redrawCanvas();
+    redrawWithSectors();
 };
 
 window.clearLayer = function(layerId) {
     const layer = layers.get(layerId);
     if (layer && layer.ctx) {
         layer.ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height);
-        redrawCanvas();
+        redrawWithSectors();
     }
 };
 

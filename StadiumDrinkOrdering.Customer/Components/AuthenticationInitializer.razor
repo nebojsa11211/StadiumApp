@@ -1,5 +1,6 @@
 @using StadiumDrinkOrdering.Customer.Services
 @inject ICustomerAuthStateService AuthStateService
+@inject IStringLocalizer<SharedResources> Localizer
 
 @if (isInitialized)
 {
@@ -10,9 +11,9 @@ else
     <div id="customer-auth-init-container" class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div id="customer-auth-init-content" class="text-center">
             <div id="customer-auth-init-spinner" class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">@Localizer["AuthInit_Loading"]</span>
             </div>
-            <p class="text-muted">Initializing Stadium Ordering...</p>
+            <p class="text-muted">@Localizer["AuthInit_Initializing"]</p>
         </div>
     </div>
 }

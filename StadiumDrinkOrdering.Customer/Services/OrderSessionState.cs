@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using StadiumDrinkOrdering.Customer.Models;
 using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Shared.Models;
@@ -15,8 +16,13 @@ namespace StadiumDrinkOrdering.Customer.Services;
 public class OrderSessionState
 {
     private readonly IApiService _api;
+    private readonly IStringLocalizer<SharedResources> _localizer;
 
-    public OrderSessionState(IApiService api) => _api = api;
+    public OrderSessionState(IApiService api, IStringLocalizer<SharedResources> localizer)
+    {
+        _api = api;
+        _localizer = localizer;
+    }
 
     // --- session identity + seat/event (from validate) ---
     public string? SessionToken { get; private set; }
@@ -62,9 +68,9 @@ public class OrderSessionState
         {
             var parts = new List<string>();
             if (!string.IsNullOrWhiteSpace(SeatSection)) parts.Add(SeatSection);
-            if (!string.IsNullOrWhiteSpace(SeatRow)) parts.Add($"Red {SeatRow}");
-            if (!string.IsNullOrWhiteSpace(SeatNumber)) parts.Add($"Sjed. {SeatNumber}");
-            return parts.Count > 0 ? string.Join(" · ", parts) : "Tvoje mjesto";
+            if (!string.IsNullOrWhiteSpace(SeatRow)) parts.Add(_localizer["Seat_RowLabel", SeatRow]);
+            if (!string.IsNullOrWhiteSpace(SeatNumber)) parts.Add(_localizer["Seat_SeatLabel", SeatNumber]);
+            return parts.Count > 0 ? string.Join(" · ", parts) : _localizer["Seat_YourSeat"];
         }
     }
 
@@ -98,7 +104,7 @@ public class OrderSessionState
         if (resp is { Success: true } && !string.IsNullOrEmpty(resp.SessionToken))
         {
             SessionToken = resp.SessionToken;
-            EventName = resp.Ticket?.EventName ?? resp.TicketSession?.EventName ?? "Utakmica";
+            EventName = resp.Ticket?.EventName ?? resp.TicketSession?.EventName ?? _localizer["Session_DefaultEventName"];
             EventDate = resp.Ticket?.EventDate ?? resp.TicketSession?.EventDate;
             SeatSection = resp.SeatInfo?.SectionName ?? resp.SeatInfo?.Section ?? resp.Ticket?.Section ?? "";
             SeatRow = resp.SeatInfo?.Row ?? resp.Ticket?.Row ?? "";
@@ -110,7 +116,7 @@ public class OrderSessionState
             OnChange?.Invoke();
             return (true, null);
         }
-        return (false, resp?.ErrorMessage ?? "Ulaznicu nije moguće potvrditi. Pokušaj ponovno.");
+        return (false, resp?.ErrorMessage ?? _localizer["Session_TicketValidationFailed"]);
     }
 
     /// <summary>Rehydrate the session (seat/event) from a stored token after a hard reload. Cart is not restored.</summary>
@@ -180,7 +186,7 @@ public class OrderSessionState
     /// offline <paramref name="paymentMethod"/> (cash / card) recorded on the order for staff.</summary>
     public async Task<SessionOrderResultDto?> CheckoutAsync(bool payWithWallet = false, PaymentMethod? paymentMethod = null, string? customerNotes = null)
     {
-        if (!HasSession || Items.Count == 0) return new SessionOrderResultDto { Success = false, Error = "Košarica je prazna." };
+        if (!HasSession || Items.Count == 0) return new SessionOrderResultDto { Success = false, Error = _localizer["Session_CartEmpty"] };
 
         var request = new SessionOrderRequest
         {

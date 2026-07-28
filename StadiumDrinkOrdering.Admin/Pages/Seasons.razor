@@ -353,7 +353,7 @@
         <div class="modal-dialog modal-dialog-centered" id="admin-season-qr-dialog">
             <div class="modal-content" id="admin-season-qr-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="admin-season-qr-title"><i class="bi bi-qr-code"></i> Sezonska propusnica – QR</h5>
+                    <h5 class="modal-title" id="admin-season-qr-title"><i class="bi bi-qr-code"></i> @L["Seasons_QrModalTitle"]</h5>
                     <button type="button" class="btn-close" @onclick="() => showQrModal = false" id="admin-season-qr-close"></button>
                 </div>
                 <div class="modal-body text-center">
@@ -371,7 +371,7 @@
                     }
                     else
                     {
-                        <p class="text-danger mb-0">QR nije moguće učitati.</p>
+                        <p class="text-danger mb-0">@L["Seasons_QrLoadFailed"]</p>
                     }
                 </div>
                 <div class="modal-footer">

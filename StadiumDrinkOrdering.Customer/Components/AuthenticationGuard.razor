@@ -1,6 +1,7 @@
 @using StadiumDrinkOrdering.Customer.Services
 @inject ICustomerAuthStateService AuthStateService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
 @if (AuthStateService.IsAuthenticated)
@@ -10,18 +11,18 @@
 else if (isLoading)
 {
     <div id="customer-auth-guard-loading-container" class="gate-loading">
-        <span id="customer-auth-guard-spinner" class="spinner"></span> Provjeravam prijavu…
+        <span id="customer-auth-guard-spinner" class="spinner"></span> @Localizer["AuthGuard_Checking"]
     </div>
 }
 else
 {
     <div id="customer-auth-guard-container" class="gate">
         <div id="customer-auth-guard-icon" class="gate-icon">🔒</div>
-        <h2>Potrebna prijava</h2>
-        <p>Prijavi se za pristup ovoj stranici.</p>
+        <h2>@Localizer["AuthGuard_SignInRequired"]</h2>
+        <p>@Localizer["AuthGuard_SignInPrompt"]</p>
         <div id="customer-auth-guard-buttons" class="gate-actions">
-            <button id="customer-auth-guard-signin-btn" class="btn btn-primary" @onclick="RedirectToLogin">Prijavi se</button>
-            <a id="customer-auth-guard-register-link" href="/register" class="btn btn-ghost">Stvori račun</a>
+            <button id="customer-auth-guard-signin-btn" class="btn btn-primary" @onclick="RedirectToLogin">@Localizer["AuthGuard_SignInButton"]</button>
+            <a id="customer-auth-guard-register-link" href="/register" class="btn btn-ghost">@Localizer["AuthGuard_CreateAccount"]</a>
         </div>
     </div>
 }

@@ -5,6 +5,7 @@
 @inject IApiService ApiService
 @inject IJSRuntime JSRuntime
 @inject IConfiguration Configuration
+@inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
 @* Read-only stadium blueprint with clickable sector overlays (the admin drawing-tool canvas,
@@ -69,7 +70,13 @@
             double? availPct = info != null && info.TotalSeats > 0
                 ? (double)info.AvailableSeats / info.TotalSeats
                 : (double?)null;
-            var sub = info == null ? "" : (isDisabled ? "Nedostupno" : soldOut ? "Rasprodano" : $"{info.AvailableSeats} slob.");
+            string sub = info == null
+                ? ""
+                : isDisabled
+                    ? Localizer["StadiumSelector_Unavailable"].Value
+                    : soldOut
+                        ? Localizer["StadiumSelector_SoldOut"].Value
+                        : Localizer["StadiumSelector_SeatsFree", info.AvailableSeats].Value;
 
             return new
             {

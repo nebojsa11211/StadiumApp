@@ -104,7 +104,7 @@ else
             <div id="customer-home-fixture-@_fixtureIndex" class="fixture-row">
                 <div id="customer-home-fixture-date-@_fixtureIndex" class="date">
                     <div id="customer-home-fixture-day-@_fixtureIndex" class="d tnum">@fx.EventDate.ToLocalTime().Day.ToString("D2")</div>
-                    <div id="customer-home-fixture-month-@_fixtureIndex" class="mo">@MonthHr(fx.EventDate.ToLocalTime())</div>
+                    <div id="customer-home-fixture-month-@_fixtureIndex" class="mo">@MonthShort(fx.EventDate.ToLocalTime())</div>
                 </div>
                 <div id="customer-home-fixture-info-@_fixtureIndex" class="fx">
                     <div id="customer-home-fixture-name-@_fixtureIndex" class="op">@fx.EventName</div>
@@ -185,14 +185,17 @@ else
         Nav.NavigateTo("/welcome");
     }
 
-    private static string MonthHr(DateTime d) => new[]
-    {
-        "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro"
-    }[d.Month - 1];
+    // Month abbreviations come from the resources as one comma-separated list so a translator edits a
+    // single entry rather than twelve, and the order stays locked to January..December.
+    private string MonthShort(DateTime d) => Localizer["Home_MonthsShort"].Value.Split(',')[d.Month - 1].Trim();
 
-    private static string Countdown(DateTime eventDateUtc)
+    private string Countdown(DateTime eventDateUtc)
     {
         var days = (eventDateUtc.Date - DateTime.UtcNow.Date).Days;
-        return days <= 0 ? "danas" : days == 1 ? "sutra" : $"za {days} dana";
+        return days <= 0
+            ? Localizer["Home_Today"].Value
+            : days == 1
+                ? Localizer["Home_Tomorrow"].Value
+                : Localizer["Home_InDays", days].Value;
     }
 }

@@ -4835,4 +4835,199 @@
   <data name="Categories_LoadException" xml:space="preserve">
     <value>An error occurred while loading categories: {0}</value>
   </data>
+  <data name="ApiErr_BadRequest_Title" xml:space="preserve">
+    <value>Invalid Request</value>
+  </data>
+  <data name="ApiErr_BadRequest_Msg" xml:space="preserve">
+    <value>⚠️ The request contains invalid data. Please check your input and try again.</value>
+  </data>
+  <data name="ApiErr_Unauthorized_Title" xml:space="preserve">
+    <value>Authentication Required</value>
+  </data>
+  <data name="ApiErr_Unauthorized_Msg" xml:space="preserve">
+    <value>🔐 Your session has expired. Please log in again to continue.</value>
+  </data>
+  <data name="ApiErr_Forbidden_Title" xml:space="preserve">
+    <value>Access Denied</value>
+  </data>
+  <data name="ApiErr_Forbidden_Msg" xml:space="preserve">
+    <value>❌ You don't have permission to perform this action. Contact your administrator if you believe this is an error.</value>
+  </data>
+  <data name="ApiErr_NotFound_Title" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="ApiErr_NotFound_Msg" xml:space="preserve">
+    <value>📭 The requested resource could not be found. It may have been deleted or moved.</value>
+  </data>
+  <data name="ApiErr_Conflict_Title" xml:space="preserve">
+    <value>Conflict</value>
+  </data>
+  <data name="ApiErr_Conflict_Msg" xml:space="preserve">
+    <value>⚠️ This action conflicts with the current state. Please refresh and try again.</value>
+  </data>
+  <data name="ApiErr_Validation_Title" xml:space="preserve">
+    <value>Validation Failed</value>
+  </data>
+  <data name="ApiErr_Validation_Msg" xml:space="preserve">
+    <value>📋 Please correct the highlighted fields and try again.</value>
+  </data>
+  <data name="ApiErr_TooManyRequests_Title" xml:space="preserve">
+    <value>Too Many Requests</value>
+  </data>
+  <data name="ApiErr_TooManyRequests_Msg" xml:space="preserve">
+    <value>⏳ You're performing actions too quickly. Please wait a moment and try again.</value>
+  </data>
+  <data name="ApiErr_ServerError_Title" xml:space="preserve">
+    <value>Server Error</value>
+  </data>
+  <data name="ApiErr_ServerError_Msg" xml:space="preserve">
+    <value>⚠️ A server error occurred. Our technical team has been automatically notified.</value>
+  </data>
+  <data name="ApiErr_BadGateway_Title" xml:space="preserve">
+    <value>Service Unavailable</value>
+  </data>
+  <data name="ApiErr_BadGateway_Msg" xml:space="preserve">
+    <value>🌐 Unable to connect to our servers. Please check your internet connection.</value>
+  </data>
+  <data name="ApiErr_ServiceUnavailable_Title" xml:space="preserve">
+    <value>Service Maintenance</value>
+  </data>
+  <data name="ApiErr_ServiceUnavailable_Msg" xml:space="preserve">
+    <value>🔧 Our service is temporarily unavailable for maintenance. Please try again in a few minutes.</value>
+  </data>
+  <data name="ApiErr_GatewayTimeout_Title" xml:space="preserve">
+    <value>Request Timeout</value>
+  </data>
+  <data name="ApiErr_GatewayTimeout_Msg" xml:space="preserve">
+    <value>⏱️ The request is taking longer than expected. Please try again.</value>
+  </data>
+  <data name="ApiErr_Generic_Title" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ApiErr_Generic_Msg" xml:space="preserve">
+    <value>An unexpected error occurred.</value>
+  </data>
+  <data name="ApiErr_Unexpected" xml:space="preserve">
+    <value>An unexpected error occurred. Please try again.</value>
+  </data>
+  <data name="ApiErr_Login_Unauthorized" xml:space="preserve">
+    <value>🔐 Invalid email or password. Please check your credentials and try again.</value>
+  </data>
+  <data name="ApiErr_Login_TooMany" xml:space="preserve">
+    <value>🛡️ Too many login attempts. Please wait 15 minutes before trying again.</value>
+  </data>
+  <data name="ApiErr_Login_BadRequest" xml:space="preserve">
+    <value>📧 Please enter a valid email address and password.</value>
+  </data>
+  <data name="ApiErr_Orders_NotFound" xml:space="preserve">
+    <value>📦 This order could not be found. It may have been cancelled or deleted.</value>
+  </data>
+  <data name="ApiErr_Orders_Conflict" xml:space="preserve">
+    <value>⚠️ This order has been modified by another user. Please refresh to see the latest changes.</value>
+  </data>
+  <data name="ApiErr_Orders_Validation" xml:space="preserve">
+    <value>📋 Please check that all required order fields are filled correctly.</value>
+  </data>
+  <data name="ApiErr_Users_Conflict" xml:space="preserve">
+    <value>👤 A user with this email address already exists.</value>
+  </data>
+  <data name="ApiErr_Users_Forbidden" xml:space="preserve">
+    <value>🔒 You don't have permission to manage user accounts.</value>
+  </data>
+  <data name="ApiErr_Users_Validation" xml:space="preserve">
+    <value>📋 Please provide a valid email address and strong password.</value>
+  </data>
+  <data name="ApiErr_Stadium_BadRequest" xml:space="preserve">
+    <value>🏟️ The stadium structure file is invalid. Please check the format and try again.</value>
+  </data>
+  <data name="ApiErr_Stadium_TooLarge" xml:space="preserve">
+    <value>📁 The stadium structure file is too large. Maximum size is 10MB.</value>
+  </data>
+  <data name="ApiErr_Stadium_MediaType" xml:space="preserve">
+    <value>📄 Please upload a valid JSON file.</value>
+  </data>
+  <data name="Drinks_LoadFailedServer" xml:space="preserve">
+    <value>Failed to load drinks. The server returned an error.</value>
+  </data>
+  <data name="Drinks_LoadError" xml:space="preserve">
+    <value>An error occurred while loading drinks: {0}</value>
+  </data>
+  <data name="Drinks_FillRequiredFields" xml:space="preserve">
+    <value>Please fill in all required fields</value>
+  </data>
+  <data name="Drinks_CreatedSuccess" xml:space="preserve">
+    <value>Drink '{0}' created successfully</value>
+  </data>
+  <data name="Drinks_CreateFailed" xml:space="preserve">
+    <value>Failed to create drink</value>
+  </data>
+  <data name="Drinks_UpdatedSuccess" xml:space="preserve">
+    <value>Drink '{0}' updated successfully</value>
+  </data>
+  <data name="Drinks_UpdateFailed" xml:space="preserve">
+    <value>Failed to update drink</value>
+  </data>
+  <data name="Drinks_ImageTooLarge" xml:space="preserve">
+    <value>Image is too large (max 5 MB).</value>
+  </data>
+  <data name="Drinks_ImageReadError" xml:space="preserve">
+    <value>Could not read image: {0}</value>
+  </data>
+  <data name="Drinks_DisabledSuccess" xml:space="preserve">
+    <value>Drink '{0}' disabled</value>
+  </data>
+  <data name="Drinks_EnabledSuccess" xml:space="preserve">
+    <value>Drink '{0}' enabled</value>
+  </data>
+  <data name="Drinks_AvailabilityUpdateFailed" xml:space="preserve">
+    <value>Failed to update drink availability</value>
+  </data>
+  <data name="Drinks_DeleteConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete '{0}'?</value>
+  </data>
+  <data name="Drinks_DeletedSuccess" xml:space="preserve">
+    <value>Drink '{0}' deleted successfully</value>
+  </data>
+  <data name="Drinks_DeleteFailed" xml:space="preserve">
+    <value>Failed to delete drink</value>
+  </data>
+  <data name="Events_LoadFailedServer" xml:space="preserve">
+    <value>Failed to load events. The server returned an error.</value>
+  </data>
+  <data name="Events_LoadError" xml:space="preserve">
+    <value>An error occurred while loading events: {0}</value>
+  </data>
+  <data name="EventStatus_Action_Unpublish" xml:space="preserve">
+    <value>Unpublish</value>
+  </data>
+  <data name="EventStatus_Action_PutOnSale" xml:space="preserve">
+    <value>Put On Sale</value>
+  </data>
+  <data name="EventStatus_Action_MarkSoldOut" xml:space="preserve">
+    <value>Mark Sold Out</value>
+  </data>
+  <data name="EventStatus_Action_GoLive" xml:space="preserve">
+    <value>Go Live</value>
+  </data>
+  <data name="EventStatus_Action_Complete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="EventStatus_Action_CancelEvent" xml:space="preserve">
+    <value>Cancel Event</value>
+  </data>
+  <data name="Bartender_TotalLabel" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="Seasons_QrModalTitle" xml:space="preserve">
+    <value>Season pass – QR</value>
+  </data>
+  <data name="Seasons_QrLoadFailed" xml:space="preserve">
+    <value>QR code could not be loaded.</value>
+  </data>
+  <data name="Overview_SeasonIncludedTooltip" xml:space="preserve">
+    <value>Season passes included in the sold total</value>
+  </data>
+  <data name="DbBadge_TitleFormat" xml:space="preserve">
+    <value>API database: {0} · {1}</value>
+  </data>
 </root>

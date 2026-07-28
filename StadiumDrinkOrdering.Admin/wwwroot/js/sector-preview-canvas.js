@@ -103,6 +103,14 @@
         const bh = maxY - minY;
         const vertical = bh >= bw; // portrait -> rows run vertically along the height
 
+        // Row 1 is the row nearest the pitch (what the seat sheet's pitch marker promises) and
+        // higher rows step back away from it. The pitch is the middle of the blueprint, so a
+        // sector on the left/top half has to count its rows BACKWARDS along the tier axis -
+        // otherwise row 1 lands against the outer wall instead of on the touchline.
+        const reverseRows = vertical
+            ? (minX + maxX) / 2 < ORIG_W / 2
+            : (minY + maxY) / 2 < ORIG_H / 2;
+
         // Erode the polygon perpendicular to every edge so seats keep a UNIFORM gap
         // from all borders - including slanted/angled edges - not just an axis-aligned
         // bounding-box inset (which over-pulls on diagonals).
@@ -122,9 +130,13 @@
             const count = seatsForRow(sector, r);
             const seats = [];
 
+            // 0..1 along the tier axis, measured from whichever edge faces the pitch.
+            const tier = (r - 0.5) / rowsCount;
+            const rowFrac = reverseRows ? 1 - tier : tier;
+
             if (vertical) {
                 // Tiers step across X; seats stack down Y (seats "stand vertically").
-                const x = iMinX + ((r - 0.5) / rowsCount) * (iMaxX - iMinX);
+                const x = iMinX + rowFrac * (iMaxX - iMinX);
                 const ys = polygonScanline(inner, x, true);
                 if (ys.length >= 2) {
                     const top = ys[0], bottom = ys[ys.length - 1];
@@ -134,7 +146,7 @@
                 }
             } else {
                 // Tiers step across Y; seats run along X.
-                const y = iMinY + ((r - 0.5) / rowsCount) * (iMaxY - iMinY);
+                const y = iMinY + rowFrac * (iMaxY - iMinY);
                 const xs = polygonScanline(inner, y, false);
                 if (xs.length >= 2) {
                     const left = xs[0], right = xs[xs.length - 1];
@@ -286,7 +298,62 @@
     // different origin) via setStadiumMapImageUrl. When none is set / it 404s, previews render
     // without the map crop (see the naturalWidth guard in drawPreview).
     window.setStadiumMapImageUrl = function (url) { window.stadiumMapImageUrl = url || null; };
+
+    // Venue blueprint image, shared by every preview on the page.
+    //   bgUrl   - the URL the current image was requested from, so a changed URL supersedes it.
+    //   bgState - idle | loading | ok | error. An 'error' is retried by the NEXT render instead
+    //             of leaving the map blank for the life of the page (one API blip used to kill
+    //             the map permanently, because the image was loaded exactly once).
     let bgImage = null;
+    let bgUrl = null;
+    let bgState = 'idle';
+    let bgAttempt = 0;
+    let pendingRedraw = null; // last render, repainted once the image lands
+
+    function ensureBackground() {
+        const wanted = window.stadiumMapImageUrl || '/api/venue/stadium-image';
+
+        // Already loaded, or a load for this exact URL is in flight - leave it alone.
+        if (bgUrl === wanted && (bgState === 'ok' || bgState === 'loading')) return;
+
+        bgUrl = wanted;
+        bgState = 'loading';
+        bgAttempt++;
+
+        const repaint = () => {
+            const p = pendingRedraw;
+            // The preview may have been closed while the image was in flight.
+            if (p && p.canvas && document.body.contains(p.canvas)) {
+                drawPreview(p.canvas, p.sector, p.marginFrac);
+            }
+        };
+
+        const img = new Image();
+        bgImage = img;
+        img.onload = () => { if (bgImage === img) bgState = 'ok'; repaint(); };
+        img.onerror = () => { if (bgImage === img) { bgState = 'error'; bgImage = null; } repaint(); };
+        // A failed response can be negatively cached, so bust the cache on every retry after the
+        // first - otherwise the retry is just handed the same failure back out of the HTTP cache.
+        img.src = bgAttempt > 1
+            ? wanted + (wanted.indexOf('?') >= 0 ? '&' : '?') + '_retry=' + bgAttempt
+            : wanted;
+    }
+
+    // Where the venue image sits inside the ORIG_W x ORIG_H blueprint. The drawing tool
+    // (drawing-canvas.js redrawCanvas) and the stadium selector (stadium-selector.js) both
+    // paint it with an aspect-preserving "contain" fit, centred on the short axis - and the
+    // sector percentages were drawn on top of THAT. Mirror it exactly or the overlay and the
+    // map disagree for any image whose aspect ratio is not 1170:898.
+    function fitBlueprint(img) {
+        const imgAspect = img.naturalWidth / img.naturalHeight;
+        const blueprintAspect = ORIG_W / ORIG_H;
+        if (imgAspect > blueprintAspect) {
+            const h = ORIG_W / imgAspect;
+            return { x: 0, y: (ORIG_H - h) / 2, w: ORIG_W, h: h };
+        }
+        const w = ORIG_H * imgAspect;
+        return { x: (ORIG_W - w) / 2, y: 0, w: w, h: ORIG_H };
+    }
 
     window.renderSectorPreview = function (canvasId, sectorJson, marginFrac, tipTemplate, dotNetRef, highlight) {
         const canvas = document.getElementById(canvasId);
@@ -310,13 +377,10 @@
             canvas.addEventListener('mouseleave', hideTip);
         }
 
-        // Lazy-load the blueprint once, then redraw when it arrives so the map appears.
-        if (!bgImage) {
-            bgImage = new Image();
-            bgImage.onload = () => drawPreview(canvas, sector, marginFrac || 0);
-            bgImage.onerror = () => drawPreview(canvas, sector, marginFrac || 0);
-            bgImage.src = window.stadiumMapImageUrl || '/api/venue/stadium-image';
-        }
+        // Load the blueprint if we do not already have it, then redraw when it arrives so the
+        // map appears under the sector. A previous failure is retried here.
+        pendingRedraw = { canvas: canvas, sector: sector, marginFrac: marginFrac || 0 };
+        ensureBackground();
         drawPreview(canvas, sector, marginFrac || 0);
     };
 
@@ -353,8 +417,19 @@
         const T = p => ({ x: dx0 + (p.x - cropX) * scale, y: dy0 + (p.y - cropY) * scale });
 
         // 1) Real stadium map for this region (true colors + surrounding context).
+        //    Placed through the SAME transform T as the outline and seats, so the map can
+        //    never drift off the sector. (Cropping with a source rect instead would read
+        //    cropX/cropY as the image's own natural pixels, which only lines up when the
+        //    uploaded image happens to be exactly ORIG_W x ORIG_H.)
         if (bgImage && bgImage.complete && bgImage.naturalWidth > 0) {
-            ctx.drawImage(bgImage, cropX, cropY, cropW, cropH, dx0, dy0, dw, dh);
+            const fit = fitBlueprint(bgImage);
+            const o = T({ x: fit.x, y: fit.y });
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(dx0, dy0, dw, dh); // only the cropped region is visible
+            ctx.clip();
+            ctx.drawImage(bgImage, o.x, o.y, fit.w * scale, fit.h * scale);
+            ctx.restore();
         }
 
         // 2) Highlight the selected sector's outline so it stands out from neighbours.

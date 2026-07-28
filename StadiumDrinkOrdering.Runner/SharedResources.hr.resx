@@ -391,4 +391,7 @@
   <data name="Shell_QrCaption" xml:space="preserve">
     <value>Otvori na mobitelu</value>
   </data>
+  <data name="DbBadge_TitleFormat" xml:space="preserve">
+    <value>Baza podataka API-ja: {0} · {1}</value>
+  </data>
 </root>

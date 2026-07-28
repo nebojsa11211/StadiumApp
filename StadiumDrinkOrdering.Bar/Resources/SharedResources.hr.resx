@@ -1170,4 +1170,28 @@
   <data name="TicketTopup_DevPickerEmpty" xml:space="preserve">
     <value>— odaberi ulaznicu —</value>
   </data>
+  <data name="Dashboard_NewOrderToast" xml:space="preserve">
+    <value>Nova narudžba #{0} zaprimljena</value>
+  </data>
+  <data name="Dashboard_NewOrderAnnounce" xml:space="preserve">
+    <value>Nova narudžba od {0}</value>
+  </data>
+  <data name="Dashboard_OrderStatusAnnounce" xml:space="preserve">
+    <value>Status narudžbe #{0} promijenjen u {1}</value>
+  </data>
+  <data name="CurrentEvent_LiveBadge" xml:space="preserve">
+    <value>UŽIVO</value>
+  </data>
+  <data name="AuthLayout_PageTitle" xml:space="preserve">
+    <value>Prijava u bar – Stadium Drink Ordering</value>
+  </data>
+  <data name="QuickAction_ViewOrderQueue" xml:space="preserve">
+    <value>Pregled reda narudžbi</value>
+  </data>
+  <data name="QuickAction_MyAssignedOrders" xml:space="preserve">
+    <value>Moje dodijeljene narudžbe</value>
+  </data>
+  <data name="DbBadge_TitleFormat" xml:space="preserve">
+    <value>Baza podataka API-ja: {0} · {1}</value>
+  </data>
 </root>

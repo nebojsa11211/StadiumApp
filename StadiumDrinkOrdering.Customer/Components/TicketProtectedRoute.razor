@@ -3,22 +3,23 @@
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResources> Localizer
 
 @if (isLoading)
 {
     <div id="customer-ticket-protected-loading" class="gate-loading">
-        <span id="customer-ticket-protected-spinner" class="spinner"></span> Provjeravam pristup…
+        <span id="customer-ticket-protected-spinner" class="spinner"></span> @Localizer["TicketGate_Checking"]
     </div>
 }
 else if (isAccessDenied)
 {
     <div id="customer-ticket-protected-denied" class="gate">
         <div id="customer-ticket-protected-denied-icon" class="gate-icon">🎫</div>
-        <h2>Nema aktivne ulaznice</h2>
+        <h2>@Localizer["TicketGate_NoActiveTicket"]</h2>
         <p id="customer-ticket-protected-message">@errorMessage</p>
         <div id="customer-ticket-protected-buttons" class="gate-actions">
-            <button id="customer-ticket-protected-scan-btn" class="btn btn-primary" @onclick="RedirectToScanner">📱 Skeniraj ulaznicu</button>
-            <button id="customer-ticket-protected-home-btn" class="btn btn-ghost" @onclick="GoHome">🏠 Početna</button>
+            <button id="customer-ticket-protected-scan-btn" class="btn btn-primary" @onclick="RedirectToScanner">@Localizer["TicketGate_ScanTicket"]</button>
+            <button id="customer-ticket-protected-home-btn" class="btn btn-ghost" @onclick="GoHome">@Localizer["TicketGate_Home"]</button>
         </div>
     </div>
 }
@@ -70,7 +71,7 @@ else
             if (string.IsNullOrEmpty(sessionToken))
             {
                 isAccessDenied = true;
-                errorMessage = "Nije pronađena aktivna ulaznica. Skeniraj ulaznicu za pristup naručivanju.";
+                errorMessage = Localizer["TicketGate_NoTicketFound"];
                 return;
             }
 
@@ -80,9 +81,9 @@ else
             if (currentSession == null || !currentSession.IsActive)
             {
                 isAccessDenied = true;
-                errorMessage = currentSession == null ?
-                    "Neispravna ili istekla sesija. Skeniraj ulaznicu ponovno." :
-                    "Sesija je istekla. Skeniraj ulaznicu ponovno.";
+                errorMessage = currentSession == null
+                    ? Localizer["TicketGate_InvalidSession"].Value
+                    : Localizer["TicketGate_SessionExpired"].Value;
                 
                 // Clear invalid session from storage
                 try
@@ -98,7 +99,7 @@ else
             if (currentSession.ExpiresAt <= DateTime.UtcNow.AddMinutes(5))
             {
                 isAccessDenied = true;
-                errorMessage = "Sesija ulaznice uskoro istječe. Skeniraj ulaznicu ponovno za nastavak naručivanja.";
+                errorMessage = Localizer["TicketGate_SessionExpiringSoon"];
                 return;
             }
 
@@ -109,7 +110,7 @@ else
         catch (Exception ex)
         {
             isAccessDenied = true;
-            errorMessage = "Nije moguće provjeriti sesiju ulaznice. Pokušaj skenirati ulaznicu ponovno.";
+            errorMessage = Localizer["TicketGate_ValidationFailed"];
         }
         finally
         {

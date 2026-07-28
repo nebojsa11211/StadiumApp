@@ -50,7 +50,7 @@
                         <div class="mt-card-foot">
                             <span id="customer-ticket-number-@ticket.Id" class="mt-num tnum">@ticket.TicketNumber</span>
                             <span id="customer-ticket-price-@ticket.Id" class="mt-price tnum">
-                                @(ticket.Kind == TicketKind.Season && ticket.Price == 0m ? "Uključeno" : Money(ticket.Price))
+                                @(ticket.Kind == TicketKind.Season && ticket.Price == 0m ? Localizer["MyTickets_Included"].Value : Money(ticket.Price))
                             </span>
                         </div>
                     </button>

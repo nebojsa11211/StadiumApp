@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject IStringLocalizer<SharedResources> L
 
 <div class="login-shell" id="admin-login-shell">
     <div class="login-shell__lang" id="admin-login-shell-lang">
@@ -7,5 +8,5 @@
     <main class="login-shell__main" id="admin-login-shell-main">
         @Body
     </main>
-    <StadiumDrinkOrdering.UI.Components.DatabaseBadge />
+    <StadiumDrinkOrdering.UI.Components.DatabaseBadge TitleFormat="@L["DbBadge_TitleFormat"]" />
 </div>

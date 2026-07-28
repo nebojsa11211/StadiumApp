@@ -190,7 +190,7 @@
                                             </span>
                                         </div>
                                         <div class="order-details" id="bartender-order-details-@order.Id">
-                                            Seat: @order.SeatNumber | @order.CreatedAt.ToString("HH:mm")
+                                            @L["Bartender_SeatLabel"] @order.SeatNumber | @order.CreatedAt.ToString("HH:mm")
                                         </div>
                                         <div class="order-items" id="bartender-order-items-@order.Id">
                                             @foreach (var item in order.OrderItems.Take(2))
@@ -264,7 +264,7 @@
                                             }
                                         </tbody>
                                     </table>
-                                    <p id="bartender-order-total"><strong>Total: €@selectedOrder.TotalAmount.ToString("F2")</strong></p>
+                                    <p id="bartender-order-total"><strong>@L["Bartender_TotalLabel"] €@selectedOrder.TotalAmount.ToString("F2")</strong></p>
                                 </div>
                                 <div class="col-md-6" id="bartender-order-modal-col-right">
                                     <h6 id="bartender-order-details-title">@L["Bartender_OrderDetailsTitle"]</h6>

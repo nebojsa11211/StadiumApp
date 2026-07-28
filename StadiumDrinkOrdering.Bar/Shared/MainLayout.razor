@@ -8,7 +8,7 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 
-<PageTitle>Stadium Bar</PageTitle>
+<PageTitle>@Localizer["Login_StadiumBar"]</PageTitle>
 
 @* Modern dashboard shell — shared 1:1 with the Admin operations console. *@
 <div class="dash dashboard-shell-root" id="bar-dashboard">
@@ -85,7 +85,7 @@
         @Body
     </main>
 
-    <StadiumDrinkOrdering.UI.Components.DatabaseBadge />
+    <StadiumDrinkOrdering.UI.Components.DatabaseBadge TitleFormat="@Localizer["DbBadge_TitleFormat"]" />
 </div>
 
 @code {

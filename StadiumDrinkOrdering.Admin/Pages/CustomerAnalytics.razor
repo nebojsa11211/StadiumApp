@@ -193,8 +193,8 @@
                                 <td class="num">
                                     <div class="mono" style="font-weight: 600; color: var(--pitch-dark);">€@customer.TotalSpent.ToString("N2")</div>
                                     <div class="console-table__muted">
-                                        Tickets: €@customer.TicketSpending.ToString("N0") |
-                                        Drinks: €@customer.DrinkSpending.ToString("N0")
+                                        @L["CustAnalytics_DetailTickets"]: €@customer.TicketSpending.ToString("N0") |
+                                        @L["CustAnalytics_DetailDrinks"]: €@customer.DrinkSpending.ToString("N0")
                                     </div>
                                 </td>
                                 <td class="num mono">@customer.TotalTicketsPurchased</td>

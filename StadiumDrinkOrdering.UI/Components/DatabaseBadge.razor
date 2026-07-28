@@ -8,7 +8,7 @@
 @if (_info is not null)
 {
     <div id="db-badge"
-         title="@($"API database: {_info.Database} · {_info.Environment}")"
+         title="@string.Format(TitleFormat, _info.Database, _info.Environment)"
          style="position:fixed; z-index:2000; @PositionCss display:inline-flex;
                 align-items:center; gap:6px; padding:4px 9px; border-radius:999px;
                 font-size:11px; font-weight:600; line-height:1; letter-spacing:.2px;
@@ -17,13 +17,20 @@
                 font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
         <span style="width:7px; height:7px; border-radius:50%; background:@Accent;
                      box-shadow:0 0 6px @Accent;"></span>
-        <span>DB: @_info.Database</span>
+        <span>@LabelPrefix: @_info.Database</span>
     </div>
 }
 
 @code {
     /// <summary>Fixed-position offsets, e.g. "left:10px; bottom:10px;". Defaults to bottom-left.</summary>
     [Parameter] public string PositionCss { get; set; } = "left:10px; bottom:10px;";
+
+    /// <summary>Tooltip format string; {0} is the database name, {1} the environment. This project has
+    /// no resource files of its own, so each host app passes its own localized format in.</summary>
+    [Parameter] public string TitleFormat { get; set; } = "API database: {0} · {1}";
+
+    /// <summary>Prefix shown next to the database name on the badge itself.</summary>
+    [Parameter] public string LabelPrefix { get; set; } = "DB";
 
     private SystemInfoDto? _info;
 

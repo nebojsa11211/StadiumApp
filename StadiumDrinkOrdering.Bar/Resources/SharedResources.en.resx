@@ -1170,4 +1170,28 @@
   <data name="TicketTopup_DevPickerEmpty" xml:space="preserve">
     <value>— select ticket —</value>
   </data>
+  <data name="Dashboard_NewOrderToast" xml:space="preserve">
+    <value>New order #{0} received</value>
+  </data>
+  <data name="Dashboard_NewOrderAnnounce" xml:space="preserve">
+    <value>New order received from {0}</value>
+  </data>
+  <data name="Dashboard_OrderStatusAnnounce" xml:space="preserve">
+    <value>Order #{0} status updated to {1}</value>
+  </data>
+  <data name="CurrentEvent_LiveBadge" xml:space="preserve">
+    <value>LIVE</value>
+  </data>
+  <data name="AuthLayout_PageTitle" xml:space="preserve">
+    <value>Bar Login – Stadium Drink Ordering</value>
+  </data>
+  <data name="QuickAction_ViewOrderQueue" xml:space="preserve">
+    <value>View Order Queue</value>
+  </data>
+  <data name="QuickAction_MyAssignedOrders" xml:space="preserve">
+    <value>My Assigned Orders</value>
+  </data>
+  <data name="DbBadge_TitleFormat" xml:space="preserve">
+    <value>API database: {0} · {1}</value>
+  </data>
 </root>

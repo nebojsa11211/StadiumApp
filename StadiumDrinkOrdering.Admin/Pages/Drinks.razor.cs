@@ -125,7 +125,7 @@ public partial class Drinks : ComponentBase
             {
                 // API returned an error (Bad Request, etc.)
                 loadingFailed = true;
-                loadingError = "Failed to load drinks. The server returned an error.";
+                loadingError = L["Drinks_LoadFailedServer"];
                 drinks = new List<DrinkDto>(); // Set empty list to show error state
             }
             else
@@ -136,7 +136,7 @@ public partial class Drinks : ComponentBase
         catch (Exception ex)
         {
             loadingFailed = true;
-            loadingError = $"An error occurred while loading drinks: {ex.Message}";
+            loadingError = L["Drinks_LoadError", ex.Message];
             drinks = new List<DrinkDto>();
         }
     }
@@ -227,7 +227,7 @@ public partial class Drinks : ComponentBase
     {
         if (string.IsNullOrWhiteSpace(drinkForm.Name) || drinkForm.Price <= 0 || drinkForm.CategoryId <= 0)
         {
-            ShowAlert("Please fill in all required fields", "danger");
+            ShowAlert(L["Drinks_FillRequiredFields"], "danger");
             return;
         }
 
@@ -253,11 +253,11 @@ public partial class Drinks : ComponentBase
                 {
                     await LoadDrinks();
                     await HideDrinkModal();
-                    ShowAlert($"Drink '{created.Name}' created successfully", "success");
+                    ShowAlert(L["Drinks_CreatedSuccess", created.Name], "success");
                 }
                 else
                 {
-                    ShowAlert("Failed to create drink", "danger");
+                    ShowAlert(L["Drinks_CreateFailed"], "danger");
                 }
             }
             else
@@ -279,11 +279,11 @@ public partial class Drinks : ComponentBase
                 {
                     await LoadDrinks();
                     await HideDrinkModal();
-                    ShowAlert($"Drink '{drinkForm.Name}' updated successfully", "success");
+                    ShowAlert(L["Drinks_UpdatedSuccess", drinkForm.Name], "success");
                 }
                 else
                 {
-                    ShowAlert("Failed to update drink", "danger");
+                    ShowAlert(L["Drinks_UpdateFailed"], "danger");
                 }
             }
         }
@@ -302,7 +302,7 @@ public partial class Drinks : ComponentBase
 
         if (file.Size > MaxImageBytes)
         {
-            imageError = "Image is too large (max 5 MB).";
+            imageError = L["Drinks_ImageTooLarge"];
             return;
         }
 
@@ -319,7 +319,7 @@ public partial class Drinks : ComponentBase
         }
         catch (Exception ex)
         {
-            imageError = $"Could not read image: {ex.Message}";
+            imageError = L["Drinks_ImageReadError", ex.Message];
         }
         finally
         {
@@ -341,27 +341,27 @@ public partial class Drinks : ComponentBase
         if (result != null)
         {
             await LoadDrinks();
-            ShowAlert($"Drink '{drink.Name}' {(drink.IsAvailable ? "disabled" : "enabled")}", "success");
+            ShowAlert(drink.IsAvailable ? L["Drinks_DisabledSuccess", drink.Name] : L["Drinks_EnabledSuccess", drink.Name], "success");
         }
         else
         {
-            ShowAlert("Failed to update drink availability", "danger");
+            ShowAlert(L["Drinks_AvailabilityUpdateFailed"], "danger");
         }
     }
 
     private async Task DeleteDrink(DrinkDto drink)
     {
-        if (await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{drink.Name}'?"))
+        if (await JSRuntime.InvokeAsync<bool>("confirm", L["Drinks_DeleteConfirm", drink.Name].Value))
         {
             var success = await ApiService.DeleteDrinkAsync(drink.Id);
             if (success)
             {
                 await LoadDrinks();
-                ShowAlert($"Drink '{drink.Name}' deleted successfully", "success");
+                ShowAlert(L["Drinks_DeletedSuccess", drink.Name], "success");
             }
             else
             {
-                ShowAlert("Failed to delete drink", "danger");
+                ShowAlert(L["Drinks_DeleteFailed"], "danger");
             }
         }
     }

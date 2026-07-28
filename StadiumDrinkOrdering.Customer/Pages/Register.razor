@@ -40,7 +40,7 @@
 
         <div id="customer-register-email-group" class="field">
             <label for="customer-register-email-input">@Localizer["Register_EmailLabel"]</label>
-            <InputText id="customer-register-email-input" type="email" @bind-Value="registerModel.Email" placeholder="ime@email.hr" autocomplete="email" />
+            <InputText id="customer-register-email-input" type="email" @bind-Value="registerModel.Email" placeholder="@Localizer["Register_EmailPlaceholder"]" autocomplete="email" />
             <ValidationMessage For="@(() => registerModel.Email)" class="verr" />
         </div>
 
@@ -58,7 +58,7 @@
 
         <div id="customer-register-oib-group" class="field">
             <label for="customer-register-oib-input">@Localizer["Register_OIBLabel"]</label>
-            <InputText id="customer-register-oib-input" @bind-Value="registerModel.Oib" placeholder="11 znamenki" inputmode="numeric" maxlength="11" autocomplete="off" />
+            <InputText id="customer-register-oib-input" @bind-Value="registerModel.Oib" placeholder="@Localizer["Register_OIBPlaceholder"]" inputmode="numeric" maxlength="11" autocomplete="off" />
             <ValidationMessage For="@(() => registerModel.Oib)" class="verr" />
             <span class="reg-hint">@Localizer["Register_OIBHint"]</span>
         </div>
@@ -78,7 +78,7 @@
 
         <label id="customer-register-terms-group" class="reg-terms">
             <InputCheckbox id="customer-register-terms-input" @bind-Value="acceptTerms" />
-            <span>Prihvaćam <a href="/terms" target="_blank">@Localizer["Register_TermsOfService"]</a> i <a href="/privacy" target="_blank">@Localizer["Register_PrivacyPolicy"]</a>.</span>
+            <span>@Localizer["Register_TermsAccept"] <a href="/terms" target="_blank">@Localizer["Register_TermsOfService"]</a> @Localizer["Register_TermsAnd"] <a href="/privacy" target="_blank">@Localizer["Register_PrivacyPolicy"]</a>@Localizer["Checkout_TermsDot"]</span>
         </label>
         @if (!acceptTerms && showTermsError)
         {
@@ -110,32 +110,32 @@
 
     public class RegisterModel
     {
-        [Required(ErrorMessage = "Korisničko ime je obavezno")]
-        [StringLength(100, ErrorMessage = "Korisničko ime mora imati manje od 100 znakova")]
+        [LocRequired("Val_UsernameRequired")]
+        [LocStringLength(100, "Val_UsernameMaxLength")]
         public string Username { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Email je obavezan")]
-        [EmailAddress(ErrorMessage = "Unesi ispravnu email adresu")]
+        [LocRequired("Val_EmailRequired")]
+        [LocEmailAddress("Val_EmailInvalid")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Ime je obavezno")]
-        [StringLength(50, ErrorMessage = "Ime mora imati manje od 50 znakova")]
+        [LocRequired("Val_FirstNameRequired")]
+        [LocStringLength(50, "Val_FirstNameMaxLength")]
         public string FirstName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Prezime je obavezno")]
-        [StringLength(50, ErrorMessage = "Prezime mora imati manje od 50 znakova")]
+        [LocRequired("Val_LastNameRequired")]
+        [LocStringLength(50, "Val_LastNameMaxLength")]
         public string LastName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "OIB je obavezan")]
-        [RegularExpression(@"^\d{11}$", ErrorMessage = "OIB mora imati točno 11 znamenki")]
+        [LocRequired("Val_OibRequired")]
+        [LocRegularExpression(@"^\d{11}$", "Val_OibElevenDigits")]
         public string Oib { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Lozinka je obavezna")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Lozinka mora imati najmanje 6 znakova")]
+        [LocRequired("Val_PasswordRequired")]
+        [LocStringLength(100, "Val_PasswordMinLength", MinimumLength = 6)]
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Potvrdi lozinku")]
-        [Compare(nameof(Password), ErrorMessage = "Lozinke se ne podudaraju")]
+        [LocRequired("Val_ConfirmPasswordRequired")]
+        [LocCompare(nameof(Password), "Val_PasswordsDoNotMatch")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 

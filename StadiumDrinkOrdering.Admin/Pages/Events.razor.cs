@@ -278,7 +278,7 @@ public partial class Events : ComponentBase, IDisposable
             if (result == null)
             {
                 loadingFailed = true;
-                loadingError = "Failed to load events. The server returned an error.";
+                loadingError = L["Events_LoadFailedServer"];
                 events = new List<EventDto>();
             }
             else
@@ -289,7 +289,7 @@ public partial class Events : ComponentBase, IDisposable
         catch (Exception ex)
         {
             loadingFailed = true;
-            loadingError = $"An error occurred while loading events: {ex.Message}";
+            loadingError = L["Events_LoadError", ex.Message];
             events = new List<EventDto>();
         }
     }
@@ -1164,14 +1164,15 @@ public partial class Events : ComponentBase, IDisposable
         _ => "pill-btn"
     };
 
-    private static (string Label, string Icon) TransitionMeta(EventStatus target) => target switch
+    // Instance (not static) so the button labels can be resolved through the injected localizer.
+    private (string Label, string Icon) TransitionMeta(EventStatus target) => target switch
     {
-        EventStatus.Planned => ("Unpublish", "bi-arrow-counterclockwise"),
-        EventStatus.OnSale => ("Put On Sale", "bi-megaphone"),
-        EventStatus.SoldOut => ("Mark Sold Out", "bi-x-octagon"),
-        EventStatus.Active => ("Go Live", "bi-broadcast"),
-        EventStatus.Completed => ("Complete", "bi-check2-circle"),
-        EventStatus.Cancelled => ("Cancel Event", "bi-x-circle"),
+        EventStatus.Planned => (L["EventStatus_Action_Unpublish"].Value, "bi-arrow-counterclockwise"),
+        EventStatus.OnSale => (L["EventStatus_Action_PutOnSale"].Value, "bi-megaphone"),
+        EventStatus.SoldOut => (L["EventStatus_Action_MarkSoldOut"].Value, "bi-x-octagon"),
+        EventStatus.Active => (L["EventStatus_Action_GoLive"].Value, "bi-broadcast"),
+        EventStatus.Completed => (L["EventStatus_Action_Complete"].Value, "bi-check2-circle"),
+        EventStatus.Cancelled => (L["EventStatus_Action_CancelEvent"].Value, "bi-x-circle"),
         _ => (target.ToString(), "bi-arrow-right")
     };
 

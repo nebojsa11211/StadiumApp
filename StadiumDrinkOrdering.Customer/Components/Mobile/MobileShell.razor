@@ -2,6 +2,7 @@
 @implements IDisposable
 @using QRCoder
 @inject NavigationManager Nav
+@inject IStringLocalizer<SharedResources> Localizer
 
 @* Chrome-less mobile shell. On phones the app fills the screen exactly as before. On wide
    viewports the whole app is presented inside a realistic phone device (metal bezel, rounded
@@ -35,8 +36,8 @@
        and CSS hides it under 520px where the phone frame collapses and the app owns the viewport. *@
     <aside id="customer-mobile-shell-qr" class="shell-qr">
         <img id="customer-mobile-shell-qr-img" class="shell-qr-img"
-             src="@QrDataUri" alt="QR code for @_currentUrl" />
-        <div id="customer-mobile-shell-qr-caption" class="shell-qr-caption">Otvori na mobitelu</div>
+             src="@QrDataUri" alt="@Localizer["MobileShell_QrAlt", _currentUrl]" />
+        <div id="customer-mobile-shell-qr-caption" class="shell-qr-caption">@Localizer["MobileShell_OpenOnPhone"]</div>
         <div id="customer-mobile-shell-qr-url" class="shell-qr-url">@_currentUrl</div>
     </aside>
 </div>

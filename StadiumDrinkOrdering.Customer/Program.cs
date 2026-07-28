@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Localization;
+using StadiumDrinkOrdering.Customer;
 using StadiumDrinkOrdering.Customer.Services;
 using StadiumDrinkOrdering.Shared.Services;
 using StadiumDrinkOrdering.Shared.Authentication.Extensions;
@@ -98,6 +100,10 @@ builder.Services.AddHttpClient("CustomerSecureApi", client =>
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Customer");
 
 var app = builder.Build();
+
+// Validation attributes carry resource keys rather than literal messages; hand them the localizer so
+// DataAnnotationsValidator renders them in the visitor's language. See Services/LocalizedValidation.cs.
+ValidationLocalizer.Configure(app.Services.GetRequiredService<IStringLocalizer<SharedResources>>());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,6 +1,7 @@
 @page "/profile"
 @layout MobileShell
 @using StadiumDrinkOrdering.Shared.DTOs
+@using StadiumDrinkOrdering.Customer.Components
 @using StadiumDrinkOrdering.Customer.Services
 @using System.ComponentModel.DataAnnotations
 @inject IApiService ApiService
@@ -101,18 +102,18 @@
 
     public class ProfileModel
     {
-        [StringLength(50, ErrorMessage = "Ime mora imati manje od 50 znakova")]
+        [LocStringLength(50, "Val_FirstNameMaxLength")]
         public string? FirstName { get; set; }
 
-        [StringLength(50, ErrorMessage = "Prezime mora imati manje od 50 znakova")]
+        [LocStringLength(50, "Val_LastNameMaxLength")]
         public string? LastName { get; set; }
 
-        [Phone(ErrorMessage = "Unesi ispravan broj telefona")]
-        [StringLength(30, ErrorMessage = "Broj telefona je predug")]
+        [LocPhone("Val_PhoneInvalid")]
+        [LocStringLength(30, "Val_PhoneTooLong")]
         public string? PhoneNumber { get; set; }
 
         // Optional on the profile: empty is allowed, but when supplied it must be exactly 11 digits.
-        [RegularExpression(@"^(\d{11})?$", ErrorMessage = "OIB mora imati točno 11 znamenki")]
+        [LocRegularExpression(@"^(\d{11})?$", "Val_OibElevenDigits")]
         public string? Oib { get; set; }
     }
 

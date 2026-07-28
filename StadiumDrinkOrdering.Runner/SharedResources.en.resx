@@ -391,4 +391,7 @@
   <data name="Shell_QrCaption" xml:space="preserve">
     <value>Open on your phone</value>
   </data>
+  <data name="DbBadge_TitleFormat" xml:space="preserve">
+    <value>API database: {0} · {1}</value>
+  </data>
 </root>

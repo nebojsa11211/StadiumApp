@@ -3161,4 +3161,214 @@
   <data name="Register_LastNamePlaceholder" xml:space="preserve">
     <value>e.g. Horvat</value>
   </data>
+  <data name="AuthGuard_Checking" xml:space="preserve">
+    <value>Checking sign-in…</value>
+  </data>
+  <data name="AuthGuard_SignInRequired" xml:space="preserve">
+    <value>Sign-in required</value>
+  </data>
+  <data name="AuthGuard_SignInPrompt" xml:space="preserve">
+    <value>Sign in to access this page.</value>
+  </data>
+  <data name="AuthGuard_SignInButton" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="AuthGuard_CreateAccount" xml:space="preserve">
+    <value>Create account</value>
+  </data>
+  <data name="TicketGate_Checking" xml:space="preserve">
+    <value>Checking access…</value>
+  </data>
+  <data name="TicketGate_NoActiveTicket" xml:space="preserve">
+    <value>No active ticket</value>
+  </data>
+  <data name="TicketGate_ScanTicket" xml:space="preserve">
+    <value>📱 Scan ticket</value>
+  </data>
+  <data name="TicketGate_Home" xml:space="preserve">
+    <value>🏠 Home</value>
+  </data>
+  <data name="TicketGate_NoTicketFound" xml:space="preserve">
+    <value>No active ticket found. Scan your ticket to start ordering.</value>
+  </data>
+  <data name="TicketGate_InvalidSession" xml:space="preserve">
+    <value>Invalid or expired session. Scan your ticket again.</value>
+  </data>
+  <data name="TicketGate_SessionExpired" xml:space="preserve">
+    <value>Your session has expired. Scan your ticket again.</value>
+  </data>
+  <data name="TicketGate_SessionExpiringSoon" xml:space="preserve">
+    <value>Your ticket session is about to expire. Scan your ticket again to keep ordering.</value>
+  </data>
+  <data name="TicketGate_ValidationFailed" xml:space="preserve">
+    <value>Could not verify your ticket session. Try scanning your ticket again.</value>
+  </data>
+  <data name="NotFound_PageTitle" xml:space="preserve">
+    <value>Page not found — HALFTIME</value>
+  </data>
+  <data name="NotFound_HeaderTitle" xml:space="preserve">
+    <value>Not found</value>
+  </data>
+  <data name="NotFound_Heading" xml:space="preserve">
+    <value>Nothing here</value>
+  </data>
+  <data name="NotFound_Text" xml:space="preserve">
+    <value>The page you're looking for doesn't exist or has moved.</value>
+  </data>
+  <data name="NotFound_HomeButton" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="StadiumSelector_Unavailable" xml:space="preserve">
+    <value>Unavailable</value>
+  </data>
+  <data name="StadiumSelector_SoldOut" xml:space="preserve">
+    <value>Sold out</value>
+  </data>
+  <data name="StadiumSelector_SeatsFree" xml:space="preserve">
+    <value>{0} free</value>
+  </data>
+  <data name="MobileShell_OpenOnPhone" xml:space="preserve">
+    <value>Open on your phone</value>
+  </data>
+  <data name="MobileShell_QrAlt" xml:space="preserve">
+    <value>QR code for {0}</value>
+  </data>
+  <data name="AuthInit_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="AuthInit_Initializing" xml:space="preserve">
+    <value>Initializing Stadium Ordering...</value>
+  </data>
+  <data name="ScreenHeader_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Cart_WalletBalance" xml:space="preserve">
+    <value>Balance €{0}</value>
+  </data>
+  <data name="Home_MonthsShort" xml:space="preserve">
+    <value>jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec</value>
+  </data>
+  <data name="Home_Today" xml:space="preserve">
+    <value>today</value>
+  </data>
+  <data name="Home_Tomorrow" xml:space="preserve">
+    <value>tomorrow</value>
+  </data>
+  <data name="Home_InDays" xml:space="preserve">
+    <value>in {0} days</value>
+  </data>
+  <data name="Order_TrackGo" xml:space="preserve">
+    <value>Track ›</value>
+  </data>
+  <data name="MyTickets_Included" xml:space="preserve">
+    <value>Included</value>
+  </data>
+  <data name="Register_EmailPlaceholder" xml:space="preserve">
+    <value>name@email.com</value>
+  </data>
+  <data name="Register_OIBPlaceholder" xml:space="preserve">
+    <value>11 digits</value>
+  </data>
+  <data name="Register_TermsAccept" xml:space="preserve">
+    <value>I accept the</value>
+  </data>
+  <data name="Register_TermsAnd" xml:space="preserve">
+    <value>and</value>
+  </data>
+  <data name="Val_UsernameRequired" xml:space="preserve">
+    <value>Username is required</value>
+  </data>
+  <data name="Val_UsernameMaxLength" xml:space="preserve">
+    <value>Username must be under 100 characters</value>
+  </data>
+  <data name="Val_EmailRequired" xml:space="preserve">
+    <value>Email is required</value>
+  </data>
+  <data name="Val_EmailInvalid" xml:space="preserve">
+    <value>Enter a valid email address</value>
+  </data>
+  <data name="Val_FirstNameRequired" xml:space="preserve">
+    <value>First name is required</value>
+  </data>
+  <data name="Val_FirstNameMaxLength" xml:space="preserve">
+    <value>First name must be under 50 characters</value>
+  </data>
+  <data name="Val_LastNameRequired" xml:space="preserve">
+    <value>Last name is required</value>
+  </data>
+  <data name="Val_LastNameMaxLength" xml:space="preserve">
+    <value>Last name must be under 50 characters</value>
+  </data>
+  <data name="Val_OibRequired" xml:space="preserve">
+    <value>OIB is required</value>
+  </data>
+  <data name="Val_OibElevenDigits" xml:space="preserve">
+    <value>OIB must be exactly 11 digits</value>
+  </data>
+  <data name="Val_PasswordRequired" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="Val_PasswordMinLength" xml:space="preserve">
+    <value>Password must be at least 6 characters</value>
+  </data>
+  <data name="Val_ConfirmPasswordRequired" xml:space="preserve">
+    <value>Confirm your password</value>
+  </data>
+  <data name="Val_PasswordsDoNotMatch" xml:space="preserve">
+    <value>Passwords do not match</value>
+  </data>
+  <data name="Val_PhoneInvalid" xml:space="preserve">
+    <value>Enter a valid phone number</value>
+  </data>
+  <data name="Val_PhoneTooLong" xml:space="preserve">
+    <value>Phone number is too long</value>
+  </data>
+  <data name="Api_ActivationFailed" xml:space="preserve">
+    <value>Activation failed. Please try again.</value>
+  </data>
+  <data name="Api_CannotReachServer" xml:space="preserve">
+    <value>Unable to reach the server.</value>
+  </data>
+  <data name="Api_OrderPlacementFailed" xml:space="preserve">
+    <value>Failed to place order.</value>
+  </data>
+  <data name="Api_TicketSalesUnavailable" xml:space="preserve">
+    <value>In-app ticket sales are currently unavailable.</value>
+  </data>
+  <data name="Api_TicketSalesNotOpen" xml:space="preserve">
+    <value>Ticket sales for this event are not open yet.</value>
+  </data>
+  <data name="Api_SeatTaken" xml:space="preserve">
+    <value>That seat has just been taken.</value>
+  </data>
+  <data name="Api_AddSeatFailed" xml:space="preserve">
+    <value>Something went wrong adding the seat. Please try again.</value>
+  </data>
+  <data name="Api_ServerUnreachableRetry" xml:space="preserve">
+    <value>Cannot reach the server. Check your connection and try again.</value>
+  </data>
+  <data name="Api_OrderFailed" xml:space="preserve">
+    <value>Order failed.</value>
+  </data>
+  <data name="Api_Failed" xml:space="preserve">
+    <value>Failed.</value>
+  </data>
+  <data name="Seat_RowLabel" xml:space="preserve">
+    <value>Row {0}</value>
+  </data>
+  <data name="Seat_SeatLabel" xml:space="preserve">
+    <value>Seat {0}</value>
+  </data>
+  <data name="Seat_YourSeat" xml:space="preserve">
+    <value>Your seat</value>
+  </data>
+  <data name="Session_DefaultEventName" xml:space="preserve">
+    <value>Match</value>
+  </data>
+  <data name="Session_TicketValidationFailed" xml:space="preserve">
+    <value>Could not verify your ticket. Please try again.</value>
+  </data>
+  <data name="Session_CartEmpty" xml:space="preserve">
+    <value>Your cart is empty.</value>
+  </data>
 </root>

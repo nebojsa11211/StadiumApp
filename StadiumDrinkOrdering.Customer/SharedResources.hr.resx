@@ -2874,13 +2874,13 @@
     <value>Naruči sa svog mjesta, a mi ti donosimo do tribine. Bez propuštanja gola zbog piva.</value>
   </data>
   <data name="Welcome_LiveNow" xml:space="preserve">
-    <value>LIVE NOW</value>
+    <value>UŽIVO</value>
   </data>
   <data name="Welcome_NextFixture" xml:space="preserve">
-    <value>NEXT FIXTURE</value>
+    <value>SLJEDEĆA UTAKMICA</value>
   </data>
   <data name="Welcome_Fixture" xml:space="preserve">
-    <value>FIXTURE</value>
+    <value>UTAKMICA</value>
   </data>
   <data name="Welcome_Live" xml:space="preserve">
     <value>UŽIVO</value>
@@ -3160,5 +3160,215 @@
   </data>
   <data name="Register_LastNamePlaceholder" xml:space="preserve">
     <value>npr. Horvat</value>
+  </data>
+  <data name="AuthGuard_Checking" xml:space="preserve">
+    <value>Provjeravam prijavu…</value>
+  </data>
+  <data name="AuthGuard_SignInRequired" xml:space="preserve">
+    <value>Potrebna prijava</value>
+  </data>
+  <data name="AuthGuard_SignInPrompt" xml:space="preserve">
+    <value>Prijavi se za pristup ovoj stranici.</value>
+  </data>
+  <data name="AuthGuard_SignInButton" xml:space="preserve">
+    <value>Prijavi se</value>
+  </data>
+  <data name="AuthGuard_CreateAccount" xml:space="preserve">
+    <value>Stvori račun</value>
+  </data>
+  <data name="TicketGate_Checking" xml:space="preserve">
+    <value>Provjeravam pristup…</value>
+  </data>
+  <data name="TicketGate_NoActiveTicket" xml:space="preserve">
+    <value>Nema aktivne ulaznice</value>
+  </data>
+  <data name="TicketGate_ScanTicket" xml:space="preserve">
+    <value>📱 Skeniraj ulaznicu</value>
+  </data>
+  <data name="TicketGate_Home" xml:space="preserve">
+    <value>🏠 Početna</value>
+  </data>
+  <data name="TicketGate_NoTicketFound" xml:space="preserve">
+    <value>Nije pronađena aktivna ulaznica. Skeniraj ulaznicu za pristup naručivanju.</value>
+  </data>
+  <data name="TicketGate_InvalidSession" xml:space="preserve">
+    <value>Neispravna ili istekla sesija. Skeniraj ulaznicu ponovno.</value>
+  </data>
+  <data name="TicketGate_SessionExpired" xml:space="preserve">
+    <value>Sesija je istekla. Skeniraj ulaznicu ponovno.</value>
+  </data>
+  <data name="TicketGate_SessionExpiringSoon" xml:space="preserve">
+    <value>Sesija ulaznice uskoro istječe. Skeniraj ulaznicu ponovno za nastavak naručivanja.</value>
+  </data>
+  <data name="TicketGate_ValidationFailed" xml:space="preserve">
+    <value>Nije moguće provjeriti sesiju ulaznice. Pokušaj skenirati ulaznicu ponovno.</value>
+  </data>
+  <data name="NotFound_PageTitle" xml:space="preserve">
+    <value>Stranica nije pronađena — HALFTIME</value>
+  </data>
+  <data name="NotFound_HeaderTitle" xml:space="preserve">
+    <value>Nije pronađeno</value>
+  </data>
+  <data name="NotFound_Heading" xml:space="preserve">
+    <value>Ništa ovdje</value>
+  </data>
+  <data name="NotFound_Text" xml:space="preserve">
+    <value>Stranica koju tražiš ne postoji ili je premještena.</value>
+  </data>
+  <data name="NotFound_HomeButton" xml:space="preserve">
+    <value>Početna</value>
+  </data>
+  <data name="StadiumSelector_Unavailable" xml:space="preserve">
+    <value>Nedostupno</value>
+  </data>
+  <data name="StadiumSelector_SoldOut" xml:space="preserve">
+    <value>Rasprodano</value>
+  </data>
+  <data name="StadiumSelector_SeatsFree" xml:space="preserve">
+    <value>{0} slob.</value>
+  </data>
+  <data name="MobileShell_OpenOnPhone" xml:space="preserve">
+    <value>Otvori na mobitelu</value>
+  </data>
+  <data name="MobileShell_QrAlt" xml:space="preserve">
+    <value>QR kod za {0}</value>
+  </data>
+  <data name="AuthInit_Loading" xml:space="preserve">
+    <value>Učitavanje...</value>
+  </data>
+  <data name="AuthInit_Initializing" xml:space="preserve">
+    <value>Pokretanje aplikacije...</value>
+  </data>
+  <data name="ScreenHeader_Back" xml:space="preserve">
+    <value>Natrag</value>
+  </data>
+  <data name="Cart_WalletBalance" xml:space="preserve">
+    <value>Stanje €{0}</value>
+  </data>
+  <data name="Home_MonthsShort" xml:space="preserve">
+    <value>sij,velj,ožu,tra,svi,lip,srp,kol,ruj,lis,stu,pro</value>
+  </data>
+  <data name="Home_Today" xml:space="preserve">
+    <value>danas</value>
+  </data>
+  <data name="Home_Tomorrow" xml:space="preserve">
+    <value>sutra</value>
+  </data>
+  <data name="Home_InDays" xml:space="preserve">
+    <value>za {0} dana</value>
+  </data>
+  <data name="Order_TrackGo" xml:space="preserve">
+    <value>Prati ›</value>
+  </data>
+  <data name="MyTickets_Included" xml:space="preserve">
+    <value>Uključeno</value>
+  </data>
+  <data name="Register_EmailPlaceholder" xml:space="preserve">
+    <value>ime@email.hr</value>
+  </data>
+  <data name="Register_OIBPlaceholder" xml:space="preserve">
+    <value>11 znamenki</value>
+  </data>
+  <data name="Register_TermsAccept" xml:space="preserve">
+    <value>Prihvaćam</value>
+  </data>
+  <data name="Register_TermsAnd" xml:space="preserve">
+    <value>i</value>
+  </data>
+  <data name="Val_UsernameRequired" xml:space="preserve">
+    <value>Korisničko ime je obavezno</value>
+  </data>
+  <data name="Val_UsernameMaxLength" xml:space="preserve">
+    <value>Korisničko ime mora imati manje od 100 znakova</value>
+  </data>
+  <data name="Val_EmailRequired" xml:space="preserve">
+    <value>Email je obavezan</value>
+  </data>
+  <data name="Val_EmailInvalid" xml:space="preserve">
+    <value>Unesi ispravnu email adresu</value>
+  </data>
+  <data name="Val_FirstNameRequired" xml:space="preserve">
+    <value>Ime je obavezno</value>
+  </data>
+  <data name="Val_FirstNameMaxLength" xml:space="preserve">
+    <value>Ime mora imati manje od 50 znakova</value>
+  </data>
+  <data name="Val_LastNameRequired" xml:space="preserve">
+    <value>Prezime je obavezno</value>
+  </data>
+  <data name="Val_LastNameMaxLength" xml:space="preserve">
+    <value>Prezime mora imati manje od 50 znakova</value>
+  </data>
+  <data name="Val_OibRequired" xml:space="preserve">
+    <value>OIB je obavezan</value>
+  </data>
+  <data name="Val_OibElevenDigits" xml:space="preserve">
+    <value>OIB mora imati točno 11 znamenki</value>
+  </data>
+  <data name="Val_PasswordRequired" xml:space="preserve">
+    <value>Lozinka je obavezna</value>
+  </data>
+  <data name="Val_PasswordMinLength" xml:space="preserve">
+    <value>Lozinka mora imati najmanje 6 znakova</value>
+  </data>
+  <data name="Val_ConfirmPasswordRequired" xml:space="preserve">
+    <value>Potvrdi lozinku</value>
+  </data>
+  <data name="Val_PasswordsDoNotMatch" xml:space="preserve">
+    <value>Lozinke se ne podudaraju</value>
+  </data>
+  <data name="Val_PhoneInvalid" xml:space="preserve">
+    <value>Unesi ispravan broj telefona</value>
+  </data>
+  <data name="Val_PhoneTooLong" xml:space="preserve">
+    <value>Broj telefona je predug</value>
+  </data>
+  <data name="Api_ActivationFailed" xml:space="preserve">
+    <value>Aktivacija nije uspjela. Pokušaj ponovno.</value>
+  </data>
+  <data name="Api_CannotReachServer" xml:space="preserve">
+    <value>Nije moguće spojiti se na poslužitelj.</value>
+  </data>
+  <data name="Api_OrderPlacementFailed" xml:space="preserve">
+    <value>Narudžbu nije moguće poslati.</value>
+  </data>
+  <data name="Api_TicketSalesUnavailable" xml:space="preserve">
+    <value>Prodaja ulaznica putem aplikacije trenutno nije dostupna.</value>
+  </data>
+  <data name="Api_TicketSalesNotOpen" xml:space="preserve">
+    <value>Prodaja ulaznica za ovaj događaj trenutno nije otvorena.</value>
+  </data>
+  <data name="Api_SeatTaken" xml:space="preserve">
+    <value>Mjesto je u međuvremenu zauzeto.</value>
+  </data>
+  <data name="Api_AddSeatFailed" xml:space="preserve">
+    <value>Došlo je do pogreške pri dodavanju mjesta. Pokušajte ponovno.</value>
+  </data>
+  <data name="Api_ServerUnreachableRetry" xml:space="preserve">
+    <value>Nije moguće dohvatiti poslužitelj. Provjerite vezu i pokušajte ponovno.</value>
+  </data>
+  <data name="Api_OrderFailed" xml:space="preserve">
+    <value>Narudžba nije uspjela.</value>
+  </data>
+  <data name="Api_Failed" xml:space="preserve">
+    <value>Neuspješno.</value>
+  </data>
+  <data name="Seat_RowLabel" xml:space="preserve">
+    <value>Red {0}</value>
+  </data>
+  <data name="Seat_SeatLabel" xml:space="preserve">
+    <value>Sjed. {0}</value>
+  </data>
+  <data name="Seat_YourSeat" xml:space="preserve">
+    <value>Tvoje mjesto</value>
+  </data>
+  <data name="Session_DefaultEventName" xml:space="preserve">
+    <value>Utakmica</value>
+  </data>
+  <data name="Session_TicketValidationFailed" xml:space="preserve">
+    <value>Ulaznicu nije moguće potvrditi. Pokušaj ponovno.</value>
+  </data>
+  <data name="Session_CartEmpty" xml:space="preserve">
+    <value>Košarica je prazna.</value>
   </data>
 </root>

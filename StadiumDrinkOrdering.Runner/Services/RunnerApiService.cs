@@ -135,6 +135,8 @@ public class RunnerApiService
             var dto = new UpdateOrderStatusDto
             {
                 Status = OrderStatus.Delivered,
+                // Persisted as order history, not shown as UI chrome — deliberately NOT localized so the
+                // stored audit trail reads the same regardless of the runner's interface language.
                 Notes = "Delivered by runner",
                 ClientActionId = clientActionId
             };

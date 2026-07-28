@@ -1,10 +1,11 @@
 @inherits LayoutComponentBase
+@inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>Bar Login - Stadium Drink Ordering</PageTitle>
+<PageTitle>@Localizer["AuthLayout_PageTitle"]</PageTitle>
 
 <div class="bar-login-shell" id="bar-login-shell">
     <main class="bar-login-shell__main" id="bar-login-shell-main">
         @Body
     </main>
-    <StadiumDrinkOrdering.UI.Components.DatabaseBadge />
+    <StadiumDrinkOrdering.UI.Components.DatabaseBadge TitleFormat="@Localizer["DbBadge_TitleFormat"]" />
 </div>

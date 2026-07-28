@@ -296,8 +296,8 @@ else
         {
             DashboardService.InvalidateCache();
             await LoadDashboardData();
-            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", $"New order #{order.Id} received", "info");
-            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", $"New order received from {order.CustomerName}");
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_NewOrderToast", order.Id].Value, "info");
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", Localizer["Dashboard_NewOrderAnnounce", order.CustomerName].Value);
         });
     }
 
@@ -307,7 +307,7 @@ else
         {
             DashboardService.InvalidateCache();
             await LoadDashboardData();
-            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", $"Order #{order.Id} status updated to {order.Status}");
+            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", Localizer["Dashboard_OrderStatusAnnounce", order.Id, order.Status].Value);
         });
     }
 

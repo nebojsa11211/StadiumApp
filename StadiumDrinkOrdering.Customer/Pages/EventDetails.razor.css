@@ -140,7 +140,12 @@
 .scrim-top{z-index:59;background:rgba(2,3,6,.86);backdrop-filter:blur(5px)}
 .locator{
     position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);
-    width:min(96vw,760px);max-height:92vh;overflow-y:auto;z-index:60;background:var(--surface);
+    /* Sized against the CONTAINING BLOCK - the phone screen on desktop (.device-screen carries
+       a transform), the viewport on a real handset. vw/vh would measure the desktop window
+       instead, making the panel ~760px wide inside a ~460px phone screen; .device-screen's
+       overflow:hidden then clipped the map (and the close button) right out of view. */
+    width:calc(100% - 28px);max-width:760px;
+    max-height:calc(100% - 28px);overflow-y:auto;z-index:60;background:var(--surface);
     /* Brighter edge + brand halo + deep shadow so the whole panel reads as a raised card. */
     border:1px solid rgba(255,255,255,.24);border-radius:22px;
     padding:16px 18px calc(18px + var(--safe-bottom));
@@ -150,11 +155,13 @@
     transition:opacity .28s var(--ease),transform .28s var(--ease)
 }
 .locator.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
-.locator-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.locator-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .locator-title{font-size:19px;font-weight:900;letter-spacing:-.01em}
 .locator-sub{font-size:13px;font-weight:800;color:var(--live);margin-top:2px}
 /* The map is a bright card: light border + soft shadow separate it from the dark panel. */
-.locator-canvas-wrap{position:relative;border-radius:14px;overflow:hidden;
+/* flex:none - the wrap clips (overflow:hidden), so letting it shrink would crop the map
+   instead of scrolling the panel. */
+.locator-canvas-wrap{flex:none;position:relative;border-radius:14px;overflow:hidden;
     background:#fff;border:1px solid rgba(255,255,255,.35);
     box-shadow:0 6px 20px rgba(0,0,0,.45)}
 .locator-canvas-wrap canvas{display:block;width:100%;height:auto}

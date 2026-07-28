@@ -3,6 +3,7 @@ using StadiumDrinkOrdering.Shared.DTOs;
 using StadiumDrinkOrdering.Bar.Models;
 using StadiumDrinkOrdering.Bar.Services;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 
 namespace StadiumDrinkOrdering.Bar.Services;
 
@@ -25,14 +26,18 @@ public class DashboardService : IDashboardService
     private const string CURRENT_EVENT_CACHE_KEY = "current_event";
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromSeconds(30);
 
+    private readonly IStringLocalizer<SharedResources> _localizer;
+
     public DashboardService(
         IStaffApiService apiService,
         IMemoryCache cache,
-        ILogger<DashboardService> logger)
+        ILogger<DashboardService> logger,
+        IStringLocalizer<SharedResources> localizer)
     {
         _apiService = apiService;
         _cache = cache;
         _logger = logger;
+        _localizer = localizer;
     }
 
     public async Task<DashboardViewModel> GetDashboardDataAsync()
@@ -159,14 +164,14 @@ public class DashboardService : IDashboardService
         var quickActions = new List<QuickAction>
         {
             QuickAction.CreateLink(
-                title: "View Order Queue",
+                title: _localizer["QuickAction_ViewOrderQueue"],
                 url: "/order-queue",
                 iconClass: "oi oi-list",
                 buttonClass: "btn-primary",
                 badgeCount: pendingOrders.Count
             ),
             QuickAction.CreateLink(
-                title: "My Assigned Orders",
+                title: _localizer["QuickAction_MyAssignedOrders"],
                 url: "/my-orders",
                 iconClass: "oi oi-clipboard",
                 buttonClass: "btn-info",

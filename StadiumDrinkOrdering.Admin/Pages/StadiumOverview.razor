@@ -82,7 +82,7 @@
                     @OverallOccupancy.ToString("0.0")@L["Overview_PercentFull"]
                     @if (TotalSeasonSold > 0)
                     {
-                        <span id="admin-overview-total-season" title="Season passes included in the sold total"
+                        <span id="admin-overview-total-season" title="@L["Overview_SeasonIncludedTooltip"]"
                               style="display:inline-flex;align-items:center;gap:.25rem;margin-left:.5rem;padding:.05rem .45rem;border-radius:999px;background:#ede9fe;color:#6d28d9;font-weight:600;font-size:.75rem;">
                             <i class="bi bi-person-badge"></i> @TotalSeasonSold.ToString("N0") season
                         </span>

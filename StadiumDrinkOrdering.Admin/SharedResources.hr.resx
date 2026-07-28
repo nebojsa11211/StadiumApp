@@ -2360,7 +2360,7 @@
     <value>Karta:</value>
   </data>
   <data name="Bartender_SeatLabel" xml:space="preserve">
-    <value>Mjesto:</value>
+    <value>Sjedalo:</value>
   </data>
   <data name="Bartender_StatusLabel" xml:space="preserve">
     <value>Status:</value>
@@ -3634,7 +3634,7 @@
     <value>Zdravo</value>
   </data>
   <data name="Dash_Cache" xml:space="preserve">
-    <value>Cache</value>
+    <value>Predmemorija</value>
   </data>
   <data name="Dash_Active" xml:space="preserve">
     <value>Aktivno</value>
@@ -4864,5 +4864,200 @@
   </data>
   <data name="Categories_LoadException" xml:space="preserve">
     <value>Došlo je do pogreške pri učitavanju kategorija: {0}</value>
+  </data>
+  <data name="ApiErr_BadRequest_Title" xml:space="preserve">
+    <value>Neispravan zahtjev</value>
+  </data>
+  <data name="ApiErr_BadRequest_Msg" xml:space="preserve">
+    <value>⚠️ Zahtjev sadrži neispravne podatke. Provjerite unos i pokušajte ponovno.</value>
+  </data>
+  <data name="ApiErr_Unauthorized_Title" xml:space="preserve">
+    <value>Potrebna prijava</value>
+  </data>
+  <data name="ApiErr_Unauthorized_Msg" xml:space="preserve">
+    <value>🔐 Sesija je istekla. Prijavite se ponovno za nastavak.</value>
+  </data>
+  <data name="ApiErr_Forbidden_Title" xml:space="preserve">
+    <value>Pristup odbijen</value>
+  </data>
+  <data name="ApiErr_Forbidden_Msg" xml:space="preserve">
+    <value>❌ Nemate ovlaštenje za ovu radnju. Obratite se administratoru ako smatrate da je ovo pogreška.</value>
+  </data>
+  <data name="ApiErr_NotFound_Title" xml:space="preserve">
+    <value>Nije pronađeno</value>
+  </data>
+  <data name="ApiErr_NotFound_Msg" xml:space="preserve">
+    <value>📭 Traženi resurs nije pronađen. Možda je obrisan ili premješten.</value>
+  </data>
+  <data name="ApiErr_Conflict_Title" xml:space="preserve">
+    <value>Sukob</value>
+  </data>
+  <data name="ApiErr_Conflict_Msg" xml:space="preserve">
+    <value>⚠️ Radnja je u sukobu s trenutnim stanjem. Osvježite stranicu i pokušajte ponovno.</value>
+  </data>
+  <data name="ApiErr_Validation_Title" xml:space="preserve">
+    <value>Provjera nije uspjela</value>
+  </data>
+  <data name="ApiErr_Validation_Msg" xml:space="preserve">
+    <value>📋 Ispravite označena polja i pokušajte ponovno.</value>
+  </data>
+  <data name="ApiErr_TooManyRequests_Title" xml:space="preserve">
+    <value>Previše zahtjeva</value>
+  </data>
+  <data name="ApiErr_TooManyRequests_Msg" xml:space="preserve">
+    <value>⏳ Radnje se izvode prebrzo. Pričekajte trenutak i pokušajte ponovno.</value>
+  </data>
+  <data name="ApiErr_ServerError_Title" xml:space="preserve">
+    <value>Pogreška poslužitelja</value>
+  </data>
+  <data name="ApiErr_ServerError_Msg" xml:space="preserve">
+    <value>⚠️ Došlo je do pogreške na poslužitelju. Tehnički tim je automatski obaviješten.</value>
+  </data>
+  <data name="ApiErr_BadGateway_Title" xml:space="preserve">
+    <value>Usluga nedostupna</value>
+  </data>
+  <data name="ApiErr_BadGateway_Msg" xml:space="preserve">
+    <value>🌐 Povezivanje s poslužiteljem nije moguće. Provjerite internetsku vezu.</value>
+  </data>
+  <data name="ApiErr_ServiceUnavailable_Title" xml:space="preserve">
+    <value>Održavanje usluge</value>
+  </data>
+  <data name="ApiErr_ServiceUnavailable_Msg" xml:space="preserve">
+    <value>🔧 Usluga je privremeno nedostupna zbog održavanja. Pokušajte ponovno za nekoliko minuta.</value>
+  </data>
+  <data name="ApiErr_GatewayTimeout_Title" xml:space="preserve">
+    <value>Isteklo vrijeme zahtjeva</value>
+  </data>
+  <data name="ApiErr_GatewayTimeout_Msg" xml:space="preserve">
+    <value>⏱️ Zahtjev traje duže od očekivanog. Pokušajte ponovno.</value>
+  </data>
+  <data name="ApiErr_Generic_Title" xml:space="preserve">
+    <value>Pogreška</value>
+  </data>
+  <data name="ApiErr_Generic_Msg" xml:space="preserve">
+    <value>Došlo je do neočekivane pogreške.</value>
+  </data>
+  <data name="ApiErr_Unexpected" xml:space="preserve">
+    <value>Došlo je do neočekivane pogreške. Pokušajte ponovno.</value>
+  </data>
+  <data name="ApiErr_Login_Unauthorized" xml:space="preserve">
+    <value>🔐 Neispravan email ili lozinka. Provjerite podatke i pokušajte ponovno.</value>
+  </data>
+  <data name="ApiErr_Login_TooMany" xml:space="preserve">
+    <value>🛡️ Previše pokušaja prijave. Pričekajte 15 minuta prije novog pokušaja.</value>
+  </data>
+  <data name="ApiErr_Login_BadRequest" xml:space="preserve">
+    <value>📧 Unesite ispravnu email adresu i lozinku.</value>
+  </data>
+  <data name="ApiErr_Orders_NotFound" xml:space="preserve">
+    <value>📦 Narudžba nije pronađena. Možda je otkazana ili obrisana.</value>
+  </data>
+  <data name="ApiErr_Orders_Conflict" xml:space="preserve">
+    <value>⚠️ Narudžbu je izmijenio drugi korisnik. Osvježite stranicu za najnovije promjene.</value>
+  </data>
+  <data name="ApiErr_Orders_Validation" xml:space="preserve">
+    <value>📋 Provjerite jesu li sva obavezna polja narudžbe ispravno ispunjena.</value>
+  </data>
+  <data name="ApiErr_Users_Conflict" xml:space="preserve">
+    <value>👤 Korisnik s ovom email adresom već postoji.</value>
+  </data>
+  <data name="ApiErr_Users_Forbidden" xml:space="preserve">
+    <value>🔒 Nemate ovlaštenje za upravljanje korisničkim računima.</value>
+  </data>
+  <data name="ApiErr_Users_Validation" xml:space="preserve">
+    <value>📋 Unesite ispravnu email adresu i jaku lozinku.</value>
+  </data>
+  <data name="ApiErr_Stadium_BadRequest" xml:space="preserve">
+    <value>🏟️ Datoteka strukture stadiona nije ispravna. Provjerite format i pokušajte ponovno.</value>
+  </data>
+  <data name="ApiErr_Stadium_TooLarge" xml:space="preserve">
+    <value>📁 Datoteka strukture stadiona je prevelika. Najveća veličina je 10 MB.</value>
+  </data>
+  <data name="ApiErr_Stadium_MediaType" xml:space="preserve">
+    <value>📄 Učitajte ispravnu JSON datoteku.</value>
+  </data>
+  <data name="Drinks_LoadFailedServer" xml:space="preserve">
+    <value>Učitavanje pića nije uspjelo. Poslužitelj je vratio pogrešku.</value>
+  </data>
+  <data name="Drinks_LoadError" xml:space="preserve">
+    <value>Došlo je do pogreške pri učitavanju pića: {0}</value>
+  </data>
+  <data name="Drinks_FillRequiredFields" xml:space="preserve">
+    <value>Ispunite sva obavezna polja</value>
+  </data>
+  <data name="Drinks_CreatedSuccess" xml:space="preserve">
+    <value>Piće '{0}' uspješno je stvoreno</value>
+  </data>
+  <data name="Drinks_CreateFailed" xml:space="preserve">
+    <value>Stvaranje pića nije uspjelo</value>
+  </data>
+  <data name="Drinks_UpdatedSuccess" xml:space="preserve">
+    <value>Piće '{0}' uspješno je ažurirano</value>
+  </data>
+  <data name="Drinks_UpdateFailed" xml:space="preserve">
+    <value>Ažuriranje pića nije uspjelo</value>
+  </data>
+  <data name="Drinks_ImageTooLarge" xml:space="preserve">
+    <value>Slika je prevelika (najviše 5 MB).</value>
+  </data>
+  <data name="Drinks_ImageReadError" xml:space="preserve">
+    <value>Sliku nije moguće pročitati: {0}</value>
+  </data>
+  <data name="Drinks_DisabledSuccess" xml:space="preserve">
+    <value>Piće '{0}' onemogućeno</value>
+  </data>
+  <data name="Drinks_EnabledSuccess" xml:space="preserve">
+    <value>Piće '{0}' omogućeno</value>
+  </data>
+  <data name="Drinks_AvailabilityUpdateFailed" xml:space="preserve">
+    <value>Ažuriranje dostupnosti pića nije uspjelo</value>
+  </data>
+  <data name="Drinks_DeleteConfirm" xml:space="preserve">
+    <value>Jeste li sigurni da želite obrisati '{0}'?</value>
+  </data>
+  <data name="Drinks_DeletedSuccess" xml:space="preserve">
+    <value>Piće '{0}' uspješno je obrisano</value>
+  </data>
+  <data name="Drinks_DeleteFailed" xml:space="preserve">
+    <value>Brisanje pića nije uspjelo</value>
+  </data>
+  <data name="Events_LoadFailedServer" xml:space="preserve">
+    <value>Učitavanje događaja nije uspjelo. Poslužitelj je vratio pogrešku.</value>
+  </data>
+  <data name="Events_LoadError" xml:space="preserve">
+    <value>Došlo je do pogreške pri učitavanju događaja: {0}</value>
+  </data>
+  <data name="EventStatus_Action_Unpublish" xml:space="preserve">
+    <value>Poništi objavu</value>
+  </data>
+  <data name="EventStatus_Action_PutOnSale" xml:space="preserve">
+    <value>Pokreni prodaju</value>
+  </data>
+  <data name="EventStatus_Action_MarkSoldOut" xml:space="preserve">
+    <value>Označi rasprodano</value>
+  </data>
+  <data name="EventStatus_Action_GoLive" xml:space="preserve">
+    <value>Pokreni uživo</value>
+  </data>
+  <data name="EventStatus_Action_Complete" xml:space="preserve">
+    <value>Završi</value>
+  </data>
+  <data name="EventStatus_Action_CancelEvent" xml:space="preserve">
+    <value>Otkaži događaj</value>
+  </data>
+  <data name="Bartender_TotalLabel" xml:space="preserve">
+    <value>Ukupno:</value>
+  </data>
+  <data name="Seasons_QrModalTitle" xml:space="preserve">
+    <value>Sezonska propusnica – QR</value>
+  </data>
+  <data name="Seasons_QrLoadFailed" xml:space="preserve">
+    <value>QR nije moguće učitati.</value>
+  </data>
+  <data name="Overview_SeasonIncludedTooltip" xml:space="preserve">
+    <value>Sezonske propusnice uključene u ukupno prodano</value>
+  </data>
+  <data name="DbBadge_TitleFormat" xml:space="preserve">
+    <value>Baza podataka API-ja: {0} · {1}</value>
   </data>
 </root>

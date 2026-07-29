@@ -346,10 +346,14 @@
             }
 
             <div id="simulator-index-event-quick-row" class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-2 border-top">
-                <button id="simulator-index-event-newcurrent-btn" class="btn btn-sm btn-danger" title="@Localizer["Index_NewCurrentEventTooltip", CurrentEventHours]" @onclick="CreateCurrentEventAsync" disabled="@(busy || !connectionOk)">
+                <button id="simulator-index-event-newcurrent-btn" class="btn btn-sm btn-danger" title="@Localizer["Index_NewCurrentEventTooltip", CurrentEventHours, currentEventCrowd]" @onclick="CreateCurrentEventAsync" disabled="@(busy || !connectionOk)">
                     <i class="bi bi-lightning-charge-fill"></i> @Localizer["Index_NewCurrentEventButton"]
                 </button>
-                <span id="simulator-index-event-quick-hint" class="small text-muted">@Localizer["Index_NewCurrentEventHint", CurrentEventHours]</span>
+                <div id="simulator-index-event-newcurrent-crowd-group" class="input-group input-group-sm" style="width:auto" title="@Localizer["Index_NewCurrentEventCrowdTooltip"]">
+                    <span id="simulator-index-event-newcurrent-crowd-label" class="input-group-text"><i class="bi bi-people-fill"></i>&nbsp;@Localizer["Index_NewCurrentEventCrowdLabel"]</span>
+                    <input id="simulator-index-event-newcurrent-crowd-input" type="number" min="0" max="500" class="form-control form-control-sm" style="width:85px" @bind="currentEventCrowd" disabled="@busy" />
+                </div>
+                <span id="simulator-index-event-quick-hint" class="small text-muted">@Localizer["Index_NewCurrentEventHint", CurrentEventHours, currentEventCrowd]</span>
             </div>
             @if (currentEventClash != null)
             {
@@ -841,6 +845,11 @@
     // How long the quick "New current event" action runs from now. The same span stands in for an
     // existing event that carries no explicit end when checking whether that window is free.
     private const int CurrentEventHours = 3;
+
+    // How many single-match tickets the quick "New current event" action sells into the event on its
+    // way live. Sales close the moment an event goes live, so the crowd has to be seated in between
+    // creating it and taking it live — 0 creates an empty ground.
+    private int currentEventCrowd = 25;
 
     // Why the last "New current event" click was refused (another event owns that window), shown
     // inline under the create form; null when there is nothing to report.
@@ -1561,6 +1570,12 @@
             eventDate = startUtc.ToLocalTime();
             eventEndDate = endUtc.ToLocalTime();
 
+            // Seat the crowd BEFORE going live: the API closes ticket sales on the live transition, so
+            // this is the only window in which the event can be filled. Skipped when the operator asks
+            // for nobody (0), which leaves the ground to whatever season passes the linked season holds.
+            if (currentEventCrowd > 0)
+                await SellCurrentEventCrowdAsync();
+
             if (!await GoLiveCoreAsync())
             {
                 // Created but still OnSale — usable, just not live yet, so say so rather than leaving
@@ -1571,15 +1586,42 @@
 
             Log($"🕒 Current event is live, {eventDate:HH:mm} → {eventEndDate:HH:mm} ({CurrentEventHours}h).");
 
-            // Going live closes ticket sales, so an event with no season passes behind it has nobody
-            // seated and drink-order simulation has no seat to pick. Worth saying up front.
+            // Going live closes ticket sales, so if neither the simulated crowd nor a linked season put
+            // anyone in a seat, drink-order simulation has no seat to pick. Worth saying up front.
             if (TotalOccupied == 0)
-                Log("⚠ No seats are occupied — link a season with passes before creating a live event, or drink orders will have no seat to attach to.");
+                Log("⚠ No seats are occupied — raise the crowd size or link a season with passes, or drink orders will have no seat to attach to.");
         }
         finally
         {
             busy = false;
         }
+    }
+
+    /// <summary>
+    /// Sells <see cref="currentEventCrowd"/> single-match tickets into the freshly-created current
+    /// event, spread over the sectors exactly as the "Sell random" button does. Called between
+    /// creating the event and taking it live, because the API refuses ticket sales for a live event.
+    /// Caller owns the <c>busy</c> flag; failures are logged, never thrown — an event that could not be
+    /// filled is still a usable live event.
+    /// </summary>
+    private async Task SellCurrentEventCrowdAsync()
+    {
+        if (sections.Count == 0)
+        {
+            Log("⚠ No sectors discovered — the current event was created with an empty ground.");
+            return;
+        }
+
+        var sold = await SellRandomInternalAsync(currentEventCrowd, CancellationToken.None);
+        if (sold > 0)
+            Log($"🎟 Sold {sold} ticket(s) into the current event (occupied {TotalOccupied}/{TotalCapacity}).");
+        if (sold < currentEventCrowd)
+            Log($"⚠ Only {sold} of {currentEventCrowd} requested ticket(s) were sold — the ground is full or the API rejected the rest.");
+
+        // Keep an open seat grid honest about the seats just taken, and let the log/occupancy figures
+        // reach the screen before the go-live round-trip.
+        if (expandedSector != null) await LoadExpandedSeatsAsync();
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>

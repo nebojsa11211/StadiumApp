@@ -11,6 +11,9 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
+    <!-- Renders the order-slip QR in-process for printing (PngByteQRCode is managed-only, no
+         System.Drawing), so the print path needs no API round-trip or external QR service. -->
+    <PackageReference Include="QRCoder" Version="1.4.3" />
   </ItemGroup>
 
   <ItemGroup>

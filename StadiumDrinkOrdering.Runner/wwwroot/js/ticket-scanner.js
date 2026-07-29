@@ -1,7 +1,13 @@
-// Runner ticket QR scanner. Uses the browser-native BarcodeDetector API together with getUserMedia
+// Runner QR scanner. Uses the browser-native BarcodeDetector API together with getUserMedia
 // so no third-party library or CDN asset is needed. When BarcodeDetector is unavailable the caller
 // is told (supported:false) and falls back to manual code entry. getUserMedia requires a secure
 // context — this app is HTTPS-only, so it works on localhost/https. Mirrors the Bar's topup-scanner.
+//
+// Two modes, chosen by the `continuous` argument to start():
+//   single-shot (default) — decode one code, release the camera, hand it to .NET. Used by /scan,
+//     where one ticket resolves to one screen of detail.
+//   continuous            — keep the camera live and report every distinct code seen. Used by the
+//     pool page, where a runner sweeps a stack of pickup slips in one pass.
 window.runnerTicketScanner = (function () {
     let stream = null;
     let detector = null;
@@ -9,9 +15,21 @@ window.runnerTicketScanner = (function () {
     let videoEl = null;
     let loopHandle = null;
     let running = false;
+    let continuous = false;
+
+    // A code held in front of the lens decodes several times a second. In continuous mode only the
+    // first read is reported, then the same value is muted until the cooldown lapses — long enough
+    // that a runner lingering on one slip doesn't machine-gun the .NET side, short enough that a
+    // deliberate re-scan of the same slip still registers.
+    let lastValue = null;
+    let lastValueAt = 0;
+    const REPEAT_COOLDOWN_MS = 2500;
 
     function releaseCamera() {
         running = false;
+        continuous = false;
+        lastValue = null;
+        lastValueAt = 0;
         if (loopHandle) {
             clearTimeout(loopHandle);
             loopHandle = null;
@@ -38,14 +56,28 @@ window.runnerTicketScanner = (function () {
                 const value = codes[0].rawValue;
                 if (value && dotNetRef) {
                     const ref = dotNetRef;
-                    // Single-shot: hand the decoded text to .NET, then release the camera.
-                    releaseCamera();
-                    try {
-                        await ref.invokeMethodAsync('OnQrDecoded', value);
-                    } catch (e) {
-                        console.warn('runnerTicketScanner: OnQrDecoded invoke failed', e);
+
+                    if (!continuous) {
+                        // Single-shot: hand the decoded text to .NET, then release the camera.
+                        releaseCamera();
+                        try {
+                            await ref.invokeMethodAsync('OnQrDecoded', value);
+                        } catch (e) {
+                            console.warn('runnerTicketScanner: OnQrDecoded invoke failed', e);
+                        }
+                        return;
                     }
-                    return;
+
+                    const now = (window.performance && performance.now) ? performance.now() : 0;
+                    if (value !== lastValue || (now - lastValueAt) > REPEAT_COOLDOWN_MS) {
+                        lastValue = value;
+                        lastValueAt = now;
+                        try {
+                            await ref.invokeMethodAsync('OnQrDecoded', value);
+                        } catch (e) {
+                            console.warn('runnerTicketScanner: OnQrDecoded invoke failed', e);
+                        }
+                    }
                 }
             }
         } catch (e) {
@@ -57,7 +89,8 @@ window.runnerTicketScanner = (function () {
         }
     }
 
-    async function start(videoElementId, ref) {
+    // continuous defaults to false when omitted, so existing single-shot callers are unaffected.
+    async function start(videoElementId, ref, continuousMode) {
         // Ensure a clean slate if a previous session wasn't stopped.
         releaseCamera();
 
@@ -101,6 +134,8 @@ window.runnerTicketScanner = (function () {
 
         dotNetRef = ref;
         running = true;
+        // Set after releaseCamera() above (which clears it) so the mode survives into the scan loop.
+        continuous = continuousMode === true;
         loopHandle = setTimeout(scanTick, 300);
         return { supported: true, started: true, error: null };
     }

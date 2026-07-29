@@ -2784,6 +2784,12 @@
   <data name="EventStats_TicketsSoldLabel" xml:space="preserve">
     <value>Tickets sold</value>
   </data>
+  <data name="EventStats_SingleTicketsLabel" xml:space="preserve">
+    <value>Single-event tickets</value>
+  </data>
+  <data name="EventStats_AmortisedHint" xml:space="preserve">
+    <value>amortised share</value>
+  </data>
   <data name="EventStats_Of" xml:space="preserve">
     <value>of</value>
   </data>
@@ -3629,6 +3635,12 @@
   </data>
   <data name="Index_ReturnToCurrent" xml:space="preserve">
     <value>Return to current event</value>
+  </data>
+  <data name="Index_OpenEvent" xml:space="preserve">
+    <value>Open event</value>
+  </data>
+  <data name="Index_GoToLiveEvent" xml:space="preserve">
+    <value>Go to the live event</value>
   </data>
   <data name="Index_Current" xml:space="preserve">
     <value>Current</value>

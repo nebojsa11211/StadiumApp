@@ -43,7 +43,11 @@
                     </div>
                     <div class="dash-event-name-row">
                         <i class="bi bi-calendar-event"></i>
-                        <h2 class="dash-event-name" id="admin-dashboard-event-name">@_selectedEvent.Name</h2>
+                        @* The name doubles as the way into the event's own page. *@
+                        <a class="dash-event-name-link" href="admin/event-statistics/@_selectedEvent.Id"
+                           id="admin-dashboard-event-link" title="@L["Index_OpenEvent"]">
+                            <h2 class="dash-event-name" id="admin-dashboard-event-name">@_selectedEvent.Name</h2>
+                        </a>
                         @if (_selectedEvent.Date.HasValue)
                         {
                             <span class="dash-event-date">@_selectedEvent.Date.Value.ToString("ddd, dd. MMM yyyy. · HH:mm")</span>
@@ -153,11 +157,11 @@
                 <div class="dash-kpi-head">
                     <div class="dash-kpi-label">
                         <span class="dash-kpi-title">@L["Index_SeasonPasses"]</span>
-                        <span class="dash-kpi-context">@(DashboardSeason?.Name ?? L["Index_NoSeason"])</span>
+                        <span class="dash-kpi-context">@SeasonScopeLabel</span>
                     </div>
                     <div class="dash-kpi-icon"><i class="bi bi-person-badge"></i></div>
                 </div>
-                <div class="dash-kpi-value @(DashboardSeason == null ? "dash-kpi-value--muted" : "")">@(DashboardSeason == null ? "—" : SeasonPassCount.ToString("N0"))</div>
+                <div class="dash-kpi-value @(HasSeasonScope ? "" : "dash-kpi-value--muted")">@(HasSeasonScope ? SeasonPassCount.ToString("N0") : "—")</div>
             </div>
 
             <div class="dash-kpi-card" id="admin-dashboard-kpi-nps">

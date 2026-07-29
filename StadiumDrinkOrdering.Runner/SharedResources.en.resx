@@ -394,4 +394,31 @@
   <data name="DbBadge_TitleFormat" xml:space="preserve">
     <value>API database: {0} · {1}</value>
   </data>
+  <data name="Home_ScanSlips" xml:space="preserve">
+    <value>Scan pickup slips</value>
+  </data>
+  <data name="Home_ScanHint" xml:space="preserve">
+    <value>Point the camera at each slip's QR code — they add up in your selection.</value>
+  </data>
+  <data name="Home_StopScan" xml:space="preserve">
+    <value>Stop scanning</value>
+  </data>
+  <data name="Home_ScanNotSupported" xml:space="preserve">
+    <value>This browser can't scan QR codes. Tap the cards to select orders instead.</value>
+  </data>
+  <data name="Home_ScanError" xml:space="preserve">
+    <value>Couldn't open the camera. Check this site's camera permission.</value>
+  </data>
+  <data name="Home_ScanAdded" xml:space="preserve">
+    <value>✓ #{0} added</value>
+  </data>
+  <data name="Home_ScanAlreadyAdded" xml:space="preserve">
+    <value>#{0} is already selected</value>
+  </data>
+  <data name="Home_ScanNotInPool" xml:space="preserve">
+    <value>#{0} isn't in the pool — already taken?</value>
+  </data>
+  <data name="Home_ScanNotASlip" xml:space="preserve">
+    <value>That's not a pickup slip</value>
+  </data>
 </root>

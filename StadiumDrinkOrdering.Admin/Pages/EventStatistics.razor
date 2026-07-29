@@ -51,8 +51,9 @@
     }
     else if (stats != null)
     {
-        <!-- Headline Metrics -->
-        <section class="metrics" id="admin-event-stats-metrics">
+        <!-- Headline Metrics: revenue, then the three revenue streams kept apart
+             (single-event tickets, season passes, drinks) plus occupancy. -->
+        <section class="metrics metrics--5" id="admin-event-stats-metrics">
             <article class="metric metric--accent" id="admin-event-stats-metric-revenue">
                 <div class="metric__head">
                     <span class="metric__label">@L["EventStats_TotalRevenueLabel"]</span>
@@ -64,17 +65,31 @@
                 </div>
             </article>
 
+            @* Season-derived tickets are counted inside TotalTicketsSold, so the single-event
+               figure is the remainder — the two cards then add up to the total shown on the
+               occupancy card and in the ticketing panel. *@
             <article class="metric metric--clickable" id="admin-event-stats-metric-tickets"
                      role="button" tabindex="0" title="@L["EventStats_ViewTicketsHint"]"
                      @onclick="ViewTickets"
                      @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") ViewTickets(); })">
                 <div class="metric__head">
-                    <span class="metric__label">@L["EventStats_TicketsSoldLabel"]</span>
+                    <span class="metric__label">@L["EventStats_SingleTicketsLabel"]</span>
                     <i class="bi bi-ticket-perforated metric__icon"></i>
                 </div>
-                <div class="metric__value mono" id="admin-event-stats-metric-tickets-value">@stats.TotalTicketsSold.ToString("N0")</div>
+                <div class="metric__value mono" id="admin-event-stats-metric-tickets-value">@SingleEventTicketsSold.ToString("N0")</div>
                 <div class="metric__foot">
-                    <span class="metric__hint">@L["EventStats_Of"] @stats.TotalCapacity.ToString("N0") @L["EventStats_SeatsLabel"] <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="metric__hint">€@stats.TicketRevenue.ToString("N2") <i class="bi bi-arrow-right-short"></i></span>
+                </div>
+            </article>
+
+            <article class="metric" id="admin-event-stats-metric-season-tickets">
+                <div class="metric__head">
+                    <span class="metric__label">@L["EventStats_SeasonTicketsLabel"]</span>
+                    <i class="bi bi-award metric__icon"></i>
+                </div>
+                <div class="metric__value mono" id="admin-event-stats-metric-season-tickets-value">@stats.SeasonTicketsSold.ToString("N0")</div>
+                <div class="metric__foot">
+                    <span class="metric__hint">€@stats.SeasonTicketRevenue.ToString("N2") · @L["EventStats_AmortisedHint"]</span>
                 </div>
             </article>
 
@@ -84,7 +99,8 @@
                     <i class="bi bi-people metric__icon"></i>
                 </div>
                 <div class="metric__value mono" id="admin-event-stats-metric-occupancy-value">@stats.OccupancyPercent.ToString("0.#")%</div>
-                <div class="metric__foot">
+                <div class="metric__foot metric__foot--stack">
+                    <span class="metric__hint" id="admin-event-stats-metric-occupancy-hint">@stats.TotalTicketsSold.ToString("N0") @L["EventStats_Of"] @stats.TotalCapacity.ToString("N0") @L["EventStats_SeatsLabel"]</span>
                     <div class="progress" style="height: 6px;" id="admin-event-stats-occupancy-bar">
                         <div class="progress-bar" role="progressbar"
                              style="width: @(Math.Min(100, (double)stats.OccupancyPercent).ToString(System.Globalization.CultureInfo.InvariantCulture))%;"
@@ -119,6 +135,8 @@
                         <dl class="event-meta" id="admin-event-stats-ticketing-details">
                             <dt>@L["EventStats_TicketsSoldLabel"]</dt>
                             <dd class="mono" id="admin-event-stats-ticketing-sold">@stats.TotalTicketsSold.ToString("N0")</dd>
+                            <dt>@L["EventStats_SingleTicketsLabel"]</dt>
+                            <dd class="mono" id="admin-event-stats-ticketing-single">@SingleEventTicketsSold.ToString("N0")</dd>
                             <dt>@L["EventStats_SeasonTicketsLabel"]</dt>
                             <dd class="mono" id="admin-event-stats-ticketing-season">@stats.SeasonTicketsSold.ToString("N0")</dd>
                             <dt>@L["EventStats_CapacityLabel"]</dt>

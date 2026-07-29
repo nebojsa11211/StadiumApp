@@ -18,7 +18,11 @@
             </div>
             <div class="dash-event-name-row">
                 <i class="bi bi-calendar-event"></i>
-                <h2 class="dash-event-name" id="admin-dashboard-event-name">@Event.Name</h2>
+                @* The name opens the event's own page. *@
+                <a class="dash-event-name-link" href="admin/event-statistics/@Event.Id"
+                   id="admin-dashboard-event-link" title="@L["Index_OpenEvent"]">
+                    <h2 class="dash-event-name" id="admin-dashboard-event-name">@Event.Name</h2>
+                </a>
                 @if (Event.Date.HasValue)
                 {
                     <span class="dash-event-date">@Event.Date.Value.ToString("ddd, dd. MMM yyyy. · HH:mm")</span>
@@ -28,8 +32,10 @@
 
         <div class="dash-event-controls">
             @* The bar is read-only; this sends the admin to the dashboard, where the event can
-               actually be changed and acted on. *@
-            <a href="" class="dash-event-current" id="admin-dashboard-event-dashboard-link" title="@L["Nav_Dashboard"]">
+               actually be changed and acted on. The eventId carries the scope across, so the
+               dashboard opens on *this* event even when the season banner points elsewhere (a
+               one-off event belongs to no season and would otherwise be filtered out there). *@
+            <a href="/?eventId=@Event.Id" class="dash-event-current" id="admin-dashboard-event-dashboard-link" title="@L["Index_GoToLiveEvent"]">
                 <i class="bi bi-grid-1x2"></i> @L["Nav_Dashboard"]
             </a>
         </div>

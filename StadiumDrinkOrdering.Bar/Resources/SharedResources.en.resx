@@ -1194,4 +1194,19 @@
   <data name="DbBadge_TitleFormat" xml:space="preserve">
     <value>API database: {0} · {1}</value>
   </data>
+  <data name="OrderQueue_PrintSlip" xml:space="preserve">
+    <value>Reprint slip</value>
+  </data>
+  <data name="OrderQueue_AutoPrintSlip" xml:space="preserve">
+    <value>Auto-print slips</value>
+  </data>
+  <data name="OrderQueue_AutoPrintSlipHint" xml:space="preserve">
+    <value>Print a pickup slip automatically whenever an order is marked ready.</value>
+  </data>
+  <data name="OrderQueue_SlipScanCaption" xml:space="preserve">
+    <value>Runner: scan to collect</value>
+  </data>
+  <data name="OrderQueue_SlipReadyAt" xml:space="preserve">
+    <value>Ready at</value>
+  </data>
 </root>

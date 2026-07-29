@@ -394,4 +394,31 @@
   <data name="DbBadge_TitleFormat" xml:space="preserve">
     <value>Baza podataka API-ja: {0} · {1}</value>
   </data>
+  <data name="Home_ScanSlips" xml:space="preserve">
+    <value>Skeniraj potvrde</value>
+  </data>
+  <data name="Home_ScanHint" xml:space="preserve">
+    <value>Usmjeri kameru na QR kôd svake potvrde — zbrajaju se u tvom odabiru.</value>
+  </data>
+  <data name="Home_StopScan" xml:space="preserve">
+    <value>Zaustavi skeniranje</value>
+  </data>
+  <data name="Home_ScanNotSupported" xml:space="preserve">
+    <value>Ovaj preglednik ne može skenirati QR kodove. Narudžbe odaberi dodirom na kartice.</value>
+  </data>
+  <data name="Home_ScanError" xml:space="preserve">
+    <value>Nije moguće otvoriti kameru. Provjeri dopuštenje za kameru na ovoj stranici.</value>
+  </data>
+  <data name="Home_ScanAdded" xml:space="preserve">
+    <value>✓ #{0} dodano</value>
+  </data>
+  <data name="Home_ScanAlreadyAdded" xml:space="preserve">
+    <value>#{0} je već odabrano</value>
+  </data>
+  <data name="Home_ScanNotInPool" xml:space="preserve">
+    <value>#{0} nije na popisu — možda je već preuzeto?</value>
+  </data>
+  <data name="Home_ScanNotASlip" xml:space="preserve">
+    <value>Ovo nije potvrda za preuzimanje</value>
+  </data>
 </root>

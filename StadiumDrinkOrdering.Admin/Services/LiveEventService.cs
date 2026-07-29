@@ -36,7 +36,9 @@ public class LiveEventService
 
     /// <summary>
     /// The live event in the selected season, or null when nothing is on. With "all seasons"
-    /// selected, any live event qualifies.
+    /// selected, any live event qualifies. Events belonging to no season (one-off matches, friendlies)
+    /// always qualify: no season scope should be able to hide a match that is running right now —
+    /// doing so left the only live event unreachable from the shell whenever a league season was selected.
     /// </summary>
     public EventDto? LiveEvent
     {
@@ -45,7 +47,7 @@ public class LiveEventService
             var seasonId = _seasonState.SelectedSeason?.Id;
             return _events
                 .Where(e => e.Phase == EventPhase.Active)
-                .Where(e => seasonId == null || e.SeasonId == seasonId)
+                .Where(e => seasonId == null || e.SeasonId == seasonId || e.SeasonId == null)
                 .OrderBy(e => e.Date ?? DateTime.MaxValue)
                 .FirstOrDefault();
         }

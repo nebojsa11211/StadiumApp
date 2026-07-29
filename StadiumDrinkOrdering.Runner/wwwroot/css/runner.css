@@ -535,6 +535,37 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
 }
 .runner-scan-hint { font-size: 0.85rem; color: var(--r-ink-muted); text-align: center; margin: 0; }
 
+/* Two header buttons (scan + refresh) sit together on the right of the page head. */
+.runner-head-actions { display: flex; gap: 0.5rem; flex: none; }
+
+/* Scanner-on state for the camera toggle, so it's obvious at a glance the camera is live. */
+.runner-refresh-on {
+    background: var(--r-primary-tint);
+    color: var(--r-primary);
+    border-color: var(--r-primary);
+}
+
+/* Rolling scan log under the viewfinder: what the last few reads actually did. Colour-coded so a
+   miss is distinguishable at a glance while holding a tray. */
+.runner-scan-feed {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.runner-scan-feed-item {
+    border-radius: 8px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+.runner-scan-feed-ok { background: var(--r-primary-tint); color: var(--r-success-ink); }
+.runner-scan-feed-dup { background: var(--r-pending-tint); color: var(--r-pending); }
+.runner-scan-feed-miss { background: var(--r-danger-tint); color: var(--r-danger); }
+
 /* ---- Ticket detail ---- */
 .runner-ticket { display: flex; flex-direction: column; gap: 0.75rem; }
 

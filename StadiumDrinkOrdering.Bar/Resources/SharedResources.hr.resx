@@ -1194,4 +1194,19 @@
   <data name="DbBadge_TitleFormat" xml:space="preserve">
     <value>Baza podataka API-ja: {0} · {1}</value>
   </data>
+  <data name="OrderQueue_PrintSlip" xml:space="preserve">
+    <value>Ponovno ispiši potvrdu</value>
+  </data>
+  <data name="OrderQueue_AutoPrintSlip" xml:space="preserve">
+    <value>Automatski ispis potvrda</value>
+  </data>
+  <data name="OrderQueue_AutoPrintSlipHint" xml:space="preserve">
+    <value>Automatski ispiši potvrdu za preuzimanje čim se narudžba označi kao spremna.</value>
+  </data>
+  <data name="OrderQueue_SlipScanCaption" xml:space="preserve">
+    <value>Dostavljač: skeniraj za preuzimanje</value>
+  </data>
+  <data name="OrderQueue_SlipReadyAt" xml:space="preserve">
+    <value>Spremno u</value>
+  </data>
 </root>

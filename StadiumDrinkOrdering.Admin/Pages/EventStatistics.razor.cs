@@ -16,6 +16,14 @@ public partial class EventStatistics : ComponentBase
     private bool loadFailed;
     private string loadError = "";
 
+    /// <summary>
+    /// Tickets bought for this event alone. <see cref="EventStatisticsDto.TotalTicketsSold"/>
+    /// counts season-derived tickets too, so they are subtracted here to keep the two ticket
+    /// streams reported separately (clamped at 0 in case the two figures ever disagree).
+    /// </summary>
+    private int SingleEventTicketsSold =>
+        stats == null ? 0 : Math.Max(0, stats.TotalTicketsSold - stats.SeasonTicketsSold);
+
     protected override async Task OnParametersSetAsync()
     {
         // Reload when navigating between events without leaving the page.

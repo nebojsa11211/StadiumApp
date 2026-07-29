@@ -327,10 +327,16 @@ Wallet balances are destroyed, not refunded. This cannot be undone.</value>
     <value>New current event</value>
   </data>
   <data name="Index_NewCurrentEventTooltip" xml:space="preserve">
-    <value>Create an event running from now for {0} hours — using the name, type and season above — and take it live immediately.</value>
+    <value>Create an event running from now for {0} hours — using the name, type and season above — sell {1} ticket(s) into it, and take it live immediately.</value>
   </data>
   <data name="Index_NewCurrentEventHint" xml:space="preserve">
-    <value>Starts now, runs {0} hours, goes live immediately. Refused if another event is already live, or occupies — or is scheduled to start inside — that window. Live events cannot sell tickets, so link a season if you need occupied seats.</value>
+    <value>Starts now, runs {0} hours, sells {1} ticket(s) across the sectors, then goes live immediately. Refused if another event is already live, or occupies — or is scheduled to start inside — that window. Tickets are sold before it goes live, because a live event can no longer sell.</value>
+  </data>
+  <data name="Index_NewCurrentEventCrowdLabel" xml:space="preserve">
+    <value>Crowd</value>
+  </data>
+  <data name="Index_NewCurrentEventCrowdTooltip" xml:space="preserve">
+    <value>How many single-match tickets to sell into the new event before it goes live, spread over the sectors. 0 creates an empty ground.</value>
   </data>
   <data name="Index_NewCurrentEventClash" xml:space="preserve">
     <value>Not created: “{0}” ({2}) already occupies that window — {1}. End, cancel or delete it first.</value>

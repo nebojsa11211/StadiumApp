@@ -25,5 +25,17 @@ window.barKds = {
         } catch (e) {
             console.warn('barKds.beep failed', e);
         }
+    },
+
+    // Prints the currently-rendered order slip. The caller renders the slip into
+    // #bar-slip-print-area first; print CSS hides everything else on the page.
+    // window.print() blocks until the dialog closes, so it runs on a timeout to let the
+    // Blazor render (and the QR <img> data URI) settle before the snapshot is taken.
+    printSlip: function () {
+        try {
+            setTimeout(function () { window.print(); }, 60);
+        } catch (e) {
+            console.warn('barKds.printSlip failed', e);
+        }
     }
 };

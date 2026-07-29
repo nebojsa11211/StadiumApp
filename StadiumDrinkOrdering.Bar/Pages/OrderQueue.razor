@@ -24,6 +24,10 @@
             {
                 <span class="mono dash-updated">@Localizer["OrderQueue_Updated"] @lastUpdated.ToString("HH:mm:ss")</span>
             }
+            <label class="kds-autoprint" id="bar-orderqueue-autoprint-label" title="@Localizer["OrderQueue_AutoPrintSlipHint"]">
+                <input type="checkbox" checked="@autoPrintSlips" @onchange="ToggleAutoPrint" id="bar-orderqueue-autoprint-toggle" />
+                <span>🖨 @Localizer["OrderQueue_AutoPrintSlip"]</span>
+            </label>
             <button class="pill-btn" @onclick="RefreshOrders" id="bar-orderqueue-refresh-btn">
                 <i class="bi bi-arrow-clockwise"></i> @Localizer["Refresh"]
             </button>
@@ -66,6 +70,46 @@
     </div>
 </div>
 
+@* Printable pickup slip. Only the order currently being printed is rendered here — it is
+   invisible on screen and takes over the page in print (see kds.css). The QR encodes
+   SDO-ORDER:{id}, which a runner scans at the bar to claim exactly the order this slip is
+   sitting on, so the drinks in hand and the claim in the app can never diverge. *@
+<div id="bar-slip-print-area" aria-hidden="true">
+    @if (slipOrder is not null)
+    {
+        <div class="kds-slip-order-id">#@slipOrder.Id</div>
+        <div class="kds-slip-seat">@SeatLabel(slipOrder)</div>
+        @if (!string.IsNullOrEmpty(slipQrDataUri))
+        {
+            <img class="kds-slip-qr" src="@slipQrDataUri" alt="" />
+            <div class="kds-slip-qr-caption">@Localizer["OrderQueue_SlipScanCaption"]</div>
+        }
+        <div class="kds-slip-items">
+            @foreach (var item in slipOrder.OrderItems)
+            {
+                <div>
+                    <span class="kds-slip-item-qty">@item.Quantity×</span> @item.DrinkName
+                    @if (!string.IsNullOrWhiteSpace(item.SpecialInstructions))
+                    {
+                        <span class="kds-slip-item-note"> (@item.SpecialInstructions)</span>
+                    }
+                </div>
+            }
+        </div>
+        var slipNote = OrderNote(slipOrder);
+        @if (!string.IsNullOrWhiteSpace(slipNote))
+        {
+            <div class="kds-slip-note">📝 @slipNote</div>
+        }
+        var slipPay = SlipPayText(slipOrder);
+        @if (!string.IsNullOrWhiteSpace(slipPay))
+        {
+            <div class="kds-slip-pay">@slipPay</div>
+        }
+        <div class="kds-slip-foot">@Localizer["OrderQueue_SlipReadyAt"] @StepClock(slipOrder)</div>
+    }
+</div>
+
 @code {
     private List<OrderDto> pendingOrders = new();
     // Legacy stragglers only: the board no longer produces the Accepted state (Pending starts prep
@@ -103,6 +147,15 @@
     private const string NoSectorKey = "—";
     private const string SelectionStorageKey = "bar-orderqueue-selected-sectors";
 
+    // Pickup-slip printing. Only one slip is rendered at a time — the order whose slip is being
+    // sent to the printer. printPending defers the window.print() call to OnAfterRenderAsync so the
+    // slip markup (and its QR image) is guaranteed to be in the DOM before the page is snapshotted.
+    private OrderDto? slipOrder;
+    private string? slipQrDataUri;
+    private bool printPending;
+    private bool autoPrintSlips;
+    private const string AutoPrintStorageKey = "bar-orderqueue-auto-print-slip";
+
     private System.Threading.Timer? refreshTimer;
     private const int RefreshSeconds = 8;
 
@@ -135,7 +188,32 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // The slip markup only exists after the render that assigned slipOrder, so the print call
+        // has to happen here — post-render — or the browser would snapshot a page with no slip on it.
+        if (printPending)
+        {
+            printPending = false;
+            try { await JS.InvokeVoidAsync("barKds.printSlip"); }
+            catch (Exception ex) { Console.WriteLine($"Printing slip failed: {ex.Message}"); }
+        }
+
         if (!firstRender) return;
+
+        // Restore the auto-print preference (per station, so a bar with no printer attached can
+        // leave it off while the pass printer station keeps it on).
+        try
+        {
+            var storedAutoPrint = await JS.InvokeAsync<string?>("localStorage.getItem", AutoPrintStorageKey);
+            if (storedAutoPrint == "1")
+            {
+                autoPrintSlips = true;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Restoring auto-print preference failed: {ex.Message}");
+        }
 
         // localStorage is only reachable after the first interactive render (not during prerender),
         // so restore the saved sector selection here and re-partition the already-loaded orders.
@@ -474,12 +552,18 @@
                 </button>
                 break;
             case OrderStatus.InPreparation:
-                <button class="btn btn-success kds-btn" @onclick="() => MarkReady(order.Id)" id="bar-kds-mark-ready-btn-@order.Id">
+                <button class="btn btn-success kds-btn" @onclick="() => MarkReady(order)" id="bar-kds-mark-ready-btn-@order.Id">
                     @Localizer["OrderQueue_MarkReady"]
                 </button>
                 break;
             case OrderStatus.Ready:
                 <div id="bar-orderqueue-page-ready-note-@order.Id" class="kds-ready-note">✓ @Localizer["OrderQueue_AwaitingRunnerPickup"]</div>
+                @* Reprint: the slip is normally produced automatically when the order is marked
+                   ready, but a jam, an empty roll or a slip that walked off with the wrong tray
+                   all need a second copy without touching the order's state. *@
+                <button class="btn btn-outline-secondary kds-btn kds-slip-btn" @onclick="() => PrintSlip(order)" id="bar-kds-print-slip-btn-@order.Id">
+                    🖨 @Localizer["OrderQueue_PrintSlip"]
+                </button>
                 break;
             case OrderStatus.OutForDelivery:
                 <div id="bar-orderqueue-page-collected-note-@order.Id" class="kds-collected-note">🫱 @Localizer["OrderQueue_CollectedByRunner"]</div>
@@ -618,13 +702,60 @@
         _ => null
     };
 
-    private async Task StartPreparation(int orderId) =>
+    private async Task StartPreparation(int orderId)
+    {
         await Transition(orderId, OrderStatus.InPreparation, Localizer["OrderQueue_PreparationStarted"].Value);
+    }
 
-    private async Task MarkReady(int orderId) =>
-        await Transition(orderId, OrderStatus.Ready, Localizer["OrderQueue_OrderReadyForPickup"].Value);
+    // Marking ready is the moment the drinks physically leave the pass, so it's also the moment the
+    // slip that travels with them should print. Only prints on a successful transition — a slip for
+    // an order the server rejected would be worse than no slip at all.
+    private async Task MarkReady(OrderDto order)
+    {
+        var moved = await Transition(order.Id, OrderStatus.Ready, Localizer["OrderQueue_OrderReadyForPickup"].Value);
+        if (moved && autoPrintSlips)
+            PrintSlip(order);
+    }
 
-    private async Task Transition(int orderId, OrderStatus newStatus, string note)
+    // Queues this order's slip for printing. The QR is generated here rather than per render so the
+    // 8-second board poll doesn't re-encode a PNG for every card on screen.
+    private void PrintSlip(OrderDto order)
+    {
+        slipOrder = order;
+        slipQrDataUri = OrderSlipQr.DataUri(order.Id);
+        printPending = true;
+        StateHasChanged();
+    }
+
+    private async Task ToggleAutoPrint(ChangeEventArgs e)
+    {
+        autoPrintSlips = e.Value is true;
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", AutoPrintStorageKey, autoPrintSlips ? "1" : "0");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Persisting auto-print preference failed: {ex.Message}");
+        }
+    }
+
+    // The slip's payment line: what the runner must do at the seat. A wallet order is already
+    // settled, so it reads "paid"; cash/card orders show the amount to collect. Blank when the order
+    // carries no payment record, so the line is omitted entirely.
+    private string SlipPayText(OrderDto o)
+    {
+        if (PayBadge(o) is not { } pay)
+            return string.Empty;
+
+        return pay.Paid
+            ? $"{pay.Icon} {pay.Label} · {Localizer["OrderQueue_PayPaid"].Value}"
+            : $"{pay.Icon} {pay.Label} · {Localizer["OrderQueue_PayCollect"].Value} €{o.TotalAmount:F2}";
+    }
+
+    // Returns whether the server accepted the transition, so callers can hang follow-up work
+    // (printing the pickup slip) off a move that actually happened.
+    private async Task<bool> Transition(int orderId, OrderStatus newStatus, string note)
     {
         var updateDto = new UpdateOrderStatusDto { Status = newStatus, Notes = note };
         var success = await ApiService.UpdateOrderStatusAsync(orderId, updateDto);
@@ -634,6 +765,7 @@
             try { await SignalRService.SendOrderStatusChanged(orderId, newStatus, ""); }
             catch (Exception ex) { Console.WriteLine($"Status broadcast failed: {ex.Message}"); }
         }
+        return success;
     }
 
     private async Task RefreshOrders() => await LoadOrders();

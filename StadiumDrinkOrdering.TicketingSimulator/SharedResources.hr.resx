@@ -327,10 +327,16 @@ Stanja novčanika se uništavaju, ne vraćaju. Ovo se ne može poništiti.</valu
     <value>Novi trenutni događaj</value>
   </data>
   <data name="Index_NewCurrentEventTooltip" xml:space="preserve">
-    <value>Kreiraj događaj koji traje od sada {0} sata — s nazivom, vrstom i sezonom odabranima iznad — i odmah ga pokreni uživo.</value>
+    <value>Kreiraj događaj koji traje od sada {0} sata — s nazivom, vrstom i sezonom odabranima iznad — prodaj {1} ulaznica u njega i odmah ga pokreni uživo.</value>
   </data>
   <data name="Index_NewCurrentEventHint" xml:space="preserve">
-    <value>Počinje sada, traje {0} sata, odmah ide uživo. Odbija se ako je drugi događaj već uživo ili zauzima taj termin — odnosno počinje unutar njega. Događaj uživo ne može prodavati ulaznice, pa povežite sezonu ako trebate zauzeta sjedala.</value>
+    <value>Počinje sada, traje {0} sata, proda {1} ulaznica po sektorima i odmah ide uživo. Odbija se ako je drugi događaj već uživo ili zauzima taj termin — odnosno počinje unutar njega. Ulaznice se prodaju prije pokretanja uživo jer događaj uživo više ne može prodavati.</value>
+  </data>
+  <data name="Index_NewCurrentEventCrowdLabel" xml:space="preserve">
+    <value>Publika</value>
+  </data>
+  <data name="Index_NewCurrentEventCrowdTooltip" xml:space="preserve">
+    <value>Koliko pojedinačnih ulaznica prodati u novi događaj prije nego što krene uživo, raspoređeno po sektorima. 0 stvara prazan stadion.</value>
   </data>
   <data name="Index_NewCurrentEventClash" xml:space="preserve">
     <value>Nije kreirano: „{0}” ({2}) već zauzima taj termin — {1}. Prvo ga završite, otkažite ili obrišite.</value>

@@ -318,3 +318,78 @@
     gap: 0.5rem;
 }
 .kds-return-actions .kds-btn { flex: 1; }
+
+/* ---- Printable order slip --------------------------------------------------
+   The slip carries the QR a runner scans at pickup, so the drinks in hand and the
+   order claimed in the Runner app can't drift apart. Only one slip is rendered at a
+   time (the order being printed); it is invisible on screen and takes over the page
+   in print. Sized for an 80mm thermal roll but harmless on A4 — it simply prints
+   small in the top-left corner. */
+#bar-slip-print-area { display: none; }
+
+.kds-slip-btn { margin-top: 0.4rem; }
+
+.kds-autoprint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--stadium-gray-600);
+    user-select: none;
+    cursor: pointer;
+}
+.kds-autoprint input { cursor: pointer; }
+
+@media print {
+    /* Hide the console without unmounting it: visibility (unlike display) can be
+       switched back on for a descendant of a hidden ancestor. */
+    body * { visibility: hidden !important; }
+    #bar-slip-print-area,
+    #bar-slip-print-area * { visibility: visible !important; }
+
+    #bar-slip-print-area {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 72mm;
+        color: #000;
+        font-family: "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    @page { margin: 6mm; }
+
+    .kds-slip-order-id {
+        font-size: 30pt;
+        font-weight: 700;
+        line-height: 1;
+        margin: 0 0 2mm;
+    }
+    .kds-slip-seat {
+        font-size: 13pt;
+        font-weight: 700;
+        margin: 0 0 3mm;
+        padding-bottom: 2mm;
+        border-bottom: 1px dashed #000;
+    }
+    .kds-slip-qr { width: 28mm; height: 28mm; display: block; margin: 0 0 2mm; }
+    .kds-slip-qr-caption { font-size: 7pt; margin: 0 0 3mm; }
+    .kds-slip-items { font-size: 11pt; line-height: 1.5; margin: 0 0 3mm; }
+    .kds-slip-item-qty { font-weight: 700; }
+    .kds-slip-item-note { font-style: italic; }
+    .kds-slip-note {
+        font-size: 10pt;
+        margin: 0 0 3mm;
+        padding: 1.5mm;
+        border: 1px solid #000;
+    }
+    .kds-slip-pay {
+        font-size: 12pt;
+        font-weight: 700;
+        margin: 0 0 3mm;
+        padding: 1.5mm 0;
+        border-top: 1px dashed #000;
+        border-bottom: 1px dashed #000;
+    }
+    .kds-slip-foot { font-size: 8pt; }
+}

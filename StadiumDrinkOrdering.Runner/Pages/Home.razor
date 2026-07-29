@@ -1,5 +1,5 @@
 @page "/"
-@implements IDisposable
+@implements IAsyncDisposable
 @inject RunnerApiService Api
 @inject OutboxService Outbox
 @inject NavigationManager Nav
@@ -11,8 +11,44 @@
 <div class="runner-page @(selected.Count > 0 ? "runner-page-has-bar" : "")" id="runner-home-page">
     <div class="runner-page-head" id="runner-home-page-head">
         <h1 class="runner-page-title" id="runner-home-title">@Localizer["Home_ReadyForPickup"]</h1>
-        <button class="runner-refresh" @onclick="Load" aria-label="@Localizer["Home_Refresh"]" id="runner-pool-refresh">↻</button>
+        <div class="runner-head-actions" id="runner-home-head-actions">
+            <button class="runner-refresh @(scannerActive ? "runner-refresh-on" : "")" @onclick="ToggleScanner"
+                    aria-label="@Localizer["Home_ScanSlips"]" aria-pressed="@scannerActive" id="runner-pool-scan-btn">📷</button>
+            <button class="runner-refresh" @onclick="Load" aria-label="@Localizer["Home_Refresh"]" id="runner-pool-refresh">↻</button>
+        </div>
     </div>
+
+    @* Slip scanner: stays live while the runner sweeps a stack of pickup slips at the bar, adding
+       each one to the same selection the cards below feed. Deliberately does NOT claim on scan —
+       claiming stays a single deliberate tap on Collect, so a stray decode can't take an order. *@
+    @if (scannerActive)
+    {
+        <div class="runner-scan-camera" id="runner-pool-camera">
+            <video id="@ScannerVideoId" playsinline muted class="runner-scan-video"></video>
+            <p class="runner-scan-hint" id="runner-pool-scan-hint">@Localizer["Home_ScanHint"]</p>
+            @if (scanFeed.Count > 0)
+            {
+                <ul class="runner-scan-feed" id="runner-pool-scan-feed" aria-live="polite">
+                    @foreach (var entry in scanFeed)
+                    {
+                        <li class="runner-scan-feed-item runner-scan-feed-@entry.Kind">@entry.Text</li>
+                    }
+                </ul>
+            }
+            <button class="runner-cta runner-cta-secondary" @onclick="StopScannerAsync" id="runner-pool-scan-stop">
+                @Localizer["Home_StopScan"]
+            </button>
+        </div>
+    }
+
+    @if (scannerUnsupported)
+    {
+        <div class="runner-notice runner-notice-info" id="runner-pool-scan-unsupported">@Localizer["Home_ScanNotSupported"]</div>
+    }
+    @if (!string.IsNullOrEmpty(scannerError))
+    {
+        <div class="runner-notice runner-notice-info" id="runner-pool-scan-error">@Localizer["Home_ScanError"]</div>
+    }
 
     @if (!Outbox.IsOnline)
     {
@@ -111,6 +147,21 @@
     private string? message;
     private System.Threading.Timer? timer;
 
+    // Slip scanner state. The camera stays live across decodes (continuous mode) so a stack of
+    // slips can be swept in one pass; each decode lands in `selected` alongside tapped cards.
+    private bool scannerActive;
+    private bool pendingScannerStart;
+    private bool scannerUnsupported;
+    private string? scannerError;
+    private DotNetObjectReference<Home>? selfRef;
+    private const string ScannerVideoId = "runner-pool-scan-video";
+
+    // Rolling log of the last few scans, newest first. Eyes are on the slips, not the screen, so
+    // this is the record a runner checks after a sweep to see what actually registered.
+    private readonly List<ScanFeedItem> scanFeed = new();
+    private const int ScanFeedLimit = 4;
+    private sealed record ScanFeedItem(string Text, string Kind);
+
     private bool AllSelected => orders is { Count: > 0 } && selected.Count == orders.Count;
 
     protected override async Task OnInitializedAsync()
@@ -119,6 +170,17 @@
         await Load();
         timer = new System.Threading.Timer(async _ => await InvokeAsync(Load), null,
             TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The <video> element only exists after the render that flips scannerActive on, so start the
+        // camera here (post-render) to guarantee the element is in the DOM.
+        if (pendingScannerStart)
+        {
+            pendingScannerStart = false;
+            await StartScannerAsync();
+        }
     }
 
     private void OnConnectivityChanged() => InvokeAsync(StateHasChanged);
@@ -156,9 +218,117 @@
         message = null;
     }
 
+    // ---------------- Slip scanner ----------------
+
+    private async Task ToggleScanner()
+    {
+        if (scannerActive || pendingScannerStart)
+        {
+            await StopScannerAsync();
+            return;
+        }
+
+        scannerUnsupported = false;
+        scannerError = null;
+        message = null;
+        scanFeed.Clear();
+        scannerActive = true;       // renders the <video> element
+        pendingScannerStart = true; // OnAfterRenderAsync starts the camera once it's in the DOM
+    }
+
+    private async Task StartScannerAsync()
+    {
+        selfRef ??= DotNetObjectReference.Create(this);
+        try
+        {
+            // The trailing `true` selects continuous mode: the camera stays live and reports every
+            // distinct slip, instead of releasing after the first decode like the ticket scanner.
+            var res = await JS.InvokeAsync<ScanStartResult>("runnerTicketScanner.start", ScannerVideoId, selfRef, true);
+            if (res == null || !res.Supported)
+            {
+                scannerUnsupported = true;
+                scannerActive = false;
+            }
+            else if (!res.Started)
+            {
+                scannerError = res.Error;
+                scannerActive = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            scannerError = ex.Message;
+            scannerActive = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task StopScannerAsync()
+    {
+        pendingScannerStart = false;
+        if (!scannerActive)
+            return;
+        scannerActive = false;
+        try { await JS.InvokeVoidAsync("runnerTicketScanner.stop"); }
+        catch (Exception ex) { Console.WriteLine($"Stopping scanner failed: {ex.Message}"); }
+    }
+
+    /// <summary>
+    /// A slip decoded by the camera. Adds the order to the current selection; claiming still
+    /// requires the explicit Collect tap. Anything that isn't an order slip currently in the pool is
+    /// reported in the feed rather than silently dropped — a runner holding a tray needs to know the
+    /// difference between "added" and "nothing happened".
+    /// </summary>
+    [JSInvokable]
+    public Task OnQrDecoded(string text) => InvokeAsync(async () =>
+    {
+        if (!OrderSlipCode.TryParse(text, out var orderId))
+        {
+            // Most likely a ticket QR (a customer deep link) rather than a pickup slip.
+            PushFeed(Localizer["Home_ScanNotASlip"].Value, "miss");
+        }
+        else if (orders is null || orders.All(o => o.Id != orderId))
+        {
+            // Prepared but already claimed by another runner, already delivered, or filtered out of
+            // this runner's pool — either way it isn't theirs to take.
+            PushFeed(Localizer["Home_ScanNotInPool", orderId].Value, "miss");
+        }
+        else if (!selected.Add(orderId))
+        {
+            PushFeed(Localizer["Home_ScanAlreadyAdded", orderId].Value, "dup");
+        }
+        else
+        {
+            PushFeed(Localizer["Home_ScanAdded", orderId].Value, "ok");
+            await Haptic();
+        }
+
+        StateHasChanged();
+    });
+
+    private void PushFeed(string text, string kind)
+    {
+        scanFeed.Insert(0, new ScanFeedItem(text, kind));
+        if (scanFeed.Count > ScanFeedLimit)
+            scanFeed.RemoveRange(ScanFeedLimit, scanFeed.Count - ScanFeedLimit);
+    }
+
+    // Shape returned by runnerTicketScanner.start (camelCase JSON → these properties).
+    public class ScanStartResult
+    {
+        public bool Supported { get; set; }
+        public bool Started { get; set; }
+        public string? Error { get; set; }
+    }
+
     private async Task CollectSelected()
     {
         if (selected.Count == 0 || !Outbox.IsOnline) return;
+
+        // The sweep is over once they commit — free the camera rather than leaving it running
+        // through the walk to the stands.
+        await StopScannerAsync();
+        scanFeed.Clear();
 
         await Haptic();
         collecting = true;
@@ -218,9 +388,15 @@
              : Localizer["Home_AgeMinutesAgo", mins];
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         timer?.Dispose();
         Outbox.OnChange -= OnConnectivityChanged;
+
+        // Navigating away with the camera still held would leave the phone's capture indicator lit
+        // and the device locked for the /scan page.
+        try { await JS.InvokeVoidAsync("runnerTicketScanner.stop"); }
+        catch (Exception ex) { Console.WriteLine($"Scanner disposal stop failed: {ex.Message}"); }
+        selfRef?.Dispose();
     }
 }

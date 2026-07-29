@@ -512,6 +512,9 @@
     margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.3px; color: var(--d-ink);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
 }
+/* The event name doubles as a link to the event's page — keep it looking like a heading. */
+.dash-event-name-link { text-decoration: none; color: inherit; min-width: 0; }
+.dash-event-name-link:hover .dash-event-name { color: var(--d-blue); text-decoration: underline; }
 .dash-event-date { font-size: 13px; color: var(--d-muted); font-variant-numeric: tabular-nums; }
 
 .dash-event-controls { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
@@ -532,6 +535,7 @@
     display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px;
     border: 1px solid #cdeccf; background: var(--d-green-soft); color: #15803d;
     border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    text-decoration: none; /* also used on <a> in the read-only live-event bar */
 }
 .dash-event-current:hover { background: #dcf5e1; }
 .dash-event-bar--empty { color: var(--d-muted); font-size: 14px; gap: 10px; }

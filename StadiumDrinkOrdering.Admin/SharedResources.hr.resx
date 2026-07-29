@@ -2814,6 +2814,12 @@
   <data name="EventStats_TicketsSoldLabel" xml:space="preserve">
     <value>Prodane ulaznice</value>
   </data>
+  <data name="EventStats_SingleTicketsLabel" xml:space="preserve">
+    <value>Pojedinačne ulaznice</value>
+  </data>
+  <data name="EventStats_AmortisedHint" xml:space="preserve">
+    <value>razmjerni dio</value>
+  </data>
   <data name="EventStats_Of" xml:space="preserve">
     <value>od</value>
   </data>
@@ -3659,6 +3665,12 @@
   </data>
   <data name="Index_ReturnToCurrent" xml:space="preserve">
     <value>Vrati se na trenutni događaj</value>
+  </data>
+  <data name="Index_OpenEvent" xml:space="preserve">
+    <value>Otvori događaj</value>
+  </data>
+  <data name="Index_GoToLiveEvent" xml:space="preserve">
+    <value>Idi na događaj uživo</value>
   </data>
   <data name="Index_Current" xml:space="preserve">
     <value>Trenutni</value>

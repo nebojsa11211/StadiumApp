@@ -90,9 +90,20 @@
     private int DisplayPassCount =>
         Current?.SeasonTicketCount ?? SeasonsOrdered.Sum(s => s.SeasonTicketCount);
 
-    // Prev/next walk this ordered track: [All] + seasons (chronological). "none" sits off the track.
-    private List<string> NavTokens =>
-        new List<string> { "" }.Concat(SeasonsOrdered.Select(s => s.Id.ToString())).ToList();
+    // Prev/next walk this ordered track: [All] + seasons (chronological) + [No season]. "none" used
+    // to sit off the track, which made events belonging to no season reachable only by opening the
+    // dropdown — easy to miss when a one-off event is the live one.
+    private List<string> NavTokens
+    {
+        get
+        {
+            var tokens = new List<string> { "" };
+            tokens.AddRange(SeasonsOrdered.Select(s => s.Id.ToString()));
+            if (AllowNoSeason)
+                tokens.Add("none");
+            return tokens;
+        }
+    }
 
     private int NavIndex => NavTokens.IndexOf(Value ?? "");
     private bool CanGoPrev => NavIndex > 0;

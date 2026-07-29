@@ -15,6 +15,14 @@ public partial class Index : ComponentBase, IDisposable
     [Inject] private ILogger<Index> Logger { get; set; } = default!;
     [Inject] private SeasonStateService SeasonState { get; set; } = default!;
 
+    /// <summary>
+    /// Deep link to a specific event (<c>/?eventId=123</c>), used by the shell's live-event bar so
+    /// clicking a running match lands on the dashboard already scoped to it. Wins over the shell's
+    /// season selection on load — see <see cref="TryApplyEventFromQuery"/>.
+    /// </summary>
+    [Parameter, SupplyParameterFromQuery(Name = "eventId")]
+    public int? EventIdParam { get; set; }
+
     private bool _loading = true;
 
     // Event scoping — the whole dashboard is scoped to one selected event.
@@ -33,15 +41,34 @@ public partial class Index : ComponentBase, IDisposable
     // The season currently in progress (flagged IsCurrent) — the "live" season to jump back to.
     private SeasonDto? LiveSeason => _seasons.FirstOrDefault(s => s.IsCurrent);
 
-    // The season the dashboard is scoped to: the shell selection, else the live season, else the
-    // first. The banner's "all seasons"/"no season" states have no meaning for the event-scoped
-    // dashboard tiles, so they fall back to the live season rather than showing nothing.
-    private SeasonDto? DisplaySeason =>
-        SeasonState.SelectedSeason ?? LiveSeason ?? SeasonsOrdered.FirstOrDefault();
+    /// <summary>
+    /// The shell banner's raw scope, using its convention: "" = all seasons, "none" = events with no
+    /// season, otherwise a season id.
+    /// </summary>
+    private string SeasonScope => SeasonState.SelectedValue ?? "";
+
+    // The concrete season the dashboard is scoped to, or null in the "all seasons"/"no season"
+    // states. This used to fall back to the live season for those two, which silently re-applied a
+    // season filter and made events belonging to no season (one-off matches) unreachable here.
+    private SeasonDto? DisplaySeason => SeasonState.SelectedSeason;
 
     // Season tile follows the banner so the two stay consistent.
     private SeasonDto? DashboardSeason => DisplaySeason;
-    private int SeasonPassCount => DashboardSeason?.SeasonTicketCount ?? 0;
+
+    /// <summary>Label for the season tile, covering the banner's two season-less scopes.</summary>
+    private string SeasonScopeLabel => SeasonScope switch
+    {
+        "none" => L["Index_NoSeason"],
+        "" => L["Seasons_AllSeasons"],
+        _ => DashboardSeason?.Name ?? L["Index_NoSeason"]
+    };
+
+    /// <summary>True when season passes are meaningful for the current scope ("no season" is not).</summary>
+    private bool HasSeasonScope => DashboardSeason != null || SeasonScope == "";
+
+    private int SeasonPassCount =>
+        DashboardSeason?.SeasonTicketCount
+        ?? (SeasonScope == "" ? _seasons.Sum(s => s.SeasonTicketCount) : 0);
 
     /// <summary>Name of the selected event's season, or null when it has none.</summary>
     private string? SelectedEventSeasonName =>
@@ -51,11 +78,20 @@ public partial class Index : ComponentBase, IDisposable
     private bool SelectedEventInOtherSeason =>
         _selectedEvent?.SeasonId is int sid && DisplaySeason != null && sid != DisplaySeason.Id;
 
-    /// <summary>Events that belong to the season shown in the banner. With no seasons, the whole list.</summary>
+    /// <summary>
+    /// Events in scope for the banner's selection: everything under "all seasons", the season-less
+    /// events under "no season", otherwise that season's events. With no seasons configured at all,
+    /// the whole list.
+    /// </summary>
     private List<EventDto> SeasonEvents =>
-        DisplaySeason == null
+        _seasons.Count == 0
             ? _events
-            : _events.Where(e => e.SeasonId == DisplaySeason.Id).ToList();
+            : SeasonScope switch
+            {
+                "" => _events,
+                "none" => _events.Where(e => e.SeasonId == null).ToList(),
+                _ => DisplaySeason is { } s ? _events.Where(e => e.SeasonId == s.Id).ToList() : _events
+            };
 
     // Scoped metrics
     private int _ticketsSold;
@@ -152,10 +188,12 @@ public partial class Index : ComponentBase, IDisposable
             // Seasons are owned by the shell banner; this joins its load rather than re-fetching.
             await SeasonState.EnsureLoadedAsync();
 
-            // The shell's season wins on load — arriving at the dashboard must not silently
-            // re-point the banner at whatever event happened to be picked. Instead, scope the
-            // event to the season the admin already chose elsewhere.
-            EnsureEventInSeason();
+            // An explicit ?eventId= deep link is the one case that may re-point the banner: the
+            // admin asked for that event, so the scope follows it. Otherwise the shell's season
+            // wins — arriving at the dashboard must not silently re-point the banner at whatever
+            // event happened to be picked.
+            if (!TryApplyEventFromQuery())
+                EnsureEventInSeason();
 
             ApplyEventScope();
         }
@@ -352,6 +390,11 @@ public partial class Index : ComponentBase, IDisposable
     /// <summary>Point the shell season banner at the selected event's season (when it has one).</summary>
     private void SyncSeasonToEvent()
     {
+        // "All seasons" and "no season" are deliberate browse scopes: picking an event inside them
+        // must not snap the banner onto that event's season and re-filter the list underneath.
+        if (SeasonState.SelectedSeason == null)
+            return;
+
         if (_selectedEvent?.SeasonId is not int sid || !_seasons.Any(s => s.Id == sid))
             return;
 
@@ -381,14 +424,35 @@ public partial class Index : ComponentBase, IDisposable
         await RejoinEventAsync();
     }
 
-    /// <summary>Guarantee the selected event belongs to the displayed season; otherwise pick a default there.</summary>
+    /// <summary>Guarantee the selected event is inside the banner's scope; otherwise pick a default there.</summary>
     private void EnsureEventInSeason()
     {
-        if (DisplaySeason == null)
-            return; // no seasons configured → no season filtering
-        if (_selectedEvent != null && _selectedEvent.SeasonId == DisplaySeason.Id)
+        if (_selectedEvent != null && SeasonEvents.Any(e => e.Id == _selectedEvent.Id))
             return;
         _selectedEvent = PickDefaultEvent(SeasonEvents);
+    }
+
+    /// <summary>
+    /// Applies a <c>?eventId=</c> deep link: selects that event and moves the banner onto its scope
+    /// (its season, or "no season" for a one-off event) so it stays visible in the picker.
+    /// Returns false when there is no such parameter or no matching event.
+    /// </summary>
+    private bool TryApplyEventFromQuery()
+    {
+        if (EventIdParam is not int id)
+            return false;
+
+        var match = _events.FirstOrDefault(e => e.Id == id);
+        if (match == null)
+            return false;
+
+        _selectedEvent = match;
+
+        _syncingSeasonToEvent = true;
+        try { SeasonState.SetSelected(match.SeasonId?.ToString() ?? "none"); }
+        finally { _syncingSeasonToEvent = false; }
+
+        return true;
     }
 
     private async Task SelectPrevEvent()

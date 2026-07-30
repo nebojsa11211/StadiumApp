@@ -175,7 +175,15 @@
                                     @ticket.EventName
                                     @if (ticket.Kind == TicketKind.Season)
                                     {
-                                        <span class="badge-pill badge-pill--season" id="admin-tickets-kind-badge-@ticket.Id" title="@L["Tickets_SeasonPassBadge"]">@L["Tickets_SeasonPassBadge"]</span>
+                                        <span class="badge-pill badge-pill--season" id="admin-tickets-kind-badge-@ticket.Id" title="@L["Tickets_SeasonMatchBadgeTitle"]">@L["Tickets_SeasonMatchBadge"]</span>
+                                        @if (ticket.SeasonTicketId.HasValue)
+                                        {
+                                            <a class="pass-link mono" id="admin-tickets-pass-link-@ticket.Id"
+                                               href="@PassLink(ticket)"
+                                               title="@L["Tickets_OpenPassTitle", ticket.SeasonTicketNumber ?? $"#{ticket.SeasonTicketId}"]">
+                                                <i class="bi bi-person-badge"></i>@PassLabel(ticket)
+                                            </a>
+                                        }
                                     }
                                 </td>
                                 <td class="mono" id="admin-tickets-cell-date-@ticket.Id">@ticket.EventDate?.ToString("MMM dd, yyyy HH:mm")</td>

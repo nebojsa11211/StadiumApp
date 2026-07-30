@@ -70,7 +70,12 @@ public class TicketsController : ControllerBase
                 CustomerEmail = t.CustomerEmail,
                 CustomerName = t.CustomerName,
                 Price = t.Price,
-                Kind = t.Kind
+                Kind = t.Kind,
+                // Season-derived rows carry their pass so the admin list can link back to it; a
+                // single-event ticket has no pass and leaves all three null.
+                SeasonTicketId = t.SeasonTicketId,
+                SeasonId = t.SeasonTicket != null ? (int?)t.SeasonTicket.SeasonId : null,
+                SeasonTicketNumber = t.SeasonTicket != null ? t.SeasonTicket.SeasonTicketNumber : null
             })
             .ToListAsync();
 

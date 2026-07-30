@@ -2482,6 +2482,15 @@
   <data name="Tickets_SeasonPassBadge" xml:space="preserve">
     <value>Season Pass</value>
   </data>
+  <data name="Tickets_SeasonMatchBadge" xml:space="preserve">
+    <value>Season pass · match</value>
+  </data>
+  <data name="Tickets_SeasonMatchBadgeTitle" xml:space="preserve">
+    <value>Admission to this one match, derived from a season pass. Its status applies to this match only — it does not consume the pass.</value>
+  </data>
+  <data name="Tickets_OpenPassTitle" xml:space="preserve">
+    <value>Open season pass {0}</value>
+  </data>
   <data name="Tickets_StatusHeader" xml:space="preserve">
     <value>Status</value>
   </data>

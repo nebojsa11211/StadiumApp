@@ -70,6 +70,22 @@ public partial class Tickets : ComponentBase
     /// Compared at UTC day granularity to match how event dates are stored/filtered elsewhere, so a
     /// ticket for an event happening today still counts as Active until the day rolls over.
     /// </summary>
+    /// <summary>
+    /// The pass reference shown on a season-derived row — <c>SEA-{passId}</c>, the same prefix the
+    /// ticket's own number carries (<c>SEA-155-E107</c>), so the label matches what an admin already
+    /// reads in the number column. The pass's real number (<c>SEA-STK-…</c>) goes in the tooltip.
+    /// </summary>
+    private static string PassLabel(TicketDto t) => $"SEA-{t.SeasonTicketId}";
+
+    /// <summary>
+    /// Deep-link to the pass on the seasons page: it opens that season's pass list and highlights the
+    /// row. Without a season id we can only get the admin to the seasons page itself.
+    /// </summary>
+    private static string PassLink(TicketDto t) =>
+        t.SeasonId.HasValue
+            ? $"/admin/seasons?season={t.SeasonId}&pass={t.SeasonTicketId}"
+            : "/admin/seasons";
+
     private static bool IsExpired(TicketDto t) =>
         t.Kind != TicketKind.Season
         && t.EventDate.HasValue

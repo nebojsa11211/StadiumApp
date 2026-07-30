@@ -2512,6 +2512,15 @@
   <data name="Tickets_SeasonPassBadge" xml:space="preserve">
     <value>Sezonska</value>
   </data>
+  <data name="Tickets_SeasonMatchBadge" xml:space="preserve">
+    <value>Sezonska ulaznica · utakmica</value>
+  </data>
+  <data name="Tickets_SeasonMatchBadgeTitle" xml:space="preserve">
+    <value>Ulaz na ovu jednu utakmicu, izveden iz sezonske ulaznice. Stanje vrijedi samo za ovu utakmicu — sezonska ulaznica se time ne troši.</value>
+  </data>
+  <data name="Tickets_OpenPassTitle" xml:space="preserve">
+    <value>Otvori sezonsku ulaznicu {0}</value>
+  </data>
   <data name="Tickets_StatusHeader" xml:space="preserve">
     <value>Stanje</value>
   </data>

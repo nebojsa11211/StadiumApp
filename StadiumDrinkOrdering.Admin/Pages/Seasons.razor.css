@@ -191,3 +191,9 @@ tr.is-expanded .season-expand-btn {
 .chip--done { border-color: var(--line, #e5e7eb); background: var(--stadium-gray-100, #f3f4f6); color: var(--muted, #6b7280); }
 .chip--in { border-color: #c4b5fd; background: rgba(139, 92, 246, 0.10); color: #6d28d9; }
 .chip--ext { border-color: #fcd34d; background: rgba(245, 158, 11, 0.12); color: #b45309; }
+
+/* Pass row a match ticket deep-linked to (/admin/seasons?season=&pass=) */
+.pass-row--highlight > td {
+    background: rgba(59, 130, 246, 0.12);
+    box-shadow: inset 3px 0 0 #2563eb;
+}

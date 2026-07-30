@@ -24,6 +24,19 @@ public class TicketDto
     public string? CustomerName { get; set; }
     public decimal Price { get; set; }
     public TicketKind Kind { get; set; } = TicketKind.SingleEvent;
+
+    /// <summary>
+    /// Set on <see cref="TicketKind.Season"/> tickets: the season pass this per-match admission was
+    /// derived from. The pass itself is not a ticket (it lives in its own table), so this is what an
+    /// admin follows to get from a single match row back to the annual pass that produced it.
+    /// </summary>
+    public int? SeasonTicketId { get; set; }
+
+    /// <summary>The season owning <see cref="SeasonTicketId"/>, so the UI can deep-link to the pass.</summary>
+    public int? SeasonId { get; set; }
+
+    /// <summary>The pass's own number (e.g. <c>SEA-STK-…</c>), distinct from this ticket's number.</summary>
+    public string? SeasonTicketNumber { get; set; }
 }
 
 public class ValidateTicketDto

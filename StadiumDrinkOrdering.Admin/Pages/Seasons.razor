@@ -291,7 +291,7 @@
                     <h5 class="modal-title" id="admin-season-passes-title">
                         <i class="bi bi-person-badge"></i> @L["Seasons_PassesModalTitle", passesSeasonName]
                     </h5>
-                    <button type="button" class="btn-close" @onclick="() => showPassesModal = false" id="admin-season-passes-close"></button>
+                    <button type="button" class="btn-close" @onclick="ClosePasses" id="admin-season-passes-close"></button>
                 </div>
                 <div class="modal-body">
                     @if (passesLoading)
@@ -319,7 +319,7 @@
                                     </tr>
                                     @foreach (var p in SortPassGroup(grp))
                                     {
-                                        <tr id="admin-season-pass-row-@p.Id">
+                                        <tr id="admin-season-pass-row-@p.Id" class="@(highlightPassId == p.Id ? "pass-row--highlight" : "")">
                                             <td class="text-muted small">@p.SectionCode</td>
                                             <td class="mono">@L["Seasons_RowSeat", p.RowNumber, p.SeatNumber]</td>
                                             <td>@(string.IsNullOrWhiteSpace(p.HolderName) ? "—" : p.HolderName)
@@ -340,7 +340,7 @@
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="() => showPassesModal = false" id="admin-season-passes-close-btn">@L["Seasons_Close"]</button>
+                    <button type="button" class="btn btn-secondary" @onclick="ClosePasses" id="admin-season-passes-close-btn">@L["Seasons_Close"]</button>
                 </div>
             </div>
         </div>
@@ -580,10 +580,18 @@
     private bool isSaving;
     private SeasonFormModel form = new();
 
+    // Deep-link from a season-derived match ticket (/admin/tickets → "SEA-155"): open that season's
+    // pass list and highlight the pass, so the admin lands on the pass instead of hunting for it.
+    [Parameter, SupplyParameterFromQuery(Name = "season")] public int? SeasonFromQuery { get; set; }
+    [Parameter, SupplyParameterFromQuery(Name = "pass")] public int? PassFromQuery { get; set; }
+
     private bool showPassesModal;
     private bool passesLoading;
     private string passesSeasonName = "";
     private List<SeasonTicketDto> passes = new();
+    private int? highlightPassId;
+    // Set when a highlighted pass still needs scrolling into view once its row has rendered.
+    private bool scrollToHighlightPending;
 
     private bool showQrModal;
     private bool qrLoading;
@@ -791,7 +799,27 @@
         StateHasChanged();
     }
 
-    protected override async Task OnInitializedAsync() => await LoadSeasons();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSeasons();
+        await OpenLinkedPassAsync();
+    }
+
+    /// <summary>
+    /// Honours <c>?season=&amp;pass=</c> by opening that season's pass list with the pass highlighted.
+    /// A pass id whose season isn't in the list (deleted, or a stale link) simply leaves the page as it is.
+    /// </summary>
+    private async Task OpenLinkedPassAsync()
+    {
+        if (PassFromQuery is not int passId || SeasonFromQuery is not int seasonId)
+            return;
+
+        var season = seasons?.FirstOrDefault(s => s.Id == seasonId);
+        if (season == null)
+            return;
+
+        await ShowPasses(season, passId);
+    }
 
     private async Task LoadSeasons()
     {
@@ -897,16 +925,19 @@
         }
     }
 
-    private async Task ShowPasses(SeasonDto s)
+    private async Task ShowPasses(SeasonDto s, int? highlightPass = null)
     {
         showPassesModal = true;
         passesLoading = true;
         passesSeasonName = s.Name;
         passes = new List<SeasonTicketDto>();
+        highlightPassId = highlightPass;
         StateHasChanged();
         try
         {
             passes = await ApiService.GetAsync<List<SeasonTicketDto>>($"seasons/{s.Id}/tickets") ?? new List<SeasonTicketDto>();
+            // Only chase a row that actually exists in this season's list.
+            scrollToHighlightPending = highlightPassId.HasValue && passes.Any(p => p.Id == highlightPassId.Value);
         }
         catch (Exception ex)
         {
@@ -915,6 +946,33 @@
         finally
         {
             passesLoading = false;
+        }
+    }
+
+    private void ClosePasses()
+    {
+        showPassesModal = false;
+        highlightPassId = null;
+        scrollToHighlightPending = false;
+    }
+
+    /// <summary>
+    /// The passes table is long and scrolls inside the modal, so a deep-linked pass is brought into
+    /// view once its row exists in the DOM.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!scrollToHighlightPending || passesLoading || highlightPassId is not int passId)
+            return;
+
+        scrollToHighlightPending = false;
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("scrollElementIntoView", $"admin-season-pass-row-{passId}");
+        }
+        catch (JSException)
+        {
+            // Scrolling is cosmetic — the row is still highlighted if the interop call fails.
         }
     }
 

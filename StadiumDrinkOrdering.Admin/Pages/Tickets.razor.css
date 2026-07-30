@@ -13,6 +13,22 @@
     text-decoration: underline;
 }
 
+/* Season-derived row: link from the match ticket back to the pass that produced it */
+.pass-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    font-size: 0.72rem;
+    color: var(--accent, #1d4ed8);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.pass-link:hover {
+    text-decoration: underline;
+}
+
 /* ---- Detail modal ---- */
 .ticket-detail-overlay {
     position: fixed;

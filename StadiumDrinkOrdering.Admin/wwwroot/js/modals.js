@@ -111,6 +111,15 @@ window.hideBootstrapModal = function (modalId) {
     }
 };
 
+// Brings an element into view — used for a deep-linked row inside a scrollable modal body.
+// A missing element is not an error: the caller only asks when it believes the row was rendered.
+window.scrollElementIntoView = function (elementId) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+};
+
 window.toggleBootstrapModal = function (modalId) {
     const modalElement = document.getElementById(modalId);
     if (modalElement) {

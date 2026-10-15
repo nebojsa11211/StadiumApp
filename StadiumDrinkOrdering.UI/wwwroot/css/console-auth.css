@@ -42,6 +42,8 @@
     margin-bottom: 1.5rem;
 }
 
+.console-auth__brand { margin-bottom: 0.75rem; }
+
 .console-auth__eyebrow {
     display: inline-block;
     margin-bottom: 0.5rem;

@@ -74,7 +74,7 @@
     <value>Moje dostave</value>
   </data>
   <data name="Login_PageTitle" xml:space="preserve">
-    <value>Prijava dostavljača</value>
+    <value>Prijava</value>
   </data>
   <data name="Login_Title" xml:space="preserve">
     <value>Prijava</value>
@@ -101,7 +101,7 @@
     <value>Prijava u tijeku…</value>
   </data>
   <data name="Home_PageTitle" xml:space="preserve">
-    <value>Dostavljač — Bazen</value>
+    <value>Bazen</value>
   </data>
   <data name="Home_ReadyForPickup" xml:space="preserve">
     <value>Spremno za preuzimanje</value>
@@ -158,7 +158,7 @@
     <value>Preuzeto {0}. {1} je već preuzeto.</value>
   </data>
   <data name="MyDeliveries_PageTitle" xml:space="preserve">
-    <value>Dostavljač — Moje dostave</value>
+    <value>Moje dostave</value>
   </data>
   <data name="MyDeliveries_Title" xml:space="preserve">
     <value>Moje dostave</value>
@@ -420,5 +420,23 @@
   </data>
   <data name="Home_ScanNotASlip" xml:space="preserve">
     <value>Ovo nije potvrda za preuzimanje</value>
+  </data>
+  <data name="Seat_Row" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Seat_Seat" xml:space="preserve">
+    <value>Sjedalo</value>
+  </data>
+  <data name="MyDeliveries_Ordered" xml:space="preserve">
+    <value>Naručeno</value>
+  </data>
+  <data name="MyDeliveries_EmptyTitle" xml:space="preserve">
+    <value>Sve je dostavljeno</value>
+  </data>
+  <data name="Home_EmptyTitle" xml:space="preserve">
+    <value>Bazen je prazan</value>
+  </data>
+  <data name="ScanTicket_Or" xml:space="preserve">
+    <value>ili</value>
   </data>
 </root>

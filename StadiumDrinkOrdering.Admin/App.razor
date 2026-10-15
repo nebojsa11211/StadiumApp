@@ -30,7 +30,7 @@ else
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
-            <PageTitle>@L["App_NotFound"]</PageTitle>
+            <BrandPageTitle Station="Admin" Title="@L["App_NotFound"]" />
             <AuthRoute>
                 <LayoutView Layout="@typeof(DashboardLayout)">
                     <p role="alert">@L["App_NothingAtAddress"]</p>

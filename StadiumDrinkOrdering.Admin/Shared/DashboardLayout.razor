@@ -9,19 +9,7 @@
     @* ============================ SIDEBAR ============================ *@
     <aside class="dash-sidebar" id="admin-dashboard-sidebar">
         <div class="dash-brand" id="admin-dashboard-brand">
-            <div class="dash-brand-logo" id="admin-dashboard-brand-logo" aria-hidden="true">
-                @* Inline SVG stadium mark: self-contained so the logo renders even if the
-                   CDN icon font fails to load. currentColor inherits the white brand colour. *@
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="12" cy="10" rx="9" ry="5.5" stroke="currentColor" stroke-width="1.6" />
-                    <ellipse cx="12" cy="10" rx="3.6" ry="2.2" fill="currentColor" fill-opacity="0.4" stroke="currentColor" stroke-width="1.2" />
-                    <path d="M3 10v3.5c0 1.6 4.03 3.2 9 3.2s9-1.6 9-3.2V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                </svg>
-            </div>
-            <div class="dash-brand-text" id="admin-dashboard-brand-text">
-                <span class="dash-brand-name">STADIUM</span>
-                <span class="dash-brand-sub">ADMIN</span>
-            </div>
+            <StadiumDrinkOrdering.UI.Components.BrandWordmark Id="admin-dashboard-brand-text" Sub="ADMIN" />
         </div>
 
         <div class="dash-clock" id="admin-dashboard-clock">

@@ -10,7 +10,7 @@
     Ids follow the project convention {app}-login-{element}, driven by IdPrefix, so the
     existing per-app ids ("admin-login-body", "staff-login-row", ...) are preserved.
 
-    Requires: css/console-auth.css from _content/StadiumDrinkOrdering.UI.
+    Requires: css/console-auth.css and css/brand.css from _content/StadiumDrinkOrdering.UI.
 *@
 
 <div class="console console-auth" id="@Id("container")">
@@ -20,6 +20,9 @@
                 <div class="panel__body console-auth__body" id="@Id("body")">
 
                     <div class="console-auth__header" id="@Id("header")">
+                        <div class="console-auth__brand">
+                            <StadiumDrinkOrdering.UI.Components.BrandWordmark Id="@Id("brand")" Size="30" />
+                        </div>
                         @if (!string.IsNullOrEmpty(Eyebrow))
                         {
                             <span class="eyebrow console-auth__eyebrow" id="@Id("eyebrow")">@Eyebrow</span>

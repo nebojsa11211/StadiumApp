@@ -1,0 +1,43 @@
+/* HALFTIME wordmark (BrandWordmark.razor). Matches the Customer welcome logo (.wl-logo). */
+
+.hb-brand {
+    --hb-size: 22px;
+    --hb-accent: #EE2A2E;
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1;
+    gap: 3px;
+}
+
+.hb-wordmark {
+    font-weight: 900;
+    font-style: italic;
+    font-size: var(--hb-size);
+    letter-spacing: -.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    /* italic caps lean past the box; keep the last letter from being clipped */
+    padding-right: .08em;
+}
+
+.hb-wordmark__accent { color: var(--hb-accent); }
+
+.hb-brand__sub {
+    font-size: max(10px, calc(var(--hb-size) * .45));
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: .6;
+}
+
+.hb-brand--chip {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    padding: 5px 11px;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #fff;
+}
+
+.hb-brand--chip .hb-brand__sub { opacity: .75; }

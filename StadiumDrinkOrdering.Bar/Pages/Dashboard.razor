@@ -10,7 +10,7 @@
 @inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<PageTitle>@Localizer["Dashboard_PageTitle"]</PageTitle>
+<BrandPageTitle Station="Bar" Title="@Localizer["Dashboard_PageTitle"]" />
 
 @if (!AuthService.IsAuthenticated)
 {
@@ -214,7 +214,6 @@ else
         try
         {
             await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_RefreshingDashboard"].Value, "info");
-            await DashboardService.RefreshDataAsync();
             await LoadDashboardData();
             await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_RefreshedSuccessfully"].Value, "success");
         }
@@ -294,7 +293,6 @@ else
     {
         await InvokeAsync(async () =>
         {
-            DashboardService.InvalidateCache();
             await LoadDashboardData();
             await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_NewOrderToast", order.Id].Value, "info");
             await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", Localizer["Dashboard_NewOrderAnnounce", order.CustomerName].Value);
@@ -305,7 +303,6 @@ else
     {
         await InvokeAsync(async () =>
         {
-            DashboardService.InvalidateCache();
             await LoadDashboardData();
             await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", Localizer["Dashboard_OrderStatusAnnounce", order.Id, order.Status].Value);
         });

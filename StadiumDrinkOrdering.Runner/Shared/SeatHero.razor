@@ -1,0 +1,71 @@
+@inject IStringLocalizer<SharedResources> Localizer
+
+@* Seat hero for runner cards. The server sends SeatPath as "Section · Row 2 · Seat 11" — rendered as
+   one string it wraps mid-phrase and the seat number drowns. Split it into a quiet sector eyebrow plus
+   big Row / Seat numerals so the runner's eye lands on the two numbers it actually walks to.
+   Anything that doesn't match that shape (legacy free-text seat, SeatNumber fallback) renders as the
+   classic single-line hero. All sizes are em-based so a parent override (pending cards) scales it. *@
+@if (parts is { } p)
+{
+    <div class="runner-seat runner-seat-split" id="@Id">
+        <div class="runner-seat-sector">@p.Sector</div>
+        <div class="runner-seat-nums">
+            <span class="runner-seat-part">
+                <span class="runner-seat-k">@Localizer["Seat_Row"]</span>
+                <span class="runner-seat-v">@p.Row</span>
+            </span>
+            <span class="runner-seat-part runner-seat-part-hero">
+                <span class="runner-seat-k">@Localizer["Seat_Seat"]</span>
+                <span class="runner-seat-v">@p.Seat</span>
+            </span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="runner-seat" id="@Id">@Fallback</div>
+}
+
+@code {
+    [Parameter, EditorRequired] public string? SeatPath { get; set; }
+    [Parameter] public string? SeatNumber { get; set; }
+    [Parameter] public string? Id { get; set; }
+
+    private SeatParts? parts;
+    private string Fallback = "—";
+
+    private sealed record SeatParts(string Sector, string Row, string Seat);
+
+    protected override void OnParametersSet()
+    {
+        parts = Parse(SeatPath);
+        Fallback = !string.IsNullOrWhiteSpace(SeatPath) ? SeatPath!
+                 : !string.IsNullOrWhiteSpace(SeatNumber) ? SeatNumber!
+                 : "—";
+    }
+
+    private static SeatParts? Parse(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return null;
+        var segs = path.Split('·', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (segs.Length != 3) return null;
+        var row = StripLabel(segs[1], "Row", "Red");
+        var seat = StripLabel(segs[2], "Seat", "Sjedalo");
+        return row is null || seat is null ? null : new SeatParts(segs[0], row, seat);
+    }
+
+    // "Row 2" → "2". Returns null when the segment doesn't carry the expected label, so an
+    // unfamiliar format falls back to the plain string instead of being mangled.
+    private static string? StripLabel(string seg, params string[] labels)
+    {
+        foreach (var l in labels)
+        {
+            if (seg.StartsWith(l + " ", StringComparison.OrdinalIgnoreCase))
+            {
+                var v = seg[(l.Length + 1)..].Trim();
+                return v.Length > 0 ? v : null;
+            }
+        }
+        return null;
+    }
+}

@@ -384,7 +384,7 @@
     <value>Momčadi</value>
   </data>
   <data name="Teams_PageTitle" xml:space="preserve">
-    <value>Momčadi - Administracija stadiona</value>
+    <value>Momčadi</value>
   </data>
   <data name="Teams_Eyebrow" xml:space="preserve">
     <value>Događaji</value>
@@ -530,7 +530,7 @@
 
   <!-- AUTO-GENERATED PAGE LOCALIZATION KEYS -->
   <data name="Drawing_PageTitle" xml:space="preserve">
-    <value>Alat za crtanje stadiona - Admin</value>
+    <value>Alat za crtanje stadiona</value>
   </data>
   <data name="Drawing_MainTitle" xml:space="preserve">
     <value>🎨 Alat za crtanje stadiona</value>
@@ -743,7 +743,7 @@
     <value>Raspored definira {0} sjedala; {1} pohranjeno u bazi.</value>
   </data>
   <data name="Login_PageTitle" xml:space="preserve">
-    <value>Prijava administratora</value>
+    <value>Prijava</value>
   </data>
   <data name="Login_StadiumAdmin" xml:space="preserve">
     <value>Stadion admin</value>
@@ -755,7 +755,7 @@
     <value>Prijava u tijeku...</value>
   </data>
   <data name="Login_DemoCredentialsHint" xml:space="preserve">
-    <value>Koristite admin@stadium.com/admin123 u demonstracijske svrhe</value>
+    <value>Koristite nebojsa.medancic+adminStadion@gmail.com / Admin123! u demonstracijske svrhe</value>
   </data>
   <data name="SectorEdit_CreateNewTitle" xml:space="preserve">
     <value>Kreiraj novi sektor</value>
@@ -1745,7 +1745,7 @@
     <value>Nema stavki zapisnika koje odgovaraju vašim trenutnim filtrima.</value>
   </data>
   <data name="Users_PageTitle" xml:space="preserve">
-    <value>Upravljanje korisnicima - Stadium Admin</value>
+    <value>Upravljanje korisnicima</value>
   </data>
   <data name="Users_EyebrowLabel" xml:space="preserve">
     <value>Tim</value>
@@ -2886,6 +2886,15 @@
   <data name="Events_EditModalTitle" xml:space="preserve">
     <value>Uredi događaj</value>
   </data>
+  <data name="Events_NameAutoHint" xml:space="preserve">
+    <value>Popunjava se automatski iz domaćeg i gostujućeg tima. Upišite vlastiti naziv ako želite.</value>
+  </data>
+  <data name="Events_NameTeamsMismatch" xml:space="preserve">
+    <value>Naziv se ne podudara s odabranim timovima — navijači vide timove ({0}), šank vidi ovaj naziv.</value>
+  </data>
+  <data name="Events_NameUseTeams" xml:space="preserve">
+    <value>Koristi nazive timova</value>
+  </data>
   <data name="Events_EventNameLabel" xml:space="preserve">
     <value>Naziv događaja *</value>
   </data>
@@ -3100,7 +3109,7 @@
     <value>Spremi izmjene</value>
   </data>
   <data name="Orders_PageTitle" xml:space="preserve">
-    <value>Upravljanje narudžbama - Stadion Admin</value>
+    <value>Upravljanje narudžbama</value>
   </data>
   <data name="Orders_Eyebrow" xml:space="preserve">
     <value>Operacije</value>
@@ -3529,7 +3538,7 @@
     <value>Očisti Filtre</value>
   </data>
   <data name="Dash_PageTitle" xml:space="preserve">
-    <value>Admin Nadzorna Ploča Stadiona</value>
+    <value>Nadzorna ploča</value>
   </data>
   <data name="Dash_Eyebrow" xml:space="preserve">
     <value>Operacije</value>
@@ -3661,7 +3670,7 @@
     <value>Pokrenut</value>
   </data>
   <data name="Index_PageTitle" xml:space="preserve">
-    <value>Admin Nadzorna Ploča Stadiona</value>
+    <value>Nadzorna ploča</value>
   </data>
   <data name="Index_LoadingEvents" xml:space="preserve">
     <value>Učitavanje događaja…</value>
@@ -3947,7 +3956,7 @@
     <value>Učitavanje dinamičkog rasporeda stadiona...</value>
   </data>
   <data name="Overview_PageTitle" xml:space="preserve">
-    <value>Operativni centar stadiona - Administracija</value>
+    <value>Operativni centar stadiona</value>
   </data>
   <data name="Overview_ConnectionStatusTooltip" xml:space="preserve">
     <value>Status veze u stvarnom vremenu</value>
@@ -4308,7 +4317,7 @@
   <data name="Wallets_ActionFailed" xml:space="preserve"><value>Radnja nije uspjela.</value></data>
   <data name="Nav_Venue" xml:space="preserve"><value>Stadion i brend</value></data>
   <data name="Nav_Setup" xml:space="preserve"><value>Postavljanje</value></data>
-  <data name="Setup_PageTitle" xml:space="preserve"><value>Postavljanje — Administracija stadiona</value></data>
+  <data name="Setup_PageTitle" xml:space="preserve"><value>Postavljanje</value></data>
   <data name="Setup_Eyebrow" xml:space="preserve"><value>Početak rada</value></data>
   <data name="Setup_Heading" xml:space="preserve"><value>Početno postavljanje</value></data>
   <data name="Setup_Subtitle" xml:space="preserve"><value>Nekoliko stvari mora biti postavljeno prije nego što je sustav spreman za korištenje.</value></data>

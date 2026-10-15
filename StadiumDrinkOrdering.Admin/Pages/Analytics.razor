@@ -5,7 +5,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject IStringLocalizer<SharedResources> L
 
-<PageTitle>@L["Analytics_PageTitle"]</PageTitle>
+<BrandPageTitle Station="Admin" Title="@L["Analytics_PageTitle"]" />
 
 <div class="console" id="admin-analytics-main-container">
     <!-- Page Header -->

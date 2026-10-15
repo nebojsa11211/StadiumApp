@@ -8,7 +8,7 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 
-<PageTitle>@Localizer["Login_StadiumBar"]</PageTitle>
+<BrandPageTitle Station="Bar" />
 
 @* Modern dashboard shell — shared 1:1 with the Admin operations console. *@
 <div class="dash dashboard-shell-root" id="bar-dashboard">
@@ -16,13 +16,7 @@
     @* ============================ SIDEBAR ============================ *@
     <aside class="dash-sidebar" id="bar-dashboard-sidebar">
         <div class="dash-brand" id="bar-dashboard-brand">
-            <div id="bar-layout-brand-logo" class="dash-brand-logo" aria-hidden="true">
-                <i class="bi bi-cup-straw"></i>
-            </div>
-            <div id="bar-layout-brand-text" class="dash-brand-text">
-                <span id="bar-layout-brand-name" class="dash-brand-name">STADIUM</span>
-                <span id="bar-layout-brand-sub" class="dash-brand-sub">BAR</span>
-            </div>
+            <StadiumDrinkOrdering.UI.Components.BrandWordmark Id="bar-layout-brand-text" Sub="BAR" />
         </div>
 
         <div id="bar-dashboard-clock" class="dash-clock">

@@ -7,7 +7,7 @@
 @inject IStringLocalizer<SharedResources> Localizer
 @implements IDisposable
 
-<PageTitle>@Localizer["MyOrders_PageTitle"]</PageTitle>
+<BrandPageTitle Station="Bar" Title="@Localizer["MyOrders_PageTitle"]" />
 
 @if (!AuthService.IsAuthenticated)
 {

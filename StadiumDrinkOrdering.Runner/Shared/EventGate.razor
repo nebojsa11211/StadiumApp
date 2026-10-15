@@ -16,8 +16,8 @@ else if (blocked)
 {
     <div class="runner-page" id="runner-eventgate-blocked">
         <div class="runner-empty" id="runner-eventgate-empty">
-            <div class="runner-empty-icon" id="runner-eventgate-icon" aria-hidden="true">🚫</div>
-            <div class="runner-empty-text" id="runner-eventgate-title">@Localizer["EventGate_NoLiveEventTitle"]</div>
+            <div class="runner-empty-icon" id="runner-eventgate-icon" aria-hidden="true"><RunnerIcon Name="slash" /></div>
+            <div class="runner-empty-title" id="runner-eventgate-title">@Localizer["EventGate_NoLiveEventTitle"]</div>
             <p class="runner-eventgate-sub" id="runner-eventgate-body">@Localizer["EventGate_NoLiveEventBody"]</p>
             <button class="runner-linkbtn" @onclick="CheckAsync" id="runner-eventgate-recheck">@Localizer["EventGate_CheckAgain"]</button>
         </div>

@@ -306,10 +306,10 @@
 
   <!-- Login Page -->
   <data name="Login_PageTitle" xml:space="preserve">
-    <value>Prijava osoblja</value>
+    <value>Prijava</value>
   </data>
   <data name="Login_StadiumBar" xml:space="preserve">
-    <value>Stadium Bar</value>
+    <value>Bar</value>
   </data>
   <data name="Login_BartenderStationAccess" xml:space="preserve">
     <value>Pristup barmenu</value>
@@ -335,7 +335,7 @@
 
   <!-- Dashboard Page -->
   <data name="Dashboard_PageTitle" xml:space="preserve">
-    <value>Nadzorna ploča osoblja</value>
+    <value>Nadzorna ploča</value>
   </data>
   <data name="Dashboard_AuthenticationRequired" xml:space="preserve">
     <value>Potrebna je autentifikacija</value>
@@ -409,7 +409,7 @@
 
   <!-- Order Queue Page -->
   <data name="OrderQueue_PageTitle" xml:space="preserve">
-    <value>Bar — Nadzorna ploča narudžbi</value>
+    <value>Nadzorna ploča narudžbi</value>
   </data>
   <data name="OrderQueue_OrderBoard" xml:space="preserve">
     <value>Nadzorna ploča narudžbi</value>
@@ -515,7 +515,7 @@
 
   <!-- My Orders Page -->
   <data name="MyOrders_PageTitle" xml:space="preserve">
-    <value>Moje narudžbe — Bar</value>
+    <value>Moje narudžbe</value>
   </data>
   <data name="MyOrders_HeaderSubtitle" xml:space="preserve">
     <value>Narudžbe koje ste obradili tijekom aktivnog događaja</value>

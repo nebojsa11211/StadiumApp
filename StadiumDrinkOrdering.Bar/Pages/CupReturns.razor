@@ -8,7 +8,7 @@
 @inject IStringLocalizer<SharedResources> Localizer
 @implements IAsyncDisposable
 
-<PageTitle>@Localizer["CupReturns_PageTitle"]</PageTitle>
+<BrandPageTitle Station="Bar" Title="@Localizer["CupReturns_PageTitle"]" />
 
 @if (!AuthService.IsAuthenticated)
 {

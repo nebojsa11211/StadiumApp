@@ -10,6 +10,13 @@ public interface IOrderService
     Task<CreateOrderResult> CreateOrderAsync(CreateOrderDto createOrderDto, int customerId);
     Task<OrderDto?> GetOrderByIdAsync(int orderId);
     Task<List<OrderDto>> GetOrdersAsync(OrderStatus? status = null);
+
+    /// <summary>
+    /// Orders matching any of <paramref name="statuses"/> (all statuses when empty), optionally scoped
+    /// to one event. Both filters run in the database, so a bar board for the live event doesn't pull
+    /// every historical order across the wire.
+    /// </summary>
+    Task<List<OrderDto>> GetOrdersAsync(IReadOnlyCollection<OrderStatus> statuses, int? eventId);
     Task<List<OrderDto>> GetOrdersByCustomerAsync(int customerId);
     Task<List<OrderDto>> GetAssignedOrdersAsync(int staffId);
     Task<List<OrderDto>> GetAvailableForDeliveryAsync();
@@ -575,7 +582,10 @@ public class OrderService : IOrderService
         return order != null ? MapToOrderDto(order) : null;
     }
 
-    public async Task<List<OrderDto>> GetOrdersAsync(OrderStatus? status = null)
+    public Task<List<OrderDto>> GetOrdersAsync(OrderStatus? status = null)
+        => GetOrdersAsync(status.HasValue ? new[] { status.Value } : Array.Empty<OrderStatus>(), null);
+
+    public async Task<List<OrderDto>> GetOrdersAsync(IReadOnlyCollection<OrderStatus> statuses, int? eventId)
     {
         // AsNoTracking: this is a read-only projection, and it also keeps EF from wiring up the
         // inverse navigations (Event.Orders, Section.Seats, …) between the loaded entities.
@@ -596,10 +606,11 @@ public class OrderService : IOrderService
                 .ThenInclude(ts => ts.Ticket)
             .AsQueryable();
 
-        if (status.HasValue)
-        {
-            query = query.Where(o => o.Status == status.Value);
-        }
+        if (statuses.Count > 0)
+            query = query.Where(o => statuses.Contains(o.Status));
+
+        if (eventId.HasValue)
+            query = query.Where(o => o.EventId == eventId.Value);
 
         var orders = await query.OrderByDescending(o => o.CreatedAt).ToListAsync();
         return orders.Select(MapToOrderDto).ToList();

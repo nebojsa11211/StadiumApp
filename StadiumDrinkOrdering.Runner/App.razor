@@ -30,7 +30,7 @@ else
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
-            <PageTitle>@Localizer["Error_NotFoundTitle"]</PageTitle>
+            <BrandPageTitle Station="@Localizer["Layout_Brand"]" Title="@Localizer["Error_NotFoundTitle"]" />
             <LayoutView Layout="@typeof(MainLayout)">
                 <p role="alert">@Localizer["Error_NotFoundMessage"]</p>
             </LayoutView>

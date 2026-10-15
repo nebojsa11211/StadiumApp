@@ -1,0 +1,26 @@
+@namespace StadiumDrinkOrdering.UI.Components
+
+@*
+    Browser tab title in the shared brand format: "{Title} · HALFTIME {Station}", or just
+    "HALFTIME {Station}" when the page has no title of its own. Use this instead of a bare
+    <PageTitle> so every app's tabs read the same way.
+*@
+
+<PageTitle>@Text</PageTitle>
+
+@code {
+    /// <summary>The page's own (localized) name, e.g. "Orders". Optional.</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>The app, e.g. "Admin", "Bar". Optional.</summary>
+    [Parameter] public string? Station { get; set; }
+
+    private string Text
+    {
+        get
+        {
+            var brand = string.IsNullOrWhiteSpace(Station) ? "HALFTIME" : $"HALFTIME {Station}";
+            return string.IsNullOrWhiteSpace(Title) ? brand : $"{Title} · {brand}";
+        }
+    }
+}

@@ -1,0 +1,35 @@
+@namespace StadiumDrinkOrdering.UI.Components
+
+@*
+    The HALFTIME wordmark — the product's logo, shared by every app so they all carry the same brand.
+    It mirrors the Customer welcome-screen logo (customer-welcome-logo): heavy italic caps, "HALF"
+    in the surrounding text colour and "TIME" in brand red.
+
+    Sub is an optional small caption under the mark naming the station ("ADMIN", "BAR", ...).
+    Chip puts the mark on a dark pill, for coloured bars where the red would not read.
+
+    Requires: css/brand.css from _content/StadiumDrinkOrdering.UI.
+*@
+
+<span class="hb-brand @(Chip ? "hb-brand--chip" : null) @Class" id="@Id" style="@(Size is null ? null : $"--hb-size:{Size}px")">
+    <span class="hb-wordmark" id="@(Id is null ? null : $"{Id}-wordmark")" aria-label="HALFTIME">HALF<span class="hb-wordmark__accent">TIME</span></span>
+    @if (!string.IsNullOrEmpty(Sub))
+    {
+        <span class="hb-brand__sub" id="@(Id is null ? null : $"{Id}-sub")">@Sub</span>
+    }
+</span>
+
+@code {
+    [Parameter] public string? Id { get; set; }
+
+    /// <summary>Caption under the mark, e.g. "ADMIN". Omitted when empty.</summary>
+    [Parameter] public string? Sub { get; set; }
+
+    /// <summary>Wordmark font size in px. Defaults to 22 (set in brand.css).</summary>
+    [Parameter] public int? Size { get; set; }
+
+    /// <summary>Render on a dark pill so the red half stays legible on coloured backgrounds.</summary>
+    [Parameter] public bool Chip { get; set; }
+
+    [Parameter] public string? Class { get; set; }
+}

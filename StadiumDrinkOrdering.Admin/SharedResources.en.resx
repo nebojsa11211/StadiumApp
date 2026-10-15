@@ -357,7 +357,7 @@
     <value>Teams</value>
   </data>
   <data name="Teams_PageTitle" xml:space="preserve">
-    <value>Teams - Stadium Admin</value>
+    <value>Teams</value>
   </data>
   <data name="Teams_Eyebrow" xml:space="preserve">
     <value>Events</value>
@@ -500,7 +500,7 @@
 
   <!-- AUTO-GENERATED PAGE LOCALIZATION KEYS -->
   <data name="Drawing_PageTitle" xml:space="preserve">
-    <value>Stadium Drawing Tool - Admin</value>
+    <value>Stadium Drawing Tool</value>
   </data>
   <data name="Drawing_MainTitle" xml:space="preserve">
     <value>🎨 Stadium Drawing Tool</value>
@@ -713,7 +713,7 @@
     <value>Layout defines {0} seats; {1} persisted in database.</value>
   </data>
   <data name="Login_PageTitle" xml:space="preserve">
-    <value>Admin Login</value>
+    <value>Sign in</value>
   </data>
   <data name="Login_StadiumAdmin" xml:space="preserve">
     <value>Stadium Admin</value>
@@ -725,7 +725,7 @@
     <value>Logging in...</value>
   </data>
   <data name="Login_DemoCredentialsHint" xml:space="preserve">
-    <value>Use admin@stadium.com/admin123 for demo purposes</value>
+    <value>Use nebojsa.medancic+adminStadion@gmail.com / Admin123! for demo purposes</value>
   </data>
   <data name="SectorEdit_CreateNewTitle" xml:space="preserve">
     <value>Create New Sector</value>
@@ -1715,7 +1715,7 @@
     <value>No log entries match your current filters.</value>
   </data>
   <data name="Users_PageTitle" xml:space="preserve">
-    <value>User Management - Stadium Admin</value>
+    <value>User Management</value>
   </data>
   <data name="Users_EyebrowLabel" xml:space="preserve">
     <value>Team</value>
@@ -2856,6 +2856,15 @@
   <data name="Events_EditModalTitle" xml:space="preserve">
     <value>Edit Event</value>
   </data>
+  <data name="Events_NameAutoHint" xml:space="preserve">
+    <value>Filled in automatically from the home and away teams. Type to use your own title.</value>
+  </data>
+  <data name="Events_NameTeamsMismatch" xml:space="preserve">
+    <value>The name doesn't match the selected teams — fans see the teams ({0}), the bar sees this name.</value>
+  </data>
+  <data name="Events_NameUseTeams" xml:space="preserve">
+    <value>Use team names</value>
+  </data>
   <data name="Events_EventNameLabel" xml:space="preserve">
     <value>Event Name *</value>
   </data>
@@ -3070,7 +3079,7 @@
     <value>Save Changes</value>
   </data>
   <data name="Orders_PageTitle" xml:space="preserve">
-    <value>Order Management - Stadium Admin</value>
+    <value>Order Management</value>
   </data>
   <data name="Orders_Eyebrow" xml:space="preserve">
     <value>Operations</value>
@@ -3499,7 +3508,7 @@
     <value>Clear Filters</value>
   </data>
   <data name="Dash_PageTitle" xml:space="preserve">
-    <value>Stadium Admin Dashboard</value>
+    <value>Dashboard</value>
   </data>
   <data name="Dash_Eyebrow" xml:space="preserve">
     <value>Operations</value>
@@ -3631,7 +3640,7 @@
     <value>Running</value>
   </data>
   <data name="Index_PageTitle" xml:space="preserve">
-    <value>Stadium Admin Dashboard</value>
+    <value>Dashboard</value>
   </data>
   <data name="Index_LoadingEvents" xml:space="preserve">
     <value>Loading events…</value>
@@ -3917,7 +3926,7 @@
     <value>Loading dynamic stadium layout...</value>
   </data>
   <data name="Overview_PageTitle" xml:space="preserve">
-    <value>Stadium Operations Center - Admin</value>
+    <value>Stadium Operations Center</value>
   </data>
   <data name="Overview_ConnectionStatusTooltip" xml:space="preserve">
     <value>Real-time connection status</value>
@@ -4278,7 +4287,7 @@
   <data name="Wallets_ActionFailed" xml:space="preserve"><value>Action failed.</value></data>
   <data name="Nav_Venue" xml:space="preserve"><value>Venue &amp; Branding</value></data>
   <data name="Nav_Setup" xml:space="preserve"><value>Setup</value></data>
-  <data name="Setup_PageTitle" xml:space="preserve"><value>Setup — Stadium Admin</value></data>
+  <data name="Setup_PageTitle" xml:space="preserve"><value>Setup</value></data>
   <data name="Setup_Eyebrow" xml:space="preserve"><value>Getting started</value></data>
   <data name="Setup_Heading" xml:space="preserve"><value>Initial setup</value></data>
   <data name="Setup_Subtitle" xml:space="preserve"><value>A few things must be configured before the system is ready to use.</value></data>

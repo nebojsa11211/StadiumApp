@@ -136,19 +136,13 @@ public class OrdersController : ControllerBase
     // multi-value or hyphenated query doesn't fail [ApiController] model binding with a 400.
     [HttpGet]
     [Authorize(Policy = AuthorizationPolicies.CanReadOrders)]
-    public async Task<ActionResult<List<OrderDto>>> GetOrders([FromQuery] string? status = null)
+    public async Task<ActionResult<List<OrderDto>>> GetOrders(
+        [FromQuery] string? status = null,
+        [FromQuery] int? eventId = null)
     {
+        // Status list and event scope are both applied in the database query.
         var statuses = ParseStatuses(status);
-
-        // Fast path: a single status uses the existing filtered query.
-        if (statuses.Count == 1)
-            return Ok(await _orderService.GetOrdersAsync(statuses[0]));
-
-        var orders = await _orderService.GetOrdersAsync();
-        if (statuses.Count > 1)
-            orders = orders.Where(o => statuses.Contains(o.Status)).ToList();
-
-        return Ok(orders);
+        return Ok(await _orderService.GetOrdersAsync(statuses, eventId));
     }
 
     /// <summary>

@@ -6,15 +6,15 @@
 @inject IJSRuntime JS
 @inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>@Localizer["Home_PageTitle"]</PageTitle>
+<BrandPageTitle Station="@Localizer["Layout_Brand"]" Title="@Localizer["Home_PageTitle"]" />
 
 <div class="runner-page @(selected.Count > 0 ? "runner-page-has-bar" : "")" id="runner-home-page">
     <div class="runner-page-head" id="runner-home-page-head">
         <h1 class="runner-page-title" id="runner-home-title">@Localizer["Home_ReadyForPickup"]</h1>
         <div class="runner-head-actions" id="runner-home-head-actions">
             <button class="runner-refresh @(scannerActive ? "runner-refresh-on" : "")" @onclick="ToggleScanner"
-                    aria-label="@Localizer["Home_ScanSlips"]" aria-pressed="@scannerActive" id="runner-pool-scan-btn">📷</button>
-            <button class="runner-refresh" @onclick="Load" aria-label="@Localizer["Home_Refresh"]" id="runner-pool-refresh">↻</button>
+                    aria-label="@Localizer["Home_ScanSlips"]" aria-pressed="@scannerActive" id="runner-pool-scan-btn"><svg class="runner-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></svg></button>
+            <button class="runner-refresh" @onclick="Load" aria-label="@Localizer["Home_Refresh"]" id="runner-pool-refresh"><svg class="runner-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12a7 7 0 1 1-2.05-4.95"/><path d="M17.5 3.5v4h-4"/></svg></button>
         </div>
     </div>
 
@@ -24,7 +24,10 @@
     @if (scannerActive)
     {
         <div class="runner-scan-camera" id="runner-pool-camera">
-            <video id="@ScannerVideoId" playsinline muted class="runner-scan-video"></video>
+            <div class="runner-scan-viewfinder">
+                <video id="@ScannerVideoId" playsinline muted class="runner-scan-video"></video>
+                <span class="runner-scan-frame" aria-hidden="true"></span>
+            </div>
             <p class="runner-scan-hint" id="runner-pool-scan-hint">@Localizer["Home_ScanHint"]</p>
             @if (scanFeed.Count > 0)
             {
@@ -53,7 +56,7 @@
     @if (!Outbox.IsOnline)
     {
         <div class="runner-offline-banner" role="status" id="runner-pool-offline">
-            <span class="runner-banner-icon" aria-hidden="true">⚠</span>
+            <RunnerIcon Name="alert" Class="runner-banner-icon" />
             <span>@Localizer["Home_OfflineBanner"]</span>
         </div>
     }
@@ -70,7 +73,8 @@
     else if (orders is null || orders.Count == 0)
     {
         <div class="runner-empty" id="runner-home-empty">
-            <div class="runner-empty-icon" id="runner-home-empty-icon" aria-hidden="true">📋</div>
+            <div class="runner-empty-icon" id="runner-home-empty-icon" aria-hidden="true"><RunnerIcon Name="clipboard" /></div>
+            <div class="runner-empty-title">@Localizer["Home_EmptyTitle"]</div>
             <div class="runner-empty-text" id="runner-home-empty-text">@Localizer["Home_NoOrdersEmpty"]</div>
         </div>
     }
@@ -87,22 +91,27 @@
         @foreach (var o in orders)
         {
             var isSelected = selected.Contains(o.Id);
+            @* Blazor drops a bare boolean `true` from aria-pressed, so pass the explicit string. *@
             <div class="runner-card runner-card-selectable @(isSelected ? "runner-card-selected" : "")"
-                 role="button" aria-pressed="@isSelected" tabindex="0"
+                 role="button" aria-pressed="@(isSelected ? "true" : "false")" tabindex="0"
                  @onclick="() => ToggleSelect(o.Id)"
                  id="runner-pool-card-@o.Id">
+                @* Top row: wait-time pill (the only thing that changes urgency) left; order ref + the
+                   selection tick right, where a thumb-holding hand already looks for a checkbox. *@
                 <div class="runner-card-top" id="@($"runner-pool-card-{o.Id}-top")">
-                    <span class="runner-seat-label">@Localizer["Home_SeatLabel"]</span>
+                    <AgePill CreatedAt="@o.CreatedAt" Label="@Localizer["Home_Ready"]" />
                     <span class="runner-card-meta">
-                        <span class="runner-order-id">#@o.Id</span> · @Localizer["Home_Ready"] @Age(o)
-                        <span class="runner-check @(isSelected ? "runner-check-on" : "")" aria-hidden="true">@(isSelected ? "✓" : "")</span>
+                        <span class="runner-order-id">#@o.Id</span>
+                        <span class="runner-check @(isSelected ? "runner-check-on" : "")" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg>
+                        </span>
                     </span>
                 </div>
-                <div class="runner-seat" id="@($"runner-pool-card-{o.Id}-seat")">@SeatText(o)</div>
+                <SeatHero SeatPath="@o.SeatPath" SeatNumber="@o.SeatNumber" Id="@($"runner-pool-card-{o.Id}-seat")" />
                 <div class="runner-items" id="@($"runner-pool-card-{o.Id}-items")">
                     @foreach (var it in o.OrderItems)
                     {
-                        <div id="@($"runner-pool-card-{o.Id}-item-{o.OrderItems.IndexOf(it)}")"><span class="runner-qty">@it.Quantity×</span> @it.DrinkName</div>
+                        <div id="@($"runner-pool-card-{o.Id}-item-{o.OrderItems.IndexOf(it)}")"><span class="runner-qty">@it.Quantity×</span> @it.DrinkName <svg class="runner-cup" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10l-1.4 17H8.4z"/><path d="M7.4 8h9.2"/></svg></div>
                     }
                 </div>
                 <div class="runner-total" id="runner-pool-total-@o.Id">
@@ -127,12 +136,12 @@
             }
             else if (!Outbox.IsOnline)
             {
-                <span class="runner-cta-icon" aria-hidden="true">🔒</span>
+                <RunnerIcon Name="lock" Class="runner-cta-icon" />
                 <span>@Localizer["Home_OfflineClaim"]</span>
             }
             else
             {
-                <span class="runner-cta-icon" aria-hidden="true">🫱</span>
+                <RunnerIcon Name="bag" Class="runner-cta-icon" />
                 <span>@Localizer["Home_CollectSelected", selected.Count]</span>
             }
         </button>
@@ -370,22 +379,6 @@
     private async Task Haptic()
     {
         try { await JS.InvokeVoidAsync("runnerHaptic", 15); } catch { /* JS unavailable — ignore */ }
-    }
-
-    // Full seat location from the server (section · row · seat), falling back to the short seat
-    // number and finally an em dash when neither is present.
-    private static string SeatText(OrderDto o)
-    {
-        if (!string.IsNullOrWhiteSpace(o.SeatPath)) return o.SeatPath;
-        return string.IsNullOrWhiteSpace(o.SeatNumber) ? "—" : o.SeatNumber;
-    }
-
-    private string Age(OrderDto o)
-    {
-        var mins = (int)Math.Floor((DateTime.UtcNow - DateTime.SpecifyKind(o.CreatedAt, DateTimeKind.Utc)).TotalMinutes);
-        return mins <= 0 ? Localizer["Home_AgeJustNow"]
-             : mins == 1 ? Localizer["Home_AgeOneMinAgo"]
-             : Localizer["Home_AgeMinutesAgo", mins];
     }
 
     public async ValueTask DisposeAsync()

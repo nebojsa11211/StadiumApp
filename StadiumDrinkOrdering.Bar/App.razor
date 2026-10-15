@@ -33,7 +33,7 @@ else
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
-            <PageTitle>@Localizer["App_NotFound"]</PageTitle>
+            <BrandPageTitle Station="Bar" Title="@Localizer["App_NotFound"]" />
             <AuthRoute>
                 <EventGate>
                     <LayoutView Layout="@typeof(MainLayout)">

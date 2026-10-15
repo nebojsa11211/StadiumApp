@@ -3,7 +3,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject IStringLocalizer<SharedResources> L
 
-<PageTitle>@L["EventStats_PageTitle"]</PageTitle>
+<BrandPageTitle Station="Admin" Title="@L["EventStats_PageTitle"]" />
 
 <div class="console" id="admin-event-stats-main-container">
     <!-- Page Header -->

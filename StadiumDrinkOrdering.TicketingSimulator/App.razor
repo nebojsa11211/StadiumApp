@@ -6,7 +6,7 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>@Localizer["App_NotFoundTitle"]</PageTitle>
+        <BrandPageTitle Station="Simulator" Title="@Localizer["App_NotFoundTitle"]" />
         <LayoutView Layout="@typeof(MainLayout)">
             <p role="alert">@Localizer["App_NotFoundMessage"]</p>
         </LayoutView>

@@ -153,6 +153,14 @@ public partial class Events : ComponentBase, IDisposable
     private EventFormModel eventForm = new();
 
     /// <summary>
+    /// True while a Match's name is still derived from its two sides ("Home - Away"). Typing a
+    /// custom name turns it off; clearing the box turns it back on. Without this the free-text
+    /// name and the team pickers drifted apart — the bar shows the name, the fan welcome card
+    /// shows the teams, so one fixture read as two different matches.
+    /// </summary>
+    private bool nameIsAuto = true;
+
+    /// <summary>
     /// Per-sector price rows shown in the modal's "Sector prices" editor. Null while loading. Each
     /// row's <see cref="EventSectorPriceDto.EventPrice"/> is bound to its input; null there means the
     /// sector uses its default price for this event.
@@ -313,6 +321,7 @@ public partial class Events : ComponentBase, IDisposable
             BasePrice = 50,
             SeasonId = seasons?.FirstOrDefault(s => s.IsCurrent)?.Id
         };
+        nameIsAuto = true;
         sectorPrices = null;
         eventStaff = null;
         ResetPosterState();
@@ -374,6 +383,10 @@ public partial class Events : ComponentBase, IDisposable
             IsActive = evt.IsActive,
             SeasonId = evt.SeasonId
         };
+        // A stored name that is exactly "Home - Away" keeps following the teams; anything the
+        // admin wrote by hand is left alone.
+        nameIsAuto = string.IsNullOrWhiteSpace(evt.Name)
+            || string.Equals(evt.Name.Trim(), ComposeMatchName(evt.HomeTeam, evt.AwayTeam), StringComparison.OrdinalIgnoreCase);
         sectorPrices = null;
         eventStaff = null;
         ResetPosterState();
@@ -669,7 +682,58 @@ public partial class Events : ComponentBase, IDisposable
     private async Task OnAwayTeamChangedAsync(ChangeEventArgs e)
     {
         eventForm.AwayTeam = e.Value?.ToString();
+        SyncAutoName();
         await LoadRememberedAwayCrestAsync();
+    }
+
+    // ---- Name / teams consistency ------------------------------------------------------------
+
+    private static string ComposeMatchName(string? home, string? away) =>
+        $"{home?.Trim()} - {away?.Trim()}";
+
+    /// <summary>Rewrites the name from the teams while it is still auto-derived and both sides are set.</summary>
+    private void SyncAutoName()
+    {
+        if (!nameIsAuto || eventForm.EventType != "Match") return;
+        if (string.IsNullOrWhiteSpace(eventForm.HomeTeam) || string.IsNullOrWhiteSpace(eventForm.AwayTeam)) return;
+        eventForm.Name = ComposeMatchName(eventForm.HomeTeam, eventForm.AwayTeam);
+    }
+
+    private void OnNameChanged() =>
+        nameIsAuto = string.IsNullOrWhiteSpace(eventForm.Name)
+            || string.Equals(eventForm.Name.Trim(), ComposeMatchName(eventForm.HomeTeam, eventForm.AwayTeam), StringComparison.OrdinalIgnoreCase);
+
+    private void UseTeamsAsName()
+    {
+        nameIsAuto = true;
+        SyncAutoName();
+    }
+
+    /// <summary>
+    /// A hand-written Match name that doesn't mention one of the selected sides — e.g. "Istra - Zagreb"
+    /// saved with Dinamo vs Barcelona. Advisory only: titles like "Derby: Dinamo - Hajduk" are fine.
+    /// </summary>
+    private bool NameTeamsMismatch =>
+        eventForm.EventType == "Match"
+        && !nameIsAuto
+        && !string.IsNullOrWhiteSpace(eventForm.Name)
+        && !string.IsNullOrWhiteSpace(eventForm.HomeTeam)
+        && !string.IsNullOrWhiteSpace(eventForm.AwayTeam)
+        && (!NameMentions(eventForm.Name, eventForm.HomeTeam!, HomeClubShortName)
+            || !NameMentions(eventForm.Name, eventForm.AwayTeam!, null));
+
+    private string? HomeClubShortName =>
+        venueClubs?.FirstOrDefault(c => string.Equals(c.Name, eventForm.HomeTeam?.Trim(), StringComparison.OrdinalIgnoreCase))?.ShortName;
+
+    // A team counts as mentioned by its full name, its short name, or any distinctive word of it
+    // (4+ letters, so "GNK"/"HNK"/"FC" prefixes don't count).
+    private static bool NameMentions(string name, string team, string? shortName)
+    {
+        if (name.Contains(team.Trim(), StringComparison.OrdinalIgnoreCase)) return true;
+        if (!string.IsNullOrWhiteSpace(shortName) && name.Contains(shortName.Trim(), StringComparison.OrdinalIgnoreCase)) return true;
+        return team.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Where(w => w.Length >= 4)
+            .Any(w => name.Contains(w, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>

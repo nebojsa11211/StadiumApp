@@ -59,8 +59,3 @@
     --admin-primary-light: #2f9d68;
 }
 
-/* Bar identity: give the sidebar brand logo an amber "bar" tint so a bartender
-   instantly recognises this station, while everything else stays 1:1 with Admin. */
-.dashboard-shell-root .dash-brand-logo {
-    background: linear-gradient(135deg, #d98a1f, #b7791f);
-}

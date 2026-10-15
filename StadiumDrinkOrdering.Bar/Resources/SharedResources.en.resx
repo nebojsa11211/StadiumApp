@@ -306,10 +306,10 @@
 
   <!-- Login Page -->
   <data name="Login_PageTitle" xml:space="preserve">
-    <value>Staff Login</value>
+    <value>Sign in</value>
   </data>
   <data name="Login_StadiumBar" xml:space="preserve">
-    <value>Stadium Bar</value>
+    <value>Bar</value>
   </data>
   <data name="Login_BartenderStationAccess" xml:space="preserve">
     <value>Bartender station access</value>
@@ -335,7 +335,7 @@
 
   <!-- Dashboard Page -->
   <data name="Dashboard_PageTitle" xml:space="preserve">
-    <value>Staff Dashboard</value>
+    <value>Dashboard</value>
   </data>
   <data name="Dashboard_AuthenticationRequired" xml:space="preserve">
     <value>Authentication Required</value>
@@ -409,7 +409,7 @@
 
   <!-- Order Queue Page -->
   <data name="OrderQueue_PageTitle" xml:space="preserve">
-    <value>Bar — Order Board</value>
+    <value>Order Board</value>
   </data>
   <data name="OrderQueue_OrderBoard" xml:space="preserve">
     <value>Order Board</value>
@@ -515,7 +515,7 @@
 
   <!-- My Orders Page -->
   <data name="MyOrders_PageTitle" xml:space="preserve">
-    <value>My Orders — Bar</value>
+    <value>My Orders</value>
   </data>
   <data name="MyOrders_HeaderSubtitle" xml:space="preserve">
     <value>Orders you've handled during the live event</value>

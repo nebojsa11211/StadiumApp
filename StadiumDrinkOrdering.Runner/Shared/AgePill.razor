@@ -1,0 +1,35 @@
+@inject IStringLocalizer<SharedResources> Localizer
+
+@* Wait-time pill shared by pool + my-deliveries cards. Neutral while fresh, amber past 10 min, red
+   past 20 min (drinks go warm/flat). Colour always backs up the minute count in the text. *@
+<span class="runner-age @AgeClass" id="@Id">
+    <span class="runner-status-dot" aria-hidden="true"></span>@Label @AgeText
+</span>
+
+@code {
+    [Parameter, EditorRequired] public DateTime CreatedAt { get; set; }
+    /// <summary>Lead word, e.g. "Spremno" / "Naručeno".</summary>
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Id { get; set; }
+
+    public const int WarnMinutes = 10;
+    public const int UrgentMinutes = 20;
+
+    private int Minutes =>
+        (int)Math.Floor((DateTime.UtcNow - DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc)).TotalMinutes);
+
+    private string AgeClass => Minutes > UrgentMinutes ? "runner-age-urgent"
+                             : Minutes > WarnMinutes ? "runner-age-warn"
+                             : "";
+
+    private string AgeText
+    {
+        get
+        {
+            var m = Minutes;
+            return m <= 0 ? Localizer["Home_AgeJustNow"]
+                 : m == 1 ? Localizer["Home_AgeOneMinAgo"]
+                 : Localizer["Home_AgeMinutesAgo", m];
+        }
+    }
+}

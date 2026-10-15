@@ -684,7 +684,7 @@ Wallet balances are destroyed, not refunded. This cannot be undone.</value>
     <value>Season generator</value>
   </data>
   <data name="SeasonGen_PageTitle" xml:space="preserve">
-    <value>Season generator - Ticketing Simulator</value>
+    <value>Season generator</value>
   </data>
   <data name="SeasonGen_Title" xml:space="preserve">
     <value>Season generator</value>

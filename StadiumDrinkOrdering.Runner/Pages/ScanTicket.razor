@@ -5,14 +5,14 @@
 @inject IJSRuntime JS
 @inject IStringLocalizer<SharedResources> Localizer
 
-<PageTitle>@Localizer["ScanTicket_PageTitle"]</PageTitle>
+<BrandPageTitle Station="@Localizer["Layout_Brand"]" Title="@Localizer["ScanTicket_PageTitle"]" />
 
 <div class="runner-page" id="runner-scan-page">
     <div class="runner-page-head" id="runner-scan-page-head">
         <h1 class="runner-page-title" id="runner-scan-title">@Localizer["ScanTicket_Title"]</h1>
         @if (ticket is not null)
         {
-            <button class="runner-refresh" @onclick="ResetAll" aria-label="@Localizer["ScanTicket_NewScanBtn"]" id="runner-scan-reset">↻</button>
+            <button class="runner-refresh" @onclick="ResetAll" aria-label="@Localizer["ScanTicket_NewScanBtn"]" id="runner-scan-reset"><RunnerIcon Name="refresh" Class="runner-icon" /></button>
         }
     </div>
 
@@ -20,7 +20,32 @@
     {
         @* ---------- Identify: type or scan ---------- *@
         <div class="runner-scan-identify" id="runner-scan-identify">
+            @* Camera is the fast path (primary); typing is the fallback for a damaged or screen-dimmed QR. *@
             <label class="runner-scan-label" for="runner-scan-code-input" id="runner-scan-code-label">@Localizer["ScanTicket_IdentifyLabel"]</label>
+            @if (!scannerActive)
+            {
+                <button id="runner-scan-camera-btn" class="runner-cta" @onclick="RequestScan" disabled="@isResolving">
+                    <RunnerIcon Name="scan" Class="runner-cta-icon" />
+                    <span>@Localizer["ScanTicket_ScanBtn"]</span>
+                </button>
+            }
+            else
+            {
+                <div id="runner-scan-camera" class="runner-scan-camera">
+                    @* Framed target: corner brackets + a slow sweep line tell the runner where to hold the QR. *@
+                    <div class="runner-scan-viewfinder">
+                        <video id="@ScannerVideoId" playsinline muted class="runner-scan-video"></video>
+                        <span class="runner-scan-frame" aria-hidden="true"></span>
+                    </div>
+                    <p class="runner-scan-hint" id="runner-scan-hint">@Localizer["ScanTicket_ScanningHint"]</p>
+                    <button id="runner-scan-stop-btn" class="runner-cta runner-cta-secondary" @onclick="StopScannerAsync">
+                        @Localizer["ScanTicket_StopScanBtn"]
+                    </button>
+                </div>
+            }
+
+            <div class="runner-or" aria-hidden="true"><span>@Localizer["ScanTicket_Or"]</span></div>
+
             <form class="runner-scan-inputrow" @onsubmit="Resolve" id="runner-scan-form">
                 <input id="runner-scan-code-input" class="runner-scan-input" type="text"
                        @bind="codeInput" @bind:event="oninput"
@@ -38,24 +63,6 @@
                     }
                 </button>
             </form>
-
-            @if (!scannerActive)
-            {
-                <button id="runner-scan-camera-btn" class="runner-cta runner-cta-secondary" @onclick="RequestScan" disabled="@isResolving">
-                    <span class="runner-cta-icon" aria-hidden="true">📷</span>
-                    <span>@Localizer["ScanTicket_ScanBtn"]</span>
-                </button>
-            }
-            else
-            {
-                <div id="runner-scan-camera" class="runner-scan-camera">
-                    <video id="@ScannerVideoId" playsinline muted class="runner-scan-video"></video>
-                    <p class="runner-scan-hint" id="runner-scan-hint">@Localizer["ScanTicket_ScanningHint"]</p>
-                    <button id="runner-scan-stop-btn" class="runner-cta runner-cta-secondary" @onclick="StopScannerAsync">
-                        @Localizer["ScanTicket_StopScanBtn"]
-                    </button>
-                </div>
-            }
 
             @if (scannerUnsupported)
             {
@@ -81,7 +88,7 @@
         <div class="runner-ticket" id="runner-scan-ticket">
             <div class="runner-ticket-hero" id="runner-scan-ticket-hero">
                 <div class="runner-ticket-hero-main">
-                    <span class="runner-seat-label">@Localizer["ScanTicket_TicketNumber"]</span>
+                    <span class="runner-label">@Localizer["ScanTicket_TicketNumber"]</span>
                     <div class="runner-ticket-number" id="runner-scan-ticket-number">@ticket.TicketNumber</div>
                     <div class="runner-ticket-badges" id="runner-scan-ticket-badges">
                         <span class="runner-badge @(ticket.IsActive ? "runner-badge-ok" : "runner-badge-muted")" id="runner-scan-badge-active">
@@ -148,7 +155,7 @@
 
             @* Drink orders *@
             <div class="runner-ticket-section" id="runner-scan-section-orders">
-                <div class="runner-ticket-section-title">@Localizer["ScanTicket_SectionOrders"] (@ticket.DrinkOrders.Count)</div>
+                <div class="runner-ticket-section-title">@Localizer["ScanTicket_SectionOrders"] <span class="runner-sync-count">@ticket.DrinkOrders.Count</span></div>
                 @if (ticket.DrinkOrders.Count == 0)
                 {
                     <div class="runner-kv-empty" id="runner-scan-orders-empty">@Localizer["ScanTicket_NoOrders"]</div>
@@ -160,13 +167,14 @@
                         <div class="runner-scan-order" id="@($"runner-scan-order-{o.OrderId}")">
                             <div class="runner-scan-order-top">
                                 <span class="runner-order-id">#@o.OrderId</span>
-                                <span class="runner-scan-order-meta">@o.Status · @DateText(o.CreatedAt)</span>
+                                <span class="runner-badge runner-badge-muted runner-badge-sm">@o.Status</span>
                                 <span class="runner-scan-order-total">@FormatMoney(o.OrderTotal, ticket.Currency)</span>
                             </div>
+                            <div class="runner-scan-order-meta">@DateText(o.CreatedAt)</div>
                             <div class="runner-scan-order-items">
                                 @foreach (var it in o.Items)
                                 {
-                                    <div><span class="runner-qty">@it.Quantity×</span> @it.DrinkName <span class="runner-kv-sub">@FormatMoney(it.TotalPrice, ticket.Currency)</span></div>
+                                    <div class="runner-scan-order-line"><span><span class="runner-qty">@it.Quantity×</span> @it.DrinkName</span><span class="runner-kv-sub">@FormatMoney(it.TotalPrice, ticket.Currency)</span></div>
                                 }
                             </div>
                         </div>
@@ -186,7 +194,7 @@
                     }
                     else
                     {
-                        <span class="runner-cta-icon" aria-hidden="true">🔓</span>
+                        <RunnerIcon Name="unlock" Class="runner-cta-icon" />
                         <span>@Localizer["ScanTicket_ReleaseBtn"]</span>
                     }
                 </button>
@@ -197,7 +205,7 @@
             </div>
 
             <button class="runner-cta" @onclick="ResetAll" id="runner-scan-new-btn">
-                <span class="runner-cta-icon" aria-hidden="true">🎟️</span>
+                <RunnerIcon Name="ticket" Class="runner-cta-icon" />
                 <span>@Localizer["ScanTicket_NewScanBtn"]</span>
             </button>
         </div>

@@ -7,8 +7,8 @@
 
 :root {
     /* Brand + go */
-    --r-primary: #1f7a4d;        /* CTAs, appbar, active tab, login submit (white text 5.3:1) */
-    --r-primary-press: #15633c;  /* pressed CTA / appbar-dark (white 7.4:1) */
+    --r-primary: #1c5e3a;        /* CTAs, appbar, active tab, login submit (white text 5.3:1) */
+    --r-primary-press: #164d2f;  /* pressed CTA / appbar-dark (white 7.4:1) */
     --r-primary-tint: #e7f2ec;   /* delivered/synced wash, focus-ring fill */
     --r-success-ink: #12603a;    /* "delivered ✓" text on tint */
 
@@ -24,20 +24,30 @@
 
     /* Neutrals */
     --r-surface: #ffffff;        /* cards, tab bar, inputs */
-    --r-bg: #eef1ee;             /* page bg (off-white cuts glare vs cards) */
-    --r-ink: #15181c;            /* primary text, seat hero (15:1 on white) */
-    --r-ink-muted: #4d574f;      /* meta, age, order-id (8:1 on white) */
-    --r-border: #d3dbd5;
+    --r-bg: #f5f4f1;             /* page bg (off-white cuts glare vs cards) */
+    --r-ink: #121a2b;            /* primary text, seat hero (15:1 on white) */
+    --r-ink-muted: #565c66;      /* meta, age, order-id (8:1 on white) */
+    --r-border: #dcdcd8;
+    --r-accent-dot: #f59e2b;     /* amber wait dot (>10 min) on pool cards */
+    --r-fresh: #2f9e64;          /* fresh-ready dot (<=10 min) */
+    --r-chip-bg: #f0efeb;        /* neutral pill surface (wait-time) */
+    --r-check-ring: #8a9089;     /* empty selection circle — 3.3:1 on white (non-text min 3:1) */
+    --r-selected-wash: #edf6f0;  /* selected card surface; ink stays 14:1 on it */
 
     --r-disabled-bg: #e4e7e1;
     --r-disabled-ink: #9aa39c;
 
-    --r-radius-card: 14px;
+    --r-radius-card: 20px;
     --r-radius-btn: 12px;
-    --r-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.10);
+    --r-shadow-card: 0 1px 2px rgba(18, 26, 43, 0.04), 0 6px 18px -8px rgba(18, 26, 43, 0.10);
 }
 
-html, body { background: var(--r-bg); color: var(--r-ink); }
+html, body {
+    background: var(--r-bg);
+    color: var(--r-ink);
+    /* Inter when reachable (Google Fonts); offline the system UI stack is the fallback. */
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
 
 .runner-shell {
     display: flex;
@@ -55,36 +65,73 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    min-height: 56px;
-    padding: 0 0.9rem;
+    min-height: 64px;
+    padding: 0 1rem;
     padding-top: env(safe-area-inset-top);
     background: var(--r-primary);
     color: #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 .runner-brand { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; white-space: nowrap; }
-.runner-appbar-right { display: flex; align-items: center; gap: 0.4rem; }
+.runner-appbar-right { display: flex; align-items: center; gap: 0.9rem; }
 .runner-appbar-status { display: inline-flex; align-items: center; gap: 0.4rem; }
+/* Language pill + sign-out share one look: translucent white on the green bar. */
+.runner-lang,
+.runner-logout {
+    height: 36px;
+    border: none;
+    background-color: transparent;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+.runner-lang {
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0 1.5rem 0 0.35rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.35rem center;
+}
+.runner-lang option { color: var(--r-ink); background: var(--r-surface); }
+.runner-logout { padding: 0 0.35rem; }
+.runner-lang:active,
+.runner-logout:active { background-color: rgba(255, 255, 255, 0.15); }
+.runner-lang:focus-visible,
+.runner-logout:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Signed-in user row under the app bar */
+.runner-userbar {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 1rem 0.7rem;
+    background: var(--r-primary);
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    color: #fff;
+}
+.runner-user-avatar {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f1f1ee;
+    color: var(--r-primary);
+    font-size: 0.85rem;
+    font-weight: 800;
+}
 .runner-user {
-    font-size: 0.8rem;
-    opacity: 0.92;
-    max-width: 34vw;
+    min-width: 0;
+    font-size: 1rem;
+    font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.runner-logout {
-    min-height: 40px;
-    padding: 0 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    background: transparent;
-    color: #fff;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-.runner-logout:active { background: rgba(255, 255, 255, 0.15); }
 
 /* Connectivity / sync chips — icon + text + color (never color alone) */
 .runner-chip {
@@ -104,32 +151,51 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
 /* Leave room for the fixed bottom tab bar + iPhone home indicator. */
 .runner-content {
     flex: 1;
-    padding: 0.75rem 0.75rem;
-    padding-bottom: calc(60px + env(safe-area-inset-bottom) + 0.75rem);
+    padding: 1rem 0.9rem;
+    padding-bottom: calc(68px + env(safe-area-inset-bottom) + 0.75rem);
 }
 
 .runner-page-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.7rem;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
 }
-.runner-page-title { font-size: 1.15rem; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+.runner-page-title { font-size: 1.45rem; font-weight: 800; margin: 0; letter-spacing: -0.02em; color: var(--r-ink); }
 .runner-refresh {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 48px;
-    min-height: 48px;
+    width: 52px;
+    height: 52px;
+    padding: 0;
     border: 1px solid var(--r-border);
     background: var(--r-surface);
-    color: var(--r-ink-muted);
-    border-radius: 10px;
+    color: var(--r-ink);
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(18, 26, 43, 0.06);
     font-size: 1.25rem;
     line-height: 1;
     cursor: pointer;
 }
 .runner-refresh:active { background: var(--r-primary-tint); }
+/* Line icons (header buttons) - stroke inherits the button's text colour. */
+.runner-icon { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+/* RunnerIcon (Shared/RunnerIcon.razor): line icons that replaced emoji. Sized in em so they track
+   the text they sit beside; contexts below pin explicit sizes where alignment matters. */
+.runner-ico { flex: none; width: 1.2em; height: 1.2em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* The one small-caps label voice used across cards, sections and the ticket hero. */
+.runner-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--r-ink-muted);
+}
 
 /* ---- Offline banner -------------------------------------------------------- */
 .runner-offline-banner {
@@ -147,7 +213,7 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     line-height: 1.35;
     margin-bottom: 0.75rem;
 }
-.runner-offline-banner .runner-banner-icon { font-size: 1.05rem; line-height: 1.3; }
+.runner-offline-banner .runner-banner-icon { width: 20px; height: 20px; stroke-width: 2; margin-top: 0.05rem; }
 
 /* Inline notice (claim result) */
 .runner-notice {
@@ -164,42 +230,109 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
 /* ---- Order card ------------------------------------------------------------ */
 .runner-card {
     background: var(--r-surface);
-    border: 1px solid var(--r-border);
+    border: 1px solid transparent;
     border-radius: var(--r-radius-card);
     box-shadow: var(--r-shadow-card);
-    padding: 14px 14px 16px;
-    margin-bottom: 12px;
+    padding: 18px 18px 6px;
+    margin-bottom: 14px;
 }
-/* Meta row: seat label left, order-id + age demoted right */
+/* Meta row. Pool: wait pill left, #id + tick right. My deliveries: seat label left, #id right. */
 .runner-card-top {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.75rem;
 }
 .runner-seat-label {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     color: var(--r-ink-muted);
 }
-.runner-card-meta { font-size: 0.85rem; font-weight: 500; color: var(--r-ink-muted); text-align: right; }
-.runner-order-id { font-weight: 600; }
+.runner-card-meta { display: inline-flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; font-weight: 500; color: var(--r-ink-muted); text-align: right; }
+/* Order ref is a cross-check against the bar slip, not something to read first: quiet, tabular. */
+.runner-order-id { font-weight: 600; color: var(--r-ink-muted); font-variant-numeric: tabular-nums; }
+.runner-status-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--r-fresh); }
+
+/* Wait-time pill. Neutral while fresh; amber past 10 min, red past 20 — colour is backed by the
+   minute count in the text, never the only signal. */
+.runner-age {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    height: 30px;
+    padding: 0 0.75rem 0 0.65rem;
+    border-radius: 999px;
+    background: var(--r-chip-bg);
+    color: var(--r-ink-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.runner-age-warn { background: var(--r-warn-tint); color: var(--r-warn-ink); }
+.runner-age-warn .runner-status-dot { background: var(--r-accent-dot); }
+.runner-age-urgent { background: var(--r-danger-tint); color: var(--r-danger); font-weight: 700; }
+.runner-age-urgent .runner-status-dot {
+    background: var(--r-danger);
+    box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.45);
+    animation: runner-dot-pulse 2s ease-out infinite;
+}
+@keyframes runner-dot-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.45); }
+    70%, 100% { box-shadow: 0 0 0 7px rgba(185, 28, 28, 0); }
+}
 
 /* Seat — the hero datum. Wraps for long codes (N1A-R5S12); never truncate. */
 .runner-seat {
-    font-size: 1.9rem;
+    font-size: 2.35rem;
     font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
     color: var(--r-ink);
     overflow-wrap: anywhere;
     margin-bottom: 0.55rem;
 }
 
-.runner-items { font-size: 1.05rem; font-weight: 500; line-height: 1.45; color: var(--r-ink); margin-bottom: 0.75rem; }
+/* Split seat (SeatHero): sector eyebrow + Row | Seat numerals. em-based so a parent font-size
+   (pending cards) scales the whole block; max() keeps the tiny labels legible when scaled down. */
+.runner-seat-split { letter-spacing: normal; margin-bottom: 1rem; }
+.runner-seat-sector {
+    font-size: max(0.95rem, 0.44em);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    color: #3a404a;
+    margin-bottom: 0.5rem;
+}
+.runner-seat-nums { display: flex; flex-wrap: wrap; align-items: flex-end; row-gap: 0.4rem; }
+.runner-seat-part { display: inline-flex; flex-direction: column; min-width: 0; }
+/* Hairline divider between Row and Seat — structure through spacing + one rule, no boxes. */
+.runner-seat-part + .runner-seat-part { margin-left: 0.45em; padding-left: 0.45em; border-left: 1px solid var(--r-border); }
+.runner-seat-k {
+    font-size: max(0.7rem, 0.3em);
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--r-ink-muted);
+    margin-bottom: 0.4rem;
+}
+.runner-seat-v {
+    font-size: 1.15em;
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--r-ink);
+    overflow-wrap: anywhere;
+}
+
+.runner-items { font-size: 1.15rem; font-weight: 500; line-height: 1.5; color: var(--r-ink); margin-bottom: 0.9rem; }
+.runner-cup { width: 1.15em; height: 1.15em; margin-left: 0.15rem; vertical-align: -0.2em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
 .runner-items .runner-qty { font-weight: 700; }
 
 /* Order total — secondary to the seat, but a clear reference when handing over. */
@@ -208,18 +341,18 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     align-items: baseline;
     justify-content: space-between;
     gap: 0.5rem;
-    padding-top: 0.6rem;
+    padding-top: 0.85rem;
     margin-bottom: 0.75rem;
-    border-top: 1px solid var(--r-border);
+    border-top: 1px solid #e3e3df;
 }
 .runner-total-label {
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     color: var(--r-ink-muted);
 }
-.runner-total-amount { font-size: 1.15rem; font-weight: 800; color: var(--r-ink); }
+.runner-total-amount { font-size: 1.55rem; font-weight: 800; letter-spacing: -0.02em; color: var(--r-ink); }
 
 /* ---- Primary CTA ----------------------------------------------------------- */
 .runner-cta {
@@ -242,6 +375,7 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     transition: background-color 0.12s ease, transform 0.06s ease;
 }
 .runner-cta .runner-cta-icon { font-size: 1.25rem; line-height: 1; }
+.runner-cta svg.runner-cta-icon { width: 22px; height: 22px; stroke-width: 2; }
 .runner-cta:active:not(:disabled) { background: var(--r-primary-press); transform: scale(0.98); }
 /* Loading: stay green (graying reads as disabled) */
 .runner-cta.is-loading { pointer-events: none; }
@@ -259,14 +393,32 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
 @keyframes runner-spin { to { transform: rotate(360deg); } }
 
 /* ---- Empty state ----------------------------------------------------------- */
+/* Icon in a soft tinted disc, a short title, one line of guidance. Calm, not celebratory. */
 .runner-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    padding: 40px 20px;
+    padding: 56px 24px 40px;
     color: var(--r-ink-muted);
 }
-.runner-empty-icon { font-size: 3rem; line-height: 1; margin-bottom: 0.6rem; }
-.runner-empty-text { font-size: 1rem; font-weight: 500; line-height: 1.5; }
-.runner-empty-text a { color: var(--r-primary); font-weight: 700; }
+.runner-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    margin-bottom: 1.1rem;
+    border-radius: 50%;
+    background: var(--r-primary-tint);
+    color: var(--r-primary);
+    font-size: 2rem; /* legacy emoji fallback */
+    line-height: 1;
+}
+.runner-empty-icon .runner-ico { width: 34px; height: 34px; stroke-width: 1.6; }
+.runner-empty-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; color: var(--r-ink); margin-bottom: 0.35rem; }
+.runner-empty-text { max-width: 30ch; font-size: 1rem; font-weight: 400; line-height: 1.5; }
+.runner-empty-text a { color: var(--r-primary); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
 
 /* Event gate: muted subtitle under the "no live event" message. */
 .runner-eventgate-sub {
@@ -287,28 +439,69 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
 }
 
 /* ---- "Waiting to sync" section --------------------------------------------- */
+/* Section label in the shared small-caps voice + a count chip. */
 .runner-sync-head {
-    margin: 1.1rem 0 0.55rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.75rem 0 0.75rem;
     font-size: 0.72rem;
     font-weight: 700;
     color: var(--r-ink-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.14em;
 }
-.runner-card-pending { background: var(--r-pending-tint); border: 1px dashed var(--r-pending-border); box-shadow: none; }
+.runner-sync-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: #e8e7e2;
+    color: var(--r-ink);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+}
+/* Pending = done on our side, just not confirmed. Flat (no shadow), slate-washed and compact so
+   it reads as "settled, in the background" next to the live cards above. */
+.runner-card-pending {
+    background: var(--r-pending-tint);
+    border: 1px solid #dde4e8;
+    border-radius: 16px;
+    box-shadow: none;
+    padding: 14px 16px 2px;
+    margin-bottom: 10px;
+}
+.runner-card-pending .runner-card-top { margin-bottom: 0.6rem; }
+.runner-card-pending .runner-seat { font-size: 1.35rem; margin-bottom: 0.6rem; } /* still legible: confirm which seat synced */
+.runner-card-pending .runner-seat-split { margin-bottom: 0.65rem; }
+.runner-card-pending .runner-items {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    color: var(--r-ink-muted);
+    margin-bottom: 0.8rem;
+}
+.runner-pending-ico { width: 18px; height: 18px; stroke-width: 2.2; color: var(--r-primary); }
 .runner-pending-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 0.15rem 0.5rem;
+    gap: 0.35rem;
+    height: 28px;
+    padding: 0 0.7rem 0 0.55rem;
     border-radius: 999px;
     background: var(--r-surface);
+    font-size: 0.82rem;
+    font-weight: 700;
 }
+.runner-badge-ico { width: 16px; height: 16px; stroke-width: 2; }
 .runner-pending-badge-sync { color: var(--r-pending); }
-.runner-pending-badge-offline { color: var(--r-warn); }
-.runner-card-pending .runner-seat { font-size: 1.5rem; } /* still legible: confirm which seat synced */
+.runner-pending-badge-offline { background: var(--r-warn-tint); color: var(--r-warn-ink); }
 
 /* ---- Bottom tab bar -------------------------------------------------------- */
 .runner-tabbar {
@@ -319,8 +512,8 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     z-index: 20;
     display: flex;
     background: var(--r-surface);
-    border-top: 1px solid var(--r-border);
-    box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.08);
+    border-top: 1px solid #ecebe7;
+    box-shadow: 0 -4px 14px -8px rgba(0, 0, 0, 0.10);
     padding-bottom: env(safe-area-inset-bottom);
 }
 .runner-tab {
@@ -329,17 +522,29 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.12rem;
-    min-height: 60px;
-    border-top: 3px solid transparent;
-    color: var(--r-ink-muted);
-    font-size: 0.72rem;
-    font-weight: 600;
+    gap: 0.2rem;
+    position: relative;
+    min-height: 68px;
+    padding-bottom: 6px;
+    color: var(--r-ink);
+    font-size: 0.85rem;
+    font-weight: 500;
     text-decoration: none;
 }
-.runner-tab .runner-tab-icon { font-size: 1.5rem; line-height: 1; }
+.runner-tab .runner-tab-icon { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .runner-tab:active { background: var(--r-primary-tint); }
-.runner-tab.active { color: var(--r-primary); font-weight: 700; border-top-color: var(--r-primary); }
+.runner-tab.active { color: var(--r-primary); font-weight: 700; }
+.runner-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    margin-left: -2.5px;
+    border-radius: 50%;
+    background: var(--r-primary);
+}
 
 /* ---- Pool multi-select ----------------------------------------------------- */
 /* Toolbar above the pool list: select-all convenience + one-line hint. */
@@ -348,51 +553,75 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.9rem;
 }
-.runner-pool-hint { font-size: 0.82rem; font-weight: 500; color: var(--r-ink-muted); line-height: 1.3; }
+.runner-pool-hint { font-size: 0.95rem; font-weight: 400; color: var(--r-ink-muted); line-height: 1.4; }
 .runner-linkbtn {
     flex: none;
     background: none;
     border: none;
     padding: 0.25rem 0.35rem;
-    font-size: 0.85rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--r-primary);
     cursor: pointer;
 }
 .runner-linkbtn:disabled { color: var(--r-disabled-ink); cursor: default; }
 
-/* Cards become tap-to-select targets; selected state gets a green ring + wash. */
-.runner-card-selectable { cursor: pointer; transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease; }
-.runner-card-selectable:active { transform: scale(0.995); }
+/* Cards are tap-to-select targets (the whole card is the hit area; the tick is the indicator).
+   Selected = three redundant cues readable at arm's length in sun: a 3px pitch-green frame,
+   a green-washed surface, and a filled tick top-right. Text colours don't change, so legibility holds. */
+.runner-card-selectable {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.16s ease-out, box-shadow 0.16s ease-out, background-color 0.16s ease-out, transform 0.08s ease-out;
+}
+.runner-card-selectable:active { transform: scale(0.99); }
 .runner-card-selected {
     border-color: var(--r-primary);
-    box-shadow: 0 0 0 2px var(--r-primary) inset, var(--r-shadow-card);
-    background: var(--r-primary-tint);
+    /* 1px border + 2px outer ring = 3px frame without shifting layout. */
+    box-shadow: 0 0 0 2px var(--r-primary), 0 12px 24px -14px rgba(28, 94, 58, 0.55);
+    background: var(--r-selected-wash);
 }
-/* Selection tick sits in the meta row; empty circle when unselected. */
+.runner-card-selected .runner-total { border-top-color: rgba(28, 94, 58, 0.2); }
+.runner-card-selected .runner-seat-part + .runner-seat-part { border-left-color: rgba(28, 94, 58, 0.25); }
+.runner-card-selected .runner-age:not(.runner-age-warn):not(.runner-age-urgent) { background: rgba(28, 94, 58, 0.09); }
+
+/* Selection tick: own slot top-right, 32px — big enough to read as "checkbox" at a glance. */
 .runner-check {
+    flex: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.15rem;
-    height: 1.15rem;
-    margin-left: 0.4rem;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    border: 2px solid var(--r-border);
-    font-size: 0.75rem;
-    font-weight: 800;
-    vertical-align: middle;
+    border: 2px solid var(--r-check-ring);
+    background: var(--r-surface);
+    transition: background-color 0.16s ease-out, border-color 0.16s ease-out, transform 0.16s ease-out;
 }
-.runner-check-on { background: var(--r-primary); border-color: var(--r-primary); color: #fff; }
+.runner-check svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* Tick draws itself in when selected. */
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 0.2s ease-out 0.04s;
+}
+.runner-check-on { background: var(--r-primary); border-color: var(--r-primary); transform: scale(1.06); }
+.runner-check-on svg { stroke-dashoffset: 0; }
 
 /* Sticky commit bar, parked just above the bottom tab bar. */
 .runner-actionbar {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: calc(60px + env(safe-area-inset-bottom));
+    bottom: calc(68px + env(safe-area-inset-bottom));
     z-index: 21;
     padding: 0.6rem 0.75rem;
     background: var(--r-surface);
@@ -418,21 +647,35 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     .runner-cta { transition: none; }
     .runner-cta:active:not(:disabled) { transform: none; }
     .runner-cta-spinner { animation-duration: 1.4s; }
+    .runner-card-selectable,
+    .runner-check,
+    .runner-check svg { transition: none; }
+    .runner-card-selectable:active,
+    .runner-check-on { transform: none; }
+    .runner-age-urgent .runner-status-dot { animation: none; }
 }
 
 /* ---- Couldn't-deliver: secondary CTA + reason sheet ------------------------ */
-/* Secondary action under "Mark delivered": a low-emphasis outline button so the
-   primary (deliver) stays dominant. Sits directly below with a small gap. */
+/* Secondary action: neutral ink, lighter weight, shorter than the 56px primary. On the page
+   background it is a white outlined button; inside a card it becomes a soft grey fill so it
+   does not draw a second frame. Never red: "couldn't deliver" is a normal outcome, not an error. */
 .runner-cta-secondary {
-    margin-top: 0.5rem;
-    min-height: 48px;
+    min-height: 52px;
     background: var(--r-surface);
-    color: var(--r-danger);
+    color: var(--r-ink);
     border: 1px solid var(--r-border);
     box-shadow: none;
     font-size: 1rem;
+    font-weight: 600;
 }
-.runner-cta-secondary:active:not(:disabled) { background: var(--r-danger-tint); transform: scale(0.98); }
+.runner-cta-secondary svg.runner-cta-icon { width: 20px; height: 20px; color: var(--r-ink-muted); }
+.runner-cta-secondary:active:not(:disabled) { background: var(--r-chip-bg); transform: scale(0.98); }
+.runner-card .runner-cta-secondary { background: var(--r-chip-bg); border-color: transparent; color: #3a404a; }
+.runner-card .runner-cta-secondary:active:not(:disabled) { background: #e6e5e0; }
+.runner-cta-secondary:disabled { background: var(--r-disabled-bg); border-color: transparent; }
+
+/* Card action stack (my-deliveries): primary on top, 8px, secondary. */
+.runner-card-actions { display: grid; gap: 8px; margin: 0.25rem 0 12px; }
 
 /* Bottom-sheet reason picker. Backdrop dims the page; the sheet slides up from the
    bottom on mobile so options sit under the thumb. */
@@ -440,7 +683,8 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     position: fixed;
     inset: 0;
     z-index: 50;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(18, 26, 43, 0.45);
+    animation: runner-fade-in 0.18s ease-out;
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -449,35 +693,45 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
     width: 100%;
     max-width: 480px;
     background: var(--r-surface);
-    border-radius: 16px 16px 0 0;
-    padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
-    animation: runner-sheet-up 0.18s ease-out;
+    border-radius: 24px 24px 0 0;
+    padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+    box-shadow: 0 -8px 32px -8px rgba(18, 26, 43, 0.25);
+    animation: runner-sheet-up 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 @keyframes runner-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.runner-sheet-title { font-size: 1.15rem; font-weight: 800; color: var(--r-ink); margin-bottom: 0.25rem; }
-.runner-sheet-hint { font-size: 0.9rem; color: var(--r-ink-muted); margin-bottom: 0.85rem; line-height: 1.35; }
+@keyframes runner-fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* Grab handle: signals "this is a sheet, it can go away". */
+.runner-sheet-grip { width: 40px; height: 4px; margin: 0 auto 18px; border-radius: 999px; background: #d6d5d0; }
+.runner-sheet-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.015em; color: var(--r-ink); margin: 0 4px 0.35rem; }
+.runner-sheet-hint { font-size: 0.95rem; color: var(--r-ink-muted); margin: 0 4px 1.1rem; line-height: 1.45; }
 .runner-sheet-option {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
     width: 100%;
-    min-height: 52px;
-    padding: 0 1rem;
-    margin-bottom: 0.5rem;
+    min-height: 58px;
+    padding: 0 0.9rem 0 1.1rem;
+    margin-bottom: 8px;
     text-align: left;
     border: 1px solid var(--r-border);
-    border-radius: var(--r-radius-btn);
+    border-radius: 14px;
     background: var(--r-surface);
     color: var(--r-ink);
     font-size: 1.05rem;
     font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.12s ease-out, border-color 0.12s ease-out;
 }
-.runner-sheet-option:active { background: var(--r-primary-tint); transform: scale(0.99); }
+.runner-sheet-chev { width: 20px; height: 20px; color: var(--r-ink-muted); }
+.runner-sheet-option:active { background: var(--r-primary-tint); border-color: var(--r-primary); transform: scale(0.99); }
+.runner-sheet-option:focus-visible,
+.runner-sheet-cancel:focus-visible { outline: 3px solid var(--r-primary); outline-offset: 2px; }
 .runner-sheet-cancel {
     display: block;
     width: 100%;
-    min-height: 48px;
-    margin-top: 0.25rem;
+    min-height: 52px;
+    margin-top: 4px;
     border: none;
     border-radius: var(--r-radius-btn);
     background: transparent;
@@ -491,49 +745,126 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
    Ticket scan page (/scan) — identify (type/scan) + full ticket drill-down.
    ============================================================================= */
 
-.runner-scan-identify { display: flex; flex-direction: column; gap: 0.75rem; }
-.runner-scan-label { font-size: 0.9rem; font-weight: 600; color: var(--r-ink-muted); }
+/* ---- Identify step ---- */
+/* Order: one-line instruction → camera (fast path, primary) → "or" rule → typed fallback. */
+.runner-scan-identify { display: flex; flex-direction: column; gap: 0.85rem; }
+.runner-scan-label { font-size: 0.95rem; font-weight: 500; line-height: 1.45; color: var(--r-ink-muted); }
+
+/* "— or —" divider: two hairlines and a small-caps word. */
+.runner-or {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.15rem 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--r-ink-muted);
+}
+.runner-or::before,
+.runner-or::after { content: ""; flex: 1; height: 1px; background: var(--r-border); }
+
 .runner-scan-inputrow { display: flex; gap: 0.5rem; }
 .runner-scan-input {
     flex: 1;
-    min-height: 48px;
-    padding: 0 0.9rem;
+    min-width: 0;
+    min-height: 56px;
+    padding: 0 1rem;
     border: 1px solid var(--r-border);
     border-radius: var(--r-radius-btn);
     background: var(--r-surface);
     color: var(--r-ink);
-    font-size: 1.05rem;
+    font: inherit;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 1px 2px rgba(18, 26, 43, 0.04);
+    transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
 }
+.runner-scan-input::placeholder { color: #8a9089; font-weight: 500; letter-spacing: 0; }
 .runner-scan-input:focus {
     outline: none;
     border-color: var(--r-primary);
-    box-shadow: 0 0 0 3px var(--r-primary-tint);
+    box-shadow: 0 0 0 4px rgba(28, 94, 58, 0.14);
 }
+.runner-scan-input:disabled { background: #f7f7f5; color: var(--r-ink-muted); }
 .runner-scan-go {
-    min-width: 84px;
-    min-height: 48px;
-    padding: 0 1rem;
+    flex: none;
+    min-width: 88px;
+    min-height: 56px;
+    padding: 0 1.1rem;
     border: none;
     border-radius: var(--r-radius-btn);
     background: var(--r-primary);
     color: #fff;
-    font-size: 1rem;
+    font: inherit;
+    font-size: 1.05rem;
     font-weight: 700;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.12s ease-out, transform 0.06s ease-out;
 }
+.runner-scan-go:active:not(:disabled) { background: var(--r-primary-press); transform: scale(0.97); }
+.runner-scan-go:focus-visible { outline: 3px solid var(--r-primary); outline-offset: 2px; }
 .runner-scan-go:disabled { background: var(--r-disabled-bg); color: var(--r-disabled-ink); cursor: default; }
 
-.runner-scan-camera { display: flex; flex-direction: column; gap: 0.5rem; }
-.runner-scan-video {
+/* ---- Viewfinder (shared by /scan and the pool slip scanner) ---- */
+.runner-scan-camera { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 0.75rem; }
+.runner-scan-viewfinder {
+    position: relative;
     width: 100%;
-    max-height: 320px;
-    background: #000;
+    aspect-ratio: 1 / 1;
+    max-height: 62vh;
+    overflow: hidden;
     border-radius: var(--r-radius-card);
+    background: #0d1410;
+    box-shadow: var(--r-shadow-card);
 }
-.runner-scan-hint { font-size: 0.85rem; color: var(--r-ink-muted); text-align: center; margin: 0; }
+.runner-scan-video { display: block; width: 100%; max-height: 320px; background: #000; border-radius: var(--r-radius-card); }
+.runner-scan-viewfinder .runner-scan-video { height: 100%; max-height: none; object-fit: cover; border-radius: 0; }
+/* Target square: four white corner brackets, the outside dimmed by a giant spread shadow
+   (clipped by the viewfinder's overflow), and a slow sweep line. */
+.runner-scan-frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 64%;
+    aspect-ratio: 1 / 1;
+    transform: translate(-50%, -50%);
+    border-radius: 16px;
+    box-shadow: 0 0 0 100vmax rgba(8, 12, 10, 0.42);
+    --c: #fff;
+    --l: 30px;
+    --t: 4px;
+    background:
+        linear-gradient(var(--c), var(--c)) top left / var(--l) var(--t),
+        linear-gradient(var(--c), var(--c)) top left / var(--t) var(--l),
+        linear-gradient(var(--c), var(--c)) top right / var(--l) var(--t),
+        linear-gradient(var(--c), var(--c)) top right / var(--t) var(--l),
+        linear-gradient(var(--c), var(--c)) bottom left / var(--l) var(--t),
+        linear-gradient(var(--c), var(--c)) bottom left / var(--t) var(--l),
+        linear-gradient(var(--c), var(--c)) bottom right / var(--l) var(--t),
+        linear-gradient(var(--c), var(--c)) bottom right / var(--t) var(--l);
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+.runner-scan-frame::after {
+    content: "";
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 12%;
+    height: 2px;
+    border-radius: 2px;
+    background: #6ee7a8;
+    box-shadow: 0 0 12px 2px rgba(110, 231, 168, 0.55);
+    animation: runner-scan-sweep 2.4s ease-in-out infinite alternate;
+}
+@keyframes runner-scan-sweep { from { top: 12%; } to { top: 88%; } }
+.runner-scan-hint { font-size: 0.9rem; font-weight: 500; color: var(--r-ink-muted); text-align: center; margin: 0; }
 
 /* Two header buttons (scan + refresh) sit together on the right of the page head. */
 .runner-head-actions { display: flex; gap: 0.5rem; flex: none; }
@@ -567,66 +898,122 @@ html, body { background: var(--r-bg); color: var(--r-ink); }
 .runner-scan-feed-miss { background: var(--r-danger-tint); color: var(--r-danger); }
 
 /* ---- Ticket detail ---- */
-.runner-ticket { display: flex; flex-direction: column; gap: 0.75rem; }
+.runner-ticket { display: flex; flex-direction: column; gap: 14px; }
 
+/* Hero: what the runner checks first — ticket number + state — with the QR as the visual anchor. */
 .runner-ticket-hero {
     display: flex;
-    gap: 0.75rem;
+    gap: 1rem;
     align-items: center;
     justify-content: space-between;
     background: var(--r-surface);
     border-radius: var(--r-radius-card);
     box-shadow: var(--r-shadow-card);
-    padding: 0.9rem 1rem;
+    padding: 18px;
 }
 .runner-ticket-hero-main { min-width: 0; }
-.runner-ticket-number { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.01em; color: var(--r-ink); word-break: break-all; }
-.runner-ticket-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.45rem; }
-.runner-ticket-qr { width: 96px; height: 96px; border-radius: 8px; flex-shrink: 0; }
-
-.runner-badge {
-    display: inline-block;
-    padding: 0.15rem 0.55rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    line-height: 1.4;
+.runner-ticket-number {
+    margin-top: 0.3rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--r-ink);
+    overflow-wrap: anywhere; /* breaks after a hyphen, not mid-group like break-all */
 }
+.runner-ticket-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+.runner-ticket-qr {
+    flex-shrink: 0;
+    width: 104px;
+    height: 104px;
+    padding: 6px;
+    box-sizing: border-box;
+    border: 1px solid var(--r-border);
+    border-radius: 12px;
+    background: #fff;
+}
+
+/* Status pills: leading dot in currentColor so state never relies on fill alone. */
+.runner-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 26px;
+    padding: 0 0.65rem 0 0.55rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+.runner-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.runner-badge-sm { height: 22px; font-size: 0.72rem; padding: 0 0.55rem 0 0.45rem; }
 .runner-badge-ok { background: var(--r-primary-tint); color: var(--r-success-ink); }
 .runner-badge-warn { background: var(--r-warn-tint); color: var(--r-warn-ink); }
-.runner-badge-muted { background: var(--r-pending-tint); color: var(--r-pending); }
+.runner-badge-muted { background: var(--r-chip-bg); color: #4a5059; }
 
 .runner-ticket-section {
     background: var(--r-surface);
     border-radius: var(--r-radius-card);
     box-shadow: var(--r-shadow-card);
-    padding: 0.85rem 1rem;
+    padding: 18px;
 }
 .runner-ticket-section-title {
-    font-size: 0.78rem;
-    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.16em;
     color: var(--r-ink-muted);
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.9rem;
 }
 
+/* Key/value: muted label column, confident value column, generous row rhythm. */
 .runner-kv {
     display: grid;
-    grid-template-columns: minmax(90px, 40%) 1fr;
-    gap: 0.35rem 0.75rem;
+    grid-template-columns: minmax(84px, 31%) 1fr;
+    gap: 0.7rem 1rem;
     margin: 0;
+    align-items: baseline;
 }
-.runner-kv dt { color: var(--r-ink-muted); font-size: 0.9rem; }
-.runner-kv dd { margin: 0; color: var(--r-ink); font-size: 0.95rem; font-weight: 500; word-break: break-word; }
-.runner-kv-strong { font-weight: 800 !important; color: var(--r-ink) !important; font-size: 1.05rem !important; }
-.runner-kv-sub { color: var(--r-ink-muted); font-weight: 500; font-size: 0.85rem; }
+.runner-kv dt { color: var(--r-ink-muted); font-size: 0.9rem; font-weight: 500; }
+.runner-kv dd { margin: 0; color: var(--r-ink); font-size: 1rem; font-weight: 600; word-break: break-word; }
+/* Grand total row: separated by a hairline, heavier. */
+.runner-kv .runner-kv-strong {
+    padding-top: 0.75rem;
+    border-top: 1px solid #ecebe7;
+    color: var(--r-ink);
+    font-weight: 800;
+}
+.runner-kv dd.runner-kv-strong { font-size: 1.2rem; letter-spacing: -0.01em; }
+.runner-kv dt.runner-kv-strong { font-size: 0.95rem; }
+.runner-kv-sub { color: var(--r-ink-muted); font-weight: 500; font-size: 0.875rem; }
 .runner-kv-empty { color: var(--r-ink-muted); font-size: 0.95rem; }
+p.runner-kv-sub { margin: 0 0 0.9rem; line-height: 1.5; }
 
-.runner-scan-order { border-top: 1px solid var(--r-border); padding-top: 0.55rem; margin-top: 0.55rem; }
-.runner-scan-order:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
-.runner-scan-order-top { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
-.runner-scan-order-meta { color: var(--r-ink-muted); font-size: 0.82rem; flex: 1; }
-.runner-scan-order-total { font-weight: 800; }
-.runner-scan-order-items { margin-top: 0.35rem; font-size: 0.95rem; line-height: 1.5; }
+/* Order history: hairline-separated rows; #id · status pill · total on one line. */
+.runner-scan-order { border-top: 1px solid #ecebe7; padding: 0.85rem 0; }
+.runner-ticket-section-title + .runner-scan-order { border-top: none; padding-top: 0; }
+.runner-scan-order:last-child { padding-bottom: 0; }
+.runner-scan-order-top { display: flex; align-items: center; gap: 0.5rem; }
+.runner-scan-order-total { margin-left: auto; font-weight: 800; font-variant-numeric: tabular-nums; }
+.runner-scan-order-meta { margin-top: 0.2rem; color: var(--r-ink-muted); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+.runner-scan-order-items { margin-top: 0.5rem; font-size: 0.95rem; line-height: 1.6; }
+.runner-scan-order-line { display: flex; justify-content: space-between; gap: 0.75rem; }
 .runner-scan-order-items .runner-qty { font-weight: 700; }
+
+/* ---- Reduced motion (additions for the polish pass) ---- */
+@media (prefers-reduced-motion: reduce) {
+    .runner-scan-frame::after { animation: none; top: 50%; opacity: 0.6; }
+    .runner-sheet,
+    .runner-sheet-backdrop { animation: none; }
+    .runner-sheet-option,
+    .runner-scan-input,
+    .runner-scan-go { transition: none; }
+    .runner-sheet-option:active,
+    .runner-scan-go:active:not(:disabled),
+    .runner-cta-secondary:active:not(:disabled) { transform: none; }
+}

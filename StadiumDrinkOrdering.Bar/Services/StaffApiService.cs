@@ -154,7 +154,7 @@ public class StaffApiService : IStaffApiService
             // runner-collected ones on the board (greyed) until they're delivered. Delivered orders
             // are fetched too so the dashboard can tally the "Preuzeto"/"Dostavljeno" metrics; the
             // KDS board simply ignores delivered orders (no column renders them).
-            var response = await _httpClient.GetAsync("orders?status=pending,accepted,in-preparation,ready,out-for-delivery,delivery-failed,delivered");
+            var response = await _httpClient.GetAsync($"orders?status=pending,accepted,in-preparation,ready,out-for-delivery,delivery-failed,delivered&eventId={currentEvent.Id}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();

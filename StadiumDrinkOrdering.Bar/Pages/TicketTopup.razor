@@ -8,7 +8,7 @@
 @inject IWebHostEnvironment Env
 @implements IAsyncDisposable
 
-<PageTitle>@Localizer["TicketTopup_PageTitle"]</PageTitle>
+<BrandPageTitle Station="Bar" Title="@Localizer["TicketTopup_PageTitle"]" />
 
 @if (!AuthService.IsAuthenticated)
 {

@@ -599,7 +599,7 @@ public partial class Events : ComponentBase, IDisposable
 
             // Fresh artwork always starts unapproved: its text has not been checked yet.
             posterApproved = false;
-            posterSignature = PosterSignature.For(eventForm.HomeTeam, eventForm.AwayTeam, eventForm.Date);
+            posterSignature = CurrentPosterSignature();
             // A newly generated poster supersedes whatever was stored before.
             removeExistingPoster = false;
         }
@@ -772,11 +772,47 @@ public partial class Events : ComponentBase, IDisposable
         if (editingEvent == null)
             return false;
 
-        var current = PosterSignature.For(eventForm.HomeTeam, eventForm.AwayTeam, eventForm.Date);
+        var current = CurrentPosterSignature();
         var original = PosterSignature.For(editingEvent.HomeTeam, editingEvent.AwayTeam,
-            editingEvent.Date ?? eventForm.Date);
+            editingEvent.Date is { } stored ? DtoInstantToUtc(stored) : FormInstantToUtc(eventForm.Date));
         return current != original;
     }
+
+    /// <summary>
+    /// The poster signature for the form's current values, built on the UTC kick-off.
+    /// </summary>
+    /// <remarks>
+    /// The form holds local wall-clock (its datetime-local inputs), but every server-side comparison
+    /// builds the signature from the event's UTC <c>EventDate</c> — see <c>Event.IsPosterStale</c>.
+    /// Signing local time made the two permanently differ by the UTC offset, so a stored poster was
+    /// always reported stale and every save regenerated it, which reset the pending-review flag and
+    /// silently discarded the admin's "text is correct" tick. Normalizing to UTC here keeps the
+    /// signature comparable on both sides.
+    /// </remarks>
+    private string CurrentPosterSignature() =>
+        PosterSignature.For(eventForm.HomeTeam, eventForm.AwayTeam, FormInstantToUtc(eventForm.Date));
+
+    /// <summary>
+    /// Reads a form value as local wall-clock and returns the same instant in UTC. A datetime-local
+    /// input binds as <see cref="DateTimeKind.Unspecified"/>, which must be treated as local rather
+    /// than as UTC — otherwise the instant shifts by the offset instead of being converted.
+    /// </summary>
+    private static DateTime FormInstantToUtc(DateTime formValue) =>
+        formValue.Kind == DateTimeKind.Utc
+            ? formValue
+            : DateTime.SpecifyKind(formValue, DateTimeKind.Local).ToUniversalTime();
+
+    /// <summary>
+    /// Normalizes a timestamp received from the API to UTC. The API returns UTC, but a JSON value
+    /// without a trailing "Z" deserializes as <see cref="DateTimeKind.Unspecified"/>, so it is tagged
+    /// rather than converted.
+    /// </summary>
+    private static DateTime DtoInstantToUtc(DateTime apiValue) => apiValue.Kind switch
+    {
+        DateTimeKind.Utc => apiValue,
+        DateTimeKind.Local => apiValue.ToUniversalTime(),
+        _ => DateTime.SpecifyKind(apiValue, DateTimeKind.Utc)
+    };
 
     /// <summary>
     /// Downscales the generated poster in the browser (canvas → JPEG) so the customer fixture strip

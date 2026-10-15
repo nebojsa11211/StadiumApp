@@ -66,8 +66,48 @@ public class VenueController : ControllerBase
         venue.UpdatedAt = DateTime.UtcNow;
         venue.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
 
+        SeedPrimaryClubFromClubName(venue);
+
         await _context.SaveChangesAsync();
         return Ok(ToDto(venue));
+    }
+
+    /// <summary>
+    /// Promotes the free-text <see cref="Venue.ClubName"/> label into a real resident
+    /// <see cref="Club"/> when the venue has none yet. The two are easy to confuse (both are
+    /// labelled "Club name" in the admin UI) but only the <see cref="Venue.Clubs"/> collection feeds
+    /// the event form's home-team picker, so an installation that filled in the label alone could not
+    /// create a Match and saw a "no resident clubs configured" warning instead. Seeding on save makes
+    /// filling in the profile sufficient.
+    /// </summary>
+    private void SeedPrimaryClubFromClubName(Venue venue)
+    {
+        if (string.IsNullOrWhiteSpace(venue.ClubName))
+            return;
+
+        // Only ever seed an empty list. Once an admin curates resident clubs explicitly, renaming the
+        // profile label must not silently add another club to their list.
+        if (venue.Clubs.Count > 0)
+            return;
+
+        var club = new Club
+        {
+            VenueId = venue.Id,
+            Name = venue.ClubName.Trim(),
+            IsPrimary = true,
+            DisplayOrder = 0,
+            CreatedAt = DateTime.UtcNow,
+            // Carry over the venue-level crest so the seeded club arrives complete — the event poster
+            // generator requires a home crest, and re-uploading the same image would be busywork.
+            Logo = venue.ClubLogo,
+            LogoContentType = venue.ClubLogoContentType
+        };
+
+        // Add through the navigation collection only: the venue is tracked, so EF inserts the club on
+        // SaveChanges and the response DTO already reflects it. Adding to _context.Clubs as well would
+        // land the same instance in venue.Clubs twice (once here, once via relationship fixup) and the
+        // DTO would report a club that does not exist.
+        venue.Clubs.Add(club);
     }
 
     // ---- App settings --------------------------------------------------------------------

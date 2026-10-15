@@ -110,7 +110,7 @@ namespace StadiumDrinkOrdering.Admin.Services.ErrorHandling
             // requested page just because the token still passes the client-side validity check
             // (expiry + format). Without this, a server-rejected-but-client-valid token causes an
             // infinite dashboard <-> login loop (~137 redirects/sec).
-            var loginUrl = "/login?sessionExpired=true";
+            var loginUrl = "login?sessionExpired=true"; // base-relative: keeps the ngrok path base
             if (!string.IsNullOrEmpty(returnUrl))
             {
                 loginUrl += $"&returnUrl={Uri.EscapeDataString(returnUrl)}";

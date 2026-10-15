@@ -26,6 +26,19 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "ngrok": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:7000/open/backend",
+      "applicationUrl": "https://localhost:7010",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Proxy__Enabled": "true",
+        "Proxy__Prefix": "/backend",
+        "CustomerApp__BaseUrl": "https://lustrous-unfrozen-legacy.ngrok-free.dev/customer"
+      }
     }
   }
 }

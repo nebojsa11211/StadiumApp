@@ -4328,14 +4328,18 @@
   <data name="Setup_Configure" xml:space="preserve"><value>Postavi</value></data>
   <data name="Setup_Refresh" xml:space="preserve"><value>Ponovno provjeri</value></data>
   <data name="Setup_Dismiss" xml:space="preserve"><value>Sakrij podsjetnik</value></data>
-  <data name="Setup_BannerText" xml:space="preserve"><value>Vaš stadion još nije potpuno postavljen. Nekoliko osnovnih stvari treba postaviti.</value></data>
+  <data name="Setup_BannerText" xml:space="preserve"><value>Postavljanje još nije dovršeno. Još nedostaje:</value></data>
   <data name="Setup_BannerAction" xml:space="preserve"><value>Dovrši postavljanje</value></data>
-  <data name="Setup_Item_Stadium_Title" xml:space="preserve"><value>Raspored i slika stadiona</value></data>
-  <data name="Setup_Item_Stadium_Desc" xml:space="preserve"><value>Učitajte sliku rasporeda sjedala vašeg stadiona i preko nje nacrtajte raspored — tribine, sektore i sjedala. O tome ovisi sve ostalo.</value></data>
+  <data name="Setup_Item_Image_Title" xml:space="preserve"><value>Slika rasporeda sjedala (Alat za crtanje)</value></data>
+  <data name="Setup_Item_Image_Desc" xml:space="preserve"><value>Učitajte pozadinu rasporeda sjedala u Alatu za crtanje → Slika stadiona; sektori se crtaju preko nje. To je odvojeno od fotografije stadiona u izborniku Stadion i brend.</value></data>
+  <data name="Setup_Item_Layout_Title" xml:space="preserve"><value>Raspored stadiona</value></data>
+  <data name="Setup_Item_Layout_Desc" xml:space="preserve"><value>Nacrtajte barem jedan sektor u Alatu za crtanje ili uvezite JSON strukturu stadiona.</value></data>
+  <data name="Setup_Item_Categories_Title" xml:space="preserve"><value>Kategorije pića</value></data>
+  <data name="Setup_Item_Categories_Desc" xml:space="preserve"><value>Dodajte barem jednu kategoriju pića (npr. Pivo, Sokovi).</value></data>
+  <data name="Setup_Item_Drinks_Title" xml:space="preserve"><value>Pića</value></data>
+  <data name="Setup_Item_Drinks_Desc" xml:space="preserve"><value>Dodajte barem jedno piće kako bi navijači imali što naručiti.</value></data>
   <data name="Setup_Item_Venue_Title" xml:space="preserve"><value>Domaći klub i adresa</value></data>
   <data name="Setup_Item_Venue_Desc" xml:space="preserve"><value>Postavite naziv domaćeg kluba i adresu stadiona koja se prikazuje kupcima.</value></data>
-  <data name="Setup_Item_Drinks_Title" xml:space="preserve"><value>Kategorije pića i pića</value></data>
-  <data name="Setup_Item_Drinks_Desc" xml:space="preserve"><value>Dodajte barem jednu kategoriju i jedno piće kako bi navijači imali što naručiti.</value></data>
   <data name="Setup_Item_Staff_Title" xml:space="preserve"><value>Članovi osoblja</value></data>
   <data name="Setup_Item_Staff_Desc" xml:space="preserve"><value>Stvorite barem jedan račun konobara ili šankera za rad šanka.</value></data>
   <data name="Venue_PageTitle" xml:space="preserve"><value>Stadion i brend</value></data>
@@ -4369,6 +4373,8 @@
   <data name="Venue_ContactPhone" xml:space="preserve"><value>Telefon podrške</value></data>
   <data name="Venue_Website" xml:space="preserve"><value>Web stranica</value></data>
   <data name="Venue_Photo" xml:space="preserve"><value>Fotografija stadiona</value></data>
+  <data name="Venue_PhotoHint" xml:space="preserve"><value>Prikazuje se kupcima kao fotografija stadiona. Ovo nije slika rasporeda sjedala za crtanje sektora — nju učitajte u</value></data>
+  <data name="Venue_PhotoHintLink" xml:space="preserve"><value>Alatu za crtanje →</value></data>
   <data name="Venue_UploadPhoto" xml:space="preserve"><value>Učitaj fotografiju</value></data>
   <data name="Venue_RemovePhoto" xml:space="preserve"><value>Ukloni fotografiju</value></data>
   <data name="Venue_NoPhoto" xml:space="preserve"><value>Fotografija nije učitana.</value></data>
@@ -5089,5 +5095,56 @@
   </data>
   <data name="DbBadge_TitleFormat" xml:space="preserve">
     <value>Baza podataka API-ja: {0} · {1}</value>
+  </data>
+  <data name="Events_FiltersTitle" xml:space="preserve">
+    <value>Filteri</value>
+  </data>
+  <data name="Events_ClearFilters" xml:space="preserve">
+    <value>Očisti filtere</value>
+  </data>
+  <data name="Events_FilterSearchLabel" xml:space="preserve">
+    <value>Pretraži</value>
+  </data>
+  <data name="Events_FilterSearchPlaceholder" xml:space="preserve">
+    <value>Naziv, momčad ili #ID</value>
+  </data>
+  <data name="Events_FilterStatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Events_FilterAllStatuses" xml:space="preserve">
+    <value>Svi statusi</value>
+  </data>
+  <data name="Events_FilterTypeLabel" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="Events_FilterAllTypes" xml:space="preserve">
+    <value>Sve vrste</value>
+  </data>
+  <data name="Events_FilterWhenLabel" xml:space="preserve">
+    <value>Kada</value>
+  </data>
+  <data name="Events_FilterWhenAll" xml:space="preserve">
+    <value>Bilo kada</value>
+  </data>
+  <data name="Events_FilterWhenUpcoming" xml:space="preserve">
+    <value>Nadolazeći</value>
+  </data>
+  <data name="Events_FilterWhenPast" xml:space="preserve">
+    <value>Prošli</value>
+  </data>
+  <data name="Events_FilterVisibilityLabel" xml:space="preserve">
+    <value>Vidljivost</value>
+  </data>
+  <data name="Events_FilterVisibilityAll" xml:space="preserve">
+    <value>Svi</value>
+  </data>
+  <data name="Events_FilterVisibilityPublished" xml:space="preserve">
+    <value>Objavljeni</value>
+  </data>
+  <data name="Events_FilterVisibilityHidden" xml:space="preserve">
+    <value>Skriveni</value>
+  </data>
+  <data name="Events_NoMatches" xml:space="preserve">
+    <value>Nijedan događaj ne odgovara odabranim filterima.</value>
   </data>
 </root>

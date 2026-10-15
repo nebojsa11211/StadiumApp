@@ -287,11 +287,11 @@ public partial class Dashboard : ComponentBase, IDisposable
     }
 
     // Navigation methods
-    private void NavigateToOrders() => Navigation.NavigateTo("/orders");
-    private void NavigateToUsers() => Navigation.NavigateTo("/users");
-    private void NavigateToReports() => Navigation.NavigateTo("/reports");
-    private void NavigateToLogs() => Navigation.NavigateTo("/logs");
-    private void NavigateToOrder(int orderId) => Navigation.NavigateTo($"/orders/{orderId}");
+    private void NavigateToOrders() => Navigation.NavigateTo("orders");
+    private void NavigateToUsers() => Navigation.NavigateTo("users");
+    private void NavigateToReports() => Navigation.NavigateTo("reports");
+    private void NavigateToLogs() => Navigation.NavigateTo("logs");
+    private void NavigateToOrder(int orderId) => Navigation.NavigateTo($"orders/{orderId}");
 
     public void Dispose()
     {

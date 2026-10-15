@@ -56,9 +56,9 @@ public partial class EventStatistics : ComponentBase
     }
 
     /// <summary>Drill into the full ticket list for this event (the Tickets page reads ?eventId).</summary>
-    private void ViewTickets() => Navigation.NavigateTo($"/tickets?eventId={EventId}");
+    private void ViewTickets() => Navigation.NavigateTo($"tickets?eventId={EventId}");
 
     /// <summary>Drill into this event's drink orders (the Orders page reads ?eventId and shows a
     /// per-event drink breakdown).</summary>
-    private void ViewDrinkOrders() => Navigation.NavigateTo($"/orders?eventId={EventId}");
+    private void ViewDrinkOrders() => Navigation.NavigateTo($"orders?eventId={EventId}");
 }

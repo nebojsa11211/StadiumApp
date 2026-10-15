@@ -260,7 +260,7 @@ else
     private void OnAuthStateChanged()
     {
         if (!AuthService.IsAuthenticated)
-            InvokeAsync(() => Navigation.NavigateTo("/login"));
+            InvokeAsync(() => Navigation.NavigateTo("login"));
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

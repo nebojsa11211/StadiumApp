@@ -118,7 +118,7 @@ public partial class DashboardLayout : LayoutComponentBase, IDisposable
     {
         _showProfile = false;
         await AuthStateService.LogoutAsync();
-        Navigation.NavigateTo("/login");
+        Navigation.NavigateTo("login");
     }
 
     public void Dispose()

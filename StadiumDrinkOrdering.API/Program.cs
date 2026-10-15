@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using System.Text;
 using System.Diagnostics;
 using Npgsql;
+using StadiumDrinkOrdering.Shared.Hosting;
 
 // Load variables from the gitignored .env file (if present) BEFORE the configuration builder is
 // created, so values like ConnectionStrings__Supabase become available to configuration. Existing
@@ -29,6 +30,9 @@ StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.LoadDotEnvFile();
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// "ngrok" launch profile: start the tunnel on F5 + trust the path-based proxy (see Ngrok.md).
+builder.AddReverseProxySupport();
 
 // ================================================================================================
 // ENVIRONMENT VARIABLE CONFIGURATION
@@ -483,13 +487,17 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+// Must run first: forwarded scheme/host + Proxy:Prefix path base (no-op outside the ngrok profile).
+app.UseReverseProxySupport();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stadium API V1");
+        // Relative, so it also resolves under the ngrok path base (/backend/swagger -> /backend/swagger/v1/swagger.json).
+        c.SwaggerEndpoint("v1/swagger.json", "Stadium API V1");
         c.RoutePrefix = "swagger";
     });
 }

@@ -4298,14 +4298,18 @@
   <data name="Setup_Configure" xml:space="preserve"><value>Configure</value></data>
   <data name="Setup_Refresh" xml:space="preserve"><value>Re-check</value></data>
   <data name="Setup_Dismiss" xml:space="preserve"><value>Hide reminder</value></data>
-  <data name="Setup_BannerText" xml:space="preserve"><value>Your stadium isn't fully configured yet. A few essentials still need setting up.</value></data>
+  <data name="Setup_BannerText" xml:space="preserve"><value>Setup isn't finished yet. Still missing:</value></data>
   <data name="Setup_BannerAction" xml:space="preserve"><value>Finish setup</value></data>
-  <data name="Setup_Item_Stadium_Title" xml:space="preserve"><value>Stadium layout &amp; image</value></data>
-  <data name="Setup_Item_Stadium_Desc" xml:space="preserve"><value>Upload your stadium's seat-map picture and draw its layout on top — tribunes, sectors and seats. Everything else depends on this.</value></data>
+  <data name="Setup_Item_Image_Title" xml:space="preserve"><value>Seat-map image (Drawing Tool)</value></data>
+  <data name="Setup_Item_Image_Desc" xml:space="preserve"><value>Upload the seat-map background in Drawing Tool → Stadium Image; sectors are drawn on top of it. This is separate from the stadium photo in Venue &amp; Branding.</value></data>
+  <data name="Setup_Item_Layout_Title" xml:space="preserve"><value>Stadium layout</value></data>
+  <data name="Setup_Item_Layout_Desc" xml:space="preserve"><value>Draw at least one sector in the Drawing Tool, or import a stadium structure JSON.</value></data>
+  <data name="Setup_Item_Categories_Title" xml:space="preserve"><value>Drink categories</value></data>
+  <data name="Setup_Item_Categories_Desc" xml:space="preserve"><value>Add at least one drink category (e.g. Beer, Soft drinks).</value></data>
+  <data name="Setup_Item_Drinks_Title" xml:space="preserve"><value>Drinks</value></data>
+  <data name="Setup_Item_Drinks_Desc" xml:space="preserve"><value>Add at least one drink so fans have something to order.</value></data>
   <data name="Setup_Item_Venue_Title" xml:space="preserve"><value>Home club &amp; address</value></data>
   <data name="Setup_Item_Venue_Desc" xml:space="preserve"><value>Set the home club name and the stadium address shown to customers.</value></data>
-  <data name="Setup_Item_Drinks_Title" xml:space="preserve"><value>Drink categories &amp; drinks</value></data>
-  <data name="Setup_Item_Drinks_Desc" xml:space="preserve"><value>Add at least one category and one drink so fans have something to order.</value></data>
   <data name="Setup_Item_Staff_Title" xml:space="preserve"><value>Staff members</value></data>
   <data name="Setup_Item_Staff_Desc" xml:space="preserve"><value>Create at least one bartender or waiter account to run the bar.</value></data>
   <data name="Venue_PageTitle" xml:space="preserve"><value>Venue &amp; Branding</value></data>
@@ -4339,6 +4343,8 @@
   <data name="Venue_ContactPhone" xml:space="preserve"><value>Support phone</value></data>
   <data name="Venue_Website" xml:space="preserve"><value>Website</value></data>
   <data name="Venue_Photo" xml:space="preserve"><value>Stadium photo</value></data>
+  <data name="Venue_PhotoHint" xml:space="preserve"><value>Shown to customers as a picture of the stadium. This is not the seat-map image used for drawing sectors — upload that one in the</value></data>
+  <data name="Venue_PhotoHintLink" xml:space="preserve"><value>Drawing Tool →</value></data>
   <data name="Venue_UploadPhoto" xml:space="preserve"><value>Upload photo</value></data>
   <data name="Venue_RemovePhoto" xml:space="preserve"><value>Remove photo</value></data>
   <data name="Venue_NoPhoto" xml:space="preserve"><value>No photo uploaded.</value></data>
@@ -5059,5 +5065,56 @@
   </data>
   <data name="DbBadge_TitleFormat" xml:space="preserve">
     <value>API database: {0} · {1}</value>
+  </data>
+  <data name="Events_FiltersTitle" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="Events_ClearFilters" xml:space="preserve">
+    <value>Clear filters</value>
+  </data>
+  <data name="Events_FilterSearchLabel" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Events_FilterSearchPlaceholder" xml:space="preserve">
+    <value>Name, team or #ID</value>
+  </data>
+  <data name="Events_FilterStatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Events_FilterAllStatuses" xml:space="preserve">
+    <value>All statuses</value>
+  </data>
+  <data name="Events_FilterTypeLabel" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Events_FilterAllTypes" xml:space="preserve">
+    <value>All types</value>
+  </data>
+  <data name="Events_FilterWhenLabel" xml:space="preserve">
+    <value>When</value>
+  </data>
+  <data name="Events_FilterWhenAll" xml:space="preserve">
+    <value>Any time</value>
+  </data>
+  <data name="Events_FilterWhenUpcoming" xml:space="preserve">
+    <value>Upcoming</value>
+  </data>
+  <data name="Events_FilterWhenPast" xml:space="preserve">
+    <value>Past</value>
+  </data>
+  <data name="Events_FilterVisibilityLabel" xml:space="preserve">
+    <value>Visibility</value>
+  </data>
+  <data name="Events_FilterVisibilityAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Events_FilterVisibilityPublished" xml:space="preserve">
+    <value>Published</value>
+  </data>
+  <data name="Events_FilterVisibilityHidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="Events_NoMatches" xml:space="preserve">
+    <value>No events match the current filters.</value>
   </data>
 </root>

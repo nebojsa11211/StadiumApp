@@ -1,0 +1,15 @@
+{
+  "name": "stadium-ngrok-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Path-based HTTPS reverse proxy that puts all Stadium apps behind one ngrok domain. See Ngrok.md.",
+  "main": "proxy.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^4.2.0"
+  }
+}

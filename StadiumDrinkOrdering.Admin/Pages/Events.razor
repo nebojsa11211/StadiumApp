@@ -94,12 +94,82 @@
             </article>
         </section>
 
+        <!-- Filters -->
+        <div class="panel filters-panel" id="admin-events-filters-panel">
+            <div class="panel__head" id="admin-events-filters-head">
+                <h2 class="panel__title" id="admin-events-filters-title">@L["Events_FiltersTitle"]</h2>
+                @if (HasActiveFilters)
+                {
+                    <button class="link-btn" @onclick="ClearFilters" id="admin-events-clear-filters-btn">
+                        <i class="oi oi-x"></i> @L["Events_ClearFilters"]
+                    </button>
+                }
+            </div>
+            <div class="filters" id="admin-events-filters-container">
+                <div class="field field--grow" id="admin-events-search-field">
+                    <label class="field__label" for="admin-events-search-input">@L["Events_FilterSearchLabel"]</label>
+                    <input type="text" class="field__input" id="admin-events-search-input"
+                           placeholder="@L["Events_FilterSearchPlaceholder"]"
+                           @bind="searchText" @bind:event="oninput" />
+                </div>
+                <div class="field" id="admin-events-status-field">
+                    <label class="field__label" for="admin-events-status-select">@L["Events_FilterStatusLabel"]</label>
+                    <select class="field__input" id="admin-events-status-select" @bind="statusFilter">
+                        <option value="">@L["Events_FilterAllStatuses"]</option>
+                        @foreach (var s in Enum.GetValues<EventStatus>())
+                        {
+                            <option value="@s">@StatusDisplay(s)</option>
+                        }
+                    </select>
+                </div>
+                <div class="field" id="admin-events-type-field">
+                    <label class="field__label" for="admin-events-type-select">@L["Events_FilterTypeLabel"]</label>
+                    <select class="field__input" id="admin-events-type-select" @bind="typeFilter">
+                        <option value="">@L["Events_FilterAllTypes"]</option>
+                        @foreach (var t in EventTypeOptions)
+                        {
+                            <option value="@t">@t</option>
+                        }
+                    </select>
+                </div>
+                <div class="field" id="admin-events-timeframe-field">
+                    <label class="field__label" for="admin-events-timeframe-select">@L["Events_FilterWhenLabel"]</label>
+                    <select class="field__input" id="admin-events-timeframe-select" @bind="timeframeFilter">
+                        <option value="">@L["Events_FilterWhenAll"]</option>
+                        <option value="upcoming">@L["Events_FilterWhenUpcoming"]</option>
+                        <option value="past">@L["Events_FilterWhenPast"]</option>
+                    </select>
+                </div>
+                <div class="field" id="admin-events-visibility-field">
+                    <label class="field__label" for="admin-events-visibility-select">@L["Events_FilterVisibilityLabel"]</label>
+                    <select class="field__input" id="admin-events-visibility-select" @bind="visibilityFilter">
+                        <option value="">@L["Events_FilterVisibilityAll"]</option>
+                        <option value="published">@L["Events_FilterVisibilityPublished"]</option>
+                        <option value="hidden">@L["Events_FilterVisibilityHidden"]</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <!-- Events Grid -->
         <div class="panel" id="admin-events-panel">
             <div class="panel__head" id="admin-events-panel-head">
                 <h2 class="panel__title" id="admin-events-panel-title">@L["Events_PanelTitle"] <span class="panel__count mono" id="admin-events-panel-count">@FilteredEvents.Count()</span></h2>
             </div>
             <div class="panel__body" id="admin-events-panel-body">
+                @if (!FilteredEvents.Any())
+                {
+                    <div class="empty" id="admin-events-no-matches">
+                        <i class="bi bi-funnel"></i>
+                        <p>@L["Events_NoMatches"]</p>
+                        @if (HasActiveFilters)
+                        {
+                            <button class="pill-btn" @onclick="ClearFilters" id="admin-events-no-matches-clear-btn">
+                                <i class="bi bi-x-circle"></i><span>@L["Events_ClearFilters"]</span>
+                            </button>
+                        }
+                    </div>
+                }
                 <div class="row" id="admin-events-list">
                     @foreach (var evt in FilteredEvents.OrderBy(e => e.Date ?? DateTime.MaxValue))
                     {
@@ -381,7 +451,7 @@
                                     {
                                         <div class="alert alert-warning py-2 mb-0" id="admin-event-form-home-noclubs">
                                             <i class="bi bi-exclamation-triangle me-1"></i>@L["Events_NoClubsWarning"]
-                                            <a href="/admin/venue-settings" id="admin-event-form-home-venue-link">@L["Events_NoClubsLink"]</a>
+                                            <a href="admin/venue-settings" id="admin-event-form-home-venue-link">@L["Events_NoClubsLink"]</a>
                                         </div>
                                     }
                                     else
@@ -419,7 +489,7 @@
                                     </datalist>
                                     <div class="form-text" id="admin-event-form-away-hint">
                                         @L["Events_AwayTeamHint"]
-                                        <a href="/admin/teams" id="admin-event-form-away-teams-link">@L["Events_AwayTeamManageLink"]</a>
+                                        <a href="admin/teams" id="admin-event-form-away-teams-link">@L["Events_AwayTeamManageLink"]</a>
                                     </div>
                                 </div>
                             </div>

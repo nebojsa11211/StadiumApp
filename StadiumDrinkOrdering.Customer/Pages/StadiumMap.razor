@@ -15,7 +15,7 @@
 
     <div id="customer-stadium-map-controls" class="map-actions">
         <button id="customer-stadium-map-refresh-btn" class="btn btn-ghost btn-sm" @onclick="RefreshMap">@Localizer["StadiumMap_RefreshButton"]</button>
-        <a id="customer-stadium-map-order-btn" class="btn btn-primary btn-sm" href="/menu">@Localizer["StadiumMap_OrderDrinks"]</a>
+        <a id="customer-stadium-map-order-btn" class="btn btn-primary btn-sm" href="menu">@Localizer["StadiumMap_OrderDrinks"]</a>
     </div>
 
     @if (stadiumLayout == null)
@@ -144,7 +144,7 @@
         selectedSection = stadiumLayout?.Sections.FirstOrDefault(s => s.SectionName.Equals(sector, StringComparison.OrdinalIgnoreCase));
     }
 
-    private void NavigateToMenu(string sector) => NavigationManager.NavigateTo($"/menu?sector={sector}");
+    private void NavigateToMenu(string sector) => NavigationManager.NavigateTo($"menu?sector={sector}");
 
     private string GetSectorInfo(string sectorName)
     {

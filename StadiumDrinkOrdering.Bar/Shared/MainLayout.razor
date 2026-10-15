@@ -146,7 +146,7 @@
     private async Task HandleLogout()
     {
         await AuthStateService.LogoutAsync();
-        NavigationManager.NavigateTo("/login");
+        NavigationManager.NavigateTo("login");
     }
 
     public void Dispose()

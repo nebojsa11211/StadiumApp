@@ -20,6 +20,10 @@ builder.Services.AddLocalization();
 //
 // wwwroot/appsettings.json still wins when it names an explicit non-loopback host, so pointing the
 // Runner at a deployed/staging API stays a config-only change.
+//
+// Behind the ngrok path proxy (Ngrok.md) the Runner is served from https://<domain>/runner/ and the
+// API from https://<domain>/backend/ on the SAME origin — there is no port to swap, so a non-root
+// base address means "behind the proxy" and the API is the sibling /backend/ path.
 var configuredApiUrl = builder.Configuration["ApiSettings:BaseUrl"];
 var apiBaseUrl = ResolveApiBaseUrl(configuredApiUrl, builder.HostEnvironment.BaseAddress);
 if (!apiBaseUrl.EndsWith('/')) apiBaseUrl += "/";
@@ -27,6 +31,7 @@ if (!apiBaseUrl.EndsWith('/')) apiBaseUrl += "/";
 static string ResolveApiBaseUrl(string? configured, string hostBaseAddress)
 {
     const int ApiPort = 7010;
+    const string ProxiedApiPath = "/backend/"; // keep in sync with tools/proxy/proxy.js
 
     // An explicit, non-loopback configured value is authoritative (staging, Docker, a real host).
     if (!string.IsNullOrWhiteSpace(configured) &&
@@ -36,9 +41,15 @@ static string ResolveApiBaseUrl(string? configured, string hostBaseAddress)
         return configured;
     }
 
-    // Otherwise follow the origin that served this app, so LAN access works from any device.
     if (Uri.TryCreate(hostBaseAddress, UriKind.Absolute, out var origin))
     {
+        // Served under a path prefix (/runner/) => behind the ngrok proxy: API is a sibling path.
+        if (origin.AbsolutePath != "/")
+        {
+            return new Uri(origin, ProxiedApiPath).ToString();
+        }
+
+        // Otherwise follow the origin that served this app, so LAN access works from any device.
         return new UriBuilder(origin.Scheme, origin.Host, ApiPort).Uri.ToString();
     }
 

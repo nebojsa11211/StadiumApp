@@ -32,6 +32,20 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "ngrok": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:7000/open/bar",
+      "applicationUrl": "https://localhost:7040",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Proxy__Enabled": "true",
+        "Proxy__Prefix": "/bar",
+        "ApiSettings__PublicBaseUrl": "/backend",
+        "Urls": "https://localhost:7040"
+      }
     }
   }
 }

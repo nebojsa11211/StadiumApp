@@ -21,6 +21,7 @@ using StadiumDrinkOrdering.Shared.Authentication.Extensions;
 using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using StadiumDrinkOrdering.Shared.Configuration;
 using System.Globalization;
+using StadiumDrinkOrdering.Shared.Hosting;
 
 Console.WriteLine("=== ADMIN PROGRAM START ===");
 Console.WriteLine($"DOTNET_RUNNING_IN_CONTAINER: {Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER")}");
@@ -31,6 +32,9 @@ Console.WriteLine($"ASPNETCORE_URLS: {Environment.GetEnvironmentVariable("ASPNET
 AppConfiguration.LoadDotEnvFile();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// "ngrok" launch profile: start the tunnel on F5 + trust the path-based proxy (see Ngrok.md).
+builder.AddReverseProxySupport();
 
 // Docker configuration - support both HTTP and HTTPS when running in container
 var containerEnv = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
@@ -345,6 +349,9 @@ builder.Services.AddHttpClient<IStadiumSvgService, StadiumSvgService>(client =>
 // builder.Services.AddScoped<IStadiumLayoutGenerator, HNKRijekaLayoutGenerator>();
 
 var app = builder.Build();
+
+// Must run first: forwarded scheme/host + Proxy:Prefix path base (no-op outside the ngrok profile).
+app.UseReverseProxySupport();
 
 // ErrorMessageMappings is reached from static ApiResponse factories that have no DI, so hand it the
 // localizer once here. See Services/ErrorHandling/ErrorMessageMappings.cs.

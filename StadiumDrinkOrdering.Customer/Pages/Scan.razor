@@ -10,7 +10,7 @@
 
 <PageTitle>@Localizer["Scan_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="@Localizer["Scan_ScreenHeader"]" BackHref="/welcome" />
+<ScreenHeader Title="@Localizer["Scan_ScreenHeader"]" BackHref="welcome" />
 
 <div id="customer-scan-body" class="scan-body">
     <div id="customer-scan-reticle" class="reticle">
@@ -72,7 +72,7 @@
         var code = e.Value?.ToString();
         if (string.IsNullOrWhiteSpace(code)) return;
         _code = code;
-        Nav.NavigateTo($"/t/{code.Trim()}");
+        Nav.NavigateTo($"t/{code.Trim()}");
     }
 
     private void OnKey(KeyboardEventArgs e)
@@ -83,6 +83,6 @@
     private void Submit()
     {
         if (string.IsNullOrWhiteSpace(_code)) { _error = true; return; }
-        Nav.NavigateTo($"/t/{_code.Trim()}");
+        Nav.NavigateTo($"t/{_code.Trim()}");
     }
 }

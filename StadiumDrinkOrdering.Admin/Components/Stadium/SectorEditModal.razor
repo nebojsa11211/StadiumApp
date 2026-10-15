@@ -946,7 +946,7 @@
             _selfRef ??= DotNetObjectReference.Create(this);
             var json = System.Text.Json.JsonSerializer.Serialize(Sector);
             var tipTemplate = L["SectorEdit_PreviewSeatTooltip"].Value; // e.g. "Row {0}, Seat {1}"
-            var apiBase = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+            var apiBase = StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.ResolvePublicApiBaseUrl(Configuration);
             await JSRuntime.InvokeVoidAsync("setStadiumMapImageUrl", $"{apiBase}/api/venue/stadium-image");
             await JSRuntime.InvokeVoidAsync("renderSectorPreview",
                 "admin-sector-preview-canvas", json, seatMarginPercent / 100.0, tipTemplate, _selfRef);

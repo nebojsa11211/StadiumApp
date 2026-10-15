@@ -76,19 +76,8 @@
 
     private record SetupItem(string Key, bool Done, string Title, string Description, string Route);
 
-    private IEnumerable<SetupItem> Items => status is null
-        ? Enumerable.Empty<SetupItem>()
-        : new[]
-        {
-            new SetupItem("stadium", status.HasStadiumStructure && status.HasStadiumImage,
-                L["Setup_Item_Stadium_Title"], L["Setup_Item_Stadium_Desc"], "admin/stadium-drawing-tool"),
-            new SetupItem("venue", status.HasVenueIdentity,
-                L["Setup_Item_Venue_Title"], L["Setup_Item_Venue_Desc"], "admin/venue-settings"),
-            new SetupItem("drinks", status.HasCategories && status.HasDrinks,
-                L["Setup_Item_Drinks_Title"], L["Setup_Item_Drinks_Desc"], "drinks"),
-            new SetupItem("staff", status.HasStaff,
-                L["Setup_Item_Staff_Title"], L["Setup_Item_Staff_Desc"], "users"),
-        };
+    private IEnumerable<SetupItem> Items => SetupState.Steps
+        .Select(s => new SetupItem(s.Key, s.Done, L[s.TitleKey], L[s.DescKey], s.Route));
 
     protected override async Task OnInitializedAsync()
     {

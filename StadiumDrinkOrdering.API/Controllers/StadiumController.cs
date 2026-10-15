@@ -99,8 +99,11 @@ public class StadiumController : ControllerBase
     [Authorize(Roles = "Admin,Bartender,Waiter")]
     public async Task<ActionResult<List<SectionRefDto>>> GetSections()
     {
+        // Only sections backing a drawn sector overlay are real venue sectors; the legacy seeded
+        // StadiumSections ("Section A" … "Section D VIP") would otherwise show up as phantom sectors.
         var sections = await _context.StadiumSections
-            .Where(s => s.IsActive)
+            .Where(s => s.IsActive
+                        && _context.StadiumSectorOverlays.Any(o => o.StadiumSectionId == s.Id))
             .OrderBy(s => s.SectionCode)
             .Select(s => new SectionRefDto { Code = s.SectionCode, Name = s.SectionName })
             .ToListAsync();

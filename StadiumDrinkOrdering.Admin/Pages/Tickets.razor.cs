@@ -111,7 +111,8 @@ public partial class Tickets : ComponentBase
     {
         get
         {
-            var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+            // Browser-facing (<img src>): ApiSettings:PublicBaseUrl when set (ngrok profile).
+            var apiBaseUrl = StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.ResolvePublicApiBaseUrl(Configuration);
             return $"{apiBaseUrl}/api/venue/stadium-image";
         }
     }
@@ -332,7 +333,7 @@ public partial class Tickets : ComponentBase
 
     private void ViewOrder(int orderId)
     {
-        Navigation.NavigateTo($"/orders?id={orderId}");
+        Navigation.NavigateTo($"orders?id={orderId}");
     }
 
     private async Task ValidateTicket(string ticketNumber)

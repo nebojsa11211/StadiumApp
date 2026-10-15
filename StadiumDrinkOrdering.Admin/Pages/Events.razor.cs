@@ -264,14 +264,66 @@ public partial class Events : ComponentBase, IDisposable
         seasons = SeasonState.Seasons;
     }
 
+    // Page-local filters, layered on top of the shell's season scope. "" = no filter.
+    private string searchText = "";
+    private string statusFilter = "";
+    private string typeFilter = "";
+    private string timeframeFilter = "";   // "", "upcoming", "past"
+    private string visibilityFilter = "";  // "", "published", "hidden"
+
+    private bool HasActiveFilters =>
+        !string.IsNullOrWhiteSpace(searchText) || statusFilter != "" || typeFilter != ""
+        || timeframeFilter != "" || visibilityFilter != "";
+
+    private void ClearFilters()
+    {
+        searchText = statusFilter = typeFilter = timeframeFilter = visibilityFilter = "";
+    }
+
+    /// <summary>Types actually present on loaded events (custom "Other" types included).</summary>
+    private IEnumerable<string> EventTypeOptions =>
+        (events ?? new List<EventDto>())
+            .Select(e => string.IsNullOrWhiteSpace(e.EventType) ? "Match" : e.EventType)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(t => t);
+
     private IEnumerable<EventDto> FilteredEvents
     {
         get
         {
             if (events == null) return Enumerable.Empty<EventDto>();
-            if (seasonFilterValue == "") return events;
-            if (seasonFilterValue == "none") return events.Where(e => e.SeasonId == null);
-            return int.TryParse(seasonFilterValue, out var id) ? events.Where(e => e.SeasonId == id) : events;
+            IEnumerable<EventDto> result = events;
+
+            if (seasonFilterValue == "none") result = result.Where(e => e.SeasonId == null);
+            else if (seasonFilterValue != "" && int.TryParse(seasonFilterValue, out var seasonId))
+                result = result.Where(e => e.SeasonId == seasonId);
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                var q = searchText.Trim().TrimStart('#');
+                result = result.Where(e =>
+                    e.Id.ToString() == q
+                    || (e.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (e.HomeTeam?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (e.AwayTeam?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false));
+            }
+
+            if (Enum.TryParse<EventStatus>(statusFilter, out var status))
+                result = result.Where(e => e.Status == status);
+
+            if (typeFilter != "")
+                result = result.Where(e => string.Equals(
+                    string.IsNullOrWhiteSpace(e.EventType) ? "Match" : e.EventType, typeFilter, StringComparison.OrdinalIgnoreCase));
+
+            // Event dates are UTC; undated events count as upcoming (not yet scheduled).
+            var now = DateTime.UtcNow;
+            if (timeframeFilter == "upcoming") result = result.Where(e => e.Date == null || e.Date >= now);
+            else if (timeframeFilter == "past") result = result.Where(e => e.Date != null && e.Date < now);
+
+            if (visibilityFilter == "published") result = result.Where(e => e.IsActive);
+            else if (visibilityFilter == "hidden") result = result.Where(e => !e.IsActive);
+
+            return result;
         }
     }
 

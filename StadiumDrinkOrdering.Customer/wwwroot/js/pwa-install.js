@@ -123,7 +123,7 @@ window.trackPwaInstallation = function (data) {
 
         // Send to analytics endpoint if available
         if (typeof fetch !== 'undefined') {
-            fetch('/api/analytics/pwa-install', {
+            fetch('api/analytics/pwa-install', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

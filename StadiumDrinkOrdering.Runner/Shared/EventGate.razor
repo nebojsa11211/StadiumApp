@@ -6,22 +6,30 @@
    game day, so with nothing live there is nothing to run. Fails open on an unknown result (offline /
    API error) so a runner is never locked out mid-shift, and re-checks periodically so it opens on its
    own once an event goes live. *@
-@if (isChecking)
+@* The loading / blocked states render in place of the RouteView, so they would skip the layout chain
+   (MainLayout -> MobileShell) and show full-bleed on desktop. LayoutView puts them back inside the
+   app chrome and the phone frame. *@
+@if (isChecking || blocked)
 {
-    <div class="runner-loading" id="runner-eventgate-loading">
-        <div class="runner-cta-spinner" id="runner-eventgate-spinner"></div>
-    </div>
-}
-else if (blocked)
-{
-    <div class="runner-page" id="runner-eventgate-blocked">
-        <div class="runner-empty" id="runner-eventgate-empty">
-            <div class="runner-empty-icon" id="runner-eventgate-icon" aria-hidden="true"><RunnerIcon Name="slash" /></div>
-            <div class="runner-empty-title" id="runner-eventgate-title">@Localizer["EventGate_NoLiveEventTitle"]</div>
-            <p class="runner-eventgate-sub" id="runner-eventgate-body">@Localizer["EventGate_NoLiveEventBody"]</p>
-            <button class="runner-linkbtn" @onclick="CheckAsync" id="runner-eventgate-recheck">@Localizer["EventGate_CheckAgain"]</button>
-        </div>
-    </div>
+    <LayoutView Layout="@typeof(MainLayout)">
+        @if (isChecking)
+        {
+            <div class="runner-loading" id="runner-eventgate-loading">
+                <div class="runner-cta-spinner" id="runner-eventgate-spinner"></div>
+            </div>
+        }
+        else
+        {
+            <div class="runner-page" id="runner-eventgate-blocked">
+                <div class="runner-empty" id="runner-eventgate-empty">
+                    <div class="runner-empty-icon" id="runner-eventgate-icon" aria-hidden="true"><RunnerIcon Name="slash" /></div>
+                    <div class="runner-empty-title" id="runner-eventgate-title">@Localizer["EventGate_NoLiveEventTitle"]</div>
+                    <p class="runner-eventgate-sub" id="runner-eventgate-body">@Localizer["EventGate_NoLiveEventBody"]</p>
+                    <button class="runner-linkbtn" @onclick="CheckAsync" id="runner-eventgate-recheck">@Localizer["EventGate_CheckAgain"]</button>
+                </div>
+            </div>
+        }
+    </LayoutView>
 }
 else
 {

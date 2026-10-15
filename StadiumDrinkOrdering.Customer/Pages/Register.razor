@@ -11,7 +11,7 @@
 
 <PageTitle>@Localizer["Register_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="@Localizer["Register_ScreenHeader_Title"]" Subtitle="@Localizer["Register_ScreenHeader_Subtitle"]" BackHref="/login" />
+<ScreenHeader Title="@Localizer["Register_ScreenHeader_Title"]" Subtitle="@Localizer["Register_ScreenHeader_Subtitle"]" BackHref="login" />
 
 <div id="customer-register-body" class="reg-body">
     <div id="customer-register-hero" class="reg-hero">
@@ -78,7 +78,7 @@
 
         <label id="customer-register-terms-group" class="reg-terms">
             <InputCheckbox id="customer-register-terms-input" @bind-Value="acceptTerms" />
-            <span>@Localizer["Register_TermsAccept"] <a href="/terms" target="_blank">@Localizer["Register_TermsOfService"]</a> @Localizer["Register_TermsAnd"] <a href="/privacy" target="_blank">@Localizer["Register_PrivacyPolicy"]</a>@Localizer["Checkout_TermsDot"]</span>
+            <span>@Localizer["Register_TermsAccept"] <a href="terms" target="_blank">@Localizer["Register_TermsOfService"]</a> @Localizer["Register_TermsAnd"] <a href="privacy" target="_blank">@Localizer["Register_PrivacyPolicy"]</a>@Localizer["Checkout_TermsDot"]</span>
         </label>
         @if (!acceptTerms && showTermsError)
         {
@@ -97,7 +97,7 @@
         </button>
     </EditForm>
 
-    <p class="alt" id="customer-register-login-section">@Localizer["Register_AlreadyHasAccount"] <a href="/login" id="customer-register-login-link">@Localizer["Register_SignInLink"]</a>.</p>
+    <p class="alt" id="customer-register-login-section">@Localizer["Register_AlreadyHasAccount"] <a href="login" id="customer-register-login-link">@Localizer["Register_SignInLink"]</a>.</p>
 </div>
 
 @code {
@@ -142,7 +142,7 @@
     protected override void OnInitialized()
     {
         if (AuthStateService.IsAuthenticated)
-            NavigationManager.NavigateTo("/home");
+            NavigationManager.NavigateTo("home");
     }
 
     private async Task HandleRegister()
@@ -191,7 +191,7 @@
                     StateHasChanged();
 
                     await Task.Delay(1200);
-                    NavigationManager.NavigateTo("/home");
+                    NavigationManager.NavigateTo("home");
                 }
                 else
                 {

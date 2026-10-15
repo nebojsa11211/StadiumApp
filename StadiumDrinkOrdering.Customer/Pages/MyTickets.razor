@@ -12,7 +12,7 @@
 
 <PageTitle>@Localizer["MyTickets_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="@Localizer["MyTickets_ScreenHeader_Title"]" Subtitle="@Localizer["MyTickets_ScreenHeader_Subtitle"]" ShowBack="true" BackHref="/home" />
+<ScreenHeader Title="@Localizer["MyTickets_ScreenHeader_Title"]" Subtitle="@Localizer["MyTickets_ScreenHeader_Subtitle"]" ShowBack="true" BackHref="home" />
 
 <AuthenticationGuard>
     <div id="customer-tickets-container" class="mt-body no-scrollbar">
@@ -27,7 +27,7 @@
                 <div class="mt-emoji">🎟️</div>
                 <h2>@Localizer["MyTickets_Empty_Title"]</h2>
                 <p>@Localizer["MyTickets_Empty_Message"]</p>
-                <a id="customer-tickets-browse-btn" href="/events" class="btn btn-primary">@Localizer["MyTickets_BrowseEvents"]</a>
+                <a id="customer-tickets-browse-btn" href="events" class="btn btn-primary">@Localizer["MyTickets_BrowseEvents"]</a>
             </div>
         }
         else

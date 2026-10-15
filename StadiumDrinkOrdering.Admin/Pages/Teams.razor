@@ -226,8 +226,9 @@
         }
     }
 
+    // Browser-facing (the <img> is fetched by the browser): ApiSettings:PublicBaseUrl when set (ngrok profile).
     private string ApiBaseUrl =>
-        Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+        StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.ResolvePublicApiBaseUrl(Configuration);
 
     /// <summary>Crest endpoints are anonymous, so the browser fetches them directly.</summary>
     private string ImageUrl(string path) => $"{ApiBaseUrl}/api/teams/{path}?v={imgVersion}";

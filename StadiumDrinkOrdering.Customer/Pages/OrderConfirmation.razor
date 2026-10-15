@@ -23,7 +23,7 @@ else if (orderConfirmation == null)
         <div id="customer-order-confirmation-emoji" class="oc-emoji">🚫</div>
         <h2>@Localizer["OrderConfirmation_NotFound_Title"]</h2>
         <p>@Localizer["OrderConfirmation_NotFound_Message"]</p>
-        <button id="customer-order-confirmation-notfound-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">@Localizer["OrderConfirmation_BackToEvents"]</button>
+        <button id="customer-order-confirmation-notfound-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("events"))">@Localizer["OrderConfirmation_BackToEvents"]</button>
     </div>
 }
 else
@@ -103,7 +103,7 @@ else
     </div>
 
     <div id="customer-order-confirmation-cta" class="oc-cta">
-        <button id="customer-order-confirmation-browse-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">@Localizer["OrderConfirmation_BrowseMore"]</button>
+        <button id="customer-order-confirmation-browse-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("events"))">@Localizer["OrderConfirmation_BrowseMore"]</button>
     </div>
 }
 
@@ -146,5 +146,5 @@ else
     private async Task EmailTickets() =>
         await JSRuntime.InvokeVoidAsync("alert", Localizer["OrderConfirmation_EmailSent"]);
 
-    private void GoBack() => Navigation.NavigateTo("/events");
+    private void GoBack() => Navigation.NavigateTo("events");
 }

@@ -43,7 +43,7 @@
         {
             <button id="customer-welcome-account-signin-btn" class="wl-account" type="button"
                     aria-label="@Localizer["Welcome_AccountSignIn"]"
-                    @onclick="@(() => Nav.NavigateTo("/login"))">
+                    @onclick="@(() => Nav.NavigateTo("login"))">
                 <svg class="wl-account-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.4-8 5.3V21h16v-1.7c0-2.9-3.6-5.3-8-5.3Z"/></svg>
             </button>
         }
@@ -91,8 +91,8 @@
                     var end = evt.EventEndDate?.ToLocalTime();
                     var label = evt.IsLive ? Localizer["Welcome_LiveNow"].Value : (isFirst ? Localizer["Welcome_NextFixture"].Value : Localizer["Welcome_Fixture"].Value);
                     <div id="customer-welcome-vs-card-@evt.Id" class="vs-card" role="button" tabindex="0"
-                         @onclick="@(() => Nav.NavigateTo($"/events/{evt.Id}"))"
-                         @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/events/{evt.Id}"); })">
+                         @onclick="@(() => Nav.NavigateTo($"events/{evt.Id}"))"
+                         @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"events/{evt.Id}"); })">
                         @if (evt.HasPoster)
                         {
                             @* An approved poster IS the card: the crests, team names, venue and
@@ -206,7 +206,7 @@
         {
             @* Ticket already scanned this session — jump back into ordering instead of scanning again.
                Who you are, your seat and your balance live in the header account button. *@
-            <button id="customer-welcome-continue-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/order"))">
+            <button id="customer-welcome-continue-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("order"))">
                 <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
                 @Localizer["Welcome_ContinueOrdering"]
             </button>
@@ -215,15 +215,15 @@
         {
             @* Scanning is only useful while a match is actually running — off game day the ticket
                opens nothing to order from, so the CTA is sign-in only. *@
-            <button id="customer-welcome-scan-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
+            <button id="customer-welcome-scan-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("scan"))">
                 <svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M6 9.5v5M18 9.5v5"/></svg>
                 @Localizer["Welcome_ScanTicket"]
             </button>
-            <button id="customer-welcome-login-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/login"))">@Localizer["Welcome_SignIn"]</button>
+            <button id="customer-welcome-login-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("login"))">@Localizer["Welcome_SignIn"]</button>
         }
         else
         {
-            <button id="customer-welcome-login-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("/login"))">@Localizer["Welcome_SignIn"]</button>
+            <button id="customer-welcome-login-btn" class="btn wl-scan" @onclick="@(() => Nav.NavigateTo("login"))">@Localizer["Welcome_SignIn"]</button>
         }
     </div>
 
@@ -232,7 +232,7 @@
         {
             @* Redundant once a ticket is scanned — the CTA above already offers "continue ordering",
                and pointless with no live match, same as the scan CTA. *@
-            <button id="customer-welcome-foot-scan" class="wl-foot-scan" @onclick="@(() => Nav.NavigateTo("/scan"))">
+            <button id="customer-welcome-foot-scan" class="wl-foot-scan" @onclick="@(() => Nav.NavigateTo("scan"))">
                 <span>@Localizer["Welcome_SingleTicketScan"]</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm11-2h2v2h-2v-2Zm3 0h2v2h-2v-2Zm-3 3h2v2h-2v-2Zm0 3h2v-2h3v2h-2v-1h-1v3h-2v-2Zm3-3h2v2h-2v-2Z"/></svg>
             </button>
@@ -328,8 +328,8 @@
                             @foreach (var o in _orders!.Orders)
                             {
                                 <div id="customer-welcome-account-order-@o.OrderId" class="wl-hist-row" role="button" tabindex="0"
-                                     @onclick="@(() => Nav.NavigateTo($"/track/{o.OrderId}"))"
-                                     @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"/track/{o.OrderId}"); })">
+                                     @onclick="@(() => Nav.NavigateTo($"track/{o.OrderId}"))"
+                                     @onkeydown="@(e => { if (e.Key is "Enter" or " ") Nav.NavigateTo($"track/{o.OrderId}"); })">
                                     <div class="wl-hist-main">
                                         <div class="wl-hist-title">@string.Join(" · ", o.Items.Select(i => $"{i.Quantity}× {i.DrinkName}"))</div>
                                         <div class="wl-hist-sub tnum">

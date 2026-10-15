@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HALFTIME Runner</title>
     <base href="/" />
+    <!-- Behind the ngrok path proxy the Runner lives under /runner/ (Ngrok.md). Switch the base
+         before any relative URL below is resolved, so CSS, _framework and the service worker load
+         from /runner/ there, while direct LAN access at the root keeps working unchanged. -->
+    <script>
+        (function () {
+            var prefix = '/runner/';
+            var p = location.pathname;
+            if (p === prefix.slice(0, -1) || p.indexOf(prefix) === 0) {
+                document.querySelector('base').setAttribute('href', prefix);
+            }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
@@ -18,7 +30,9 @@
     <link rel="stylesheet" href="css/runner.css?v=8" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="StadiumDrinkOrdering.Runner.styles.css" rel="stylesheet" />
-    <link href="manifest.webmanifest" rel="manifest" />
+    <!-- use-credentials: manifests are fetched WITHOUT cookies by default, so behind the free ngrok tunnel
+         the request would get ngrok's browser-warning HTML ("Manifest: Syntax error"). See Ngrok.md §9. -->
+    <link href="manifest.webmanifest" rel="manifest" crossorigin="use-credentials" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
 </head>

@@ -9,11 +9,15 @@ using StadiumDrinkOrdering.Shared.Authentication.Extensions;
 using StadiumDrinkOrdering.Shared.Authentication.Interfaces;
 using StadiumDrinkOrdering.Shared.Configuration;
 using System.Globalization;
+using StadiumDrinkOrdering.Shared.Hosting;
 
 // Load the gitignored .env file (NoClobber) before building configuration.
 AppConfiguration.LoadDotEnvFile();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// "ngrok" launch profile: start the tunnel on F5 + trust the path-based proxy (see Ngrok.md).
+builder.AddReverseProxySupport();
 
 // Configure URLs for Docker environment
 if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
@@ -100,6 +104,9 @@ builder.Services.AddHttpClient("CustomerSecureApi", client =>
 builder.Services.AddCentralizedLogging(apiBaseUrl, "Customer");
 
 var app = builder.Build();
+
+// Must run first: forwarded scheme/host + Proxy:Prefix path base (no-op outside the ngrok profile).
+app.UseReverseProxySupport();
 
 // Validation attributes carry resource keys rather than literal messages; hand them the localizer so
 // DataAnnotationsValidator renders them in the visitor's language. See Services/LocalizedValidation.cs.

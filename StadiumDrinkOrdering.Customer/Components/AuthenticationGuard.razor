@@ -22,7 +22,7 @@ else
         <p>@Localizer["AuthGuard_SignInPrompt"]</p>
         <div id="customer-auth-guard-buttons" class="gate-actions">
             <button id="customer-auth-guard-signin-btn" class="btn btn-primary" @onclick="RedirectToLogin">@Localizer["AuthGuard_SignInButton"]</button>
-            <a id="customer-auth-guard-register-link" href="/register" class="btn btn-ghost">@Localizer["AuthGuard_CreateAccount"]</a>
+            <a id="customer-auth-guard-register-link" href="register" class="btn btn-ghost">@Localizer["AuthGuard_CreateAccount"]</a>
         </div>
     </div>
 }
@@ -72,7 +72,7 @@ else
         // page they actually requested instead of the home page.
         var relativePath = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         var returnUrl = Uri.EscapeDataString(relativePath);
-        var loginUrl = !string.IsNullOrEmpty(RedirectUrl) ? RedirectUrl : $"/login?returnUrl={returnUrl}";
+        var loginUrl = !string.IsNullOrEmpty(RedirectUrl) ? RedirectUrl : $"login?returnUrl={returnUrl}";
         NavigationManager.NavigateTo(loginUrl);
     }
 

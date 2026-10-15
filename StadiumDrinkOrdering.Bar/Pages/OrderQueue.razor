@@ -143,6 +143,10 @@
     // normalized through this map so they collapse onto the same chip as their structured siblings,
     // instead of appearing under a bare code. Accumulated across polls so a name learned once sticks.
     private readonly Dictionary<string, string> sectorNames = new(StringComparer.OrdinalIgnoreCase);
+    // True once the API's list of real (overlay-backed) sectors has loaded. From then on that list is
+    // the whole truth: orders can't add sector names, and an order whose seat doesn't resolve to a real
+    // sector goes to the "no sector" bucket instead of inventing a chip from its seat string.
+    private bool sectorsAuthoritative;
     private bool suppressChimeOnce;
     private const string NoSectorKey = "—";
     private const string SelectionStorageKey = "bar-orderqueue-selected-sectors";
@@ -227,6 +231,13 @@
                 // A selection saved under a bare code (before its name was known) must be migrated to
                 // the structured name learned during the initial load, or it would match nothing.
                 ReconcileSectorNames();
+                // Drop a saved sector that is no longer a real one (e.g. a phantom chip picked before
+                // the sector list became authoritative), or it would pin a chip that can never match.
+                if (sectorsAuthoritative)
+                {
+                    var realNames = sectorNames.Values.ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    selectedSectors.RemoveWhere(s => s != NoSectorKey && !realNames.Contains(s));
+                }
                 // Ensure every restored sector has a chip even when it has no orders in the current
                 // event — otherwise a stale selection filters the board to empty with no way to undo it.
                 foreach (var sector in selectedSectors)
@@ -251,14 +262,17 @@
             var orders = await ApiService.GetActiveOrdersAsync() ?? new List<OrderDto>();
             lastOrders = orders;
 
-            // Learn code → name from structured orders FIRST, so legacy seats in this same batch can
-            // be normalized against it when their sector is resolved below.
-            foreach (var seat in orders.Select(o => o.Seat).Where(s => s != null))
+            // Without the authoritative sector list (preload failed), learn code → name from structured
+            // orders FIRST, so legacy seats in this same batch can be normalized against it below.
+            if (!sectorsAuthoritative)
             {
-                if (!string.IsNullOrWhiteSpace(seat!.SectionCode) && !string.IsNullOrWhiteSpace(seat.SectionName))
-                    sectorNames[seat.SectionCode!.Trim()] = seat.SectionName!.Trim();
+                foreach (var seat in orders.Select(o => o.Seat).Where(s => s != null))
+                {
+                    if (!string.IsNullOrWhiteSpace(seat!.SectionCode) && !string.IsNullOrWhiteSpace(seat.SectionName))
+                        sectorNames[seat.SectionCode!.Trim()] = seat.SectionName!.Trim();
+                }
+                ReconcileSectorNames();
             }
-            ReconcileSectorNames();
 
             // Remember every sector present so its filter chip stays available across refreshes.
             foreach (var order in orders)
@@ -318,10 +332,11 @@
 
     // The sector an order belongs to, normalized to the structured section name whenever possible so
     // structured and legacy orders share one chip. Resolution order:
-    //   1. Structured seat → its own SectionName (canonical).
-    //   2. Legacy free-text seat → the learned section name whose code the seat string starts with
+    //   1. Structured seat → its own SectionName (canonical), if it is a real sector.
+    //   2. Legacy free-text seat → the known section name whose code the seat string starts with
     //      (longest match wins, so "VIP…" beats "V…"); matches the API's StartsWith(code) rule.
-    //   3. Unknown code → the seat's leading letters as a best-effort code.
+    //   3. Unknown code → "no sector" once the real sector list is loaded; only without it, the
+    //      seat's leading letters as a best-effort code.
     //   4. No seat info → a shared "no sector" bucket so it stays filterable.
     // Full human-readable seat location for the card, e.g. "Sjever1 · Row 1 · Seat 2". SeatPath is
     // computed server-side from the linked Seat/Section and already falls back to the legacy seat
@@ -361,7 +376,16 @@
     {
         var section = o.Seat?.SectionName;
         if (!string.IsNullOrWhiteSpace(section))
-            return section!.Trim();
+        {
+            var code = o.Seat!.SectionCode?.Trim();
+            if (!sectorsAuthoritative)
+                return section!.Trim();
+            // Normalize to the API's name for the code; a seat in a non-venue section (legacy seed
+            // data) isn't a real sector, so it doesn't get a chip of its own.
+            return !string.IsNullOrEmpty(code) && sectorNames.TryGetValue(code, out var realName)
+                ? realName
+                : NoSectorKey;
+        }
 
         var seat = o.SeatNumber?.Trim();
         if (string.IsNullOrWhiteSpace(seat))
@@ -374,7 +398,7 @@
         if (match != null)
             return sectorNames[match];
 
-        return LeadingCode(seat);
+        return sectorsAuthoritative ? NoSectorKey : LeadingCode(seat);
     }
 
     // Best-effort section code from a legacy seat string when no structured name is known: the leading
@@ -422,6 +446,7 @@
                 if (!string.IsNullOrWhiteSpace(s.Code) && !string.IsNullOrWhiteSpace(s.Name))
                     sectorNames[s.Code.Trim()] = s.Name.Trim();
             }
+            sectorsAuthoritative = true;
         }
         catch (Exception ex)
         {

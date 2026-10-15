@@ -18,7 +18,7 @@
             <p>@Localizer["Dashboard_MustBeLoggedIn"]</p>
             <hr>
             <p class="mb-0">
-                <a href="/login" class="btn btn-primary">@Localizer["Dashboard_GoToLogin"]</a>
+                <a href="login" class="btn btn-primary">@Localizer["Dashboard_GoToLogin"]</a>
             </p>
         </div>
     </div>
@@ -1032,7 +1032,7 @@ else
     private void OnAuthStateChanged()
     {
         if (!AuthService.IsAuthenticated)
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("login");
         InvokeAsync(StateHasChanged);
     }
 

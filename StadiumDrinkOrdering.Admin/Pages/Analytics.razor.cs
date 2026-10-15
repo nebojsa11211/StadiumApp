@@ -131,22 +131,22 @@ namespace StadiumDrinkOrdering.Admin.Pages
 
         private void NavigateToCustomerAnalytics()
         {
-            NavigationManager.NavigateTo("/customer-analytics");
+            NavigationManager.NavigateTo("customer-analytics");
         }
 
         private void NavigateToEvents()
         {
-            NavigationManager.NavigateTo("/events");
+            NavigationManager.NavigateTo("events");
         }
 
         private void NavigateToOrders()
         {
-            NavigationManager.NavigateTo("/orders");
+            NavigationManager.NavigateTo("orders");
         }
 
         private void NavigateToLogs()
         {
-            NavigationManager.NavigateTo("/logs");
+            NavigationManager.NavigateTo("logs");
         }
     }
 }

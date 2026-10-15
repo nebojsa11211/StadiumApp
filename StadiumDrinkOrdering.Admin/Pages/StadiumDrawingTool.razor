@@ -15,6 +15,7 @@
 @inject IConfiguration Configuration
 @inject ILogger<StadiumDrawingTool> Logger
 @inject IStringLocalizer<SharedResources> L
+@inject StadiumDrinkOrdering.Admin.Services.SetupStatusService SetupState
 
 <BrandPageTitle Station="Admin" Title="@L["Drawing_PageTitle"]" />
 
@@ -335,8 +336,9 @@
         }
     }
 
+    // Browser-facing (canvas background image): ApiSettings:PublicBaseUrl when set (ngrok profile).
     private string ApiBaseUrl =>
-        Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+        StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.ResolvePublicApiBaseUrl(Configuration);
 
     /// <summary>Loads the venue's saved stadium image URL (cache-busted) into the canvas background,
     /// or leaves it blank when the venue has none.</summary>
@@ -706,6 +708,7 @@
                 backgroundImageUrl = $"{ApiBaseUrl}/api/venue/stadium-image?v={DateTime.UtcNow.Ticks}";
                 await JSRuntime.InvokeVoidAsync("setBackgroundImage", backgroundImageUrl);
                 ShowAlert("Stadium image uploaded successfully!", "success");
+                await SetupState.ReloadAsync();
             }
             else
             {
@@ -742,6 +745,7 @@
         backgroundImageUrl = string.Empty;
         await JSRuntime.InvokeVoidAsync("clearBackgroundImage");
         ShowAlert("Stadium image cleared!", "info");
+        await SetupState.ReloadAsync();
     }
 
     private async Task ExportDrawing()

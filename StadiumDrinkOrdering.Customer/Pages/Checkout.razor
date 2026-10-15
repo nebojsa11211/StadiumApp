@@ -19,7 +19,7 @@
         <div id="customer-checkout-emoji" class="co-emoji">🛒</div>
         <h2>@Localizer["Checkout_CartEmptyTitle"]</h2>
         <p>@Localizer["Checkout_CartEmptyMessage"]</p>
-        <button id="customer-checkout-empty-browse-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/events"))">@Localizer["Checkout_BrowseEventsButton"]</button>
+        <button id="customer-checkout-empty-browse-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("events"))">@Localizer["Checkout_BrowseEventsButton"]</button>
     </div>
 }
 else
@@ -144,7 +144,7 @@ else
             <!-- Terms -->
             <label id="customer-checkout-terms-label" class="co-terms">
                 <InputCheckbox id="customer-checkout-terms-input" @bind-Value="checkoutForm.AgreeToTerms" />
-                <span>@Localizer["Checkout_TermsAccept"] <a href="/terms" target="_blank">@Localizer["Checkout_TermsLinkText"]</a> @Localizer["Checkout_TermsAnd"] <a href="/privacy" target="_blank">@Localizer["Checkout_PrivacyLinkText"]</a>@Localizer["Checkout_TermsDot"]</span>
+                <span>@Localizer["Checkout_TermsAccept"] <a href="terms" target="_blank">@Localizer["Checkout_TermsLinkText"]</a> @Localizer["Checkout_TermsAnd"] <a href="privacy" target="_blank">@Localizer["Checkout_PrivacyLinkText"]</a>@Localizer["Checkout_TermsDot"]</span>
             </label>
             <ValidationMessage For="@(() => checkoutForm.AgreeToTerms)" class="co-err" />
         </div>
@@ -294,7 +294,7 @@ else
             if (orderResult != null && orderResult.Success)
             {
                 await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", "ticketingSessionId");
-                Navigation.NavigateTo("/order-confirmation/" + orderResult.OrderId);
+                Navigation.NavigateTo("order-confirmation/" + orderResult.OrderId);
             }
             else
             {

@@ -108,6 +108,8 @@
 .seats-scroll{--seat:44px;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
     display:flex;flex-direction:column;gap:10px;padding-bottom:2px}
 .seat-row{display:flex;align-items:flex-start;gap:10px}
+/* a long row wraps onto several lines; a divider between rows keeps the wrapped lines grouped */
+.seat-row + .seat-row{border-top:1px dashed var(--line);padding-top:10px}
 .rl{flex:none;min-width:46px;padding-top:12px;
     font-size:11px;font-weight:800;color:var(--muted)}
 .seats{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px}

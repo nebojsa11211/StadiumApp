@@ -15,7 +15,7 @@
 <div id="customer-track-atmos" class="crowd-atmos" aria-hidden="true"></div>
 
 <div id="customer-track-body" class="body">
-    <button id="customer-track-back-top" class="track-back" @onclick="@(() => Nav.NavigateTo("/order"))" aria-label="@Localizer["Track_BackButton_Aria"]">‹</button>
+    <button id="customer-track-back-top" class="track-back" @onclick="@(() => Nav.NavigateTo("order"))" aria-label="@Localizer["Track_BackButton_Aria"]">‹</button>
     @if (_loading)
     {
         <div id="customer-track-loading" class="tload"><span class="spinner"></span> @Localizer["Track_Loading"]</div>
@@ -25,7 +25,7 @@
         <div id="customer-track-not-found" class="tload">
             <div id="customer-track-not-found-icon" style="font-size:44px">🔍</div>
             <p>@Localizer["Track_NotFound_Message"]</p>
-            <button id="customer-track-back-btn" class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("/order"))">@Localizer["Track_BackMenu_Button"]</button>
+            <button id="customer-track-back-btn" class="btn btn-ghost btn-sm" @onclick="@(() => Nav.NavigateTo("order"))">@Localizer["Track_BackMenu_Button"]</button>
         </div>
     }
     else
@@ -66,7 +66,7 @@
         }
 
         <div id="customer-track-foot" class="track-foot">
-            <button id="customer-track-order-more-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/order"))">@Localizer["Track_OrderMoreButton"]</button>
+            <button id="customer-track-order-more-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("order"))">@Localizer["Track_OrderMoreButton"]</button>
         </div>
     }
 </div>

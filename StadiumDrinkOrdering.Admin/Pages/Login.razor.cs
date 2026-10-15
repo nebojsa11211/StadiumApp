@@ -48,13 +48,17 @@ public partial class Login
         // reconciles the in-memory state with storage before we decide.
         if (await AuthService.ValidateAuthenticationAsync())
         {
-            NavigationManager.NavigateTo(ResolveReturnUrl());
+            NavigationManager.NavigateTo(ToBaseRelative(ResolveReturnUrl()));
         }
     }
 
     // Resolves the post-login destination, preserving the originally requested page.
     // Absolute URLs are only honored when same-origin (prevents open-redirect); anything
     // else (or a loop back to /login) falls back to the dashboard.
+    // ResolveReturnUrl yields app paths with a leading "/" (e.g. /orders). Navigate base-relative so the
+    // ngrok path base is kept (/admin/orders); with <base href="/"> it is the very same URL.
+    private static string ToBaseRelative(string path) => path.TrimStart('/') is { Length: > 0 } p ? p : "./";
+
     private string ResolveReturnUrl()
     {
         if (string.IsNullOrEmpty(returnUrl))
@@ -127,7 +131,7 @@ public partial class Login
                     await Task.Delay(100);
 
                     // Navigate to the originally requested page (or dashboard as fallback)
-                    NavigationManager.NavigateTo(ResolveReturnUrl());
+                    NavigationManager.NavigateTo(ToBaseRelative(ResolveReturnUrl()));
                 }
                 else
                 {

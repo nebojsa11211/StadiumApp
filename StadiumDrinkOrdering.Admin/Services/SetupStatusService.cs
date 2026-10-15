@@ -30,6 +30,24 @@ public class SetupStatusService
     /// <summary>Show the setup banner whenever setup is incomplete. The banner is not dismissible.</summary>
     public bool ShouldShowBanner => Status is { IsComplete: false };
 
+    /// <summary>
+    /// One checklist row per <see cref="SetupStatusDto"/> flag, so the banner and the setup page both
+    /// name the exact outstanding item. Title/Desc are resource keys (Setup_Item_{Key}_Title/_Desc).
+    /// </summary>
+    public IReadOnlyList<SetupStep> Steps => Status is null
+        ? Array.Empty<SetupStep>()
+        : new[]
+        {
+            new SetupStep("image", Status.HasStadiumImage, "admin/stadium-drawing-tool"),
+            new SetupStep("layout", Status.HasStadiumStructure, "admin/stadium-drawing-tool"),
+            new SetupStep("venue", Status.HasVenueIdentity, "admin/venue-settings"),
+            new SetupStep("categories", Status.HasCategories, "drinks"),
+            new SetupStep("drinks", Status.HasDrinks, "drinks"),
+            new SetupStep("staff", Status.HasStaff, "users"),
+        };
+
+    public IEnumerable<SetupStep> MissingSteps => Steps.Where(s => !s.Done);
+
     public Task EnsureLoadedAsync() => _loadTask ??= LoadAsync();
 
     /// <summary>Force a fresh read, e.g. after the admin finished a setup step on another page.</summary>
@@ -50,4 +68,11 @@ public class SetupStatusService
 
         OnChanged?.Invoke();
     }
+}
+
+/// <summary>A single setup prerequisite: its key, whether it is met, and the page that fixes it.</summary>
+public record SetupStep(string Key, bool Done, string Route)
+{
+    public string TitleKey => $"Setup_Item_{char.ToUpperInvariant(Key[0])}{Key[1..]}_Title";
+    public string DescKey => $"Setup_Item_{char.ToUpperInvariant(Key[0])}{Key[1..]}_Desc";
 }

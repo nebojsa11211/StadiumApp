@@ -113,6 +113,14 @@ public class CustomerTicketingController : ControllerBase
         }
     }
 
+    private static string GetTicketSalesState(Event evt, DateTime nowUtc)
+    {
+        if (!EventLifecycle.CanSellTickets(evt.Status)) return "NotOnSale";
+        if (evt.TicketSalesStartDate.HasValue && nowUtc < evt.TicketSalesStartDate.Value) return "NotOpenYet";
+        if (evt.TicketSalesEndDate.HasValue && nowUtc > evt.TicketSalesEndDate.Value) return "Closed";
+        return "Open";
+    }
+
     /// <summary>
     /// Get detailed information about a specific event
     /// </summary>
@@ -151,7 +159,9 @@ public class CustomerTicketingController : ControllerBase
                 AvailableSeats = sectionAvailability.Values.Sum(s => s.AvailableSeats),
                 VenueInfo = BuildVenueInfo(venue),
                 SectionAvailability = sectionAvailability,
-                PricingTiers = BuildPricingTiersFromSectors(sectionAvailability)
+                PricingTiers = BuildPricingTiersFromSectors(sectionAvailability),
+                TicketSalesState = GetTicketSalesState(evt, DateTime.UtcNow),
+                TicketSalesStartDate = evt.TicketSalesStartDate
             };
 
             return Ok(eventDetails);
@@ -333,6 +343,14 @@ public class CustomerEventDetailsDto : CustomerEventDto
 {
     public Dictionary<string, SectionAvailabilityInfo> SectionAvailability { get; set; } = new();
     public List<PricingTierDto> PricingTiers { get; set; } = new();
+
+    /// <summary>
+    /// Whether seats can be bought right now: "Open", "NotOnSale" (lifecycle isn't OnSale — e.g. the
+    /// event is live or finished), "NotOpenYet" (before the sales window) or "Closed" (after it).
+    /// Mirrors <see cref="Event.TicketSalesBlockedReason"/>, which the cart enforces server-side.
+    /// </summary>
+    public string TicketSalesState { get; set; } = "Open";
+    public DateTime? TicketSalesStartDate { get; set; }
 }
 
 public class CustomerEventFilterDto

@@ -364,7 +364,7 @@ public partial class Orders : ComponentBase
 
     private void CreateNewOrder()
     {
-        Navigation.NavigateTo("/orders/new");
+        Navigation.NavigateTo("orders/new");
     }
 
     private async Task ViewOrder(int orderId)

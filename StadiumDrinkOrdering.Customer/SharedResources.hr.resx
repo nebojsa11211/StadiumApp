@@ -687,7 +687,7 @@
     <value>Prodano</value>
   </data>
   <data name="EventDetails_Row" xml:space="preserve">
-    <value>Red</value>
+    <value>Red {0}</value>
   </data>
   <data name="EventDetails_NoSeatsAvailable" xml:space="preserve">
     <value>Nema dostupnih sjedišta u ovom sektoru.</value>
@@ -3336,7 +3336,7 @@
     <value>Prodaja ulaznica putem aplikacije trenutno nije dostupna.</value>
   </data>
   <data name="Api_TicketSalesNotOpen" xml:space="preserve">
-    <value>Prodaja ulaznica za ovaj događaj trenutno nije otvorena.</value>
+    <value>Prodaja ulaznica za ovaj događaj još nije otvorena.</value>
   </data>
   <data name="Api_SeatTaken" xml:space="preserve">
     <value>Mjesto je u međuvremenu zauzeto.</value>
@@ -3370,5 +3370,14 @@
   </data>
   <data name="Session_CartEmpty" xml:space="preserve">
     <value>Košarica je prazna.</value>
+  </data>
+  <data name="Api_TicketSalesNotOnSale" xml:space="preserve">
+    <value>Ulaznice za ovaj događaj nisu u prodaji.</value>
+  </data>
+  <data name="Api_TicketSalesClosed" xml:space="preserve">
+    <value>Prodaja ulaznica za ovaj događaj je završena.</value>
+  </data>
+  <data name="EventDetails_SalesOpenFrom" xml:space="preserve">
+    <value>Prodaja ulaznica počinje {0}.</value>
   </data>
 </root>

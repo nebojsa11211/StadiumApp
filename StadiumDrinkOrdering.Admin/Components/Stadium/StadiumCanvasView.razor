@@ -79,8 +79,10 @@
         {
             var apiBaseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
             var venue = await HttpClient.GetFromJsonAsync<StadiumDrinkOrdering.Shared.DTOs.VenueDto>($"{apiBaseUrl}/api/venue");
+            // The image itself is fetched by the browser, so it uses the browser-facing API URL.
+            var publicApiBaseUrl = StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.ResolvePublicApiBaseUrl(Configuration);
             backgroundImageUrl = venue?.HasStadiumImage == true
-                ? $"{apiBaseUrl}/api/venue/stadium-image?v={DateTime.UtcNow.Ticks}"
+                ? $"{publicApiBaseUrl}/api/venue/stadium-image?v={DateTime.UtcNow.Ticks}"
                 : null;
         }
         catch (Exception ex)

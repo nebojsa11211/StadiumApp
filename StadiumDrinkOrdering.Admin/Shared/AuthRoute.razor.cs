@@ -53,7 +53,7 @@ public partial class AuthRoute : ComponentBase, IDisposable
         // page they actually requested instead of the dashboard.
         var relativePath = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         var returnUrl = Uri.EscapeDataString(relativePath);
-        NavigationManager.NavigateTo($"/login?returnUrl={returnUrl}");
+        NavigationManager.NavigateTo($"login?returnUrl={returnUrl}");
     }
 
     public void Dispose()

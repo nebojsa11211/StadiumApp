@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Localization;
 using StadiumDrinkOrdering.TicketingSimulator.Services;
 using System.Globalization;
+using StadiumDrinkOrdering.Shared.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// "ngrok" launch profile: start the tunnel on F5 + trust the path-based proxy (see Ngrok.md).
+builder.AddReverseProxySupport();
 
 // Container support (HTTPS-only project convention)
 if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
@@ -53,6 +57,9 @@ builder.Services.AddHttpClient<StadiumDrinkOrdering.UI.SystemInfoClient>(client 
 });
 
 var app = builder.Build();
+
+// Must run first: forwarded scheme/host + Proxy:Prefix path base (no-op outside the ngrok profile).
+app.UseReverseProxySupport();
 
 if (!app.Environment.IsDevelopment())
 {

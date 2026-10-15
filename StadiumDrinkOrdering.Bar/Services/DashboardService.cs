@@ -63,14 +63,14 @@ public class DashboardService : IDashboardService
         {
             QuickAction.CreateLink(
                 title: _localizer["QuickAction_ViewOrderQueue"],
-                url: "/order-queue",
+                url: "order-queue",
                 iconClass: "oi oi-list",
                 buttonClass: "btn-primary",
                 badgeCount: pendingOrders.Count
             ),
             QuickAction.CreateLink(
                 title: _localizer["QuickAction_MyAssignedOrders"],
-                url: "/my-orders",
+                url: "my-orders",
                 iconClass: "oi oi-clipboard",
                 buttonClass: "btn-info",
                 badgeCount: acceptedOrders.Count

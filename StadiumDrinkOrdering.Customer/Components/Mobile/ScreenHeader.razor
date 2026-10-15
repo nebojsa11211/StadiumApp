@@ -41,6 +41,6 @@
             await OnBack.InvokeAsync();
             return;
         }
-        Nav.NavigateTo(string.IsNullOrEmpty(BackHref) ? "/" : BackHref);
+        Nav.NavigateTo(string.IsNullOrEmpty(BackHref) ? "./" : BackHref);
     }
 }

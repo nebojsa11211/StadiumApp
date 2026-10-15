@@ -30,7 +30,7 @@ window.authSessionBridge = {
     // Internal method to sync tokens to server session via API call
     syncToServerSession: async function(tokenData) {
         try {
-            const response = await fetch('/api/auth/sync-session', {
+            const response = await fetch('api/auth/sync-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ window.authSessionBridge = {
     // Clear server session
     clearServerSession: async function() {
         try {
-            await fetch('/api/auth/clear-session', {
+            await fetch('api/auth/clear-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

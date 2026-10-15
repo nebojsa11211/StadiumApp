@@ -37,8 +37,8 @@
             <div id="customer-resolve-cross" class="cross">✕</div>
             <h2>@Localizer["Resolve_Error_Title"]</h2>
             <p class="err">@_error</p>
-            <button id="customer-resolve-retry-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">@Localizer["Resolve_RescanButton"]</button>
-            <button id="customer-resolve-home-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("/welcome"))">@Localizer["Resolve_Home_Button"]</button>
+            <button id="customer-resolve-retry-scan-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("scan"))">@Localizer["Resolve_RescanButton"]</button>
+            <button id="customer-resolve-home-btn" class="btn btn-ghost" @onclick="@(() => Nav.NavigateTo("welcome"))">@Localizer["Resolve_Home_Button"]</button>
         </div>
     }
 </div>
@@ -92,7 +92,7 @@
     private void Go()
     {
         _forward?.Dispose();
-        Nav.NavigateTo("/order");
+        Nav.NavigateTo("order");
     }
 
     public void Dispose() => _forward?.Dispose();

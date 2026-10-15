@@ -37,6 +37,17 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "ngrok": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:7000/open/runner",
+      "applicationUrl": "https://localhost:7060",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "pathbase": "/runner"
+      }
     }
   }
 }

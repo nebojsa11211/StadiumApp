@@ -174,6 +174,9 @@
             <div class="card-header">
                 <h5 class="mb-0" id="admin-venue-photo-title">@L["Venue_Photo"]</h5>
             </div>
+            <div class="px-3 pt-3 small text-muted" id="admin-venue-photo-hint">
+                @L["Venue_PhotoHint"] <a href="admin/stadium-drawing-tool" id="admin-venue-photo-hint-link">@L["Venue_PhotoHintLink"]</a>
+            </div>
             <div class="card-body d-flex align-items-center gap-4" id="admin-venue-photo-body">
                 <div id="admin-venue-photo-preview" style="width:180px;height:110px;background:#f1f3f5;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
                     @if (venue.HasPhoto)
@@ -384,8 +387,9 @@
         }
     }
 
+    // Browser-facing (the <img> is fetched by the browser): ApiSettings:PublicBaseUrl when set (ngrok profile).
     private string ApiBaseUrl =>
-        Configuration.GetValue<string>("ApiSettings:BaseUrl")?.TrimEnd('/') ?? "https://localhost:7010";
+        StadiumDrinkOrdering.Shared.Configuration.AppConfiguration.ResolvePublicApiBaseUrl(Configuration);
 
     // Public image endpoints are read cross-origin by the browser directly (no auth needed).
     private string ImageUrl(string path) => $"{ApiBaseUrl}/api/venue/{path}?v={imgVersion}";

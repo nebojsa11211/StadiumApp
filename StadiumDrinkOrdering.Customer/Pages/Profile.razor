@@ -11,7 +11,7 @@
 
 <PageTitle>@Localizer["Profile_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="@Localizer["Profile_ScreenHeader_Title"]" Subtitle="@Localizer["Profile_ScreenHeader_Subtitle"]" BackHref="/home" />
+<ScreenHeader Title="@Localizer["Profile_ScreenHeader_Title"]" Subtitle="@Localizer["Profile_ScreenHeader_Subtitle"]" BackHref="home" />
 
 <AuthenticationGuard>
     <div id="customer-profile-container" class="prof-body no-scrollbar">
@@ -199,6 +199,6 @@
     private async Task HandleLogout()
     {
         await AuthStateService.LogoutAsync();
-        NavigationManager.NavigateTo("/welcome");
+        NavigationManager.NavigateTo("welcome");
     }
 }

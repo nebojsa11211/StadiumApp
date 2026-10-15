@@ -9,7 +9,7 @@
 
 <PageTitle>@Localizer["Login_PageTitle"]</PageTitle>
 
-<ScreenHeader Title="@Localizer["Login_ScreenHeader_Title"]" Subtitle="@Localizer["Login_ScreenHeader_Subtitle"]" BackHref="/welcome" />
+<ScreenHeader Title="@Localizer["Login_ScreenHeader_Title"]" Subtitle="@Localizer["Login_ScreenHeader_Subtitle"]" BackHref="welcome" />
 
 <div id="customer-login-body" class="login-body">
     <div id="customer-login-hero" class="login-hero">
@@ -45,7 +45,7 @@
         </button>
     </EditForm>
 
-    <p class="alt">@Localizer["Login_AltText"] <a id="customer-login-scan-link" @onclick="@(() => Nav.NavigateTo("/scan"))">@Localizer["Login_ScanLink"]</a>.</p>
+    <p class="alt">@Localizer["Login_AltText"] <a id="customer-login-scan-link" @onclick="@(() => Nav.NavigateTo("scan"))">@Localizer["Login_ScanLink"]</a>.</p>
 </div>
 
 @code {
@@ -60,7 +60,7 @@
         var q = System.Web.HttpUtility.ParseQueryString(new Uri(Nav.Uri).Query);
         _returnUrl = q["returnUrl"];
         if (AuthState.IsAuthenticated)
-            Nav.NavigateTo(string.IsNullOrEmpty(_returnUrl) ? "/home" : _returnUrl);
+            Nav.NavigateTo(string.IsNullOrEmpty(_returnUrl) ? "home" : _returnUrl.TrimStart('/'));
     }
 
     private async Task HandleLogin()
@@ -75,7 +75,7 @@
             if (result?.Token != null && result.User != null)
             {
                 await AuthState.LoginAsync(result.Token, result.User);
-                Nav.NavigateTo(string.IsNullOrEmpty(_returnUrl) ? "/home" : _returnUrl, forceLoad: false);
+                Nav.NavigateTo(string.IsNullOrEmpty(_returnUrl) ? "home" : _returnUrl.TrimStart('/'), forceLoad: false);
             }
             else
             {

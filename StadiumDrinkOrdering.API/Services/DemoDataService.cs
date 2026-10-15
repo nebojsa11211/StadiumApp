@@ -672,7 +672,7 @@ public class DemoDataService : IDemoDataService
             await _context.SaveChangesAsync();
 
             // Generate tickets
-            var seats = await _context.Seats.Take(ticketCount).ToListAsync();
+            var seats = (await LoadRealSeatsAsync()).Take(ticketCount).ToList();
             for (int i = 0; i < Math.Min(ticketCount, seats.Count); i++)
             {
                 var ticket = new Ticket
@@ -942,7 +942,13 @@ public class DemoDataService : IDemoDataService
             }
 
             // Generate demo tickets for the event
-            var availableSeats = await _context.Seats.Where(s => !_context.Tickets.Any(t => t.SeatId == s.Id && t.EventId == eventId)).Take(20).ToListAsync();
+            var realSeats = await LoadRealSeatsAsync();
+            var takenForEvent = (await _context.Tickets
+                    .Where(t => t.EventId == eventId && t.SeatId != null)
+                    .Select(t => t.SeatId!.Value)
+                    .ToListAsync())
+                .ToHashSet();
+            var availableSeats = realSeats.Where(s => !takenForEvent.Contains(s.Id)).Take(20).ToList();
             
             for (int i = 0; i < availableSeats.Count; i++)
             {
@@ -983,15 +989,14 @@ public class DemoDataService : IDemoDataService
                 {
                     EventId = eventId,
                     TicketNumber = $"ORD{eventId:D2}{i + 1:D3}",
-                    SeatNumber = $"A{i + 1}",
                     CustomerId = 104 + (i % 2), // Use demo customers
                     TotalAmount = 25.50m + (i * 5.25m),
                     Status = (OrderStatus)((i % 5) + 1), // Various statuses (1-5)
                     CreatedAt = DateTime.UtcNow.AddHours(-Random.Shared.Next(1, 24)),
                     Notes = $"Demo order {i + 1} for event {eventId}",
-                    CustomerNotes = $"Generated demo order",
-                    DeliveryNotes = $"Section {(char)('A' + (i % 4))}, Row {i + 1}"
+                    CustomerNotes = $"Generated demo order"
                 };
+                AssignRandomSeat(order, realSeats);
 
                 _context.Orders.Add(order);
             }
@@ -1039,6 +1044,8 @@ public class DemoDataService : IDemoDataService
                 return 0;
             }
 
+            var realSeats = await LoadRealSeatsAsync();
+
             // Idempotency: skip any completed event that already has a non-cancelled drink order, so
             // re-running this never doubles up sales.
             var completedIds = completedEvents.Select(e => e.Id).ToList();
@@ -1077,13 +1084,13 @@ public class DemoDataService : IDemoDataService
                         EventId = evt.Id,
                         CustomerId = customer.Id,
                         TicketNumber = $"DRK{evt.Id:D2}-{i + 1:D3}",
-                        SeatNumber = $"{(char)('A' + Random.Shared.Next(0, 4))}{Random.Shared.Next(1, 30)}",
                         TotalAmount = 0, // set once items are priced
                         Status = OrderStatus.Delivered, // the event is over, so sales are fulfilled
                         CreatedAt = createdAt,
                         DeliveredAt = createdAt.AddMinutes(Random.Shared.Next(5, 20)),
                         Notes = "Seeded drink sale for completed event"
                     };
+                    AssignRandomSeat(order, realSeats);
 
                     _context.Orders.Add(order);
                     await _context.SaveChangesAsync();
@@ -2006,6 +2013,34 @@ public class DemoDataService : IDemoDataService
     private static string Truncate(string? value, int max) =>
         string.IsNullOrEmpty(value) ? "" : value.Length <= max ? value : value[..max];
 
+    // Seats of the real, admin-drawn stadium (sections backing a StadiumSectorOverlay). The legacy
+    // seeded StadiumSections ("Section A" … "Section D VIP") aren't part of the venue, so demo data must
+    // never bind tickets/orders to them or invent "A12"-style seat strings — those surface as phantom
+    // sectors (e.g. the Bar's sector filter). Falls back to every seat only on a DB with no overlays.
+    private async Task<List<Seat>> LoadRealSeatsAsync()
+    {
+        var sectionIds = await _context.StadiumSectorOverlays
+            .Where(o => o.StadiumSectionId != null)
+            .Select(o => o.StadiumSectionId!.Value)
+            .ToListAsync();
+
+        var query = _context.Seats.AsNoTracking().Include(s => s.Section).AsQueryable();
+        if (sectionIds.Count > 0)
+            query = query.Where(s => sectionIds.Contains(s.SectionId));
+        return await query.OrderBy(s => s.Id).ToListAsync();
+    }
+
+    // Binds a demo order to a random real seat (SeatId + its code, clamped to the varchar(10) column).
+    // With no seats at all the order stays unseated rather than getting a made-up seat string.
+    private static void AssignRandomSeat(Order order, List<Seat> seats)
+    {
+        if (seats.Count == 0)
+            return;
+        var seat = seats[Random.Shared.Next(seats.Count)];
+        order.SeatId = seat.Id;
+        order.SeatNumber = Truncate(seat.SeatCode, 10);
+    }
+
     // Marks tickets/orders this generator creates so re-runs can recognise (and skip) them.
     private const string VariedSalesSource = "DemoVariedSales";
 
@@ -2026,7 +2061,7 @@ public class DemoDataService : IDemoDataService
 
         // Physical seat pool is shared by every event; load it once. Without seats we can still add
         // orders (revenue), just not seat-bound tickets.
-        var allSeats = await _context.Seats.AsNoTracking().ToListAsync();
+        var allSeats = await LoadRealSeatsAsync();
 
         var drinks = await _context.Drinks.Where(d => d.IsAvailable).ToListAsync();
         var customers = await _context.Users.Where(u => u.Role == UserRole.Customer).ToListAsync();
@@ -2143,13 +2178,13 @@ public class DemoDataService : IDemoDataService
                             EventId = evt.Id,
                             CustomerId = customer.Id,
                             TicketNumber = $"DRK{evt.Id:D3}-{i + 1:D3}",
-                            SeatNumber = $"{(char)('A' + Random.Shared.Next(0, 4))}{Random.Shared.Next(1, 30)}",
                             TotalAmount = 0, // priced once items are added
                             Status = OrderStatus.Delivered, // completed/started event → sale is realised
                             CreatedAt = createdAt,
                             DeliveredAt = createdAt.AddMinutes(Random.Shared.Next(5, 20)),
                             Notes = "Seeded varied per-event drink sale"
                         };
+                        AssignRandomSeat(order, allSeats);
 
                         _context.Orders.Add(order);
                         await _context.SaveChangesAsync();

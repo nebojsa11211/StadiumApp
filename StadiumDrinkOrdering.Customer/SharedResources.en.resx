@@ -687,7 +687,7 @@
     <value>Sold</value>
   </data>
   <data name="EventDetails_Row" xml:space="preserve">
-    <value>Row</value>
+    <value>Row {0}</value>
   </data>
   <data name="EventDetails_NoSeatsAvailable" xml:space="preserve">
     <value>No seats available in this section.</value>
@@ -3370,5 +3370,14 @@
   </data>
   <data name="Session_CartEmpty" xml:space="preserve">
     <value>Your cart is empty.</value>
+  </data>
+  <data name="Api_TicketSalesNotOnSale" xml:space="preserve">
+    <value>Tickets for this event are not on sale.</value>
+  </data>
+  <data name="Api_TicketSalesClosed" xml:space="preserve">
+    <value>Ticket sales for this event have closed.</value>
+  </data>
+  <data name="EventDetails_SalesOpenFrom" xml:space="preserve">
+    <value>Ticket sales open {0}.</value>
   </data>
 </root>

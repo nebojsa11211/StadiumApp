@@ -132,7 +132,13 @@
         {
             <div class="alert alert-warning d-flex align-items-center gap-2 mb-3" role="alert" id="admin-dashboard-setup-banner">
                 <i class="bi bi-exclamation-triangle-fill"></i>
-                <span class="flex-grow-1">@L["Setup_BannerText"]</span>
+                <span class="flex-grow-1">
+                    @L["Setup_BannerText"]
+                    @foreach (var (step, i) in Setup.MissingSteps.Select((s, i) => (s, i)))
+                    {
+                        @(i > 0 ? ", " : " ")<a href="@step.Route" class="alert-link" id="@($"admin-dashboard-setup-banner-missing-{step.Key}")">@L[step.TitleKey]</a>
+                    }
+                </span>
                 <a href="admin/setup" class="btn btn-sm btn-warning" id="admin-dashboard-setup-banner-link">@L["Setup_BannerAction"]</a>
             </div>
         }

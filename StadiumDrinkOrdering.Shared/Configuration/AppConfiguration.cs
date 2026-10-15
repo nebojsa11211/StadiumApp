@@ -101,5 +101,22 @@ public static class AppConfiguration
         return Normalize(localUrl);
     }
 
+    /// <summary>
+    /// Resolves the API base URL (without a trailing slash) for URLs the BROWSER fetches — image
+    /// <c>src</c>s, URLs handed to JavaScript — as opposed to server-side HttpClient calls.
+    ///
+    /// <c>ApiSettings:PublicBaseUrl</c> when set, otherwise <see cref="ResolveApiBaseUrl"/>. The
+    /// <c>ngrok</c> launch profiles set it to the root-relative <c>/backend</c>, so a remote browser on
+    /// the tunnel loads images through the proxy instead of from <c>https://localhost:7010</c>, which
+    /// only exists on this machine. See Ngrok.md.
+    /// </summary>
+    public static string ResolvePublicApiBaseUrl(IConfiguration configuration)
+    {
+        var configured = configuration["ApiSettings:PublicBaseUrl"];
+        return string.IsNullOrWhiteSpace(configured)
+            ? ResolveApiBaseUrl(configuration)
+            : Normalize(configured);
+    }
+
     private static string Normalize(string url) => url.TrimEnd('/');
 }

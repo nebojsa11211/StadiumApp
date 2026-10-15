@@ -18,6 +18,6 @@
 
         // Season members land on their home; everyone else starts at the scan-first welcome.
         await AuthState.InitializeAsync();
-        Nav.NavigateTo(AuthState.IsAuthenticated ? "/home" : "/welcome", forceLoad: false);
+        Nav.NavigateTo(AuthState.IsAuthenticated ? "home" : "welcome", forceLoad: false);
     }
 }

@@ -39,7 +39,7 @@
             await JSRuntime.InvokeVoidAsync("stadiumSelectorInit", "customer-stadium-canvas", _ref);
             // The seat-map background is the venue's uploaded stadium image (no default ships). The
             // JS ignores a missing/404 image, so the sectors still render on a plain background.
-            var apiBaseUrl = AppConfiguration.ResolveApiBaseUrl(Configuration).TrimEnd('/');
+            var apiBaseUrl = AppConfiguration.ResolvePublicApiBaseUrl(Configuration);
             await JSRuntime.InvokeVoidAsync("stadiumSelectorSetBackground", "customer-stadium-canvas", $"{apiBaseUrl}/api/venue/stadium-image");
             await LoadAndDrawAsync();
             _initialized = true;

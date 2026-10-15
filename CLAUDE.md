@@ -60,6 +60,20 @@
 - **Customer**: https://localhost:7020
 - **Staff**: https://localhost:7040
 
+#### 🌍 Public access via ngrok (`ngrok` launch profile) — see [`Ngrok.md`](Ngrok.md)
+All six apps share ONE free ngrok domain through a local path-based proxy
+(`tools/proxy/proxy.js`, **https://127.0.0.1:7000**): `https://lustrous-unfrozen-legacy.ngrok-free.dev/`
++ `/backend` (API) · `/customer` · `/admin` · `/bar` · `/sim` · `/runner`.
+- Pick the **`ngrok`** multi-start entry in VS and F5; the first app up runs `start-ngrok.bat auto`
+  (via `Shared/Hosting/TunnelLauncher.cs`), which opens the "Stadium proxy (7000)" and "ngrok tunnel" windows.
+  They **outlive Stop Debugging** by design.
+- Driven by `Proxy__Enabled` / `Proxy__Prefix` (`Shared/Hosting/ReverseProxySetup.cs`: forwarded headers + `UsePathBase`).
+- **Write links base-relative** (`NavigateTo("orders")`, `href="events"` — no leading `/`) so they stay inside the
+  path prefix; use `AppConfiguration.ResolvePublicApiBaseUrl` for any API URL the *browser* fetches (images, JS).
+- Same ngrok account as the CRM project: only one of the two tunnels can be online at a time (`ERR_NGROK_334`).
+- **Agent cleanup when you started it:** also stop `ngrok.exe` and whatever listens on 7000
+  (`Get-Process ngrok | Stop-Process -Force`; port-kill 7000 like 7060 below).
+
 ### 🚨 **MANDATORY CLEANUP RULE** 🚨
 
 > 🔴🔴🔴 **AGENT / CLAUDE ABSOLUTE RULE — KILL EVERY APP YOU START, EVERY TIME.** 🔴🔴🔴

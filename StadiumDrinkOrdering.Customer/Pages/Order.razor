@@ -20,7 +20,7 @@
         <h2 id="customer-order-no-session-heading-1">@Localizer["Order_NoSession_Title"]</h2>
         <p id="customer-order-no-session-message-1">@Localizer["Order_NoSession_Message"]</p>
         <div class="gate-actions">
-            <button id="customer-order-scan-btn-1" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/scan"))">@Localizer["Order_ScanTicketButton"]</button>
+            <button id="customer-order-scan-btn-1" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("scan"))">@Localizer["Order_ScanTicketButton"]</button>
         </div>
     </div>
 }
@@ -38,7 +38,7 @@ else if (State.HasSession && !State.CanOrderDrinks && !_loading)
             <span id="customer-order-no-session-slot-6" class="seat-cell seat"><span class="k">@Localizer["Order_SeatLabel"]</span><span class="v tnum">@Coord(State.SeatNumber)</span></span>
         </div>
         <div class="gate-actions">
-            <button id="customer-order-home-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/"))">@Localizer["Order_HomeButton"]</button>
+            <button id="customer-order-home-btn" class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("./"))">@Localizer["Order_HomeButton"]</button>
         </div>
     </div>
 }
@@ -47,7 +47,7 @@ else
     <div id="customer-order-atmos" class="crowd-atmos" aria-hidden="true"></div>
     <div id="customer-order-head" class="order-head">
         <div id="customer-order-top" class="head-bar">
-            <button id="customer-order-back-btn" class="iconbtn" @onclick="@(() => Nav.NavigateTo("/"))" aria-label="@Localizer["Common_BackAria"]">‹</button>
+            <button id="customer-order-back-btn" class="iconbtn" @onclick="@(() => Nav.NavigateTo("./"))" aria-label="@Localizer["Common_BackAria"]">‹</button>
             <div id="customer-order-match-info" class="head-titles">
                 <div id="customer-order-pass-match" class="head-title">@(string.IsNullOrWhiteSpace(State.EventName) ? Localizer["Order_Event_Label"] : State.EventName)</div>
                 <div id="customer-order-pass-eyebrow" class="head-sub">@Localizer["Order_EventSubtitle"]</div>
@@ -84,7 +84,7 @@ else
         {
             @* The fan placed an order, then came back here to order more — offer a jump back to tracking it. *@
             <button id="customer-order-track-active-btn" class="track-active"
-                    @onclick="@(() => Nav.NavigateTo($"/track/{activeOrderId}"))">
+                    @onclick="@(() => Nav.NavigateTo($"track/{activeOrderId}"))">
                 <span id="customer-order-track-active-dot" class="ta-ic"><span class="pulse"></span></span>
                 <span id="customer-order-track-active-text" class="ta-txt">@Localizer["Order_TrackActive", activeOrderId]</span>
                 <span id="customer-order-track-active-go" class="ta-go">@Localizer["Order_TrackGo"]</span>
@@ -112,13 +112,13 @@ else
 
     <CartBar Count="State.Count" Total="State.Subtotal"
              Balance="@SpendableBalance"
-             OnView="@(() => Nav.NavigateTo("/cart"))"
-             OnTopUp="@(() => Nav.NavigateTo("/wallet"))" />
+             OnView="@(() => Nav.NavigateTo("cart"))"
+             OnTopUp="@(() => Nav.NavigateTo("wallet"))" />
 
     <DrinkSheet Drink="_sheetDrink" OnClose="() => _sheetDrink = null" OnAdd="SheetAdd"
                 Available="@SpendableAfterCart"
                 CupSettings="@_cupSettings"
-                OnTopUp="@(() => Nav.NavigateTo("/wallet"))" />
+                OnTopUp="@(() => Nav.NavigateTo("wallet"))" />
 }
 
 @code {

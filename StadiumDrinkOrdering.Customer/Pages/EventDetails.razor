@@ -25,7 +25,7 @@ else if (eventDetails == null)
         <div id="customer-event-details-emoji" class="ev-emoji">🚫</div>
         <h2>@Localizer["EventDetails_NotFound_Title"]</h2>
         <p>@Localizer["EventDetails_NotFound_Message"]</p>
-        <button id="customer-event-details-notfound-home-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/welcome"))">@Localizer["EventDetails_NotFound_Home_Button"]</button>
+        <button id="customer-event-details-notfound-home-btn" class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("welcome"))">@Localizer["EventDetails_NotFound_Home_Button"]</button>
     </div>
 }
 else
@@ -69,6 +69,12 @@ else
         {
             <div id="customer-event-details-sales-disabled" class="ev-empty">
                 🎟️ @Localizer["EventDetails_SalesDisabled"]
+            </div>
+        }
+        else if (eventDetails.TicketSalesState != "Open")
+        {
+            <div id="customer-event-details-sales-closed" class="ev-empty">
+                🎟️ @EventSalesClosedMessage
             </div>
         }
         else
@@ -352,6 +358,17 @@ else
         { "sij", "velj", "ožu", "tra", "svi", "lip", "srp", "kol", "ruj", "lis", "stu", "pro" };
 
     private string EventTitle => eventDetails?.EventName ?? "Utakmica";
+
+    // Shown instead of the section picker when the event itself isn't selling seats right now
+    // (the cart API would reject every seat anyway).
+    private string EventSalesClosedMessage => eventDetails?.TicketSalesState switch
+    {
+        "NotOpenYet" when eventDetails.TicketSalesStartDate.HasValue =>
+            Localizer["EventDetails_SalesOpenFrom", eventDetails.TicketSalesStartDate.Value.ToLocalTime().ToString("g")].Value,
+        "NotOpenYet" => Localizer["Api_TicketSalesNotOpen"].Value,
+        "Closed" => Localizer["Api_TicketSalesClosed"].Value,
+        _ => Localizer["Api_TicketSalesNotOnSale"].Value
+    };
     private decimal CartTotal => cartItems.Sum(i => i.Price);
     private string SelectedTotal => selectedSeats.Sum(s => s.Price).ToString("F2");
 
@@ -396,7 +413,7 @@ else
                 points.AddRange(cartItems.Where(x => x.SectorId == sid).Select(x => (x.RowNumber, x.SeatNumber)));
                 var highlight = points.Distinct().Select(p => new { row = p.Row, seat = p.Seat }).ToArray();
 
-                var apiBase = AppConfiguration.ResolveApiBaseUrl(Configuration).TrimEnd('/');
+                var apiBase = AppConfiguration.ResolvePublicApiBaseUrl(Configuration);
                 await JSRuntime.InvokeVoidAsync("setStadiumMapImageUrl", $"{apiBase}/api/venue/stadium-image");
                 await JSRuntime.InvokeVoidAsync("renderSectorPreview",
                     "customer-seat-locator-canvas", json, 0.08, Localizer["EventDetails_SeatLabelFormat"].Value, null, highlight);
@@ -582,7 +599,7 @@ else
         seatSheetError = null;
     }
 
-    private void ProceedToCheckout() => Navigation.NavigateTo("/checkout?sessionId=" + sessionId);
+    private void ProceedToCheckout() => Navigation.NavigateTo("checkout?sessionId=" + sessionId);
 
     private async Task GoBack() => await JSRuntime.InvokeVoidAsync("history.back");
 

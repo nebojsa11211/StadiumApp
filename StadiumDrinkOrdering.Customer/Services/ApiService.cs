@@ -1002,9 +1002,18 @@ public class ApiService : IApiService
                     return new CartAddResult(false, CartAddOutcome.NotOnSale,
                         _localizer["Api_TicketSalesUnavailable"]);
 
-                if (body.Contains("on sale", StringComparison.OrdinalIgnoreCase))
+                // Event.TicketSalesBlockedReason: lifecycle not OnSale / before window / after window.
+                if (body.Contains("not currently on sale", StringComparison.OrdinalIgnoreCase))
+                    return new CartAddResult(false, CartAddOutcome.NotOnSale,
+                        _localizer["Api_TicketSalesNotOnSale"]);
+
+                if (body.Contains("not opened yet", StringComparison.OrdinalIgnoreCase))
                     return new CartAddResult(false, CartAddOutcome.NotOnSale,
                         _localizer["Api_TicketSalesNotOpen"]);
+
+                if (body.Contains("have closed", StringComparison.OrdinalIgnoreCase))
+                    return new CartAddResult(false, CartAddOutcome.NotOnSale,
+                        _localizer["Api_TicketSalesClosed"]);
 
                 return new CartAddResult(false, CartAddOutcome.Unavailable,
                     _localizer["Api_SeatTaken"]);
@@ -1400,6 +1409,10 @@ public class CustomerEventDetailsDto : CustomerEventDto
 {
     public Dictionary<string, SectionAvailabilityInfo> SectionAvailability { get; set; } = new();
     public List<PricingTierDto> PricingTiers { get; set; } = new();
+
+    /// <summary>"Open", "NotOnSale", "NotOpenYet" or "Closed" — see the API's CustomerEventDetailsDto.</summary>
+    public string TicketSalesState { get; set; } = "Open";
+    public DateTime? TicketSalesStartDate { get; set; }
 }
 
 public class CustomerEventFilterDto

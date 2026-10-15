@@ -80,12 +80,16 @@
 
     private void NavigateToReturnUrl()
     {
-        Navigation.NavigateTo(ResolveReturnUrl(), forceLoad: true);
+        Navigation.NavigateTo(ToBaseRelative(ResolveReturnUrl()), forceLoad: true);
     }
 
     // Returns the post-login destination, preserving the originally requested page.
     // Absolute URLs are only honored when same-origin (prevents open-redirect); anything
     // else (or a loop back to /login or /register) falls back to home.
+    // ResolveReturnUrl yields app paths with a leading "/" (e.g. /orders). Navigate base-relative so the
+    // ngrok path base is kept (/bar/orders); with <base href="/"> it is the very same URL.
+    private static string ToBaseRelative(string path) => path.TrimStart('/') is { Length: > 0 } p ? p : "./";
+
     private string ResolveReturnUrl()
     {
         if (string.IsNullOrEmpty(returnUrl))

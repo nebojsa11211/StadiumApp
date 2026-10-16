@@ -158,6 +158,7 @@ else
 
             SignalRService.NewOrder += OnNewOrder;
             SignalRService.OrderUpdated += OnOrderUpdated;
+            SignalRService.OrderStatusChanged += OnOrderStatusChanged;
 
             lastConnectedTime = DateTime.Now;
             connectionStatusMessage = Localizer["Dashboard_SignalRConnectionEstablished"].Value;
@@ -171,17 +172,77 @@ else
         // Load initial dashboard data
         await LoadDashboardData();
 
-        // Setup auto-refresh timer (every 30 seconds)
+        // Live backstop poll (same cadence as the order board): SignalR pushes refresh immediately, this
+        // catches anything a push missed (e.g. while reconnecting).
         refreshTimer = new System.Threading.Timer(async _ =>
-        {
-            await InvokeAsync(async () =>
-            {
-                await LoadDashboardData();
-            });
-        }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+            await InvokeAsync(LoadDashboardData), null,
+            TimeSpan.FromSeconds(RefreshSeconds), TimeSpan.FromSeconds(RefreshSeconds));
     }
 
+    private const int RefreshSeconds = 5;
+
+    // Load coalescing: a push that lands mid-load sets reloadPending so exactly one more load follows,
+    // instead of stacking overlapping loads (or dropping the later push) during a burst of orders.
+    private bool isLoadingData;
+    private bool reloadPending;
+
+    // New orders seen since the last load, toasted once afterwards — one "N new orders" toast for a
+    // burst rather than one per order.
+    private readonly List<OrderDto> pendingNewOrders = new();
+
     private async Task LoadDashboardData()
+    {
+        if (isLoadingData)
+        {
+            reloadPending = true;
+            return;
+        }
+        isLoadingData = true;
+        try
+        {
+            await LoadDashboardDataCore();
+        }
+        finally
+        {
+            isLoadingData = false;
+        }
+
+        await AnnounceNewOrdersAsync();
+
+        if (reloadPending)
+        {
+            reloadPending = false;
+            await LoadDashboardData();
+        }
+    }
+
+    private async Task AnnounceNewOrdersAsync()
+    {
+        if (pendingNewOrders.Count == 0) return;
+        var batch = pendingNewOrders.ToList();
+        pendingNewOrders.Clear();
+
+        try
+        {
+            if (batch.Count == 1)
+            {
+                await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_NewOrderToast", batch[0].Id].Value, "info");
+                await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", Localizer["Dashboard_NewOrderAnnounce", batch[0].CustomerName].Value);
+            }
+            else
+            {
+                var text = Localizer["Dashboard_NewOrdersToast", batch.Count].Value;
+                await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", text, "info");
+                await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", text);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"New-order toast failed: {ex.Message}");
+        }
+    }
+
+    private async Task LoadDashboardDataCore()
     {
         try
         {
@@ -293,20 +354,16 @@ else
     {
         await InvokeAsync(async () =>
         {
+            pendingNewOrders.Add(order);
             await LoadDashboardData();
-            await JSRuntime.InvokeVoidAsync("blazorDashboard.showToast", Localizer["Dashboard_NewOrderToast", order.Id].Value, "info");
-            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", Localizer["Dashboard_NewOrderAnnounce", order.CustomerName].Value);
         });
     }
 
-    private async void OnOrderUpdated(OrderDto order)
-    {
-        await InvokeAsync(async () =>
-        {
-            await LoadDashboardData();
-            await JSRuntime.InvokeVoidAsync("blazorDashboard.announceUpdate", Localizer["Dashboard_OrderStatusAnnounce", order.Id, order.Status].Value);
-        });
-    }
+    // Status changes only refresh the numbers — no per-change announcement, which would flood screen
+    // readers while the board is busy.
+    private async void OnOrderUpdated(OrderDto order) => await InvokeAsync(LoadDashboardData);
+
+    private async void OnOrderStatusChanged(OrderStatusChangedNotification n) => await InvokeAsync(LoadDashboardData);
 
     public void Dispose()
     {
@@ -320,6 +377,7 @@ else
         {
             SignalRService.NewOrder -= OnNewOrder;
             SignalRService.OrderUpdated -= OnOrderUpdated;
+            SignalRService.OrderStatusChanged -= OnOrderStatusChanged;
         }
     }
 }

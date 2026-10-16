@@ -4,6 +4,7 @@
 @using StadiumDrinkOrdering.Bar.Services
 @inject IStaffApiService ApiService
 @inject IStringLocalizer<SharedResources> Localizer
+@implements IDisposable
 
 <BrandPageTitle Station="Bar" Title="@Localizer["TopupHistory_PageTitle"]" />
 
@@ -15,6 +16,10 @@
             <p>@Localizer["TopupHistory_Subtitle"]</p>
         </div>
         <div id="bar-topup-history-header-actions" class="console-head__actions">
+            @if (lastUpdated != default)
+            {
+                <span id="bar-topup-history-updated" class="mono dash-updated">@Localizer["OrderQueue_Updated"] @lastUpdated.ToString("HH:mm:ss")</span>
+            }
             <button class="pill-btn" @onclick="Refresh" id="bar-topup-history-refresh-btn" disabled="@isLoading">
                 <i class="bi bi-arrow-clockwise"></i> @Localizer["Refresh"]
             </button>
@@ -112,7 +117,7 @@
                         <tbody>
                             @foreach (var item in data.Items)
                             {
-                                <tr id="@($"bar-topup-history-row-{item.TransactionId}")">
+                                <tr id="@($"bar-topup-history-row-{item.TransactionId}")" class="@(flashIds.Contains(item.TransactionId) ? "topup-row-new" : null)">
                                     <td class="console-table__time mono">@item.CreatedAt.ToLocalTime().ToString("dd.MM HH:mm:ss")</td>
                                     <td><span class="badge @TypeBadgeClass(item.ReferenceType)">@TypeLabel(item.ReferenceType)</span></td>
                                     <td>
@@ -185,31 +190,86 @@
     private bool isLoading = true;
 
     private string search = string.Empty;
+    // The search actually in effect. The box is bound per keystroke, so the background refresh must
+    // use the last applied term — not whatever is half-typed in the box.
+    private string appliedSearch = string.Empty;
     private bool onlyMine;
     private int page = 1;
     private const int PageSize = 50;
+
+    // Live view: counter movements are re-fetched quietly on a timer so the cash drawer view stays
+    // current without a manual refresh. Rows that weren't there on the previous fetch flash briefly.
+    private System.Threading.Timer? refreshTimer;
+    private const int RefreshSeconds = 5;
+    private bool silentLoading;
+    private DateTime lastUpdated;
+    private HashSet<long> knownIds = new();
+    private HashSet<long> flashIds = new();
 
     private int TotalPages => data == null || data.TotalCount == 0
         ? 1
         : (int)Math.Ceiling(data.TotalCount / (double)PageSize);
 
-    protected override async Task OnInitializedAsync() => await LoadData();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        refreshTimer = new System.Threading.Timer(async _ =>
+            await InvokeAsync(SilentRefresh), null,
+            TimeSpan.FromSeconds(RefreshSeconds), TimeSpan.FromSeconds(RefreshSeconds));
+    }
 
+    // Full load with the spinner — for first load and anything the user explicitly asked for.
     private async Task LoadData()
     {
         isLoading = true;
         StateHasChanged();
 
-        data = await ApiService.GetBarTopupHistoryAsync(search, onlyMine, page, PageSize);
+        var result = await ApiService.GetBarTopupHistoryAsync(appliedSearch, onlyMine, page, PageSize);
+        if (result != null)
+        {
+            data = result;
+            knownIds = result.Items.Select(i => i.TransactionId).ToHashSet();
+            flashIds.Clear();
+            lastUpdated = DateTime.Now;
+        }
 
         isLoading = false;
         StateHasChanged();
+    }
+
+    // Background poll: swaps the data in place without the spinner, and keeps the last good data on a
+    // failed fetch rather than blanking the table.
+    private async Task SilentRefresh()
+    {
+        if (isLoading || silentLoading) return;
+        silentLoading = true;
+        try
+        {
+            var result = await ApiService.GetBarTopupHistoryAsync(appliedSearch, onlyMine, page, PageSize);
+            if (result == null) return;
+
+            var ids = result.Items.Select(i => i.TransactionId).ToHashSet();
+            flashIds = ids.Where(id => !knownIds.Contains(id)).ToHashSet();
+            knownIds = ids;
+            data = result;
+            lastUpdated = DateTime.Now;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Top-up history refresh failed: {ex.Message}");
+        }
+        finally
+        {
+            silentLoading = false;
+        }
     }
 
     private async Task Refresh() => await LoadData();
 
     private async Task ApplyFilters()
     {
+        appliedSearch = search;
         page = 1;
         await LoadData();
     }
@@ -217,6 +277,7 @@
     private async Task ClearFilters()
     {
         search = string.Empty;
+        appliedSearch = string.Empty;
         onlyMine = false;
         page = 1;
         await LoadData();
@@ -248,6 +309,8 @@
         page++;
         await LoadData();
     }
+
+    public void Dispose() => refreshTimer?.Dispose();
 
     // ---- Display helpers ----
 

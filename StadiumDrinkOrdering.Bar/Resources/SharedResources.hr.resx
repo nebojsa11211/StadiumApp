@@ -1209,4 +1209,7 @@
   <data name="OrderQueue_SlipReadyAt" xml:space="preserve">
     <value>Spremno u</value>
   </data>
+  <data name="Dashboard_NewOrdersToast" xml:space="preserve">
+    <value>Zaprimljeno novih narudžbi: {0}</value>
+  </data>
 </root>

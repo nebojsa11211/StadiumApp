@@ -70,6 +70,21 @@ public interface ITicketIngestionService
     Task<SimulatedDrinkOrderResult> SimulateDrinkOrderAsync(string externalEventId, CancellationToken ct = default);
 
     /// <summary>
+    /// Testing hook: plays bar staff (and optionally runners) for the simulator's own drink orders on
+    /// this event, advancing each one stage once it has waited its turn. Goes through the same
+    /// status-update path as the Bar board and broadcasts the change, so /order-queue animates live.
+    /// </summary>
+    Task<SimulateOrderProgressResult> SimulateOrderProgressAsync(string externalEventId, SimulateOrderProgressRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// Testing hook: one realistic bar-counter cash movement for a fan holding a ticket to this event —
+    /// a cash top-up onto their account (or onto the ticket itself when they have no account), or now
+    /// and then a ticket cash-out. Uses the same wallet primitives and rules as the Bar /topup flow,
+    /// attributed to a real bartender account, so it lands on /topup-history like a real one.
+    /// </summary>
+    Task<SimulatedBarCashResult> SimulateBarCashAsync(string externalEventId, CancellationToken ct = default);
+
+    /// <summary>
     /// Testing hook for the admin Stadium Overview: fills <paramref name="numberOfTickets"/> seats of an
     /// event with simulated sold tickets. Seats are allocated from the drawing-tool overlays (the real
     /// stadium, source of truth) so each ticket's <see cref="Ticket.Section"/> is a genuine overlay
@@ -93,6 +108,7 @@ public class TicketIngestionService : ITicketIngestionService
     private readonly IQRCodeService _qrCode;
     private readonly IOrderService _orderService;
     private readonly IAccountProvisioningService _accountProvisioning;
+    private readonly IWalletService _walletService;
     private readonly ILogger<TicketIngestionService> _logger;
 
     public TicketIngestionService(
@@ -102,6 +118,7 @@ public class TicketIngestionService : ITicketIngestionService
         IQRCodeService qrCode,
         IOrderService orderService,
         IAccountProvisioningService accountProvisioning,
+        IWalletService walletService,
         ILogger<TicketIngestionService> logger)
     {
         _context = context;
@@ -110,6 +127,7 @@ public class TicketIngestionService : ITicketIngestionService
         _qrCode = qrCode;
         _orderService = orderService;
         _accountProvisioning = accountProvisioning;
+        _walletService = walletService;
         _logger = logger;
     }
 
@@ -940,7 +958,7 @@ public class TicketIngestionService : ITicketIngestionService
         // just like a customer order placed from a seat.
         var occupiedSeats = await _context.Tickets
             .Where(t => t.EventId == evt.Id && t.Status != TicketStatuses.Cancelled && t.SeatId != null)
-            .Select(t => new { t.SeatId, t.SeatNumber, t.TicketNumber, t.CustomerName })
+            .Select(t => new { t.Id, t.SeatId, t.SeatNumber, t.TicketNumber, t.CustomerName, t.CustomerEmail, t.CustomerOib })
             .ToListAsync(ct);
         if (occupiedSeats.Count == 0)
             return new SimulatedDrinkOrderResult { Accepted = false, Message = "No occupied seats to order from — sell some tickets first." };
@@ -951,7 +969,17 @@ public class TicketIngestionService : ITicketIngestionService
         if (drinks.Count == 0)
             return new SimulatedDrinkOrderResult { Accepted = false, Message = "No drinks available to order." };
 
-        var seat = occupiedSeats[_rng.Next(occupiedSeats.Count)];
+        // Fans who loaded cash at the bar are the ones who come back to order — so about half the
+        // time the order comes from a seat whose holder has money on their account or ticket.
+        var pool = occupiedSeats;
+        if (_rng.NextDouble() < 0.5)
+        {
+            var funded = await FundedTicketIdsAsync(evt.Id, ct);
+            var fundedSeats = occupiedSeats.Where(s => funded.Contains(s.Id)).ToList();
+            if (fundedSeats.Count > 0)
+                pool = fundedSeats;
+        }
+        var seat = pool[_rng.Next(pool.Count)];
         var customerId = await ResolveSimulatorCustomerIdAsync(ct);
 
         // 1–3 distinct drinks, 1–2 of each.
@@ -993,6 +1021,11 @@ public class TicketIngestionService : ITicketIngestionService
         _context.Orders.Add(order);
         await _context.SaveChangesAsync(ct);
 
+        // Settle it the way this fan realistically would: from the cash they loaded at the bar when
+        // there's enough on it, otherwise cash or card collected by the runner on delivery.
+        var holderUserId = await ResolveHolderAccountIdAsync(seat.CustomerEmail, seat.CustomerOib, ct);
+        var paymentMethod = await ApplySimulatedPaymentAsync(order.Id, total, seat.Id, holderUserId, ct);
+
         var summary = string.Join(", ", summaryParts);
         await BroadcastNewOrderAsync(order, seat.CustomerName, summary, ct);
 
@@ -1007,8 +1040,274 @@ public class TicketIngestionService : ITicketIngestionService
             EventId = evt.Id,
             SeatNumber = order.SeatNumber,
             OrderSummary = summary,
-            TotalAmount = total
+            TotalAmount = total,
+            PaymentMethod = paymentMethod.ToString()
         };
+    }
+
+    /// <summary>
+    /// Pays a simulated order like the customer app would: account wallet first, then the ticket's
+    /// own balance, each only when it covers the total (most fans who loaded cash spend it); otherwise
+    /// a Pending cash/card payment the runner collects at the seat (settled on Delivered).
+    /// </summary>
+    private async Task<PaymentMethod> ApplySimulatedPaymentAsync(int orderId, decimal total, int ticketId, int? holderUserId, CancellationToken ct)
+    {
+        var key = $"order-{orderId}";
+        var description = $"Drink order #{orderId}";
+
+        if (holderUserId is int uid && _rng.NextDouble() < 0.9)
+        {
+            var balance = await _context.Wallets.AsNoTracking()
+                .Where(w => w.UserId == uid && w.Status == WalletStatus.Active)
+                .Select(w => (decimal?)w.Balance).FirstOrDefaultAsync(ct);
+            if (balance >= total)
+            {
+                var debit = await _walletService.TryDebitAsync(uid, total, key, "Order", orderId, description);
+                if (debit.Outcome is WalletDebitOutcome.Success && debit.Transaction != null)
+                {
+                    await AddWalletPaymentAsync(orderId, debit.Transaction, PaymentMethod.DigitalWallet, total, ct);
+                    return PaymentMethod.DigitalWallet;
+                }
+            }
+        }
+
+        var ticketBalance = await _context.Wallets.AsNoTracking()
+            .Where(w => w.TicketId == ticketId && w.Status == WalletStatus.Active)
+            .Select(w => (decimal?)w.Balance).FirstOrDefaultAsync(ct);
+        if (ticketBalance >= total)
+        {
+            var debit = await _walletService.TryDebitTicketWalletAsync(ticketId, total, key, "Order", orderId, description);
+            if (debit.Outcome is WalletDebitOutcome.Success && debit.Transaction != null)
+            {
+                await AddWalletPaymentAsync(orderId, debit.Transaction, PaymentMethod.TicketWallet, total, ct);
+                return PaymentMethod.TicketWallet;
+            }
+        }
+
+        // Cash is still king in the stands, but cards are common.
+        var offline = _rng.NextDouble() < 0.55 ? PaymentMethod.Cash : PaymentMethod.CreditCard;
+        _context.Payments.Add(new Payment
+        {
+            OrderId = orderId,
+            PaymentMethod = offline,
+            Direction = PaymentDirection.In,
+            Amount = total,
+            Currency = "EUR",
+            Status = PaymentStatus.Pending,
+            PaymentDate = DateTime.UtcNow
+        });
+        await _context.SaveChangesAsync(ct);
+        return offline;
+    }
+
+    /// <summary>Tickets on this event whose holder has a positive balance — on the ticket itself or on their account.</summary>
+    private async Task<HashSet<int>> FundedTicketIdsAsync(int eventId, CancellationToken ct)
+    {
+        var onTicket = from w in _context.Wallets
+                       join t in _context.Tickets on w.TicketId equals (int?)t.Id
+                       where t.EventId == eventId && w.Status == WalletStatus.Active && w.Balance > 0
+                       select t.Id;
+        var onAccount = from t in _context.Tickets
+                        join u in _context.Users on t.CustomerEmail.ToLower() equals u.Email.ToLower()
+                        join w in _context.Wallets on (int?)u.Id equals w.UserId
+                        where t.EventId == eventId && w.Status == WalletStatus.Active && w.Balance > 0
+                        select t.Id;
+        var ids = await onTicket.Concat(onAccount).Distinct().ToListAsync(ct);
+        return ids.ToHashSet();
+    }
+
+    private async Task AddWalletPaymentAsync(int orderId, WalletTransaction txn, PaymentMethod method, decimal total, CancellationToken ct)
+    {
+        _context.Payments.Add(new Payment
+        {
+            OrderId = orderId,
+            WalletTransactionId = txn.Id,
+            PaymentMethod = method,
+            Direction = PaymentDirection.In,
+            TransactionId = txn.Id.ToString(),
+            Amount = total,
+            Currency = txn.Currency,
+            Status = PaymentStatus.Completed,
+            PaymentDate = DateTime.UtcNow,
+            ProcessedAt = DateTime.UtcNow
+        });
+        await _context.SaveChangesAsync(ct);
+    }
+
+    /// <summary>
+    /// The active account a ticket holder resolves to at the bar — by email, then by the OIB on the
+    /// ticket — mirroring BarTopupController.Resolve. Null when they have no (active) account.
+    /// </summary>
+    private async Task<int?> ResolveHolderAccountIdAsync(string? email, string? oib, CancellationToken ct)
+    {
+        User? user = null;
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            var lower = email.Trim().ToLower();
+            user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email.ToLower() == lower, ct);
+        }
+        if (user == null && !string.IsNullOrWhiteSpace(oib))
+            user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Oib == oib, ct);
+        return user is { IsActive: true } ? user.Id : null;
+    }
+
+    // ---- Bar-counter cash simulation ---------------------------------------------------------
+
+    // What fans actually hand over at a counter: mostly a €20 or €10 note, a €50 for a group, the
+    // odd €5 or €100. Weights sum to 100.
+    private static readonly (decimal Amount, int Weight)[] CashNotes =
+    {
+        (5m, 6), (10m, 26), (15m, 4), (20m, 32), (30m, 6), (40m, 4), (50m, 18), (100m, 4)
+    };
+
+    public async Task<SimulatedBarCashResult> SimulateBarCashAsync(string externalEventId, CancellationToken ct = default)
+    {
+        var evt = await _context.Events.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.ExternalEventId == externalEventId, ct);
+        if (evt == null)
+            return new SimulatedBarCashResult { Accepted = false, Message = $"No event mapped to external id '{externalEventId}'" };
+        if (!EventLifecycle.CanOrderDrinks(evt.Status))
+            return new SimulatedBarCashResult { Accepted = false, Message = EventLifecycle.OrderingBlockedReason(evt.Status) };
+
+        var staff = await PickBarStaffAsync(ct);
+
+        // Roughly one counter visit in eight is someone leaving and taking their ticket balance back.
+        if (_rng.NextDouble() < 0.12)
+        {
+            var cashOut = await TrySimulateCashOutAsync(evt.Id, staff, ct);
+            if (cashOut != null)
+                return cashOut;
+        }
+
+        // A handful of random fans actually in the stadium for this match; the first one we can
+        // serve under the real top-up rules gets the top-up.
+        var holders = await _context.Tickets.AsNoTracking()
+            .Where(t => t.EventId == evt.Id && t.Status != TicketStatuses.Cancelled && t.SeatId != null)
+            .OrderBy(_ => EF.Functions.Random())
+            .Take(8)
+            .Select(t => new { t.Id, t.TicketNumber, t.CustomerName, t.CustomerEmail, t.CustomerOib })
+            .ToListAsync(ct);
+        if (holders.Count == 0)
+            return new SimulatedBarCashResult { Accepted = false, Message = "No ticket holders to top up — sell some tickets first." };
+
+        foreach (var h in holders)
+        {
+            var amount = PickCashNote();
+            var key = $"sim-bar-{Guid.NewGuid():N}";
+            var userId = await ResolveHolderAccountIdAsync(h.CustomerEmail, h.CustomerOib, ct);
+
+            if (userId is int uid)
+            {
+                // Has an account → the bar always loads the fan's own wallet (CashTopup).
+                var (outcome, txn) = await _walletService.StaffCashDepositAsync(uid, amount, staff.Id, key);
+                if (outcome is not WalletDebitOutcome.Success || txn == null)
+                    continue;
+
+                var user = await _context.Users.AsNoTracking().FirstAsync(u => u.Id == uid, ct);
+                var name = $"{user.FirstName} {user.LastName}".Trim();
+                return new SimulatedBarCashResult
+                {
+                    Accepted = true,
+                    Message = "Account top-up",
+                    Kind = "CashTopup",
+                    CustomerName = string.IsNullOrWhiteSpace(name) ? user.Username : name,
+                    TicketNumber = h.TicketNumber,
+                    Amount = amount,
+                    BalanceAfter = txn.BalanceAfter,
+                    StaffEmail = staff.Email
+                };
+            }
+
+            // No account → cash goes onto the ticket itself, never past the bearer-balance cap.
+            var current = await _context.Wallets.AsNoTracking()
+                .Where(w => w.TicketId == h.Id)
+                .Select(w => new { w.Balance, w.Status })
+                .FirstOrDefaultAsync(ct);
+            if (current != null && current.Status != WalletStatus.Active)
+                continue; // already cashed out — they'd have to be turned away
+            var headroom = _walletService.TicketWalletMaxBalance - (current?.Balance ?? 0m);
+            amount = Math.Min(amount, Math.Floor(headroom / 5m) * 5m);
+            if (amount < 5m)
+                continue;
+
+            var (tOutcome, tTxn) = await _walletService.TopUpTicketWalletAsync(h.Id, amount, staff.Id, key);
+            if (tOutcome is not WalletDebitOutcome.Success || tTxn == null)
+                continue;
+
+            return new SimulatedBarCashResult
+            {
+                Accepted = true,
+                Message = "Ticket load",
+                Kind = "TicketTopup",
+                CustomerName = h.CustomerName,
+                TicketNumber = h.TicketNumber,
+                Amount = amount,
+                BalanceAfter = tTxn.BalanceAfter,
+                StaffEmail = staff.Email
+            };
+        }
+
+        return new SimulatedBarCashResult { Accepted = true, Message = "No fan could be topped up this time" };
+    }
+
+    /// <summary>
+    /// Cashes out a random ticket balance on this event that still has money on it — but only one the
+    /// fan has actually spent from, so it reads as leftover change on the way out, not a load-and-refund.
+    /// </summary>
+    private async Task<SimulatedBarCashResult?> TrySimulateCashOutAsync(int eventId, User staff, CancellationToken ct)
+    {
+        var candidate = await (from w in _context.Wallets.AsNoTracking()
+                               join t in _context.Tickets.AsNoTracking() on w.TicketId equals (int?)t.Id
+                               where t.EventId == eventId && w.Status == WalletStatus.Active && w.Balance > 0
+                                     && _context.WalletTransactions.Any(x => x.WalletId == w.Id && x.ReferenceType == "Order")
+                               orderby EF.Functions.Random()
+                               select new { TicketId = t.Id, t.TicketNumber, t.CustomerName })
+            .FirstOrDefaultAsync(ct);
+        if (candidate == null)
+            return null;
+
+        var result = await _walletService.CashOutTicketWalletAsync(candidate.TicketId, staff.Id, $"sim-cashout-{Guid.NewGuid():N}");
+        if (result.Outcome != TicketWalletCashOutOutcome.Success)
+            return null;
+
+        return new SimulatedBarCashResult
+        {
+            Accepted = true,
+            Message = "Ticket cash-out",
+            Kind = "TicketCashOut",
+            CustomerName = candidate.CustomerName,
+            TicketNumber = candidate.TicketNumber,
+            Amount = -result.RefundAmount,
+            BalanceAfter = 0m,
+            StaffEmail = staff.Email
+        };
+    }
+
+    private decimal PickCashNote()
+    {
+        var roll = _rng.Next(CashNotes.Sum(n => n.Weight));
+        foreach (var (amount, weight) in CashNotes)
+        {
+            if (roll < weight) return amount;
+            roll -= weight;
+        }
+        return 20m;
+    }
+
+    /// <summary>
+    /// A real bartender account to stamp the movement with (so "only mine" and per-staff reconciliation
+    /// behave like a real shift); falls back to the simulator's own bartender when none exist.
+    /// </summary>
+    private async Task<User> PickBarStaffAsync(CancellationToken ct)
+    {
+        var bartenders = await _context.Users.AsNoTracking()
+            .Where(u => u.Role == UserRole.Bartender && u.IsActive && !u.Email.StartsWith("simulator+"))
+            .ToListAsync(ct);
+        if (bartenders.Count > 0)
+            return bartenders[_rng.Next(bartenders.Count)];
+
+        var id = await ResolveSimulatorUserIdAsync(SimulatorBartenderEmail, "Simulator Bartender", UserRole.Bartender, ct);
+        return await _context.Users.AsNoTracking().FirstAsync(u => u.Id == id, ct);
     }
 
     public async Task<SimulatedTicketSalesResult> SimulateTicketSalesAsync(int eventId, int numberOfTickets, decimal basePrice, CancellationToken ct = default)
@@ -1113,11 +1412,140 @@ public class TicketIngestionService : ITicketIngestionService
         };
     }
 
+    private const string SimulatorBartenderEmail = "simulator+bartender@stadium.local";
+    private const string SimulatorRunnerEmail = "simulator+runner@stadium.local";
+
+    public async Task<SimulateOrderProgressResult> SimulateOrderProgressAsync(
+        string externalEventId, SimulateOrderProgressRequest request, CancellationToken ct = default)
+    {
+        var evt = await _context.Events.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.ExternalEventId == externalEventId, ct);
+        if (evt == null)
+            return new SimulateOrderProgressResult { Accepted = false, Message = $"No event mapped to external id '{externalEventId}'" };
+
+        // Only the simulator's own orders are worked — a real order placed by a tester stays put for
+        // whoever is manning the Bar board.
+        var customerId = await ResolveSimulatorCustomerIdAsync(ct);
+        var movable = new[] { OrderStatus.Pending, OrderStatus.Accepted, OrderStatus.InPreparation, OrderStatus.Ready, OrderStatus.OutForDelivery };
+        var orders = await _context.Orders.AsNoTracking()
+            .Where(o => o.EventId == evt.Id && o.CustomerId == customerId && movable.Contains(o.Status))
+            .Select(o => new { o.Id, o.Status, o.SeatNumber, o.CreatedAt, o.AcceptedAt, o.InPreparationAt, o.PreparedAt, o.AssignedStaffId })
+            .ToListAsync(ct);
+
+        var result = new SimulateOrderProgressResult { Accepted = true };
+        if (orders.Count == 0)
+        {
+            result.Message = "No simulated orders to advance";
+            return result;
+        }
+
+        var bartenderId = await ResolveSimulatorUserIdAsync(SimulatorBartenderEmail, "Simulator Bartender", UserRole.Bartender, ct);
+        var runnerId = request.IncludeDelivery
+            ? await ResolveSimulatorUserIdAsync(SimulatorRunnerEmail, "Simulator Runner", UserRole.Waiter, ct)
+            : 0;
+
+        var stage = TimeSpan.FromSeconds(Math.Clamp(request.StageSeconds, 1, 600));
+        var now = DateTime.UtcNow;
+
+        foreach (var o in orders)
+        {
+            // Per-order jitter (0.6×–1.4× the stage time) so orders don't all move on the same tick.
+            var wait = stage * (0.6 + (o.Id % 9) / 10.0);
+            OrderStatus? next = null;
+
+            switch (o.Status)
+            {
+                case OrderStatus.Pending when now - o.CreatedAt >= wait:
+                case OrderStatus.Accepted when now - (o.AcceptedAt ?? o.CreatedAt) >= wait:
+                    next = OrderStatus.InPreparation;
+                    break;
+                case OrderStatus.InPreparation when now - (o.InPreparationAt ?? o.CreatedAt) >= wait:
+                    next = OrderStatus.Ready;
+                    break;
+                case OrderStatus.Ready when request.IncludeDelivery && o.AssignedStaffId == null
+                                            && now - (o.PreparedAt ?? o.CreatedAt) >= wait:
+                    next = OrderStatus.OutForDelivery;
+                    break;
+                // No pickup timestamp exists, so delivery is timed from Ready: one stage at the bar
+                // waiting for a runner, one stage walking to the seat. Only orders our runner holds.
+                case OrderStatus.OutForDelivery when request.IncludeDelivery && o.AssignedStaffId == runnerId
+                                                     && now - (o.PreparedAt ?? o.CreatedAt) >= wait * 2:
+                    next = OrderStatus.Delivered;
+                    break;
+            }
+
+            if (next is not { } status)
+                continue;
+
+            bool moved;
+            if (status == OrderStatus.OutForDelivery)
+            {
+                var (outcome, _) = await _orderService.ClaimOrderForDeliveryAsync(o.Id, runnerId);
+                moved = outcome == ClaimOutcome.Claimed;
+            }
+            else
+            {
+                var actor = status == OrderStatus.Delivered ? runnerId : bartenderId;
+                moved = await _orderService.UpdateOrderStatusAsync(o.Id,
+                    new UpdateOrderStatusDto { Status = status, Notes = "Simulated staff" }, actor);
+            }
+
+            if (!moved)
+                continue;
+
+            switch (status)
+            {
+                case OrderStatus.InPreparation: result.StartedPreparation++; break;
+                case OrderStatus.Ready: result.MarkedReady++; break;
+                case OrderStatus.OutForDelivery: result.PickedUp++; break;
+                case OrderStatus.Delivered: result.Delivered++; break;
+            }
+
+            await BroadcastStatusChangedAsync(o.Id, status, o.SeatNumber, evt.Id, ct);
+        }
+
+        result.Message = $"{result.TotalMoved} order(s) advanced";
+        return result;
+    }
+
+    /// <summary>
+    /// Pushes a status change exactly like the Bar/Runner apps do through the hub, plus an
+    /// OrderUpdated nudge, so the Bar board, Runner and customer views refresh immediately.
+    /// </summary>
+    private async Task BroadcastStatusChangedAsync(int orderId, OrderStatus status, string seatNumber, int eventId, CancellationToken ct)
+    {
+        try
+        {
+            var notification = new OrderStatusChangedNotification
+            {
+                OrderId = orderId,
+                Status = status,
+                SeatNumber = seatNumber,
+                Timestamp = DateTime.UtcNow,
+                EventId = eventId
+            };
+            await _hub.Clients.Group($"event-{eventId}").SendAsync("OrderStatusChanged", notification, ct);
+            await _hub.Clients.Group("staff-all").SendAsync("OrderStatusChanged", notification, ct);
+
+            var dto = await _orderService.GetOrderByIdAsync(orderId);
+            if (dto != null)
+                await _hub.Clients.Group("staff-all").SendAsync("OrderUpdated", dto, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to broadcast simulated status change for order {OrderId}", orderId);
+        }
+    }
+
     /// <summary>Resolve-or-create the dedicated customer used to attribute simulated drink orders.</summary>
-    private async Task<int> ResolveSimulatorCustomerIdAsync(CancellationToken ct)
+    private Task<int> ResolveSimulatorCustomerIdAsync(CancellationToken ct)
+        => ResolveSimulatorUserIdAsync(SimulatorCustomerEmail, "Simulator Customer", UserRole.Customer, ct);
+
+    /// <summary>Resolve-or-create a placeholder user the simulator acts as (customer, bartender or runner).</summary>
+    private async Task<int> ResolveSimulatorUserIdAsync(string email, string username, UserRole role, CancellationToken ct)
     {
         var existing = await _context.Users
-            .Where(u => u.Email == SimulatorCustomerEmail)
+            .Where(u => u.Email == email)
             .Select(u => u.Id)
             .FirstOrDefaultAsync(ct);
         if (existing != 0)
@@ -1125,11 +1553,11 @@ public class TicketIngestionService : ITicketIngestionService
 
         var user = new User
         {
-            Username = "Simulator Customer",
-            Email = SimulatorCustomerEmail,
+            Username = username,
+            Email = email,
             // Not a real login — a non-empty placeholder just satisfies the required column.
             PasswordHash = Guid.NewGuid().ToString("N"),
-            Role = UserRole.Customer,
+            Role = role,
             CreatedAt = DateTime.UtcNow
         };
         _context.Users.Add(user);

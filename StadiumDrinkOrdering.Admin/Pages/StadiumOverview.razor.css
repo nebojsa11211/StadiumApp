@@ -168,6 +168,8 @@
 
 /* Progress bars */
 .ops-progress {
+    display: flex;
+    gap: 2px;
     height: 8px;
     background: #e2e8f0;
     border-radius: 999px;
@@ -176,8 +178,8 @@
 }
 
 .ops-progress-bar {
+    flex: none;
     height: 100%;
-    border-radius: 999px;
     transition: width 0.4s ease;
 }
 
@@ -187,6 +189,33 @@
 .ops-progress-bar.occ-mid { background: #f59e0b; }
 .occ-high .ops-progress-bar,
 .ops-progress-bar.occ-high { background: #ef4444; }
+
+/* Season-pass segment of a stacked sold bar, and the colour key beneath it */
+.ops-progress-bar.ops-progress-bar--season { background: #8b5cf6; }
+
+.ops-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.8rem;
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.ops-legend strong { color: #334155; }
+
+.ops-swatch {
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-right: 0.3rem;
+    border-radius: 2px;
+    background: #22c55e;
+}
+
+.ops-legend.occ-mid .ops-swatch { background: #f59e0b; }
+.ops-legend.occ-high .ops-swatch { background: #ef4444; }
+.ops-legend .ops-swatch.ops-swatch--season { background: #8b5cf6; }
 
 /* Sector grid */
 .ops-section-title {

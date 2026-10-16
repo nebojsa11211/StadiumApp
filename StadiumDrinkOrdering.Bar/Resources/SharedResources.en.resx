@@ -1209,4 +1209,7 @@
   <data name="OrderQueue_SlipReadyAt" xml:space="preserve">
     <value>Ready at</value>
   </data>
+  <data name="Dashboard_NewOrdersToast" xml:space="preserve">
+    <value>{0} new orders received</value>
+  </data>
 </root>

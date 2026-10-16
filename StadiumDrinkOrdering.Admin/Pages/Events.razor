@@ -171,7 +171,7 @@
                     </div>
                 }
                 <div class="row" id="admin-events-list">
-                    @foreach (var evt in FilteredEvents.OrderBy(e => e.Date ?? DateTime.MaxValue))
+                    @foreach (var evt in FilteredEvents.OrderByDescending(e => e.Date ?? DateTime.MinValue))
                     {
                         <div class="col-md-6 col-lg-4 mb-4" id="admin-event-col-@evt.Id">
                             <div class="panel event-card event-card--@PhaseModifier(evt.Status) @(evt.HasPoster ? "event-card--poster" : null)" id="admin-event-card-@evt.Id">
@@ -225,16 +225,10 @@
                                                 <span class="mono fw-medium" id="admin-event-seats-sold-@evt.Id">@soldSeats.ToString("N0")</span> @L["Events_SeatsSold"]
                                                 <span class="text-muted">·</span>
                                                 <span class="mono" id="admin-event-seats-free-@evt.Id">@evt.AvailableSeats.ToString("N0")</span> @L["Events_SeatsFree"]
-                                                @if (evt.SeasonTicketsSold > 0)
-                                                {
-                                                    <div class="event-occupancy__note" id="admin-event-season-sold-@evt.Id">@L["Events_SeasonPassNote", evt.SeasonTicketsSold.ToString("N0")]</div>
-                                                }
                                             </dd>
                                             <dt class="event-occupancy__bar-label"><i class="bi bi-bar-chart-steps"></i></dt>
                                             <dd class="event-occupancy__bar-cell">
-                                                <div class="event-occupancy__bar" id="admin-event-occupancy-bar-@evt.Id" title="@occupancyPct% sold">
-                                                    <div class="event-occupancy__fill" style="width:@(occupancyPct)%"></div>
-                                                </div>
+                                                @OccupancyBar(evt, soldSeats, occupancyPct, $"admin-event-occupancy-bar-{evt.Id}", $"admin-event-season-sold-{evt.Id}", $"admin-event-single-sold-{evt.Id}")
                                             </dd>
                                         }
                                         @if (evt.Status == EventStatus.Completed)
@@ -248,16 +242,10 @@
                                                 <span class="mono fw-medium" id="admin-event-tickets-sold-@evt.Id">@attendance.ToString("N0")</span> @L["Events_SeatsSold"]
                                                 <span class="text-muted">·</span>
                                                 <span class="mono" id="admin-event-attendance-pct-@evt.Id">@attendancePct%</span>
-                                                @if (evt.SeasonTicketsSold > 0)
-                                                {
-                                                    <div class="event-occupancy__note" id="admin-event-completed-season-sold-@evt.Id">@L["Events_SeasonPassNote", evt.SeasonTicketsSold.ToString("N0")]</div>
-                                                }
                                             </dd>
                                             <dt class="event-occupancy__bar-label"><i class="bi bi-bar-chart-steps"></i></dt>
                                             <dd class="event-occupancy__bar-cell">
-                                                <div class="event-occupancy__bar" id="admin-event-attendance-bar-@evt.Id" title="@attendancePct% @L["Events_SeatsSold"]">
-                                                    <div class="event-occupancy__fill" style="width:@(attendancePct)%"></div>
-                                                </div>
+                                                @OccupancyBar(evt, attendance, attendancePct, $"admin-event-attendance-bar-{evt.Id}", $"admin-event-completed-season-sold-{evt.Id}", $"admin-event-completed-single-sold-{evt.Id}")
                                             </dd>
                                         }
                                         <dt><i class="bi bi-cash"></i> @L["Events_BasePriceLabel"]</dt>
@@ -1098,4 +1086,33 @@
             </button>
         </div>
     </div>
+}
+
+@code {
+    /// <summary>
+    /// Stacked sold bar: season-pass seats (fixed for the whole season) first, then single tickets
+    /// sold for this event, each in its own colour with a count legend underneath — so the two
+    /// kinds of sale read as separate quantities rather than one undifferentiated fill.
+    /// </summary>
+    private RenderFragment OccupancyBar(EventDto evt, int sold, int pct, string barId, string seasonId, string singleId)
+    {
+        var season = Math.Min(evt.SeasonTicketsSold, sold);
+        var single = Math.Max(0, sold - season);
+        return @<div>
+            <div class="event-occupancy__bar" id="@barId" title="@pct% @L["Events_SeatsSold"]">
+                @if (season > 0)
+                {
+                    <div class="event-occupancy__fill event-occupancy__fill--season" style="width:@BarWidth(season, evt.Capacity)"></div>
+                }
+                <div class="event-occupancy__fill" style="width:@BarWidth(single, evt.Capacity)"></div>
+            </div>
+            @if (season > 0)
+            {
+                <div class="event-occupancy__legend">
+                    <span id="@seasonId"><i class="event-occupancy__swatch event-occupancy__swatch--season"></i>@L["Events_LegendSeason"] <span class="mono">@season.ToString("N0")</span></span>
+                    <span id="@singleId"><i class="event-occupancy__swatch"></i>@L["Events_LegendSingle"] <span class="mono">@single.ToString("N0")</span></span>
+                </div>
+            }
+        </div>;
+    }
 }

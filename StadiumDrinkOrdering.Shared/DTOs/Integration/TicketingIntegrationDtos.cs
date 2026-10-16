@@ -255,6 +255,57 @@ public class SimulatedDrinkOrderResult
     public string? OrderSummary { get; set; }
 
     public decimal TotalAmount { get; set; }
+
+    /// <summary>How the fan paid: "DigitalWallet" / "TicketWallet" (charged now) or "Cash" / "CreditCard" (collected on delivery).</summary>
+    public string? PaymentMethod { get; set; }
+}
+
+/// <summary>
+/// Outcome of one simulated bar-counter cash movement — a fan loading cash onto their account
+/// wallet ("CashTopup") or onto their ticket ("TicketTopup"), or cashing a ticket balance back out
+/// ("TicketCashOut"). These are exactly the rows the Bar /topup-history page lists.
+/// </summary>
+public class SimulatedBarCashResult
+{
+    public bool Accepted { get; set; }
+    public string Message { get; set; } = string.Empty;
+
+    public string? Kind { get; set; }
+    public string? CustomerName { get; set; }
+    public string? TicketNumber { get; set; }
+    /// <summary>Signed: positive for cash in, negative for a cash-out.</summary>
+    public decimal Amount { get; set; }
+    public decimal BalanceAfter { get; set; }
+    public string? StaffEmail { get; set; }
+}
+
+/// <summary>
+/// Asks the API to move the simulator's own drink orders one stage along the Bar board
+/// (Pending → In preparation → Ready, and optionally on through runner pickup to Delivered),
+/// as if staff were working the queue. An order only moves once it has sat in its current stage
+/// for roughly <see cref="StageSeconds"/> (jittered per order so the board doesn't move in lockstep).
+/// </summary>
+public class SimulateOrderProgressRequest
+{
+    /// <summary>Approximate seconds an order stays in each stage before it is advanced.</summary>
+    public int StageSeconds { get; set; } = 10;
+
+    /// <summary>Also play the runner: Ready → Out for delivery → Delivered. Off = orders stop at Ready.</summary>
+    public bool IncludeDelivery { get; set; } = true;
+}
+
+/// <summary>Outcome of one progress tick: how many simulated orders moved into each stage.</summary>
+public class SimulateOrderProgressResult
+{
+    public bool Accepted { get; set; }
+    public string Message { get; set; } = string.Empty;
+
+    public int StartedPreparation { get; set; }
+    public int MarkedReady { get; set; }
+    public int PickedUp { get; set; }
+    public int Delivered { get; set; }
+
+    public int TotalMoved => StartedPreparation + MarkedReady + PickedUp + Delivered;
 }
 
 /// <summary>

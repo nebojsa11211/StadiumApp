@@ -124,6 +124,40 @@ public class SimulatorApiClient
     }
 
     /// <summary>
+    /// Asks the API to advance this event's simulated drink orders one stage along the Bar board
+    /// (and optionally through runner delivery), as if staff were working the queue. Signed like the webhook.
+    /// </summary>
+    public async Task<SimulateOrderProgressResult> SimulateOrderProgressAsync(string externalEventId, SimulateOrderProgressRequest request)
+    {
+        var body = JsonSerializer.Serialize(request, Json);
+        using var content = new StringContent(body, Encoding.UTF8, "application/json");
+        var path = $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/simulate-progress";
+        using var req = new HttpRequestMessage(HttpMethod.Post, path) { Content = content };
+        req.Headers.TryAddWithoutValidation("X-Signature", "sha256=" + Sign(body));
+
+        var resp = await _http.SendAsync(req);
+        var result = await resp.Content.ReadFromJsonAsync<SimulateOrderProgressResult>(Json);
+        return result ?? new SimulateOrderProgressResult { Accepted = false, Message = $"HTTP {(int)resp.StatusCode}" };
+    }
+
+    /// <summary>
+    /// Asks the API for one realistic bar-counter cash movement (top-up / ticket load / cash-out) at
+    /// this live event. Signed like the webhook.
+    /// </summary>
+    public async Task<SimulatedBarCashResult> SimulateBarCashAsync(string externalEventId)
+    {
+        const string body = "{}";
+        using var content = new StringContent(body, Encoding.UTF8, "application/json");
+        var path = $"api/integration/ticketing/events/{Uri.EscapeDataString(externalEventId)}/simulate-bar-cash";
+        using var req = new HttpRequestMessage(HttpMethod.Post, path) { Content = content };
+        req.Headers.TryAddWithoutValidation("X-Signature", "sha256=" + Sign(body));
+
+        var resp = await _http.SendAsync(req);
+        var result = await resp.Content.ReadFromJsonAsync<SimulatedBarCashResult>(Json);
+        return result ?? new SimulatedBarCashResult { Accepted = false, Message = $"HTTP {(int)resp.StatusCode}" };
+    }
+
+    /// <summary>
     /// Asks the API to stand up one complete fixture — event, crowd, and for a past date a played
     /// match's attendance and drink orders. Signed like the webhook. The season generator issues one
     /// of these per fixture rather than thousands of individual ticket webhooks.

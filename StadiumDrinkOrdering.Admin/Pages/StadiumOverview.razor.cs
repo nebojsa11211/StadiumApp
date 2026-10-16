@@ -59,6 +59,15 @@ public partial class StadiumOverview : ComponentBase, IDisposable
     private int SectorStaff(SectorSalesDto s) =>
         s.Sold <= 0 ? 0 : (int)Math.Ceiling(s.Sold / (double)Math.Max(1, AttendeesPerStaff));
 
+    /// <summary>
+    /// CSS width of one bar segment. Invariant culture: under the Croatian UI a plain decimal
+    /// renders as "17,5%", which is not a valid CSS length and collapses the segment.
+    /// </summary>
+    private static string BarWidth(int part, int capacity) =>
+        capacity > 0
+            ? (100.0 * Math.Clamp(part, 0, capacity) / capacity).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) + "%"
+            : "0%";
+
     private static string OccupancyClass(decimal pct) => pct switch
     {
         >= 90 => "occ-high",

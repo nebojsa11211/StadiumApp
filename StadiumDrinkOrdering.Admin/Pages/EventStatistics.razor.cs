@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using StadiumDrinkOrdering.Admin.Services;
 using StadiumDrinkOrdering.Shared.DTOs;
@@ -23,6 +24,19 @@ public partial class EventStatistics : ComponentBase
     /// </summary>
     private int SingleEventTicketsSold =>
         stats == null ? 0 : Math.Max(0, stats.TotalTicketsSold - stats.SeasonTicketsSold);
+
+    /// <summary>Season-derived tickets, clamped so the stacked bar never exceeds the sold total.</summary>
+    private int SeasonSeats =>
+        stats == null ? 0 : Math.Clamp(stats.SeasonTicketsSold, 0, stats.TotalTicketsSold);
+
+    /// <summary>
+    /// CSS width of one occupancy-bar segment. Invariant culture: under the Croatian UI a plain
+    /// decimal renders as "17,5%", which is not a valid CSS length and collapses the segment.
+    /// </summary>
+    private string BarWidth(int part) =>
+        stats is { TotalCapacity: > 0 }
+            ? (100.0 * Math.Clamp(part, 0, stats.TotalCapacity) / stats.TotalCapacity).ToString("0.##", CultureInfo.InvariantCulture) + "%"
+            : "0%";
 
     protected override async Task OnParametersSetAsync()
     {

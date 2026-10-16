@@ -101,11 +101,25 @@
                 <div class="metric__value mono" id="admin-event-stats-metric-occupancy-value">@stats.OccupancyPercent.ToString("0.#")%</div>
                 <div class="metric__foot metric__foot--stack">
                     <span class="metric__hint" id="admin-event-stats-metric-occupancy-hint">@stats.TotalTicketsSold.ToString("N0") @L["EventStats_Of"] @stats.TotalCapacity.ToString("N0") @L["EventStats_SeatsLabel"]</span>
-                    <div class="progress" style="height: 6px;" id="admin-event-stats-occupancy-bar">
-                        <div class="progress-bar" role="progressbar"
-                             style="width: @(Math.Min(100, (double)stats.OccupancyPercent).ToString(System.Globalization.CultureInfo.InvariantCulture))%;"
-                             aria-valuenow="@stats.OccupancyPercent" aria-valuemin="0" aria-valuemax="100"></div>
+                    @* Stacked: season-pass seats first, then single-event tickets, so the two
+                       ticket streams read as separate quantities within one occupancy bar. *@
+                    <div class="progress sold-bar" style="height: 6px;" id="admin-event-stats-occupancy-bar"
+                         role="progressbar" aria-valuenow="@stats.OccupancyPercent" aria-valuemin="0" aria-valuemax="100">
+                        @if (SeasonSeats > 0)
+                        {
+                            <div class="progress-bar sold-bar__season" style="width: @BarWidth(SeasonSeats)"
+                                 title="@L["Events_LegendSeason"]: @SeasonSeats.ToString("N0")"></div>
+                        }
+                        <div class="progress-bar sold-bar__single" style="width: @BarWidth(SingleEventTicketsSold)"
+                             title="@L["Events_LegendSingle"]: @SingleEventTicketsSold.ToString("N0")"></div>
                     </div>
+                    @if (SeasonSeats > 0)
+                    {
+                        <div class="sold-legend" id="admin-event-stats-occupancy-legend">
+                            <span id="admin-event-stats-occupancy-legend-season"><i class="sold-legend__swatch sold-legend__swatch--season"></i>@L["Events_LegendSeason"] <strong>@SeasonSeats.ToString("N0")</strong></span>
+                            <span id="admin-event-stats-occupancy-legend-single"><i class="sold-legend__swatch"></i>@L["Events_LegendSingle"] <strong>@SingleEventTicketsSold.ToString("N0")</strong></span>
+                        </div>
+                    }
                 </div>
             </article>
 

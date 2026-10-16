@@ -839,4 +839,22 @@ Wallet balances are destroyed, not refunded. This cannot be undone.</value>
   <data name="SeasonGen_ColOrders" xml:space="preserve">
     <value>Drink orders</value>
   </data>
+  <data name="Index_SimulateStaffLabel" xml:space="preserve">
+    <value>Simulate bar staff (move orders through the board)</value>
+  </data>
+  <data name="Index_StageSecondsLabel" xml:space="preserve">
+    <value>~time per stage</value>
+  </data>
+  <data name="Index_SimulateDeliveryLabel" xml:space="preserve">
+    <value>Also simulate runner delivery</value>
+  </data>
+  <data name="Index_OrdersAdvancedLabel" xml:space="preserve">
+    <value>Moved</value>
+  </data>
+  <data name="Index_SimulateBarCashLabel" xml:space="preserve">
+    <value>Simulate bar cash counter (top-ups / cash-outs)</value>
+  </data>
+  <data name="Index_BarCashStatsLabel" xml:space="preserve">
+    <value>Counter</value>
+  </data>
 </root>

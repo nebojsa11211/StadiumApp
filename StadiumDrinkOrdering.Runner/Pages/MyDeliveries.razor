@@ -2,6 +2,7 @@
 @implements IDisposable
 @inject RunnerApiService Api
 @inject OutboxService Outbox
+@inject RunnerLiveService Live
 @inject IJSRuntime JS
 @inject IStringLocalizer<SharedResources> Localizer
 
@@ -111,19 +112,44 @@
     // The order whose "why couldn't you deliver?" reason sheet is open, or null when none is.
     private int? failingOrderId;
 
+    private System.Threading.Timer? timer;
+    private const int PollSeconds = 10;
+    // Set when a refresh is requested mid-load, so exactly one more load follows (see Home).
+    private bool reloadPending;
+
     protected override async Task OnInitializedAsync()
     {
         Outbox.OnChange += OnOutboxChanged;
+        Live.Changed += OnLiveChanged;
         await Load();
+        _ = Live.EnsureStartedAsync();
+        // Backstop poll for when pushes can't arrive (offline / reconnecting): an order the bar
+        // cancels or re-assigns still drops off this list.
+        timer = new System.Threading.Timer(async _ => await InvokeAsync(Load), null,
+            TimeSpan.FromSeconds(PollSeconds), TimeSpan.FromSeconds(PollSeconds));
     }
+
+    private void OnLiveChanged() => _ = InvokeAsync(Load);
 
     private async Task Load()
     {
+        if (loading)
+        {
+            reloadPending = true;
+            return;
+        }
         loading = true;
-        mine = await Api.GetMyDeliveriesAsync();
+        // A failed fetch (offline) keeps the last good list on screen rather than blanking it.
+        mine = await Api.GetMyDeliveriesAsync() ?? mine;
         Recompute();
         loading = false;
         StateHasChanged();
+
+        if (reloadPending)
+        {
+            reloadPending = false;
+            await Load();
+        }
     }
 
     private void Recompute()
@@ -178,5 +204,10 @@
         _ = Load();      // background: reconcile against the server (drops synced-then-Delivered orders)
     });
 
-    public void Dispose() => Outbox.OnChange -= OnOutboxChanged;
+    public void Dispose()
+    {
+        timer?.Dispose();
+        Outbox.OnChange -= OnOutboxChanged;
+        Live.Changed -= OnLiveChanged;
+    }
 }

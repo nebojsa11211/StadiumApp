@@ -2,6 +2,7 @@
 @implements IAsyncDisposable
 @inject RunnerApiService Api
 @inject OutboxService Outbox
+@inject RunnerLiveService Live
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 @inject IStringLocalizer<SharedResources> Localizer
@@ -176,10 +177,22 @@
     protected override async Task OnInitializedAsync()
     {
         Outbox.OnChange += OnConnectivityChanged;
+        Live.Changed += OnLiveChanged;
         await Load();
+        _ = Live.EnsureStartedAsync();
+        // Backstop poll: pushes (Live) refresh the pool instantly; this covers a phone that's offline
+        // or mid-reconnect and so isn't receiving them.
         timer = new System.Threading.Timer(async _ => await InvokeAsync(Load), null,
-            TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            TimeSpan.FromSeconds(PollSeconds), TimeSpan.FromSeconds(PollSeconds));
     }
+
+    private const int PollSeconds = 10;
+
+    private void OnLiveChanged() => _ = InvokeAsync(Load);
+
+    // Set when a refresh is requested mid-load, so exactly one more load follows instead of the later
+    // request being dropped (or loads overlapping) during a burst of pushes.
+    private bool reloadPending;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -196,8 +209,14 @@
 
     private async Task Load()
     {
+        if (loading)
+        {
+            reloadPending = true;
+            return;
+        }
         loading = true;
-        orders = await Api.GetPoolAsync();
+        // A failed fetch (offline) keeps the last good pool on screen rather than blanking it.
+        orders = await Api.GetPoolAsync() ?? orders;
         // Drop any selection that's no longer in the pool (claimed by another runner, delivered, etc.)
         // so the action-bar count and batch request never reference stale orders.
         if (orders is not null)
@@ -207,6 +226,12 @@
         }
         loading = false;
         StateHasChanged();
+
+        if (reloadPending)
+        {
+            reloadPending = false;
+            await Load();
+        }
     }
 
     private void ToggleSelect(int orderId)
@@ -385,6 +410,7 @@
     {
         timer?.Dispose();
         Outbox.OnChange -= OnConnectivityChanged;
+        Live.Changed -= OnLiveChanged;
 
         // Navigating away with the camera still held would leave the phone's capture indicator lit
         // and the device locked for the /scan page.

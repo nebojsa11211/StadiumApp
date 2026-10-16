@@ -108,6 +108,66 @@ public class IntegrationController : ControllerBase
     }
 
     /// <summary>
+    /// Testing hook: advances the simulator's own drink orders for the event one stage along the
+    /// Bar board (and optionally through runner pickup/delivery), as if staff were working the
+    /// queue. Signed like the webhook; the simulator calls it on every auto-order tick.
+    /// </summary>
+    [HttpPost("events/{externalEventId}/simulate-progress")]
+    public async Task<ActionResult<SimulateOrderProgressResult>> SimulateProgress(string externalEventId, CancellationToken ct)
+    {
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
+        if (!VerifySignature(body, Request.Headers[SignatureHeader].ToString()))
+        {
+            _logger.LogWarning("Rejected simulate-progress: invalid or missing signature");
+            return Unauthorized(new SimulateOrderProgressResult { Accepted = false, Message = "Invalid signature" });
+        }
+
+        SimulateOrderProgressRequest? request;
+        try
+        {
+            request = string.IsNullOrWhiteSpace(body)
+                ? new SimulateOrderProgressRequest()
+                : System.Text.Json.JsonSerializer.Deserialize<SimulateOrderProgressRequest>(body, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Rejected simulate-progress: malformed JSON");
+            return BadRequest(new SimulateOrderProgressResult { Accepted = false, Message = "Malformed JSON" });
+        }
+
+        var result = await _ingestion.SimulateOrderProgressAsync(externalEventId, request ?? new SimulateOrderProgressRequest(), ct);
+        return result.Accepted ? Ok(result) : UnprocessableEntity(result);
+    }
+
+    /// <summary>
+    /// Testing hook: one realistic bar-counter cash movement (account top-up, ticket load, or ticket
+    /// cash-out) for a fan at this live event — what the Bar /topup-history page lists. Signed like the webhook.
+    /// </summary>
+    [HttpPost("events/{externalEventId}/simulate-bar-cash")]
+    public async Task<ActionResult<SimulatedBarCashResult>> SimulateBarCash(string externalEventId, CancellationToken ct)
+    {
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            body = await reader.ReadToEndAsync(ct);
+        }
+
+        if (!VerifySignature(body, Request.Headers[SignatureHeader].ToString()))
+        {
+            _logger.LogWarning("Rejected simulate-bar-cash: invalid or missing signature");
+            return Unauthorized(new SimulatedBarCashResult { Accepted = false, Message = "Invalid signature" });
+        }
+
+        var result = await _ingestion.SimulateBarCashAsync(externalEventId, ct);
+        return result.Accepted ? Ok(result) : UnprocessableEntity(result);
+    }
+
+    /// <summary>
     /// Testing hook: builds one complete fixture in a season — creates the event, sells it a crowd,
     /// and for a past date settles it like a played match (attendance mix, optional drink orders).
     /// Signed like the webhook. The simulator's season generator calls this once per fixture.

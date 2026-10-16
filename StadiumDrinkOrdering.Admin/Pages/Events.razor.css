@@ -115,6 +115,8 @@
 }
 
 .event-occupancy__bar {
+    display: flex;
+    gap: 2px;
     width: 100%;
     height: 0.4rem;
     border-radius: 0.3rem;
@@ -122,11 +124,39 @@
     overflow: hidden;
 }
 
+/* Segments sit side by side; the 2px gap is the visible seam between season and single sales. */
 .event-occupancy__fill {
+    flex: none;
     height: 100%;
-    border-radius: inherit;
     background: var(--stadium-green, #10b981);
     transition: width 0.3s ease;
+}
+
+.event-occupancy__fill--season {
+    background: #8b5cf6;
+}
+
+.event-occupancy__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin-top: 0.3rem;
+    font-size: 0.72rem;
+    color: var(--stadium-gray-500);
+}
+
+.event-occupancy__swatch {
+    display: inline-block;
+    width: 0.55rem;
+    height: 0.55rem;
+    margin-right: 0.3rem;
+    border-radius: 2px;
+    background: var(--stadium-green, #10b981);
+    vertical-align: baseline;
+}
+
+.event-occupancy__swatch--season {
+    background: #8b5cf6;
 }
 
 /* ---- Completed-event results ---------------------------------------------------------------

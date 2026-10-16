@@ -1218,6 +1218,15 @@ public partial class Events : ComponentBase, IDisposable
     }
 
     /// <summary>
+    /// CSS width for one segment of the stacked occupancy bar. Invariant culture so the Croatian UI
+    /// doesn't emit "12,5%" (an invalid CSS length that would collapse the segment).
+    /// </summary>
+    private static string BarWidth(int part, int capacity) =>
+        capacity > 0
+            ? (100.0 * Math.Clamp(part, 0, capacity) / capacity).ToString("0.##", CultureInfo.InvariantCulture) + "%"
+            : "0%";
+
+    /// <summary>
     /// Money for the card's results strip — thousands-separated so a five-figure gate stays readable
     /// (the rest of the card uses plain "F2" for single prices, which never reach that size).
     /// </summary>

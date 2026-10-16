@@ -5147,4 +5147,10 @@
   <data name="Events_NoMatches" xml:space="preserve">
     <value>Nijedan događaj ne odgovara odabranim filterima.</value>
   </data>
+  <data name="Events_LegendSeason" xml:space="preserve">
+    <value>Sezonske ulaznice</value>
+  </data>
+  <data name="Events_LegendSingle" xml:space="preserve">
+    <value>Pojedinačne ulaznice</value>
+  </data>
 </root>

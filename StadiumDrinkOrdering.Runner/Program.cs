@@ -62,6 +62,8 @@ static string ResolveApiBaseUrl(string? configured, string hostBaseAddress)
 // to login). A singleton is shared across all scopes, and is correct for a single-user WASM app.
 builder.Services.AddSingleton<RunnerAuthService>();
 builder.Services.AddScoped<OutboxService>();
+// Live order pushes (SignalR) — one connection for the whole app, shared by every page.
+builder.Services.AddSingleton(sp => new RunnerLiveService(sp.GetRequiredService<RunnerAuthService>(), apiBaseUrl));
 builder.Services.AddTransient<BearerTokenHandler>();
 
 // Typed client: every RunnerApiService call goes to the API with the bearer token attached.

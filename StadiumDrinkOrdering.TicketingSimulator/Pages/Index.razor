@@ -628,6 +628,31 @@
                         @(autoOrdering ? Localizer["Index_StopAutoOrdersButton"] : Localizer["Index_StartAutoOrdersButton"])
                     </button>
                 </div>
+                <div id="simulator-index-drinks-staff-controls" class="d-flex align-items-center gap-3 flex-wrap mt-2">
+                    <div class="form-check form-switch mb-0">
+                        <input id="simulator-index-drinks-staff-toggle" class="form-check-input" type="checkbox" @bind="simulateStaff" />
+                        <label class="form-check-label small" for="simulator-index-drinks-staff-toggle">@Localizer["Index_SimulateStaffLabel"]</label>
+                    </div>
+                    <span class="small text-muted">@Localizer["Index_StageSecondsLabel"]</span>
+                    <input id="simulator-index-drinks-stage-input" type="number" min="1" max="600" class="form-control form-control-sm" style="width:70px" @bind="stageSeconds" disabled="@(!simulateStaff)" />
+                    <span class="small text-muted">s</span>
+                    <div class="form-check form-switch mb-0">
+                        <input id="simulator-index-drinks-delivery-toggle" class="form-check-input" type="checkbox" @bind="simulateDelivery" disabled="@(!simulateStaff)" />
+                        <label class="form-check-label small" for="simulator-index-drinks-delivery-toggle">@Localizer["Index_SimulateDeliveryLabel"]</label>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input id="simulator-index-drinks-barcash-toggle" class="form-check-input" type="checkbox" @bind="simulateBarCash" />
+                        <label class="form-check-label small" for="simulator-index-drinks-barcash-toggle">@Localizer["Index_SimulateBarCashLabel"]</label>
+                    </div>
+                    @if (barCashMovements > 0)
+                    {
+                        <span id="simulator-index-drinks-barcash-stats" class="small text-muted">@Localizer["Index_BarCashStatsLabel"]: <strong>@barCashMovements</strong> · +€@barCashIn.ToString("0") / −€@barCashOut.ToString("0")</span>
+                    }
+                    @if (ordersAdvanced > 0)
+                    {
+                        <span id="simulator-index-drinks-advanced-stats" class="small text-muted">@Localizer["Index_OrdersAdvancedLabel"]: <strong>@ordersAdvanced</strong></span>
+                    }
+                </div>
                 <div class="small text-muted mt-2">
                     @Localizer["Index_DrinkOrdersInfo"]
                 </div>
@@ -866,6 +891,17 @@
     private int autoOrderRate = 3;
     private int autoOrderIntervalMs = 1500;
     private CancellationTokenSource? autoOrderCts;
+    // While auto-ordering, also play bar staff (and optionally runners) so orders flow across the
+    // Bar /order-queue board instead of piling up in Pending.
+    private bool simulateStaff = true;
+    private bool simulateDelivery = true;
+    private int stageSeconds = 10;
+    private int ordersAdvanced;
+    // While auto-ordering, also simulate the bar cash counter (top-ups / ticket loads / cash-outs)
+    // that feeds the Bar /topup-history page. Fans arrive at the counter far less often than they order.
+    private bool simulateBarCash = true;
+    private int barCashMovements;
+    private decimal barCashIn, barCashOut;
     private int drinkOrdersPlaced;
 
     // The event is only "live" between start and end, so the end must come after the start.
@@ -2149,7 +2185,7 @@
                 if (r.Accepted)
                 {
                     drinkOrdersPlaced++;
-                    Log($"🍺 Drink order #{r.OrderId} @ seat {r.SeatNumber}: {r.OrderSummary} (€{r.TotalAmount:0.00})");
+                    Log($"🍺 Drink order #{r.OrderId} @ seat {r.SeatNumber}: {r.OrderSummary} (€{r.TotalAmount:0.00}, {r.PaymentMethod})");
                 }
                 else
                 {
@@ -2205,6 +2241,11 @@
                             break;
                         }
                     }
+                    if (autoOrdering && simulateStaff)
+                        await AdvanceOrdersAsync();
+                    // ~1 counter visit per 3 orders placed, so wallets fill a little ahead of spending.
+                    if (autoOrdering && simulateBarCash && Random.Shared.NextDouble() < Math.Min(1.0, autoOrderRate / 3.0))
+                        await SimulateBarCashAsync();
                     await InvokeAsync(StateHasChanged);
                     if (!autoOrdering) break;
                     await Task.Delay(autoOrderIntervalMs, token);
@@ -2217,6 +2258,66 @@
             }
             await InvokeAsync(StateHasChanged);
         });
+    }
+
+    // One staff tick: the API moves every simulated order that has waited out its stage.
+    private async Task AdvanceOrdersAsync()
+    {
+        try
+        {
+            var p = await Api.SimulateOrderProgressAsync(externalEventId!, new SimulateOrderProgressRequest
+            {
+                StageSeconds = Math.Clamp(stageSeconds, 1, 600),
+                IncludeDelivery = simulateDelivery
+            });
+            if (!p.Accepted)
+            {
+                Log($"⚠ Order progress rejected: {p.Message}");
+                return;
+            }
+            if (p.TotalMoved == 0) return;
+
+            ordersAdvanced += p.TotalMoved;
+            var parts = new List<string>();
+            if (p.StartedPreparation > 0) parts.Add($"{p.StartedPreparation} → prep");
+            if (p.MarkedReady > 0) parts.Add($"{p.MarkedReady} → ready");
+            if (p.PickedUp > 0) parts.Add($"{p.PickedUp} → picked up");
+            if (p.Delivered > 0) parts.Add($"{p.Delivered} → delivered");
+            Log($"🧑‍🍳 Staff: {string.Join(", ", parts)}");
+        }
+        catch (Exception ex)
+        {
+            Log($"Order progress error: {ex.Message}");
+        }
+    }
+
+    private async Task SimulateBarCashAsync()
+    {
+        try
+        {
+            var r = await Api.SimulateBarCashAsync(externalEventId!);
+            if (!r.Accepted)
+            {
+                Log($"⚠ Bar cash rejected: {r.Message}");
+                return;
+            }
+            if (r.Kind == null) return; // nobody could be served this round
+
+            barCashMovements++;
+            if (r.Amount >= 0) barCashIn += r.Amount; else barCashOut += -r.Amount;
+            var what = r.Kind switch
+            {
+                "CashTopup" => "💶 Top-up",
+                "TicketTopup" => "🎟 Ticket load",
+                "TicketCashOut" => "↩ Cash-out",
+                _ => r.Kind
+            };
+            Log($"{what} {r.CustomerName}: {(r.Amount >= 0 ? "+" : "−")}€{Math.Abs(r.Amount):0.00} → €{r.BalanceAfter:0.00} ({r.StaffEmail})");
+        }
+        catch (Exception ex)
+        {
+            Log($"Bar cash error: {ex.Message}");
+        }
     }
 
     private async Task ResetEvent()

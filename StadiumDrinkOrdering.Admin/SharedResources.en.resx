@@ -5117,4 +5117,10 @@
   <data name="Events_NoMatches" xml:space="preserve">
     <value>No events match the current filters.</value>
   </data>
+  <data name="Events_LegendSeason" xml:space="preserve">
+    <value>Season passes</value>
+  </data>
+  <data name="Events_LegendSingle" xml:space="preserve">
+    <value>Single tickets</value>
+  </data>
 </root>

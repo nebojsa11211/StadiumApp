@@ -1,0 +1,38 @@
+/* Occupancy metric — stacked season / single bar with a colour key beneath it */
+.sold-bar {
+    gap: 2px;
+}
+
+.sold-bar__season {
+    background-color: #8b5cf6;
+}
+
+.sold-bar__single {
+    background-color: #22c55e;
+}
+
+.sold-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.8rem;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.sold-legend strong {
+    color: #334155;
+}
+
+.sold-legend__swatch {
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-right: 0.3rem;
+    border-radius: 2px;
+    background: #22c55e;
+}
+
+.sold-legend__swatch--season {
+    background: #8b5cf6;
+}

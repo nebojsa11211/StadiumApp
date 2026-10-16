@@ -77,17 +77,11 @@
             <div class="ops-kpi" id="admin-overview-kpi-attendance">
                 <div class="ops-kpi-label" id="admin-overview-kpi-attendance-label">@L["Overview_KpiAttendance"]</div>
                 <div class="ops-kpi-value" id="admin-overview-kpi-attendance-value">@TotalSold.ToString("N0") <span class="ops-kpi-sub">/ @TotalCapacity.ToString("N0")</span></div>
-                <div class="ops-progress" id="admin-overview-kpi-attendance-progress"><div class="ops-progress-bar @OccupancyClass(OverallOccupancy)" style="width:@(OverallOccupancy)%"></div></div>
+                @SoldBar("admin-overview-kpi-attendance-progress", TotalSold, TotalSeasonSold, TotalCapacity, OverallOccupancy)
                 <div class="ops-kpi-foot" id="admin-overview-kpi-attendance-foot">
                     @OverallOccupancy.ToString("0.0")@L["Overview_PercentFull"]
-                    @if (TotalSeasonSold > 0)
-                    {
-                        <span id="admin-overview-total-season" title="@L["Overview_SeasonIncludedTooltip"]"
-                              style="display:inline-flex;align-items:center;gap:.25rem;margin-left:.5rem;padding:.05rem .45rem;border-radius:999px;background:#ede9fe;color:#6d28d9;font-weight:600;font-size:.75rem;">
-                            <i class="bi bi-person-badge"></i> @TotalSeasonSold.ToString("N0") season
-                        </span>
-                    }
                 </div>
+                @SoldLegend("admin-overview-total", TotalSold, TotalSeasonSold, OverallOccupancy)
             </div>
             <div class="ops-kpi" id="admin-overview-kpi-beer">
                 <div class="ops-kpi-label" id="admin-overview-kpi-beer-label">@L["Overview_KpiBeer"]</div>
@@ -113,17 +107,11 @@
                             <span class="ops-sector-code" title="@s.SectionName" id="admin-overview-sector-code-@s.SectionCode">@s.SectionCode</span>
                             <span class="ops-sector-occ" id="admin-overview-sector-occ-@s.SectionCode">@occ.ToString("0")%</span>
                         </div>
-                        <div class="ops-progress" id="admin-overview-sector-progress-@s.SectionCode"><div class="ops-progress-bar @OccupancyClass(occ)" style="width:@(occ)%"></div></div>
+                        @SoldBar($"admin-overview-sector-progress-{s.SectionCode}", s.Sold, s.SeasonSold, s.Capacity, occ)
                         <div class="ops-sector-stats" id="admin-overview-sector-stats-@s.SectionCode">
                             <span id="admin-overview-sector-sold-@s.SectionCode"><strong>@s.Sold.ToString("N0")</strong> / @s.Capacity.ToString("N0") @L["Overview_Seats"]</span>
-                            @if (s.SeasonSold > 0)
-                            {
-                                <span id="admin-overview-sector-season-@s.SectionCode" title="Seats held by season passes"
-                                      style="display:inline-flex;align-items:center;gap:.25rem;margin-left:.4rem;padding:.05rem .4rem;border-radius:999px;background:#ede9fe;color:#6d28d9;font-weight:600;font-size:.72rem;">
-                                    <i class="bi bi-person-badge"></i> @s.SeasonSold.ToString("N0") season
-                                </span>
-                            }
                         </div>
+                        @SoldLegend($"admin-overview-sector-{s.SectionCode}", s.Sold, s.SeasonSold, occ)
                         <div class="ops-sector-plan" id="admin-overview-sector-plan-@s.SectionCode">
                             <span id="admin-overview-sector-beer-@s.SectionCode" title="@L["Overview_SectorBeerTooltip"]"><i class="bi bi-cup-straw"></i> @SectorBeer(s).ToString("N0") L</span>
                             <span id="admin-overview-sector-staff-@s.SectionCode" title="@L["Overview_SectorStaffTooltip"]"><i class="bi bi-person-badge"></i> @SectorStaff(s) @L["Overview_Staff"]</span>
@@ -141,3 +129,40 @@
         }
     }
 </div>
+
+
+@code {
+    /// <summary>
+    /// Stacked sold bar: season-pass seats (purple) first, then single tickets in the occupancy
+    /// colour, so the two kinds of sale read as separate quantities. <paramref name="seasonSold"/>
+    /// is a subset of <paramref name="sold"/>.
+    /// </summary>
+    private RenderFragment SoldBar(string id, int sold, int seasonSold, int capacity, decimal occ)
+    {
+        var season = Math.Min(seasonSold, sold);
+        var single = Math.Max(0, sold - season);
+        return @<div class="ops-progress" id="@id">
+            @if (season > 0)
+            {
+                <div class="ops-progress-bar ops-progress-bar--season" style="width:@BarWidth(season, capacity)" title="@L["Events_LegendSeason"]: @season.ToString("N0")"></div>
+            }
+            <div class="ops-progress-bar @OccupancyClass(occ)" style="width:@BarWidth(single, capacity)" title="@L["Events_LegendSingle"]: @single.ToString("N0")"></div>
+        </div>;
+    }
+
+    /// <summary>Colour key under a <see cref="SoldBar"/>; omitted when nothing is held by season passes.</summary>
+    private RenderFragment SoldLegend(string idPrefix, int sold, int seasonSold, decimal occ)
+    {
+        var season = Math.Min(seasonSold, sold);
+        var single = Math.Max(0, sold - season);
+        return @<text>
+            @if (season > 0)
+            {
+                <div class="ops-legend @OccupancyClass(occ)" id="@(idPrefix)-legend">
+                    <span id="@(idPrefix)-season"><i class="ops-swatch ops-swatch--season"></i>@L["Events_LegendSeason"] <strong>@season.ToString("N0")</strong></span>
+                    <span id="@(idPrefix)-single"><i class="ops-swatch"></i>@L["Events_LegendSingle"] <strong>@single.ToString("N0")</strong></span>
+                </div>
+            }
+        </text>;
+    }
+}

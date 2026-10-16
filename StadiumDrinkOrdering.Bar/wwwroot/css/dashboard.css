@@ -235,23 +235,93 @@
 }
 
 /* ===== QUICK ACTIONS ===== */
-.quick-actions-card .btn {
-    font-weight: 600;
-    border-radius: 9px;
-    padding: 0.7rem 1rem;
+/* Minimal list rows: neutral surface, hairline border, accent only on the icon,
+   a mono count pill and a chevron that nudges on hover. */
+.quick-actions-card .card-body { padding: 0.75rem; }
+
+.qa-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.quick-actions-card .qa-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--stadium-gray-800);
+    font-weight: 500;
+    font-size: 0.9rem;
     text-align: left;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    box-shadow: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.quick-actions-card .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--stadium-shadow-sm);
+.quick-actions-card .qa-item:hover {
+    background: var(--stadium-gray-50);
+    border-color: var(--stadium-gray-200);
+    color: var(--stadium-gray-900);
 }
 
-.quick-actions-card .badge {
+.quick-actions-card .qa-item:active { background: var(--stadium-gray-100); }
+
+.quick-actions-card .qa-item.disabled { opacity: 0.45; }
+
+.qa-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--pitch-soft, #eaf3ec);
+    color: var(--pitch, #1f7a4d);
+    font-size: 0.85rem;
+}
+
+.qa-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.qa-count {
+    font-family: var(--stadium-font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.72rem;
-    padding: 0.25rem 0.5rem;
+    font-weight: 600;
+    min-width: 1.6rem;
+    padding: 0.15rem 0.45rem;
     border-radius: 999px;
+    text-align: center;
+    background: var(--stadium-gray-900);
+    color: #ffffff;
+}
+
+.qa-chevron {
+    font-size: 0.6rem;
+    color: var(--stadium-gray-400);
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.quick-actions-card .qa-item:hover .qa-chevron {
+    color: var(--stadium-gray-700);
+    transform: translateX(2px);
+}
+
+.qa-desc {
+    display: block;
+    margin: -0.15rem 0 0.25rem 3.5rem;
+    font-size: 0.75rem;
+    color: var(--stadium-gray-500);
 }
 
 /* ===== CONNECTION STATUS ===== */
@@ -475,8 +545,9 @@
 @media (prefers-reduced-motion: reduce) {
     .dashboard-card,
     .dashboard-card:hover,
-    .quick-actions-card .btn,
-    .quick-actions-card .btn:hover,
+    .quick-actions-card .qa-item,
+    .qa-chevron,
+    .quick-actions-card .qa-item:hover .qa-chevron,
     .skeleton-card,
     .skeleton-text,
     .skeleton-icon,

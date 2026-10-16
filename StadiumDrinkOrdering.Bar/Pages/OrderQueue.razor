@@ -127,6 +127,10 @@
 
     private HashSet<int> knownIds = new();
     private HashSet<int> flashIds = new();
+    // Orders that changed stage since the previous fetch (moved by another bartender, a runner, or the
+    // simulator) get a one-shot highlight in their new column, so movement on the board is visible.
+    private Dictionary<int, OrderStatus> knownStatuses = new();
+    private HashSet<int> movedIds = new();
     private bool firstLoad = true;
     private bool isLoading = false;
     private DateTime lastUpdated;
@@ -161,12 +165,13 @@
     private const string AutoPrintStorageKey = "bar-orderqueue-auto-print-slip";
 
     private System.Threading.Timer? refreshTimer;
-    private const int RefreshSeconds = 8;
+    private const int RefreshSeconds = 5;
 
     protected override async Task OnInitializedAsync()
     {
         SignalRService.NewOrder += OnNewOrder;
         SignalRService.OrderUpdated += OnOrderUpdated;
+        SignalRService.OrderStatusChanged += OnOrderStatusChanged;
         SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
 
         // The auth token is restored from storage asynchronously, so it may not be available yet
@@ -253,9 +258,17 @@
         }
     }
 
+    // Set when an update arrives mid-load, so that load is followed by exactly one more — a burst of
+    // pushes (several orders moving at once) is coalesced instead of the later ones being lost.
+    private bool reloadPending;
+
     private async Task LoadOrders()
     {
-        if (isLoading) return;
+        if (isLoading)
+        {
+            reloadPending = true;
+            return;
+        }
         isLoading = true;
         try
         {
@@ -292,6 +305,12 @@
         {
             isLoading = false;
         }
+
+        if (reloadPending)
+        {
+            reloadPending = false;
+            await LoadOrders();
+        }
     }
 
     // Splits the cached order list into the three KDS columns, honouring the active sector filter.
@@ -321,6 +340,15 @@
         var newPending = pendingOrders.Select(o => o.Id).Where(id => !knownIds.Contains(id)).ToList();
         knownIds = currentIds;
         flashIds = newPending.ToHashSet();
+
+        // Stage changes are tracked across ALL orders (not just the visible ones) so toggling a sector
+        // chip never makes unchanged cards look "moved".
+        var statuses = lastOrders.GroupBy(o => o.Id).ToDictionary(g => g.Key, g => g.First().Status);
+        movedIds = firstLoad || suppressChimeOnce
+            ? new HashSet<int>()
+            : visible.Where(o => knownStatuses.TryGetValue(o.Id, out var before) && before != o.Status)
+                     .Select(o => o.Id).ToHashSet();
+        knownStatuses = statuses;
 
         // A filter change shifts which orders are "new" purely because the view changed — don't chime
         // for that, only for orders that actually arrived.
@@ -513,7 +541,7 @@
             {
                 @foreach (var order in orders)
                 {
-                    <div class="kds-card @(flashIds.Contains(order.Id) ? "kds-new" : "") @(order.Status == OrderStatus.OutForDelivery ? "kds-card-collected" : "")" id="bar-kds-card-@order.Id">
+                    <div class="kds-card @(flashIds.Contains(order.Id) ? "kds-new" : movedIds.Contains(order.Id) ? "kds-moved" : "") @(order.Status == OrderStatus.OutForDelivery ? "kds-card-collected" : "")" id="bar-kds-card-@order.Id">
                         <div id="bar-orderqueue-page-card-top-@order.Id" class="kds-card-top">
                             <span class="kds-order-id">#@order.Id</span>
                             <span class="kds-seat">@SeatLabel(order)</span>
@@ -799,6 +827,9 @@
 
     private async void OnOrderUpdated(OrderDto order) => await InvokeAsync(LoadOrders);
 
+    // What the Bar/Runner apps (and the simulator) broadcast when an order changes stage.
+    private async void OnOrderStatusChanged(OrderStatusChangedNotification n) => await InvokeAsync(LoadOrders);
+
     private async void OnConnectionStateChanged() => await InvokeAsync(StateHasChanged);
 
     private bool signalRStarting;
@@ -834,6 +865,7 @@
         {
             SignalRService.NewOrder -= OnNewOrder;
             SignalRService.OrderUpdated -= OnOrderUpdated;
+            SignalRService.OrderStatusChanged -= OnOrderStatusChanged;
             SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
         }
         AuthService.OnAuthenticationStateChanged -= OnAuthStateChanged;

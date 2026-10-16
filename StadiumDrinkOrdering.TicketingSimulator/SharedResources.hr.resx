@@ -839,4 +839,22 @@ Stanja novčanika se uništavaju, ne vraćaju. Ovo se ne može poništiti.</valu
   <data name="SeasonGen_ColOrders" xml:space="preserve">
     <value>Narudžbe pića</value>
   </data>
+  <data name="Index_SimulateStaffLabel" xml:space="preserve">
+    <value>Simuliraj osoblje bara (pomiči narudžbe kroz ploču)</value>
+  </data>
+  <data name="Index_StageSecondsLabel" xml:space="preserve">
+    <value>~vrijeme po fazi</value>
+  </data>
+  <data name="Index_SimulateDeliveryLabel" xml:space="preserve">
+    <value>Simuliraj i dostavu (runner)</value>
+  </data>
+  <data name="Index_OrdersAdvancedLabel" xml:space="preserve">
+    <value>Pomaknuto</value>
+  </data>
+  <data name="Index_SimulateBarCashLabel" xml:space="preserve">
+    <value>Simuliraj blagajnu bara (nadoplate / isplate)</value>
+  </data>
+  <data name="Index_BarCashStatsLabel" xml:space="preserve">
+    <value>Blagajna</value>
+  </data>
 </root>

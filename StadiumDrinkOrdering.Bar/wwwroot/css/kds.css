@@ -276,6 +276,18 @@
 /* New-order flash — fires on cards that appeared since the last poll. */
 .kds-card.kds-new { animation: kds-flash 0.9s ease-in-out 5; }
 
+/* Stage-change highlight — a single soft pulse on a card that just moved into this column. */
+.kds-card.kds-moved { animation: kds-moved 1.6s ease-out; }
+
+@keyframes kds-moved {
+    0%, 25% { background: #e8f6ee; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.55); }
+    100% { background: #ffffff; box-shadow: var(--stadium-shadow-sm); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kds-card.kds-moved { animation: none; }
+}
+
 @keyframes kds-flash {
     0%, 100% { background: #ffffff; box-shadow: var(--stadium-shadow-sm); }
     50% { background: #fbf3df; box-shadow: 0 0 0 4px var(--stadium-accent); }
